@@ -26,9 +26,9 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Ribbon;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -44,20 +44,80 @@ namespace Gorgon.Editor.Views
     {
         #region Events.
         // The file explorer context change event.
-        private event EventHandler _fileExplorerContextChanged;
+        private event EventHandler FileExplorerContextChangedEvent;
 
         // The file explorer context change event.
-        private event EventHandler _fileExplorerIsRenaming;
+        private event EventHandler FileExplorerIsRenamingEvent;
+
+        // The ribbon added event.
+        private event EventHandler<ContentRibbonEventArgs> RibbonAddedEvent;
+
+        // The ribbon removed event.
+        private event EventHandler<ContentRibbonEventArgs> RibbonRemovedEvent;
 
         /// <summary>
         /// Event triggered when a ribbon is added.
         /// </summary>
-        public event EventHandler<ContentRibbonEventArgs> RibbonAdded;
+        public event EventHandler<ContentRibbonEventArgs> RibbonAdded
+        {
+            add
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        RibbonAddedEvent = value;
+                        return;
+                    }
+
+                    RibbonAddedEvent += value;
+                }
+            }
+            remove
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    RibbonAddedEvent -= value;
+                }
+            }
+        }
 
         /// <summary>
         /// Event triggered when a ribbon is added.
         /// </summary>
-        public event EventHandler<ContentRibbonEventArgs> RibbonRemoved;
+        public event EventHandler<ContentRibbonEventArgs> RibbonRemoved
+        {
+            add
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        RibbonRemovedEvent = value;
+                        return;
+                    }
+
+                    RibbonRemovedEvent += value;
+                }
+            }
+            remove
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    RibbonRemovedEvent -= value;
+                }
+            }
+        }
 
         /// <summary>
         /// Event triggered when the file explorer context changed.
@@ -70,11 +130,11 @@ namespace Gorgon.Editor.Views
                 {
                     if (value == null)
                     {
-                        _fileExplorerContextChanged = null;
+                        FileExplorerContextChangedEvent = null;
                         return;
                     }
 
-                    _fileExplorerContextChanged += value;
+                    FileExplorerContextChangedEvent += value;
                 }
             }
             remove
@@ -86,7 +146,7 @@ namespace Gorgon.Editor.Views
                         return;
                     }
 
-                    _fileExplorerContextChanged -= value;
+                    FileExplorerContextChangedEvent -= value;
                 }
             }
         }
@@ -102,11 +162,11 @@ namespace Gorgon.Editor.Views
                 {
                     if (value == null)
                     {
-                        _fileExplorerIsRenaming = null;
+                        FileExplorerIsRenamingEvent = null;
                         return;
                     }
 
-                    _fileExplorerIsRenaming += value;
+                    FileExplorerIsRenamingEvent += value;
                 }
             }
             remove
@@ -118,7 +178,7 @@ namespace Gorgon.Editor.Views
                         return;
                     }
 
-                    _fileExplorerIsRenaming -= value;
+                    FileExplorerIsRenamingEvent -= value;
                 }
             }
         }
@@ -175,31 +235,23 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="data">The drag/drop data.</param>
         /// <returns>The content file if dropping is allowed, or <b>null</b> if not.</returns>
-        private IContentFile GetContentFileDragData(IDataObject data)
+        private string GetContentFileDragData(IDataObject data)
         {
-#warning FIX ME.
-            /*Type dataType = typeof(TreeNodeDragData);
-
-            if ((_dragDropHandler == null)
-                || (data == null))
+            if (data == null)
             {
                 return null;
             }
 
+            Type dataType = typeof(GridRowsDragData);
+
             if (!data.GetDataPresent(dataType))
             {
-                dataType = typeof(ListViewItemDragData);
-
-                if (!data.GetDataPresent(dataType))
-                {
-                    return null;
-                }
+                return null;
             }
 
-            var dragData = (IFileExplorerNodeDragData)data.GetData(dataType);
+            var rows = (GridRowsDragData)data.GetData(dataType);
 
-            return dragData?.Node == null ? null : dragData.Node as IContentFile;*/
-            return null;
+            return rows.SourceFiles.Count != 1 ? null : rows.SourceFiles[0];
         }
 
         /// <summary>Handles the IsRenamingChanged event of the FileExplorer control.</summary>
@@ -211,7 +263,7 @@ namespace Gorgon.Editor.Views
 
             lock (_eventLock)
             {
-                handler = _fileExplorerIsRenaming;
+                handler = FileExplorerIsRenamingEvent;
             }
             handler?.Invoke(this, EventArgs.Empty);
         }
@@ -225,7 +277,7 @@ namespace Gorgon.Editor.Views
 
             lock (_eventLock)
             {
-                handler = _fileExplorerContextChanged;
+                handler = FileExplorerContextChangedEvent;
             }
             handler?.Invoke(this, EventArgs.Empty);
         }
@@ -233,22 +285,16 @@ namespace Gorgon.Editor.Views
         /// <summary>Handles the DragDrop event of the PanelContent control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void PanelContent_DragDrop(object sender, DragEventArgs e)
+        private async void PanelContent_DragDrop(object sender, DragEventArgs e)
         {
-#warning FIX ME.
-            /*if (_dragDropHandler == null)
+            string contentID = GetContentFileDragData(e.Data);
+
+            if ((DataContext?.FileExplorer?.OpenContentFileCommand == null) || (!DataContext.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
             {
                 return;
             }
 
-            IContentFile contentFile = GetContentFileDragData(e.Data);
-
-            if (contentFile == null)
-            {
-                return;
-            }
-
-            _dragDropHandler.Drop(contentFile);*/
+            await DataContext.FileExplorer.OpenContentFileCommand.ExecuteAsync(contentID);
         }
 
         /// <summary>Handles the DragEnter event of the PanelContent control.</summary>
@@ -256,24 +302,15 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void PanelContent_DragEnter(object sender, DragEventArgs e)
         {
-#warning FIX ME.
-            /*
-            if (_dragDropHandler == null)
+            string contentID = GetContentFileDragData(e.Data);
+
+            if ((DataContext?.FileExplorer?.OpenContentFileCommand == null) || (!DataContext.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
             {
                 e.Effect = DragDropEffects.None;
                 return;
             }
 
-            IContentFile contentFile = GetContentFileDragData(e.Data);
-
-            if (!_dragDropHandler.CanDrop(contentFile))
-            {
-                e.Effect = DragDropEffects.None;
-                return;
-            }
-
-            e.Effect = DragDropEffects.Copy;
-            */
+            e.Effect = DragDropEffects.Move;
         }
 
         /// <summary>
@@ -319,6 +356,7 @@ namespace Gorgon.Editor.Views
                     if (_contentControl != null)
                     {
                         _contentControl.BubbleDragEnter -= ContentControl_BubbleDragEnter;
+                        _contentControl.BubbleDragOver -= ContentControl_BubbleDragOver;
                         _contentControl.BubbleDragDrop -= ContentControl_BubbleDragDrop;
                     }
                     break;
@@ -340,20 +378,27 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The current data context.</param>
         private void SetupContent(IProjectEditor dataContext)
         {
-            if (_currentContentRibbon != null)
+            KryptonRibbon ribbon = Interlocked.Exchange(ref _currentContentRibbon, null);
+            if (ribbon != null)
             {
-                var args = new ContentRibbonEventArgs(_currentContentRibbon);
-                _currentContentRibbon = null;
+                EventHandler<ContentRibbonEventArgs> handler = null;
 
-                EventHandler<ContentRibbonEventArgs> handler = RibbonRemoved;
-                handler?.Invoke(this, args);
+                lock (_eventLock)
+                {                    
+                    handler = RibbonRemovedEvent;                    
+                }
+
+                handler?.Invoke(this, new ContentRibbonEventArgs(ribbon));
             }
 
             // Remove all controls.
             while (PanelContent.Controls.Count > 0)
             {
-                // Leave this here for now, just in case we need it later.
-                //var contentControl = SplitProject.Panel1.Controls[SplitProject.Panel1.Controls.Count - 1] as ContentBaseControl;
+                if (PanelContent.Controls[PanelContent.Controls.Count - 1] is ContentBaseControl contentControl)
+                {
+                    contentControl.ContentClosed -= ContentClosed;
+                }
+
                 PanelContent.Controls[PanelContent.Controls.Count - 1].Dispose();
             }
 
@@ -371,21 +416,48 @@ namespace Gorgon.Editor.Views
             PanelContent.Controls.Add(_contentControl);
 
             // Set up the graphics context.
-            _contentControl.SetupGraphics(GraphicsContext);
-
-            if (_contentControl.Ribbon != null)
+            try
             {
-                var args = new ContentRibbonEventArgs(_contentControl.Ribbon);
-                EventHandler<ContentRibbonEventArgs> handler = RibbonAdded;
-                handler?.Invoke(this, args);
+                _contentControl.SetupGraphics(GraphicsContext);
 
-                _currentContentRibbon = _contentControl.Ribbon;
+                if (_contentControl.Ribbon != null)
+                {
+                    if (Interlocked.Exchange(ref _currentContentRibbon, _contentControl.Ribbon) == null)
+                    {
+                        EventHandler<ContentRibbonEventArgs> handler = null;
+
+                        lock (_eventLock)
+                        {
+                            handler = RibbonAddedEvent;
+                        }
+
+                        handler?.Invoke(this, new ContentRibbonEventArgs(_currentContentRibbon));
+                    }
+                }
+
+                _contentControl.Start();
+
+                _contentControl.ContentClosed += ContentClosed;
+                _contentControl.BubbleDragEnter += ContentControl_BubbleDragEnter;
+                _contentControl.BubbleDragOver += ContentControl_BubbleDragOver;
+                _contentControl.BubbleDragDrop += ContentControl_BubbleDragDrop;
             }
+            catch
+            {
+                if (_contentControl != null)
+                {
+                    _contentControl.ContentClosed -= ContentClosed;
+                    _contentControl.BubbleDragEnter -= ContentControl_BubbleDragEnter;
+                    _contentControl.BubbleDragOver -= ContentControl_BubbleDragOver;
+                    _contentControl.BubbleDragDrop -= ContentControl_BubbleDragDrop;
 
-            _contentControl.Start();
+                    _contentControl.Stop();
 
-            _contentControl.BubbleDragEnter += ContentControl_BubbleDragEnter;
-            _contentControl.BubbleDragDrop += ContentControl_BubbleDragDrop;
+                    PanelContent.Controls.Remove(_contentControl);
+                    _contentControl.Dispose();
+                }
+                throw;
+            }
         }
 
         /// <summary>Handles the SplitterMoved event of the SplitMain control.</summary>
@@ -424,6 +496,24 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void ContentControl_BubbleDragEnter(object sender, DragEventArgs e) => PanelContent_DragEnter(sender, e);
 
+        /// <summary>Handles the BubbleDragOver event of the ContentControl control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+        private void ContentControl_BubbleDragOver(object sender, DragEventArgs e) => PanelContent_DragEnter(sender, e);
+
+        /// <summary>Function called when the currently active content is closed.</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ContentClosed(object sender, EventArgs e)
+        {
+            if ((DataContext?.ContentClosedCommand == null) || (!DataContext.ContentClosedCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.ContentClosedCommand.Execute(null);
+        }
+
         /// <summary>
         /// Function to initialize the view with the data context.
         /// </summary>
@@ -451,14 +541,16 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (_contentControl != null)
-            {
-                _contentControl.BubbleDragEnter -= ContentControl_BubbleDragEnter;
-                _contentControl.BubbleDragDrop -= ContentControl_BubbleDragDrop;
-            }
+            ContentBaseControl currentContent = Interlocked.Exchange(ref _contentControl, null);
 
-            // Close the current content control.
-            SetupContent(null);
+            if (currentContent != null)
+            {
+                currentContent.ContentClosed -= ContentClosed;
+                currentContent.BubbleDragOver -= ContentControl_BubbleDragOver;
+                currentContent.BubbleDragEnter -= ContentControl_BubbleDragEnter;
+                currentContent.BubbleDragDrop -= ContentControl_BubbleDragDrop;
+                currentContent = null;
+            }
 
             if (DataContext == null)
             {
@@ -524,16 +616,13 @@ namespace Gorgon.Editor.Views
         {
             base.OnLoad(e);
 
-            if ((IsDesignTime) || (Disposing))
+            if ((IsDesignTime) || (Disposing) || (!_deferDataContextLoad))
             {
                 return;
             }
 
-            if (_deferDataContextLoad)                
-            {
-                DataContext?.OnLoad();                
-            }
-
+            DataContext?.OnLoad();
+            ActiveControl = null;
             FileExplorer.Select();
         }
 
@@ -563,6 +652,7 @@ namespace Gorgon.Editor.Views
             if (!_deferDataContextLoad)
             {
                 DataContext.OnLoad();
+                ActiveControl = null;
                 FileExplorer.Select();
             }
 

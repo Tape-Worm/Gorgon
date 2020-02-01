@@ -95,5 +95,29 @@ namespace Gorgon.Editor.ImageEditor
             get;
             set;
         } = 255;
+
+        /// <summary>Property to set or return the width of the picker window.</summary>
+        [JsonProperty]
+        public int PickerWidth
+        {
+            get;
+            set;
+        } = 900;
+
+        /// <summary>Property to set or return the height of the picker window.</summary>
+        [JsonProperty]
+        public int PickerHeight
+        {
+            get;
+            set;
+        } = 600;
+
+        /// <summary>Property to set or return the state of the picker window.</summary>
+        [JsonProperty]
+        public int PickerWindowState
+        {
+            get;
+            set;
+        }
     }
 }

@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -39,6 +38,7 @@ using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The image editor content.
     /// </summary>
     internal class ImageContent
-        : EditorContentCommon<ImageContentParameters>, IImageContent
+        : ContentEditorViewModelBase<ImageContentParameters>, IImageContent
     {
         #region Undo Args.
         /// <summary>
@@ -433,7 +433,16 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         public int Height => ImageData.Height;
 
-        /// <summary>Property to return the view model for the cropping/resizing settings.</summary>
+        /// <summary>
+        /// Property to return the view model for picking images to import into the current image.
+        /// </summary>
+        public IImagePicker ImagePicker
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>Property to return the view model for the cropping/resizing settings.</summary>        
         public ICropResizeSettings CropOrResizeSettings
         {
             get => _cropResizeSettings;
@@ -508,7 +517,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>Property to return the currently active panel.</summary>
-        public IHostedPanelViewModel CurrentPanel
+        public IHostedPanelViewModel CurrentHostedPanel
         {
             get => _currentPanel;
             private set
@@ -520,7 +529,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 if (_currentPanel != null)
                 {
-                    _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
+                    _currentPanel.PropertyChanged -= CurrentHostedPanel_PropertyChanged;
                     _currentPanel.IsActive = false;
                 }
 
@@ -531,7 +540,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 if (_currentPanel != null)
                 {
                     _currentPanel.IsActive = true;
-                    _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
+                    _currentPanel.PropertyChanged += CurrentHostedPanel_PropertyChanged;
                 }
             }
         }
@@ -584,6 +593,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to copy an image from the project into the current image at the selected array/depth/mip index.
+        /// </summary>
+        public IEditorAsyncCommand<CopyToImageArgs> CopyToImageCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.        
@@ -592,17 +609,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
         private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => BuildCodecList(ImageData);
 
-        /// <summary>Handles the PropertyChanged event of the CurrentPanel control.</summary>
+        /// <summary>Handles the PropertyChanged event of the CurrentHostedPanel control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void CurrentPanel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void CurrentHostedPanel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
                 case nameof(IHostedPanelViewModel.IsActive):
-                    if ((CurrentPanel != null) && (!CurrentPanel.IsActive))
+                    if ((CurrentHostedPanel != null) && (!CurrentHostedPanel.IsActive))
                     {
-                        CurrentPanel = null;
+                        CurrentHostedPanel = null;
                     }
                     break;
             }
@@ -640,7 +657,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 Stream inStream = null;
 
-                BusyState.SetBusy();
+                HostServices.BusyService.SetBusy();
 
                 try
                 {
@@ -649,13 +666,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         return Task.CompletedTask;
                     }
 
-                    NotifyPropertyChanging(nameof(ImageData));
-
                     inStream = undoArgs.UndoFile.OpenStream();
                     (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                     ImageData.Dispose();
-                    ImageData = image;
 
+                    NotifyPropertyChanging(nameof(ImageData));
+                    ImageData = image;
                     NotifyImageUpdated(nameof(ImageData));
 
                     inStream.Dispose();
@@ -666,12 +682,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
                 }
                 finally
                 {
                     inStream?.Dispose();
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -685,7 +701,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    BusyState.SetBusy();
+                    HostServices.BusyService.SetBusy();
 
                     int startArrayOrDepth = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
                     int width = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Width;
@@ -703,7 +719,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         redoFileStream.Dispose();
 
                         ImageData.Dispose();
+                        NotifyPropertyChanging(nameof(ImageData));
                         ImageData = redoImage;
+                        NotifyPropertyChanged(nameof(ImageData));
 
                         DeleteUndoCacheFile(redoArgs.RedoFile);
                     }
@@ -721,7 +739,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         }
 
                         // By default, just copy straight in.
-                        _imageUpdater.CopyTo(importImage, ImageData, CurrentMipLevel, startArrayOrDepth, alignment);
+                        _imageUpdater.CopyTo(importImage, ImageData, CurrentMipLevel, startArrayOrDepth, alignment, false);
                     }
 
                     // Save the updated data to the working file.
@@ -740,7 +758,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
                     if (undoFile != null)
                     {
                         DeleteUndoCacheFile(undoFile);
@@ -757,7 +775,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 finally
                 {
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -769,6 +787,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             if (!task.IsFaulted)
             {
                 _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_IMPORT, file), UndoAction, RedoAction, importUndoArgs, importUndoArgs);
+                // Need to call this so the UI can register our updated undo stack.
+                NotifyPropertyChanged(nameof(UndoCommand));
             }
         }
 
@@ -797,7 +817,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     break;
             }
 
-            return MessageDisplay.ShowConfirmation(confirmMessage);
+            return HostServices.MessageDisplay.ShowConfirmation(confirmMessage);
         }
 
         /// <summary>
@@ -813,7 +833,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 if (!imageData.CanConvertToFormat(ImageData.Format))
                 {
-                    MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, originalFormat, CurrentPixelFormat));
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, originalFormat, CurrentPixelFormat));
                     return false;
                 }
 
@@ -840,7 +860,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return false;
             }
 
-            CurrentPanel = null;
+            CurrentHostedPanel = null;
 
             CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
             if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
@@ -856,7 +876,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             // Take a copy of the image here because we'll need to destroy it later.
             CropOrResizeSettings.ImportImage = importImage.Clone();
             CropOrResizeSettings.TargetImageSize = new DX.Size2(width, height);
-            CurrentPanel = CropOrResizeSettings;
+            CurrentHostedPanel = CropOrResizeSettings;
 
             return true;
         }
@@ -868,9 +888,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             IGorgonImage importImage = null;
             IGorgonVirtualFile tempFile = null;
-            BufferFormat originalFormat = BufferFormat.Unknown;
-            FileInfo sourceFile = null;
+            BufferFormat originalFormat;
+            FileInfo sourceFile;
 
+#warning FIX THIS - Not importing from explorer now. Change this to the same implementation as the drag/drop.
             try
             {
                 if (ConfirmImageDataOverwrite() == MessageResponse.No)
@@ -878,7 +899,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     return;
                 }
 
-                BusyState.SetBusy();
+                HostServices.BusyService.SetBusy();
                 (sourceFile, importImage, tempFile, originalFormat) = _imageIO.ImportImage();
 
                 if ((sourceFile == null) || (importImage == null) || (tempFile == null) || (originalFormat == BufferFormat.Unknown))
@@ -891,7 +912,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 {
                     return;
                 }
-                BusyState.SetIdle();
+                HostServices.BusyService.SetIdle();
 
                 CropOrResizeSettings.ImportFileDirectory = sourceFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
                 if (CheckForCropResize(importImage, sourceFile.Name))
@@ -904,7 +925,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
             }
             finally
             {
@@ -913,7 +934,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
                 }
                 importImage?.Dispose();
-                BusyState.SetIdle();
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -936,19 +957,19 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (CurrentPanel == DimensionSettings)
+                if (CurrentHostedPanel == DimensionSettings)
                 {
-                    CurrentPanel = null;
+                    CurrentHostedPanel = null;
                     return;
                 }
 
                 DimensionSettings.UpdateImageInfoCommand.Execute(ImageData);
                 DimensionSettings.MipSupport = MipSupport;
-                CurrentPanel = DimensionSettings;
+                CurrentHostedPanel = DimensionSettings;
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
             }
         }
 
@@ -959,23 +980,23 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (CurrentPanel == MipMapSettings)
+                if (CurrentHostedPanel == MipMapSettings)
                 {
                     return;
                 }
 
                 // Ensure that the user is aware we'll be wrecking their current mips.
-                if ((ImageData.MipCount > 1) && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_GEN_MIPMAP) == MessageResponse.No))
+                if ((ImageData.MipCount > 1) && (HostServices.MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_GEN_MIPMAP) == MessageResponse.No))
                 {
                     return;
                 }
 
                 MipMapSettings.UpdateImageInfoCommand?.Execute(ImageData);
-                CurrentPanel = MipMapSettings;
+                CurrentHostedPanel = MipMapSettings;
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
             }
         }
 
@@ -993,8 +1014,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoSaveImageTask(SaveReason saveReason)
         {
-            Stream inStream = null;
-            Stream outStream = null;
             IGorgonVirtualFile workFile = null;
 
             ShowWaitPanel(string.Format(Resources.GORIMG_TEXT_SAVING, File.Name));
@@ -1004,31 +1023,20 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 // Persist the image to a new working file so that block compression won't be applied to our current working file.   
                 workFile = await Task.Run(() => _imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat));
 
-                inStream = workFile.OpenStream();                
-#warning FIX ME
-                //outStream = File.OpenWrite();
-
-                await inStream.CopyToAsync(outStream);
-
-                inStream.Dispose();
-                outStream.Dispose();
+                await SaveContentFileAsync(workFile);
 
                 File.Metadata.Attributes[PremultipliedAttr] = IsPremultiplied.ToString(CultureInfo.InvariantCulture);
 
                 File.Refresh();
-                File.SaveMetadata();
 
                 ContentState = ContentState.Unmodified;
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_SAVE_CONTENT);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_SAVE_CONTENT);
             }
             finally
             {
-                inStream?.Dispose();
-                outStream?.Dispose();
-
                 // Remove the temp working file.
                 if (workFile != null)
                 {
@@ -1043,13 +1051,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => _undoService.CanUndo && CurrentPanel == null;
+        private bool CanUndo() => _undoService.CanUndo && CurrentHostedPanel == null;
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => _undoService.CanRedo && CurrentPanel == null;
+        private bool CanRedo() => _undoService.CanRedo && CurrentHostedPanel == null;
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -1062,7 +1070,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_REDO);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_REDO);
             }
         }
 
@@ -1077,7 +1085,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UNDO);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UNDO);
             }
         }
 
@@ -1173,8 +1181,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                Log.Print($"[ERROR] Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
-                Log.LogException(ex);
+                HostServices.Log.Print($"[ERROR] Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
             }
         }
 
@@ -1190,7 +1198,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 Stream inStream = null;
 
-                BusyState.SetBusy();
+                HostServices.BusyService.SetBusy();
 
                 try
                 {
@@ -1202,7 +1210,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     inStream = undoArgs.UndoFile.OpenStream();
                     (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                     ImageData.Dispose();
+
+                    NotifyPropertyChanging(nameof(ImageData));
                     ImageData = image;
+                    NotifyPropertyChanged(nameof(ImageData));
+
                     CurrentPixelFormat = undoArgs.Format;
                     ContentState = ContentState.Modified;
 
@@ -1214,12 +1226,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, string.Format(Resources.GORIMG_ERR_CONVERT_FORMAT, format));
+                    HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GORIMG_ERR_CONVERT_FORMAT, format));
                 }
                 finally
                 {
                     inStream?.Dispose();
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -1232,7 +1244,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    BusyState.SetBusy();
+                    HostServices.BusyService.SetBusy();
 
                     var destFormat = new GorgonFormatInfo(format);
 
@@ -1242,7 +1254,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         if (!ImageData.CanConvertToFormat(format))
                         {
                             string message = string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, srcFormat.Format, format);
-                            MessageDisplay.ShowError(message);
+                            HostServices.MessageDisplay.ShowError(message);
                             return Task.FromException(new InvalidCastException(message));
                         }
                     }
@@ -1250,7 +1262,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     {
 
                         string message = string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format);
-                        MessageDisplay.ShowError(message);
+                        HostServices.MessageDisplay.ShowError(message);
                         return Task.FromException(new InvalidCastException(message));
                     }
 
@@ -1270,14 +1282,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, string.Format(Resources.GORIMG_ERR_CONVERT_FORMAT, format));
+                    HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GORIMG_ERR_CONVERT_FORMAT, format));
                     DeleteUndoCacheFile(undoFile);
                     convertUndoArgs = null;
                     return Task.FromException(ex);
                 }
                 finally
                 {
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -1321,7 +1333,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     if (convertFormat == BufferFormat.Unknown)
                     {
-                        MessageDisplay.ShowError(Resources.GORIMG_ERR_EXPORT_CONVERT);
+                        HostServices.MessageDisplay.ShowError(Resources.GORIMG_ERR_EXPORT_CONVERT);
                         return;
                     }
 
@@ -1368,7 +1380,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 if (missingSupport.Length > 0)
                 {
-                    if (MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_EXPORT_LIMITS, codec.CodecDescription, missingSupport)) == MessageResponse.No)
+                    if (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_EXPORT_LIMITS, codec.CodecDescription, missingSupport)) == MessageResponse.No)
                     {
                         return;
                     }
@@ -1385,12 +1397,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CODEC_ASSIGN);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CODEC_ASSIGN);
             }
             finally
             {
                 exportImage?.Dispose();
-                BusyState.SetIdle();
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -1420,13 +1432,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
             }
             finally
             {
                 image.Dispose();
                 CropOrResizeSettings.ImportImage = null;
-                CurrentPanel = null;
+                CurrentHostedPanel = null;
             }
         }
 
@@ -1467,20 +1479,19 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 Stream inStream = null;
 
-                BusyState.SetBusy();
+                HostServices.BusyService.SetBusy();
 
                 try
                 {
                     if (undoArgs.UndoFile == null)
                     {
                         return Task.CompletedTask;
-                    }
-
-                    NotifyPropertyChanging(nameof(ImageData));
+                    }                    
 
                     inStream = undoArgs.UndoFile.OpenStream();
                     (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                     ImageData.Dispose();
+                    NotifyPropertyChanging(nameof(ImageData));
                     ImageData = image;
 
                     if (CurrentMipLevel >= MipCount)
@@ -1501,7 +1512,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     NotifyPropertyChanged(nameof(Width));
                     NotifyPropertyChanged(nameof(Height));
-                    NotifyPropertyChanged(nameof(MipCount));
                     NotifyImageUpdated(nameof(ImageData));
 
                     inStream.Dispose();
@@ -1512,12 +1522,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
                 }
                 finally
                 {
                     inStream?.Dispose();
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -1533,18 +1543,28 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
+                    var formatInfo = new GorgonFormatInfo(CurrentPixelFormat);
+
+                    // Block compressed files must be a multiple of 4 for width and height. 
+                    if ((formatInfo.IsCompressed) &&
+                        (((DimensionSettings.Width % 4) != 0) || ((DimensionSettings.Height % 4) != 0)))
+                    {
+                        HostServices.MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_COMPRESSED_RESIZE_MULTIPLE_4, CurrentPixelFormat, DimensionSettings.Width, DimensionSettings.Height));
+                        return Task.FromException(new OperationCanceledException());
+                    }
+
                     if ((redoArgs?.RedoFile == null) && ((((DimensionSettings.Width < ImageData.Width) || (DimensionSettings.Height < ImageData.Height))
                             && (DimensionSettings.CurrentMode != CropResizeMode.Resize))
                         || (DimensionSettings.DepthSlicesOrArrayIndices < arrayOrDepthCount)
                         || (DimensionSettings.MipLevels < ImageData.MipCount)))
                     {
-                        if (MessageDisplay.ShowConfirmation(Resources.GORIMG_CROP_LOSE_DATA) == MessageResponse.No)
+                        if (HostServices.MessageDisplay.ShowConfirmation(Resources.GORIMG_CROP_LOSE_DATA) == MessageResponse.No)
                         {
-                            return Task.CompletedTask;
+                            return Task.FromException(new OperationCanceledException());
                         }
                     }
 
-                    BusyState.SetBusy();
+                    HostServices.BusyService.SetBusy();
 
                     undoFile = CreateUndoCacheFile();
 
@@ -1556,7 +1576,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         redoFileStream.Dispose();
 
                         ImageData.Dispose();
+                        NotifyPropertyChanging(nameof(ImageData));
                         ImageData = redoImage;
+                        NotifyPropertyChanged(nameof(ImageData));
 
                         DeleteUndoCacheFile(redoArgs.RedoFile);
                     }
@@ -1592,6 +1614,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                             if (newImage != ImageData)
                             {
                                 ImageData?.Dispose();
+                                NotifyPropertyChanging(nameof(ImageData));
                                 ImageData = newImage;
                             }
                         }
@@ -1603,6 +1626,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                             if (newImage != ImageData)
                             {
                                 ImageData?.Dispose();
+                                NotifyPropertyChanging(nameof(ImageData));
                                 ImageData = newImage;
                             }
                         }
@@ -1646,11 +1670,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     redoArgs.UndoFile = undoFile;
                     redoArgs.RedoFile = redoFile;
 
+                    CurrentHostedPanel = null;
+
                     return Task.CompletedTask;
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
 
                     if (newImage != ImageData)
                     {
@@ -1675,8 +1701,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 finally
                 {
                     redoFileStream?.Dispose();
-                    BusyState.SetIdle();
-                    CurrentPanel = null;
+                    HostServices.BusyService.SetIdle();
                 }
             }
 
@@ -1708,7 +1733,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 Stream inStream = null;
 
-                BusyState.SetBusy();
+                HostServices.BusyService.SetBusy();
 
                 try
                 {
@@ -1722,6 +1747,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     inStream = undoArgs.UndoFile.OpenStream();
                     (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                     ImageData.Dispose();
+                    NotifyPropertyChanging(nameof(ImageData));
                     ImageData = image;
 
                     if (CurrentMipLevel >= MipCount)
@@ -1729,7 +1755,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         CurrentMipLevel = MipCount - 1;
                     }
 
-                    NotifyPropertyChanged(nameof(MipCount));
                     NotifyImageUpdated(nameof(ImageData));
 
                     inStream.Dispose();
@@ -1740,12 +1765,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
                 }
                 finally
                 {
                     inStream?.Dispose();
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -1759,7 +1784,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    BusyState.SetBusy();
+                    HostServices.BusyService.SetBusy();
 
                     undoFile = CreateUndoCacheFile();
 
@@ -1809,11 +1834,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     NotifyPropertyChanged(nameof(ImageData));
                     ContentState = ContentState.Modified;
 
+                    CurrentHostedPanel = null;
+
                     return Task.CompletedTask;
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
 
                     if (undoFile != null)
                     {
@@ -1833,8 +1860,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 finally
                 {
                     redoFileStream?.Dispose();
-                    BusyState.SetIdle();
-                    CurrentPanel = null;
+                    HostServices.BusyService.SetIdle();                    
                 }
             }
 
@@ -1902,7 +1928,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 Stream inStream = null;
 
-                BusyState.SetBusy();
+                HostServices.BusyService.SetBusy();
 
                 try
                 {
@@ -1914,8 +1940,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     inStream = undoArgs.UndoFile.OpenStream();
                     (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                     ImageData.Dispose();
-                    ImageData = image;
 
+                    NotifyPropertyChanging(nameof(ImageData));
+                    ImageData = image;
                     NotifyImageUpdated(nameof(ImageType));
 
                     inStream.Dispose();
@@ -1926,12 +1953,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CHANGE_TYPE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CHANGE_TYPE);
                 }
                 finally
                 {
                     inStream?.Dispose();
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -1949,22 +1976,22 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         case ImageType.ImageCube:
                         case ImageType.Image2D:
                             if ((DepthCount > 1)
-                                && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_3D_TO_2D) == MessageResponse.No))
+                                && (HostServices.MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_3D_TO_2D) == MessageResponse.No))
                             {
                                 return Task.CompletedTask;
                             }
 
-                            BusyState.SetBusy();
+                            HostServices.BusyService.SetBusy();
                             newImage = _imageUpdater.ConvertTo2D(ImageData, newImageType == ImageType.ImageCube);
                             break;
                         case ImageType.Image3D:
                             if ((ArrayCount > 1)
-                                && (MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_ARRAY_TO_VOLUME) == MessageResponse.No))
+                                && (HostServices.MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_ARRAY_TO_VOLUME) == MessageResponse.No))
                             {
                                 return Task.CompletedTask;
                             }
 
-                            BusyState.SetBusy();
+                            HostServices.BusyService.SetBusy();
                             newImage = _imageUpdater.ConvertToVolume(ImageData);
                             break;
                         default:
@@ -1972,6 +1999,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     }
 
                     ImageData.Dispose();
+                    NotifyPropertyChanging(nameof(ImageData));
                     ImageData = newImage;
 
                     undoFile = CreateUndoCacheFile();
@@ -1985,18 +2013,19 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     redoArgs.ImageType = newImageType;
                     redoArgs.UndoFile = undoFile;
 
+                    NotifyPropertyChanging(nameof(ImageType));
                     NotifyImageUpdated(nameof(ImageType));
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CHANGE_TYPE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CHANGE_TYPE);
                     DeleteUndoCacheFile(undoFile);
                     imageTypeUndoArgs = null;
                     return Task.FromException(ex);
                 }
                 finally
                 {
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -2020,7 +2049,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             IGorgonVirtualFile workImageFile = null;
             Stream imageStream = null;
 
-            BusyState.SetBusy();
+            HostServices.BusyService.SetBusy();
 
             try
             {
@@ -2047,10 +2076,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 // Doesn't support our format, so convert it.
                 if (!codec.SupportedPixelFormats.Contains(workImage.Format))
                 {
-                    Log.Print($"Image pixel format is [{workImage.Format}], but PNG codec does not support this format. Image will be converted to [{BufferFormat.B8G8R8A8_UNorm}].", LoggingLevel.Verbose);
+                    HostServices.Log.Print($"Image pixel format is [{workImage.Format}], but PNG codec does not support this format. Image will be converted to [{BufferFormat.B8G8R8A8_UNorm}].", LoggingLevel.Verbose);
                     if (!workImage.CanConvertToFormat(BufferFormat.B8G8R8A8_UNorm))
                     {
-                        MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_EXPORT_CONVERT, workImage.Format));
+                        HostServices.MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_EXPORT_CONVERT, workImage.Format));
                         return;
                     }
 
@@ -2076,10 +2105,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 if (workImage.Format != ImageData.Format)
                 {
-                    Log.Print($"Image pixel format changed.  Is now [{workImage.Format}], will be converted to [{ImageData.Format}] to match current format.", LoggingLevel.Verbose);
+                    HostServices.Log.Print($"Image pixel format changed.  Is now [{workImage.Format}], will be converted to [{ImageData.Format}] to match current format.", LoggingLevel.Verbose);
                     if (!workImage.CanConvertToFormat(ImageData.Format))
                     {
-                        MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_EXPORT_CONVERT, workImage.Format));
+                        HostServices.MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_EXPORT_CONVERT, workImage.Format));
                         return;
                     }
 
@@ -2096,7 +2125,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
             }
             finally
             {
@@ -2111,13 +2140,353 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        Log.Print("Error deleting working image file.", LoggingLevel.All);
-                        Log.LogException(ex);
+                        HostServices.Log.Print("Error deleting working image file.", LoggingLevel.All);
+                        HostServices.Log.LogException(ex);
                     }
                 }
 
                 workImage?.Dispose();
-                BusyState.SetIdle();
+                HostServices.BusyService.SetIdle();
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the file can be imported into the image.
+        /// </summary>
+        /// <param name="args">The command arguments.</param>
+        /// <returns><b>true</b> if the file can be imported, <b>false</b> if not.</returns>
+        private bool CanCopyToImage(CopyToImageArgs args)
+        {
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if ((args?.ContentFilePaths == null) || (args.ContentFilePaths.Count == 0) || (CurrentHostedPanel != null))
+            {
+                return false;
+            }
+#pragma warning restore IDE0046 // Convert to conditional expression
+
+            return args.ContentFilePaths.Select(file => ContentFileManager.GetFile(file))
+                        .Where(file => file != null)
+                        .Any(file => (file.Metadata.ContentMetadata != null)
+                                    && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
+                                    && (string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>
+        /// Function to import a single image with the same size as the target image.
+        /// </summary>
+        /// <param name="importItem">The image item to import.</param>
+        private async Task ImportSingleImageSameSizeAsync(ImagePickerImportData importItem)
+        {
+            if (ConfirmImageDataOverwrite() == MessageResponse.No)
+            {
+                return;
+            }
+
+            IGorgonImage importImage = null;
+
+            // Get the image we're importing.    
+            ShowWaitPanel(Resources.GORIMG_TEXT_IMPORTING);
+            await Task.Run(() =>
+            {
+                var ddsCodec = new GorgonCodecDds();
+
+                using (Stream imageStream = _imageIO.ScratchArea.OpenStream(importItem.FromFile.FullPath, FileMode.Open))
+                {
+                    (importImage, _, _) = _imageIO.LoadImageFile(imageStream, $"/Import/Import_{importItem.FromFile.Name}_{Guid.NewGuid():N}");
+                }
+
+                importImage.ConvertToFormat(ImageData.Format);
+            });
+            
+            ImportImageData(Path.GetFileName(importItem.OriginalFilePath), importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
+            HideWaitPanel();
+
+            _imageIO.ScratchArea.DeleteFile(importItem.FromFile.FullPath);
+        }
+
+        /// <summary>
+        /// Function to determine if the import process can be finalized or not.
+        /// </summary>
+        /// <returns><b>true</b> if the process can be finalized, or <b>false</b> if not.</returns>
+        private bool CanFinalizeImport() => (ImagePicker.ChangedSubResources.Count > 0) && (!ImagePicker.NeedsTransformation) && (!ImagePicker.SourceHasMultipleSubresources);
+
+        /// <summary>
+        /// Function to finalize the import process.
+        /// </summary>
+        private void DoFinalizeImport()
+        {
+            ImportDimensionUndoArgs importUndoArgs = null;
+
+            Task UndoAction(ImportDimensionUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                Stream inStream = null;
+
+                HostServices.BusyService.SetBusy();
+
+                try
+                {
+                    if (undoArgs.UndoFile == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    inStream = undoArgs.UndoFile.OpenStream();
+                    (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
+                    ImageData.Dispose();
+
+                    NotifyPropertyChanging(nameof(ImageData));
+                    ImageData = image;
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    inStream.Dispose();
+
+                    // This file will be re-created on redo.
+                    DeleteUndoCacheFile(undoArgs.UndoFile);
+                    undoArgs.UndoFile = null;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                }
+                finally
+                {
+                    inStream?.Dispose();
+                    HostServices.BusyService.SetIdle();
+                }
+
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(ImportDimensionUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                IGorgonVirtualFile undoFile = null;
+                IGorgonVirtualFile redoFile = null;
+                Stream redoFileStream = null;
+
+                try
+                {
+                    HostServices.BusyService.SetBusy();
+
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    undoFile = CreateUndoCacheFile();
+                    if (redoArgs?.RedoFile != null)
+                    {
+                        // Just reuse the image data in the redo cache item.                        
+                        redoFileStream = redoArgs.RedoFile.OpenStream();
+                        (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
+                        redoFileStream.Dispose();
+
+                        NotifyPropertyChanging(nameof(ImageData));
+                        ImageData.Dispose();
+                        ImageData = redoImage;
+                        NotifyPropertyChanged(nameof(ImageData));
+
+                        DeleteUndoCacheFile(redoArgs.RedoFile);
+                    }
+                    else
+                    {
+                        NotifyPropertyChanging(nameof(ImageData));
+                        ImageData.Dispose();
+                        ImageData = ImagePicker.ImageData.Clone();
+                        NotifyPropertyChanged(nameof(ImageData));
+                    }
+
+                    // Save the updated data to the working file.
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
+                    redoFile = CreateUndoCacheFile();
+
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    if (redoArgs == null)
+                    {
+                        redoArgs = importUndoArgs = new ImportDimensionUndoArgs();
+                    }
+
+                    redoArgs.RedoFile = redoFile;
+                    redoArgs.UndoFile = undoFile;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    if (undoFile != null)
+                    {
+                        DeleteUndoCacheFile(undoFile);
+                    }
+
+                    if (redoFile != null)
+                    {
+                        redoFileStream?.Dispose();
+                        DeleteUndoCacheFile(redoFile);
+                    }
+
+                    importUndoArgs = null;
+                    return Task.FromException(ex);
+                }
+                finally
+                {
+                    HostServices.BusyService.SetIdle();
+                }
+
+                return Task.CompletedTask;
+            }
+
+            Task task = RedoAction(null, CancellationToken.None);
+
+            // If we had an error, do not record the undo state.
+            if (!task.IsFaulted)
+            {
+                _undoService.Record(Resources.GORIMG_UNDO_DESC_IMPORT_SOURCE, UndoAction, RedoAction, importUndoArgs, importUndoArgs);
+                // Need to call this so the UI can register our updated undo stack.
+                NotifyPropertyChanged(nameof(UndoCommand));
+            }
+        }
+
+        /// <summary>
+        /// Function to copy an image into the currently selected array/depth/mip index.
+        /// </summary>
+        /// <param name="args">The command arguments.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoCopyToImageAsync(CopyToImageArgs args)
+        {
+            IGorgonImage importImage = null;
+            IGorgonVirtualFile tempFile = null;
+            Stream imageStream = null;
+            var cancelSource = new CancellationTokenSource();            
+            IReadOnlyList<ImagePickerImportData> imports = Array.Empty<ImagePickerImportData>();
+
+            void CancelAction() => cancelSource?.Cancel();
+
+            try
+            {
+                // Get our list of image files.
+                IContentFile[] imageFiles = args.ContentFilePaths.Select(imageFile => ContentFileManager.GetFile(imageFile))
+                                                                 .Where(imageFile => (imageFile?.Metadata.ContentMetadata != null)
+                                                                        && (imageFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
+                                                                        && (string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
+                                                                 .ToArray();
+
+                UpdateProgress(imageFiles[0].Path.Ellipses(45, true), 0, Resources.GORIMG_TEXT_LOADING_IMAGES, CancelAction);
+
+                imports = await Task.Run(() =>
+                {
+                    Stream stream = null;
+                    var importedFiles = new List<ImagePickerImportData>();
+                    IGorgonImageInfo originalMetadata;
+
+                    _imageIO.ScratchArea.CreateDirectory("/Import/");
+
+                    for (int i = 0; i < imageFiles.Length; ++i)
+                    {
+                        IContentFile imageFile = imageFiles[i];
+                        if (cancelSource.Token.IsCancellationRequested)
+                        {
+                            return null;
+                        }
+
+                        try
+                        {
+                            UpdateProgress(imageFile.Path.Ellipses(45, true), (float)i / imageFiles.Length, Resources.GORIMG_TEXT_IMPORTING, CancelAction);
+
+                            stream = ContentFileManager.OpenStream(imageFile.Path, FileMode.Open);
+                            (importImage, tempFile, originalMetadata) = _imageIO.LoadImageAsThumbnail(stream, $"/Import/Thumb_{imageFile.Name}_{Guid.NewGuid():N}", 128, args.ThumbnailDpi);
+                            stream.Close();
+
+                            importedFiles.Add(new ImagePickerImportData(imageFile.Path, tempFile, importImage, originalMetadata));
+
+                            UpdateProgress(imageFile.Path.Ellipses(45, true), (float)(i + 1) / imageFiles.Length, Resources.GORIMG_TEXT_IMPORTING, CancelAction);
+
+                            Thread.Sleep(16);
+                        }
+                        finally
+                        {
+                            stream?.Close();
+                        }                        
+                    }
+
+                    return importedFiles;
+                }, cancelSource.Token);
+
+                HideProgress();
+
+                if (cancelSource.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                // If we've only imported a single image, and its width/height is the same as this image and depth/array/mip count is 1 for both, then there's no need for the picker.
+                // So just straight up import it.
+                if ((imports.Count == 1) 
+                    && (imports[0].OriginalMetadata.Width == Width) 
+                    && (imports[0].OriginalMetadata.Height == Height) 
+                    && (imports[0].OriginalMetadata.ArrayCount == 1)
+                    && (imports[0].OriginalMetadata.Depth == 1)
+                    && (imports[0].OriginalMetadata.MipCount == 1))
+                {                    
+                    await ImportSingleImageSameSizeAsync(imports[0]);
+                    return;
+                }
+
+                // If we have more than 1 image selected, or the import image is not the same size as the destination image, then we can use the 
+                // picker to update the image.
+                var imgPickerArgs = new ActivateImagePickerArgs(imports, ImageData)
+                {
+                    CurrentArrayIndexDepthSlice = ImageType == ImageType.Image3D ? _currentDepthSlice : _currentArrayindex,
+                    MipLevel = _currentMipLevel
+                };
+                if ((ImagePicker.ActivateCommand == null) || (!ImagePicker.ActivateCommand.CanExecute(imgPickerArgs)))
+                {
+                    return;
+                }
+
+                ImagePicker.ActivateCommand.Execute(imgPickerArgs);
+
+                if (imgPickerArgs.Cancel)
+                {
+                    return;
+                }
+
+                HostServices.BusyService.SetBusy();
+
+                // Blow away any files we generated to keep the system clean.
+                foreach (ImagePickerImportData thumbnail in imports)
+                {
+                    if (thumbnail?.FromFile == null)
+                    {
+                        continue;
+                    }
+
+                    _imageIO.ScratchArea.DeleteFile(thumbnail.FromFile.FullPath);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Do nothing.
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                // Ensure our thumbnails are cleaned up.
+                foreach (ImagePickerImportData thumb in imports)
+                {
+                    thumb?.Thumbnail?.Dispose();
+                }
+
+                HostServices.BusyService.SetIdle();
+                HideProgress();
+                HideWaitPanel();
+                imageStream?.Dispose();
+
+                if ((tempFile != null) && (_imageIO.ScratchArea.FileSystem.GetFile(tempFile.FullPath) != null))
+                {                                        
+                    _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
+                }
+
+                importImage?.Dispose();
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -2127,26 +2496,26 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="image">The image to evaluate.</param>
         private void BuildCodecList(IGorgonImage image)
         {
-            Log.Print("Building codec list for the current image.", LoggingLevel.Verbose);
+            HostServices.Log.Print("Building codec list for the current image.", LoggingLevel.Verbose);
 
             _codecs.Clear();
             Codecs.Clear();
 
             if (image == null)
             {
-                Log.Print("[WARNING] No image was found.", LoggingLevel.Simple);
+                HostServices.Log.Print("[WARNING] No image was found.", LoggingLevel.Simple);
                 return;
             }
 
             if (_imageIO.InstalledCodecs.Codecs.Count == 0)
             {
-                Log.Print("[WARNING] No image codecs were found.  This should not happen.", LoggingLevel.Simple);
+                HostServices.Log.Print("[WARNING] No image codecs were found.  This should not happen.", LoggingLevel.Simple);
                 return;
             }
 
             foreach (IGorgonImageCodec codec in _imageIO.InstalledCodecs.Codecs.Where(item => item.CanEncode).OrderBy(item => item.Codec))
             {
-                Log.Print($"Adding codec '{codec.CodecDescription} ({codec.Codec})'", LoggingLevel.Verbose);
+                HostServices.Log.Print($"Adding codec '{codec.CodecDescription} ({codec.Codec})'", LoggingLevel.Verbose);
                 Codecs.Add(codec);
                 foreach (string extension in codec.CodecCommonExtensions)
                 {
@@ -2170,16 +2539,16 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (CurrentPanel == AlphaSettings)
+                if (CurrentHostedPanel == AlphaSettings)
                 {
                     return;
                 }
 
-                CurrentPanel = AlphaSettings;
+                CurrentHostedPanel = AlphaSettings;
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
             }
         }
 
@@ -2194,7 +2563,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 Stream inStream = null;
 
-                BusyState.SetBusy();
+                HostServices.BusyService.SetBusy();
 
                 try
                 {
@@ -2208,6 +2577,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     inStream = undoArgs.UndoFile.OpenStream();
                     (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                     ImageData.Dispose();
+                    NotifyPropertyChanging(nameof(ImageData));
                     ImageData = image;
 
                     NotifyImageUpdated(nameof(ImageData));
@@ -2220,12 +2590,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
                 }
                 finally
                 {
                     inStream?.Dispose();
-                    BusyState.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 return Task.CompletedTask;
@@ -2240,7 +2610,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    BusyState.SetBusy();
+                    HostServices.BusyService.SetBusy();
 
                     undoFile = CreateUndoCacheFile();
 
@@ -2267,16 +2637,18 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     redoFile = CreateUndoCacheFile();
 
                     redoArgs.UndoFile = undoFile;
-
+                    NotifyPropertyChanging(nameof(ImageData));
                     ImageData = newImage;
                     NotifyPropertyChanged(nameof(ImageData));
-                    ContentState = ContentState.Modified;                    
+                    ContentState = ContentState.Modified;
+
+                    CurrentHostedPanel = null;
 
                     return Task.CompletedTask;
                 }
                 catch (Exception ex)
                 {
-                    MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
 
                     if (undoFile != null)
                     {
@@ -2296,8 +2668,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 finally
                 {
                     redoFileStream?.Dispose();
-                    BusyState.SetIdle();
-                    CurrentPanel = null;
+                    HostServices.BusyService.SetIdle();                    
                 }
             }
 
@@ -2334,7 +2705,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
             }
         }
 
@@ -2342,14 +2713,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns>
         ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
         /// <remarks>PlugIn authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
-        protected override async Task<bool> OnCloseContentTask()
+        protected override async Task<bool> OnCloseContentTaskAsync()
         {
             if (ContentState == ContentState.Unmodified)
             {
                 return true;
             }
 
-            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_CLOSE, File.Name), allowCancel: true);
+            MessageResponse response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_CLOSE, File.Name), allowCancel: true);
 
             switch (response)
             {
@@ -2369,25 +2740,27 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             base.OnInitialize(injectionParameters);
 
-            _cropResizeSettings = injectionParameters.CropResizeSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.CropResizeSettings), nameof(injectionParameters));
-            _dimensionSettings = injectionParameters.DimensionSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.DimensionSettings), nameof(injectionParameters));
-            _mipMapSettings = injectionParameters.MipMapSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.MipMapSettings), nameof(injectionParameters));
-            _alphaSettings = injectionParameters.AlphaSettings ?? throw new ArgumentMissingException(nameof(injectionParameters.AlphaSettings), nameof(injectionParameters));
-            _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
-            _workingFile = injectionParameters.WorkingFile ?? throw new ArgumentMissingException(nameof(injectionParameters.WorkingFile), nameof(injectionParameters));
-            ImageData = injectionParameters.Image ?? throw new ArgumentMissingException(nameof(injectionParameters.Image), nameof(injectionParameters));
-            _formatSupport = injectionParameters.FormatSupport ?? throw new ArgumentMissingException(nameof(injectionParameters.FormatSupport), nameof(injectionParameters));
-            _imageIO = injectionParameters.ImageIOService ?? throw new ArgumentMissingException(nameof(injectionParameters.ImageIOService), nameof(injectionParameters));
-            _undoService = injectionParameters.UndoService ?? throw new ArgumentMissingException(nameof(injectionParameters.UndoService), nameof(injectionParameters));
-            _imageUpdater = injectionParameters.ImageUpdater ?? throw new ArgumentMissingException(nameof(injectionParameters.ImageUpdater), nameof(injectionParameters));
-            _videoAdapter = injectionParameters.VideoAdapterInfo ?? throw new ArgumentMissingException(nameof(injectionParameters.VideoAdapterInfo), nameof(injectionParameters));
-            _externalEditor = injectionParameters.ExternalEditorService ?? throw new ArgumentMissingException(nameof(injectionParameters.ExternalEditorService), nameof(injectionParameters));
+            ImagePicker = injectionParameters.ImagePicker;
+            _cropResizeSettings = injectionParameters.CropResizeSettings;
+            _dimensionSettings = injectionParameters.DimensionSettings;
+            _mipMapSettings = injectionParameters.MipMapSettings;
+            _alphaSettings = injectionParameters.AlphaSettings;
+            _settings = injectionParameters.Settings;
+            _workingFile = injectionParameters.WorkingFile;
+            ImageData = injectionParameters.Image;
+            _formatSupport = injectionParameters.FormatSupport;
+            _imageIO = injectionParameters.ImageIOService;
+            _undoService = injectionParameters.UndoService;
+            _imageUpdater = injectionParameters.ImageUpdater;
+            _videoAdapter = injectionParameters.VideoAdapterInfo;
+            _externalEditor = injectionParameters.ExternalEditorService;
             _format = injectionParameters.OriginalFormat;
             
             _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
             _dimensionSettings.OkCommand = new EditorCommand<object>(DoUpdateImageDimensions, CanUpdateDimensions);
             _mipMapSettings.OkCommand = new EditorCommand<object>(DoGenMips, CanGenMips);
             _alphaSettings.OkCommand = new EditorCommand<object>(DoSetAlphaValue);
+            ImagePicker.OkCommand = new EditorCommand<object>(DoFinalizeImport, CanFinalizeImport);
 
             if (injectionParameters.File.Metadata.Attributes.TryGetValue(PremultipliedAttr, out string premultiplied))
             {
@@ -2423,7 +2796,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _settings.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
                 }
 
-                CurrentPanel = null;
+                CurrentHostedPanel = null;
 
                 if (_workingFile != null)
                 {
@@ -2439,189 +2812,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                Log.Print("There was an error cleaning up the working file.", LoggingLevel.Verbose);
-                Log.LogException(ex);
+                HostServices.Log.Print("There was an error cleaning up the working file.", LoggingLevel.Verbose);
+                HostServices.Log.LogException(ex);
             }
 
             base.OnUnload();
-        }
-
-        /// <summary>Function to determine if an object can be dropped.</summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <returns>
-        ///   <c>true</c> if this instance can drop the specified drag data; otherwise, <c>false</c>.</returns>
-        public bool CanDrop(IContentFileDragData dragData)
-        {
-            // Only perform special operations if the dragged type is an image, otherwise, fall back.
-            if ((dragData?.File == null)
-                || (!dragData.File.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
-                || (!string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
-            {
-                return false;
-            }
-
-            if (CurrentPanel != null)
-            {
-                dragData.Cancel = true;
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>Function to drop the payload for a drag drop operation.</summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        public void Drop(IContentFileDragData dragData, Action afterDrop = null)
-        {
-            IGorgonImage importImage = null;
-            BufferFormat originalFormat;
-            IGorgonVirtualFile tempFile = null;
-            Stream imageFile = null;
-
-            try
-            {
-                if (ConfirmImageDataOverwrite() == MessageResponse.No)
-                {
-                    dragData.Cancel = true;
-                    return;
-                }
-
-                // Get the image we're importing.    
-                // If we drag ourselves, we don't need to clone it.
-                BusyState.SetBusy();
-                imageFile = dragData.File.OpenRead();
-                (importImage, tempFile, originalFormat) = _imageIO.LoadImageFile(imageFile, $"Import_{dragData.File.Name}_{Guid.NewGuid():N}");
-                imageFile.Close();
-
-                if (!ConvertImportFilePixelFormat(importImage, originalFormat))
-                {
-                    dragData.Cancel = true;
-                    return;
-                }
-                BusyState.SetIdle();
-
-                CropOrResizeSettings.ImportFileDirectory = null;
-                if (CheckForCropResize(importImage, dragData.File.Name))
-                {
-                    return;
-                }
-
-                ImportImageData(dragData.File.Name, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
-            }
-            catch (Exception ex)
-            {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
-                dragData.Cancel = true;
-            }
-            finally
-            {
-                imageFile?.Dispose();
-
-                if (tempFile != null)
-                {
-                    _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
-                }
-
-                importImage?.Dispose();
-                BusyState.SetIdle();
-            }
-        }
-
-        /// <summary>Function to determine if an object can be dropped.</summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <returns>
-        ///   <b>true</b> if the data can be dropped, <b>false</b> if not.</returns>
-        public bool CanDrop(Olde_IExplorerFilesDragData dragData)
-        {
-            // Only perform special operations if the dragged type is an image, otherwise, fall back.
-            if ((dragData?.Files == null)
-                || (dragData.Files.Count != 1))
-            {
-                dragData.Cancel = true;
-                return false;
-            }
-
-            if (CurrentPanel != null)
-            {
-                dragData.Cancel = true;
-                return false;
-            }
-
-            // Ensure the file being imported is actually supported.
-            var ext = new GorgonFileExtension(Path.GetExtension(dragData.Files[0]));
-
-            if (_codecs.All(item => item.codec.CanDecode && item.extension.Equals(ext)))
-            {
-                dragData.Cancel = true;
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>Function to drop the payload for a drag drop operation.</summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        public void Drop(Olde_IExplorerFilesDragData dragData, Action afterDrop = null)
-        {
-            IGorgonImage importImage = null;
-            BufferFormat originalFormat;
-            IGorgonVirtualFile tempFile = null;
-            FileInfo sourceFile = null;
-
-            try
-            {
-                if (ConfirmImageDataOverwrite() == MessageResponse.No)
-                {
-                    dragData.Cancel = true;
-                    return;
-                }
-
-                IGorgonImageCodec codec = null;
-                string file = dragData.Files[0];
-                var ext = new GorgonFileExtension(Path.GetExtension(file));
-
-                codec = _codecs.FirstOrDefault(item => item.extension.Equals(ext)).codec;
-                Debug.Assert(codec != null, $"Could not locate code for {file}");
-
-                BusyState.SetBusy();
-                (sourceFile, importImage, tempFile, originalFormat) = _imageIO.ImportImage(codec, file);
-
-                if ((sourceFile == null) || (importImage == null) || (tempFile == null) || (originalFormat == BufferFormat.Unknown))
-                {
-                    return;
-                }
-
-                if (!ConvertImportFilePixelFormat(importImage, originalFormat))
-                {
-                    return;
-                }
-                BusyState.SetIdle();
-
-                CropOrResizeSettings.ImportFileDirectory = sourceFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-                if (CheckForCropResize(importImage, sourceFile.Name))
-                {
-                    return;
-                }
-
-                ImportImageData(sourceFile.Name, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
-                _settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
-            }
-            catch (Exception ex)
-            {
-                MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
-            }
-            finally
-            {
-                if (tempFile != null)
-                {
-                    _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
-                }
-                importImage?.Dispose();
-
-                BusyState.SetIdle();
-            }
         }
         #endregion
 
@@ -2641,6 +2836,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);
             PremultipliedAlphaCommand = new EditorCommand<bool>(DoSetPremultipliedAlpha, CanSetPremultipliedAlpha);
             ShowSetAlphaCommand = new EditorCommand<object>(DoShowSetAlphaValue, CanShowSetAlphaValue);
+            CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);
         }
         #endregion
     }

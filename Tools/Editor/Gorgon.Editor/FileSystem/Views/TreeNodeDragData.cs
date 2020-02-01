@@ -25,8 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Editor.Content;
-using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views

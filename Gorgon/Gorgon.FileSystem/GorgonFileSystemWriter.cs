@@ -31,7 +31,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
@@ -179,7 +178,7 @@ namespace Gorgon.IO
         // The notifier used to update the file system.
         private readonly IGorgonFileSystemNotifier _notifier;
         // The callback used to delete file system items.
-        private Func<string, bool> _deleteAction;
+        private readonly Func<string, bool> _deleteAction;
         // The buffer used to block copy a file.
         private byte[] _writeBuffer;
         // The buffer used for building a path.
@@ -307,6 +306,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="srcPath">The path for the source stream.</param>
         /// <param name="destPath">The path for the destination stream.</param>
+        /// <param name="virtDestPath">The virtual path for the destination.</param>
         /// <param name="inStream">The source stream to copy.</param>
         /// <param name="outStream">The destination stream for the file data.</param>
         /// <param name="progressCallback">The callback method used to report progress.</param>
@@ -316,7 +316,7 @@ namespace Gorgon.IO
         /// This performs a block copy of a file from one location to another. These locations can be anywhere on the physical file system(s) and are not checked.  
         /// </para>
         /// </remarks>
-        private void BlockCopyStreams(string srcPath, string destPath, Stream inStream, Stream outStream, Action<string, double> progressCallback, CancellationToken cancelToken)
+        private void BlockCopyStreams(string srcPath, string destPath, string virtDestPath, Stream inStream, Stream outStream, Action<string, double> progressCallback, CancellationToken cancelToken)
         {
             long maxBlockSize = _writeBuffer.Length;
 
@@ -356,6 +356,11 @@ namespace Gorgon.IO
                         // Do nothing if we can't remove the file.
                     }
 
+                    if (!string.IsNullOrWhiteSpace(virtDestPath))
+                    {
+                        _notifier.NotifyFileDeleted(virtDestPath);
+                    }
+
                     return;
                 }
 
@@ -381,10 +386,11 @@ namespace Gorgon.IO
         /// </remarks>
         private void BlockCopyFileToPhysical(IGorgonVirtualFile srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
         {
-            using Stream inStream = srcFile.OpenStream();
-            using Stream outStream = File.Open(destPath, FileMode.Create, FileAccess.Write, FileShare.None);
-
-            BlockCopyStreams(srcFile.FullPath, destPath, inStream, outStream, progressCallback, cancelToken);
+            using (Stream inStream = srcFile.OpenStream())
+            using (Stream outStream = File.Open(destPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                BlockCopyStreams(srcFile.FullPath, destPath, null, inStream, outStream, progressCallback, cancelToken);
+            }
         }
 
         /// <summary>
@@ -401,10 +407,11 @@ namespace Gorgon.IO
         /// </remarks>
         private void BlockCopyFileFromPhysical(string srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
         {
-            using Stream inStream = File.Open(srcFile, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using Stream outStream = OpenStream(destPath, FileMode.Create);
-
-            BlockCopyStreams(srcFile, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), inStream, outStream, progressCallback, cancelToken);
+            using (Stream inStream = File.Open(srcFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream outStream = OpenStream(destPath, FileMode.Create))
+            {
+                BlockCopyStreams(srcFile, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), destPath, inStream, outStream, progressCallback, cancelToken);
+            }
         }
 
         /// <summary>
@@ -421,10 +428,11 @@ namespace Gorgon.IO
         /// </remarks>
         private void BlockCopyFile(IGorgonVirtualFile srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
         {
-            using Stream inStream = srcFile.OpenStream();
-            using Stream outStream = OpenStream(destPath, FileMode.Create);
-
-            BlockCopyStreams(srcFile.FullPath, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), inStream, outStream, progressCallback, cancelToken);
+            using (Stream inStream = srcFile.OpenStream())
+            using (Stream outStream = OpenStream(destPath, FileMode.Create))
+            {
+                BlockCopyStreams(srcFile.FullPath, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), destPath, inStream, outStream, progressCallback, cancelToken);
+            }
         }
 
         /// <summary>
@@ -1733,12 +1741,6 @@ namespace Gorgon.IO
                     throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, filePath));
                 }
 
-                // Don't copy files to the same location.
-                if (file.Directory == destDirectory)
-                {
-                    continue;
-                }
-
                 files.Add(file);
             }
 
@@ -1796,9 +1798,18 @@ namespace Gorgon.IO
                     if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null) 
                         && ((fileExists) || (directoryExists)))
                     {
-                        if ((directoryExists) || ((conflictRes != FileConflictResolution.RenameAll) && (conflictRes != FileConflictResolution.SkipAll)))
+                        if ((directoryExists) 
+                            || ((conflictRes != FileConflictResolution.RenameAll) && (conflictRes != FileConflictResolution.SkipAll)))
                         {
-                            conflictRes = conflictCallback(file.FullPath, destFilePath);
+                            // If we're copying the file to the same directory, we're essentially duplicating the file with a new name.
+                            if (file == destDirectory.Files[file.Name])
+                            {
+                                conflictRes = FileConflictResolution.Rename;
+                            }
+                            else
+                            {
+                                conflictRes = conflictCallback(file.FullPath, destFilePath);
+                            }
                         }
 
                         switch (conflictRes)
@@ -2292,7 +2303,7 @@ namespace Gorgon.IO
                         }
                     }
 
-                    return true;
+                    return !cancelToken.IsCancellationRequested;
                 }
 
                 if (filesToCopy.Count > 0)
@@ -2434,8 +2445,8 @@ namespace Gorgon.IO
                 IGorgonPhysicalFileInfo fileInfo = new PhysicalFileInfo(_mountPoint, stream.Name);
                 IGorgonVirtualFile updatedFile = _notifier.NotifyFileWriteStreamClosed(_mountPoint, fileInfo);
 
-                EventHandler<VirtualFileClosedEventArgs> handler = VirtualFileClosed;
-                handler?.Invoke(this, new VirtualFileClosedEventArgs(updatedFile, file == null));
+                EventHandler<VirtualFileClosedEventArgs> closeHandler = VirtualFileClosed;
+                closeHandler?.Invoke(this, new VirtualFileClosedEventArgs(updatedFile, file == null));
             }
 
             PrepareWriteArea();

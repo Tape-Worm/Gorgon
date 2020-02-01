@@ -26,7 +26,8 @@
 
 using System;
 using System.IO;
-using Gorgon.Editor.ProjectData;
+using System.Threading;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
@@ -34,7 +35,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// Parameters for the <see cref="IFileExplorerVm"/> view model.
+    /// Parameters for the <see cref="IFileExplorer"/> view model.
     /// </summary>
     internal class FileExplorerParameters
         : ViewModelCommonParameters
@@ -76,22 +77,30 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the content plug in service for the application.
+        /// Property to set or return the synchronization context for the main thread.
         /// </summary>
-        public IContentPlugInService ContentPlugInService
+        public SynchronizationContext SyncContext
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileExplorerParameters" /> class.
+        /// Property to set or return the clipboard handler.
         /// </summary>
+        public IClipboardHandler Clipboard
+        {
+            get;
+            set;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="FileExplorerParameters"/> class.</summary>
+        /// <param name="hostServices">The services from the host application.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerParameters(ViewModelFactory viewModelFactory)
-            : base(viewModelFactory)
-        {
+        public FileExplorerParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+            : base(hostServices, viewModelFactory)
+        {            
         }
     }
 }

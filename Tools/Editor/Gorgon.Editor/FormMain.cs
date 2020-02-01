@@ -30,19 +30,16 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Ribbon;
 using ComponentFactory.Krypton.Toolkit;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.Editor.Views;
-using Gorgon.Timing;
 using DX = SharpDX;
 
 namespace Gorgon.Editor
@@ -75,18 +72,12 @@ namespace Gorgon.Editor
         #endregion
 
         #region Variables.
-        // The current action to use when cancelling an operation in progress.
-        private Action _progressCancelAction;
-        // The timer used to indicate how fast messages can be sent to the progress meter.
-        private IGorgonTimer _progressTimer;
-        // The current synchronization context.
-        private readonly SynchronizationContext _syncContext;
         // The context for a clipboard handler object.
         private IClipboardHandler _clipboardContext;
         // The flag to indicate that the application is already closing.
         private CloseStates _closeFlag;
         // The ribbon merger for the main ribbon.
-        private readonly IRibbonMerger _ribbonMerger;
+        private readonly RibbonMerger _ribbonMerger;
         // The currently selected tab prior to showing a context tab.
         private KryptonRibbonTab _prevTabBeforeContext;
         // The list of groups on the tools tab.
@@ -105,6 +96,10 @@ namespace Gorgon.Editor
         private readonly DeleteArgs _deleteValidationArgs = new DeleteArgs(null);
         private DeleteArgs _deleteAllValidationArgs;
         private readonly ImportData _defaultImportData = new ImportData();
+        // The wait panel form.
+        private readonly WaitPanelDisplay _waitForm;
+        // The progress panel form.
+        private readonly ProgressPanelDisplay _progressForm;
         #endregion
 
         #region Properties.
@@ -343,14 +338,56 @@ namespace Gorgon.Editor
         {
             IProjectEditor project = DataContext?.CurrentProject;
             IFileExplorer fileExplorer = project?.FileExplorer;
-            var currentFile = fileExplorer?.SelectedFiles[0] as IContentFile;
-#warning FIX THIS - Use string path instead of casting type.
-            if ((fileExplorer?.OpenContentFileCommand == null) || (!fileExplorer.OpenContentFileCommand.CanExecute(currentFile)))
+            string currentFilePath = fileExplorer?.SelectedFiles[0].FullPath;
+
+            if ((fileExplorer?.OpenContentFileCommand == null) || (!fileExplorer.OpenContentFileCommand.CanExecute(currentFilePath)))
             {
                 return;
             }
 
-            fileExplorer.OpenContentFileCommand.Execute(currentFile);
+            fileExplorer.OpenContentFileCommand.Execute(currentFilePath);
+        }
+
+
+        /// <summary>Handles the Click event of the ButtonFileSystemRefresh control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void ButtonFileSystemRefresh_Click(object sender, EventArgs e)
+        {
+            IProjectEditor project = DataContext?.CurrentProject;
+            IFileExplorer fileExplorer = project?.FileExplorer;
+            IContentPreview preview = project?.ContentPreviewer;
+
+            if ((fileExplorer?.RefreshCommand == null) || (!fileExplorer.RefreshCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            await fileExplorer.RefreshCommand.ExecuteAsync(null);
+
+            if ((project.SaveProjectMetadataCommand != null) && (project.SaveProjectMetadataCommand.CanExecute(null)))
+            {
+                project.SaveProjectMetadataCommand.Execute(null);
+            }
+
+            if ((preview?.ResetPreviewCommand == null) || (preview?.RefreshPreviewCommand == null))
+            {
+                return;
+            }
+
+            if (preview.ResetPreviewCommand.CanExecute(null))
+            {
+                await preview.ResetPreviewCommand.ExecuteAsync(null);
+            }
+
+            IFile file = fileExplorer.SelectedFiles.Count > 0 ? fileExplorer.SelectedFiles[0] : null;
+
+            if ((file == null) || (!preview.RefreshPreviewCommand.CanExecute(file.FullPath)))
+            {
+                return;
+            }
+
+            await preview.RefreshPreviewCommand.ExecuteAsync(file.FullPath);
         }
 
         /// <summary>Handles the RibbonAdded event of the PanelProject control.</summary>
@@ -557,20 +594,20 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="SaveEventArgs" /> instance containing the event data.</param>
         private async void StageLive_Save(object sender, SaveEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext?.CurrentProject?.SaveProjectToPackFileCommand == null)
             {
                 return;
             }
 
-            var args = new SavePackFileArgs(DataContext.CurrentProject);
+            var args = new CancelEventArgs();
 
-            if ((DataContext?.SavePackFileCommand == null) || (!DataContext.SavePackFileCommand.CanExecute(args)))
+            if (!DataContext.CurrentProject.SaveProjectToPackFileCommand.CanExecute(args))
             {
                 NavigateToProjectView(DataContext);
                 return;
             }
 
-            await DataContext.SavePackFileCommand.ExecuteAsync(args);
+            await DataContext.CurrentProject.SaveProjectToPackFileCommand.ExecuteAsync(args);
 
             NavigateToProjectView(DataContext);
         }
@@ -607,10 +644,18 @@ namespace Gorgon.Editor
             ButtonFileSystemPanel.Enabled = project != null;
             ButtonFileSystemPreview.Enabled = (ButtonFileSystemPanel.Enabled) && (project.ShowFileExplorer);
             ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);            
-            ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);
-            ButtonFileSystemDeleteAll.Visible = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.SelectedDirectory == null) || (fileExplorer.SelectedDirectory == fileExplorer.Root);
-            ButtonFileSystemDelete.Visible = !ButtonFileSystemDeleteAll.Visible;
-            ButtonFileSystemDeleteAll.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteAllValidationArgs) ?? false);            
+            ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);            
+            ButtonOpenContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.OpenContentFileCommand?.CanExecute(null) ?? false);
+            GroupCreate.Visible = SepCreate.Visible = DataContext.ContentCreators.Count > 0;
+            ButtonFileSystemRefresh.Enabled = !PanelProject.FileExplorer.IsRenaming;
+
+            foreach (ToolStripItem item in MenuCreate.Items)
+            {
+                if (item.Tag is Guid id)
+                {
+                    item.Enabled = project.CreateContentCommand?.CanExecute(id) ?? false;
+                }
+            }
 
             switch (PanelProject.FileExplorer.ControlContext)
             {
@@ -623,6 +668,8 @@ namespace Gorgon.Editor
                     ButtonFileSystemCut.Enabled = false;
                     break;
                 case FileExplorerContext.DirectoryTree:
+                    ButtonFileSystemDeleteAll.Visible = (fileExplorer.SelectedDirectory == null) || (fileExplorer.SelectedDirectory == fileExplorer.Root);
+                    ButtonFileSystemDelete.Visible = !ButtonFileSystemDeleteAll.Visible;
                     ButtonExport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ExportDirectoryCommand?.CanExecute(null) ?? false);
                     ButtonFileSystemCopy.Enabled = (!PanelProject.FileExplorer.IsRenaming)
                                                 && ((_clipboardContext?.CopyDataCommand?.CanExecute(new DirectoryCopyMoveData
@@ -638,11 +685,15 @@ namespace Gorgon.Editor
                                                 }) ?? false));
                     ButtonFileSystemPaste.Enabled = (!PanelProject.FileExplorer.IsRenaming)
                                                 && (_clipboardContext?.PasteDataCommand?.CanExecute(null) ?? false);
+                    ButtonFileSystemDeleteAll.Enabled = 
                     ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteValidationArgs) ?? false);
+                    ButtonFileSystemDeleteAll.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteAllValidationArgs) ?? false);
                     ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameDirectoryCommand?.CanExecute(null) ?? false);
                     break;
                 case FileExplorerContext.FileList:
                     string[] validationFiles = fileExplorer.SelectedFiles.Select(item => item.ID).ToArray();
+                    ButtonFileSystemDeleteAll.Visible = false;
+                    ButtonFileSystemDelete.Visible = true;
                     ButtonExport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ExportFilesCommand?.CanExecute(null) ?? false);
                     ButtonFileSystemCopy.Enabled = (!PanelProject.FileExplorer.IsRenaming)
                                                 && ((_clipboardContext?.CopyDataCommand?.CanExecute(new FileCopyMoveData
@@ -659,35 +710,11 @@ namespace Gorgon.Editor
                                                 }) ?? false));
                     ButtonFileSystemPaste.Enabled = (!PanelProject.FileExplorer.IsRenaming)
                                                 && (_clipboardContext?.PasteDataCommand?.CanExecute(null) ?? false);
+                    ButtonFileSystemDeleteAll.Enabled = false;
                     ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteFileCommand?.CanExecute(_deleteValidationArgs) ?? false);
                     ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameFileCommand?.CanExecute(null) ?? false);
                     break;
             }
-
-#warning FIX THIS
-            /*
-            
-
-
-
-            ButtonExpand.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
-            ButtonCollapse.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
-
-            ButtonFileSystemDelete.Visible = fileExplorer.SelectedNode != null;
-            ButtonFileSystemDelete.Enabled = (fileExplorer.DeleteNodeCommand != null)
-                                            && (fileExplorer.DeleteNodeCommand.CanExecute(null));
-
-            ButtonImport.Enabled = fileExplorer.ImportIntoNodeCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
-            ButtonExport.Enabled = fileExplorer.ExportNodeToCommand?.CanExecute(fileExplorer.SelectedNode ?? fileExplorer.RootNode) ?? false;
-
-            ButtonOpenContent.Enabled = fileExplorer.OpenContentFileCommand?.CanExecute(fileExplorer.SelectedNode as IContentFile) ?? false;
-
-            ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
-            ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
-            ButtonFileSystemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
-
-            GroupCreate.Visible = SepCreate.Visible = (DataContext.CreateContentCommand != null)
-                                                        && (DataContext.CreateContentCommand.CanExecute(null));
 
             foreach (IToolPlugInRibbonButton button in project.ToolButtons.SelectMany(item => item.Value))
             {
@@ -704,7 +731,7 @@ namespace Gorgon.Editor
                 {
                     ribButton.Enabled = true;
                 }
-            }*/
+            }
         }
 
         /// <summary>
@@ -712,17 +739,8 @@ namespace Gorgon.Editor
         /// </summary>
         private void KeepWaitPanelOnTop()
         {
-            if (ProgressScreen.Visible)
-            {
-                ProgressScreen.BringToFront();
-            }
-
-            if (!WaitScreen.Visible)
-            {
-                return;
-            }
-
-            WaitScreen.BringToFront();
+            _waitForm.BringToFront();
+            _progressForm.BringToFront();
         }
 
         /// <summary>
@@ -755,14 +773,14 @@ namespace Gorgon.Editor
         /// </summary>
         private void NavigateToStagingView()
         {
-            if (DataContext?.SavePackFileCommand != null)
+            if (DataContext?.CurrentProject?.SaveProjectToPackFileCommand != null)
             {
-                var saveAsArgs = new SavePackFileArgs(DataContext.CurrentProject);
-                Stage.CanSaveAs = DataContext.SavePackFileCommand.CanExecute(saveAsArgs);
+                var saveAsArgs = new CancelEventArgs();
+                Stage.CanSavePackedFile = DataContext.CurrentProject.SaveProjectToPackFileCommand.CanExecute(saveAsArgs);
             }
             else
             {
-                Stage.CanSaveAs = false;
+                Stage.CanSavePackedFile = false;
             }
 
             Text = string.Empty;
@@ -777,111 +795,6 @@ namespace Gorgon.Editor
             Stage.BringToFront();
 
             KeepWaitPanelOnTop();
-        }
-
-        /// <summary>
-        /// Handles the ProgressDeactivated event of the DataContext control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void DataContext_ProgressDeactivated(object sender, EventArgs e)
-        {
-            _progressCancelAction = null;
-            ProgressScreen.Visible = false;
-            ProgressScreen.OperationCancelled -= ProgressScreen_OperationCancelled;
-            _progressTimer = null;
-        }
-
-        /// <summary>
-        /// Datas the context progress updated.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        private void DataContext_ProgressUpdated(object sender, ProgressPanelUpdateArgs e)
-        {
-            // Drop the message if it's been less than 10 milliseconds since our last call.
-            // This will keep us from flooding the window message queue with very fast operations.            
-            if ((_progressTimer != null) && (_progressTimer.Milliseconds < 10) && (e.PercentageComplete < 1) && (e.PercentageComplete > 0))
-            {
-                return;
-            }
-
-            // The actual method to execute on the main thread.
-            void UpdateProgressPanel(ProgressPanelUpdateArgs args)
-            {
-                ProgressScreen.ProgressTitle = e.Title ?? string.Empty;
-                ProgressScreen.ProgressMessage = e.Message ?? string.Empty;
-                ProgressScreen.CurrentValue = e.PercentageComplete;
-                ProgressScreen.AllowCancellation = e.CancelAction != null;
-                _progressCancelAction = args.CancelAction;
-
-                bool isMarquee = ProgressScreen.MeterStyle == ProgressBarStyle.Marquee;
-
-                if (ProgressScreen.Visible)
-                {
-                    if (isMarquee == e.IsMarquee)
-                    {
-                        _progressTimer?.Reset();
-                        return;
-                    }
-
-                    // If we change to a marquee format, then hide the previous panel.
-                    DataContext_ProgressDeactivated(this, EventArgs.Empty);
-                }
-
-                _progressTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
-                ProgressScreen.OperationCancelled += ProgressScreen_OperationCancelled;
-                ProgressScreen.MeterStyle = e.IsMarquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
-                ProgressScreen.Visible = true;
-                ProgressScreen.BringToFront();
-                ProgressScreen.Invalidate();
-            }
-
-            if (InvokeRequired)
-            {
-                _syncContext.Send(args => UpdateProgressPanel((ProgressPanelUpdateArgs)args), e);
-                return;
-            }
-
-            UpdateProgressPanel(e);
-        }
-
-        /// <summary>
-        /// Handles the OperationCancelled event of the ProgressScreen control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ProgressScreen_OperationCancelled(object sender, EventArgs e) => _progressCancelAction?.Invoke();
-
-        /// <summary>
-        /// Handles the WaitPanelDeactivated event of the DataContext control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void DataContext_WaitPanelDeactivated(object sender, EventArgs e) => WaitScreen.Visible = false;
-
-        /// <summary>
-        /// Handles the WaitPanelActivated event of the DataContext control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="WaitPanelActivateArgs"/> instance containing the event data.</param>
-        private void DataContext_WaitPanelActivated(object sender, WaitPanelActivateArgs e)
-        {
-            WaitScreen.WaitMessage = e.Message;
-
-            if (!string.IsNullOrWhiteSpace(e.Title))
-            {
-                WaitScreen.WaitTitle = e.Title;
-            }
-
-            if (WaitScreen.Visible)
-            {
-                return;
-            }
-
-            WaitScreen.Visible = true;
-            WaitScreen.BringToFront();
-            WaitScreen.Invalidate();
         }
 
         /// <summary>
@@ -1075,56 +988,12 @@ namespace Gorgon.Editor
 
                 var menuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
                 {
-                    Name = id
+                    Name = id,
+                    Tag = item.NewIconID
                 };
                 menuItem.Click += NewItem_Click;
 
                 MenuCreate.Items.Add(menuItem);
-            }
-
-            ValidateRibbonButtons();
-        }
-
-        /// <summary>
-        /// Function to update the icons used for the "new" buttons.
-        /// </summary>
-        /// <param name="metadata">The metadata for plug ins that can create content.</param>
-        private void RemoveNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
-        {
-            if (metadata == null)
-            {
-                return;
-            }
-
-            foreach (IContentPlugInMetadata item in metadata)
-            {
-                string id = item.NewIconID.ToString("N");
-
-                if (!MenuCreate.Items.ContainsKey(id))
-                {
-                    continue;
-                }
-
-                ToolStripItem menuItem = MenuCreate.Items[id];
-                MenuCreate.Items.RemoveByKey(id);
-                menuItem.Click -= NewItem_Click;
-                menuItem.Dispose();
-            }
-
-            ValidateRibbonButtons();
-        }
-
-        /// <summary>
-        /// Function to clear the new icons list.
-        /// </summary>
-        private void ClearNewIcons()
-        {
-            ToolStripItem[] items = MenuCreate.Items.OfType<ToolStripItem>().ToArray();
-            MenuCreate.Items.Clear();
-
-            for (int i = 0; i < items.Length; ++i)
-            {
-                items[i]?.Dispose();
             }
 
             ValidateRibbonButtons();
@@ -1136,13 +1005,14 @@ namespace Gorgon.Editor
         private void NewItem_Click(object sender, EventArgs e)
         {
             var item = (ToolStripItem)sender;
+            var id = (Guid)item.Tag;
 
-            if ((DataContext?.CreateContentCommand == null) || (!DataContext.CreateContentCommand.CanExecute(item.Name)))
+            if ((DataContext?.CurrentProject?.CreateContentCommand == null) || (!DataContext.CurrentProject.CreateContentCommand.CanExecute(id)))
             {
                 return;
             }
 
-            DataContext.CreateContentCommand.Execute(item.Name);
+            DataContext.CurrentProject.CreateContentCommand.Execute(id);
         }
 
         /// <summary>
@@ -1178,41 +1048,16 @@ namespace Gorgon.Editor
             AddNewIcons(dataContext.ContentCreators);
         }
 
-        /// <summary>Handles the CollectionChanged event of the ContentCreators control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-        private void ContentCreators_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    AddNewIcons(e.NewItems.OfType<IContentPlugInMetadata>());
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    RemoveNewIcons(e.OldItems.OfType<IContentPlugInMetadata>());
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    ClearNewIcons();
-                    break;
-            }
-        }
-
         /// <summary>
         /// Function to unassign the events from the data context.
         /// </summary>
         private void UnassignEvents()
         {
-            _progressCancelAction = null;
-            ProgressScreen.OperationCancelled -= ProgressScreen_OperationCancelled;
+            _progressForm.SetDataContext(null);
 
             if (DataContext == null)
             {
                 return;
-            }
-
-            if (DataContext.ContentCreators != null)
-            {
-                DataContext.ContentCreators.CollectionChanged -= ContentCreators_CollectionChanged;
             }
 
             if (DataContext.CurrentProject != null)
@@ -1228,10 +1073,6 @@ namespace Gorgon.Editor
                 }
             }
 
-            DataContext.ProgressUpdated -= DataContext_ProgressUpdated;
-            DataContext.ProgressDeactivated -= DataContext_ProgressDeactivated;
-            DataContext.WaitPanelActivated -= DataContext_WaitPanelActivated;
-            DataContext.WaitPanelDeactivated -= DataContext_WaitPanelDeactivated;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
         }
@@ -1397,6 +1238,8 @@ namespace Gorgon.Editor
             DataContext.OnLoad();
 
             Stage.CanOpen = (DataContext.OpenPackFileCommand != null) && (DataContext.OpenPackFileCommand.CanExecute(null));
+
+            Focus();
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
@@ -1484,6 +1327,9 @@ namespace Gorgon.Editor
                 InitializeFromDataContext(dataContext);
                 DataContext = dataContext;
 
+                _waitForm.SetDataContext(DataContext);
+                _progressForm.SetDataContext(DataContext);
+
                 if (DataContext == null)
                 {
                     return;
@@ -1504,11 +1350,6 @@ namespace Gorgon.Editor
                     _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
                 }
 
-                DataContext.ContentCreators.CollectionChanged += ContentCreators_CollectionChanged;
-                DataContext.ProgressUpdated += DataContext_ProgressUpdated;
-                DataContext.ProgressDeactivated += DataContext_ProgressDeactivated;
-                DataContext.WaitPanelActivated += DataContext_WaitPanelActivated;
-                DataContext.WaitPanelDeactivated += DataContext_WaitPanelDeactivated;
                 DataContext.PropertyChanged += DataContext_PropertyChanged;
                 DataContext.PropertyChanging += DataContext_PropertyChanging;
             }
@@ -1530,9 +1371,10 @@ namespace Gorgon.Editor
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
                 _ribbonMerger = new RibbonMerger(RibbonMain);
+                _waitForm = new WaitPanelDisplay(this);
+                _progressForm = new ProgressPanelDisplay(this);
             }
 
-            _syncContext = SynchronizationContext.Current;
             RibbonMain.AllowFormIntegrate = false;
             PanelProject.MainRibbon = RibbonMain;
         }

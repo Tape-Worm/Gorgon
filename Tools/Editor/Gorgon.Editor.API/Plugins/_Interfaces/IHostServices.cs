@@ -25,9 +25,7 @@
 #endregion
 
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.PlugIns
 {
@@ -61,17 +59,9 @@ namespace Gorgon.Editor.PlugIns
         }
 
         /// <summary>
-        /// Property to return the clipboard handler for the view model.
+        /// Property to return the service used to send and retrieve data to and from the clipboard.
         /// </summary>
-        IClipboardService Clipboard
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the graphics and the 2D renderer used by the host application.
-        /// </summary>
-        IGraphicsContext GraphicsContext
+        IClipboardService ClipboardService
         {
             get;
         }

@@ -27,9 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -49,15 +46,6 @@ namespace Gorgon.Editor.ViewModels
         IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to set or return the active clipboard handler context.
-        /// </summary>
-        IClipboardHandler ClipboardContext
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -87,7 +75,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the content previewer.
         /// </summary>
-        IContentPreviewVm ContentPreviewer
+        IContentPreview ContentPreviewer
         {
             get;
         }
@@ -101,7 +89,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the current content for the project.
+        /// Property to return the current content file for the project.
         /// </summary>
         IEditorContent CurrentContent
         {
@@ -109,9 +97,26 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to set or return the current clipboard context depending on content.
+        /// </summary>
+        IClipboardHandler ClipboardContext
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the command to execute when the project is closing.
         /// </summary>
         IEditorAsyncCommand<CancelEventArgs> BeforeCloseCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute after the project is closed.
+        /// </summary>
+        IEditorCommand<object> AfterCloseCommand
         {
             get;
         }
@@ -159,27 +164,30 @@ namespace Gorgon.Editor.ViewModels
             get;
             set;
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to create a new content item.
-        /// </summary>
-        /// <param name="metadata">The metadata for the plug in associated with the content.</param>
-        /// <param name="plugin">The plug in used to create the content.</param>
-        /// <returns>A new content file containing the content data, or <b>null</b> if the content creation was cancelled.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/>, or the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        Task<IContentFile> CreateNewContentItemAsync(IContentPlugInMetadata metadata, ContentPlugIn plugin);
 
         /// <summary>
-        /// Function to persist the project data to a file.
+        /// Property to return the command used to save the project to a packed file.
         /// </summary>
-        /// <param name="path">A path to the file that will hold the project data.</param>
-        /// <param name="writer">The plug in used to write the project data.</param>
-        /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
-        /// <param name="cancelToken">The token used for cancellation of the operation.</param>
-        /// <returns>A task for asynchronous operation.</returns>
-        Task SaveToPackFileAsync(FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
+        IEditorAsyncCommand<CancelEventArgs> SaveProjectToPackFileCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to create content.
+        /// </summary>
+        IEditorAsyncCommand<Guid> CreateContentCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command executed when the currently active content is closed.
+        /// </summary>
+        IEditorCommand<object> ContentClosedCommand
+        {
+            get;
+        }
         #endregion
     }
 }

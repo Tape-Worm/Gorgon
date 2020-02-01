@@ -632,9 +632,9 @@ namespace Gorgon.Editor.SpriteEditor
 
             _keyboardIcon = new Lazy<GorgonTexture2DView>(() => GorgonTexture2DView.CreateTexture(renderer.Graphics, new GorgonTexture2DInfo("VertexEditor_KeyboardIcon")
             {
-                Width = EditorCommonResources.KeyboardIcon.Width,
-                Height = EditorCommonResources.KeyboardIcon.Height
-            }, EditorCommonResources.KeyboardIcon), true);
+                Width = CommonEditorResources.KeyboardIcon.Width,
+                Height = CommonEditorResources.KeyboardIcon.Height
+            }, CommonEditorResources.KeyboardIcon), true);
         }
         #endregion
 

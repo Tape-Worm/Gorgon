@@ -20,8 +20,10 @@
 
             if (disposing)
             {
-                _fileExplorerContextChanged = null;
-                _fileExplorerIsRenaming = null;
+                RibbonAddedEvent = null;
+                RibbonRemovedEvent = null;
+                FileExplorerContextChangedEvent = null;
+                FileExplorerIsRenamingEvent = null;
                 UnassignEvents();
             }
 
@@ -40,7 +42,7 @@
             this.SplitMain = new System.Windows.Forms.SplitContainer();
             this.SplitFileSystem = new System.Windows.Forms.SplitContainer();
             this.FileExplorer = new Gorgon.Editor.Views.FileExploder();
-            this.Preview = new Gorgon.Editor.Views.ContentPreview();
+            this.Preview = new Gorgon.Editor.Views.ContentPreviewPanel();
             ((System.ComponentModel.ISupportInitialize)(this.SplitMain)).BeginInit();
             this.SplitMain.Panel1.SuspendLayout();
             this.SplitMain.Panel2.SuspendLayout();
@@ -54,12 +56,12 @@
             // PanelContent
             // 
             this.PanelContent.AllowDrop = true;
-            this.PanelContent.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.PanelContent.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Gorgon_Logo_Full_Site;
             this.PanelContent.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.PanelContent.Location = new System.Drawing.Point(54, 279);
+            this.PanelContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelContent.Location = new System.Drawing.Point(0, 0);
             this.PanelContent.Name = "PanelContent";
-            this.PanelContent.Size = new System.Drawing.Size(417, 100);
+            this.PanelContent.Size = new System.Drawing.Size(524, 658);
             this.PanelContent.TabIndex = 0;
             this.PanelContent.DragDrop += new System.Windows.Forms.DragEventHandler(this.PanelContent_DragDrop);
             this.PanelContent.DragEnter += new System.Windows.Forms.DragEventHandler(this.PanelContent_DragEnter);
@@ -78,6 +80,7 @@
             // 
             this.SplitMain.Panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.SplitMain.Panel1.Controls.Add(this.PanelContent);
+            this.SplitMain.Panel1.TabIndex = 2;
             this.SplitMain.Panel1MinSize = 320;
             // 
             // SplitMain.Panel2
@@ -85,7 +88,8 @@
             this.SplitMain.Panel2.Controls.Add(this.SplitFileSystem);
             this.SplitMain.Size = new System.Drawing.Size(1033, 658);
             this.SplitMain.SplitterDistance = 524;
-            this.SplitMain.TabIndex = 2;
+            this.SplitMain.Panel2.TabIndex = 0;
+            this.SplitMain.TabIndex = 0;
             this.SplitMain.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitMain_SplitterMoved);
             // 
             // SplitFileSystem
@@ -105,7 +109,7 @@
             this.SplitFileSystem.Panel2.Controls.Add(this.Preview);
             this.SplitFileSystem.Size = new System.Drawing.Size(505, 658);
             this.SplitFileSystem.SplitterDistance = 618;
-            this.SplitFileSystem.TabIndex = 1;
+            this.SplitFileSystem.TabIndex = 0;
             this.SplitFileSystem.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitFileSystem_SplitterMoved);
             // 
             // FileExplorer
@@ -129,11 +133,10 @@
             this.Preview.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Preview.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Preview.ForeColor = System.Drawing.Color.White;
-            this.Preview.GraphicsContext = null;
             this.Preview.Location = new System.Drawing.Point(0, 0);
             this.Preview.Name = "Preview";
             this.Preview.Size = new System.Drawing.Size(505, 36);
-            this.Preview.TabIndex = 1;
+            this.Preview.TabIndex = 0;
             // 
             // ProjectContainer
             // 
@@ -157,7 +160,7 @@
         #endregion
         public FileExploder FileExplorer;
         private System.Windows.Forms.Panel PanelContent;
-        private ContentPreview Preview;
+        private ContentPreviewPanel Preview;
         private System.Windows.Forms.SplitContainer SplitMain;
         private System.Windows.Forms.SplitContainer SplitFileSystem;
     }

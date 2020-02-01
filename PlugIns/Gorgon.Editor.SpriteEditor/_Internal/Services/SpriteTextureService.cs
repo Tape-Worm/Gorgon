@@ -71,7 +71,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             GorgonRenderTargetView oldRtv = _graphics.RenderTargets[0];
             GorgonRenderTarget2DView convertTarget = null;
-            GorgonTexture2DView rtvTexture = null;
+            GorgonTexture2DView rtvTexture;
             IGorgonImage tempImage = null;
             BufferFormat targetFormat = texture.FormatInformation.IsSRgb ? BufferFormat.R8G8B8A8_UNorm_SRgb : BufferFormat.R8G8B8A8_UNorm;
 
@@ -91,8 +91,6 @@ namespace Gorgon.Editor.SpriteEditor
                     Format = targetFormat,
                     Binding = TextureBinding.ShaderResource
                 });
-
-                rtvTexture = convertTarget.GetShaderResourceView();
 
                 for (int i = 0; i < texture.ArrayCount; ++i)
                 {
@@ -116,7 +114,6 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 tempImage?.Dispose();
                 _graphics.SetRenderTarget(oldRtv);
-                rtvTexture?.Dispose();
                 convertTarget?.Dispose();
             }
         }

@@ -26,9 +26,7 @@
 
 using System;
 using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 
@@ -38,41 +36,20 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The view model for the image dimensions editor.
     /// </summary>
     internal class MipMapSettings
-        : ViewModelBase<IViewModelInjection>, IMipMapSettings
+        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IMipMapSettings
     {
         #region Variables.
         // The maximum number of mip map levels.
         private int _maxMipLevels = int.MaxValue;
-        // Flag to indicate that the editor is active.
-        private bool _isActive;
         // The current resizing filter.
         private ImageFilter _resizeFilter = ImageFilter.Fant;
         // The number of mip map levels in the image.
         private int _mipLevels = 2;
-        // The service used to display message notifications.
-        private IMessageDisplayService _messageDisplay;
         #endregion
 
         #region Properties.
         /// <summary>Property to return whether the panel is modal.</summary>
-        public bool IsModal => true;
-
-        /// <summary>Property to set or return whether the crop/resize settings is active or not.</summary>
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _isActive = value;
-                OnPropertyChanged();
-            }
-        }
+        public override bool IsModal => true;
 
         /// <summary>Property to set or return the number of mip map levels.</summary>
         public int MipLevels
@@ -132,19 +109,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
-
-        /// <summary>Property to set or return the command used to cancel the operation.</summary>
-        public IEditorCommand<object> CancelCommand
-        {
-            get;
-        }
-
-        /// <summary>Property to set or return the command used to apply the operation.</summary>
-        public IEditorCommand<object> OkCommand
-        {
-            get;
-            set;
-        }
         #endregion
 
         #region Methods.
@@ -165,7 +129,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
             }
         }
 
@@ -189,22 +153,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
-            }
-        }
-
-        /// <summary>
-        /// Function to cancel the dimension change operation.
-        /// </summary>
-        private void DoCancel()
-        {
-            try
-            {
-                IsActive = false;
-            }
-            catch (Exception ex)
-            {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANCEL_OP);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
             }
         }
         #endregion
@@ -215,17 +164,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(IViewModelInjection injectionParameters) =>
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
+        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+        {
+        
+        }
         #endregion
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ViewModels.DimensionSettings"/> class.</summary>
-        public MipMapSettings()
-        {
-            UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);
-            CancelCommand = new EditorCommand<object>(DoCancel);
-        }
+        public MipMapSettings() => UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);
         #endregion
     }
 }

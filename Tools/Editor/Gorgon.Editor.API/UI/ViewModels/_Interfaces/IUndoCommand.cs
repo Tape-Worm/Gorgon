@@ -33,6 +33,15 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// A command used to perform an undo (or redo) action that will store commands (and associated data) to reset state or the opposite.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When developing a UI for a content plug in, there will come a time when the user of the content editor will make a mistake. To handle this the undo command interface is used to record steps that 
+    /// will reverse the operation, and, optionally, restore it.
+    /// </para>
+    /// <para>
+    /// This type is used internally by the <see cref="IUndoService"/> to store state, and does not typically need to be implemented by the developer.
+    /// </para>
+    /// </remarks>
     public interface IUndoCommand
     {
         #region Properties.

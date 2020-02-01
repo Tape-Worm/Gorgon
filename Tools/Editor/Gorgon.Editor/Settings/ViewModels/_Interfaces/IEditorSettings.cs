@@ -32,13 +32,13 @@ namespace Gorgon.Editor.ViewModels
     /// <summary>
     /// The view model for the editor settings panel.
     /// </summary>
-    internal interface IEditorSettingsVm
+    internal interface IEditorSettings
         : IViewModel
     {
         /// <summary>
         /// Property to return the current category ID being used.
         /// </summary>
-        ISettingsCategoryViewModel CurrentCategory
+        ISettingsCategory CurrentCategory
         {
             get;
         }
@@ -46,7 +46,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the list of categories available.
         /// </summary>
-        ObservableCollection<ISettingsCategoryViewModel> Categories
+        ObservableCollection<ISettingsCategory> Categories
         {
             get;
         }

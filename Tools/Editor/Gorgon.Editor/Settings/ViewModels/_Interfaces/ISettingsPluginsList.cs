@@ -33,7 +33,7 @@ namespace Gorgon.Editor.ViewModels
     /// The plug in list category for the settings.
     /// </summary>
     internal interface ISettingsPlugInsList
-        : ISettingsCategoryViewModel
+        : ISettingsCategory
     {
         /// <summary>
         /// Property to return the plug ins.

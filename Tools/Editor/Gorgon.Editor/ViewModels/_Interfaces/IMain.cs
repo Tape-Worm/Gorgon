@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the settings for the application.
         /// </summary>
-        EditorSettings Settings
+        Editor.EditorSettings Settings
         {
             get;
         }
@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plugins that can create their own content.
         /// </summary>
-        ObservableCollection<IContentPlugInMetadata> ContentCreators
+        IReadOnlyList<IContentPlugInMetadata> ContentCreators
         {
             get;
         }
@@ -80,7 +80,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the view model for the settings view.
         /// </summary>
-        IEditorSettingsVm SettingsViewModel
+        IEditorSettings SettingsViewModel
         {
             get;
         }
@@ -118,25 +118,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command used to save a project as a packed file.
-        /// </summary>
-        IEditorAsyncCommand<SavePackFileArgs> SavePackFileCommand
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the command used to query before closing the application.
         /// </summary>
         IEditorAsyncCommand<AppCloseArgs> AppClosingAsyncCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to create content.
-        /// </summary>
-        IEditorCommand<string> CreateContentCommand
         {
             get;
         }

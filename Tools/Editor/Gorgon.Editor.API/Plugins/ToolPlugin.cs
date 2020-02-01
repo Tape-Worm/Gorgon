@@ -30,8 +30,6 @@ using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.Rendering;
-using Gorgon.Editor.Services;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.PlugIns
@@ -269,17 +267,12 @@ namespace Gorgon.Editor.PlugIns
         /// </remarks>
         public void Initialize(IHostToolServices hostServices)
         {
-            if (hostServices == null)
-            {
-                throw new ArgumentNullException(nameof(hostServices));
-            }
-
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {
                 return;
             }
 
-            HostToolServices = hostServices;
+            HostToolServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
             HostServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
             OnInitialize();

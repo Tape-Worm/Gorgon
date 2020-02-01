@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <LangVersion>7.3</LangVersion>
+    <langversion>7.3</langversion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -64,7 +64,7 @@
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <LangVersion>7.3</LangVersion>
+    <langversion>7.3</langversion>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>

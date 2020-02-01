@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -199,8 +200,8 @@ namespace Gorgon.Graphics.Core
         // The viewports used to define the area to render into.
         private readonly DX.ViewportF[] _viewports = new DX.ViewportF[16];
 
-        // The viewports used to define the area to render into.
-        private DX.Rectangle[] _scissors = new DX.Rectangle[1];
+        // The rectangles used to define the clipping area.
+        private readonly DX.Rectangle[] _scissors = new DX.Rectangle[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 
         // The flag used to determine if a render target and/or depth/stencil is updated.
         private (bool RtvsChanged, bool DepthViewChanged) _isTargetUpdated;
@@ -658,77 +659,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to set the current list of scissor rectangles.
-        /// </summary>
-        /// <param name="rectangles">The list of scissor rectangles to apply.</param>
-        private void SetScissors(IReadOnlyList<DX.Rectangle> rectangles)
-        {
-            if ((rectangles == null) || (rectangles.Count == 0))
-            {
-                D3DDeviceContext.Rasterizer.SetScissorRectangles((DX.Rectangle[])null);
-                return;
-            }
-
-            if (rectangles.Count == 1)
-            {
-                if (_scissors.Length < 1)
-                {
-                    _scissors = new DX.Rectangle[1];
-                }
-
-                _scissors[0] = rectangles[0];
-                D3DDeviceContext.Rasterizer.SetScissorRectangle(rectangles[0].Left, rectangles[0].Top, rectangles[0].Right, rectangles[0].Bottom);
-                return;
-            }
-
-            if (_scissors.Length != rectangles.Count)
-            {
-                _scissors = new DX.Rectangle[rectangles.Count];
-            }
-
-
-            for (int i = 0; i < rectangles.Count; ++i)
-            {
-                _scissors[i] = rectangles[i];
-            }
-
-            D3DDeviceContext.Rasterizer.SetScissorRectangles(_scissors);
-        }
-
-        /// <summary>
-        /// Function to compare the two list of scissor rectangle lists for equality.
-        /// </summary>
-        /// <param name="left">The left instance to compare.</param>
-        /// <param name="right">The right instance to compare.</param>
-        private static bool CompareScissorRects(IReadOnlyList<DX.Rectangle> left, IReadOnlyList<DX.Rectangle> right)
-        {
-            if (left == right)
-            {
-                return true;
-            }
-
-            if (((left == null) && (right != null)) || (left == null))
-            {
-                return false;
-            }
-
-            if (left.Count != right.Count)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < left.Count; ++i)
-            {
-                if (!left[i].Equals(right[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Function to apply the pipeline state.
         /// </summary>
         /// <param name="currentState">The state passed in from the draw call.</param>
@@ -758,11 +688,6 @@ namespace Gorgon.Graphics.Core
             if ((changes & DrawCallChanges.BlendState) == DrawCallChanges.BlendState)
             {
                 D3DDeviceContext.OutputMerger.BlendState = currentState.D3DBlendState;
-            }
-
-            if ((changes & DrawCallChanges.Scissors) == DrawCallChanges.Scissors)
-            {
-                SetScissors(currentState.RasterState.ScissorRectangles);
             }
 
             if ((changes & DrawCallChanges.PixelShader) == DrawCallChanges.PixelShader)
@@ -821,14 +746,6 @@ namespace Gorgon.Graphics.Core
             if (GetPipelineChanges(lastState.D3DDepthStencilState == currentState.D3DDepthStencilState, DrawCallChanges.DepthStencilState, ref changes))
             {
                 _lastState.PipelineState.D3DDepthStencilState = currentState.D3DDepthStencilState;
-            }
-
-            if (((changes & DrawCallChanges.RasterState) != DrawCallChanges.RasterState)
-                && (GetPipelineChanges(CompareScissorRects(lastState.RasterState?.ScissorRectangles, currentState.RasterState?.ScissorRectangles),
-                                  DrawCallChanges.Scissors,
-                                  ref changes)))
-            {
-                _lastState.PipelineState.RasterState = currentState.RasterState;
             }
 
             if (GetPipelineChanges(lastState.VertexShader == currentState.VertexShader, DrawCallChanges.VertexShader, ref changes))
@@ -1895,7 +1812,7 @@ namespace Gorgon.Graphics.Core
             }
             catch (DX.SharpDXException sdEx)
             {
-                Log.Print($"ERROR: Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
+                Log.Print($"[ERROR] Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
             }
 
             return GorgonMultisampleInfo.NoMultiSampling;
@@ -2370,11 +2287,6 @@ namespace Gorgon.Graphics.Core
                         inheritedState |= DrawCallChanges.DepthStencilState;
                     }
 
-                    if ((CompareScissorRects(cachedState.RasterState.ScissorRectangles, newState.RasterState.ScissorRectangles)))
-                    {
-                        inheritedState |= DrawCallChanges.Scissors;
-                    }
-
                     // We've copied all the states, so just return the existing pipeline state.
                     // ReSharper disable once InvertIf
                     if (inheritedState == DrawCallChanges.AllPipelineState)
@@ -2703,6 +2615,96 @@ namespace Gorgon.Graphics.Core
             }
 
             SetRenderTargetAndDepthViews(rtvCount);
+        }
+
+        /// <summary>
+        /// Function to set a scissor rectangle for defining a clipping area on the current render target.
+        /// </summary>
+        /// <param name="rect">The region, in screen coordinates, to clip.</param>
+        /// <remarks>
+        /// <para>
+        /// These are used for defining a clipping area on the current render target, pixels rendered outside of the area defined will not appear in the render target.
+        /// </para>
+        /// <para>
+        /// The rasterizer state does not have <see cref="GorgonRasterState.ScissorRectsEnabled"/> set to <b>true</b>, this method will have no effect. If a scissor rectangle is assigned while a raster 
+        /// state with <see cref="GorgonRasterState.ScissorRectsEnabled"/> is set to <b>false</b>, it will remain assigned and will be applied if a raster state with 
+        /// <see cref="GorgonRasterState.ScissorRectsEnabled"/> is set to <b>true</b>.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonRasterState"/>
+        public void SetScissorRect(DX.Rectangle rect)
+        {
+            ref DX.Rectangle firstRect = ref _scissors[0];
+
+            if (firstRect.Equals(ref rect))
+            {
+                return;
+            }
+
+            _scissors[0] = rect;
+            Array.Clear(_scissors, 1, _scissors.Length - 1);
+            D3DDeviceContext.Rasterizer.SetScissorRectangles(rect);
+        }
+
+        /// <summary>
+        /// Function to set multple scissor rectangles for defining a clipping area on the current render target.
+        /// </summary>
+        /// <param name="rects">The regions, in screen coordinates, to clip.</param>
+        /// <remarks>
+        /// <para>
+        /// These are used for defining clipping areas on the current render target, pixels rendered outside of the areas defined will not appear in the render target.
+        /// </para>
+        /// <para>
+        /// This Which scissor rectangle to use is determined by the <b>SV_ViewportArrayIndex</b> semantic output by a geometry shader (see shader semantic syntax). If a geometry shader does not make use 
+        /// of the <b>SV_ViewportArrayIndex</b> semantic then the first scissor rectangle in the array will be used.
+        /// </para>
+        /// <para>
+        /// The rasterizer state does not have <see cref="GorgonRasterState.ScissorRectsEnabled"/> set to <b>true</b>, this method will have no effect. If a scissor rectangle is assigned while a raster 
+        /// state with <see cref="GorgonRasterState.ScissorRectsEnabled"/> is set to <b>false</b>, it will remain assigned and will be applied if a raster state with 
+        /// <see cref="GorgonRasterState.ScissorRectsEnabled"/> is set to <b>true</b>.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonRasterState"/>
+        public void SetScissorRects(DX.Rectangle[] rects)
+        {
+            if (rects == null)
+            {
+                Array.Clear(_scissors, 0, _scissors.Length);
+                D3DDeviceContext.Rasterizer.SetViewport(0, 0, 1, 1);
+                return;
+            }
+
+            bool isChanged = false;
+            int scissorCount = rects.Length.Min(_scissors.Length);
+
+            DX.Rectangle[] finalRects = ArrayPool<DX.Rectangle>.Shared.Rent(scissorCount);
+
+            if (scissorCount < _scissors.Length)
+            {
+                Array.Clear(_scissors, scissorCount, _scissors.Length - scissorCount);
+            }
+
+            for (int i = 0; i < scissorCount; ++i)
+            {
+                ref DX.Rectangle cachedRect = ref _scissors[i];
+                ref DX.Rectangle newRect = ref rects[i];
+
+                if (cachedRect.Equals(ref newRect))
+                {
+                    continue;
+                }
+
+                finalRects[i] = cachedRect = newRect;
+                isChanged = true;
+            }
+
+            if (!isChanged)
+            {
+                return;
+            }                
+
+            D3DDeviceContext.Rasterizer.SetScissorRectangles(finalRects);
+            ArrayPool<DX.Rectangle>.Shared.Return(finalRects, true);
         }
 
         /// <summary>

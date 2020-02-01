@@ -25,10 +25,7 @@
 #endregion
 
 using System;
-using System.IO;
-using Gorgon.Core;
-using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.Services;
+using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
@@ -70,10 +67,11 @@ namespace Gorgon.Editor.ViewModels
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="DirectoryParameters"/> class.</summary>
+        /// <param name="hostServices">The services from the host application.</param>
         /// <param name="factory">The factory used to create view models.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
-        public DirectoryParameters(ViewModelFactory factory)
-            : base(factory)
+        public DirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
+            : base(hostServices, factory)
         {
         }
         #endregion

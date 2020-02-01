@@ -29,7 +29,7 @@ using System;
 namespace Gorgon.Editor.Content
 {
     /// <summary>
-    /// Event parameters for the <see cref="OLDE_IContentFile.Renamed"/> event.
+    /// Event parameters for the <see cref="IContentFile.Renamed"/> event.
     /// </summary>
     public class ContentFileRenamedEventArgs
         : EventArgs
@@ -50,7 +50,7 @@ namespace Gorgon.Editor.Content
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Content.ContentFileRenamedEventArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ContentFileRenamedEventArgs"/> class.</summary>
         /// <param name="oldName">The old name.</param>
         /// <param name="newName">The new name.</param>
         public ContentFileRenamedEventArgs(string oldName, string newName)

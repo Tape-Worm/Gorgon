@@ -25,6 +25,7 @@
 #endregion
 
 using Gorgon.Editor.Content;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.UI
@@ -33,12 +34,20 @@ namespace Gorgon.Editor.UI
     /// Defines values to inject into content view models.
     /// </summary>
     public interface IContentViewModelInjection
-        : IViewModelInjection
+        : IViewModelInjection<IHostContentServices>
     {
         /// <summary>
         /// Property to return the content file.
         /// </summary>
         IContentFile File
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the file manager for content files.
+        /// </summary>
+        IContentFileManager ContentFileManager
         {
             get;
         }

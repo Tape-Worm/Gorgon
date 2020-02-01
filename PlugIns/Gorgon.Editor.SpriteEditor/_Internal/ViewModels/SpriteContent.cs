@@ -1753,7 +1753,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dragData">The drag/drop data.</param>
         /// <returns>
         ///   <b>true</b> if the data can be dropped, <b>false</b> if not.</returns>
-        public bool CanDrop(IContentFileDragData dragData)
+        public bool CanDrop(OLDE_IContentFileDragData dragData)
         {
             // Don't open the same file, it's already loaded, or is not a content image, or a tool is active.            
             if (((_textureFile != null) && (string.Equals(_textureFile.Path, dragData.File.Path, StringComparison.OrdinalIgnoreCase)))
@@ -1771,7 +1771,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to drop the payload for a drag drop operation.</summary>
         /// <param name="dragData">The drag/drop data.</param>
         /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        public async void Drop(IContentFileDragData dragData, Action afterDrop = null)
+        public async void Drop(OLDE_IContentFileDragData dragData, Action afterDrop = null)
         {
             SpriteUndoArgs textureUndoArgs = null;
             SpriteUndoArgs textureRedoArgs = null;

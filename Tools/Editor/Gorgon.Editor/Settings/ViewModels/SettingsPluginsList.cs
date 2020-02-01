@@ -27,8 +27,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -37,13 +37,11 @@ namespace Gorgon.Editor.ViewModels
     /// The plug in list category for the settings.
     /// </summary>
     internal class SettingsPlugInsList
-        : ViewModelBase<SettingsPlugInsListParameters>, ISettingsPlugInsList
+        : ViewModelBase<SettingsPlugInsListParameters, IHostServices>, ISettingsPlugInsList
     {
         #region Variables.
         // The current plug in.
         private ISettingsPlugInListItem _current;
-        // The message display service.
-        private IMessageDisplayService _messageDisplay;
         #endregion
 
         #region Properties.
@@ -104,7 +102,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GOREDIT_ERR_SELECTING_PLUGIN);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_SELECTING_PLUGIN);
             }
         }
 
@@ -113,16 +111,11 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters)
-        {
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase)
-                                                                            ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugIns), nameof(injectionParameters)));
-        }
+        protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters) => PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase));        
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.SettingsPlugInsList"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsList"/> class.</summary>
         public SettingsPlugInsList() => SelectPlugInCommand = new EditorCommand<int>(DoSelectPlugIn);
         #endregion
     }

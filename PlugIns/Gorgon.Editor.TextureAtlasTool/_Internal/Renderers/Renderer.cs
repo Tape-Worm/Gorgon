@@ -164,9 +164,9 @@ namespace Gorgon.Editor.TextureAtlasTool
             {
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Immutable,
-                Width = EditorCommonResources.CheckerBoardPatternImage.Width,
-                Height = EditorCommonResources.CheckerBoardPatternImage.Height
-            }, EditorCommonResources.CheckerBoardPatternImage);
+                Width = CommonEditorResources.CheckerBoardPatternImage.Width,
+                Height = CommonEditorResources.CheckerBoardPatternImage.Height
+            }, CommonEditorResources.CheckerBoardPatternImage);
 
             _camera = new Gorgon2DOrthoCamera(_renderer, new DX.Size2F(_swapChain.Width, _swapChain.Height))
             {

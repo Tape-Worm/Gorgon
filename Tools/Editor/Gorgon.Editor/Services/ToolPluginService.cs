@@ -34,8 +34,6 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Rendering;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 using Gorgon.PlugIns;
 using Newtonsoft.Json;
@@ -54,7 +52,7 @@ namespace Gorgon.Editor.Services
         // The list of disabled tool plug ins.
         private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
         // The list of ribbon buttons for all tools.
-        private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+        private readonly Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The directory that contains the settings for the plug ins.
         private readonly string _settingsDir;
         // The host application services to pass to the plug ins.
@@ -167,7 +165,7 @@ namespace Gorgon.Editor.Services
                             Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
                         }
 
-                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
+                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\r\n", validation), plugin.PlugInPath);
 
                         // Remove this plug in.
                         plugins.Unload(plugin.Name);
@@ -181,7 +179,7 @@ namespace Gorgon.Editor.Services
                     // Attempt to gracefully shut the plug in down if we error out.
                     plugin.Shutdown();
 
-                    Program.Log.Print($"ERROR: Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                    Program.Log.Print($"[ERROR] Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
@@ -236,11 +234,9 @@ namespace Gorgon.Editor.Services
             }
 
             using (Stream stream = settingsFile.OpenRead())
+            using (var reader = new StreamReader(stream, Encoding.UTF8))
             {
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
-                {
-                    return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
-                }
+                return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
             }
         }
 
@@ -272,11 +268,9 @@ namespace Gorgon.Editor.Services
 
             FileInfo settingsFile = GetContentPlugInSettingsPath(name);
             using (Stream stream = settingsFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+            using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
             {
-                using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
-                {
-                    writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
-                }
+                writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
             }
         }
 

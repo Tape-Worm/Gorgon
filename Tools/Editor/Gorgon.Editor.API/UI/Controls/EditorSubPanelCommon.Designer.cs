@@ -55,10 +55,9 @@
             // panel2
             // 
             this.panel2.AutoSize = true;
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.panel2.Controls.Add(this.LabelCaption);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.ForeColor = System.Drawing.Color.White;
             this.panel2.Location = new System.Drawing.Point(2, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(537, 21);
@@ -142,7 +141,6 @@
             this.Controls.Add(this.PanelBody);
             this.Controls.Add(this.PanelConfirmCancel);
             this.Controls.Add(this.PanelCaptionBorder);
-            this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.Name = "EditorSubPanelCommon";
             this.Size = new System.Drawing.Size(539, 493);
             this.PanelCaptionBorder.ResumeLayout(false);

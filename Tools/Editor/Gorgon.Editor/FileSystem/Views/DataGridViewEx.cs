@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Gorgon.Editor.Views
@@ -218,14 +216,5 @@ namespace Gorgon.Editor.Views
             e.Handled = true;
         }
         #endregion
-
-        private void InitializeComponent()
-        {
-            ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
-            this.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
-            this.ResumeLayout(false);
-
-        }
     }
 }

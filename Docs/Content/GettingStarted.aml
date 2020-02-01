@@ -39,13 +39,13 @@
             <listItem>Select the <codeInline>Build</codeInline> tab.</listItem>
             <listItem>Change the <codeInline>Configuration:</codeInline> dropdown to <codeInline>All configurations</codeInline>.</listItem>
             <listItem><phrase>(Optional, but recommended)</phrase> Uncheck <codeInline>Prefer 32 bit...</codeInline> (it's SO stupid that's the default).</listItem>
-            <listItem>Click <codeInline>Advanced...</codeInline></listItem>              
-            <listItem>On the <codeInline>Language Version:</codeInline> drop down, select <codeInline>C# latest minor version (latest)</codeInline> and click OK.</listItem>
+            <listItem><phrase>(Visual Studio 2017 only, 2019 does not need this)</phrase> Click <codeInline>Advanced...</codeInline></listItem>              
+            <listItem><phrase>(Visual Studio 2017 only, 2019 does not need this)</phrase> On the <codeInline>Language Version:</codeInline> drop down, select <codeInline>C# latest minor version (latest)</codeInline> and click OK.</listItem>
           </list>
           <mediaLink>
             <image xlink:href="ProjProps"/>
           </mediaLink>
-          <para>Next, an application manifest should be created for the project. This is used to define which version of Windows we're building for, and will enable some functionality in .NET (specifically DPI aware functionality).</para>
+          <para>Next, an application manifest <legacyUnderline><legacyBold>must</legacyBold></legacyUnderline> be created for the project. We need perform this step because without it Gorgon will not be able to properly detect which version of Windows we're using, and applications will fail to run. This is also required for .NET to use DPI aware functionality.</para>
           <list class="ordered">
             <listItem>Right click on the project and select <codeInline>Add</codeInline> and then <codeInline>New Item...</codeInline></listItem>
             <listItem>Search for the manifest template type and select it.</listItem>

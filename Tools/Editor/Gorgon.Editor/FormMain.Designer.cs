@@ -15,8 +15,11 @@ namespace Gorgon.Editor
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing)                
             {
+                _progressForm.SetDataContext(null);
+                _progressForm.Dispose();
+                _waitForm.Dispose();
                 UnassignEvents();
             }
 
@@ -37,8 +40,6 @@ namespace Gorgon.Editor
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            this.ProgressScreen = new Gorgon.UI.GorgonProgressScreenPanel();
-            this.WaitScreen = new Gorgon.UI.GorgonWaitScreenPanel();
             this.RibbonMain = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
             this.MainPalette = new ComponentFactory.Krypton.Toolkit.KryptonPalette(this.components);
             this.TabFileSystem = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
@@ -64,9 +65,9 @@ namespace Gorgon.Editor
             this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemDelete = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonFileSystemDeleteAll = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.kryptonRibbonGroupTriple4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.kryptonRibbonGroupLines4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonFileSystemRename = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFileSystemRefresh = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonFileSystemPanel = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -78,28 +79,6 @@ namespace Gorgon.Editor
             ((System.ComponentModel.ISupportInitialize)(this.RibbonMain)).BeginInit();
             this.PanelWorkSpace.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // ProgressScreen
-            // 
-            this.ProgressScreen.CurrentValue = 0F;
-            this.ProgressScreen.Location = new System.Drawing.Point(406, 220);
-            this.ProgressScreen.Name = "ProgressScreen";
-            this.ProgressScreen.ProgressMessage = resources.GetString("ProgressScreen.ProgressMessage");
-            this.ProgressScreen.ProgressMessageFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ProgressScreen.ProgressTitle = resources.GetString("ProgressScreen.ProgressTitle");
-            this.ProgressScreen.Size = new System.Drawing.Size(640, 200);
-            this.ProgressScreen.TabIndex = 1;
-            this.ProgressScreen.Visible = false;
-            // 
-            // WaitScreen
-            // 
-            this.WaitScreen.Location = new System.Drawing.Point(213, 173);
-            this.WaitScreen.Name = "WaitScreen";
-            this.WaitScreen.Size = new System.Drawing.Size(281, 145);
-            this.WaitScreen.TabIndex = 0;
-            this.WaitScreen.Visible = false;
-            this.WaitScreen.WaitMessage = "Loading...";
-            this.WaitScreen.WaitTitle = "Please wait";
             // 
             // RibbonMain
             // 
@@ -120,7 +99,7 @@ namespace Gorgon.Editor
             this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
-            this.RibbonMain.Size = new System.Drawing.Size(1051, 115);
+            this.RibbonMain.Size = new System.Drawing.Size(1007, 115);
             this.RibbonMain.StateCheckedNormal.RibbonTab.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.RibbonMain.StateCheckedNormal.RibbonTab.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.RibbonMain.StateCheckedNormal.RibbonTab.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
@@ -403,8 +382,7 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemOrganize.DialogBoxLauncher = false;
             this.RibbonGroupFileSystemOrganize.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple2,
-            this.kryptonRibbonGroupSeparator1,
-            this.kryptonRibbonGroupTriple4,
+            this.kryptonRibbonGroupLines4,
             this.kryptonRibbonGroupSeparator3,
             this.kryptonRibbonGroupLines1});
             this.RibbonGroupFileSystemOrganize.KeyTipGroup = "O";
@@ -432,15 +410,17 @@ namespace Gorgon.Editor
             this.ButtonFileSystemDeleteAll.ImageLarge = global::Gorgon.Editor.Properties.Resources.clear_fs_48x48;
             this.ButtonFileSystemDeleteAll.ImageSmall = global::Gorgon.Editor.Properties.Resources.clear_fs_16x16;
             this.ButtonFileSystemDeleteAll.KeyTip = "L";
-            this.ButtonFileSystemDeleteAll.TextLine1 = "Delete all";
+            this.ButtonFileSystemDeleteAll.TextLine1 = "Delete";
+            this.ButtonFileSystemDeleteAll.TextLine2 = "All";
             this.ButtonFileSystemDeleteAll.ToolTipBody = "Delete all files and directories from the file system.";
             this.ButtonFileSystemDeleteAll.Visible = false;
             this.ButtonFileSystemDeleteAll.Click += new System.EventHandler(this.ButtonFileSystemDeleteAll_Click);
             // 
-            // kryptonRibbonGroupTriple4
+            // kryptonRibbonGroupLines4
             // 
-            this.kryptonRibbonGroupTriple4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonFileSystemRename});
+            this.kryptonRibbonGroupLines4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonFileSystemRename,
+            this.ButtonFileSystemRefresh});
             // 
             // ButtonFileSystemRename
             // 
@@ -452,6 +432,16 @@ namespace Gorgon.Editor
             this.ButtonFileSystemRename.TextLine1 = "Rename";
             this.ButtonFileSystemRename.ToolTipBody = "Rename the selected file or directory.";
             this.ButtonFileSystemRename.Click += new System.EventHandler(this.ButtonFileSystemRename_Click);
+            // 
+            // ButtonFileSystemRefresh
+            // 
+            this.ButtonFileSystemRefresh.ImageLarge = global::Gorgon.Editor.Properties.Resources.refresh_48x48;
+            this.ButtonFileSystemRefresh.ImageSmall = global::Gorgon.Editor.Properties.Resources.refresh_16x16;
+            this.ButtonFileSystemRefresh.KeyTip = "F";
+            this.ButtonFileSystemRefresh.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.ButtonFileSystemRefresh.TextLine1 = "Refresh";
+            this.ButtonFileSystemRefresh.ToolTipBody = "Refreshes the file system and reassociates content files with their plug ins.";
+            this.ButtonFileSystemRefresh.Click += new System.EventHandler(this.ButtonFileSystemRefresh_Click);
             // 
             // kryptonRibbonGroupLines1
             // 
@@ -490,14 +480,14 @@ namespace Gorgon.Editor
             // 
             this.Stage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.Stage.CanOpen = true;
-            this.Stage.CanSaveAs = true;
+            this.Stage.CanSavePackedFile = true;
             this.Stage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Stage.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Stage.ForeColor = System.Drawing.Color.White;
             this.Stage.IsStartup = true;
             this.Stage.Location = new System.Drawing.Point(0, 115);
             this.Stage.Name = "Stage";
-            this.Stage.Size = new System.Drawing.Size(1051, 511);
+            this.Stage.Size = new System.Drawing.Size(1007, 613);
             this.Stage.TabIndex = 1;
             this.Stage.BackClicked += new System.EventHandler(this.StageLive_BackClicked);
             this.Stage.BrowseClicked += new System.EventHandler(this.StageLive_BrowseClicked);
@@ -506,13 +496,14 @@ namespace Gorgon.Editor
             // 
             // PanelProject
             // 
+            this.PanelProject.AllowDrop = true;
             this.PanelProject.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.PanelProject.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelProject.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.PanelProject.ForeColor = System.Drawing.Color.White;
             this.PanelProject.Location = new System.Drawing.Point(0, 0);
             this.PanelProject.Name = "PanelProject";
-            this.PanelProject.Size = new System.Drawing.Size(1051, 626);
+            this.PanelProject.Size = new System.Drawing.Size(1007, 613);
             this.PanelProject.TabIndex = 0;
             this.PanelProject.RibbonAdded += new System.EventHandler<Gorgon.Editor.ContentRibbonEventArgs>(this.PanelProject_RibbonAdded);
             this.PanelProject.RibbonRemoved += new System.EventHandler<Gorgon.Editor.ContentRibbonEventArgs>(this.PanelProject_RibbonRemoved);
@@ -523,9 +514,9 @@ namespace Gorgon.Editor
             // 
             this.PanelWorkSpace.Controls.Add(this.PanelProject);
             this.PanelWorkSpace.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelWorkSpace.Location = new System.Drawing.Point(0, 0);
+            this.PanelWorkSpace.Location = new System.Drawing.Point(0, 115);
             this.PanelWorkSpace.Name = "PanelWorkSpace";
-            this.PanelWorkSpace.Size = new System.Drawing.Size(1051, 626);
+            this.PanelWorkSpace.Size = new System.Drawing.Size(1007, 613);
             this.PanelWorkSpace.TabIndex = 0;
             // 
             // FormMain
@@ -533,15 +524,14 @@ namespace Gorgon.Editor
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.ClientSize = new System.Drawing.Size(1051, 626);
+            this.ClientSize = new System.Drawing.Size(1007, 728);
             this.Controls.Add(this.Stage);
-            this.Controls.Add(this.ProgressScreen);
-            this.Controls.Add(this.WaitScreen);
-            this.Controls.Add(this.RibbonMain);
             this.Controls.Add(this.PanelWorkSpace);
+            this.Controls.Add(this.RibbonMain);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.White;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(1023, 767);
             this.Name = "FormMain";
             this.PaletteMode = ComponentFactory.Krypton.Toolkit.PaletteMode.Office365Black;
             this.ShadowValues.BlurDistance = 1D;
@@ -587,13 +577,10 @@ namespace Gorgon.Editor
         #endregion
         private ComponentFactory.Krypton.Ribbon.KryptonRibbon RibbonMain;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab TabFileSystem;
-        private Gorgon.UI.GorgonWaitScreenPanel WaitScreen;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupFileSystemNew;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupFileSystemOrganize;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemDelete;
-        private Gorgon.UI.GorgonProgressScreenPanel ProgressScreen;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupFileSystemEdit;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple3;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemPaste;
@@ -608,8 +595,6 @@ namespace Gorgon.Editor
         private Stage Stage;
         private ProjectContainer PanelProject;
         private System.Windows.Forms.Panel PanelWorkSpace;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemRename;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple5;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonOpenContent;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemNewDirectory;
@@ -623,6 +608,9 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemPanel;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemPreview;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines4;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemRename;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemRefresh;
     }
 }
 

@@ -26,7 +26,7 @@
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,7 +38,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\Gorgon.Windows.xml</DocumentationFile>
     <UseVSHostingProcess>true</UseVSHostingProcess>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
@@ -96,17 +96,17 @@
     <Compile Include="UI\_Controls\GorgonProgressScreenPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\_Controls\_Internal\ProgressPanel.cs">
+    <Compile Include="UI\_Controls\GorgonProgressPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\_Controls\_Internal\ProgressPanel.Designer.cs">
-      <DependentUpon>ProgressPanel.cs</DependentUpon>
+    <Compile Include="UI\_Controls\GorgonProgressPanel.Designer.cs">
+      <DependentUpon>GorgonProgressPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Controls\_Internal\WaitMessagePanel.cs">
+    <Compile Include="UI\_Controls\GorgonWaitMessagePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\_Controls\_Internal\WaitMessagePanel.Designer.cs">
-      <DependentUpon>WaitMessagePanel.cs</DependentUpon>
+    <Compile Include="UI\_Controls\GorgonWaitMessagePanel.Designer.cs">
+      <DependentUpon>GorgonWaitMessagePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\_Controls\FolderSelectedArgs.cs" />
     <Compile Include="UI\_Controls\GorgonFolderBrowser.cs">
@@ -141,6 +141,18 @@
     </Compile>
     <Compile Include="UI\_Extensions\GorgonControlExtensions.cs" />
     <Compile Include="UI\_Extensions\GorgonListViewExtensions.cs" />
+    <Compile Include="UI\_Forms\FormProgress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Forms\FormProgress.Designer.cs">
+      <DependentUpon>FormProgress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Forms\FormWait.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Forms\FormWait.Designer.cs">
+      <DependentUpon>FormWait.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\_Forms\_Internal\BaseDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -207,17 +219,20 @@
     <EmbeddedResource Include="UI\_Controls\GorgonAlignmentPicker.resx">
       <DependentUpon>GorgonAlignmentPicker.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Controls\GorgonProgressScreenPanel.resx">
+      <DependentUpon>GorgonProgressScreenPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\_Controls\GorgonSearchBox.resx">
       <DependentUpon>GorgonSearchBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Controls\GorgonCueTextBox.resx">
       <DependentUpon>GorgonCueTextBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\_Controls\_Internal\ProgressPanel.resx">
-      <DependentUpon>ProgressPanel.cs</DependentUpon>
+    <EmbeddedResource Include="UI\_Controls\GorgonProgressPanel.resx">
+      <DependentUpon>GorgonProgressPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\_Controls\_Internal\WaitMessagePanel.resx">
-      <DependentUpon>WaitMessagePanel.cs</DependentUpon>
+    <EmbeddedResource Include="UI\_Controls\GorgonWaitMessagePanel.resx">
+      <DependentUpon>GorgonWaitMessagePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Controls\GorgonFolderBrowser.resx">
       <DependentUpon>GorgonFolderBrowser.cs</DependentUpon>
@@ -237,6 +252,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Controls\GorgonOverlayPanel.resx">
       <DependentUpon>GorgonOverlayPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Forms\FormProgress.resx">
+      <DependentUpon>FormProgress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Forms\FormWait.resx">
+      <DependentUpon>FormWait.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Forms\_Internal\BaseDialog.resx">
       <DependentUpon>BaseDialog.cs</DependentUpon>

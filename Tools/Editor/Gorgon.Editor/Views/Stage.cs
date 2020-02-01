@@ -78,10 +78,10 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
-        /// Property to set or return whether the application can save as at this time.
+        /// Property to set or return whether the application can save a packed file as at this time.
         /// </summary>
         [Browsable(false)]
-        public bool CanSaveAs
+        public bool CanSavePackedFile
         {
             get => ButtonSaveAs.Enabled;
             set => ButtonSaveAs.Enabled = value;

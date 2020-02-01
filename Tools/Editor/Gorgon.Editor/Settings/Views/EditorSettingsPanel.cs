@@ -40,7 +40,7 @@ namespace Gorgon.Editor.Views
     /// The view used to alter settings for the application.
     /// </summary>
     internal partial class EditorSettingsPanel
-        : EditorBaseControl, IDataContext<IEditorSettingsVm>
+        : EditorBaseControl, IDataContext<IEditorSettings>
     {
         #region Variables.
         // The lookup used to locate categories.
@@ -52,7 +52,7 @@ namespace Gorgon.Editor.Views
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public IEditorSettingsVm DataContext
+        public IEditorSettings DataContext
         {
             get;
             private set;
@@ -91,7 +91,7 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(IEditorSettingsVm.CurrentCategory):
+                case nameof(IEditorSettings.CurrentCategory):
                     if (!_panelLookup.TryGetValue(DataContext.CurrentCategory.ID.ToString(), out SettingsBaseControl value))
                     {
                         break;
@@ -113,7 +113,7 @@ namespace Gorgon.Editor.Views
         /// Function to register the settings panels from plug ins.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void RegisterPlugInSettingsPanels(IEditorSettingsVm dataContext)
+        private void RegisterPlugInSettingsPanels(IEditorSettings dataContext)
         {
             SplitSettingsNav.SuspendLayout();
 
@@ -126,7 +126,7 @@ namespace Gorgon.Editor.Views
                     return;
                 }
 
-                foreach (ISettingsCategoryViewModel category in dataContext.Categories)
+                foreach (ISettingsCategory category in dataContext.Categories)
                 {
                     if (!ViewFactory.IsRegistered(category))
                     {
@@ -165,7 +165,7 @@ namespace Gorgon.Editor.Views
         /// <param name="clearPanelLookup"><b>true</b> to clear the panel look up, <b>false</b> to leave it alone.</param>
         private void ClearExtraPanels(bool clearPanelLookup)
         {
-            var controls = new List<SettingsBaseControl>(SplitSettingsNav.Panel2.Controls.OfType<SettingsBaseControl>().Where(item => item != PlugInsPanel_00000000000000000000000000000000));
+            var controls = new List<SettingsBaseControl>(SplitSettingsNav.Panel2.Controls.OfType<SettingsBaseControl>().Where(item => item != PlugInList));
 
             ListCategories.SelectedIndex = 0;
 
@@ -220,7 +220,7 @@ namespace Gorgon.Editor.Views
         /// Function to initialize the control based on the data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void InitializeFromDataContext(IEditorSettingsVm dataContext)
+        private void InitializeFromDataContext(IEditorSettings dataContext)
         {
             if (dataContext == null)
             {
@@ -234,7 +234,7 @@ namespace Gorgon.Editor.Views
 
             for (int i = 0; i < dataContext.Categories.Count; ++i)
             {
-                ISettingsCategoryViewModel category = dataContext.Categories[i];
+                ISettingsCategory category = dataContext.Categories[i];
 
                 string id = category.ID.ToString();
                 if ((!_panelLookup.ContainsKey(id)) || (_categoryLookup.ContainsKey(category.Name)))
@@ -263,9 +263,9 @@ namespace Gorgon.Editor.Views
         /// Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.
         /// </para>
         /// </remarks>
-        public void SetDataContext(IEditorSettingsVm dataContext)
+        public void SetDataContext(IEditorSettings dataContext)
         {
-            PlugInsPanel_00000000000000000000000000000000.SetDataContext(dataContext?.PlugInsList);
+            PlugInList.SetDataContext(dataContext?.PlugInsList);
 
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
@@ -286,8 +286,8 @@ namespace Gorgon.Editor.Views
             InitializeComponent();
 
             // Register our fixed panel(s).
-            _panelLookup[PlugInsPanel_00000000000000000000000000000000.PanelID] = PlugInsPanel_00000000000000000000000000000000;
-            _categoryLookup[ListCategories.Items[0].ToString()] = PlugInsPanel_00000000000000000000000000000000.PanelID;
+            _panelLookup[PlugInList.PanelID] = PlugInList;
+            _categoryLookup[ListCategories.Items[0].ToString()] = PlugInList.PanelID;
         }
         #endregion
     }

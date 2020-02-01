@@ -83,6 +83,16 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap center_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap check_8x8 {
             get {
                 object obj = ResourceManager.GetObject("check_8x8", resourceCulture);
@@ -231,6 +241,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error canceling the operation.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANCEL {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANCEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find a view factory registered to the type &apos;{0}&apos;..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY {
@@ -267,6 +288,24 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CONTENT_ALREADY_EXISTS {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CONTENT_ALREADY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The content renderer &apos;{0}&apos; already exists..
+        /// </summary>
+        internal static string GOREDIT_ERR_CONTENT_RENDERER_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CONTENT_RENDERER_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no content renderer with the name &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_CONTENT_RENDERER_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CONTENT_RENDERER_NOT_FOUND", resourceCulture);
             }
         }
         

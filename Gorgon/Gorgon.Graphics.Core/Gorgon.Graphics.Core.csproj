@@ -26,7 +26,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <LangVersion>7.3</LangVersion>
+    <langversion>7.3</langversion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,7 +40,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>7.3</LangVersion>
+    <langversion>7.3</langversion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>

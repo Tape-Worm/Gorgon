@@ -30,7 +30,6 @@ using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.ImageEditor

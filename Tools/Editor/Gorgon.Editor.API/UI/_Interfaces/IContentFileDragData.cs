@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using Gorgon.Editor.Content;
+using System.Collections.Generic;
 
 namespace Gorgon.Editor.UI
 {
@@ -34,9 +34,9 @@ namespace Gorgon.Editor.UI
     public interface IContentFileDragData
     {
         /// <summary>
-        /// Property to return the content file being dragged and dropped.
+        /// Property to return the paths to the content files being dragged and dropped.
         /// </summary>
-        OLDE_IContentFile File
+        IReadOnlyList<string> FilePaths
         {
             get;
         }

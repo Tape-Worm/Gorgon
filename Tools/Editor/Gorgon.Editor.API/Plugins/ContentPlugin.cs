@@ -34,10 +34,8 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 using Gorgon.UI;
 
@@ -88,7 +86,7 @@ namespace Gorgon.Editor.PlugIns
         /// Property to return the file system used to hold temporary file data.
         /// </summary>
         /// <remarks>
-        /// Importer plug ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
+        /// Plug ins can use this to write temporary working data, which is deleted after the project unloads.
         /// </remarks>
         protected IGorgonFileSystemWriter<Stream> TemporaryFileSystem
         {
@@ -143,25 +141,6 @@ namespace Gorgon.Editor.PlugIns
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to return the file system used for writing out temporary data.
-        /// </summary>
-        /// <param name="tempDirectory">The physical directory to store the temporary data into.</param>
-        /// <returns>A new writable file system for writing temporary data into.</returns>
-        private IGorgonFileSystemWriter<Stream> GetScratchArea(DirectoryInfo tempDirectory)
-        {
-            string scratchPath = Path.Combine(tempDirectory.FullName, "Content", GetType().FullName).FormatDirectory(Path.DirectorySeparatorChar);
-
-            if (!Directory.Exists(scratchPath))
-            {
-                Directory.CreateDirectory(scratchPath);
-            }
-
-            var scratchArea = new GorgonFileSystem(HostServices.Log);
-            scratchArea.Mount(scratchPath);
-            return new GorgonFileSystemWriter(scratchArea, scratchArea, scratchPath);
-        }
-
         /// <summary>
         /// Function to provide initialization for the plugin.
         /// </summary>
@@ -333,9 +312,10 @@ namespace Gorgon.Editor.PlugIns
                 throw new ArgumentNullException(nameof(project));
             }
 
-            IGorgonFileSystemWriter<Stream> scratchWriter = GetScratchArea(project.TempDirectory);
+            // Ensure the temp directory contents are up to date.
+            TemporaryFileSystem.FileSystem.Refresh();
 
-            IEditorContent content = await OnOpenContentAsync(file, fileManager, scratchWriter, undoService);
+            IEditorContent content = await OnOpenContentAsync(file, fileManager, TemporaryFileSystem, undoService);
 
             if (content == null)
             {
@@ -353,15 +333,11 @@ namespace Gorgon.Editor.PlugIns
         /// </summary>
         public void Shutdown()
         {
-            HostServices = null;
-            
-            int initalizedFlag = Interlocked.Exchange(ref _initialized, 0);
-
-            if (initalizedFlag == 0)
+            if (Interlocked.Exchange(ref _initialized, 0) == 0)
             {
                 return;
             }
-                        
+
             OnShutdown();
             ProjectClosed();
         }
@@ -386,6 +362,7 @@ namespace Gorgon.Editor.PlugIns
             OnProjectClosed();
             ContentFileManager = null;
             TemporaryFileSystem = null;
+            HostServices = null;
         }
 
         /// <summary>

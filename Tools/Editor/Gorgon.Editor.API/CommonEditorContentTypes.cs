@@ -38,7 +38,6 @@ namespace Gorgon.Editor
     /// </remarks>
     public static class CommonEditorContentTypes
     {
-
         /// <summary>
         /// The common type name for sprite data.
         /// </summary>

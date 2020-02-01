@@ -24,11 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.UI;
@@ -140,6 +135,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return whether the file is open or not.
         /// </summary>
         bool IsOpen
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return whether the file is changed or not.
+        /// </summary>
+        bool IsChanged
         {
             get;
         }

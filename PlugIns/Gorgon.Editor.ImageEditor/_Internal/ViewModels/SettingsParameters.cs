@@ -25,11 +25,9 @@
 #endregion
 
 using System;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.UI.ViewModels;
+using Gorgon.Editor.UI;
 using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.ImageEditor
@@ -38,13 +36,8 @@ namespace Gorgon.Editor.ImageEditor
     /// Parameters to pass to the <see cref="ISettings"/> view model.
     /// </summary>
     internal class SettingsParameters
-        : ViewModelInjection, IHostServices
+        : SettingsCategoryViewModelParameters
     {
-        #region Variables.
-        // Services from the host/
-        private readonly IHostContentServices _hostServices;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the settings for the image editor plugin.
@@ -53,11 +46,6 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
         }
-
-        /// <summary>
-        /// Property to return the content plug in service.
-        /// </summary>
-        public IContentPlugInService ContentPlugInService => _hostServices.ContentPlugInService;
 
         /// <summary>
         /// Property to return the codecs loaded into the system.
@@ -82,18 +70,6 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
         }
-
-        /// <summary>Property to return the service that allows a conetnt plug in to access tool content plug ins.</summary>
-        public IToolPlugInService ToolPlugInService => _hostServices.ToolPlugInService;
-
-        /// <summary>Property to return the service used to browse through directories on the file system.</summary>
-        public IFileSystemFolderBrowseService FolderBrowser => _hostServices.FolderBrowser;
-
-        /// <summary>Property to return the clipboard handler for the view model.</summary>
-        IClipboardService IHostServices.Clipboard => _hostServices.Clipboard;
-
-        /// <summary>Property to return the graphics and the 2D renderer used by the host application.</summary>
-        public IGraphicsContext GraphicsContext => _hostServices.GraphicsContext;
         #endregion
 
         #region Constructor/Finalizer.
@@ -109,8 +85,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
-            CodecFileDialog = codecDialog ?? throw new ArgumentNullException(nameof(codecDialog));
-            _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
+            CodecFileDialog = codecDialog ?? throw new ArgumentNullException(nameof(codecDialog));            
             PlugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));            
         }
         #endregion

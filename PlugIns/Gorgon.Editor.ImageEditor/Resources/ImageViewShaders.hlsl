@@ -4,7 +4,7 @@
 // Our default texture and sampler.
 Texture2DArray _gorgonTexture2DArray : register(t0);
 TextureCube _gorgonTextureVolume : register(t0);
-Texture3D _gorgonTexture3D : register(t1);
+Texture3D _gorgonTexture3D : register(t1);			// Store this in slot 1 so that we can render a slice using our 2D renderer (which only accepts 2D views)..
 SamplerState _gorgon3DSampler : register(s1);
 
 // The texture parameters

@@ -26,16 +26,8 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Gorgon.Collections;
-using Gorgon.Core;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Properties;
-using Gorgon.Editor.Services;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
 
@@ -45,7 +37,7 @@ namespace Gorgon.Editor.ViewModels
     /// A node for a file system directory.
     /// </summary>
     internal class Directory
-        : ViewModelBase<DirectoryParameters>, IDirectory
+        : ViewModelBase<DirectoryParameters, IHostServices>, IDirectory
     {
         #region Variables.
         // The directory wrapped by the view model.
@@ -54,8 +46,6 @@ namespace Gorgon.Editor.ViewModels
         private string _physicalPath;
         // The parent directory for this directory.
         private IDirectory _parent;
-        // The service used to display messages.
-        private IMessageDisplayService _messages;
         // The metadata for the directory.
         private ProjectItemMetadata _metadata;
         // Flag to indicate whether the directory is marked for a cut operation.
@@ -225,7 +215,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messages.ShowError(ex);
+                HostServices.MessageDisplay.ShowError(ex);
             }
         }
 
@@ -266,7 +256,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messages.ShowError(ex);
+                HostServices.MessageDisplay.ShowError(ex);
             }
         }
 
@@ -278,7 +268,6 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(DirectoryParameters injectionParameters)
         {
             _directory = injectionParameters.VirtualDirectory;
-            _messages = injectionParameters.MessageDisplay;
             Parent = injectionParameters.Parent;
             PhysicalPath = injectionParameters.PhysicalPath;
         }

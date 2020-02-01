@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;

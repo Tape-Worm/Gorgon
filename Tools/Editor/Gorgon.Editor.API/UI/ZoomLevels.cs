@@ -52,31 +52,31 @@ namespace Gorgon.Editor.UI
         /// </summary>
         Percent50 = 4,
         /// <summary>
-        /// Shrink to 100% of normal size.
+        /// Set to full size.
         /// </summary>
         Percent100 = 5,
         /// <summary>
-        /// Shrink to 200% of normal size.
+        /// Expand to 200% of normal size.
         /// </summary>
         Percent200 = 6,
         /// <summary>
-        /// Shrink to 400% of normal size.
+        /// Expand to 400% of normal size.
         /// </summary>
         Percent400 = 7,
         /// <summary>
-        /// Shrink to 800% of normal size.
+        /// Expand to 800% of normal size.
         /// </summary>
         Percent800 = 8,
         /// <summary>
-        /// Shrink to 1600% of normal size.
+        /// Expand to 1600% of normal size.
         /// </summary>
         Percent1600 = 9,
         /// <summary>
-        /// Shrink to 3200% of normal size.
+        /// Expand to 3200% of normal size.
         /// </summary>
         Percent3200 = 10,
         /// <summary>
-        /// Shrink to 6400% of normal size.
+        /// Expand to 6400% of normal size.
         /// </summary>
         Percent6400 = 11
     }

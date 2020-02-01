@@ -26,7 +26,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Gorgon.Graphics.Fonts.XML</DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -38,7 +38,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\Gorgon.Graphics.Fonts.XML</DocumentationFile>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>

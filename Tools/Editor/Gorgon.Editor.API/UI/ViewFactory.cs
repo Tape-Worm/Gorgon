@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor.UI
@@ -36,6 +37,11 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// A factory used to create views based on view model types.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When developing a plug in with a UI, developers have to register their views and view models with the system so that the host application can build up the UI and assign it to the data context. 
+    /// </para>
+    /// </remarks>
     public static class ViewFactory
     {
         #region Variables.
@@ -48,11 +54,32 @@ namespace Gorgon.Editor.UI
         /// <typeparam name="T">The type of view model. Must implement <see cref="IViewModel"/>.</typeparam>
         /// <param name="constructor">The function that will create and return the view.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="constructor"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Content plug in developers must call this so that the UI will be created by the host application. Developers will pass in a function to the <paramref name="constructor"/> that will be used to 
+        /// create the view object (must inherit from <see cref="Control"/>). Typically, this is just a call to <c>new</c> on the object type, although other initialization steps may be passed into the 
+        /// callback function.
+        /// </para>
+        /// <para>
+        /// For best results, this should be called as early in the plug in initialization cycle as possible, typically in the <see cref="ContentPlugIn.OnInitialize"/> method (if the plug in has such a 
+        /// method).
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="ContentPlugIn"/>
+        /// <seealso cref="ToolPlugIn"/>
         public static void Register<T>(Func<Control> constructor)
             where T : IViewModel => _viewBuilders[typeof(T).AssemblyQualifiedName] = constructor ?? throw new ArgumentNullException(nameof(constructor));
 
         /// <summary>Function to unregisters the specified view model type.</summary>
         /// <typeparam name="T">The type of view model. Must implement <see cref="IViewModel"/>.</typeparam>
+        /// <remarks>
+        /// <para>
+        /// When the plug in is shut down (typically when the plug in UI is closed), this method should be called to remove the registration. This is typically done in the 
+        /// <see cref="ContentPlugIn.OnShutdown"/> method.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="ContentPlugIn"/>
+        /// <seealso cref="ToolPlugIn"/>
         public static void Unregister<T>()
             where T : IViewModel => _viewBuilders.Remove(typeof(T).AssemblyQualifiedName);
 
@@ -61,6 +88,12 @@ namespace Gorgon.Editor.UI
         /// </summary>
         /// <param name="viewModel">The view model to assign.</param>
         /// <param name="control">The control that will take the view model.</param>
+        /// <remarks>
+        /// <para>
+        /// This will assign a <paramref name="viewModel"/> to the given <paramref name="control"/> (if the control implements <see cref="IDataContext{T}"/>). Users should not need to call this method as 
+        /// it will be done by the editor during plug in UI initialization.
+        /// </para>
+        /// </remarks>
         public static void AssignViewModel(IViewModel viewModel, Control control)
         {
             if (viewModel == null)
@@ -120,6 +153,11 @@ namespace Gorgon.Editor.UI
         /// <param name="viewModel">The view model that is associated with the view.</param>
         /// <returns>The view for the view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="viewModel"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method creates a view registered to a <paramref name="viewModel"/>. Users should never need to call this method, the editor will build the view on behalf of the plug in.
+        /// </para>
+        /// </remarks>
         public static T CreateView<T>(IViewModel viewModel)
             where T : Control
         {

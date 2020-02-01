@@ -36,7 +36,13 @@ namespace Gorgon.Editor.UI.Controls
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Content plug in developers that require a sub panel to display properties, settings, etc... must inherit this control type on their <see cref="UserControl"/>.
+    /// This is a base UI element that allows content plug ins to display a settings/properties panel for a given operation while editing content. Content plug in developers must inherit this type to make 
+    /// their content operation properties/settings visible to the user.
+    /// </para>
+    /// <para>
+    /// One example of using this would be defining a color for the content. The developer would inherit this control type, and then place a color picker on the control. Then a view model should be created 
+    /// for the control (the view must implement <see cref="IDataContext{T}"/>), and then the content view model would receive the updated color value when the OK button is clicked by providing an OK command 
+    /// to the panel view model.
     /// </para>
     /// </remarks>
     public partial class EditorSubPanelCommon

@@ -53,11 +53,7 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
         /// </remarks>
-        protected override void OnInitialize()
-        {
-            // Compile our blur shader.
-            _grayScaleShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGrayScale");
-        }
+        protected override void OnInitialize() => _grayScaleShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGrayScale");
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources

@@ -173,6 +173,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cancel_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap center_16x16 {
             get {
                 object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
@@ -253,6 +263,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap gauss_blur_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("gauss_blur_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap gauss_blur_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("gauss_blur_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap generate_mip_maps_16x16 {
             get {
                 object obj = ResourceManager.GetObject("generate_mip_maps_16x16", resourceCulture);
@@ -276,6 +306,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_CAPTION_EXPORT_IMAGE {
             get {
                 return ResourceManager.GetString("GORIMG_CAPTION_EXPORT_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select images for import into {0}....
+        /// </summary>
+        internal static string GORIMG_CAPTION_IMG_PICKER {
+            get {
+                return ResourceManager.GetString("GORIMG_CAPTION_IMG_PICKER", resourceCulture);
             }
         }
         
@@ -458,6 +497,17 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error opening the image picker.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_CANNOT_OPEN_IMG_PICKER {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CANNOT_OPEN_IMG_PICKER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while trying to remove the selected codec(s).
         ///
         ///Please try again..
@@ -535,6 +585,17 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This image is using a compressed format [{0}]. Compressed formats require that the image width and height be a multiple of 4.  
+        ///
+        ///The request image size ({1}x{2}) is not a multiple of 4..
+        /// </summary>
+        internal static string GORIMG_ERR_COMPRESSED_RESIZE_MULTIPLE_4 {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_COMPRESSED_RESIZE_MULTIPLE_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error converting the format to [{0}].
         ///
         ///Please try again..
@@ -580,6 +641,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_IMAGE_INFO {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_IMAGE_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error importing the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORIMG_ERR_IMPORT_FAIL {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_IMPORT_FAIL", resourceCulture);
             }
         }
         
@@ -740,6 +810,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Array Index:.
+        /// </summary>
+        internal static string GORIMG_TEXT_ARRAY_INDEX {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Array index count:.
         /// </summary>
         internal static string GORIMG_TEXT_ARRAY_INDEX_COUNT {
@@ -776,6 +855,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Depth Slice:.
+        /// </summary>
+        internal static string GORIMG_TEXT_DEPTH_SLICE {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_DEPTH_SLICE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Depth slice count:.
         /// </summary>
         internal static string GORIMG_TEXT_DEPTH_SLICE_COUNT {
@@ -808,6 +896,33 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_IMAGE_SIZE_DETAILS {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_IMAGE_SIZE_DETAILS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drag an image into the panel below to import into {0}..
+        /// </summary>
+        internal static string GORIMG_TEXT_IMG_PICKER_INSTRUCTION {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_IMG_PICKER_INSTRUCTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importing....
+        /// </summary>
+        internal static string GORIMG_TEXT_IMPORTING {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_IMPORTING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading Image(s)....
+        /// </summary>
+        internal static string GORIMG_TEXT_LOADING_IMAGES {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_LOADING_IMAGES", resourceCulture);
             }
         }
         
@@ -893,6 +1008,28 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The source image &apos;{0}&apos; has multiple array indices and/or multiple mip map levels.
+        ///
+        ///Please select an array index to import from the source image..
+        /// </summary>
+        internal static string GORIMG_TEXT_SRC_IMG_PICKER_DESC_ARRAY {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_SRC_IMG_PICKER_DESC_ARRAY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The source image &apos;{0}&apos; has multiple depth slices and/or multiple mip map levels.
+        ///
+        ///Please select an depth slice to import from the source image..
+        /// </summary>
+        internal static string GORIMG_TEXT_SRC_IMG_PICKER_DESC_DEPTH {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_SRC_IMG_PICKER_DESC_DEPTH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Undoing previous action....
         /// </summary>
         internal static string GORIMG_TEXT_UNDO {
@@ -907,6 +1044,31 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_ZOOM_BUTTON {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_ZOOM_BUTTON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image Type: {0}
+        ///Size: {1}x{2}
+        ///Format: {3}
+        ///Array Count: {4}
+        ///Mip Count: {5}.
+        /// </summary>
+        internal static string GORIMG_TIP_IMAGE2D {
+            get {
+                return ResourceManager.GetString("GORIMG_TIP_IMAGE2D", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image Type: {0}
+        ///Size: {1}x{2}x{3}
+        ///Format: {4}
+        ///Mip Count: {5}.
+        /// </summary>
+        internal static string GORIMG_TIP_IMAGE3D {
+            get {
+                return ResourceManager.GetString("GORIMG_TIP_IMAGE3D", resourceCulture);
             }
         }
         
@@ -943,6 +1105,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_UNDO_DESC_IMPORT {
             get {
                 return ResourceManager.GetString("GORIMG_UNDO_DESC_IMPORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import files..
+        /// </summary>
+        internal static string GORIMG_UNDO_DESC_IMPORT_SOURCE {
+            get {
+                return ResourceManager.GetString("GORIMG_UNDO_DESC_IMPORT_SOURCE", resourceCulture);
             }
         }
         
@@ -997,6 +1168,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap image_effect_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("image_effect_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap image_effect_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("image_effect_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap image_size_16x16 {
             get {
                 object obj = ResourceManager.GetObject("image_size_16x16", resourceCulture);
@@ -1021,19 +1212,14 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         ///// Our default texture and sampler.
         ///Texture2DArray _gorgonTexture2DArray : register(t0);
         ///TextureCube _gorgonTextureVolume : register(t0);
-        ///Texture3D _gorgonTexture3D : register(t1);
+        ///Texture3D _gorgonTexture3D : register(t1);			// Store this in slot 1 so that we can render a slice using our 2D renderer (which only accepts 2D views)..
         ///SamplerState _gorgon3DSampler : register(s1);
         ///
         ///// The texture parameters
         ///cbuffer GorgonTextureParams : register(b1)
         ///{
         ///	// Depth slice to view.
-        ///	float depthSlice;
-        ///	// Mip level to view.
-        ///	float mipLevel;
-        ///};
-        ///
-        ///// Pixel shader to view a 2D texture array. [rest of string was truncated]&quot;;.
+        ///	 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ImageViewShaders {
             get {
@@ -1077,6 +1263,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap left_20x20 {
             get {
                 object obj = ResourceManager.GetObject("left_20x20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap no_thumb_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("no_thumb_64x64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

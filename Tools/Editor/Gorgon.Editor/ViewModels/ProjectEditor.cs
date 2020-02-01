@@ -27,9 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
@@ -41,6 +41,7 @@ using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.IO;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.ViewModels
@@ -64,7 +65,7 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for the project editor interface.
     /// </summary>
     internal class ProjectEditor
-        : ViewModelBase<ProjectEditorParameters>, IProjectEditor
+        : ViewModelBase<ProjectEditorParameters, IHostContentServices>, IProjectEditor
     {
         #region Constants.        
         /// <summary>
@@ -80,32 +81,26 @@ namespace Gorgon.Editor.ViewModels
         private ViewModelFactory _viewModelFactory;
         // The project data for the view model.
         private IProject _projectData;
-        // The message display service.
-        private IMessageDisplayService _messageService;
-        // The busy state service.
-        private IBusyStateService _busyService;
         // The file explorer view model.
         private IFileExplorer _fileExplorer;
-        // The current clipboard handler context.
-        private IClipboardHandler _clipboardContext;
         // The application project manager.
         private ProjectManager _projectManager;
-        // The content plugin service.
-        private IContentPlugInService _contentPlugIns;
         // The currently active content.
         private IEditorContent _currentContent;
-        // The title for the project.
-        private string _projectTitle = Resources.GOREDIT_NEW_PROJECT;
         // The content previewer view model.
-        private IContentPreviewVm _contentPreviewer;
+        private IContentPreview _contentPreviewer;
         // The file manager used to manage content through content plug ins.
         private IContentFileManager _contentFileManager;
-        // The list of tools available to the application.
-        private IToolPlugInService _toolPlugIns;
         // The list of tool buttons.
         private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The settings for the application.
-        private EditorSettings _settings;
+        private Editor.EditorSettings _settings;
+        // The project save dialog service.
+        private EditorFileSaveDialogService _saveDialog;
+        // The list of plug ins that can create content.
+        private IReadOnlyList<IContentPlugInMetadata> _contentCreators;
+        // The current clipboard context.
+        private IClipboardHandler _clipboardContext;
         #endregion
 
         #region Properties.
@@ -113,6 +108,25 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the available tool plug in button definitions for the application.
         /// </summary>
         public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons => _toolButtons;
+
+        /// <summary>
+        /// Property to set or return the current clipboard context depending on content.
+        /// </summary>
+        public IClipboardHandler ClipboardContext
+        {
+            get => _clipboardContext;
+            set
+            {
+                if (_clipboardContext == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _clipboardContext = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>Property to return the current content for the project.</summary>
         public IEditorContent CurrentContent
@@ -127,10 +141,8 @@ namespace Gorgon.Editor.ViewModels
 
                 if (_currentContent != null)
                 {
-                    _currentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
                     _currentContent.PropertyChanging -= CurrentContent_PropertyChanging;
                     _currentContent.PropertyChanged -= CurrentContent_PropertyChanged;
-                    _currentContent.CloseContent -= CurrentContent_CloseContent;
                     _currentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
                     _currentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
                     _currentContent.ProgressUpdated -= FileExplorer_ProgressUpdated;
@@ -149,8 +161,6 @@ namespace Gorgon.Editor.ViewModels
                     _currentContent.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
                     _currentContent.ProgressUpdated += FileExplorer_ProgressUpdated;
                     _currentContent.ProgressDeactivated += FileExplorer_ProgressDeactivated;
-                    _currentContent.CloseContent += CurrentContent_CloseContent;
-                    _currentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
                 }
 
                 NotifyPropertyChanged(nameof(CommandContext));
@@ -158,28 +168,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return the active clipboard handler context.
-        /// </summary>
-        public IClipboardHandler ClipboardContext
-        {
-            get => _clipboardContext;
-            set
-            {
-                if (_clipboardContext == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _clipboardContext = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         /// Property to set or return the content previewer.
         /// </summary>
-        public IContentPreviewVm ContentPreviewer
+        public IContentPreview ContentPreviewer
         {
             get => _contentPreviewer;
             private set
@@ -244,7 +235,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the title for the project.
         /// </summary>
-        public string ProjectTitle => _projectTitle;
+        public string ProjectTitle { get; private set; } = Resources.GOREDIT_NEW_PROJECT;
 
         /// <summary>Property to return the current command context.</summary>
         public string CommandContext => CurrentContent?.CommandContext ?? string.Empty;
@@ -253,6 +244,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the command to execute when the application is closing.
         /// </summary>
         public IEditorAsyncCommand<CancelEventArgs> BeforeCloseCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to execute after the project is closed.
+        /// </summary>
+        public IEditorCommand<object> AfterCloseCommand
         {
             get;
         }
@@ -311,24 +310,35 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
+                void ResetContentPreviewer()
+                {
+                    if ((ContentPreviewer.ResetPreviewCommand != null) && (ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
+                    {
+                        ContentPreviewer.ResetPreviewCommand.Execute(null);
+                    }
+                }
+
                 try
                 {
+                    if ((FileExplorer == null) || (FileExplorer.SelectedFiles.Count == 0))
+                    {
+                        ResetContentPreviewer();
+                        return;
+                    }
+
                     if (value)
                     {
-                        RefreshFilePreview(FileExplorer?.SelectedFiles[0] as IContentFile);
+                        RefreshFilePreview(FileExplorer.SelectedFiles[0]?.FullPath);
                     }
                     else
-                    {
-                        if ((ContentPreviewer.ResetPreviewCommand != null) && (ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
-                        {
-                            ContentPreviewer.ResetPreviewCommand.Execute(null);
-                        }
+                    {                            
+                        ResetContentPreviewer();
                     }
                 }
                 catch(Exception ex)
                 {
-                    Log.Print("Error loading preview", LoggingLevel.Simple);
-                    Log.LogException(ex);
+                    HostServices.Log.Print("Error loading preview", LoggingLevel.Simple);
+                    HostServices.Log.LogException(ex);
                 }
             }
         }
@@ -371,6 +381,30 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Property to return the command used to save the project to a packed file.
+        /// </summary>
+        public IEditorAsyncCommand<CancelEventArgs> SaveProjectToPackFileCommand
+        {
+            get;            
+        }
+
+
+        /// <summary>
+        /// Property to return the command used to create content.
+        /// </summary>
+        public IEditorAsyncCommand<Guid> CreateContentCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command executed when the currently active content is closed.
+        /// </summary>
+        public IEditorCommand<object> ContentClosedCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -420,6 +454,16 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to reset the content property and persist the project metadata.
+        /// </summary>
+        private void ResetContent()
+        {
+            SaveProjectMetadata();
+            CurrentContent?.OnUnload();
+            CurrentContent = null;
+        }
+
+        /// <summary>
         /// Function to rebuild the list of sorted ribbon buttons.
         /// </summary>
         private void GetTools()
@@ -428,7 +472,7 @@ namespace Gorgon.Editor.ViewModels
 
             var result = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
 
-            foreach (KeyValuePair<string, ToolPlugIn> plugin in _toolPlugIns.PlugIns)
+            foreach (KeyValuePair<string, ToolPlugIn> plugin in HostServices.ToolPlugInService.PlugIns)
             {
                 IToolPlugInRibbonButton button = plugin.Value.GetToolButton(_projectData, _contentFileManager);
                 button.ValidateButton();
@@ -459,22 +503,28 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="e">The event parameters.</param>
         private void FileExplorer_FileSystemUpdated(object sender, EventArgs e) => DoSaveProjectMetadata();
 
-        /// <summary>Handles the CloseContent event of the CurrentContent control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void CurrentContent_CloseContent(object sender, EventArgs e)
+        /// <summary>
+        /// Function to perform actions after the current content is closed.
+        /// </summary>
+        private void DoContentClosed()
         {
+            HostServices.BusyService.SetBusy();
             try
             {
                 if (CurrentContent?.File != null)
                 {
-                    RefreshFilePreview(CurrentContent.File);
+                    RefreshFilePreview(CurrentContent.File.Path);
                 }
-                CurrentContent = null;
+
+                ResetContent();
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CLOSING_CONTENT);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_CLOSING_CONTENT);
+            }
+            finally
+            {
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -513,12 +563,6 @@ namespace Gorgon.Editor.ViewModels
         {
             switch (e.PropertyName)
             {
-                case nameof(IEditorContent.File):
-                    if (CurrentContent.File != null)
-                    {
-                        CurrentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
-                    }
-                    break;
                 case nameof(IEditorContent.CommandContext):
                     NotifyPropertyChanging(nameof(CommandContext));
                     break;
@@ -536,13 +580,7 @@ namespace Gorgon.Editor.ViewModels
                     if (CurrentContent.ContentState == ContentState.Unmodified)
                     {
                         // If the state turns to unmodified, then refresh the thumbnail.
-                        RefreshFilePreview(CurrentContent.File);                            
-                    }
-                    break;
-                case nameof(IEditorContent.File):
-                    if (CurrentContent.File != null)
-                    {
-                        CurrentContent.File.DependenciesUpdated += ContentFile_DependenciesUpdated;
+                        RefreshFilePreview(CurrentContent.File.Path);                            
                     }
                     break;
                 case nameof(IEditorContent.CommandContext):
@@ -567,8 +605,6 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
             FileExplorer.ProgressUpdated += FileExplorer_ProgressUpdated;
             FileExplorer.ProgressDeactivated += FileExplorer_ProgressDeactivated;
-#warning FIX THIS - Convert to a command that gets called when the file system is updated.
-            //FileExplorer.FileSystemChanged += FileExplorer_FileSystemChanged;
         }
 
         /// <summary>
@@ -578,11 +614,6 @@ namespace Gorgon.Editor.ViewModels
         {
             if (_currentContent != null)
             {
-                if (CurrentContent.File != null)
-                {
-                    CurrentContent.File.DependenciesUpdated -= ContentFile_DependenciesUpdated;
-                }
-                CurrentContent.CloseContent -= CurrentContent_CloseContent;
                 CurrentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
                 CurrentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
                 CurrentContent.ProgressUpdated -= FileExplorer_ProgressUpdated;
@@ -598,33 +629,24 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
             FileExplorer.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
             FileExplorer.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
-#warning FIX THIS - Convert to a command that gets called when the file system is updated.
-            //FileExplorer.FileSystemChanged -= FileExplorer_FileSystemChanged;
         }
 
         /// <summary>
         /// Function to force a refresh of the specified file preview.
         /// </summary>
-        /// <param name="file">The file to refresh.</param>
-        private void RefreshFilePreview(IContentFile file)
+        /// <param name="filePath">The path to the file to refresh.</param>
+        private void RefreshFilePreview(string filePath)
         {
             if (!ShowContentPreview)
             {
                 return;
             }
 
-            if ((ContentPreviewer.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(file)))
+            if ((ContentPreviewer.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
             {
-                ContentPreviewer.RefreshPreviewCommand.Execute(file);
+                ContentPreviewer.RefreshPreviewCommand.Execute(filePath);
             }
         }
-
-        /// <summary>
-        /// Function to determine whether the content can be opened or not.
-        /// </summary>
-        /// <param name="file">The node being opened.</param>
-        /// <returns><b>true</b> if the node can be opened, <b>false</b> if not.</returns>
-        private bool CanOpenContent(IContentFile file) => file?.Metadata?.ContentMetadata != null;
 
         /// <summary>
         /// Function to persist the changed content (if any).
@@ -640,7 +662,7 @@ namespace Gorgon.Editor.ViewModels
                 return true;
             }
 
-            MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name), allowCancel: true);
+            MessageResponse response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name), allowCancel: true);
 
             switch (response)
             {
@@ -650,7 +672,7 @@ namespace Gorgon.Editor.ViewModels
                         await CurrentContent.SaveContentCommand.ExecuteAsync(saveReason);
 
                         // Refresh the preview after we've saved.
-                        RefreshFilePreview(CurrentContent.File);
+                        RefreshFilePreview(CurrentContent.File.Path);
                     }
 
                     break;
@@ -666,7 +688,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         private void DoSaveProjectMetadata()
         {
-            _busyService.SetBusy();
+            HostServices.BusyService.SetBusy();
 
             try
             {
@@ -674,12 +696,12 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                Log.Print("[ERROR] Could not save the project metadata due to an exception!!", LoggingLevel.Simple);
-                Log.LogException(ex);
+                HostServices.Log.Print("[ERROR] Could not save the project metadata due to an exception!!", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
             }
             finally
             {
-                _busyService.SetIdle();
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -700,106 +722,344 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                Log.Print("Error closing the application.", LoggingLevel.Simple);
-                Log.LogException(ex);
+                HostServices.Log.Print("Error closing the application.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
             }
+        }
+
+        /// <summary>
+        /// Function called after the project is closed.
+        /// </summary>
+        private void DoAfterClose()
+        {
+            try
+            {
+                _projectManager.CloseProject(_projectData);
+            }
+            catch (Exception ex)
+            {
+                HostServices.Log.Print("Error closing the application.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine whether the content can be opened or not.
+        /// </summary>
+        /// <param name="filePath">The path for the file being opened.</param>
+        /// <returns><b>true</b> if the node can be opened, <b>false</b> if not.</returns>
+        private bool CanOpenContent()
+        {
+            if ((FileExplorer == null) || (FileExplorer.SelectedFiles.Count == 0))
+            {
+                return false;
+            }
+
+            IContentFile file = _contentFileManager.GetFile(FileExplorer.SelectedFiles[0].FullPath);
+            return file.Metadata.ContentMetadata != null;
         }
 
         /// <summary>
         /// Function to open a file node as content.
         /// </summary>
-        /// <param name="file">The file to open.</param>
-        private async void DoOpenContent(IContentFile file)
+        private async Task DoOpenContentAsync()
         {
+            IContentFile file = null;
+
             try
             {
-#warning FIX THIS
-                /*bool continueOpen = await UpdateChangedContentAsync(SaveReason.ContentShutdown);
+                bool continueOpen = await UpdateChangedContentAsync(SaveReason.ContentShutdown);
 
                 if (!continueOpen)
                 {
                     return;
                 }
 
+                file = _contentFileManager.GetFile(FileExplorer.SelectedFiles[0].FullPath);
+
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_LOADING_CONTENT, file.Name));
 
-                // Locate the node for the content file.
-                IFileExplorerNodeVm dirNode = _fileExplorer.FindNode(Path.GetDirectoryName(file.Path));
-
-                if (dirNode == null)
-                {
-                    Log.Print($"[ERROR] Content file '{file.Path}' directory has no node.", LoggingLevel.Verbose);
-                    throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, file.Path));
-                }
-
-                IFileExplorerNodeVm fileNode = dirNode.Children.FirstOrDefault(item => string.Equals(item.Name, file.Name, StringComparison.OrdinalIgnoreCase));
-
-                if (fileNode == null)
-                {
-                    Log.Print($"[ERROR] Content file '{file.Path}' has no associated file node.", LoggingLevel.Verbose);
-                    throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, file.Path));
-                }
-
-                if (fileNode != file)
-                {
-                    file = (IContentFile)fileNode;
-                }
-
-                // If we're on a dependency node, then go to the actual node that we're working on.
-                if (_fileExplorer.SelectedNode != fileNode)
-                {
-                    dirNode.IsExpanded = true;
-                    _fileExplorer.SelectNodeCommand?.Execute(fileNode);
-                }
-
-                if (file.ContentPlugIn == null)
-                {
-                    // Reset back to unassigned.                    
-                    file.Metadata.PlugInName = null;
-
-                    // If we don't have a content plug in, then try to find one now.
-                    // If that fails (i.e. the assignment won't change), then tell the user we can't open.
-                    _contentPlugIns.AssignContentPlugIn(file, ContentFileManager, false);
-
-                    if (file.ContentPlugIn == null)
-                    {
-                        _messageService.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, file.Path));
-                        return;
-                    }
-                    else
-                    {
-                        // If we updated the content plug in for a content file, then the project is now in a modified state.
-                        ProjectState = ProjectState.Modified;
-                    }
-                }
-
                 // Close the current content. It should be saved at this point.
-                if (CurrentContent != null)
-                {
-                    CurrentContent.OnUnload();
-                    CurrentContent = null;
-                }
+                ResetContent();
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
 
+                // Find the associated plug in.
+                if (!HostServices.ContentPlugInService.PlugIns.TryGetValue(file.Metadata.PlugInName, out ContentPlugIn plugIn))
+                {
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, file.Name));
+                    return;
+                }
+
+                // Create a new instance of an undo service. Undo services are separate between content types, thus we need to create new instances.
+                IUndoService undoService = new UndoService(HostServices.Log);
+
                 // Create a content object.                
-                IEditorContent content = await file.ContentPlugIn.OpenContentAsync(file, _contentFileManager, _projectData, new UndoService(Log));
+                IEditorContent content = await plugIn.OpenContentAsync(file, _contentFileManager, _projectData, undoService);
 
                 if (content == null)
                 {
                     return;
                 }
-
                 // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
-                RefreshFilePreview(file);
+                RefreshFilePreview(file.Path);
 
                 // Load the content.
                 file.IsOpen = true;
-                CurrentContent = content;*/
+                CurrentContent = content;
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_OPEN_CONTENT, file.Path));
+                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_OPEN_CONTENT, file?.Name));
+            }
+            finally
+            {
+                HideWaitPanel();
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the project can be saved to a packed file.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        /// <returns><b>true</b> if the project can be saved, <b>false</b> if not.</returns>
+        private bool CanSaveProjectToPackFile(CancelEventArgs args) => (_saveDialog != null) && (_saveDialog.Providers.Writers.Count > 0);
+
+        /// <summary>
+        /// Function to save the current project to a packed file.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        private async Task DoSaveProjectToPackFile(CancelEventArgs args)
+        {
+            var cancelSource = new CancellationTokenSource();
+            FileWriterPlugIn writer = null;
+
+            try
+            {
+                // Function used to cancel the save operation.
+                void CancelOperation() => cancelSource.Cancel();
+
+                var lastSaveDir = new DirectoryInfo(_settings.LastOpenSavePath);
+
+                if (!lastSaveDir.Exists)
+                {
+                    lastSaveDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                }
+
+                _saveDialog.InitialDirectory = lastSaveDir;
+                _saveDialog.InitialFilePath = string.Empty;
+
+                string path = _saveDialog.GetFilename();
+
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    args.Cancel = true;
+                    return;
+                }
+
+                path = Path.GetFullPath(path);
+                writer = _saveDialog.CurrentWriter;
+
+                Debug.Assert(writer != null, "Must have a writer plug in.");
+
+                HostServices.Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
+                HostServices.Log.Print($"Saving to '{path}'...", LoggingLevel.Simple);
+
+                var panelUpdateArgs = new ProgressPanelUpdateArgs
+                {
+                    Title = Resources.GOREDIT_TEXT_PLEASE_WAIT,
+                    Message = string.Format(Resources.GOREDIT_TEXT_SAVING, ProjectTitle)
+                };
+
+                UpdateProgress(panelUpdateArgs);
+
+                // Function used to update the progress meter display.
+                void SaveProgress(int currentItem, int totalItems, bool allowCancellation)
+                {
+                    panelUpdateArgs.CancelAction = allowCancellation ? CancelOperation : (Action)null;
+                    panelUpdateArgs.PercentageComplete = (float)currentItem / totalItems;
+                    UpdateProgress(panelUpdateArgs);
+                }
+
+                SaveProjectMetadata();
+                HostServices.Log.Print($"Saving packed file '{path}'...", LoggingLevel.Verbose);
+                await _projectManager.SavePackedFileAsync(_projectData, path, writer, SaveProgress, cancelSource.Token);
+
+                if (cancelSource.Token.IsCancellationRequested)
+                {
+                    args.Cancel = true;
+                    return;
+                }
+
+                // Update the current project with the updated info.               
+                args.Cancel = cancelSource.Token.IsCancellationRequested;
+
+                if (args.Cancel)
+                {
+                    return;
+                }
+
+                _settings.LastOpenSavePath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
+
+                HostServices.Log.Print($"Saved project '{ProjectTitle}' to '{path}'.", LoggingLevel.Simple);
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_SAVING_PROJECT);
+                args.Cancel = true;
+            }
+            finally
+            {
+                HideProgress();
+                cancelSource?.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if content can be created or not.
+        /// </summary>
+        /// <param name="id">The ID for the content to create, based on the new icon ID.</param>
+        /// <returns><b>true</b> if content can be created, <b>false</b> if not.</returns>
+        private bool CanCreateContent(Guid id) => (_contentCreators.Count > 0) && (_contentCreators.Any(item => item.NewIconID == id));
+
+        /// <summary>
+        /// Function to create content.
+        /// </summary>
+        /// <param name="id">The ID for the content to create, based on the new icon ID.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoCreateContentAsync(Guid id)
+        {
+            try
+            {
+
+
+                /*
+                if (!Guid.TryParse(contentID, out Guid guid))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_INVALID_CONTENT_TYPE_ID);
+                }
+
+                IContentPlugInMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
+
+                Debug.Assert(metaData != null, $"Could not locate the content plugin metadata for {contentID}.");
+
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metaData.ContentType));
+
+                ContentPlugIn plugin = _contentPlugIns.PlugIns.FirstOrDefault(item => item.Value == metaData).Value;
+
+                Debug.Assert(plugin != null, $"Could not locate the content plug in for {contentID}.");
+#warning FIX THIS - Change this to a command.
+                string path = await CurrentProject.CreateNewContentItemAsync(metaData, plugin);
+
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    return;
+                }
+
+                HideWaitPanel();
+
+                IFileExplorerNodeVm parentNode = _fileExplorer.SelectedNode ?? _fileExplorer.RootNode;
+                Stream contentStream = null;
+                var args = new CreateContentFileArgs(parentNode);
+
+                try
+                {
+                    ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
+
+                    // Ensure we don't wipe out any changes.
+                    if ((CurrentContent?.SaveContentCommand != null) && (CurrentContent.ContentState != ContentState.Unmodified))
+                    {
+                        MessageResponse response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name));
+
+                        switch (response)
+                        {
+                            case MessageResponse.Cancel:
+                                return null;
+                            case MessageResponse.Yes:
+                                if (CurrentContent.SaveContentCommand.CanExecute(SaveReason.ContentShutdown))
+                                {
+                                    await CurrentContent.SaveContentCommand.ExecuteAsync(SaveReason.ContentShutdown);
+                                }
+                                break;
+                        }
+
+                        // Shut down the current stuff.
+                        ResetContent();
+                    }
+
+                    // Create the actual file.
+                    args.Name = plugin.ContentTypeID;
+
+                    // Get a new name (and any default data).
+                    (string contentName, byte[] contentData) = await plugin.GetDefaultContentAsync(args.Name, parentNode.Children.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
+
+                    if ((contentName == null) || (contentData == null))
+                    {
+                        return null;
+                    }
+
+                    args.Name = contentName;
+
+                    if ((_fileExplorer?.CreateContentFileCommand == null) || (!_fileExplorer.CreateContentFileCommand.CanExecute(args)))
+                    {
+                        return null;
+                    }
+
+                    _fileExplorer.CreateContentFileCommand.Execute(args);
+
+                    if (args.Cancel)
+                    {
+                        return null;
+                    }
+
+                    // Now that we have a file, we need to populate it with default data from the content plugin.
+                    contentStream = args.ContentFile.OpenWrite();
+                    contentStream.Write(contentData, 0, contentData.Length);
+                    contentStream.Dispose();
+
+                    args.Node.Refresh();
+
+                    // Since we already know our plug in, we can assign it here.
+                    _viewModelFactory.ContentPlugIns.AssignContentPlugIn(args.ContentFile, _contentFileManager, metadata);
+
+                    // Mark this item as new.
+                    args.ContentFile.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = "true";
+
+                    await SaveProjectMetadataAsync();
+
+                    // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
+                    RefreshFilePreview(args.ContentFile);
+                    
+                }
+                catch (Exception)
+                {
+                    // If we fail, for any reason, destroy the node.
+                    if (args.Node != null)
+                    {
+                        args.Node.Parent.Children.Remove(args.Node);
+                        File.Delete(args.Node.PhysicalPath);
+                    }
+
+                    throw;
+                }
+                finally
+                {
+                    contentStream?.Dispose();
+                    HideWaitPanel();
+                }
+
+                // We have our content, we can now open it as we normally would.
+                if ((!string.IsNullOrWhiteSpace(filePath)) && (CurrentProject?.FileExplorer?.OpenContentFileCommand != null)
+                    && (CurrentProject.FileExplorer.OpenContentFileCommand.CanExecute(filePath)))
+                {
+                    CurrentProject.FileExplorer.OpenContentFileCommand.Execute(filePath);
+                }
+
+                return args.ContentFile;*/
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_CONTENT_CREATION);
             }
             finally
             {
@@ -813,16 +1073,11 @@ namespace Gorgon.Editor.ViewModels
         private void ContentFile_DependenciesUpdated(object sender, EventArgs e)
         {
             ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_SAVING, ProjectTitle));
-
+                        
             try
             {
                 // When we update the dependencies on content, we need to persist those changes to the file system as soon as possible.
-                SaveProjectMetadata();
-            }
-            catch (Exception ex)
-            {
-                // If this happens, we have problems.
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_SAVING_METADATA, CurrentContent?.File?.Name ?? string.Empty));
+                DoSaveProjectMetadata();
             }
             finally
             {
@@ -843,161 +1098,19 @@ namespace Gorgon.Editor.ViewModels
             _viewModelFactory = injectionParameters.ViewModelFactory;
             _projectManager = injectionParameters.ProjectManager;
             _projectData = injectionParameters.Project;
-            _messageService = injectionParameters.MessageDisplay;
-            _busyService = injectionParameters.BusyService;
-            _contentPlugIns = injectionParameters.ContentPlugIns;
             _fileExplorer = injectionParameters.FileExplorer;
-            _contentFileManager = injectionParameters.ContentManager;
+            _contentFileManager = injectionParameters.ContentFileManager;
             _contentPreviewer = injectionParameters.ContentPreviewer;
-
+            _saveDialog = injectionParameters.SaveDialog;
+            _contentCreators = injectionParameters.ContentCreators;
+            
             AssignEvents();
 
-            // Get the tool plug ins.
-            _toolPlugIns = injectionParameters.ToolPlugIns;
+            ProjectTitle = _projectData.ProjectWorkSpace.Name;
 
-            _projectTitle = _projectData.ProjectWorkSpace.Name;
-
-            FileExplorer.OpenContentFileCommand = new EditorCommand<IContentFile>(DoOpenContent, CanOpenContent);
+            FileExplorer.OpenContentFileCommand = new EditorAsyncCommand<object>(DoOpenContentAsync, CanOpenContent);
 
             GetTools();
-        }
-
-        /// <summary>
-        /// Function to create a new content item.
-        /// </summary>
-        /// <param name="metadata">The metadata for the plug in associated with the content.</param>
-        /// <param name="plugin">The plug in used to create the content.</param>
-        /// <returns>A new content file containing the content data, or <b>null</b> if the content creation was cancelled.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/>, or the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-        public async Task<IContentFile> CreateNewContentItemAsync(IContentPlugInMetadata metadata, ContentPlugIn plugin)
-        {
-            if (metadata == null)
-            {
-                throw new ArgumentNullException(nameof(metadata));
-            }
-
-            if (plugin == null)
-            {
-                throw new ArgumentNullException(nameof(plugin));
-            }
-#warning FIX THIS - This should not be public - Turn into a command.
-            /*
-                        IFileExplorerNodeVm parentNode = _fileExplorer.SelectedNode ?? _fileExplorer.RootNode;
-                        Stream contentStream = null;
-                        var args = new CreateContentFileArgs(parentNode);
-
-                        try
-                        {
-                            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
-
-                            // Ensure we don't wipe out any changes.
-                            if ((CurrentContent?.SaveContentCommand != null) && (CurrentContent.ContentState != ContentState.Unmodified))
-                            {
-                                MessageResponse response = _messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name));
-
-                                switch (response)
-                                {
-                                    case MessageResponse.Cancel:
-                                        return null;
-                                    case MessageResponse.Yes:
-                                        if (CurrentContent.SaveContentCommand.CanExecute(SaveReason.ContentShutdown))
-                                        {
-                                            await CurrentContent.SaveContentCommand.ExecuteAsync(SaveReason.ContentShutdown);
-                                        }
-                                        break;
-                                }
-
-                                // Shut down the current stuff.
-                                CurrentContent = null;
-                            }
-
-                            // Create the actual file.
-                            args.Name = plugin.ContentTypeID;
-
-                            // Get a new name (and any default data).
-                            (string contentName, byte[] contentData) = await plugin.GetDefaultContentAsync(args.Name, parentNode.Children.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
-
-                            if ((contentName == null) || (contentData == null))
-                            {
-                                return null;
-                            }
-
-                            args.Name = contentName;
-
-                            if ((_fileExplorer?.CreateContentFileCommand == null) || (!_fileExplorer.CreateContentFileCommand.CanExecute(args)))
-                            {
-                                return null;
-                            }
-
-                            _fileExplorer.CreateContentFileCommand.Execute(args);
-
-                            if (args.Cancel)
-                            {
-                                return null;
-                            }
-
-                            // Now that we have a file, we need to populate it with default data from the content plugin.
-                            contentStream = args.ContentFile.OpenWrite();
-                            contentStream.Write(contentData, 0, contentData.Length);
-                            contentStream.Dispose();
-
-                            args.Node.Refresh();
-
-                            // Since we already know our plug in, we can assign it here.
-                            _viewModelFactory.ContentPlugIns.AssignContentPlugIn(args.ContentFile, _contentFileManager, metadata);
-
-                            // Mark this item as new.
-                            args.ContentFile.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = "true";
-
-                            await SaveProjectMetadataAsync();
-
-                            // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
-                            RefreshFilePreview(args.ContentFile);
-                        }
-                        catch (Exception)
-                        {
-                            // If we fail, for any reason, destroy the node.
-                            if (args.Node != null)
-                            {
-                                args.Node.Parent.Children.Remove(args.Node);
-                                File.Delete(args.Node.PhysicalPath);
-                            }
-
-                            throw;
-                        }
-                        finally
-                        {
-                            contentStream?.Dispose();
-                            HideWaitPanel();
-                        }
-
-                        return args.ContentFile;*/
-            return null;
-        }
-
-        /// <summary>
-        /// Function to persist the project data to a file.
-        /// </summary>
-        /// <param name="path">A path to the file that will hold the project data.</param>
-        /// <param name="writer">The plug in used to write the project data.</param>
-        /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
-        /// <param name="cancelToken">The token used for cancellation of the operation.</param>        
-        /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>
-        public Task SaveToPackFileAsync(FileInfo path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            if (writer == null)
-            {
-                throw new ArgumentNullException(nameof(writer));
-            }
-
-            Program.Log.Print($"Saving packed file '{path.FullName}'...", LoggingLevel.Verbose);
-            return _projectManager.SavePackedFileAsync(_projectData, path, writer, progressCallback, cancelToken);
         }
 
         /// <summary>
@@ -1005,13 +1118,10 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public override void OnLoad()
         {
-            _busyService.SetBusy();
+            HostServices.BusyService.SetBusy();
 
             try
             {
-                // Ensure the project is locked from outside interference (Gorgon editor instances only).
-                _projectManager.LockProject(_projectData);
-
                 if (FileExplorer != null)
                 {
                     FileExplorer.OnLoad();
@@ -1024,16 +1134,16 @@ namespace Gorgon.Editor.ViewModels
                     ContentPreviewer.OnLoad();
                     ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
                 }
-
+                
                 AssignEvents();                
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex);
+                HostServices.MessageDisplay.ShowError(ex);
             }
             finally
             {
-                _busyService.SetIdle();
+                HostServices.BusyService.SetIdle();
             }
         }        
 
@@ -1045,11 +1155,6 @@ namespace Gorgon.Editor.ViewModels
             if (FileExplorer != null)
             {
                 FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
-            }
-
-            if (_projectData != null)
-            {
-                _projectManager.CloseProject(_projectData);
             }
 
             ContentPreviewer?.OnUnload();
@@ -1068,7 +1173,11 @@ namespace Gorgon.Editor.ViewModels
         public ProjectEditor() 
         {
             BeforeCloseCommand = new EditorAsyncCommand<CancelEventArgs>(DoBeforeCloseAsync);
+            AfterCloseCommand = new EditorCommand<object>(DoAfterClose);
+            SaveProjectToPackFileCommand = new EditorAsyncCommand<CancelEventArgs>(DoSaveProjectToPackFile, CanSaveProjectToPackFile);
             SaveProjectMetadataCommand = new EditorCommand<object>(DoSaveProjectMetadata);
+            CreateContentCommand = new EditorAsyncCommand<Guid>(DoCreateContentAsync, CanCreateContent);
+            ContentClosedCommand = new EditorCommand<object>(DoContentClosed);
         }
         #endregion
     }

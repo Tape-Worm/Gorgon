@@ -58,14 +58,14 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>
         ///   <para>
         /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
-        /// the base <see cref="ISettingsCategoryViewModel"/> type.
+        /// the base <see cref="ISettingsCategory"/> type.
         /// </para>
         ///   <para>
         /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method in the
         /// <see cref="OnInitialize()"/> method or the settings will not display.
         /// </para>
         /// </remarks>
-        protected override ISettingsCategoryViewModel OnGetSettings() => _settings;
+        protected override ISettingsCategory OnGetSettings() => _settings;
 
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>

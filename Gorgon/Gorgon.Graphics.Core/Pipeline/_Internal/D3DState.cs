@@ -92,10 +92,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         BlendState = 0x1000,
         /// <summary>
-        /// Scissor rectangles were modified.
-        /// </summary>
-        Scissors = 0x2000,
-        /// <summary>
         /// Stream out buffers were modified.
         /// </summary>
         StreamOutBuffers = 0x4000,
@@ -190,8 +186,7 @@ namespace Gorgon.Graphics.Core
                            | VertexShader
                            | GeometryShader
                            | DomainShader
-                           | HullShader
-                           | Scissors,
+                           | HullShader,
         /// <summary>
         /// Everything changed.
         /// </summary>

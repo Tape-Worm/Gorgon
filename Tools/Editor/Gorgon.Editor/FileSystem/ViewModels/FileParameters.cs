@@ -25,13 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Core;
 using Gorgon.Editor.Metadata;
+using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.ViewModels
@@ -73,10 +68,11 @@ namespace Gorgon.Editor.ViewModels
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="FileParameters"/> class.</summary>
+        /// <param name="hostServices">The services from the host application.</param>
         /// <param name="factory">The view model factory used to create this view model.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileParameters(ViewModelFactory factory)
-            : base(factory)
+        public FileParameters(IHostContentServices hostServices, ViewModelFactory factory)
+            : base(hostServices, factory)
         {
         }
         #endregion

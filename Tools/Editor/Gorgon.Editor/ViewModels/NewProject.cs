@@ -31,6 +31,7 @@ using System.Linq;
 using System.Security;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -43,7 +44,7 @@ namespace Gorgon.Editor.ViewModels
     /// A view model for the new project interface.
     /// </summary>
     internal class NewProject
-        : ViewModelBase<NewProjectParameters>, INewProject
+        : ViewModelBase<NewProjectParameters, IHostContentServices>, INewProject
     {
         #region Variables.
         // The list of invalid characters for a directory.
@@ -51,8 +52,6 @@ namespace Gorgon.Editor.ViewModels
 
         // The title for the project.
         private string _title = Resources.GOREDIT_NEW_PROJECT;
-        // The message display service.
-        private IMessageDisplayService _messageService;
         // The project manager used to build up project info.
         private ProjectManager _projectManager;
         // The computer information object.
@@ -64,13 +63,15 @@ namespace Gorgon.Editor.ViewModels
         // The path where the project will be stored.
         private DirectoryInfo _workspace;
         // The settings for the application.
-        private EditorSettings _settings;
+        private Editor.EditorSettings _settings;
         // The directory locator service.
         private IDirectoryLocateService _directoryLocator;
         // Available drive space, in bytes.
         private ulong _availableSpace;
         // The reason that the entered path is invalid.
         private string _invalidPathReason;
+        // The default path for projects.
+        private readonly string _defaultProjectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Gorgon", "Projects");
         #endregion
 
         #region Properties.
@@ -223,56 +224,67 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="directory">The directory to validate.</param>
         /// <returns><b>true</b> if the directory is valid, <b>false</b> if not.</returns>
-        private bool ValidateDirectory(DirectoryInfo directory)
+        private bool ValidateDirectory(string directory)
         {
-            if (!directory.Exists)
+            string[] forbiddenPaths = ((Environment.SpecialFolder[])Enum.GetValues(typeof(Environment.SpecialFolder)))
+                                        .Select(item => Environment.GetFolderPath(item).FormatDirectory(Path.DirectorySeparatorChar))
+                                        .Where(item => !string.IsNullOrWhiteSpace(item))
+                                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                                        .ToArray();
+            directory = Path.GetFullPath(directory);
+
+            if (!System.IO.Directory.Exists(directory))
             {
                 return true;
             }
 
             // Do not allow us to write to the main windows or system folders, that'd be bad.
-            if ((directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.System), StringComparison.OrdinalIgnoreCase))
-                || (directory.FullName.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.Windows), StringComparison.OrdinalIgnoreCase))
-                || (directory.Parent == null))
-            {
-                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName.Ellipses(65, true));
+            if ((forbiddenPaths.Any(item => string.Equals(directory, item, StringComparison.OrdinalIgnoreCase)))
+                || (System.IO.Directory.GetParent(directory) == null))
+            {                
+                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.Ellipses(45, true));
                 return false;
             }
 
+            Stream lockStream = null;
+
             try
             {
-                FileSystemInfo[] itemsInDir = directory.GetFileSystemInfos("*", SearchOption.TopDirectoryOnly);
+                string[] itemsInDir = System.IO.Directory.GetFileSystemEntries(directory, "*");
 
-                if ((itemsInDir.Length > 0) && (_messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS, directory.FullName)) != MessageResponse.Yes))
+                if ((itemsInDir.Length > 0) && (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS, directory)) != MessageResponse.Yes))
                 {
-                    InvalidPathReason = string.Format(Resources.GOREDIT_ERR_WORKSPACE_EXISTS, directory.FullName.Ellipses(65, true));
+                    InvalidPathReason = string.Format(Resources.GOREDIT_ERR_WORKSPACE_EXISTS, directory.Ellipses(45, true));
                     return false;
                 }
 
-                var subDir = new DirectoryInfo(Path.Combine(directory.FullName, Guid.NewGuid().ToString("N")));
-                subDir.Create();
-                subDir.Refresh();
-                subDir.Delete();
+                string tempDir = Path.Combine(directory, Guid.NewGuid().ToString("N"));
+                System.IO.Directory.CreateDirectory(tempDir);
+                System.IO.Directory.Delete(tempDir);
             }
             catch (UnauthorizedAccessException)
             {
-                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName.Ellipses(65, true));
+                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.Ellipses(45, true));
                 return false;
             }
             catch (SecurityException)
             {
-                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.FullName.Ellipses(65, true));
+                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.Ellipses(45, true));
                 return false;
             }
             catch (IOException ioEx)
             {
-                InvalidPathReason = string.Format(ioEx.Message, directory.FullName.Ellipses(65, true));
+                InvalidPathReason = string.Format(ioEx.Message, directory.Ellipses(45, true));
                 return false;
+            }
+            finally
+            {
+                lockStream?.Dispose();
             }
 
             if (_projectManager.IsDirectoryLocked(directory))
             {
-                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_PROJECT_OPEN_LOCKED, directory.FullName.Ellipses(65, true));
+                InvalidPathReason = string.Format(Resources.GOREDIT_ERR_PROJECT_OPEN_LOCKED, directory.Ellipses(45, true));
                 return false;
             }
 
@@ -284,42 +296,52 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         private void DoSelectProjectWorkspace()
         {
-            DirectoryInfo dir = WorkspacePath;
+            string lastPath = string.Empty;
 
             try
             {
-                if (dir == null)
-                {
-                    dir = new DirectoryInfo(string.IsNullOrEmpty(_settings.LastProjectWorkingDirectory) ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : _settings.LastProjectWorkingDirectory);
-                }
-                dir.Refresh();
+                lastPath = string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ? null : Path.GetFullPath(_settings.LastProjectWorkingDirectory);
 
-                if (!dir.Exists)
+                if ((lastPath == null) || (!System.IO.Directory.Exists(lastPath)))
                 {
-                    dir = new DirectoryInfo(string.IsNullOrEmpty(_settings.LastProjectWorkingDirectory) ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : _settings.LastProjectWorkingDirectory);
-                    dir.Refresh();
-
-                    if (!dir.Exists)
+                    if (!string.IsNullOrWhiteSpace(lastPath))
                     {
-                        dir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                        var parentDir = new DirectoryInfo(lastPath);
+
+                        if (parentDir.Parent != null)
+                        {
+                            lastPath = parentDir.FullName;
+                        }
+                        else
+                        {
+                            lastPath = null;
+                        }
+                    }
+
+                    if (lastPath == null)
+                    {
+                        lastPath = _defaultProjectPath;
+                        System.IO.Directory.CreateDirectory(lastPath);
                     }
                 }
+
+                lastPath = Path.GetFullPath(lastPath);
 
                 // Check for read access.                
                 while (true)
                 {
                     try
                     {
-                        FileSystemInfo[] test = dir.GetFileSystemInfos("*", SearchOption.TopDirectoryOnly);
+                        System.IO.Directory.GetFileSystemEntries(lastPath, "*");
                         break;
                     }
                     catch (UnauthorizedAccessException)
                     {
-                        dir = dir.Parent;
+                        lastPath = System.IO.Directory.GetParent(lastPath)?.FullName;
 
-                        if (dir.Parent == null)
+                        if (string.IsNullOrWhiteSpace(lastPath))
                         {
-                            dir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                            lastPath = _defaultProjectPath;
                             break;
                         }
                     }
@@ -327,7 +349,7 @@ namespace Gorgon.Editor.ViewModels
 
                 InvalidPathReason = null;
 
-                dir = _directoryLocator.GetDirectory(dir, Resources.GOREDIT_CAPTION_SELECT_PROJECT_DIR);
+                DirectoryInfo dir = _directoryLocator.GetDirectory(new DirectoryInfo(lastPath), Resources.GOREDIT_CAPTION_SELECT_PROJECT_DIR);
 
                 if (dir == null)
                 {
@@ -336,7 +358,7 @@ namespace Gorgon.Editor.ViewModels
 
                 WorkspacePath = dir;
 
-                if (!ValidateDirectory(dir))
+                if (!ValidateDirectory(dir.FullName))
                 {
                     return;
                 }
@@ -349,7 +371,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_SET_WORKSPACE, dir?.FullName ?? string.Empty));
+                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_SET_WORKSPACE, lastPath ?? string.Empty));
                 InvalidPathReason = ex.Message;
             }
         }
@@ -428,7 +450,7 @@ namespace Gorgon.Editor.ViewModels
 
                 var dir = new DirectoryInfo(path);
 
-                if (!ValidateDirectory(dir))
+                if (!ValidateDirectory(dir.FullName))
                 {
                     return;
                 }
@@ -450,7 +472,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_SET_WORKSPACE, args.WorkspacePath));
+                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_SET_WORKSPACE, args.WorkspacePath));
                 InvalidPathReason = ex.Message;
             }
         }
@@ -463,26 +485,28 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(NewProjectParameters injectionParameters)
         {
             _settings = injectionParameters.EditorSettings;
-            _projectManager = injectionParameters.ProjectManager;
-            _messageService = injectionParameters.MessageDisplay;
+            _projectManager = injectionParameters.ProjectManager;            
             _directoryLocator = injectionParameters.DirectoryLocator;
 
-            var lastWorkspace = new DirectoryInfo(string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ?
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) :
-                _settings.LastProjectWorkingDirectory);
+            string lastWorkspace = Path.GetFullPath(string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ? _defaultProjectPath : _settings.LastProjectWorkingDirectory);
 
-            if (!lastWorkspace.Exists)
+            if (!System.IO.Directory.Exists(lastWorkspace))
             {
-                lastWorkspace = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                lastWorkspace = _defaultProjectPath;
+
+                if (!System.IO.Directory.Exists(lastWorkspace))
+                {
+                    System.IO.Directory.CreateDirectory(lastWorkspace);
+                }
             }
 
-            _availableSpace = (ulong)(new DriveInfo(Path.GetPathRoot(lastWorkspace.FullName))).AvailableFreeSpace;
+            _availableSpace = (ulong)(new DriveInfo(Path.GetPathRoot(lastWorkspace))).AvailableFreeSpace;
             _computerInfo = new GorgonComputerInfo();
         }
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.StageNewVm"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="NewProject"/> class.</summary>
         public NewProject()
         {
             _invalidDirCharacters = Path.GetInvalidFileNameChars();

@@ -29,8 +29,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Linq;
 using ComponentFactory.Krypton.Ribbon;
-using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
@@ -48,6 +48,11 @@ namespace Gorgon.Editor.UI.Views
         : EditorBaseControl, IRendererControl
     {
         #region Variables.
+        // Synchronization objects for events.
+        private readonly object _closeEventLock = new object();
+        private readonly object _dragEnterEventLock = new object();
+        private readonly object _dragOverEventLock = new object();
+        private readonly object _dragDropEventLock = new object();
         // The swap chain for the control.
         private GorgonSwapChain _swapChain;
         // The data context for the editor context.
@@ -57,16 +62,146 @@ namespace Gorgon.Editor.UI.Views
         #endregion
 
         #region Events.
+        // Event triggered when the content is closed.
+        private event EventHandler ContentClosedEvent;
+        // Event triggered when a drag enter operation is bubbled up to the parent.
+        private event EventHandler<DragEventArgs> BubbleDragEnterEvent;
+        // Event triggered when a drop operation is bubbled up to the parent.
+        private event EventHandler<DragEventArgs> BubbleDragDropEvent;
+        // Event triggered when a drag over operation is bubbled up to the parent.
+        private event EventHandler<DragEventArgs> BubbleDragOverEvent;
+
+        /// <summary>
+        /// Event triggered when the content is closed.
+        /// </summary>
+        [Category("Behavior"), Description("Notifies when the content control is closed.")]
+        public event EventHandler ContentClosed
+        {
+            add
+            {
+                lock (_closeEventLock)
+                {
+                    if (value == null)
+                    {
+                        ContentClosedEvent = null;
+                        return;
+                    }
+
+                    ContentClosedEvent += value;
+                }
+            }
+            remove
+            {
+                lock (_closeEventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    ContentClosedEvent -= value;
+                }
+            }
+        }
+
         /// <summary>
         /// Event triggered when a drag enter operation is to be bubbled up to its parent.
         /// </summary>
         [Category("Drag Drop"), Description("Notifies the parent control that the drag enter event has been passed to it from this control.")]
-        public event EventHandler<DragEventArgs> BubbleDragEnter;
+        public event EventHandler<DragEventArgs> BubbleDragEnter
+        {
+            add
+            {
+                lock (_dragEnterEventLock)
+                {
+                    if (value == null)
+                    {
+                        BubbleDragEnterEvent = null;
+                        return;
+                    }
+
+                    BubbleDragEnterEvent += value;
+                }
+            }
+            remove
+            {
+                lock (_dragEnterEventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    BubbleDragEnterEvent -= value;
+                }
+            }
+        }
+
         /// <summary>
-        /// Event triggered when a drag enter operation is to be bubbled up to its parent.
+        /// Event triggered when a drop operation is to be bubbled up to its parent.
+        /// </summary>
+        [Category("Drag Drop"), Description("Notifies the parent control that the drag over event has been passed to it from this control.")]
+        public event EventHandler<DragEventArgs> BubbleDragOver
+        {
+            add
+            {
+                lock (_dragOverEventLock)
+                {
+                    if (value == null)
+                    {
+                        BubbleDragOverEvent = null;
+                        return;
+                    }
+
+                    BubbleDragOverEvent += value;
+                }
+            }
+            remove
+            {
+                lock (_dragOverEventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    BubbleDragOverEvent -= value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Event triggered when a drop operation is to be bubbled up to its parent.
         /// </summary>
         [Category("Drag Drop"), Description("Notifies the parent control that the drag drop event has been passed to it from this control.")]
-        public event EventHandler<DragEventArgs> BubbleDragDrop;
+        public event EventHandler<DragEventArgs> BubbleDragDrop
+        {
+            add
+            {
+                lock (_dragDropEventLock)
+                {
+                    if (value == null)
+                    {
+                        BubbleDragDropEvent = null;
+                        return;
+                    }
+
+                    BubbleDragDropEvent += value;
+                }
+            }
+            remove
+            {
+                lock (_dragDropEventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    BubbleDragDropEvent -= value;
+                }
+            }
+        }
         #endregion
 
         #region Properties.
@@ -124,6 +259,12 @@ namespace Gorgon.Editor.UI.Views
         [Browsable(false)]
         public Panel PresentationPanel => PanelPresenter;
 
+        /// <summary>
+        /// Property to return the panel that will be used for hosting panels for settings, parameters, etc...
+        /// </summary>
+        [Browsable(false)]
+        public Panel HostPanel => PanelHostControls;
+
         /// <summary>Property to return the graphics context.</summary>
         [Browsable(false)]
         public IGraphicsContext GraphicsContext
@@ -135,25 +276,6 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>Property to return the swap chain assigned to the control.</summary>
         [Browsable(false)]
         public GorgonSwapChain SwapChain => _swapChain;
-
-        /// <summary>
-        /// Property to set or return the host for content panels.
-        /// </summary>
-        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool IsPanelHostActive
-        {
-            get => PanelHost.Visible;
-            set
-            {
-                PanelHost.Visible = value;
-                PanelHost.BringToFront();
-                PanelHost.Left = ClientSize.Width - PanelHost.Width;
-                PanelHost.Top = 0;
-                PanelHost.Height = ClientSize.Height;
-
-                Invalidate(true);
-            }
-        }
         #endregion
 
         #region Methods.
@@ -162,12 +284,24 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
         private void ButtonClose_Click(object sender, EventArgs e)
         {
-            if ((_dataContext?.CloseContentCommand == null) || (!_dataContext.CloseContentCommand.CanExecute(null)))
+            EventHandler handler = null;
+            var args = new CloseContentArgs(true);
+
+            if ((_dataContext?.CloseContentCommand != null) && (_dataContext.CloseContentCommand.CanExecute(args)))
+            {
+                _dataContext.CloseContentCommand.Execute(args);
+            }
+
+            if (args.Cancel)
             {
                 return;
             }
 
-            _dataContext.CloseContentCommand.Execute(new CloseContentArgs(true));
+            lock (_closeEventLock)
+            {
+                handler = ContentClosedEvent;
+            }
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -191,13 +325,13 @@ namespace Gorgon.Editor.UI.Views
                     break;
             }
 
-            OnPropertyChanged(e);
+            OnPropertyChanged(e.PropertyName);
         }
 
         /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [PropertyChangingEventArgs] instance containing the event data.</param>
-        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e) => OnPropertyChanging(e);
+        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e) => OnPropertyChanging(e.PropertyName);
 
         /// <summary>
         /// Function to initialize the view from the current data context.
@@ -276,60 +410,54 @@ namespace Gorgon.Editor.UI.Views
         }
 
         /// <summary>
-        /// Function to check to see if drag drop data is valid for this control.
+        /// Function to retrieve content file data from a drag/drop operation.
         /// </summary>
+        /// <typeparam name="T">The type of data to retrieve. Must implement <see cref="IContentFileDragData"/> and be a reference type.</typeparam>
         /// <param name="e">The event parameters for the drag/drop event.</param>
-        /// <param name="handler">The drag/drop handler used to handle the drag drop information.</param>
         /// <returns>The data in the drag operation, or <b>null</b> if the data cannot be dragged and dropped onto this control.</returns>
-        protected IContentFileDragData GetDragDropData(DragEventArgs e, Olde_IDragDropHandler<IContentFileDragData> handler)
+        /// <remarks>
+        /// <para>
+        /// This will return custom drag/drop data that implements the <see cref="IContentFileDragData"/> interface. Content editor developers should use this method to verify whether the data being dragged 
+        /// into the control is valid or not, and use the returned data to perform the final drop operation.
+        /// </para>
+        /// <para>
+        /// If the editor cannot support the data being dragged in, then the developer should call the <see cref="OnBubbleDragEnter(DragEventArgs)"/>, <see cref="OnBubbleDragOver(DragEventArgs)"/>,or the 
+        /// <see cref="OnBubbleDragDrop(DragEventArgs)"/> methods (depending on the event being fired on the control).
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IContentFileDragData"/>
+        protected T GetContentFileDragDropData<T>(DragEventArgs e)
+            where T : class, IContentFileDragData
         {
-            if (handler == null)
+            Type contentFileDragDataType = typeof(IContentFileDragData);
+
+            if (!e.Data.GetDataPresent(contentFileDragDataType.FullName, true))
+            {
+                e.Effect = DragDropEffects.None;
+                return null;
+            }
+
+            if (!(e.Data.GetData(contentFileDragDataType.FullName, true) is IContentFileDragData dragData))
             {
                 e.Effect = DragDropEffects.None;
                 return null;
             }
 
             e.Effect = DragDropEffects.Copy;
-
-            Type contentFileDragDataType = typeof(IContentFileDragData);
-
-            if (!e.Data.GetDataPresent(contentFileDragDataType.FullName, true))
-            {
-                return null;
-            }
-
-            if (!(e.Data.GetData(contentFileDragDataType.FullName, true) is IContentFileDragData dragData))
-            {
-                return null;
-            }
-
-            if (!handler.CanDrop(dragData))
-            {
-                if (dragData.Cancel)
-                {
-                    e.Effect = DragDropEffects.None;
-                }
-
-                return null;
-            }
-
-            return dragData;
+            return dragData as T;
         }
 
         /// <summary>
-        /// Function to add a control to the panel host.
+        /// Function to show a hosted panel.
         /// </summary>
-        /// <param name="control">The control to add.</param>
+        /// <param name="control">The control to show.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// Adding a control does not guarantee that the host will be visible. To show the panel host, use the <see cref="IsPanelHostActive"/> property.
-        /// </para>
-        /// <para>
-        /// Only a single control can be active in the host at a time. Adding another control will remove the previous control.
+        /// Only a single control can be active in the host at a time. Adding another control will hide the previous control.
         /// </para>
         /// </remarks>
-        protected void AddControlToPanelHost(Control control)
+        protected void ShowHostedPanel(Control control)
         {
             if (control == null)
             {
@@ -342,8 +470,13 @@ namespace Gorgon.Editor.UI.Views
                 PanelHostControls.SuspendLayout();
                 control.SuspendLayout();
 
-                PanelHostControls.Controls.Clear();
-                PanelHostControls.Controls.Add(control);
+                foreach (Control hostControl in PanelHostControls.Controls.OfType<Control>().Where(item => item != control))
+                {
+                    hostControl.Visible = false;
+                }
+
+                control.Visible = PanelHostControls.Visible = PanelHost.Visible = true;
+
                 control.Left = 0;
                 control.Top = 0;
 
@@ -353,9 +486,9 @@ namespace Gorgon.Editor.UI.Views
                     control.Width = 640;
                 }
 
-                if (control.Width < 160)
+                if (control.Width < 300)
                 {
-                    control.Width = 160;
+                    control.Width = 300;
                 }
 
                 PanelHost.Width = control.Width + PanelHost.Padding.Left;
@@ -375,14 +508,20 @@ namespace Gorgon.Editor.UI.Views
                 PanelHost.ResumeLayout(false);
                 PanelHost.PerformLayout();
             }
-
-
         }
 
         /// <summary>
-        /// Function to clear the host panel controls.
+        /// Function to hide the host panel controls.
         /// </summary>
-        protected void ClearPanelHost() => PanelHostControls.Controls.Clear();
+        protected void HideHostedPanels()
+        {
+            foreach (Control control in PanelHostControls.Controls)
+            {
+                control.Visible = false;
+            }
+
+            PanelHost.Visible = PanelHostControls.Visible = false;            
+        }
 
         /// <summary>
         /// Function to render the swap chain contents to a GDI+ bitmap.
@@ -439,7 +578,32 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected virtual void OnBubbleDragEnter(DragEventArgs e)
         {
-            EventHandler<DragEventArgs> handler = BubbleDragEnter;
+            EventHandler<DragEventArgs> handler = null;
+
+            lock (_dragEnterEventLock)
+            {
+                handler = BubbleDragEnterEvent;
+            }
+            
+            handler?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Function to bubble up the drag drop event up to the main project window.
+        /// </summary>
+        /// <param name="e">The drag event parameters.</param>
+        /// <para>
+        /// Implementors can use this method to notify the parent of this control that a drag over event is being passed on from this control.
+        /// </para>
+        protected virtual void OnBubbleDragOver(DragEventArgs e)
+        {
+            EventHandler<DragEventArgs> handler = null;
+
+            lock (_dragOverEventLock)
+            {
+                handler = BubbleDragOverEvent;
+            }
+
             handler?.Invoke(this, e);
         }
 
@@ -454,20 +618,26 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected virtual void OnBubbleDragDrop(DragEventArgs e)
         {
-            EventHandler<DragEventArgs> handler = BubbleDragDrop;
+            EventHandler<DragEventArgs> handler = null;
+
+            lock (_dragDropEventLock)
+            {
+                handler = BubbleDragDropEvent;
+            }
+            
             handler?.Invoke(this, e);
         }
 
         /// <summary>
         /// Function called when a property is changing on the data context.
         /// </summary>
-        /// <param name="e">The event parameters.</param>
+        /// <param name="propertyName">The name of the property that is updating.</param>
         /// <remarks>
         /// <para>
         /// Implementors should override this method in order to handle a property change notification from their data context.
         /// </para>
         /// </remarks>
-        protected virtual void OnPropertyChanging(PropertyChangingEventArgs e)
+        protected virtual void OnPropertyChanging(string propertyName)
         {
 
         }
@@ -475,13 +645,13 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>
         /// Function called when a property is changed on the data context.
         /// </summary>
-        /// <param name="e">The event parameters.</param>
+        /// <param name="propertyName">The name of the property that is updated.</param>
         /// <remarks>
         /// <para>
         /// Implementors should override this method in order to handle a property change notification from their data context.
         /// </para>
         /// </remarks>
-        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
 
         }
@@ -510,6 +680,11 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
+            if (Disposing)
+            {
+                return;
+            }
+
             ButtonClose.Visible = false;
             SetContentName(null);
         }
@@ -523,7 +698,7 @@ namespace Gorgon.Editor.UI.Views
         /// Applications must call this method when setting their own data context. Otherwise, some functionality will not work.
         /// </para>
         /// </remarks>
-        protected void SetDataContext(IEditorContent dataContext)
+        protected void OnSetDataContext(IEditorContent dataContext)
         {
             UnassignEvents();
 
@@ -551,84 +726,8 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>
         /// Function called to shut down the view and perform any clean up required (including user defined graphics objects).
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Plug in developers do not need to clean up the <see cref="SwapChain"/> as it will be returned to the swap chain pool automatically.
-        /// </para>
-        /// </remarks>
         protected virtual void OnShutdown()
         {
-        }
-
-        /// <summary>
-        /// Function to retrieve a registered child panel control.
-        /// </summary>
-        /// <typeparam name="T">The type of panel.</typeparam>
-        /// <param name="type">The type of the panel view model.</param>
-        /// <returns>The registered panel if found, or <b>null</b> if not.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
-        protected T GetRegisteredPanel<T>(Type type)
-            where T : Control
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (_panelViews.TryGetValue(type.FullName, out Control result))
-            {
-                return (T)result;
-            }
-
-            Control SearchInterfaces(Type implementingType)
-            {
-                Type[] interfaces = implementingType.GetInterfaces();
-
-                if (interfaces == null)
-                {
-                    return null;
-                }
-
-                foreach (Type interfaceType in interfaces)
-                {
-                    if (_panelViews.TryGetValue(interfaceType.FullName, out Control interfaceResult))
-                    {
-                        return interfaceResult;
-                    }
-                }
-
-                return null;
-            }
-
-            // Check interfaces.
-            result = SearchInterfaces(type);
-
-            if (result != null)
-            {
-                return (T)result;
-            }
-
-            Type baseType = type.BaseType;
-
-            // Walk the hierarchy to see if we've descended from the specified type.
-            while (baseType != null)
-            {
-                if (_panelViews.TryGetValue(baseType.FullName, out result))
-                {
-                    return (T)result;
-                }
-
-                result = SearchInterfaces(baseType);
-
-                if (result != null)
-                {
-                    return (T)result;
-                }
-
-                baseType = baseType.BaseType;
-            }
-
-            return null;
         }
 
         /// <summary>

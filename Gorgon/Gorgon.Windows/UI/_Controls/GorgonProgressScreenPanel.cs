@@ -29,8 +29,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using Gorgon.Math;
-using Gorgon.Windows.Properties;
 
 namespace Gorgon.UI
 {
@@ -42,11 +40,7 @@ namespace Gorgon.UI
     {
         #region Variables.
         // The message panel to display.
-        private ProgressPanel _messagePanel;
-        // The synchronization context to use.
-        private readonly SynchronizationContext _syncContext;
-        // The current progress percentage.
-        private float _progress;
+        private GorgonProgressPanel _messagePanel;
         #endregion
 
         #region Events.
@@ -66,8 +60,8 @@ namespace Gorgon.UI
          RefreshProperties(RefreshProperties.Repaint)]
         public Color ProgressBoxForeColor
         {
-            get => _messagePanel.LabelProgressMessage.ForeColor;
-            set => _messagePanel.LabelProgressMessage.ForeColor = value;
+            get => _messagePanel.ProgressBoxForeColor;
+            set => _messagePanel.ProgressBoxForeColor = value;
         }
 
         /// <summary>Gets or sets the foreground color of progress message box.</summary>
@@ -78,8 +72,8 @@ namespace Gorgon.UI
          RefreshProperties(RefreshProperties.Repaint)]
         public Color ProgressBoxTitleForeColor
         {
-            get => _messagePanel.LabelTitle.ForeColor;
-            set => _messagePanel.LabelTitle.ForeColor = value;
+            get => _messagePanel.ProgressBoxTitleForeColor;
+            set => _messagePanel.ProgressBoxTitleForeColor = value;
         }
 
         /// <summary>
@@ -91,22 +85,8 @@ namespace Gorgon.UI
         RefreshProperties(RefreshProperties.Repaint)]
         public string ProgressMessage
         {
-            get => _messagePanel.LabelProgressMessage.Text;
-            set
-            {
-                if (string.Equals(value, _messagePanel.LabelProgressMessage.Text, StringComparison.CurrentCulture))
-                {
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(value))
-                {
-
-                }
-
-                _messagePanel.LabelProgressMessage.Visible = !string.IsNullOrEmpty(value);
-                _messagePanel.LabelProgressMessage.Text = value;
-            }
+            get => _messagePanel.ProgressMessage;
+            set => _messagePanel.ProgressMessage = value;
         }
 
         /// <summary>
@@ -118,17 +98,8 @@ namespace Gorgon.UI
          RefreshProperties(RefreshProperties.Repaint)]
         public string ProgressTitle
         {
-            get => _messagePanel.LabelTitle.Text;
-            set
-            {
-                if (string.Equals(value, _messagePanel.LabelTitle.Text, StringComparison.CurrentCulture))
-                {
-                    return;
-                }
-
-                _messagePanel.LabelTitle.Visible = !string.IsNullOrEmpty(value);
-                _messagePanel.LabelTitle.Text = value;
-            }
+            get => _messagePanel.ProgressTitle;
+            set => _messagePanel.ProgressTitle = value;
         }
 
         /// <summary>
@@ -141,8 +112,8 @@ namespace Gorgon.UI
         DefaultValue(typeof(Font), "Segoe UI, 9pt")]
         public Font ProgressMessageFont
         {
-            get => _messagePanel.LabelProgressMessage.Font;
-            set => _messagePanel.LabelProgressMessage.Font = value;
+            get => _messagePanel.ProgressMessageFont;
+            set => _messagePanel.ProgressMessageFont = value;
         }
 
         /// <summary>
@@ -155,8 +126,8 @@ namespace Gorgon.UI
          DefaultValue(typeof(Font), "Segoe UI, 14pt")]
         public Font ProgressTitleFont
         {
-            get => _messagePanel.LabelTitle.Font;
-            set => _messagePanel.LabelTitle.Font = value;
+            get => _messagePanel.ProgressTitleFont;
+            set => _messagePanel.ProgressTitleFont = value;
         }
 
         /// <summary>
@@ -165,8 +136,8 @@ namespace Gorgon.UI
         [Browsable(false)]
         public float CurrentValue
         {
-            get => _progress;
-            set => SetProgressValue(value);
+            get => _messagePanel.CurrentValue;
+            set => _messagePanel.CurrentValue = value;
         }
 
         /// <summary>
@@ -179,8 +150,8 @@ namespace Gorgon.UI
          RefreshProperties(RefreshProperties.Repaint)]
         public ProgressBarStyle MeterStyle
         {
-            get => _messagePanel.ProgressMeter.Style;
-            set => _messagePanel.ProgressMeter.Style = value;
+            get => _messagePanel.MeterStyle;
+            set => _messagePanel.MeterStyle = value;
         }
 
         /// <summary>
@@ -193,8 +164,8 @@ namespace Gorgon.UI
          RefreshProperties(RefreshProperties.Repaint)]
         public bool AllowCancellation
         {
-            get => _messagePanel.ButtonCancel.Visible;
-            set => _messagePanel.ButtonCancel.Visible = value;
+            get => _messagePanel.AllowCancellation;
+            set => _messagePanel.AllowCancellation = value;
         }
         #endregion
 
@@ -204,52 +175,10 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonCancel_Click(object sender, EventArgs e)
+        private void OnOperationCancelled(object sender, EventArgs e)
         {
-            _messagePanel.ButtonCancel.Enabled = false;
-            _messagePanel.ButtonCancel.Click -= ButtonCancel_Click;
-
             EventHandler handler = OperationCancelled;
             OperationCancelled?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Function to set the progress meter value in a thread safe context.
-        /// </summary>
-        /// <param name="value">The value to set.</param>
-        private void SetProgressValue(float value)
-        {
-            _progress = value.Min(1.0f).Max(0);
-
-            if ((_syncContext != null) && (InvokeRequired))
-            {
-                _syncContext.Post(progValue => SetProgressValue((float)progValue), _progress);
-                return;
-            }
-
-            int progressValue = (int)(_progress * 100.0f);
-
-            // This awful block of code is to handle a very stupid bug that's been a part of the progress bar since Aero was introduced:
-            // https://derekwill.com/2014/06/24/combating-the-lag-of-the-winforms-progressbar/
-            // Effectively, this disables animation so that we can get accurate feedback. 
-            if (progressValue == 100)
-            {
-                _messagePanel.ProgressMeter.Maximum = 101;
-                _messagePanel.ProgressMeter.Value = 101;
-                _messagePanel.ProgressMeter.Value = 100;
-                _messagePanel.ProgressMeter.Maximum = 100;
-            }
-            else if (progressValue > 0)
-            {
-                _messagePanel.ProgressMeter.Value = progressValue + 1;
-                _messagePanel.ProgressMeter.Value = progressValue - 1;
-            }
-            else
-            {
-                _messagePanel.ProgressMeter.Value = 1;
-                _messagePanel.ProgressMeter.Value = 0;
-            }
-            _messagePanel.ProgressMeter.Update();
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.</summary>
@@ -259,7 +188,7 @@ namespace Gorgon.UI
         {
             if (disposing)
             {
-                ProgressPanel panel = Interlocked.Exchange(ref _messagePanel, null);
+                GorgonProgressPanel panel = Interlocked.Exchange(ref _messagePanel, null);
 
                 if (panel == null)
                 {
@@ -268,7 +197,7 @@ namespace Gorgon.UI
                 }
 
                 panel.Resize -= MessagePanel_Resize;
-                panel.ButtonCancel.Click -= ButtonCancel_Click;
+                panel.OperationCancelled -= OnOperationCancelled;
                 panel.Dispose();
             }
 
@@ -307,33 +236,37 @@ namespace Gorgon.UI
         /// </summary>
         public GorgonProgressScreenPanel()
         {
-            _messagePanel = new ProgressPanel
+            InitializeComponent();
+
+            _messagePanel = new GorgonProgressPanel
             {
                 BackColor = Color.White,
                 BorderStyle = BorderStyle.FixedSingle,
                 Visible = true,
-                LabelProgressMessage =
-                                {
-                                    ForeColor = Color.Black,
-                                    Text = Resources.GOR_TEXT_PROGRESS
-                                },
-                LabelTitle =
-                                {
-                                    ForeColor = Color.DimGray,
-                                    Text = Resources.GOR_TEXT_WAIT_TITLE
-                                }
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
             };
 
             Controls.Add(_messagePanel);
 
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
-            {
-                _syncContext = SynchronizationContext.Current;
-                _messagePanel.ButtonCancel.Click += ButtonCancel_Click;
+            {                
+                _messagePanel.OperationCancelled += OnOperationCancelled;
             }
 
             _messagePanel.Resize += MessagePanel_Resize;
         }
         #endregion
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // GorgonProgressScreenPanel
+            // 
+            this.Name = "GorgonProgressScreenPanel";
+            this.ResumeLayout(false);
+
+        }
     }
 }

@@ -43,17 +43,11 @@ namespace Gorgon.Editor.ImageEditor
     /// Settings view model for image codecs.
     /// </summary>
     internal class Settings
-        : ViewModelBase<SettingsParameters>, ISettings
+        : SettingsCategoryBase<SettingsParameters>, ISettings
     {
         #region Variables.
-        // The busy state service.
-        private IBusyStateService _busyService;
-        // The message display service.
-        private IMessageDisplayService _messageDisplay;
         // The underlying settings for the plug in.
         private ImageEditorSettings _settings;
-        // The plug in service used to manage content and content importer plug ins.
-        private IContentPlugInService _pluginService;
         // The registry for image codecs.
         private ICodecRegistry _codecs;
         // The dialog used to open a codec assembly.
@@ -63,16 +57,8 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the ID for this panel.
-        /// </summary>
-        public Guid ID
-        {
-            get;
-        }
-
         /// <summary>Gets the name.</summary>
-        public string Name => Resources.GORIMG_IMPORT_DESC;
+        public override string Name => Resources.GORIMG_IMPORT_DESC;
 
         /// <summary>
         /// Property to return the last used alpha value when setting the alpha channel on an image.
@@ -174,6 +160,56 @@ namespace Gorgon.Editor.ImageEditor
             get;
         }
 
+        /// <summary>Property to set or return the width of the picker window.</summary>
+        public int PickerWidth
+        {
+            get => _settings.PickerWidth;
+            set
+            {
+                if (_settings.PickerWidth == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.PickerWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Property to set or return the height of the picker window.</summary>
+        public int PickerHeight
+        {
+            get => _settings.PickerHeight;
+            set
+            {
+                if (_settings.PickerHeight == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.PickerHeight = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>Property to set or return the state of the picker window.</summary>
+        public int PickerWindowState
+        {
+            get => _settings.PickerWindowState;
+            set
+            {
+                if (_settings.PickerWindowState == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.PickerWindowState = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Methods.
@@ -211,12 +247,12 @@ namespace Gorgon.Editor.ImageEditor
         {
             try
             {
-                _pluginService.WriteContentSettings(OLDE_ImageEditorPlugIn.SettingsName, _settings);
+                HostServices.ContentPlugInService.WriteContentSettings(ImageEditorPlugIn.SettingsName, _settings);
             }
             catch (Exception ex)
             {
                 // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-                Log.LogException(ex);
+                HostServices.Log.LogException(ex);
             }
         }
 
@@ -246,7 +282,7 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     if ((response != MessageResponse.YesToAll) && (response != MessageResponse.NoToAll))
                     {
-                        response = _messageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: plugIns.Count > 1);
+                        response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: plugIns.Count > 1);
                     }
 
                     if (response == MessageResponse.NoToAll)
@@ -254,7 +290,7 @@ namespace Gorgon.Editor.ImageEditor
                         return;
                     }
 
-                    _busyService.SetBusy();
+                    HostServices.BusyService.SetBusy();
 
                     if (response == MessageResponse.No)
                     {
@@ -269,7 +305,7 @@ namespace Gorgon.Editor.ImageEditor
                         CodecPlugInPaths.Remove(setting);
                     }
 
-                    _busyService.SetIdle();
+                    HostServices.BusyService.SetIdle();
                 }
 
                 // Store the settings now.
@@ -277,11 +313,11 @@ namespace Gorgon.Editor.ImageEditor
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANNOT_UNLOAD_CODECS);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANNOT_UNLOAD_CODECS);
             }
             finally
             {
-                _busyService.SetIdle();
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -310,12 +346,12 @@ namespace Gorgon.Editor.ImageEditor
                     return;
                 }
 
-                _busyService.SetBusy();
+                HostServices.BusyService.SetBusy();
                 IReadOnlyList<GorgonImageCodecPlugIn> codecs = _codecs.AddCodecPlugIn(path, out IReadOnlyList<string> errors);
 
                 if (errors.Count > 0)
                 {
-                    _messageDisplay.ShowError(Resources.GORIMG_ERR_CODEC_LOAD_ERRORS_PRESENT, details: string.Join("\n\n", errors.Select((item, index) => $"Error #{index + 1}\n--------------\n{item}")));
+                    HostServices.MessageDisplay.ShowError(Resources.GORIMG_ERR_CODEC_LOAD_ERRORS_PRESENT, details: string.Join("\n\n", errors.Select((item, index) => $"Error #{index + 1}\n--------------\n{item}")));
 
                     if (codecs.Count == 0)
                     {
@@ -345,11 +381,11 @@ namespace Gorgon.Editor.ImageEditor
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANNOT_LOAD_CODEC);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANNOT_LOAD_CODEC);
             }
             finally
             {
-                _busyService.SetIdle();
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -360,12 +396,9 @@ namespace Gorgon.Editor.ImageEditor
         /// </remarks>
         protected override void OnInitialize(SettingsParameters injectionParameters)
         {
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
-            _pluginService = injectionParameters.ContentPlugInService ?? throw new ArgumentMissingException(nameof(injectionParameters.ContentPlugInService), nameof(injectionParameters));
-            _codecs = injectionParameters.Codecs ?? throw new ArgumentMissingException(nameof(injectionParameters.Codecs), nameof(injectionParameters));
-            _openCodecDialog = injectionParameters.CodecFileDialog ?? throw new ArgumentMissingException(nameof(injectionParameters.CodecFileDialog), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(injectionParameters.BusyService), nameof(injectionParameters));
+            _settings = injectionParameters.Settings;
+            _codecs = injectionParameters.Codecs;
+            _openCodecDialog = injectionParameters.CodecFileDialog;
             _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);
             foreach (GorgonImageCodecPlugIn plugin in _codecs.CodecPlugIns)
             {
@@ -401,14 +434,13 @@ namespace Gorgon.Editor.ImageEditor
             CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
 
             base.OnUnload();
-        }
+        }        
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="Settings"/> class.</summary>
         public Settings()
         {
-            ID = Guid.NewGuid();
             WriteSettingsCommand = new EditorCommand<object>(DoWriteSettings);
             LoadPlugInAssemblyCommand = new EditorCommand<object>(DoLoadPlugInAssembly);
             UnloadPlugInAssembliesCommand = new EditorCommand<object>(DoUnloadPlugInAssemblies, CanUnloadPlugInAssemblies);

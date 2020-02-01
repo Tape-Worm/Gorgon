@@ -32,6 +32,15 @@ namespace Gorgon.Editor.UI
     /// An command used to carry out an asynchronous operation.
     /// </summary>
     /// <typeparam name="T">The type of data to pass to the command.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// Commands are used to perform actions on a view model. They work similarly to events in that they are usually called in response to a UI action like a button click. 
+    /// </para>
+    /// <para>
+    /// Unlike the <see cref="IEditorCommand{T}"/> type, this allows commands to execute asynchronously and await the results on the view so that order of execution can be guaranteed even on the view.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="IEditorCommand{T}"/>
     public interface IEditorAsyncCommand<in T>
         : IEditorCommand<T>
     {

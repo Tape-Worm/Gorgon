@@ -42,10 +42,6 @@ namespace Gorgon.Editor.Views
     internal partial class PlugInListPanel
         : SettingsBaseControl, IDataContext<ISettingsPlugInsList>
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>Property to return the ID of the panel.</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -140,6 +136,13 @@ namespace Gorgon.Editor.Views
 
                 selected.Selected = true;
                 ListPlugIns.SelectedIndices.Add(selected.Index);
+
+                if ((dataContext?.SelectPlugInCommand == null) || (!dataContext.SelectPlugInCommand.CanExecute(selected.Index)))
+                {
+                    return;
+                }
+
+                dataContext.SelectPlugInCommand.Execute(selected.Index);
             }
             finally
             {

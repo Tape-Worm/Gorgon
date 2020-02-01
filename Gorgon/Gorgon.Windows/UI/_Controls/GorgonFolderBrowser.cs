@@ -472,15 +472,7 @@ namespace Gorgon.UI
         [Browsable(true), Category("Appearance"), Description("Sets the background color for the control."), DefaultValue(typeof(Color), "Empty")]
         public new Color BackColor
         {
-            get
-            {
-                if ((Parent != null) && (base.BackColor == Color.Empty))
-                {
-                    return Parent.BackColor;
-                }
-
-                return base.BackColor;
-            }
+            get => (Parent != null) && (base.BackColor == Color.Empty) ? Parent.BackColor : base.BackColor;
             set => base.BackColor = value;
         }
         #endregion

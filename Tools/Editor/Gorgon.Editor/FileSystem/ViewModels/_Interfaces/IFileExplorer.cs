@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -47,6 +46,14 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the clipboard handler for this view model.
+        /// </summary>
+        IClipboardHandler Clipboard
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the metadata for the content plug ins.
         /// </summary>
@@ -210,10 +217,18 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the command to execute when a content node is opened.
         /// </summary>
-        IEditorCommand<IContentFile> OpenContentFileCommand
+        IEditorAsyncCommand<object> OpenContentFileCommand
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the command to refresh the file system.
+        /// </summary>
+        IEditorAsyncCommand<object> RefreshCommand
+        {
+            get;
         }
         #endregion
     }

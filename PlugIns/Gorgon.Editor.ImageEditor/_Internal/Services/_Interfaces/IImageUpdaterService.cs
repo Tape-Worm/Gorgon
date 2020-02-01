@@ -44,7 +44,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="startMip">The starting mip map level to copy.</param>
         /// <param name="startArrayOrDepth">The starting array index for 2D images, or depth slice for 3D images.</param>
         /// <param name="alignment">The alignment of the image, relative to the source image.</param>
-        void CopyTo(IGorgonImage srcImage, IGorgonImage destImage, int startMip, int startArrayOrDepth, Alignment alignment);
+        /// <param name="clearDestination"><b>true</b> to clear the destination, <b>false</b> to keep the image contents.</param>
+        void CopyTo(IGorgonImage srcImage, IGorgonImage destImage, int startMip, int startArrayOrDepth, Alignment alignment, bool clearDestination = true);
 
         /// <summary>
         /// Function to resize the image to fit within the width and height specified.

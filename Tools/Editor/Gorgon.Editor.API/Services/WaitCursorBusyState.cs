@@ -43,15 +43,47 @@ namespace Gorgon.Editor.Services
         : IBusyStateService
     {
         #region Variables.
+        // Synchronization lock for the event.
+        private readonly object _eventLock = new object();
         // The number of times the SetBusy method has been called.
         private int _busyStateCounter;
         #endregion
 
         #region Events.
+        // Event triggered when the busy state changes.
+        private event EventHandler _busyStateChanged;
+
         /// <summary>
         /// Event triggered when the busy state changes.
         /// </summary>
-        public event EventHandler BusyStateChanged;
+        public event EventHandler BusyStateChanged
+        {
+            add
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        _busyStateChanged = null;
+                        return;
+                    }
+
+                    _busyStateChanged += value;
+                }
+            }
+            remove
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    _busyStateChanged -= value;
+                }
+            }
+        }
         #endregion
 
         #region Properties.
@@ -67,6 +99,21 @@ namespace Gorgon.Editor.Services
 
         #region Methods.
         /// <summary>
+        /// Function to trigger the busy state change event.
+        /// </summary>
+        private void OnBusyStateChanged()
+        {
+            EventHandler handler = null;
+
+            lock (_eventLock)
+            {
+                handler = _busyStateChanged;
+            }
+
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
         /// Function to forcefully reset the busy state back to an idle state.
         /// </summary>
         public void Reset()
@@ -79,8 +126,7 @@ namespace Gorgon.Editor.Services
             Cursor.Current = Cursors.Default;
             IsBusy = false;
 
-            EventHandler handler = BusyStateChanged;
-            handler?.Invoke(this, EventArgs.Empty);
+            OnBusyStateChanged();
         }
 
         /// <summary>
@@ -96,8 +142,7 @@ namespace Gorgon.Editor.Services
             Cursor.Current = Cursors.WaitCursor;
             IsBusy = true;
 
-            EventHandler handler = BusyStateChanged;
-            handler?.Invoke(this, EventArgs.Empty);
+            OnBusyStateChanged();
         }
 
         /// <summary>
@@ -116,8 +161,7 @@ namespace Gorgon.Editor.Services
             Cursor.Current = Cursors.Default;
             IsBusy = false;
 
-            EventHandler handler = BusyStateChanged;
-            handler?.Invoke(this, EventArgs.Empty);
+            OnBusyStateChanged();
         }
         #endregion
     }

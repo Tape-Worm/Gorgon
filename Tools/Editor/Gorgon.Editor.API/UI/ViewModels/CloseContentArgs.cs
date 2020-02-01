@@ -29,7 +29,7 @@ using System.ComponentModel;
 namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Arguments for the <see cref="OLDE_IEditorContent.CloseContentCommand"/>.
+    /// Arguments for the <see cref="IEditorContent.CloseContentCommand"/>.
     /// </summary>
     public class CloseContentArgs
         : CancelEventArgs

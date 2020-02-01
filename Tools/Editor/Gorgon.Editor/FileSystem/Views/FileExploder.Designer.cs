@@ -15,8 +15,8 @@
         {
             if (disposing)
             {
-                _isRenamingChanged = null;
-                _controlContextChanged = null;
+                IsRenamingChangedEvent = null;
+                ControlContextChangedEvent = null;
                 DataContext?.OnUnload();
                 UnassignEvents();
 
@@ -114,13 +114,15 @@
             // SplitFileSystem.Panel1
             // 
             this.SplitFileSystem.Panel1.Controls.Add(this.TreeDirectories);
+            this.SplitFileSystem.Panel1.TabIndex = 2;
             // 
             // SplitFileSystem.Panel2
             // 
             this.SplitFileSystem.Panel2.Controls.Add(this.GridFiles);
+            this.SplitFileSystem.Panel2.TabIndex = 0;
             this.SplitFileSystem.Size = new System.Drawing.Size(600, 441);
             this.SplitFileSystem.SplitterDistance = 145;
-            this.SplitFileSystem.TabIndex = 2;
+            this.SplitFileSystem.TabIndex = 0;
             // 
             // TreeDirectories
             // 
@@ -309,6 +311,7 @@
             this.GridFiles.StandardTab = true;
             this.GridFiles.TabIndex = 0;
             this.GridFiles.RowsDrag += new System.EventHandler<Gorgon.Editor.Views.RowsDragEventArgs>(this.GridFiles_RowsDrag);
+            this.GridFiles.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridFiles_CellDoubleClick);
             this.GridFiles.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridFiles_CellEndEdit);
             this.GridFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.GridFiles_CellFormatting);
             this.GridFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.GridFiles_DragDrop);
@@ -419,6 +422,7 @@
             this.MenuItemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.MenuItemOpen.Size = new System.Drawing.Size(146, 22);
             this.MenuItemOpen.Text = "Open";
+            this.MenuItemOpen.Click += new System.EventHandler(this.MenuItemOpen_Click);
             // 
             // MenuSepFileExport
             // 
@@ -493,7 +497,7 @@
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.panel1.Size = new System.Drawing.Size(600, 27);
-            this.panel1.TabIndex = 1;
+            this.panel1.TabIndex = 0;
             // 
             // TextSearch
             // 
@@ -505,7 +509,7 @@
             this.TextSearch.Location = new System.Drawing.Point(0, 0);
             this.TextSearch.Name = "TextSearch";
             this.TextSearch.Size = new System.Drawing.Size(600, 24);
-            this.TextSearch.TabIndex = 4;
+            this.TextSearch.TabIndex = 1;
             this.TextSearch.ToolTipBackColor = System.Drawing.SystemColors.Info;
             this.TextSearch.ToolTipForeColor = System.Drawing.SystemColors.InfoText;
             this.TextSearch.ToolTipIcon = System.Windows.Forms.ToolTipIcon.None;

@@ -20,6 +20,11 @@
 
             if (disposing)
             {
+                if (_contentRenderer != null)
+                {
+                    _contentRenderer.ZoomScale -= ContentRenderer_ZoomScale;
+                }
+
                 DataContext = null;
             }
 
@@ -35,7 +40,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OLDE_FormRibbon));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRibbon));
             this.RibbonImageContent = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
             this.TabImage = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
             this.GroupImageFile = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
@@ -49,6 +54,7 @@
             this.GroupEdit = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonEditInApp = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.CheckFx = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonImageUndo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -83,6 +89,11 @@
             this.Item1600Percent = new System.Windows.Forms.ToolStripMenuItem();
             this.Item3200Percent = new System.Windows.Forms.ToolStripMenuItem();
             this.Item6400Percent = new System.Windows.Forms.ToolStripMenuItem();
+            this.TabEffects = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
+            this.GroupImageEffects = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.kryptonRibbonGroupButton2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ContextFx = new ComponentFactory.Krypton.Ribbon.KryptonRibbonContext();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).BeginInit();
             this.MenuImageType.SuspendLayout();
             this.MenuZoom.SuspendLayout();
@@ -93,10 +104,12 @@
             this.RibbonImageContent.AllowFormIntegrate = true;
             this.RibbonImageContent.InDesignHelperMode = true;
             this.RibbonImageContent.Name = "RibbonImageContent";
+            this.RibbonImageContent.RibbonContexts.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonContext[] {
+            this.ContextFx});
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
-            this.TabImage});
-            this.RibbonImageContent.SelectedContext = null;
-            this.RibbonImageContent.SelectedTab = this.TabImage;
+            this.TabImage,
+            this.TabEffects});
+            this.RibbonImageContent.SelectedTab = this.TabEffects;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
             // 
@@ -190,7 +203,8 @@
             // kryptonRibbonGroupTriple3
             // 
             this.kryptonRibbonGroupTriple3.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonEditInApp});
+            this.ButtonEditInApp,
+            this.CheckFx});
             // 
             // ButtonEditInApp
             // 
@@ -205,6 +219,16 @@
     "pplication exits.\r\n";
             this.ButtonEditInApp.ToolTipTitle = "Edit In Application";
             this.ButtonEditInApp.Click += new System.EventHandler(this.ButtonEditInApp_Click);
+            // 
+            // CheckFx
+            // 
+            this.CheckFx.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.CheckFx.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_effect_48x48;
+            this.CheckFx.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.image_effect_16x16;
+            this.CheckFx.KeyTip = "F";
+            this.CheckFx.TextLine1 = "FX";
+            this.CheckFx.ToolTipBody = "Provides effects to apply to the current image array/depth/mip level.";
+            this.CheckFx.ToolTipTitle = "FX";
             // 
             // kryptonRibbonGroupLines2
             // 
@@ -499,6 +523,7 @@
             // 
             // Item3200Percent
             // 
+            this.Item3200Percent.CheckOnClick = true;
             this.Item3200Percent.Name = "Item3200Percent";
             this.Item3200Percent.Size = new System.Drawing.Size(133, 22);
             this.Item3200Percent.Tag = "Percent3200";
@@ -507,11 +532,49 @@
             // 
             // Item6400Percent
             // 
+            this.Item6400Percent.CheckOnClick = true;
             this.Item6400Percent.Name = "Item6400Percent";
             this.Item6400Percent.Size = new System.Drawing.Size(133, 22);
             this.Item6400Percent.Tag = "Percent6400";
             this.Item6400Percent.Text = "6400%";
             this.Item6400Percent.Click += new System.EventHandler(this.ItemZoom_Click);
+            // 
+            // TabEffects
+            // 
+            this.TabEffects.ContextName = "ContextFx";
+            this.TabEffects.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
+            this.GroupImageEffects});
+            this.TabEffects.KeyTip = "F";
+            this.TabEffects.Text = "Image Effects";
+            // 
+            // GroupImageEffects
+            // 
+            this.GroupImageEffects.AllowCollapsed = false;
+            this.GroupImageEffects.DialogBoxLauncher = false;
+            this.GroupImageEffects.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.kryptonRibbonGroupTriple4});
+            this.GroupImageEffects.KeyTipGroup = "I";
+            this.GroupImageEffects.TextLine1 = "Image";
+            // 
+            // kryptonRibbonGroupTriple4
+            // 
+            this.kryptonRibbonGroupTriple4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupButton2});
+            // 
+            // kryptonRibbonGroupButton2
+            // 
+            this.kryptonRibbonGroupButton2.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.gauss_blur_48x48;
+            this.kryptonRibbonGroupButton2.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.gauss_blur_16x16;
+            this.kryptonRibbonGroupButton2.TextLine1 = "Gaussian";
+            this.kryptonRibbonGroupButton2.TextLine2 = "Blur";
+            this.kryptonRibbonGroupButton2.ToolTipBody = "Blurs the image using a gaussian blur algorithm.";
+            this.kryptonRibbonGroupButton2.ToolTipTitle = "Gaussian Blur";
+            // 
+            // ContextFx
+            // 
+            this.ContextFx.ContextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.ContextFx.ContextName = "ContextFx";
+            this.ContextFx.ContextTitle = "FX";
             // 
             // FormRibbon
             // 
@@ -578,5 +641,11 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonPremultipliedAlpha;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSetAlpha;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton CheckFx;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab TabEffects;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupImageEffects;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton kryptonRibbonGroupButton2;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonContext ContextFx;
     }
 }

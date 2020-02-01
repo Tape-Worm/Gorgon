@@ -27,7 +27,6 @@
 using System;
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging;
@@ -69,8 +68,9 @@ namespace Gorgon.Editor.ImageEditor
 
             LabelAnchor.Visible = AlignmentPicker.Visible = RadioCrop.Checked;
 
-            RadioResize.Enabled = (DataContext.AllowedModes & CropResizeMode.Resize) == CropResizeMode.Resize;
-            LabelImageFilter.Visible = ComboImageFilter.Visible = CheckPreserveAspect.Visible = RadioResize.Enabled && RadioResize.Checked;
+            bool radioEnabled = (DataContext.AllowedModes & CropResizeMode.Resize) == CropResizeMode.Resize;
+            RadioResize.Enabled = radioEnabled;
+            LabelImageFilter.Visible = ComboImageFilter.Visible = CheckPreserveAspect.Visible = radioEnabled && RadioResize.Checked;
         }
 
 
@@ -282,8 +282,20 @@ namespace Gorgon.Editor.ImageEditor
         ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
         protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
 
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        /// <summary>Raises the <see cref="System.Windows.Forms.Control.VisibleChanged"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> object that contains the event data.</param>
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+
+            if (Visible)
+            {
+                ValidateControls();
+            }
+        }
+
+        /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -313,6 +325,10 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
+            if (IsHandleCreated)
+            {
+                ValidateControls();
+            }
         }
         #endregion
 

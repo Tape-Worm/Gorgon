@@ -33,7 +33,6 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
-using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.Views
 {

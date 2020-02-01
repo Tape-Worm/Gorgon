@@ -24,12 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Core;
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.PlugIns
@@ -40,6 +35,14 @@ namespace Gorgon.Editor.PlugIns
     public interface IHostToolServices
         : IHostServices
     {
+        /// <summary>
+        /// Property to return the graphics and the 2D renderer used by the host application.
+        /// </summary>
+        IGraphicsContext GraphicsContext
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the service that allows a conetnt plug in to access tool content plug ins.
         /// </summary>

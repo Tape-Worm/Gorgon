@@ -24,12 +24,10 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using Gorgon.Windows.Properties;
 
 namespace Gorgon.UI
 {
@@ -41,9 +39,7 @@ namespace Gorgon.UI
     {
         #region Variables.
         // The message panel to display.
-        private WaitMessagePanel _messagePanel;
-        // The image used for the wait icon.
-        private Image _waitIcon;
+        private GorgonWaitMessagePanel _messagePanel;
         #endregion
 
         #region Properties.
@@ -54,9 +50,8 @@ namespace Gorgon.UI
         DefaultValue(true), RefreshProperties(RefreshProperties.Repaint)]
         public bool WaitBoxHasBorder
         {
-            get => _messagePanel.BorderStyle == BorderStyle.FixedSingle;
-            // ReSharper disable once ValueParameterNotUsed
-            set => _messagePanel.BorderStyle = value ? BorderStyle.FixedSingle : BorderStyle.None;
+            get => _messagePanel.WaitBoxHasBorder;
+            set => _messagePanel.WaitBoxHasBorder = value;
         }
 
         /// <summary>Gets or sets the foreground color of wait message box.</summary>
@@ -67,8 +62,8 @@ namespace Gorgon.UI
          RefreshProperties(RefreshProperties.Repaint)]
         public Color WaitBoxForeColor
         {
-            get => _messagePanel.LabelWaitMessage.ForeColor;
-            set => _messagePanel.LabelWaitMessage.ForeColor = value;
+            get => _messagePanel.WaitBoxForeColor;
+            set => _messagePanel.WaitBoxForeColor = value;
         }
 
         /// <summary>Gets or sets the foreground color of wait message box.</summary>
@@ -79,8 +74,8 @@ namespace Gorgon.UI
          RefreshProperties(RefreshProperties.Repaint)]
         public Color WaitBoxTitleForeColor
         {
-            get => _messagePanel.LabelWaitTitle.ForeColor;
-            set => _messagePanel.LabelWaitTitle.ForeColor = value;
+            get => _messagePanel.WaitBoxTitleForeColor;
+            set => _messagePanel.WaitBoxTitleForeColor = value;
         }
 
         /// <summary>
@@ -92,39 +87,8 @@ namespace Gorgon.UI
         RefreshProperties(RefreshProperties.Repaint)]
         public string WaitMessage
         {
-            get => _messagePanel.LabelWaitMessage.Text;
-            set
-            {
-                if (string.Equals(value, _messagePanel.LabelWaitMessage.Text, StringComparison.CurrentCulture))
-                {
-                    return;
-                }
-
-                _messagePanel.LabelWaitMessage.Text = value;
-
-                if (string.IsNullOrEmpty(_messagePanel.LabelWaitMessage.Text))
-                {
-                    _messagePanel.PanelWait.RowStyles[1].SizeType = SizeType.Absolute;
-                    _messagePanel.PanelWait.RowStyles[1].Height = 0;
-
-                    if (string.IsNullOrEmpty(_messagePanel.LabelWaitTitle.Text))
-                    {
-                        _messagePanel.PanelWait.ColumnStyles[1].SizeType = SizeType.Absolute;
-                        _messagePanel.PanelWait.ColumnStyles[1].Width = 0;
-                    }
-                    else if (_messagePanel.PanelWait.ColumnStyles[1].SizeType != SizeType.AutoSize)
-                    {
-                        _messagePanel.PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
-                    }
-                }
-                else
-                {
-                    _messagePanel.PanelWait.RowStyles[1].SizeType = SizeType.AutoSize;
-                    _messagePanel.PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
-                }
-
-                Invalidate();
-            }
+            get => _messagePanel.WaitMessage;
+            set => _messagePanel.WaitMessage = value;
         }
 
         /// <summary>
@@ -136,41 +100,8 @@ namespace Gorgon.UI
          RefreshProperties(RefreshProperties.Repaint)]
         public string WaitTitle
         {
-            get => _messagePanel.LabelWaitTitle.Text;
-            set
-            {
-                if (string.Equals(value, _messagePanel.LabelWaitTitle.Text, StringComparison.CurrentCulture))
-                {
-                    return;
-                }
-
-                _messagePanel.LabelWaitTitle.Text = value;
-
-                if (string.IsNullOrEmpty(_messagePanel.LabelWaitTitle.Text))
-                {
-                    _messagePanel.LabelWaitMessage.Anchor = AnchorStyles.Left;
-                    _messagePanel.PanelWait.RowStyles[0].SizeType = SizeType.Absolute;
-                    _messagePanel.PanelWait.RowStyles[0].Height = 0;
-
-                    if (string.IsNullOrEmpty(_messagePanel.LabelWaitMessage.Text))
-                    {
-                        _messagePanel.PanelWait.ColumnStyles[1].SizeType = SizeType.Absolute;
-                        _messagePanel.PanelWait.ColumnStyles[1].Width = 0;
-                    }
-                    else if (_messagePanel.PanelWait.ColumnStyles[1].SizeType != SizeType.AutoSize)
-                    {
-                        _messagePanel.PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
-                    }
-                }
-                else
-                {
-                    _messagePanel.LabelWaitMessage.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-                    _messagePanel.PanelWait.RowStyles[0].SizeType = SizeType.AutoSize;
-                    _messagePanel.PanelWait.ColumnStyles[1].SizeType = SizeType.AutoSize;
-                }
-
-                Invalidate();
-            }
+            get => _messagePanel.WaitTitle;
+            set => _messagePanel.WaitTitle = value;
         }
 
         /// <summary>
@@ -183,12 +114,8 @@ namespace Gorgon.UI
         DefaultValue(typeof(Font), "Segoe UI, 9pt")]
         public Font WaitMessageFont
         {
-            get => _messagePanel.LabelWaitMessage.Font;
-            set
-            {
-                _messagePanel.LabelWaitMessage.Font = value;
-                Invalidate();
-            }
+            get => _messagePanel.WaitMessageFont;
+            set => _messagePanel.WaitMessageFont = value;
         }
 
         /// <summary>
@@ -201,12 +128,8 @@ namespace Gorgon.UI
          DefaultValue(typeof(Font), "Segoe UI, 12pt")]
         public Font WaitTitleFont
         {
-            get => _messagePanel.LabelWaitTitle.Font;
-            set
-            {
-                _messagePanel.LabelWaitTitle.Font = value;
-                Invalidate();
-            }
+            get => _messagePanel.WaitTitleFont;
+            set => _messagePanel.WaitTitleFont = value;
         }
 
         /// <summary>
@@ -222,24 +145,8 @@ namespace Gorgon.UI
          DefaultValue(typeof(Image), null)]
         public Image WaitIcon
         {
-            get => _waitIcon;
-            set
-            {
-                if (_waitIcon == value)
-                {
-                    return;
-                }
-
-                if (value == null)
-                {
-                    _waitIcon = null;
-                    _messagePanel.ImageWait.Image = Resources.wait_48x48;
-                }
-                else
-                {
-                    _messagePanel.ImageWait.Image = _waitIcon = value;
-                }
-            }
+            get => _messagePanel.WaitIcon;
+            set => _messagePanel.WaitIcon = value;
         }
         #endregion
 
@@ -251,7 +158,7 @@ namespace Gorgon.UI
         {
             if (disposing)
             {
-                WaitMessagePanel panel = Interlocked.Exchange(ref _messagePanel, null);
+                GorgonWaitMessagePanel panel = Interlocked.Exchange(ref _messagePanel, null);
                 panel?.Dispose();
             }
 
@@ -280,19 +187,11 @@ namespace Gorgon.UI
         /// </summary>
         public GorgonWaitScreenPanel()
         {
-            _messagePanel = new WaitMessagePanel
+            _messagePanel = new GorgonWaitMessagePanel
             {
                 BackColor = Color.White,
                 BorderStyle = BorderStyle.FixedSingle,
-                Visible = true,
-                LabelWaitMessage =
-                                {
-                                    Text = Resources.GOR_TEXT_WAIT_MESSAGE
-                                },
-                LabelWaitTitle =
-                                {
-                                    Text = Resources.GOR_TEXT_WAIT_TITLE
-                                }
+                Visible = true
             };
 
             Controls.Add(_messagePanel);

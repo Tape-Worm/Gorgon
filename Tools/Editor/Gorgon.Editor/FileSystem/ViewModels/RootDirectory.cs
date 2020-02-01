@@ -24,15 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Gorgon.Collections;
-using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Properties;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
 
@@ -42,7 +35,7 @@ namespace Gorgon.Editor.ViewModels
     /// The root directory for the editor virtual file system.
     /// </summary>
     internal class RootDirectory
-        : ViewModelBase<RootDirectoryParameters>, IDirectory
+        : ViewModelBase<RootDirectoryParameters, IHostServices>, IDirectory
     {
         #region Variables.
         // The root directory wrapped by the view model.

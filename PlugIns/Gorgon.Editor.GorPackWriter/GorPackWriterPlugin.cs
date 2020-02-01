@@ -47,7 +47,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
     /// Gorgon packed file writer plug in interface.
     /// </summary>
     internal class GorPackWriterPlugIn
-        : OLDE_FileWriterPlugIn
+        : FileWriterPlugIn
     {
         #region Constants.
         // The header for the file.
@@ -514,9 +514,9 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// The <paramref name="file" /> parameter is never <b>null</b>, and is guaranteed to exist when this method is called. If neither of these are true, then this method is not called.
         /// </para>
         /// </remarks>
-        protected override bool OnEvaluateCanWriteFile(FileInfo file)
+        protected override bool OnEvaluateCanWriteFile(string file)
         {
-            using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream stream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (var memStream = new MemoryStream())
             {
                 int byteCount = Encoding.UTF8.GetByteCount(FileHeader) + 5; // Plus string length bytes (potentially up to 4), plus byte order mark.
@@ -556,7 +556,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// This progress method is optional, and if <b>null</b> is passed, then no progress is reported.
         /// </para>
         /// </remarks>
-        protected override async Task OnWriteAsync(FileInfo file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+        protected override async Task OnWriteAsync(string file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
             // We will dump our file data into a temporary work space.
             var tempFolderPath = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
@@ -611,7 +611,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                 progressCallback?.Invoke(1, 1, false);
 
                 inStream = tempFile.Open(FileMode.Open, FileAccess.Read, FileShare.None);
-                outStream = file.Open(FileMode.Create, FileAccess.Write, FileShare.None);
+                outStream = File.Open(file, FileMode.Create, FileAccess.Write, FileShare.None);
                 writer = new GorgonBinaryWriter(outStream);
                 writer.Write(FileHeader);
                 writer.Write((int)compressedFatStream.Length);

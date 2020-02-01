@@ -27,8 +27,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -36,19 +36,17 @@ namespace Gorgon.Editor.ViewModels
     /// <summary>
     /// The view model for the editor settings panel.
     /// </summary>
-    internal class EditorSettingsVm
-        : ViewModelBase<EditorSettingsParameters>, IEditorSettingsVm
+    internal class EditorSettings
+        : ViewModelBase<EditorSettingsParameters, IHostServices>, IEditorSettings
     {
         #region Variables.
-        // The message display service.
-        private IMessageDisplayService _messageDisplay;
         // The currently selected category.
-        private ISettingsCategoryViewModel _current;
+        private ISettingsCategory _current;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the current category ID being used.</summary>
-        public ISettingsCategoryViewModel CurrentCategory
+        public ISettingsCategory CurrentCategory
         {
             get => _current;
             private set
@@ -65,7 +63,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Property to return the list of categories available.</summary>
-        public ObservableCollection<ISettingsCategoryViewModel> Categories
+        public ObservableCollection<ISettingsCategory> Categories
         {
             get;
             private set;
@@ -114,30 +112,25 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GOREDIT_ERR_SELECT_SETTING_CATEGORY);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_SELECT_SETTING_CATEGORY);
             }
         }
 
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <exception cref="ArgumentMissingException">MessageDisplay - injectionParameters
-        /// or
-        /// Categories - injectionParameters</exception>
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
         protected override void OnInitialize(EditorSettingsParameters injectionParameters)
         {
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            Categories = new ObservableCollection<ISettingsCategoryViewModel>(injectionParameters.Categories
-                ?? throw new ArgumentMissingException(nameof(injectionParameters.Categories), nameof(injectionParameters)));
-            PlugInsList = injectionParameters.PlugInsList ?? throw new ArgumentMissingException(nameof(injectionParameters.PlugInsList), nameof(injectionParameters));
+            Categories = new ObservableCollection<ISettingsCategory>(injectionParameters.Categories);
+            PlugInsList = injectionParameters.PlugInsList;
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.EditorSettingsVm"/> class.</summary>
-        public EditorSettingsVm() => SetCategoryCommand = new EditorCommand<string>(DoSetCategory);
+        /// <summary>Initializes a new instance of the <see cref="EditorSettings"/> class.</summary>
+        public EditorSettings() => SetCategoryCommand = new EditorCommand<string>(DoSetCategory);
         #endregion
     }
 }

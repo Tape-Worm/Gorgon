@@ -26,10 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Content
 {
@@ -41,24 +39,9 @@ namespace Gorgon.Editor.Content
     {
         #region Events.
         /// <summary>
-        /// Event triggered if this content file was deleted.
-        /// </summary>
-        event EventHandler Deleted;
-
-        /// <summary>
-        /// Event triggered if the content was closed with the <see cref="CloseContent"/> method.
-        /// </summary>
-        event EventHandler Closed;
-
-        /// <summary>
         /// Event triggered if this content file was renamed.
         /// </summary>
         event EventHandler<ContentFileRenamedEventArgs> Renamed;
-
-        /// <summary>
-        /// Event triggered if the dependencies list for this file is updated.
-        /// </summary>
-        event EventHandler DependenciesUpdated;
         #endregion
 
         #region Properties.
@@ -96,14 +79,6 @@ namespace Gorgon.Editor.Content
         }
 
         /// <summary>
-        /// Property to return the plugin associated with the file.
-        /// </summary>
-        ContentPlugIn ContentPlugIn
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the metadata associated with the file.
         /// </summary>
         ProjectItemMetadata Metadata
@@ -122,16 +97,6 @@ namespace Gorgon.Editor.Content
         #endregion
 
         #region Methods.  
-        /// <summary>
-        /// Function to notify that the content should close if it's open.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This method will close the content forcefully, that is, it will not prompt to save and any changes will be lost.
-        /// </para>
-        /// </remarks>
-        void CloseContent();
-
         /// <summary>
         /// Function to link a content file to be dependant upon this content.
         /// </summary>
@@ -153,11 +118,6 @@ namespace Gorgon.Editor.Content
         /// Function to notify that the metadata should be refreshed.
         /// </summary>
         void RefreshMetadata();
-
-        /// <summary>
-        /// Function to persist the metadata for content.
-        /// </summary>
-        void SaveMetadata();
 
         /// <summary>Function called to refresh the information about the file.</summary>
         void Refresh();

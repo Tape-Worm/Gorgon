@@ -101,11 +101,11 @@ namespace Gorgon.Editor.Services
         IEditorContentImporter GetContentImporter(string filePath);
 
         /// <summary>
-        /// Function 
+        /// Function to retrieve the actual plug in based on the name associated with the project metadata item.
         /// </summary>
-        /// <param name="metadata"></param>
-        /// <returns></returns>
-        public (ContentPlugIn plugin, MetadataPlugInState state) GetContentPlugIn(ProjectItemMetadata metadata);
+        /// <param name="metadata">The metadata item to evaluate.</param>
+        /// <returns>The plug in, and the <see cref="MetadataPlugInState"/> used to evaluate whether a deep inspection is required.</returns>
+        (ContentPlugIn plugin, MetadataPlugInState state) GetContentPlugIn(ProjectItemMetadata metadata);
 
         /// <summary>
         /// Function called when a project is loaded/created.

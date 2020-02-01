@@ -1688,6 +1688,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loaded successfully..
+        /// </summary>
+        internal static string GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Content Preview.
         /// </summary>
         internal static string GOREDIT_TEXT_PREVIEW {
@@ -1774,6 +1783,17 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_UNDO_RENAME {
             get {
                 return ResourceManager.GetString("GOREDIT_UNDO_RENAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error importing the file &apos;{0}&apos;.
+        ///
+        ///The file will still imported into the file system, but the editor may not be able to open it..
+        /// </summary>
+        internal static string GOREDIT_WRN_IMPORT_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_WRN_IMPORT_FILE", resourceCulture);
             }
         }
         
@@ -1874,6 +1894,16 @@ namespace Gorgon.Editor.Properties {
         internal static string Krypton_DarkO2k10Theme {
             get {
                 return ResourceManager.GetString("Krypton_DarkO2k10Theme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LoadingBg {
+            get {
+                object obj = ResourceManager.GetObject("LoadingBg", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -2053,6 +2083,26 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap redo_48x48 {
             get {
                 object obj = ResourceManager.GetObject("redo_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap refresh_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("refresh_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap refresh_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("refresh_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

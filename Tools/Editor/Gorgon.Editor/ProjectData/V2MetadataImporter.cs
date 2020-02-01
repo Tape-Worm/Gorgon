@@ -55,22 +55,18 @@ namespace Gorgon.Editor.ProjectData
 
         #region Variables.
         // The file containing the metadata.
-        private readonly FileInfo _file;
+        private readonly string _file;
         // The log interface for debug messages.
         private readonly IGorgonLog _log;
-        #endregion
-
-        #region Properties.
-
         #endregion
 
         #region Methods.
         /// <summary>
         /// Function to import the files in the metadata.
         /// </summary>
-        /// <param name="files">The files to populate.</param>
+        /// <param name="project">The project to update.</param>
         /// <param name="rootNode">The root node of the metadata.</param>
-        private void GetFiles(IDictionary<string, ProjectItemMetadata> files, XElement rootNode)
+        private void GetFiles(IProject project, XElement rootNode)
         {
             _log.Print("Importing file list.", LoggingLevel.Verbose);
 
@@ -88,15 +84,18 @@ namespace Gorgon.Editor.ProjectData
                 string dirPath = Path.GetDirectoryName(filePath).FormatDirectory('/');
 
                 // Add directories.
-                if ((!string.IsNullOrWhiteSpace(dirPath)) && (!files.ContainsKey(dirPath)))
+                if ((!string.IsNullOrWhiteSpace(dirPath)) && (!project.ProjectItems.ContainsKey(dirPath)))
                 {
-                    files.Add(dirPath, new ProjectItemMetadata());
+                    project.ProjectItems.Add(dirPath, new ProjectItemMetadata());
+                    continue;
                 }
 
-                files.Add(filePath, new ProjectItemMetadata()
+                var metadata = new ProjectItemMetadata()
                 {
                     PlugInName = null
-                });
+                };
+
+                project.ProjectItems.Add(filePath, metadata);
             }
         }
 
@@ -104,6 +103,7 @@ namespace Gorgon.Editor.ProjectData
         /// Function to perform the import of the metadata.
         /// </summary>
         /// <param name="project">The project to update.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, or the <paramref name="contentPlugIns"/> parameter is <b>null</b>.</exception>
         public void Import(IProject project)
         {
             if (project == null)
@@ -111,14 +111,14 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentNullException(nameof(project));
             }
 
-            if (!_file.Exists)
+            if (!File.Exists(_file))
             {
                 return;
             }
 
             _log.Print("Importing v2 Gorgon Editor file metadata...", LoggingLevel.Simple);
 
-            var document = XDocument.Load(_file.FullName);
+            var document = XDocument.Load(_file);
 
             XElement rootNode = document.Element(RootNodeName);
 
@@ -128,12 +128,12 @@ namespace Gorgon.Editor.ProjectData
                 return;
             }
 
-            GetFiles(project.ProjectItems, rootNode);
+            GetFiles(project, rootNode);
 
             try
             {
                 // Delete the metadata file, we don't need it anymore.
-                _file.Delete();
+                File.Delete(_file);
             }
             catch
             {
@@ -148,7 +148,7 @@ namespace Gorgon.Editor.ProjectData
         /// <param name="metadataFile">The file containing the v2 metadata.</param>
         /// <param name="log">The log interface for debug messages.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadataFile"/> parameter is <b>null</b>.</exception>
-        public V2MetadataImporter(FileInfo metadataFile, IGorgonLog log)
+        public V2MetadataImporter(string metadataFile, IGorgonLog log)
         {
             _log = log ?? GorgonLog.NullLog;
             _file = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));            

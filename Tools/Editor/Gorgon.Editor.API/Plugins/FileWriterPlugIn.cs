@@ -258,7 +258,7 @@ namespace Gorgon.Editor.PlugIns
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="OLDE_FileWriterPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
         /// </summary>
         /// <param name="description">Friendly description of the plug in.</param>
         /// <param name="fileExtensions">The file of common file name extensions supported by this writer.</param>

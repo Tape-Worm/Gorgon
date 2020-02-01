@@ -26,18 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
 
@@ -47,7 +40,7 @@ namespace Gorgon.Editor.ViewModels
     /// A virtual file for the <see cref="IFileExplorer"/> view model.
     /// </summary>
     internal class File
-        : ViewModelBase<FileParameters>, IFile, IContentFile
+        : ViewModelBase<FileParameters, IHostServices>, IFile, IContentFile
     {
         #region Constants.
         // The name of the default icon.
@@ -55,12 +48,12 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Variables.
+        // The synchronization lock for the rename event.
+        private readonly object _eventLock = new object();
         // The virtual file wrapped by this view model.
         private IGorgonVirtualFile _file;
         // The parent directory.
         private IDirectory _parent;
-        // The service used to display messages.
-        private IMessageDisplayService _messages;
         // The name of the image used for the file icon.
         private string _imageIcon = DefaultIconName;
         // The project metadata for the file.
@@ -69,22 +62,45 @@ namespace Gorgon.Editor.ViewModels
         private bool _isOpen;
         // Flag to indicate that the file was marked for cutting.
         private bool _isCut;
+        // Flag to indicate that the file was marked as changed.
+        private bool _isChanged;
         // File type.
         private string _type = Resources.GOREDIT_TEXT_UNKNOWN;
         #endregion
 
         #region Events.
-        /// <summary>Event triggered if this content file was deleted.</summary>
-        public event EventHandler Deleted;
-
-        /// <summary>Event triggered if the content was closed with the <see cref="OLDE_IContentFile.CloseContent"/> method.</summary>
-        public event EventHandler Closed;
+        // The event triggered when a file is renamed.
+        private event EventHandler<ContentFileRenamedEventArgs> RenamedEvent;
 
         /// <summary>Event triggered if this content file was renamed.</summary>
-        public event EventHandler<ContentFileRenamedEventArgs> Renamed;
+        public event EventHandler<ContentFileRenamedEventArgs> Renamed
+        {
+            add
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        RenamedEvent = null;
+                        return;
+                    }
 
-        /// <summary>Event triggered if the dependencies list for this file is updated.</summary>
-        public event EventHandler DependenciesUpdated;
+                    RenamedEvent += value;
+                }
+            }
+            remove
+            {
+                lock (_eventLock)
+                {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    RenamedEvent -= value;
+                }
+            }
+        }
         #endregion
 
         #region Properties.
@@ -196,18 +212,22 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Property to set or return whether the file has changes.</summary>
         public bool IsChanged
         {
-            get;
-            set;
+            get => _isChanged;
+            set
+            {
+                if (_isChanged == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isChanged = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>Property to return the path to the file.</summary>
         string IContentFile.Path => FullPath;
-
-        /// <summary>Property to return the plugin associated with the file.</summary>
-        public ContentPlugIn ContentPlugIn
-        {
-            get;
-        }
 
         /// <summary>Property to set or return the metadata associated with the file.</summary>
         public ProjectItemMetadata Metadata
@@ -287,7 +307,8 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messages.ShowError(ex);
+                HostServices.Log.Print("[ERROR] Error updating paths.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
             }
         }
 
@@ -302,7 +323,8 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messages.ShowError(ex);
+                HostServices.Log.Print("[ERROR] Error refreshing file data.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
             }
         }
 
@@ -320,8 +342,19 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messages.ShowError(ex);
+                HostServices.Log.Print("[ERROR] Error renaming file.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
             }
+
+            // Notify content subscribers that the file is renamed.
+            EventHandler<ContentFileRenamedEventArgs> handler = null;
+
+            lock (_eventLock)
+            {
+                handler = RenamedEvent;
+            }
+
+            handler?.Invoke(this, new ContentFileRenamedEventArgs(args.OldName, args.NewName));
         }
 
         /// <summary>
@@ -341,14 +374,11 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(FileParameters injectionParameters)
         {
             _file = injectionParameters.VirtualFile;
-            _messages = injectionParameters.MessageDisplay;
             Parent = injectionParameters.Parent;
             Metadata = injectionParameters.Metadata;
 
             RefreshMetadata();
         }
-
-        void IContentFile.CloseContent() => throw new NotImplementedException();
 
         void IContentFile.LinkContent(IContentFile child) => throw new NotImplementedException();
 
@@ -358,8 +388,6 @@ namespace Gorgon.Editor.ViewModels
 
         /// <summary>Function to notify that the metadata should be refreshed.</summary>
         void IContentFile.RefreshMetadata() => RefreshMetadata();
-
-        void IContentFile.SaveMetadata() => throw new NotImplementedException();
 
         /// <summary>Function called to refresh the information about the file.</summary>
         void IContentFile.Refresh() => RefreshFileData();

@@ -300,7 +300,7 @@ namespace Gorgon.Graphics.Core
                 pipelineState.RasterState.ForcedReadWriteViewSampleCount = RasterState.ForcedReadWriteViewSampleCount;
                 pipelineState.RasterState.IsFrontCounterClockwise = RasterState.IsFrontCounterClockwise;
                 pipelineState.RasterState.IsMultisamplingEnabled = RasterState.IsMultisamplingEnabled;
-                pipelineState.RasterState.RwScissorRectangles.AddRange(RasterState.RwScissorRectangles);
+                pipelineState.RasterState.ScissorRectsEnabled = RasterState.ScissorRectsEnabled;
                 pipelineState.RasterState.SlopeScaledDepthBias = RasterState.SlopeScaledDepthBias;
                 pipelineState.RasterState.UseConservativeRasterization = RasterState.UseConservativeRasterization;
             }

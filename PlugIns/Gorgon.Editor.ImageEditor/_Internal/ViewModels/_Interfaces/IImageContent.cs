@@ -38,7 +38,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The image content view model.
     /// </summary>
     internal interface IImageContent
-        : IEditorContent, IUndoHandler, Olde_IDragDropHandler<IContentFileDragData>, Olde_IDragDropHandler<Olde_IExplorerFilesDragData>
+        : IVisualEditorContent, IUndoHandler
     {
         #region Properties.
         /// <summary>
@@ -189,8 +189,16 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the view model for the cropping/resizing settings.
+        /// Property to return the view model for picking images to import into the current image.
         /// </summary>
+        IImagePicker ImagePicker
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the view model for the cropping/resizing settings.
+        /// </summary>        
         ICropResizeSettings CropOrResizeSettings
         {
             get;
@@ -216,14 +224,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the view model for the set alpha settings.
         /// </summary>
         IAlphaSettings AlphaSettings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the currently active panel.
-        /// </summary>
-        IHostedPanelViewModel CurrentPanel
         {
             get;
         }
@@ -280,6 +280,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the command used to set the image to use premultiplied alpha.
         /// </summary>
         IEditorCommand<bool> PremultipliedAlphaCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to copy an image from the project into the current image at the selected array/depth/mip index.
+        /// </summary>
+        IEditorAsyncCommand<CopyToImageArgs> CopyToImageCommand
         {
             get;
         }

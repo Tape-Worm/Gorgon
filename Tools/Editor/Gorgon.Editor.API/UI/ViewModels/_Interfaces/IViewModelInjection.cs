@@ -24,45 +24,28 @@
 // 
 #endregion
 
-using System;
-using Gorgon.Diagnostics;
-using Gorgon.Editor.Services;
+using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.UI.ViewModels
 {
     /// <summary>
-    /// Defines values to inject into a view model.
+    /// This object is used to inject common host application services into view models as parameters.
     /// </summary>
-    public interface IViewModelInjection
+    /// <typeparam name="T">The type of host services. Must implement <see cref="IHostServices"/>.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// When creating view models, developers should pass custom data used for initialization by inheriting this type. For content, settings, etc... or other built in view model types, there are other 
+    /// base classes for the parameters that should be used.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="IHostServices"/>
+    public interface IViewModelInjection<out T>
+        where T : IHostServices
     {
         /// <summary>
-        /// Property to return the logging interface for debug logging.
+        /// Property to return the common services passed from host application.
         /// </summary>
-        IGorgonLog Log
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the serivce used to show busy states.
-        /// </summary>
-        IBusyStateService BusyService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service used to show message dialogs.
-        /// </summary>
-        IMessageDisplayService MessageDisplay
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the clipboard handler for the view model.
-        /// </summary>
-        IClipboardHandler Clipboard
+        T HostServices
         {
             get;
         }

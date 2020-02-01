@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// Parameters to pass to the <see cref="ImageContent"/> view model.
     /// </summary>
     internal class ImageContentParameters
-        : ContentViewModelInjectionCommon
+        : ContentViewModelInjection
     {
         #region Properties.
         /// <summary>
@@ -52,8 +52,16 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the crop/resize settings view model.
+        /// Property to return the image picker view model.
         /// </summary>
+        public IImagePicker ImagePicker
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the crop/resize settings view model.
+        /// </summary>        
         public ICropResizeSettings CropResizeSettings
         {
             get;
@@ -153,13 +161,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         public IImageExternalEditService ExternalEditorService
         {
             get;
-        }
+        }        
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the ImageContentVmParameters class.</summary>
+        /// <param name="fileManager">The file manager for content files.</param>
         /// <param name="file">The file for the image content.</param>
         /// <param name="settings">The settings for the image editor.</param>
+        /// <param name="imagePicker">The image picker used to import image data into the current image.</param>
         /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
         /// <param name="dimensionSettings">The image dimensions settings view model.</param>
         /// <param name="mipMapSettings">The mip map generation settings view model.</param>
@@ -169,9 +179,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
         /// <param name="services">The services required by the image editor.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        /// <exception cref="ArgumentMissingException">Thrown when any required child parameters are <b>null</b>.</exception>
-        public ImageContentParameters(IContentFile file,
+        public ImageContentParameters(IContentFileManager fileManager,
+            IContentFile file,
             ISettings settings,
+            IImagePicker imagePicker,
             ICropResizeSettings cropResizeSettings,
             IDimensionSettings dimensionSettings,
             IMipMapSettings mipMapSettings,
@@ -180,16 +191,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             IGorgonVideoAdapterInfo videoAdapter,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
             ImageEditorServices services)
-            : base(file, services.HostContentServices ?? throw new ArgumentNullException(nameof(services)))
+            : base(fileManager, file, services.HostContentServices ?? throw new ArgumentNullException(nameof(services)))
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             WorkingFile = imageData.workingFile ?? throw new ArgumentNullException(nameof(imageData.workingFile));
             Image = imageData.image ?? throw new ArgumentNullException(nameof(imageData.image));
             FormatSupport = formatSupport ?? throw new ArgumentNullException(nameof(formatSupport));
-            ImageIOService = services.ImageIO ?? throw new ArgumentMissingException(nameof(services.ImageIO), nameof(services));
-            UndoService = services.UndoService ?? throw new ArgumentMissingException(nameof(services.UndoService), nameof(services));
-            ImageUpdater = services.ImageUpdater ?? throw new ArgumentMissingException(nameof(services.ImageUpdater), nameof(services));
-            ExternalEditorService = services.ExternalEditorService ?? throw new ArgumentMissingException(nameof(services.ExternalEditorService), nameof(services));
+            ImageIOService = services.ImageIO;
+            UndoService = services.UndoService;
+            ImageUpdater = services.ImageUpdater;
+            ExternalEditorService = services.ExternalEditorService;
+            ImagePicker = imagePicker ?? throw new ArgumentNullException(nameof(imagePicker));
             CropResizeSettings = cropResizeSettings ?? throw new ArgumentNullException(nameof(cropResizeSettings));
             DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
             MipMapSettings = mipMapSettings ?? throw new ArgumentNullException(nameof(mipMapSettings));

@@ -99,7 +99,6 @@ namespace Gorgon.Editor.Services
                 Description = description
             })
             {
-
                 browser.SetDataContext(FileSystem);
                 browser.SetInitialPath(initialDirectory);
                 return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');

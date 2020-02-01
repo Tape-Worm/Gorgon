@@ -155,14 +155,13 @@ namespace Gorgon.Editor.SpriteEditor.Services
 
         /// <summary>Imports the data.</summary>
         /// <param name="temporaryDirectory">The temporary directory for writing any transitory data.</param>
-        /// <param name="cancelToken">The cancel token.</param>
         /// <remarks>
         /// <para>
         /// The <paramref name="temporaryDirectory"/> should be used to write any working/temporary data used by the import.  Note that all data written into this directory will be deleted when the 
         /// project is unloaded from memory.
         /// </para>
         /// </remarks>
-        public FileInfo ImportData(IGorgonVirtualDirectory temporaryDirectory, CancellationToken cancelToken)
+        public FileInfo ImportData(IGorgonVirtualDirectory temporaryDirectory)
         {
             var spriteCodec = new GorgonV3SpriteBinaryCodec(_renderer);
 

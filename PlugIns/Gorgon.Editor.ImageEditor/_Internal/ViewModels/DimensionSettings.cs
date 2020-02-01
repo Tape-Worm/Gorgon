@@ -26,7 +26,6 @@
 
 using System;
 using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -39,7 +38,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The view model for the image dimensions editor.
     /// </summary>
     internal class DimensionSettings
-        : ViewModelBase<DimensionSettingsParameters>, IDimensionSettings
+        : HostedPanelViewModelBase<DimensionSettingsParameters>, IDimensionSettings
     {
         #region Variables.
         // Flag to indicate that the image has depth slices.
@@ -54,8 +53,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IGorgonVideoAdapterInfo _videoAdapter;
         // The maximum number of mip map levels.
         private int _maxMipLevels = int.MaxValue;
-        // Flag to indicate that the editor is active.
-        private bool _isActive;
         // The current cropping alignment.
         private Alignment _cropAlignment = Alignment.Center;
         // The current resizing filter.
@@ -72,31 +69,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private int _mipLevels = 1;
         // The number of depth slices or array indices in the image.
         private int _depthSlicesOrArrayIndices = 1;
-        // The service used to display message notifications.
-        private IMessageDisplayService _messageDisplay;
+        // Flag to indicate mip maps are supported.
         private bool _mipSupport;
         #endregion
 
         #region Properties.
         /// <summary>Property to return whether the panel is modal.</summary>
-        public bool IsModal => true;
-
-        /// <summary>Property to set or return whether the crop/resize settings is active or not.</summary>
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _isActive = value;
-                OnPropertyChanged();
-            }
-        }
+        public override bool IsModal => true;
 
         /// <summary>Property to return whether the image has depth slices or not.</summary>
         /// <remarks>
@@ -360,19 +339,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
-
-        /// <summary>Property to set or return the command used to cancel the operation.</summary>
-        public IEditorCommand<object> CancelCommand
-        {
-            get;
-        }
-
-        /// <summary>Property to set or return the command used to apply the operation.</summary>
-        public IEditorCommand<object> OkCommand
-        {
-            get;
-            set;
-        }
         #endregion
 
         #region Methods.
@@ -390,7 +356,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
             }
         }
 
@@ -430,26 +396,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_IMAGE_INFO);
             }
             finally
             {
                 UpdateMaxMips();
-            }
-        }
-
-        /// <summary>
-        /// Function to cancel the dimension change operation.
-        /// </summary>
-        private void DoCancel()
-        {
-            try
-            {
-                IsActive = false;
-            }
-            catch (Exception ex)
-            {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANCEL_OP);
             }
         }
         #endregion
@@ -460,20 +411,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(DimensionSettingsParameters injectionParameters)
-        {
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(DimensionSettingsParameters.MessageDisplay), nameof(injectionParameters));
-            _videoAdapter = injectionParameters.VideoAdapter ?? throw new ArgumentMissingException(nameof(DimensionSettingsParameters.VideoAdapter), nameof(injectionParameters));
-        }
+        protected override void OnInitialize(DimensionSettingsParameters injectionParameters) => _videoAdapter = injectionParameters.VideoAdapter;
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ViewModels.DimensionSettings"/> class.</summary>
-        public DimensionSettings()
-        {
-            UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);
-            CancelCommand = new EditorCommand<object>(DoCancel);
-        }
+        /// <summary>Initializes a new instance of the <see cref="DimensionSettings"/> class.</summary>
+        public DimensionSettings() => UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);
         #endregion
     }
 }

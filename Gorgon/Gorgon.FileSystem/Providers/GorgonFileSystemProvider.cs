@@ -313,12 +313,7 @@ namespace Gorgon.IO.Providers
                 virtualPath = virtualPath.Substring(1);
             }
 
-            if (string.IsNullOrWhiteSpace(virtualPath))
-            {
-                return mountPoint.PhysicalPath;
-            }
-
-            return OnGetPhysicalPath(virtualPath, mountPoint);
+            return string.IsNullOrWhiteSpace(virtualPath) ? mountPoint.PhysicalPath : OnGetPhysicalPath(virtualPath, mountPoint);
         }
 
         /// <summary>

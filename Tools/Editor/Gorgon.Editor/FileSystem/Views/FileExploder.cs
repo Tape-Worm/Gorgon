@@ -26,24 +26,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Collections;
 using Gorgon.Core;
-using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
-using Gorgon.Math;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.Views
@@ -80,10 +75,10 @@ namespace Gorgon.Editor.Views
 
         #region Events.
         // The event fired when the control context is changed.
-        private event EventHandler _controlContextChanged;
+        private event EventHandler ControlContextChangedEvent;
 
         // The event fired when the rename state is changed.
-        private event EventHandler _isRenamingChanged;
+        private event EventHandler IsRenamingChangedEvent;
 
         /// <summary>
         /// The event fired when the <see cref="ControlContext"/> property is changed.
@@ -97,11 +92,11 @@ namespace Gorgon.Editor.Views
                 {
                     if (value == null)
                     {
-                        _controlContextChanged = null;
+                        ControlContextChangedEvent = null;
                         return;
                     }
 
-                    _controlContextChanged += value;
+                    ControlContextChangedEvent += value;
                 }                
             }
             remove
@@ -113,7 +108,7 @@ namespace Gorgon.Editor.Views
                         return;
                     }
 
-                    _controlContextChanged -= value;
+                    ControlContextChangedEvent -= value;
                 }
             }
         }
@@ -130,11 +125,11 @@ namespace Gorgon.Editor.Views
                 {
                     if (value == null)
                     {
-                        _isRenamingChanged = null;
+                        IsRenamingChangedEvent = null;
                         return;
                     }
 
-                    _isRenamingChanged += value;
+                    IsRenamingChangedEvent += value;
                 }
             }
             remove
@@ -146,7 +141,7 @@ namespace Gorgon.Editor.Views
                         return;
                     }
 
-                    _isRenamingChanged -= value;
+                    IsRenamingChangedEvent -= value;
                 }
             }
         }
@@ -160,11 +155,11 @@ namespace Gorgon.Editor.Views
         // Flag to indicate that the events for the grid are hooked up.
         private int _gridEventsHooked = 0;
         // The nodes for a directory.
-        private Dictionary<string, DirectoryTreeNode> _directoryNodes = new Dictionary<string, DirectoryTreeNode>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, DirectoryTreeNode> _directoryNodes = new Dictionary<string, DirectoryTreeNode>(StringComparer.OrdinalIgnoreCase);
         // The root node for the directory tree.
         private DirectoryTreeNode _rootNode;
         // The font used for open files.
-        private Font _openFileFont;
+        private readonly Font _openFileFont;
         // Arguments used when validating clipboard menu items.
         private readonly GetClipboardDataTypeArgs _clipboardValidationArgs = new GetClipboardDataTypeArgs();
         private readonly DeleteArgs _deleteValidationArgs = new DeleteArgs(null);
@@ -242,7 +237,7 @@ namespace Gorgon.Editor.Views
 
             lock (_eventLock)
             {
-                handler = _controlContextChanged;
+                handler = ControlContextChangedEvent;
             }
 
             handler?.Invoke(this, EventArgs.Empty);
@@ -257,7 +252,7 @@ namespace Gorgon.Editor.Views
 
             lock (_eventLock)
             {
-                handler = _isRenamingChanged;
+                handler = IsRenamingChangedEvent;
             }
 
             handler?.Invoke(this, EventArgs.Empty);
@@ -337,7 +332,7 @@ namespace Gorgon.Editor.Views
 
             void ValidateFileItems()
             {
-                MenuItemOpen.Available = dataContext.SelectedFiles.Count == 1;
+                MenuItemOpen.Available = dataContext.SelectedFiles.Count != 0;
                 MenuItemExportFiles.Available = dataContext.ExportFilesCommand?.CanExecute(null) ?? false;
                 MenuItemCutFiles.Available = 
                 MenuItemCopyFiles.Available = (dataContext.SelectedFiles.Count > 0) && (dataContext.Clipboard != null) && (dataContext.SearchResults == null) && (GridFiles.ContainsFocus);
@@ -345,8 +340,8 @@ namespace Gorgon.Editor.Views
                 MenuItemDeleteFiles.Available = dataContext.DeleteFileCommand?.CanExecute(_deleteValidationArgs) ?? false;
                 MenuItemRenameFile.Available = dataContext.RenameFileCommand?.CanExecute(null) ?? false;
 
-                MenuItemOpen.Enabled = (MenuItemOpen.Available) && (dataContext.SelectedFiles[0].Metadata?.ContentMetadata != null);
-                MenuItemExportFiles.Enabled = (dataContext.SelectedFiles.Count > 0);
+                MenuItemOpen.Enabled = (MenuItemOpen.Available) && (dataContext.OpenContentFileCommand?.CanExecute(null) ?? false);
+                MenuItemExportFiles.Enabled = (dataContext.SelectedFiles.Count > 0);                
                 MenuItemCutFiles.Enabled = (MenuItemCutFiles.Available)
                                             && ((dataContext.Clipboard?.CopyDataCommand?.CanExecute(new FileCopyMoveData
                                             {
@@ -358,13 +353,13 @@ namespace Gorgon.Editor.Views
                                             {
                                                 Operation = CopyMoveOperation.Copy,
                                                 SourceFiles = _validationFiles
-                                            }) ?? false));
+                                            }) ?? false));                
                 MenuItemPasteFiles.Enabled = (MenuItemPasteFiles.Available)
                                             && (dataContext.Clipboard?.PasteDataCommand?.CanExecute(null) ?? false);
                 MenuSepFileExport.Available = MenuItemOpen.Available;                
                 MenuSepFileEdit.Available = MenuItemExportFiles.Available;
                 MenuSepFileOrganize.Available = ((MenuItemRenameFile.Available) || (MenuItemDeleteFiles.Available))
-                                            &&  ((MenuItemCutFiles.Available) || (MenuItemCopyFiles.Available) || (MenuItemPasteFiles.Available));
+                                            &&  ((MenuItemCutFiles.Available) || (MenuItemCopyFiles.Available) || (MenuItemPasteFiles.Available));                
             }
 
             if (dataContext.SelectedDirectory != null)
@@ -649,6 +644,20 @@ namespace Gorgon.Editor.Views
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
         private void MenuDirectory_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(DataContext);
+
+        /// <summary>Handles the Click event of the MenuItemOpen control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemOpen_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.OpenContentFileCommand.ExecuteAsync(null);
+            ValidateMenuItems(DataContext);
+        }
 
         /// <summary>Handles the CollectionChanged event of the SelectedFiles control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -1034,9 +1043,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void Directory_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var directory = sender as IDirectory;
-
-            if ((directory == null) || (!_directoryNodes.TryGetValue(directory.ID, out DirectoryTreeNode treeNode)))
+            if ((!(sender is IDirectory directory)) || (!_directoryNodes.TryGetValue(directory.ID, out DirectoryTreeNode treeNode)))
             {
                 return;
             }
@@ -1120,6 +1127,9 @@ namespace Gorgon.Editor.Views
                     }
 
                     row.Cells[ColumnIcon.Index].Value = fileIcon;
+                    break;
+                case nameof(IFile.IsOpen):
+                    GridFiles.InvalidateRow(row.Index);
                     break;
             }
             ValidateMenuItems(DataContext);
@@ -1543,9 +1553,12 @@ namespace Gorgon.Editor.Views
         {
             try
             {
+                // Ugh.  Of course, the selected rows are not sorted by the current sorting in the grid.
+                // We have to make it match. Lovely.
                 string[] ids = GridFiles.SelectedRows.OfType<DataGridViewRow>()
                                                      .Where(item => !item.Cells[ColumnID.Index].Value.IsNull())
-                                                     .Select(item => item.Cells[ColumnID.Index].Value.ToString())
+                                                     .Reverse()
+                                                     .Select(item => item.Cells[ColumnID.Index].Value.ToString())                                                     
                                                      .ToArray();
 
                 if ((DataContext?.SelectFileCommand == null) || (!DataContext.SelectFileCommand.CanExecute(ids)))
@@ -1621,9 +1634,10 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            var dragData = new GridRowsDragData(e.DraggedRows, ColumnFile.Index, e.MouseButtons == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);            
-            var data = new DataObject();
+            var dragData = new GridRowsDragData(e.DraggedRows, ColumnFile.Index, e.MouseButtons == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);
+            var data = new DataObject();            
             data.SetData(dragData);
+            data.SetData(typeof(IContentFileDragData).FullName, true, dragData as IContentFileDragData);
 
             GridFiles.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
 
@@ -1667,6 +1681,15 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            if (e.Data.GetDataPresent(typeof(GridRowsDragData)))
+            {
+                var data = e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData;
+                data.TargetNode = (DirectoryTreeNode)TreeDirectories.SelectedNode;
+                data.Operation = CopyMoveOperation.Copy;
+                FileRows_DragDrop(data, e);
+                return;
+            }
+
             if ((_explorerImportData == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
             {
                 return;
@@ -1685,8 +1708,16 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
+            if (e.Data.GetDataPresent(typeof(GridRowsDragData)))
+            {
+                e.Effect = DragDropEffects.Copy;
+                ValidateMenuItems(DataContext);
+                return;
+            }
+
             if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
             {
+                e.Effect = DragDropEffects.Copy;
                 return;
             }
 
@@ -1706,6 +1737,11 @@ namespace Gorgon.Editor.Views
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void GridFiles_Leave(object sender, EventArgs e) => ValidateMenuItems(DataContext);
+
+        /// <summary>Handles the CellDoubleClick event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
+        private void GridFiles_CellDoubleClick(object sender, DataGridViewCellEventArgs e) => MenuItemOpen.PerformClick();
 
         /// <summary>Handles the EditCanceled event of the TreeDirectories control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -2142,11 +2178,58 @@ namespace Gorgon.Editor.Views
         private void TreeDirectories_Leave(object sender, EventArgs e) => ValidateMenuItems(DataContext);
 
         /// <summary>
-        /// Function to handle dropping dragged file rows.
+        /// Function to handle dropping dragged file rows on the file grid.
         /// </summary>
         /// <param name="data">The data being dragged.</param>
         /// <param name="e">The event arguments.</param>
         private async void FileRows_DragDrop(GridRowsDragData data, DragEventArgs e)
+        {
+            if ((data == null)
+                || (e.Effect == DragDropEffects.None)
+                || (DataContext == null))
+            {
+                return;
+            }
+
+            try
+            {
+                switch (data.Operation)
+                {
+                    case CopyMoveOperation.Copy:
+                        if ((DataContext.CopyFileCommand != null) && (DataContext.CopyFileCommand.CanExecute(data)))
+                        {
+                            await DataContext.CopyFileCommand.ExecuteAsync(data);
+                        }
+                        break;
+                    case CopyMoveOperation.Move:
+                        if ((DataContext.MoveFileCommand != null) && (DataContext.MoveFileCommand.CanExecute(data)))
+                        {
+                            await DataContext.MoveFileCommand.ExecuteAsync(data);
+                        }
+                        break;
+                    default:
+                        // If both operations are defined, then bring up a menu.
+                        if (data.Operation == (CopyMoveOperation.Copy | CopyMoveOperation.Move))
+                        {
+                            MenuCopyMove.Tag = data;
+                            MenuCopyMove.Show(this, PointToClient(Cursor.Position));
+                            return;
+                        }
+                        break;
+                }
+            }
+            finally
+            {
+                ValidateMenuItems(DataContext);
+            }
+        }
+
+        /// <summary>
+        /// Function to handle dropping dragged file rows on the directory tree.
+        /// </summary>
+        /// <param name="data">The data being dragged.</param>
+        /// <param name="e">The event arguments.</param>
+        private async void FileRows_ToTree_DragDrop(GridRowsDragData data, DragEventArgs e)
         {
             if ((data == null)
                 || (e.Effect == DragDropEffects.None)
@@ -2200,7 +2283,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="rowData">The grid rows being dragged.</param>
         /// <param name="e">The event arguments.</param>
-        private void FileRows_DragOver(GridRowsDragData rowData, DragEventArgs e)
+        private void FileRows_ToTree_DragOver(GridRowsDragData rowData, DragEventArgs e)
         {
             if ((rowData == null) || (DataContext?.CopyFileCommand == null) || (DataContext?.MoveFileCommand == null))
             {
@@ -2289,7 +2372,7 @@ namespace Gorgon.Editor.Views
 
             if (e.Data.GetDataPresent(typeof(GridRowsDragData)))
             {
-                FileRows_DragOver(e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData, e);
+                FileRows_ToTree_DragOver(e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData, e);
                 return;
             }
 
@@ -2346,7 +2429,7 @@ namespace Gorgon.Editor.Views
 
             if (e.Data.GetDataPresent(typeof(GridRowsDragData)))
             {
-                FileRows_DragDrop(e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData, e);
+                FileRows_ToTree_DragDrop(e.Data.GetData(typeof(GridRowsDragData)) as GridRowsDragData, e);
                 return;
             }
 
@@ -2694,7 +2777,14 @@ namespace Gorgon.Editor.Views
             DataContext?.OnLoad();
 
             ControlContext = FileExplorerContext.FileList;
-            GridFiles.Select();
+            if (GridFiles.Rows.Count > 0)
+            {
+                GridFiles.Select();
+            }
+            else
+            {
+                TreeDirectories.Select();
+            }
         }
 
         /// <summary>Raises the <see cref="Enter"/> event.</summary>

@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.PlugIns
@@ -123,14 +122,14 @@ namespace Gorgon.Editor.PlugIns
         /// <remarks>
         /// <para>
         /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on 
-        /// the base <see cref="ISettingsCategoryViewModel"/> type. Returning <b>null</b> will mean that the plug in does not have settings that can be managed externally.
+        /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug in does not have settings that can be managed externally.
         /// </para>
         /// <para>
         /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method when the plug in first loaded, 
         /// or else the panel will not show in the main settings area.
         /// </para>
         /// </remarks>
-        protected virtual ISettingsCategoryViewModel OnGetSettings() => null;
+        protected virtual ISettingsCategory OnGetSettings() => null;
 
         /// <summary>
         /// Function to determine if this plug in is usable or not.
@@ -158,7 +157,7 @@ namespace Gorgon.Editor.PlugIns
         /// the main settings area of the application.
         /// </para>
         /// </remarks>
-        public ISettingsCategoryViewModel GetPlugInSettings() => OnGetSettings();
+        public ISettingsCategory GetPlugInSettings() => OnGetSettings();
 
         /// <summary>
         /// Function to determine if this plug in is usable or not.

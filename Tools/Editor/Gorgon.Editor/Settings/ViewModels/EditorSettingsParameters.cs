@@ -24,26 +24,23 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// The parameters for the <see cref="IEditorSettingsVm"/> view model.
+    /// The parameters for the <see cref="IEditorSettings"/> view model.
     /// </summary>
     internal class EditorSettingsParameters
-        : IViewModelInjection
+        : IViewModelInjection<IHostServices>
     {
         /// <summary>
         /// Property to set or return the categories for the settings.
         /// </summary>
-        public IEnumerable<ISettingsCategoryViewModel> Categories
+        public IEnumerable<ISettingsCategory> Categories
         {
             get;
             set;
@@ -58,31 +55,11 @@ namespace Gorgon.Editor.ViewModels
             set;
         }
 
-        /// <summary>Property to set or return the logging interface for debug logging.</summary>
-        public IGorgonLog Log
+        /// <summary>Property to return the services passed from host application.</summary>
+        public IHostServices HostServices
         {
             get;
             set;
         }
-
-        /// <summary>Property to set or return the serivce used to show busy states.</summary>
-        public IBusyStateService BusyService
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to set or return the service used to show message dialogs.</summary>
-        public IMessageDisplayService MessageDisplay
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to return the clipboard handler for the view model.</summary>
-        /// <remarks>
-        /// This property is not applicable for this type and will always be <b>null</b>.
-        /// </remarks>
-        public IClipboardHandler Clipboard => null;
     }
 }

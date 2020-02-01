@@ -41,10 +41,10 @@ using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Math;
@@ -71,6 +71,9 @@ namespace Gorgon.Editor.ImageEditor
         // The plug in settings.
         private ISettings _settings;
 
+        // No thumbnail image.
+        private IGorgonImage _noThumbnail;
+
         /// <summary>
         /// The name of the settings file.
         /// </summary>
@@ -92,6 +95,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
         }
+
         /// <summary>Property to return the ID of the new icon for this plug in.</summary>
         public Guid NewIconID => Guid.Empty;
 
@@ -99,7 +103,7 @@ namespace Gorgon.Editor.ImageEditor
         public override string ContentTypeID => CommonEditorContentTypes.ImageType;
 
         /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
-        public string ContentType => Resources.GORIMG_CONTENT_TYPE;
+        public string ContentType => Resources.GORIMG_CONTENT_TYPE;        
         #endregion
 
         #region Methods.
@@ -217,10 +221,10 @@ namespace Gorgon.Editor.ImageEditor
         {
             bool needsRefresh = false;
 
-            if ((attributes.TryGetValue(OLDE_ImageContent.CodecAttr, out string currentCodecType))
+            if ((attributes.TryGetValue(ImageContent.CodecAttr, out string currentCodecType))
                 && (!string.IsNullOrWhiteSpace(currentCodecType)))
             {
-                attributes.Remove(OLDE_ImageContent.CodecAttr);
+                attributes.Remove(ImageContent.CodecAttr);
                 needsRefresh = true;
             }
 
@@ -232,10 +236,10 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             string codecType = _ddsCodec.GetType().FullName;
-            if ((!attributes.TryGetValue(OLDE_ImageContent.CodecAttr, out currentCodecType))
+            if ((!attributes.TryGetValue(ImageContent.CodecAttr, out currentCodecType))
                 || (!string.Equals(currentCodecType, codecType, StringComparison.OrdinalIgnoreCase)))
             {
-                attributes[OLDE_ImageContent.CodecAttr] = codecType;
+                attributes[ImageContent.CodecAttr] = codecType;
                 needsRefresh = true;
             }
 
@@ -250,9 +254,9 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>Function to register plug in specific search keywords with the system search.</summary>
-        /// <typeparam name="T">The type of object being searched, must implement <see cref="T:Gorgon.Core.IGorgonNamedObject"/>.</typeparam>
+        /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
         /// <param name="searchService">The search service to use for registration.</param>
-        protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, OLDE_ImageContent.CodecAttr);
+        protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
 
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
@@ -279,6 +283,7 @@ namespace Gorgon.Editor.ImageEditor
                 _codecs,
                 new ExportImageDialogService(_settings),
                 new ImportImageDialogService(_settings, _codecs),
+                _noThumbnail,
                 HostContentServices.BusyService,
                 scratchArea,
                 compressor,
@@ -301,6 +306,8 @@ namespace Gorgon.Editor.ImageEditor
                 ExternalEditorService = new ImageExternalEditService(HostContentServices.Log)
             };
 
+            var imagePicker = new ImagePicker();
+            var sourceImagePicker = new SourceImagePicker();
             var cropResizeSettings = new CropResizeSettings();
             var dimensionSettings = new DimensionSettings();
             var mipSettings = new MipMapSettings();
@@ -310,15 +317,26 @@ namespace Gorgon.Editor.ImageEditor
                 UpdateRange = _settings.LastAlphaRange
             };
 
-            IViewModelInjection injector = new ViewModelInjection(HostContentServices.Log, HostContentServices.BusyService, HostContentServices.MessageDisplay, null);
+            var injector = new HostedPanelViewModelParameters(HostContentServices);
+            
             cropResizeSettings.Initialize(injector);
             dimensionSettings.Initialize(new DimensionSettingsParameters(HostContentServices));
             mipSettings.Initialize(injector);
+            sourceImagePicker.Initialize(new SourceImagePickerParameters(HostContentServices));            
 
+            imagePicker.Initialize(new ImagePickerParameters(fileManager, file, HostContentServices)
+            {
+                ImageServices = services,
+                CropResizeSettings = cropResizeSettings,
+                Settings = _settings,
+                SourceImagePicker = sourceImagePicker
+            });
 
             var content = new ImageContent();
-            content.Initialize(new ImageContentParameters(file,
+            content.Initialize(new ImageContentParameters(fileManager,
+                file,
                 _settings,
+                imagePicker,
                 cropResizeSettings,
                 dimensionSettings,
                 mipSettings,
@@ -334,6 +352,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to provide clean up for the plugin.</summary>
         protected override void OnShutdown()
         {
+            _noThumbnail?.Dispose();
+
             if ((_settings?.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
             {
                 _settings.WriteSettingsCommand.Execute(null);
@@ -348,8 +368,11 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
         protected override void OnInitialize()
         {
-            ViewFactory.Register<IImageContent>(() => new OLDE_ImageEditorView());
-            (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);            
+            ViewFactory.Register<IImageContent>(() => new ImageEditorView());
+            (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);
+
+
+            _noThumbnail = Resources.no_thumb_64x64.ToGorgonImage();
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
@@ -402,7 +425,7 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Function to retrieve a thumbnail for the content.</summary>
         /// <param name="contentFile">The content file used to retrieve the data to build the thumbnail with.</param>
-        /// <param name="filePath">The path to the thumbnail file to write.</param>
+        /// <param name="filePath">The path to the thumbnail file to write into.</param>
         /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
         /// <returns>A <see cref="IGorgonImage"/> containing the thumbnail image data.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile" />, or the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
@@ -471,8 +494,10 @@ namespace Gorgon.Editor.ImageEditor
                 Cursor.Current = Cursors.Default;
 
                 await Task.Run(() => {
-                    using Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create);
-                    pngCodec.SaveToStream(thumbImage, stream);
+                    using (Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create))
+                    {
+                        pngCodec.SaveToStream(thumbImage, stream);
+                    }
                 }, cancelToken);
 
                 if (cancelToken.IsCancellationRequested)

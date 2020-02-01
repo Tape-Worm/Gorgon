@@ -288,13 +288,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     return Factory.GetFont(fontInfo);
                 }
 
+#warning Is this needed anymore? 
                 GorgonBinaryReader reader = fontFile.OpenChunk(FontHeightChunk);
 
                 // Read in information about the font height.
-                float fontHeight = reader.ReadSingle();
-                float lineHeight = reader.ReadSingle();
-                float ascent = reader.ReadSingle();
-                float descent = reader.ReadSingle();
+                reader.ReadSingle();
+                reader.ReadSingle();
+                reader.ReadSingle();
+                reader.ReadSingle();
                 fontFile.CloseChunk();
 
                 if (fontFile.Chunks.Contains(BrushChunk))
@@ -330,11 +331,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 }
 
                 // If this font has kerning data, then load that in.
-                IReadOnlyDictionary<GorgonKerningPair, int> kerningPairs = null;
+#warning Is this really needed?
+                //IReadOnlyDictionary<GorgonKerningPair, int> kerningPairs = null;
 
                 if (fontFile.Chunks.Contains(KernDataChunk))
                 {
-                    kerningPairs = ReadKernPairs(fontFile);
+                    ReadKernPairs(fontFile);
                 }
 
                 return Factory.GetFont(fontInfo);

@@ -120,6 +120,6 @@
   <data name="label2.Text" xml:space="preserve">
     <value>This is a list of all plug ins loaded into the editor at this time.
 
-If a plug in has a status of "Not Loaded", then selecting a plug in will display details on why the plug in failed to load in the panel below the list.</value>
+If a plug in has a status of "ValidationError or Error", then selecting a plug in will display details on why the plug in failed to load in the panel below the list.</value>
   </data>
 </root>

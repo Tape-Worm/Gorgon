@@ -245,7 +245,7 @@ namespace Gorgon.Renderers
 
                 anchor.X = value.X / bounds.Width;
                 anchor.Y = value.Y / bounds.Height;
-                Renderable.HasTextureChanges = true;    
+                Renderable.HasVertexChanges = true;    
             }
         }
 

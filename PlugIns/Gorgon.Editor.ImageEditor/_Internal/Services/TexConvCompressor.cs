@@ -197,7 +197,7 @@ namespace Gorgon.Editor.ImageEditor
 
             var info = new ProcessStartInfo
             {
-                Arguments = $"-f {_d3dFormats[metadata.Format]} -y -m {metadata.MipCount} -fl 12.0 -ft DDS -o \"{directory}\" -nologo -px decoded {imageFile.PhysicalFile.FullPath}\"",
+                Arguments = $"-f {_d3dFormats[metadata.Format]} -y -m {metadata.MipCount} -fl 12.0 -ft DDS -o \"{directory}\" -nologo -px decoded \"{imageFile.PhysicalFile.FullPath}\"",
                 ErrorDialog = true,
                 FileName = _texConv.FullName,
                 WorkingDirectory = directory,

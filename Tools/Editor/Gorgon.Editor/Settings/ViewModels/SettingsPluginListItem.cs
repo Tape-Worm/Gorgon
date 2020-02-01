@@ -26,6 +26,7 @@
 
 using System;
 using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels
@@ -34,7 +35,7 @@ namespace Gorgon.Editor.ViewModels
     /// An item to display on the <see cref="ISettingsPlugInsList"/> view model.
     /// </summary>
     internal class SettingsPlugInListItem
-        : ViewModelBase<SettingsPlugInListItemParameters>, ISettingsPlugInListItem
+        : ViewModelBase<SettingsPlugInListItemParameters, IHostServices>, ISettingsPlugInListItem
     {
         #region Variables.
         // The name of the plug in.
@@ -148,10 +149,11 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         protected override void OnInitialize(SettingsPlugInListItemParameters injectionParameters)
         {
-            Name = injectionParameters.Name ?? throw new ArgumentMissingException(nameof(injectionParameters.Name), nameof(injectionParameters));
+            Name = injectionParameters.Name;
             Type = injectionParameters.Type;
             State = injectionParameters.State ?? string.Empty;
-            DisabledReason = injectionParameters.DisabledReason ?? string.Empty;
+            DisabledReason = string.IsNullOrWhiteSpace(injectionParameters.DisabledReason) ? $"{injectionParameters.Description}\r\n\r\n{Resources.GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY}" 
+                                                                                            : injectionParameters.DisabledReason;
             Path = injectionParameters.Path;
         }
         #endregion

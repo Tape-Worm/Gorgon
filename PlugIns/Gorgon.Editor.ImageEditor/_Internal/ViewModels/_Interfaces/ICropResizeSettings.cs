@@ -30,7 +30,7 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ImageEditor.ViewModels
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
     /// The mode for the cropping/resizing of an image.

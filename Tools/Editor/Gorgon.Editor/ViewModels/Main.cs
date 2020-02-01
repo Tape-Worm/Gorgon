@@ -25,23 +25,22 @@
 #endregion
 
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.Converters;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.Views;
 using Gorgon.IO;
 using Newtonsoft.Json;
 
@@ -51,32 +50,26 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for the main window.
     /// </summary>
     internal class Main
-        : ViewModelBase<MainParameters>, IMain
+        : ViewModelBase<MainParameters, IHostContentServices>, IMain
     {
         #region Variables.
         // The project manager used to handle project data.
         private ProjectManager _projectManager;
         // The factory used to create view models.
         private ViewModelFactory _viewModelFactory;
-        // The message display service.
-        private IMessageDisplayService _messageService;
         // The currently active project.
         private IProjectEditor _currentProject;
         // The project open dialog service.
         private EditorFileOpenDialogService _openDialog;
-        // The project save dialog service.
-        private EditorFileSaveDialogService _saveDialog;
         // The directory locator service.
         private IDirectoryLocateService _directoryLocator;
-        // The service used to manage content plug ins.
-        private IContentPlugInService _contentPlugIns;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the settings for the application.
         /// </summary>
-        public EditorSettings Settings
+        public Editor.EditorSettings Settings
         {
             get;
             private set;
@@ -85,7 +78,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return a list of content plugins that can create their own content.
         /// </summary>
-        public ObservableCollection<IContentPlugInMetadata> ContentCreators
+        public IReadOnlyList<IContentPlugInMetadata> ContentCreators
         {
             get;
             private set;
@@ -94,7 +87,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the view model for the settings view.
         /// </summary>
-        public IEditorSettingsVm SettingsViewModel
+        public IEditorSettings SettingsViewModel
         {
             get;
             private set;
@@ -187,25 +180,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the command used to save a project as a packed file.
-        /// </summary>
-        public IEditorAsyncCommand<SavePackFileArgs> SavePackFileCommand
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the command used to query before closing the application.
         /// </summary>
         public IEditorAsyncCommand<AppCloseArgs> AppClosingAsyncCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to create content.
-        /// </summary>
-        public IEditorCommand<string> CreateContentCommand
         {
             get;
         }
@@ -259,37 +236,6 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <returns><b>true</b> if projects can be opened, <b>false</b> if not.</returns>
         private bool CanOpenProjects() => _openDialog.Providers.Readers.Count > 0;
-
-        /// <summary>
-        /// Function to determine if a project can be saved.
-        /// </summary>
-        /// <param name="args">The arguments for the save command.</param>
-        /// <returns><b>true</b> if the project can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveProject(SavePackFileArgs args) => (_saveDialog.Providers.Writers.Count > 0) && (args?.CurrentProject != null);
-
-        /// <summary>
-        /// Function to inject dependencies for the view model.
-        /// </summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
-        /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
-        protected override void OnInitialize(MainParameters injectionParameters)
-        {
-            Settings = injectionParameters.EditorSettings;
-            _projectManager = injectionParameters.ProjectManager;
-            _viewModelFactory = injectionParameters.ViewModelFactory;
-            _openDialog = injectionParameters.OpenDialog;
-            _saveDialog = injectionParameters.SaveDialog;
-            _messageService = injectionParameters.MessageDisplay;
-            NewProject = injectionParameters.NewProject;
-            RecentFiles = injectionParameters.RecentFiles;
-            SettingsViewModel = injectionParameters.Settings;
-            _directoryLocator = injectionParameters.DirectoryLocater;
-            _contentPlugIns = injectionParameters.ContentPlugIns;
-
-            ContentCreators = new ObservableCollection<IContentPlugInMetadata>(injectionParameters.ContentCreators);
-            RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
-            NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
-        }
 
         /// <summary>
         /// Handles the PropertyChanged event of the CurrentProject control.
@@ -352,19 +298,94 @@ namespace Gorgon.Editor.ViewModels
         private void NewProject_WaitPanelActivated(object sender, WaitPanelActivateArgs e) => ShowWaitPanel(e.Message, e.Title);
 
         /// <summary>
+        /// Function to import the project data.
+        /// </summary>
+        /// <param name="project">The project to import into.</param>
+        /// <returns>The imported project view model.</returns>
+        private async Task<IProjectEditor> ImportProjectDataAsync(IProject project)
+        {
+            IProjectEditor projectEditor;
+
+            // Move the directory to a temporary physical location and we'll import from there.
+            string tempDir = Path.Combine(project.TempDirectory.FullName, Guid.NewGuid().ToString("N")).FormatDirectory(Path.DirectorySeparatorChar);
+            System.IO.Directory.Move(project.FileSystemDirectory.FullName, tempDir);
+            System.IO.Directory.CreateDirectory(project.FileSystemDirectory.FullName);
+
+            // Recreate the project.
+            project.ProjectItems.Clear();
+            projectEditor = await _viewModelFactory.CreateProjectViewModelAsync(project);
+
+            IImportData importArgs = new ImportData
+            {
+                Destination = projectEditor.FileExplorer.Root
+            };
+
+            importArgs.PhysicalPaths.AddRange(System.IO.Directory.GetDirectories(tempDir, "*", SearchOption.TopDirectoryOnly)
+                                                                .Select(item => item.FormatDirectory(Path.DirectorySeparatorChar))
+                                                                .Concat(System.IO.Directory.GetFiles(tempDir, "*", SearchOption.TopDirectoryOnly)));
+
+            // Temporary event handlers to relay progress from the project view model.
+            void UpdateProgressEvent(object sender, ProgressPanelUpdateArgs e) => UpdateProgress(e);
+            void HideProgressEvent(object sender, EventArgs e) => HideProgress();
+
+            if (!projectEditor.FileExplorer.ImportCommand.CanExecute(importArgs))
+            {
+                return null;
+            }
+
+            try
+            {
+                projectEditor.ProgressUpdated += UpdateProgressEvent;
+                projectEditor.ProgressDeactivated += HideProgressEvent;
+
+                // Temporarily load in the view model so we can make use of events.
+                projectEditor.OnLoad();
+                await projectEditor.FileExplorer.ImportCommand.ExecuteAsync(importArgs);
+            }
+            finally
+            {
+                projectEditor.OnUnload();
+
+                projectEditor.ProgressUpdated -= UpdateProgressEvent;
+                projectEditor.ProgressDeactivated -= HideProgressEvent;
+
+                HostServices.BusyService.SetBusy();
+                if (System.IO.Directory.Exists(tempDir))
+                {
+                    try
+                    {
+                        System.IO.Directory.Delete(tempDir, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        HostServices.Log.Print("[ERROR] Cannot delete import working directory.", LoggingLevel.Simple);
+                        HostServices.Log.LogException(ex);
+                    }
+                }
+                HostServices.BusyService.SetIdle();
+            }
+
+            return projectEditor;
+        }
+
+        /// <summary>
         /// Function to open a project.
         /// </summary>
         /// <param name="path">The path to the project.</param>
-        /// <param name="forceImport"><b>true</b> force the import of the files in the project directory, <b>false</b> to load as-is.</param>
-        private async Task OpenProjectAsync(DirectoryInfo path, bool forceImport)
+        /// <param name="importContent"><b>true</b> to import the content, <b>false</b> to leave as-is.</param>
+        private async Task OpenProjectAsync(string path, bool importContent)
         {
+            IProjectEditor current = CurrentProject;
+            IProjectEditor projectEditor = null;
             IProject project;
+
+            path = Path.GetFullPath(path).FormatDirectory(Path.DirectorySeparatorChar);
 
             // Check for content/project changes.
             var args = new CancelEventArgs();
-            if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
+            if ((current?.BeforeCloseCommand != null) && (current.BeforeCloseCommand.CanExecute(args)))
             {
-                await CurrentProject.BeforeCloseCommand.ExecuteAsync(args);
+                await current.BeforeCloseCommand.ExecuteAsync(args);
 
                 if (args.Cancel)
                 {
@@ -373,9 +394,9 @@ namespace Gorgon.Editor.ViewModels
             }
 
             // Check for the existence of the directory.
-            if (!path.Exists)
+            if (!System.IO.Directory.Exists(path))
             {
-                if (_messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_NO_PROJECT_DIR, path.FullName)) == MessageResponse.Yes)
+                if (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_NO_PROJECT_DIR, path)) == MessageResponse.Yes)
                 {
                     HideWaitPanel();
                     await CreateProjectAsync(path);
@@ -384,7 +405,7 @@ namespace Gorgon.Editor.ViewModels
             }
             else if (!_projectManager.IsGorgonProject(path))
             {
-                if (_messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_NOT_GOREDIT_PROJ, path.FullName)) == MessageResponse.Yes)
+                if (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_NOT_GOREDIT_PROJ, path)) == MessageResponse.Yes)
                 {
                     HideWaitPanel();
                     await CreateProjectAsync(path);
@@ -396,12 +417,15 @@ namespace Gorgon.Editor.ViewModels
 
             if (project == null)
             {
-                Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+                HostServices.Log.Print("[ERROR] No project was returned from the project manager.", LoggingLevel.Simple);
                 return;
             }
 
-            // Detach plug ins from current project.
-            IProjectEditor projectEditor = await _viewModelFactory.CreateProjectViewModelAsync(project);
+            // Ensure that the project is completely closed.
+            if ((current?.AfterCloseCommand != null) && (current.AfterCloseCommand.CanExecute(null)))
+            {
+                current.AfterCloseCommand.Execute(null);
+            }
 
             // Close the current project.
             CurrentProject = null;
@@ -409,11 +433,26 @@ namespace Gorgon.Editor.ViewModels
             // Begin file scanning.
             HideWaitPanel();
 
+            // Perform a content import.
+            if (importContent)
+            {
+                projectEditor = await ImportProjectDataAsync(project);
+
+                if (projectEditor == null)
+                {
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_IMPORT, "/"));
+                    return;
+                }
+            }
+            else
+            {
+                projectEditor = await _viewModelFactory.CreateProjectViewModelAsync(project);
+            }
+
             // Update the metadata for the most up-to-date info.
+            // Create the new view model for the project.            
             SaveProjectMetaData(projectEditor);
             CurrentProject = projectEditor;
-
-            Settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
             RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(Settings.LastProjectWorkingDirectory,
                                                                         item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
@@ -426,11 +465,11 @@ namespace Gorgon.Editor.ViewModels
 
             RecentFiles.Files.Add(new RecentItem
             {
-                FilePath = path.FullName,
+                FilePath = path,
                 LastUsedDate = DateTime.Now
             });
 
-            Log.Print($"Project '{projectEditor.ProjectTitle}' was loaded from '{path}'.", LoggingLevel.Simple);
+            HostServices.Log.Print($"Project '{projectEditor.ProjectTitle}' was loaded from '{path}'.", LoggingLevel.Simple);
         }
 
         /// <summary>
@@ -451,20 +490,19 @@ namespace Gorgon.Editor.ViewModels
                 // Always save the metadata.
                 SaveProjectMetaData(CurrentProject);
 
-                var projectDir = new DirectoryInfo(recentItem.FilePath);
-                Log.Print($"Opening '{projectDir.FullName}'...", LoggingLevel.Simple);
+                HostServices.Log.Print($"Opening '{recentItem.FilePath}'...", LoggingLevel.Simple);
 
-                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, projectDir.FullName.Ellipses(65, true)), null));
+                ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, recentItem.FilePath.Ellipses(45, true)), null));
 
-                await OpenProjectAsync(projectDir, false);
+                await OpenProjectAsync(recentItem.FilePath, false);
             }
             catch (DirectoryNotFoundException dex)
             {
-                _messageService.ShowError(dex);
+                HostServices.MessageDisplay.ShowError(dex);
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_OPENING_PROJECT);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_OPENING_PROJECT);
             }
             finally
             {
@@ -481,6 +519,7 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
+                IProjectEditor current = CurrentProject;
                 string path = _openDialog.GetFilename();
 
                 if (string.IsNullOrWhiteSpace(path))
@@ -488,31 +527,19 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                DirectoryInfo target = _directoryLocator.GetDirectory(GetInitialProjectDirectory(), Resources.GOREDIT_CAPTION_SELECT_PROJECT_DIR);
+                DirectoryInfo dir = _directoryLocator.GetDirectory(GetInitialProjectDirectory(), Resources.GOREDIT_CAPTION_SELECT_PROJECT_DIR);
 
-                if (target == null)
+                if (dir== null)
                 {
                     return;
                 }
 
-                target = new DirectoryInfo(Path.Combine(target.FullName, Path.GetFileName(path)));
+                string target = Path.Combine(dir.FullName, Path.GetFileName(path));
 
                 // If the target directory already exists, and it has items in it, then prompt the user.
-                if ((target.Exists) && (target.GetFileSystemInfos().Length > 0))
+                if ((System.IO.Directory.Exists(target)) && (System.IO.Directory.GetFileSystemEntries(target).Length > 0))
                 {
-                    if (_messageService.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS, target.FullName)) == MessageResponse.No)
-                    {
-                        return;
-                    }
-                }
-
-                // Check for content/project changes.
-                var args = new CancelEventArgs();
-                if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
-                {
-                    await CurrentProject.BeforeCloseCommand.ExecuteAsync(args);
-
-                    if (args.Cancel)
+                    if (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_WORKSPACE_PATH_EXISTS, target)) == MessageResponse.No)
                     {
                         return;
                     }
@@ -520,18 +547,14 @@ namespace Gorgon.Editor.ViewModels
 
                 ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, path.Ellipses(65, true)), null));
 
-                Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
-
-                // Ensure that our metadata is up to date in the current project.
-                SaveProjectMetaData(CurrentProject);
+                HostServices.Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
 
                 // Create the project by copying data into the folder structure.
-                await _projectManager.OpenPackFileProjectAsync(new FileInfo(path), target);
-                target.Refresh();
+                bool isEditorFile = await _projectManager.ExtractPackFileProjectAsync(path, target);
 
-                if (!target.Exists)
+                if (!System.IO.Directory.Exists(target))
                 {
-                    Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+                    HostServices.Log.Print("[ERROR] No project was returned from the project manager.", LoggingLevel.Simple);
                     return;
                 }
 
@@ -539,7 +562,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_OPENING_PROJECT);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_OPENING_PROJECT);
             }
             finally
             {
@@ -580,130 +603,25 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                Log.Print($"Opening '{path.FullName}'...", LoggingLevel.Simple);
+                HostServices.Log.Print($"Opening '{path.FullName}'...", LoggingLevel.Simple);
 
                 ShowWaitPanel(new WaitPanelActivateArgs(string.Format(Resources.GOREDIT_TEXT_OPENING, path.FullName.Ellipses(65, true)), null));
 
-                await OpenProjectAsync(path, false);
+                await OpenProjectAsync(path.FullName, false);
             }
             catch (DirectoryNotFoundException dex)
             {
-                _messageService.ShowError(dex);
+                HostServices.MessageDisplay.ShowError(dex);
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_OPENING_PROJECT);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_OPENING_PROJECT);
             }
             finally
             {
                 PersistSettings();
                 HideWaitPanel();
                 HideProgress();
-            }
-        }
-
-        /// <summary>
-        /// Function to save the current project to a packed file.
-        /// </summary>
-        /// <param name="args">The save project arguments.</param>
-        /// <returns><b>true</b> if saved successfully, <b>false</b> if cancelled.</returns>
-        private async Task<bool> CreateSaveProjectToPackFileTask(SavePackFileArgs args)
-        {
-            var cancelSource = new CancellationTokenSource();
-            FileInfo projectFile = null;
-            FileWriterPlugIn writer = null;
-
-            try
-            {
-                // Function used to cancel the save operation.
-                void CancelOperation() => cancelSource.Cancel();
-
-                var lastSaveDir = new DirectoryInfo(Settings.LastOpenSavePath);
-
-                if (!lastSaveDir.Exists)
-                {
-                    lastSaveDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-                }
-
-                _saveDialog.InitialDirectory = lastSaveDir;
-                _saveDialog.InitialFilePath = string.Empty;
-
-                string path = _saveDialog.GetFilename();
-
-                if (string.IsNullOrWhiteSpace(path))
-                {
-                    args.Cancel = true;
-                    return false;
-                }
-
-                projectFile = new FileInfo(path);
-                writer = _saveDialog.CurrentWriter;
-
-                Debug.Assert(writer != null, "Must have a writer plug in.");
-
-                Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
-                Log.Print($"Saving to '{projectFile.FullName}'...", LoggingLevel.Simple);
-
-                var panelUpdateArgs = new ProgressPanelUpdateArgs
-                {
-                    Title = Resources.GOREDIT_TEXT_PLEASE_WAIT,
-                    Message = string.Format(Resources.GOREDIT_TEXT_SAVING, CurrentProject.ProjectTitle)
-                };
-
-                UpdateProgress(panelUpdateArgs);
-
-                // Function used to update the progress meter display.
-                void SaveProgress(int currentItem, int totalItems, bool allowCancellation)
-                {
-                    panelUpdateArgs.CancelAction = allowCancellation ? CancelOperation : (Action)null;
-                    panelUpdateArgs.PercentageComplete = (float)currentItem / totalItems;
-                    UpdateProgress(panelUpdateArgs);
-                }
-
-                SaveProjectMetaData(CurrentProject);
-#warning FIX ME - Should be a command!
-                await CurrentProject.SaveToPackFileAsync(projectFile, writer, SaveProgress, cancelSource.Token);
-
-                if (cancelSource.Token.IsCancellationRequested)
-                {
-                    args.Cancel = true;
-                    return false;
-                }
-
-                // Update the current project with the updated info.               
-                args.Cancel = cancelSource.Token.IsCancellationRequested;
-
-                if (args.Cancel)
-                {
-                    return false;
-                }
-
-                Settings.LastOpenSavePath = projectFile.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar);
-
-                Log.Print($"Saved project '{CurrentProject.ProjectTitle}' to '{projectFile.FullName}'.", LoggingLevel.Simple);
-                return true;
-            }
-            finally
-            {
-                HideProgress();
-                cancelSource?.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Function to save a project file to a packed file.
-        /// </summary>
-        /// <param name="args">The arguments for the command.</param>
-        private async Task DoSaveProjectToPackFileAsync(SavePackFileArgs args)
-        {
-            try
-            {
-                await CreateSaveProjectToPackFileTask(args);
-            }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_SAVING_PROJECT);
-                args.Cancel = true;
             }
         }
 
@@ -719,27 +637,39 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="directory">The directory that will hold the project files.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private async Task CreateProjectAsync(DirectoryInfo directory)
+        private async Task CreateProjectAsync(string directory)
         {
-            ShowWaitPanel(Resources.GOREDIT_TEXT_CREATING_PROJECT);
+            IProjectEditor current = CurrentProject;
+
+            ShowWaitPanel(Resources.GOREDIT_TEXT_CREATING_PROJECT);            
 
             try
             {
-                // Ensure that our metadata is up to date in the current project.
-                SaveProjectMetaData(CurrentProject);
+                // Check for content/project changes.
+                var args = new CancelEventArgs();
+                if ((current?.BeforeCloseCommand != null) && (current.BeforeCloseCommand.CanExecute(args)))
+                {
+                    await current.BeforeCloseCommand.ExecuteAsync(args);
 
+                    if (args.Cancel)
+                    {
+                        return;
+                    }
+                }
+                
                 IProject project = await Task.Run(() => _projectManager.CreateProject(directory));
-
-                // Unload the current project.
                 CurrentProject = null;
-                Settings.LastProjectWorkingDirectory = string.Empty;
 
+                if ((current?.AfterCloseCommand != null) && (current.AfterCloseCommand.CanExecute(null)))
+                {
+                    current.AfterCloseCommand.Execute(null);
+                }
+
+                // Unload the current project.                
                 CurrentProject = await _viewModelFactory.CreateProjectViewModelAsync(project);
-                Settings.LastProjectWorkingDirectory = project.ProjectWorkSpace.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
                 RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
-                    Settings.LastProjectWorkingDirectory,
-                    StringComparison.OrdinalIgnoreCase));
+                                                                                         Settings.LastProjectWorkingDirectory, StringComparison.OrdinalIgnoreCase));
 
                 if (dupe != null)
                 {
@@ -748,7 +678,7 @@ namespace Gorgon.Editor.ViewModels
 
                 RecentFiles.Files.Add(new RecentItem
                 {
-                    FilePath = Settings.LastProjectWorkingDirectory,
+                    FilePath = directory,
                     LastUsedDate = DateTime.Now
                 });
             }
@@ -767,23 +697,11 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                // Check for content/project changes.
-                var args = new CancelEventArgs();
-                if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
-                {
-                    await CurrentProject.BeforeCloseCommand.ExecuteAsync(args);
-
-                    if (args.Cancel)
-                    {
-                        return;
-                    }
-                }
-
-                await CreateProjectAsync(NewProject.WorkspacePath);
+                await CreateProjectAsync(NewProject.WorkspacePath.FullName);
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CREATE_PROJECT);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_CREATE_PROJECT);
             }
             finally
             {
@@ -792,66 +710,9 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
-        /// <summary>
-        /// Function to determine if content can be created.
-        /// </summary>
-        /// <param name="notUsed">Not used.</param>
-        /// <returns><b>true</b> if the content can be created, <b>false</b> if not.</returns>
-        private bool CanCreateContent(string notUsed) => CurrentProject?.FileExplorer != null && ContentCreators != null && ContentCreators.Count > 0;
-
-        /// <summary>
-        /// Function to create new content.
-        /// </summary>
-        /// <param name="contentID">The ID of the content type based on its new icon ID.</param>
-        private async void DoCreateContentAsync(string contentID)
-        {
-            IContentFile contentFile = null;
-
-            try
-            {
-                if (!Guid.TryParse(contentID, out Guid guid))
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_INVALID_CONTENT_TYPE_ID);
-                }
-
-                IContentPlugInMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
-
-                Debug.Assert(metaData != null, $"Could not locate the content plugin metadata for {contentID}.");
-
-                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metaData.ContentType));
-
-                ContentPlugIn plugin = _contentPlugIns.PlugIns.FirstOrDefault(item => item.Value == metaData).Value;
-
-                Debug.Assert(plugin != null, $"Could not locate the content plug in for {contentID}.");
-
-                contentFile = await CurrentProject.CreateNewContentItemAsync(metaData, plugin);
-
-                if (contentFile == null)
-                {
-                    return;
-                }
-
-                HideWaitPanel();
-            }
-            catch (Exception ex)
-            {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CONTENT_CREATION);
-            }
-            finally
-            {
-                HideWaitPanel();
-            }
-
-            // We have our content, we can now open it as we normally would.
-            if (contentFile != null)
-            {
-                CurrentProject.FileExplorer.OpenContentFileCommand.Execute(contentFile);
-            }
-        }
-
         /// <summary>Function called when the application is closing.</summary>
         /// <param name="args">The arguments for the command.</param>
-        private async Task DoAppClose(AppCloseArgs args)
+        private async Task DoAppCloseAsync(AppCloseArgs args)
         {
             try
             {
@@ -872,15 +733,17 @@ namespace Gorgon.Editor.ViewModels
                     catch (Exception ex)
                     {
                         // If we can't save, then don't stop the close operation.
-                        Log.Print("Error saving application settings.", LoggingLevel.Simple);
-                        Log.LogException(ex);
+                        HostServices.Log.Print("Error saving application settings.", LoggingLevel.Simple);
+                        HostServices.Log.LogException(ex);
                     }
                 }
 
+                IProjectEditor current = CurrentProject;
+
                 // Save the project if one is open.
-                if ((CurrentProject?.BeforeCloseCommand != null) && (CurrentProject.BeforeCloseCommand.CanExecute(args)))
+                if ((current?.BeforeCloseCommand != null) && (current.BeforeCloseCommand.CanExecute(args)))
                 {
-                    await CurrentProject.BeforeCloseCommand.ExecuteAsync(args);
+                    await current.BeforeCloseCommand.ExecuteAsync(args);
 
                     if (args.Cancel)
                     {
@@ -888,14 +751,49 @@ namespace Gorgon.Editor.ViewModels
                     }
                 }
 
-                OnUnload();
-                SaveSettings();
+                try
+                {
+                    OnUnload();
+                    SaveSettings();
+                }
+                catch (Exception ex)
+                {
+                    HostServices.Log.Print("[ERROR] Failed to unload main view model!", LoggingLevel.Simple);
+                    HostServices.Log.LogException(ex);
+                }
+
+                // Ensure that the project is completely closed.
+                if ((current?.AfterCloseCommand != null) && (current.AfterCloseCommand.CanExecute(null)))
+                {
+                    current.AfterCloseCommand.Execute(null);
+                }
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_CLOSING);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_CLOSING);
                 args.Cancel = true;
             }
+        }
+
+        /// <summary>
+        /// Function to inject dependencies for the view model.
+        /// </summary>
+        /// <param name="injectionParameters">The parameters to inject.</param>
+        /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
+        protected override void OnInitialize(MainParameters injectionParameters)
+        {
+            Settings = injectionParameters.EditorSettings;
+            _projectManager = injectionParameters.ProjectManager;
+            _viewModelFactory = injectionParameters.ViewModelFactory;
+            _openDialog = injectionParameters.OpenDialog;
+            NewProject = injectionParameters.NewProject;
+            RecentFiles = injectionParameters.RecentFiles;
+            SettingsViewModel = injectionParameters.Settings;
+            _directoryLocator = injectionParameters.DirectoryLocater;
+
+            ContentCreators = injectionParameters.ContentCreators;
+            RecentFiles.OpenProjectCommand = new EditorCommand<RecentItem>(DoOpenRecentAsync, CanOpenRecent);
+            NewProject.CreateProjectCommand = new EditorCommand<object>(DoCreateProjectAsync, CanCreateProject);
         }
 
         /// <summary>
@@ -935,9 +833,7 @@ namespace Gorgon.Editor.ViewModels
         {
             BrowseProjectCommand = new EditorCommand<object>(DoOpenProjectAsync);
             OpenPackFileCommand = new EditorCommand<object>(DoOpenPackFileAsync, CanOpenProjects);
-            SavePackFileCommand = new EditorAsyncCommand<SavePackFileArgs>(DoSaveProjectToPackFileAsync, CanSaveProject);
-            AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppClose);
-            CreateContentCommand = new EditorCommand<string>(DoCreateContentAsync, CanCreateContent);
+            AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppCloseAsync);            
         }
         #endregion
     }

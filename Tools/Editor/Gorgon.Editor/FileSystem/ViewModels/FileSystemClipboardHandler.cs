@@ -25,15 +25,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.Views;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -132,8 +127,9 @@ namespace Gorgon.Editor.ViewModels
                         return _fileExplorer.CopyFileCommand.CanExecute(data);
                     case CopyMoveOperation.Move:
                         return _fileExplorer.MoveFileCommand.CanExecute(data);
+                    default:
+                        return false;
                 }
-                return false;
             }
             else if (_clipboardService.IsType<DirectoryCopyMoveData>())
             {
@@ -146,8 +142,9 @@ namespace Gorgon.Editor.ViewModels
                         return _fileExplorer.CopyDirectoryCommand.CanExecute(data);
                     case CopyMoveOperation.Move:
                         return _fileExplorer.MoveDirectoryCommand.CanExecute(data);
+                    default:
+                        return false;
                 }
-                return false;
             }
 
             return false;

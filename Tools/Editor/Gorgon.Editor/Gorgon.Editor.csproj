@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <CodeAnalysisRuleSet>..\..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -35,7 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <CodeAnalysisRuleSet>..\..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
@@ -65,7 +65,6 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Boot.cs" />
-    <Compile Include="CommonCommands.cs" />
     <Compile Include="ContentRibbonEventArgs.cs" />
     <Compile Include="FileSystem\Services\FileSystemFolderBrowseService.cs" />
     <Compile Include="FileSystem\Services\FileSystemSearchSystem.cs" />
@@ -84,7 +83,7 @@
     <Compile Include="FileSystem\ViewModels\RenameArgs.cs" />
     <Compile Include="FileSystem\ViewModels\RootDirectory.cs" />
     <Compile Include="FileSystem\ViewModels\RootDirectoryParameters.cs" />
-    <Compile Include="FileSystem\ViewModels\Services\FileSystemProviders.cs" />
+    <Compile Include="FileSystem\Services\FileSystemProviders.cs" />
     <Compile Include="FileSystem\ViewModels\_Extensions\FileSystemExtensions.cs" />
     <Compile Include="FileSystem\ViewModels\_Interfaces\IDirectory.cs" />
     <Compile Include="FileSystem\ViewModels\_Interfaces\IDirectoryCopyMoveData.cs" />
@@ -146,12 +145,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\GraphicsContext.cs" />
     <Compile Include="EditorSettings.cs" />
-    <Compile Include="Services\_Interfaces\IFileScanService.cs" />
     <Compile Include="Services\UndoService.cs" />
     <Compile Include="Settings\ViewModels\SettingsPluginsList.cs" />
     <Compile Include="ViewModels\AppCloseArgs.cs" />
-    <Compile Include="ViewModels\ContentPreviewVm.cs" />
-    <Compile Include="ViewModels\ContentPreviewVmParameters.cs" />
+    <Compile Include="ViewModels\ContentPreview.cs" />
+    <Compile Include="ViewModels\ContentPreviewParameters.cs" />
     <Compile Include="Settings\ViewModels\EditorSettings.cs" />
     <Compile Include="Settings\ViewModels\EditorSettingsParameters.cs" />
     <Compile Include="Settings\ViewModels\SettingsPluginListItem.cs" />
@@ -162,7 +160,6 @@
     <Compile Include="ViewModels\Main.cs" />
     <Compile Include="ViewModels\MainParameters.cs" />
     <Compile Include="ViewModels\Recent.cs" />
-    <Compile Include="ViewModels\RecentParameters.cs" />
     <Compile Include="ViewModels\SavePackFileArgs.cs" />
     <Compile Include="ViewModels\NewProject.cs" />
     <Compile Include="ViewModels\NewProjectParameters.cs" />
@@ -172,17 +169,17 @@
     <Compile Include="ViewModels\ViewModelFactory.cs" />
     <Compile Include="Settings\ViewModels\_Interfaces\IEditorSettings.cs" />
     <Compile Include="ViewModels\_Interfaces\IMain.cs" />
-    <Compile Include="ViewModels\_Interfaces\IContentPreviewVm.cs" />
+    <Compile Include="ViewModels\_Interfaces\IContentPreview.cs" />
     <Compile Include="ViewModels\_Interfaces\IRecent.cs" />
     <Compile Include="Settings\ViewModels\_Interfaces\ISettingsPluginListItem.cs" />
     <Compile Include="Settings\ViewModels\_Interfaces\ISettingsPluginsList.cs" />
     <Compile Include="ViewModels\_Interfaces\INewProject.cs" />
     <Compile Include="ViewModels\_Interfaces\IProjectEditor.cs" />
-    <Compile Include="Views\ContentPreview.cs">
+    <Compile Include="Views\ContentPreviewPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\ContentPreview.Designer.cs">
-      <DependentUpon>ContentPreview.cs</DependentUpon>
+    <Compile Include="Views\ContentPreviewPanel.Designer.cs">
+      <DependentUpon>ContentPreviewPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectContainer.cs">
       <SubType>UserControl</SubType>
@@ -252,8 +249,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Views\ContentPreview.resx">
-      <DependentUpon>ContentPreview.cs</DependentUpon>
+    <EmbeddedResource Include="Views\ContentPreviewPanel.resx">
+      <DependentUpon>ContentPreviewPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ProjectContainer.resx">
       <DependentUpon>ProjectContainer.cs</DependentUpon>
@@ -297,6 +294,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\refresh_48x48.png" />
+    <None Include="Resources\refresh_16x16.png" />
+    <None Include="Resources\LoadingBg.dds" />
     <None Include="Resources\file_explorer_48x48.png" />
     <None Include="Resources\file_explorer_16x16.png" />
     <None Include="Resources\content_preview_48x48.png" />
@@ -424,8 +424,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KryptonToolkitSuite5472">
-      <Version>5.472.2098</Version>
+    <PackageReference Include="Krypton.Ribbon.Lite">
+      <Version>5.500.2002.1</Version>
+    </PackageReference>
+    <PackageReference Include="Krypton.Toolkit.Lite">
+      <Version>5.500.2002.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.8</Version>
@@ -451,9 +454,7 @@
       <Version>4.7.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)Tools\texconv\texconv.exe" "$(TargetDir)Plugins\content"</PostBuildEvent>

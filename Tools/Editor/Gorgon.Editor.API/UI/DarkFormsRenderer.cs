@@ -33,6 +33,14 @@ namespace Gorgon.Editor.UI
 	/// <summary>
 	/// A renderer to draw the visual styles for UI elements.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// Plug in developers should use this class to ensure that the color theme of the UI for the plug in matches the rest of the application (as close as possible). 
+	/// </para>
+	/// <para>
+	/// The theme will be applied to any winforms controls that support themed rendering automatically.
+	/// </para>
+	/// </remarks>
 	public class DarkFormsRenderer
 		: ToolStripRenderer
 	{
@@ -248,35 +256,33 @@ namespace Gorgon.Editor.UI
 		/// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
 		{
-			var button = e.Item as ToolStripButton;
-
-			if (e.Item.Selected)
-			{
+            if (e.Item.Selected)
+            {
                 using (Brush backBrush = new SolidBrush(MenuHilightBackground))
                 {
                     e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
                 }
             }
-			else
-			{
-				if (button != null)
-				{
-					if (!button.Checked)
-					{
-						return;
-					}
+            else
+            {
+                if (e.Item is ToolStripButton button)
+                {
+                    if (!button.Checked)
+                    {
+                        return;
+                    }
 
-					using (Brush backBrush = new SolidBrush(MenuHilightBackground))
-					{
-						e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
-					}
+                    using (Brush backBrush = new SolidBrush(MenuHilightBackground))
+                    {
+                        e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
+                    }
 
-					return;
-				}
+                    return;
+                }
 
-				base.OnRenderButtonBackground(e);
-			}
-		}
+                base.OnRenderButtonBackground(e);
+            }
+        }
 
 		/// <summary>
 		/// Raises the <see cref="ToolStripRenderer.RenderItemCheck"/> event.

@@ -25,10 +25,7 @@
 #endregion
 
 using System;
-using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
 using DX = SharpDX;
@@ -39,7 +36,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// The view model for the image cropping/resizing settings view.
     /// </summary>
     internal class CropResizeSettings
-        : ViewModelBase<IViewModelInjection>, ICropResizeSettings
+        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ICropResizeSettings
     {
         #region Variables.
         // The file being imported.
@@ -48,12 +45,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IGorgonImage _importImage;
         // The size of the target image.
         private DX.Size2 _targetImageSize;
-        // The command executed when the operation is cancelled.
-        private IEditorCommand<object> _cancelCommand;
-        // The command execute when the operation is accepted.
-        private IEditorCommand<object> _okCommand;
-        // Flag to indicate that the crop/resize settings is active.
-        private bool _isActive;
         // Flag to indicate which modes are allowed.
         private CropResizeMode _allowedModes = CropResizeMode.Crop | CropResizeMode.Resize;
         // Flag to indicate that resizing is allowed.
@@ -66,13 +57,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private ImageFilter _imageFilter = ImageFilter.Point;
         // The directory for the imported file.
         private string _importFileDirectory;
-        // The message display service for the view model.
-        private IMessageDisplayService _messageDisplay;
         #endregion
 
         #region Properties.
         /// <summary>Property to return whether the panel is modal.</summary>
-        public bool IsModal => true;
+        public override bool IsModal => true;
 
         /// <summary>
         /// Property to set or return whether to preserve the aspect ratio of the image being resized.
@@ -185,62 +174,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
         }
 
-        /// <summary>Property to set or return the command used to cancel the operation.</summary>
-        public IEditorCommand<object> CancelCommand
-        {
-            get => _cancelCommand;
-            set
-            {
-                if (_cancelCommand == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _cancelCommand = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the command used to apply the operation.
-        /// </summary>
-        public IEditorCommand<object> OkCommand
-        {
-            get => _okCommand;
-            set
-            {
-                if (_okCommand == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _okCommand = value;
-                OnPropertyChanged();
-            }
-        }
-
-
-        /// <summary>Property to set or return whether the crop/resize settings is active or not.</summary>
-        /// <value>
-        ///   <c>true</c> if this instance is active; otherwise, <c>false</c>.</value>
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _isActive = value;
-                OnPropertyChanged();
-            }
-        }
-
         /// <summary>
         /// Property to set or return which modes are allowed.
         /// </summary>
@@ -297,38 +230,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 OnPropertyChanged();
             }
         }
-
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to cancel the crop/resize operation.
-        /// </summary>
-        private void DoCancelCropResize()
-        {
-            try
-            {
-                IsActive = false;
-            }
-            catch (Exception ex)
-            {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
-            }
-        }
-
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(IViewModelInjection injectionParameters) =>
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(IViewModelInjection.MessageDisplay), nameof(injectionParameters));
+        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+        {
+        }
         #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="CropResizeSettings"/> class.</summary>
-        public CropResizeSettings() => CancelCommand = new EditorCommand<object>(DoCancelCropResize);
-        #endregion
-
     }
 }

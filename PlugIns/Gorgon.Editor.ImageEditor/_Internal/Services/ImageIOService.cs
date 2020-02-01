@@ -55,6 +55,8 @@ namespace Gorgon.Editor.ImageEditor
         private readonly IGorgonLog _log;
         // The busy state service.
         private readonly IBusyStateService _busyState;
+        // The image to use as a placeholder for thumbnail generation.
+        private readonly IGorgonImage _noThumbImage;
         #endregion
 
         #region Properties.
@@ -354,6 +356,90 @@ namespace Gorgon.Editor.ImageEditor
             return result;
         }
 
+        /// <summary>Function to load the load the image from the stream as a thumbnail.</summary>
+        /// <param name="file">The stream to the file containing the image data.</param>
+        /// <param name="path">The path to the output file.</param>
+        /// <param name="size">The size of the thumbnail, in pixels.</param>
+        /// <param name="dpi">The DPI scaling value to apply to the thumbnail.</param>
+        /// <returns>The image data, the virtual file entry for the working file, and the original metadata for the image.</returns>
+        public (IGorgonImage thumbNail, IGorgonVirtualFile workingFile, IGorgonImageInfo originalImageInfo) LoadImageAsThumbnail(Stream file, string path, int size, float dpi)
+        {
+            IGorgonImageInfo originalInfo = DefaultCodec.GetMetaData(file);
+            (IGorgonImage image, IGorgonVirtualFile workFile, _) = LoadImageFile(file, path);
+
+            if ((image == null) || (workFile == null))
+            {
+                image?.Dispose();
+                return (null, null, null);
+            }            
+
+            // Create a thumbnail from the image.
+            if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
+            {
+                image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+            }
+            else
+            {
+                if ((_noThumbImage.Width != size) || (_noThumbImage.Height != size))
+                {
+                    image = _noThumbImage.Clone().Resize((int)(size * dpi), (int)(size * dpi), 1, ImageFilter.Fant);
+                }
+                else
+                {
+                    image = _noThumbImage.Clone();
+                }
+
+                return (image, workFile, originalInfo);
+            }
+                        
+            // We only need a single array index/depth slice/mip level, so strip those out.
+            if ((image.ArrayCount > 1) || (image.Depth > 1) || (image.MipCount > 1))
+            {
+                IGorgonImage singleImage = new GorgonImage(new GorgonImageInfo(image)
+                {
+                    ArrayCount = 1,
+                    Depth = 1,
+                    MipCount = 1
+                });
+                image.Buffers[0].CopyTo(singleImage.Buffers[0]);
+                image.Dispose();
+                image = singleImage;
+            }
+
+            int imageSize = (int)(size * dpi);
+            int newWidth;
+            int newHeight;
+            float aspect;
+
+            if (image.Width > image.Height)
+            {
+                aspect = (float)image.Height / image.Width;
+                newWidth = imageSize;
+                newHeight = (int)((size * aspect) * dpi);
+            }
+            else
+            {
+                aspect = (float)image.Width / image.Height;
+                newHeight = imageSize;
+                newWidth = (int)((size * aspect) * dpi);
+            }
+
+            image.Resize(newWidth, newHeight, 1, ImageFilter.Fant);
+
+            if (imageSize != size)
+            {
+                image.Expand(imageSize, imageSize, 1, ImageExpandAnchor.Center);
+            }
+
+            return (image, workFile, originalInfo);
+        }
+
+        /// <summary>
+        /// Function to load an image file into memory.
+        /// </summary>
+        /// <param name="file">The stream for the file to load.</param>
+        /// <returns>The image data loaded from the stream.</returns>
+        public IGorgonImage LoadImageFile(Stream stream) => DefaultCodec.LoadFromStream(stream);
 
         /// <summary>Function to load the image file into memory.</summary>
         /// <param name="file">The stream for the file to load.</param>
@@ -371,7 +457,7 @@ namespace Gorgon.Editor.ImageEditor
 
             // We absolutely need to have an extension, or else the texconv tool will not work.
             if ((DefaultCodec.CodecCommonExtensions.Count > 0)
-                && (!string.Equals(Path.GetExtension(name), DefaultCodec.CodecCommonExtensions[0], System.StringComparison.OrdinalIgnoreCase)))
+                && (!string.Equals(Path.GetExtension(name), DefaultCodec.CodecCommonExtensions[0], StringComparison.OrdinalIgnoreCase)))
             {
                 _log.Print("Adding DDS extension to working file or else external tools may not be able to read it.", LoggingLevel.Verbose);
                 name = Path.ChangeExtension(name, DefaultCodec.CodecCommonExtensions[0]);
@@ -405,7 +491,7 @@ namespace Gorgon.Editor.ImageEditor
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
 
-                _log.Print($"Loaded compressed ([{formatInfo.Format}]) image data as [{result.Format}]", LoggingLevel.Intermediate);
+                _log.Print($"Loaded compressed [{formatInfo.Format}] image data as [{result.Format}]", LoggingLevel.Intermediate);
             }
             else
             {
@@ -418,6 +504,19 @@ namespace Gorgon.Editor.ImageEditor
 
             return (result, workFile, originalFormat);
         }
+
+        /// <summary>
+        /// Function to retrieve the image information for an image file.
+        /// </summary>
+        /// <param name="filePath">The path to the file to read.</param>
+        /// <returns>An image information object containing data about the image.</returns>
+        public IGorgonImageInfo GetImageInfo(string filePath)
+        {
+            using (Stream stream = ScratchArea.OpenStream(filePath, FileMode.Open))
+            {
+                return DefaultCodec.GetMetaData(stream);
+            }
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -425,6 +524,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="defaultCodec">The default codec used by the plug in.</param>
         /// <param name="installedCodecs">The list of installed codecs.</param>
         /// <param name="importDialog">The dialog service used to export an image.</param>
+        /// <param name="exportDialog">The dialog used to export an image.</param>
+        /// <param name="noThumbnailImage">The image to use as a placeholder if a thumbnail cannot be generated.</param>
         /// <param name="busyService">The busy state service.</param>
         /// <param name="scratchArea">The file system writer used to write to the temporary area.</param>
         /// <param name="bcCompressor">The block compressor used to block (de)compress image data.</param>
@@ -433,6 +534,7 @@ namespace Gorgon.Editor.ImageEditor
             ICodecRegistry installedCodecs,
             IExportImageDialogService exportDialog,
             IImportImageDialogService importDialog,
+            IGorgonImage noThumbnailImage,
             IBusyStateService busyService,
             IGorgonFileSystemWriter<Stream> scratchArea,
             TexConvCompressor bcCompressor,
@@ -440,6 +542,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             _exportDialog = exportDialog;
             _importDialog = importDialog;
+            _noThumbImage = noThumbnailImage;
             DefaultCodec = defaultCodec;
             InstalledCodecs = installedCodecs;
             ScratchArea = scratchArea;

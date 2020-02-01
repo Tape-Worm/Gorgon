@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using System;
+using System.Collections.Generic;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
@@ -38,24 +38,6 @@ namespace Gorgon.Editor.ViewModels
         : ViewModelCommonParameters
     {
         /// <summary>
-        /// Property to set or return the plug in manager for tool plug ins.
-        /// </summary>
-        public IToolPlugInService ToolPlugIns
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the content plugins.
-        /// </summary>
-        public IContentPlugInService ContentPlugIns
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to set or return the file explorer view model.
         /// </summary>
         public IFileExplorer FileExplorer
@@ -65,14 +47,36 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to return the file manager for content plug ins.
+        /// Property to set or return the file manager for content plug ins.
         /// </summary>
-        public IContentFileManager ContentManager => (IContentFileManager)FileExplorer;
+        public IContentFileManager ContentFileManager
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to set or return the content previewer for content files.
         /// </summary>
-        public IContentPreviewVm ContentPreviewer
+        public IContentPreview ContentPreviewer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the dialog for saving projects.
+        /// </summary>
+        public EditorFileSaveDialogService SaveDialog
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the list of content creator plug ins.
+        /// </summary>
+        public IReadOnlyList<IContentPlugInMetadata> ContentCreators
         {
             get;
             set;
@@ -81,11 +85,10 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectEditorParameters" /> class.
         /// </summary>
-        /// <param name="projectData">The project data.</param>
+        /// <param name="hostServices">The services from the host application.</param>
         /// <param name="viewModelFactory">The view model factory.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ProjectEditorParameters(ViewModelFactory viewModelFactory)
-            : base(viewModelFactory)
+        public ProjectEditorParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+            : base(hostServices, viewModelFactory)
         {        
         }
     }

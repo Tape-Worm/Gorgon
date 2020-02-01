@@ -36,7 +36,7 @@ namespace Gorgon.Editor.ViewModels
     /// The parameters for the <see cref="ISettingsPlugInListItem"/> view model.
     /// </summary>
     internal class SettingsPlugInListItemParameters
-        : ViewModelInjection
+        : ViewModelInjection<IHostServices>
     {
         #region Properties.
         /// <summary>
@@ -83,6 +83,15 @@ namespace Gorgon.Editor.ViewModels
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to return the description of the plug in.
+        /// </summary>
+        public string Description
+        {
+            get;
+            private set;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -103,6 +112,7 @@ namespace Gorgon.Editor.ViewModels
             State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
             DisabledReason = string.Empty;
             Path = plugin.PlugInPath;
+            Description = plugin.Description;
         }
 
         /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
@@ -122,6 +132,7 @@ namespace Gorgon.Editor.ViewModels
             State = plugin.ReasonCode.ToString();
             DisabledReason = plugin.Description;
             Path = plugin.Path;
+            Description = string.Empty;
         }
 
         /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
@@ -141,6 +152,7 @@ namespace Gorgon.Editor.ViewModels
             State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
             DisabledReason = string.Empty;
             Path = plugin.ProviderPath;
+            Description = plugin.Description;
         }
         #endregion
     }

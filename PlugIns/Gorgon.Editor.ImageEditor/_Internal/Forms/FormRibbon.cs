@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Toolkit;
+using DX = SharpDX;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
@@ -24,30 +25,16 @@ namespace Gorgon.Editor.ImageEditor
     internal partial class FormRibbon
         : KryptonForm, IDataContext<IImageContent>
     {
-        #region Events.
-        /// <summary>
-        /// Event triggered when the zoom menu is updated.
-        /// </summary>
-        public event EventHandler<ZoomEventArgs> ImageZoomed;
-        #endregion
-
         #region Variables.
         // The list of menu items associated with the zoom level.
         private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
         // The current zoom level.
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
+        // The renderer for the content.
+        private IContentRenderer _contentRenderer;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to set or return the current graphics context.
-        /// </summary>        
-        public IGraphicsContext GraphicsContext
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// Property to set or return the data context for the ribbon on the form.
         /// </summary>
@@ -56,9 +43,45 @@ namespace Gorgon.Editor.ImageEditor
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to set or return the currently active renderer.
+        /// </summary>
+        public IContentRenderer ContentRenderer
+        {
+            get => _contentRenderer;
+            set
+            {
+                if (_contentRenderer == value)
+                {
+                    return;
+                }
+
+                if (_contentRenderer != null)
+                {
+                    ContentRenderer.ZoomScale -= ContentRenderer_ZoomScale;
+                }
+
+                _contentRenderer = value;
+
+                if (_contentRenderer != null)
+                {
+                    ContentRenderer.ZoomScale += ContentRenderer_ZoomScale;
+                }
+            }
+        }
         #endregion
 
         #region Methods.
+        /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ZoomScaleEventArgs"/> instance containing the event data.</param>
+        private void ContentRenderer_ZoomScale(object sender, ZoomScaleEventArgs e)
+        {
+            _zoomLevel = _contentRenderer.ZoomLevel;
+            UpdateZoomMenu();
+        }
+
         /// <summary>
         /// Function to update the image type menu to reflect the current selection.
         /// </summary>
@@ -111,10 +134,12 @@ namespace Gorgon.Editor.ImageEditor
                 item.Checked = false;
             }
 
-            ButtonZoom.TextLine1 = string.Format(Resources.GORIMG_TEXT_ZOOM_BUTTON, _zoomLevel.GetName());
+            if (!currentItem.Checked)
+            {
+                currentItem.Checked = true;
+            }
 
-            EventHandler<ZoomEventArgs> handler = ImageZoomed;
-            ImageZoomed?.Invoke(this, new ZoomEventArgs(_zoomLevel));
+            ButtonZoom.TextLine1 = string.Format(Resources.GORIMG_TEXT_ZOOM_BUTTON, _zoomLevel.GetName());
         }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -354,18 +379,18 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            ButtonImport.Enabled = DataContext.CurrentPanel == null;
-            ButtonEditInApp.Enabled = DataContext.CurrentPanel == null;
-            ButtonDimensions.Enabled = (DataContext.CurrentPanel == null) && (DataContext.ShowImageDimensionsCommand != null) && (DataContext.ShowImageDimensionsCommand.CanExecute(null));
-            ButtonGenerateMipMaps.Enabled = (DataContext.CurrentPanel == null) && (DataContext.ShowMipGenerationCommand != null) && (DataContext.ShowMipGenerationCommand.CanExecute(null));
-            ButtonImageFormat.Enabled = DataContext.CurrentPanel == null;
-            ButtonImageType.Enabled = DataContext.CurrentPanel == null;
+            ButtonImport.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.FilesAreSelected);
+            ButtonEditInApp.Enabled = DataContext.CurrentHostedPanel == null;
+            ButtonDimensions.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.ShowImageDimensionsCommand != null) && (DataContext.ShowImageDimensionsCommand.CanExecute(null));
+            ButtonGenerateMipMaps.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.ShowMipGenerationCommand != null) && (DataContext.ShowMipGenerationCommand.CanExecute(null));
+            ButtonImageFormat.Enabled = DataContext.CurrentHostedPanel == null;
+            ButtonImageType.Enabled = DataContext.CurrentHostedPanel == null;
             ButtonImageUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = MenuCodecs.Items.Count > 0;
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
             ButtonPremultipliedAlpha.Enabled = (DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false);
-            ButtonSetAlpha.Enabled = (DataContext.CurrentPanel == null) && (DataContext.ShowSetAlphaCommand?.CanExecute(null) ?? false);
+            ButtonSetAlpha.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.ShowSetAlphaCommand?.CanExecute(null) ?? false);
 
             if (DataContext.ChangeImageTypeCommand == null)
             {
@@ -537,6 +562,9 @@ namespace Gorgon.Editor.ImageEditor
 
             _zoomLevel = zoom;
             UpdateZoomMenu();
+
+            ContentRenderer?.MoveTo(new DX.Vector2(ContentRenderer.ClientSize.Width * 0.5f, ContentRenderer.ClientSize.Height * 0.5f),
+                                    _zoomLevel.GetScale());
         }
 
 

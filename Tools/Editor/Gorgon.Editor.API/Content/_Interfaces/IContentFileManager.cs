@@ -35,19 +35,18 @@ namespace Gorgon.Editor.Content
     /// </summary>
     public interface IContentFileManager
     {
+        #region Events.
+        /// <summary>
+        /// Event triggered when the selected files change.
+        /// </summary>
+        event EventHandler SelectedFilesChanged;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the current directory.
         /// </summary>
         string CurrentDirectory
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the currently selected file (if one is selected).
-        /// </summary>
-        IContentFile SelectedFile
         {
             get;
         }
@@ -157,6 +156,12 @@ namespace Gorgon.Editor.Content
         /// </summary>
         /// <param name="path">The path to the file to delete.</param>
         void DeleteFile(string path);
+
+        /// <summary>
+        /// Function to retrieve a list of the file paths that are selected on the file system.
+        /// </summary>
+        /// <returns>The list of selected file paths.</returns>
+        IReadOnlyList<string> GetSelectedFiles();
         #endregion
     }
 }

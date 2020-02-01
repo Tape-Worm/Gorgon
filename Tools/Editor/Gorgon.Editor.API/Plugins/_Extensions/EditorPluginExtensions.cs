@@ -44,7 +44,7 @@ namespace Gorgon.Editor.PlugIns
         /// </summary>
         /// <param name="pluginType">The plug in type to evaluate.</param>
         /// <returns>The friendly description.</returns>
-        public static string GetDescription(this PlugInType pluginType)
+        public static string GetDescription(this PlugInType pluginType) 
         {
             switch (pluginType)
             {
@@ -60,7 +60,7 @@ namespace Gorgon.Editor.PlugIns
                     return Resources.GOREDIT_PLUGIN_TYPE_IMPORTER;
                 default:
                     return Resources.GOREDIT_PLUGIN_TYPE_UNKNOWN;
-            }
+            };
         }
 
         /// <summary>Function to load all the specified plug in assemblies.</summary>
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.PlugIns
                 }
                 catch (Exception ex)
                 {
-                    log.Print($"ERROR: Cannot load plug in assembly '{file}'.", LoggingLevel.Simple);
+                    log.Print($"[ERROR] Cannot load plug in assembly '{file}'.", LoggingLevel.Simple);
                     log.LogException(ex);
                     records.Add(new PlugInAssemblyState(file, string.Format(Resources.GOREDIT_PLUGIN_LOAD_FAIL_EXCEPTION, fileName, ex.Message), true));
                 }

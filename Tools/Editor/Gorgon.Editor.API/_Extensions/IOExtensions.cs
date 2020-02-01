@@ -247,7 +247,7 @@ namespace Gorgon.IO
 
                     IReadOnlyDictionary<string, string> attributes = metaDataItem.Attributes;
 
-                    if ((attributes != null) && (attributes.Count > 0) && (attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string type)))
+                    if ((attributes != null) && (attributes.Count > 0) && (attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out _)))
                     {
                         continue;
                     }

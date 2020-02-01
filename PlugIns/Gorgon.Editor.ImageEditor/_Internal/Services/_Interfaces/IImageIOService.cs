@@ -113,6 +113,30 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="name">The name of the file.</param>
         /// <returns>The source file information, image data, the virtual file entry for the working file and the original pixel format of the file.</returns>
         (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) LoadImageFile(Stream file, string name);
+
+        /// <summary>
+        /// Function to load an image file into memory.
+        /// </summary>
+        /// <param name="file">The stream for the file to load.</param>
+        /// <returns>The image data loaded from the stream.</returns>
+        IGorgonImage LoadImageFile(Stream stream);
+
+        /// <summary>
+        /// Function to load the load the image from the stream as a thumbnail.
+        /// </summary>
+        /// <param name="file">The stream to the file containing the image data.</param>
+        /// <param name="path">The path to the output file.</param>
+        /// <param name="size">The size of the thumbnail, in pixels.</param>
+        /// <param name="dpi">The DPI scaling value to apply to the thumbnail.</param>
+        /// <returns>The image data, the virtual file entry for the working file, and the original metadata for the image.</returns>
+        (IGorgonImage thumbNail, IGorgonVirtualFile workingFile, IGorgonImageInfo originalImageInfo) LoadImageAsThumbnail(Stream file, string path, int size, float dpi);
+
+        /// <summary>
+        /// Function to retrieve the image information for an image file.
+        /// </summary>
+        /// <param name="filePath">The path to the file to read.</param>
+        /// <returns>An image information object containing data about the image.</returns>
+        IGorgonImageInfo GetImageInfo(string filePath);
         #endregion
     }
 }

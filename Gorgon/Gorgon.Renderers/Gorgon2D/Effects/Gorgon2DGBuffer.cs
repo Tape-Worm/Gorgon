@@ -26,7 +26,6 @@
 
 using System;
 using DX = SharpDX;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
@@ -42,9 +41,7 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The graphics interface used for target creation.
-        private GorgonGraphics _graphics;
-        // The renderer used to render to the GBuffer.
-        private Gorgon2D _renderer;
+        private readonly GorgonGraphics _graphics;
         // The default batch render state for drawing normals.
         private Gorgon2DBatchState _gbufferState;
         // Our custom vertex shader so we can calculate the tangent and bi-tangent.
@@ -427,8 +424,7 @@ namespace Gorgon.Renderers
         public Gorgon2DGBuffer(Gorgon2D renderer, int width, int height)
             : base(renderer, Resources.GOR2D_EFFECT_GBUFFER, Resources.GOR2D_EFFECT_GBUFFER_DESC, 1)
         {
-            _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-            _graphics = renderer.Graphics;
+            _graphics = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
             Resize(width, height);
         }
         #endregion

@@ -27,7 +27,6 @@
 using System.Collections.ObjectModel;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.Views;
 
 namespace Gorgon.Editor.ViewModels
 {

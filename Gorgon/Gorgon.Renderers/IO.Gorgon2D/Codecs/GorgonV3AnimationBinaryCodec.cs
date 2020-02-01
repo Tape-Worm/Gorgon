@@ -236,10 +236,11 @@ namespace Gorgon.IO
                 if (reader.Chunks.Contains(RotationData))
                 {
                     binReader = reader.OpenChunk(RotationData);
-                    TrackInterpolationMode interpolatino = binReader.ReadValue<TrackInterpolationMode>();
+                    TrackInterpolationMode interpolation = binReader.ReadValue<TrackInterpolationMode>();
                     keyCount = binReader.ReadInt32();
 
-                    IGorgonTrackKeyBuilder<GorgonKeySingle> track = builder.EditSingle("Angle");
+                    IGorgonTrackKeyBuilder<GorgonKeySingle> track = builder.EditSingle("Angle")
+                                                                           .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
                         track.SetKey(new GorgonKeySingle(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>().Z));

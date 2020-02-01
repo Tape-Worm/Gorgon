@@ -206,7 +206,7 @@ namespace Gorgon.Editor
                 Log?.LogEnd();
                 booter?.Dispose();
 
-                EditorCommonResources.UnloadResources();
+                CommonEditorResources.UnloadResources();
             }
         }
         #endregion

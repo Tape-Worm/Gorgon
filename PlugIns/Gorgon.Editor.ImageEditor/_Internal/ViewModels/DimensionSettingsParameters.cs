@@ -26,16 +26,16 @@
 
 using System;
 using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.UI.ViewModels;
+using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
     /// <summary>
-    /// Parameters for the <see cref="OLDE_IDimensionSettings"/> view model.
+    /// Parameters for the <see cref="IDimensionSettings"/> view model.
     /// </summary>
     internal class DimensionSettingsParameters
-        : ViewModelInjection
+        : HostedPanelViewModelParameters
     {
         #region Properties.
         /// <summary>
@@ -51,7 +51,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>Initializes a new instance of the <see cref="DimensionSettingsParameters"/> class.</summary>
         /// <param name="hostServices">Services from the host application.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public DimensionSettingsParameters(IHostServices hostServices)
+        public DimensionSettingsParameters(IHostContentServices hostServices)
             : base(hostServices) => VideoAdapter = hostServices.GraphicsContext.Graphics.VideoAdapter;
         #endregion
 

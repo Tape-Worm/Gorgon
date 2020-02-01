@@ -64,8 +64,6 @@ namespace Gorgon.Editor.ImageEditor
         #region Variables.
         // The graphics interface to use.
         private readonly GorgonGraphics _graphics;
-        // The swap chain for presenting the data.
-        private readonly GorgonSwapChain _swapChain;
         // The constant buffer holding the world/projection/view matrix transform.
         private GorgonConstantBuffer _cubeTransform;
         // Sections for the volumetric rendering.
@@ -173,15 +171,15 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Function to resize the rendering region.
         /// </summary>
-        /// <param name="size">The new size of the render region.</param>
-        public void ResizeRenderRegion()
+        /// <param name="clienSize">The size of the client area for the content view.</param>
+        public void ResizeRenderRegion(DX.Size2 clientSize)
         {
-            float newWidth = (_swapChain.Width / 5.0f).Max(64).Min(640);
-            float aspect = (float)_swapChain.Height / _swapChain.Width;
+            float newWidth = (clientSize.Width / 5.0f).Max(64).Min(640);
+            float aspect = (float)clientSize.Height / clientSize.Width;
             var cubeRegionSize = new DX.Size2F(newWidth, newWidth * aspect);
 
-            VolumeRegion = new DX.RectangleF(_swapChain.Width - cubeRegionSize.Width - 1, 1, cubeRegionSize.Width, cubeRegionSize.Height);
-            DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)_swapChain.Width / _swapChain.Height, 0.1f, 1000.0f, out _projection);
+            VolumeRegion = new DX.RectangleF(clientSize.Width - cubeRegionSize.Width - 1, 1, cubeRegionSize.Width, cubeRegionSize.Height);
+            DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)clientSize.Width / clientSize.Height, 0.1f, 1000.0f, out _projection);
             _cubeView = new DX.ViewportF(VolumeRegion.Left, VolumeRegion.Top, VolumeRegion.Width, VolumeRegion.Height, 0, 1);
 
             if (_textureView == null)
@@ -247,7 +245,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Function used to build the resources required by the volume renderer.
         /// </summary>
-        public void CreateResources()
+        /// <param name="clientSize">The size of the content client area.</param>
+        public void CreateResources(DX.Size2 clientSize)
         {
             _cubeVs = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.VolumeRenderShaders, "VolumeVS", true);
             _cubePosShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.VolumeRenderShaders, "VolumePositionPS", true);
@@ -272,7 +271,7 @@ namespace Gorgon.Editor.ImageEditor
 
             // Our camera is never changing, so we only need to define it here.
             DX.Matrix.Translation(0, 0, 1.5f, out _view);
-            ResizeRenderRegion();
+            ResizeRenderRegion(clientSize);
 
             UpdateCubeTransform();
 
@@ -341,14 +340,9 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.VolumeRenderer"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="VolumeRenderer"/> class.</summary>
         /// <param name="graphics">The graphics interface to use.</param>
-        /// <param name="swapChain">The swap chain for presenting the data.</param>
-        public VolumeRenderer(GorgonGraphics graphics, GorgonSwapChain swapChain)
-        {
-            _graphics = graphics;
-            _swapChain = swapChain;
-        }
+        public VolumeRenderer(GorgonGraphics graphics) => _graphics = graphics;
         #endregion
     }
 }

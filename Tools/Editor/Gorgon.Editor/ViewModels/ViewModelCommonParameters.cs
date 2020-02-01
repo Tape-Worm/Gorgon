@@ -25,10 +25,8 @@
 #endregion
 
 using System;
-using Gorgon.Diagnostics;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels
@@ -36,8 +34,8 @@ namespace Gorgon.Editor.ViewModels
     /// <summary>
     /// Common injection parameters for all view models.
     /// </summary>
-    internal abstract class ViewModelCommonParameters
-        : IViewModelInjection
+    internal class ViewModelCommonParameters
+        : IViewModelInjection<IHostContentServices>
     {
         /// <summary>
         /// Property to set or return the current project.
@@ -60,7 +58,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the settings for the application.
         /// </summary>
-        public EditorSettings EditorSettings
+        public Editor.EditorSettings EditorSettings
         {
             get;
             set;
@@ -74,42 +72,22 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
-        /// <summary>Property to set or return the logging interface for debug logging.</summary>
-        public IGorgonLog Log
+        /// <summary>Property to return the services passed from host application.</summary>
+        public IHostContentServices HostServices
         {
             get;
-            set;
-        }
-
-        /// <summary>Property to set or return the serivce used to show busy states.</summary>
-        public IBusyStateService BusyService
-        {
-            get;
-            set;
-        }
-
-        /// <summary>Property to set or return the service used to show message dialogs.</summary>
-        public IMessageDisplayService MessageDisplay
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the clipboard handler for the view model.
-        /// </summary>
-        public IClipboardHandler Clipboard
-        {
-            get;
-            set;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModelCommonParameters"/> class.
         /// </summary>
+        /// <param name="hostServices">The services from the host application.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
-        public ViewModelCommonParameters(ViewModelFactory viewModelFactory) =>
-                        ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="hostServices"/>, or the <paramref name="viewModelFactory"/> parameter is <b>null</b>.</exception>
+        public ViewModelCommonParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+        {
+            HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
+            ViewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+        }
     }
 }

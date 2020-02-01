@@ -164,12 +164,9 @@ namespace Gorgon.Renderers
         private Gorgon2DBatchState[] _sampleTargetStates;
         // The allocators used to creating states for final pass.
         private readonly Gorgon2DBatchStatePoolAllocator _finalPassBatchAllocator = new Gorgon2DBatchStatePoolAllocator(64);
-        private readonly Gorgon2DBatchStatePoolAllocator _compositeBatchAllocator = new Gorgon2DBatchStatePoolAllocator(64);
         private readonly Gorgon2DShaderStatePoolAllocator<GorgonPixelShader> _finalPassPixelShaderAllocator = new Gorgon2DShaderStatePoolAllocator<GorgonPixelShader>(64);
         // The batch state builder for downsampling.
         private readonly Gorgon2DBatchStateBuilder _downSampleStateBuilder = new Gorgon2DBatchStateBuilder();
-        // The batch state builder for compositor effects.
-        private readonly Gorgon2DBatchStateBuilder _compositeStateBuilder = new Gorgon2DBatchStateBuilder();
         #endregion
 
         #region Properties.

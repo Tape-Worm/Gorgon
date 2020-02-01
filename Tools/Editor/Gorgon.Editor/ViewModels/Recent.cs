@@ -31,7 +31,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Gorgon.Core;
-using Gorgon.Editor.Native;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -43,13 +43,11 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for the recent files list.
     /// </summary>
     internal class Recent
-        : ViewModelBase<RecentParameters>, IRecent
+        : ViewModelBase<ViewModelCommonParameters, IHostContentServices>, IRecent
     {
         #region Variables.
         // The recent items from the editor settings.
         private List<RecentItem> _recentItems;
-        // The message display service.
-        private IMessageDisplayService _messageDisplay;
         // The project manager for the application.
         private ProjectManager _projectManager;
         #endregion
@@ -85,7 +83,7 @@ namespace Gorgon.Editor.ViewModels
         {
             try
             {
-                if (_messageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_DELETE_PROJECT_ITEM, args.FilePath)) == MessageResponse.No)
+                if (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_DELETE_PROJECT_ITEM, args.FilePath)) == MessageResponse.No)
                 {
                     return;
                 }
@@ -99,7 +97,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETING_PROJECT_ITEM, args.FilePath));
+                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETING_PROJECT_ITEM, args.FilePath));
             }
             finally
             {
@@ -175,10 +173,9 @@ namespace Gorgon.Editor.ViewModels
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(RecentParameters injectionParameters)
+        protected override void OnInitialize(ViewModelCommonParameters injectionParameters)
         {
             _recentItems = injectionParameters.EditorSettings?.RecentFiles;
-            _messageDisplay = injectionParameters.MessageDisplay;
             _projectManager = injectionParameters.ProjectManager;
 
             // Only capture up to 150 items.

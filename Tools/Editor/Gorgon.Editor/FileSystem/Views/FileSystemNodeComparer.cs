@@ -46,15 +46,7 @@ namespace Gorgon.Editor.Views
         /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
         /// </returns>
         /// <exception cref="NotImplementedException"></exception>
-        public int Compare(DirectoryTreeNode x, DirectoryTreeNode y)
-        {
-            if (x == y)
-            {
-                return 0;
-            }
-
-            return string.Compare(x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase);
-        }
+        public int Compare(DirectoryTreeNode x, DirectoryTreeNode y) => x == y ? 0 : string.Compare(x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase);
         #endregion
 
         #region IComparer Members

@@ -21,7 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Gorgon.Animation.Gorgon2D.xml</DocumentationFile>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <CodeAnalysisRuleSet>..\..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
@@ -34,7 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Gorgon.Animation.Gorgon2D.xml</DocumentationFile>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>..\..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>

@@ -262,7 +262,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void PanelRenderWindow_DragEnter(object sender, DragEventArgs e)
         {
-            IContentFileDragData dragData = GetDragDropData(e, DataContext);
+            OLDE_IContentFileDragData dragData = GetDragDropData(e, DataContext);
 
             if ((dragData != null) && (e.Effect != DragDropEffects.None))
             {
@@ -280,7 +280,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void PanelRenderWindow_DragDrop(object sender, DragEventArgs e)
         {
-            IContentFileDragData dragData = GetDragDropData(e, DataContext);
+            OLDE_IContentFileDragData dragData = GetDragDropData(e, DataContext);
 
             if ((dragData != null) && (e.Effect != DragDropEffects.None))
             {

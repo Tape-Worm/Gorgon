@@ -483,10 +483,8 @@ namespace Gorgon.Graphics.Core
         /// Initializes static members of the <see cref="GorgonShaderFactory" /> class.
         /// </summary>
         static GorgonShaderFactory()
-        {
-            //return new GorgonComputeShader(device, entryPoint, isDebug, byteCode);
-            // ReSharper disable once UnusedVariable
-            foreach ((Type Type, ShaderType Shader, string Profile) in _shaderTypes)
+        {                        
+            foreach ((Type Type, ShaderType Shader, _) in _shaderTypes)
             {
                 _shaderFactory[Shader] = Type.CreateActivator<GorgonShader>(typeof(GorgonGraphics),
                                                                             typeof(string),

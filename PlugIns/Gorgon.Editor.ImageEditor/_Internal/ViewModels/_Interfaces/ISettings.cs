@@ -34,7 +34,7 @@ namespace Gorgon.Editor.ImageEditor
     /// Settings view model for image codecs.
     /// </summary>
     internal interface ISettings
-        : ISettingsCategoryViewModel
+        : ISettingsCategory
     {
         /// <summary>
         /// Property to set or return the to the directory that was last used for importing/exporting.
@@ -54,6 +54,32 @@ namespace Gorgon.Editor.ImageEditor
             set;
         }
 
+        /// <summary>
+        /// Property to set or return the width of the picker window.
+        /// </summary>
+        int PickerWidth
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the height of the picker window.
+        /// </summary>
+        int PickerHeight
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the state of the picker window.
+        /// </summary>
+        int PickerWindowState
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to set or return the last used alpha value when setting the alpha channel on an image.

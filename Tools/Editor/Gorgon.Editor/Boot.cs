@@ -31,7 +31,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Converters;
@@ -41,7 +40,6 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Editor.ViewModels;
 using Gorgon.IO;
 using Gorgon.Math;
@@ -412,7 +410,7 @@ namespace Gorgon.Editor
                 Cursor.Current = Cursors.WaitCursor;
 
                 // Initalize the common resources.
-                EditorCommonResources.LoadResources();
+                CommonEditorResources.LoadResources();
 
                 var hostServices = new HostContentServices
                 {
@@ -429,7 +427,7 @@ namespace Gorgon.Editor
                 hostServices.FolderBrowser = new FileSystemFolderBrowseService();
                 hostServices.BusyService = new WaitCursorBusyState();
                 hostServices.MessageDisplay = new MessageBoxService();
-                hostServices.Clipboard = new ClipboardService();
+                hostServices.ClipboardService = new ClipboardService();
                 hostServices.GraphicsContext = _graphicsContext;
 
                 var plugInLocation = new DirectoryInfo(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));

@@ -24,65 +24,30 @@
 // 
 #endregion
 
-using System;
 using System.Linq;
 using Gorgon.Core;
-using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.ImageEditor
 {
+    /// <summary>
+    /// The view model for the alpha settings view.
+    /// </summary>
     internal class AlphaSettings
-        : ViewModelBase<IViewModelInjection>, IAlphaSettings
+        : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IAlphaSettings
     {
         #region Variables.
-        // Flag to indicate that the editor is active.
-        private bool _isActive;
         // The number of mip map levels in the image.
         private int _alpha = 255;
-        // The service used to display message notifications.
-        private IMessageDisplayService _messageDisplay;
         // The range of alpha values to update.
         private GorgonRange _alphaUpdateRange = new GorgonRange(0, 255);
         #endregion
 
         #region Properties.
         /// <summary>Property to return whether the panel is modal.</summary>
-        public bool IsModal => true;
-
-        /// <summary>Property to set or return whether the crop/resize settings is active or not.</summary>
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _isActive = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the command used to cancel the operation.</summary>
-        public IEditorCommand<object> CancelCommand
-        {
-            get;
-        }
-
-        /// <summary>Property to set or return the command used to apply the operation.</summary>
-        public IEditorCommand<object> OkCommand
-        {
-            get;
-            set;
-        }
+        public override bool IsModal => true;
 
         /// <summary>
         /// Property to set or return the lower and upper bounds of the alpha range to update.
@@ -124,35 +89,14 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to cancel the dimension change operation.
-        /// </summary>
-        private void DoCancel()
-        {
-            try
-            {
-                IsActive = false;
-            }
-            catch (Exception ex)
-            {
-                _messageDisplay.ShowError(ex, Resources.GORIMG_ERR_CANCEL_OP);
-            }
-        }
-        #endregion
-
-        #region Methods.
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(IViewModelInjection injectionParameters) => 
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-        #endregion
-
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.AlphaSettings"/> class.</summary>
-        public AlphaSettings() => CancelCommand = new EditorCommand<object>(DoCancel);
+        protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
+        {            
+        }
         #endregion
     }
 }

@@ -25,7 +25,8 @@
 #endregion
 
 using System;
-using Gorgon.Diagnostics;
+using System.ComponentModel;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Math;
 
@@ -34,17 +35,67 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// A base view model for the gorgon editor.
     /// </summary>
-    /// <typeparam name="T">The type of injection parameters for the view model.  Must implement <see cref="IViewModelInjection"/> and be a reference type.</typeparam>
-    /// <seealso cref="IViewModelInjection"/>
-    public abstract class ViewModelBase<T>
+    /// <typeparam name="T">The type of injection parameters for the view model.  Must implement <see cref="IViewModelInjection{T}"/> and be a reference type.</typeparam>
+    /// <typeparam name="THs">The type of services passed from the host application. Must implement <see cref="IHostServices"/>.</typeparam>
+    /// <seealso cref="IViewModelInjection{T}"/>
+    /// <remarks>
+    /// <para>
+    /// This is the base class for all view models used by the editor and provides the bare minimum in functionality. This object already implements the <see cref="INotifyPropertyChanged"/> 
+    /// and the <see cref="INotifyPropertyChanging"/> interfaces to allow communication with a view. 
+    /// </para>
+    /// <para>
+    /// Common services used by the application, such as a message display service, content plug in service, etc... are provided through the <see cref="HostServices"/> property so that custom 
+    /// view models can use standardized functionality to communicate with the user should the need arise.
+    /// </para>
+    /// <para>
+    /// When implementing a view model, the developers should set up their properties like this:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// public ReturnType PropertyName
+    /// {
+    ///     get => _backingStoreValue;
+    ///     set
+    ///     {
+    ///         // Always check to see if the value has changed. This keeps the view model from being too "chatty" with the UI.
+    ///         if (_backingStoreValue == value)
+    ///         {
+    ///             return;
+    ///         }
+    ///         
+    ///         // Notify that the property is about to change. This allows the view to do any necessary clean up prior to updating the visual side.
+    ///         OnPropertyChanging();
+    ///         _backingStoreValue = value;
+    ///         // Now, notify that the property has changed. The view will intercept the change and update the visual associated with the property.
+    ///         OnPropertyChanged();
+    ///     }
+    /// }
+    /// ]]>
+    /// This setup notifies the view that the property has been updated, and that any associated visual should probably update as well. This is the most common pattern to use, however there will 
+    /// be times when a property notification is required from a method. If that is the case, the <see cref="PropertyMonitor.NotifyPropertyChanged(string)"/>, and 
+    /// <see cref="PropertyMonitor.NotifyPropertyChanging(string)"/> methods should be used like this:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// private void DoCommandAction()
+    /// {
+    ///     NotifyPropertyChanging(nameof(ReadOnlyValue));
+    ///     _readOnlyValue++;
+    ///     NotifyPropertyChanged(nameof(ReadOnlyValue));
+    /// }
+    /// ]]>
+    /// The difference being that for properties, you do not need to specify the name of the property being updated, and in methods you do. 
+    /// </code>
+    /// </code>
+    /// </para>
+    /// <para>
+    /// The view model is also equipped with several events that are used to notify the application that a long running operation is executing. Applications can intercept these events and display a 
+    /// progress panel, or "please wait" panel. These should only be used with asynchronous operations as they will not update correctly if everything is running on the same thread.
+    /// </para>
+    /// </remarks>
+    public abstract class ViewModelBase<T, THs>
         : PropertyMonitor, IViewModel
-        where T : class, IViewModelInjection
+        where THs : IHostServices
+        where T : class, IViewModelInjection<THs>        
     {
-        #region Variables.
-        // The clipboard handler for the view model.
-        private IClipboardHandler _clipboard;
-        #endregion
-
         #region Events.
         /// <summary>
         /// Event triggered when a wait overlay panel needs to be activated.
@@ -69,29 +120,12 @@ namespace Gorgon.Editor.UI
 
         #region Properties.
         /// <summary>
-        /// Property to return the logging interface for debug log messages.
+        /// Property to return the services passed in from the host application.
         /// </summary>
-        protected IGorgonLog Log
+        protected THs HostServices
         {
             get;
             private set;
-        }
-
-        /// <summary>Property to return the clipboard handler for this view model.</summary>
-        public IClipboardHandler Clipboard
-        {
-            get => _clipboard;
-            private set
-            {
-                if (_clipboard == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _clipboard = value;
-                OnPropertyChanged();
-            }
         }
         #endregion
 
@@ -192,12 +226,26 @@ namespace Gorgon.Editor.UI
         /// <para>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </para>
+        /// <para>
+        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+        /// </para>
         /// </remarks>
         protected abstract void OnInitialize(T injectionParameters);
 
         /// <summary>
         /// Function called when the associated view is loaded.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method should be overridden when there is a need to set up functionality (e.g. events) when the UI first loads with the view model attached. Unlike the <see cref="Initialize(T)"/> method, this 
+        /// method may be called multiple times during the lifetime of the application.
+        /// </para>
+        /// <para>
+        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="OnUnload"/> method.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="Initialize(T)"/>
+        /// <seealso cref="OnUnload"/>
         public virtual void OnLoad()
         {
 
@@ -206,6 +254,12 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Function called when the associated view is unloaded.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method is used to perform tear down and clean up of resources.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="OnLoad"/>
         public virtual void OnUnload()
         {
 
@@ -216,10 +270,12 @@ namespace Gorgon.Editor.UI
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="injectionParameters"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentMissingException">Thrown when a required parameter is <b>null</b> or missing from the <paramref name="injectionParameters"/>.</exception>
         /// <remarks>
         /// <para>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+        /// </para>
+        /// <para>
+        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
         /// </para>
         /// </remarks>
         public void Initialize(T injectionParameters)
@@ -229,8 +285,7 @@ namespace Gorgon.Editor.UI
                 throw new ArgumentNullException(nameof(injectionParameters));
             }
             
-            Log = injectionParameters.Log ?? GorgonLog.NullLog;
-            Clipboard = injectionParameters.Clipboard;
+            HostServices = injectionParameters.HostServices;
 
             OnInitialize(injectionParameters);
         }
@@ -238,7 +293,7 @@ namespace Gorgon.Editor.UI
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="ViewModelBase{T}"/> class.
+        /// Initializes a new instance of the <see cref="ViewModelBase{T, THs}"/> class.
         /// </summary>
         protected ViewModelBase()
         {

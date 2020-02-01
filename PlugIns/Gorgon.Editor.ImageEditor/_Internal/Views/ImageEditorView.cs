@@ -25,9 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -46,17 +44,13 @@ namespace Gorgon.Editor.ImageEditor
     /// The main view for the image editor.
     /// </summary>
     internal partial class ImageEditorView
-        : ContentBaseControl, IDataContext<IImageContent>
+        : VisualContentBaseControl, IDataContext<IImageContent>
     {
         #region Variables.        
         // The form for the ribbon.
         private readonly FormRibbon _ribbonForm;
-        // The background texture.
-        private GorgonTexture2DView _background;
-        // The texture viewer service.
-        private ITextureViewerService _textureViewer;
-        // The available viewers.
-        private readonly Dictionary<ImageType, ITextureViewerService> _viewers = new Dictionary<ImageType, ITextureViewerService>();
+        // The form for the image picker.
+        private readonly FormImagePicker _imagePickerForm;
         #endregion
 
         #region Properties.
@@ -70,71 +64,6 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>Handles the MouseMove event of the PanelImage control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void PanelImage_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_textureViewer == null)
-            {
-                return;
-            }
-
-            _textureViewer.MouseMove(e.X, e.Y, e.Button, DataContext);
-        }
-
-        /// <summary>Handles the MouseDown event of the PanelImage control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void PanelImage_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (_textureViewer == null)
-            {
-                return;
-            }
-
-            _textureViewer.MouseDown(e.X, e.Y, e.Button, DataContext);
-        }
-
-        /// <summary>Handles the MouseUp event of the PanelImage control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void PanelImage_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (_textureViewer == null)
-            {
-                return;
-            }
-
-            _textureViewer.MouseUp(e.X, e.Y, e.Button, DataContext);
-        }
-
-        /// <summary>Ribbons the form image zoomed.</summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The e.</param>
-        private void RibbonForm_ImageZoomed(object sender, ZoomEventArgs e)
-        {
-            if ((_textureViewer == null) || (DataContext == null))
-            {
-                return;
-            }
-
-            if (_textureViewer.ZoomLevel == e.ZoomLevel)
-            {
-                return;
-            }
-
-            _textureViewer.SetZoomLevel(e.ZoomLevel, DataContext);
-
-            if (_textureViewer.ZoomLevel != ZoomLevels.ToWindow)
-            {
-                return;
-            }
-
-            ScrollHorizontal.Value = 0;
-            ScrollVertical.Value = 0;
-        }
-
         /// <summary>
         /// Function to validate the controls on the view.
         /// </summary>
@@ -145,7 +74,7 @@ namespace Gorgon.Editor.ImageEditor
                 LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = false;
                 LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = false;
                 LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = false;
-                PanelBottomBar.Visible = false;
+                StatusPanel.Visible = false;
                 return;
             }
 
@@ -160,7 +89,61 @@ namespace Gorgon.Editor.ImageEditor
             ButtonNextDepthSlice.Enabled = DataContext.CurrentDepthSlice < DataContext.DepthCount - 1;
             ButtonPrevDepthSlice.Enabled = DataContext.CurrentDepthSlice > 0;
 
-            PanelBottomBar.Visible = true;
+            StatusPanel.Visible = true;
+        }
+
+        /// <summary>Handles the PropertyChanged event of the ImagePicker control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void ImagePicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IImagePicker.IsActive):
+                    if (DataContext.ImagePicker.IsActive)
+                    {
+                        _imagePickerForm.ShowDialog(ParentForm);
+                    }
+                    else
+                    {
+                        _imagePickerForm.Hide();
+                    }
+                    break;           
+            }
+        }
+
+        /// <summary>
+        /// Function to initialize the view from the data context.
+        /// </summary>
+        /// <param name="dataContext">The data context to use.</param>
+        private void InitializeFromDataContext(IImageContent dataContext)
+        {
+            if (dataContext == null)
+            {
+                ResetDataContext();
+                return;
+            }
+
+            _ribbonForm.SetDataContext(dataContext);            
+            _imagePickerForm.SetDataContext(dataContext.ImagePicker);            
+            CropResizeSettings.SetDataContext(dataContext.CropOrResizeSettings);
+            DimensionSettings.SetDataContext(dataContext.DimensionSettings);
+            GenMipMapSettings.SetDataContext(dataContext.MipMapSettings);
+            SetAlpha.SetDataContext(dataContext.AlphaSettings);
+
+            if (dataContext.ImageType == ImageType.Image3D)
+            {
+                UpdateDepthSliceDetails(dataContext);
+            }
+            else
+            {
+                UpdateArrayDetails(dataContext);
+            }
+
+            UpdateImageSizeDetails(dataContext);
+            UpdateMipDetails(dataContext);
+
+            dataContext.ImagePicker.PropertyChanged += ImagePicker_PropertyChanged;
         }
 
         /// <summary>
@@ -211,221 +194,16 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateMipDetails(IImageContent dataContext)
         {
-            if ((dataContext == null) || (_textureViewer == null))
+            if (dataContext == null)
             {
                 return;
             }
 
-            DX.Size2 size = _textureViewer.GetMipSize(dataContext);
+            var size = new DX.Size2((dataContext.Width >> dataContext.CurrentMipLevel).Max(1), (dataContext.Height >> dataContext.CurrentMipLevel).Max(1));
 
-            LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, DataContext.MipCount, size.Width, size.Height);
+            LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, dataContext.MipCount, size.Width, size.Height);
         }
 
-        /// <summary>Handles the DoubleClick event of the PanelImage control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
-        private void PanelImage_DoubleClick(object sender, EventArgs e) => _textureViewer?.EndAnimation();
-
-        /// <summary>
-        /// Function to determine if files from explorer can be dragged onto this view.
-        /// </summary>
-        /// <param name="e">The event parameters for the drag/drop event.</param>
-        /// <returns>The data in the drag operation, or <b>null</b> if the data cannot be dragged and dropped onto this control.</returns>
-        private Olde_IExplorerFilesDragData GetExplorerDragDropData(DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.None;
-
-            if (DataContext == null)
-            {
-                return null;
-            }
-
-            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                return null;
-            }
-
-            if (!(e.Data.GetData(DataFormats.FileDrop) is IReadOnlyList<string> dragData))
-            {
-                return null;
-            }
-
-            Olde_IExplorerFilesDragData result = new Olde_ExplorerFilesDragData(dragData);
-
-            if (!DataContext.CanDrop(result))
-            {
-                return null;
-            }
-
-            e.Effect = DragDropEffects.Copy;
-            return result;
-        }
-
-        /// <summary>Handles the DragDrop event of the ImageEditorView control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void ImageEditorView_DragDrop(object sender, DragEventArgs e)
-        {
-            IContentFileDragData contentFiles = GetDragDropData(e, DataContext);
-
-            if (contentFiles != null)
-            {
-                DataContext.Drop(contentFiles);
-                return;
-            }
-
-            Olde_IExplorerFilesDragData explorerFiles = GetExplorerDragDropData(e);
-
-            if (explorerFiles != null)
-            {
-                DataContext.Drop(explorerFiles);
-                return;
-            }
-
-            OnBubbleDragDrop(e);
-        }
-
-        /// <summary>Handles the DragEnter event of the ImageEditorView control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-        private void ImageEditorView_DragEnter(object sender, DragEventArgs e)
-        {
-            IContentFileDragData contentFiles = GetDragDropData(e, DataContext);
-
-            if ((contentFiles != null) && (e.Effect != DragDropEffects.None))
-            {
-                return;
-            }
-
-            Olde_IExplorerFilesDragData explorerFiles = GetExplorerDragDropData(e);
-
-            if ((explorerFiles != null) && (e.Effect != DragDropEffects.None))
-            {
-                return;
-            }
-
-            if (e.Effect != DragDropEffects.None)
-            {
-                OnBubbleDragEnter(e);
-            }
-        }
-
-        /// <summary>Function called when a property is changing on the data context.</summary>
-        /// <param name="e">The event parameters.</param>
-        /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
-        protected override void OnPropertyChanging(PropertyChangingEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(IImageContent.CurrentPanel):
-                    IsPanelHostActive = false;
-                    ClearPanelHost();
-                    break;
-            }
-        }
-
-        /// <summary>Function called when a property is changed on the data context.</summary>
-        /// <param name="e">The event parameters.</param>
-        /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(IImageContent.CurrentPanel):
-                    if (DataContext.CurrentPanel == null)
-                    {
-                        break;
-                    }
-
-                    Control panel = GetRegisteredPanel<Control>(DataContext.CurrentPanel.GetType().FullName);
-
-                    if (Controls.Contains(panel))
-                    {
-                        Controls.Remove(panel);
-                    }
-
-                    panel.Visible = true;
-                    AddControlToPanelHost(panel);
-                    IsPanelHostActive = true;
-                    break;
-                case nameof(IImageContent.ArrayCount):
-                    UpdateArrayDetails(DataContext);
-                    break;
-                case nameof(IImageContent.DepthCount):
-                    UpdateDepthSliceDetails(DataContext);
-                    UpdateMipDetails(DataContext);
-                    break;
-                case nameof(IImageContent.MipCount):
-                    UpdateMipDetails(DataContext);
-                    break;
-                case nameof(IImageContent.CurrentArrayIndex):
-                    // Don't need to call update texture parameters here, we already use an index by default.
-                    UpdateArrayDetails(DataContext);
-                    break;
-                case nameof(IImageContent.CurrentDepthSlice):
-                    UpdateDepthSliceDetails(DataContext);
-                    _textureViewer.UpdateTextureParameters(DataContext);
-                    break;
-                case nameof(IImageContent.CurrentMipLevel):
-                    UpdateMipDetails(DataContext);
-                    _textureViewer.UpdateTextureParameters(DataContext);
-                    break;
-                case nameof(IImageContent.Width):
-                case nameof(IImageContent.Height):
-                    UpdateImageSizeDetails(DataContext);
-                    if (_textureViewer == null)
-                    {
-                        _textureViewer = _viewers[DataContext.ImageType];
-                    }
-
-                    _textureViewer.UpdateTexture(DataContext);
-                    break;
-                case nameof(IImageContent.ImageType):
-                    if (!_viewers.ContainsKey(DataContext.ImageType))
-                    {
-                        break;
-                    }
-
-                    _textureViewer?.UpdateTexture(null);
-                    _textureViewer = _viewers[DataContext.ImageType];
-                    _textureViewer.UpdateTexture(DataContext);
-                    break;
-                default:
-                    if (_textureViewer == null)
-                    {
-                        _textureViewer = _viewers[DataContext.ImageType];
-                    }
-
-                    _textureViewer.UpdateTexture(DataContext);
-                    UpdateMipDetails(DataContext);
-                    break;
-            }
-
-            ValidateControls();
-        }
-
-        /// <summary>Handles the Click event of the ButtonCenter control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonCenter_Click(object sender, EventArgs e)
-        {
-            ScrollHorizontal.Value = ScrollVertical.Value = 0;
-            _ribbonForm.ResetZoom();
-        }
-
-        /// <summary>Handles the ValueChanged event of the ScrollVertical control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void ScrollVertical_ValueChanged(object sender, EventArgs e)
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            _textureViewer?.Scroll(DataContext);
-            Idle();
-        }
 
         /// <summary>Handles the Click event of the ButtonNextMip control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -474,7 +252,6 @@ namespace Gorgon.Editor.ImageEditor
                 DataContext.CurrentArrayIndex++;
             }
             ValidateControls();
-
         }
 
         /// <summary>Handles the Click event of the ButtonPrevDepthSlice control.</summary>
@@ -487,7 +264,6 @@ namespace Gorgon.Editor.ImageEditor
                 DataContext.CurrentDepthSlice--;
             }
             ValidateControls();
-
         }
 
         /// <summary></summary>
@@ -502,185 +278,127 @@ namespace Gorgon.Editor.ImageEditor
             ValidateControls();
         }
 
-        /// <summary>
-        /// Function to initialize the view from the data context.
-        /// </summary>
-        /// <param name="dataContext">The data context to use.</param>
-        private void InitializeFromDataContext(IImageContent dataContext)
+        /// <summary>Function to handle a drag drop event on the render control.</summary>
+        /// <param name="e">The event arguments.</param>
+        /// <remarks>Content editor developers can override this method to handle a drop event when an item is dropped into the rendering area on the view.</remarks>
+        protected override async void OnRenderWindowDragDrop(DragEventArgs e)
         {
-            if (dataContext == null)
-            {
-                ResetDataContext();
+            IContentFileDragData contentData = GetContentFileDragDropData<IContentFileDragData>(e);
+
+            if (contentData == null)
+            {                
                 return;
             }
 
-            _ribbonForm.SetDataContext(dataContext);
-            CropResizeSettings.SetDataContext(dataContext.CropOrResizeSettings);
-            DimensionSettings.SetDataContext(dataContext.DimensionSettings);
-            GenMipMapSettings.SetDataContext(dataContext.MipMapSettings);
-            SetAlpha.SetDataContext(dataContext.AlphaSettings);
-        }
-
-        /// <summary>Handles the RenderToBitmap event of the PanelImage control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
-        private void PanelImage_RenderToBitmap(object sender, PaintEventArgs e) => RenderSwapChainToBitmap(e.Graphics);
-
-
-        /// <summary>Handles the PreviewKeyDown event of the PanelImage control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
-        private void PanelImage_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            switch (e.KeyCode)
+            float dpi;
+            using (var g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
             {
-                case Keys.Left:
-                    if (e.Shift)
-                    {
-                        DataContext.CurrentArrayIndex -= (DataContext.ArrayCount / 2).Max(1).Min(6);
-                        DataContext.CurrentDepthSlice -= (DataContext.DepthCount / 2).Max(1).Min(6);
-                    }
-                    else
-                    {
-                        --DataContext.CurrentArrayIndex;
-                        --DataContext.CurrentDepthSlice;
-                    }
-                    e.IsInputKey = true;
-                    return;
-                case Keys.Right:
-                    if (e.Shift)
-                    {
-                        DataContext.CurrentArrayIndex += (DataContext.ArrayCount / 2).Max(1).Min(6);
-                        DataContext.CurrentDepthSlice += (DataContext.DepthCount / 2).Max(1).Min(6);
-                    }
-                    else
-                    {
-                        ++DataContext.CurrentArrayIndex;
-                        ++DataContext.CurrentDepthSlice;
-                    }
-                    e.IsInputKey = true;
-                    return;
-                case Keys.Up:
-                    if (e.Shift)
-                    {
-                        DataContext.CurrentMipLevel -= 2;
-                    }
-                    else
-                    {
-                        --DataContext.CurrentMipLevel;
-                    }
-                    e.IsInputKey = true;
-                    return;
-                case Keys.Down:
-                    if (e.Shift)
-                    {
-                        DataContext.CurrentMipLevel += 2;
-                    }
-                    else
-                    {
-                        ++DataContext.CurrentMipLevel;
-                    }
-                    e.IsInputKey = true;
-                    return;
+                dpi = g.DpiX / 96.0f;
             }
-        }
 
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Resize"/> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
+            var args = new CopyToImageArgs(contentData.FilePaths, dpi);
 
-            if ((IsDesignTime) || (_textureViewer == null) || (DataContext == null))
+            if ((DataContext?.CopyToImageCommand == null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
             {
+                OnBubbleDragDrop(e);
                 return;
             }
 
-            _textureViewer.WindowResize(DataContext);
+            await DataContext.CopyToImageCommand.ExecuteAsync(args);
         }
 
-        /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.control.paint.aspx" target="_blank">Paint</a> event.</summary>
-        /// <param name="e">A <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.painteventargs.aspx" target="_blank">PaintEventArgs</a> that contains the event data.</param>
-        protected override void OnPaint(PaintEventArgs e)
+        /// <summary>Function to handle a drag over event on the render control.</summary>
+        /// <param name="e">The event arguments.</param>
+        /// <remarks>Content editor developers can override this method to handle a drag over event when an item is dragged over the rendering area on the view.</remarks>
+        protected override void OnRenderWindowDragOver(DragEventArgs e)
         {
-            base.OnPaint(e);
+            IContentFileDragData contentData = GetContentFileDragDropData<IContentFileDragData>(e);
 
-            if (IsDesignTime)
+            if (contentData == null)
             {
+                e.Effect = DragDropEffects.None;
                 return;
             }
 
-            Idle();
-        }
-
-        /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.control.mousewheel.aspx" target="_blank">MouseWheel</a> event.</summary>
-        /// <param name="e">A <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.mouseeventargs.aspx" target="_blank">MouseEventArgs</a> that contains the event data.</param>
-        protected override void OnMouseWheel(MouseEventArgs e)
-        {
-            if (!ScrollVertical.Enabled)
+            if ((DataContext?.CopyToImageCommand == null) || (!DataContext.CopyToImageCommand.CanExecute(new CopyToImageArgs(contentData.FilePaths, 1.0f))))
             {
+                OnBubbleDragOver(e);
                 return;
             }
 
-            ScrollVertical.Value = (ScrollVertical.Value - (e.Delta.Sign() * ScrollVertical.LargeChange)).Min(ScrollVertical.Maximum - ScrollVertical.LargeChange).Max(ScrollVertical.Minimum);
+            e.Effect = DragDropEffects.Move;
         }
 
-        /// <summary>
-        /// Function to render during idle time.
-        /// </summary>
-        /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
-        private bool Idle()
+        /// <summary>Function called when a property is changed on the data context.</summary>
+        /// <param name="propertyName">The name of the property that is updated.</param>
+        /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
+        protected override void OnPropertyChanged(string propertyName)
         {
-            if ((DataContext == null) || (DataContext.ImageType == ImageType.Unknown) || (_textureViewer == null))
+            base.OnPropertyChanged(propertyName);
+
+            switch (propertyName)
             {
-                return false;
+                case nameof(IImageContent.ArrayCount):
+                    UpdateArrayDetails(DataContext);
+                    break;
+                case nameof(IImageContent.DepthCount):
+                    UpdateDepthSliceDetails(DataContext);
+                    UpdateMipDetails(DataContext);
+                    break;
+                case nameof(IImageContent.MipCount):
+                    UpdateMipDetails(DataContext);
+                    break;
+                case nameof(IImageContent.CurrentArrayIndex):
+                    // Don't need to call update texture parameters here, we already use an index by default.
+                    UpdateArrayDetails(DataContext);
+                    break;
+                case nameof(IImageContent.CurrentDepthSlice):
+                    UpdateDepthSliceDetails(DataContext);
+                    //_textureViewer.UpdateTextureParameters(DataContext);
+                    break;
+                case nameof(IImageContent.CurrentMipLevel):
+                    UpdateMipDetails(DataContext);
+                    //_textureViewer.UpdateTextureParameters(DataContext);
+                    break;
+                case nameof(IImageContent.ImageType):
+                    if (!HasRenderer(DataContext.ImageType.ToString()))
+                    {
+                        return;
+                    }
+
+                    SwitchRenderer(DataContext.ImageType.ToString());
+                    break;
             }
-
-            _textureViewer.Draw(DataContext);
-            return true;
-        }
-
-        /// <summary>Function to allow user defined setup of the graphics context with this control.</summary>
-        /// <param name="context">The context being assigned.</param>
-        /// <param name="swapChain">
-        /// The swap chain assigned to the <span class="nolink">RenderControl<span class="languageSpecificText"><span class="cs">()</span><span class="cpp">()</span><span class="nu">()</span><span class="fs">()</span></span></span>.
-        /// </param>
-        protected override void OnSetupGraphics(IGraphicsContext context, GorgonSwapChain swapChain)
-        {
-            Debug.Assert(EditorCommonResources.CheckerBoardPatternImage != null, "Background texture was not loaded.");
-
-            _ribbonForm.GraphicsContext = context;
-
-            _background = GorgonTexture2DView.CreateTexture(context.Graphics, new GorgonTexture2DInfo("Editor_BG_Texture")
-            {
-                Format = EditorCommonResources.CheckerBoardPatternImage.Format,
-                Width = EditorCommonResources.CheckerBoardPatternImage.Width,
-                Height = EditorCommonResources.CheckerBoardPatternImage.Height,
-                Binding = TextureBinding.ShaderResource,
-                Usage = ResourceUsage.Immutable
-            }, EditorCommonResources.CheckerBoardPatternImage);
-
-            _viewers[ImageType.Image2D] = new Texture2DViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
-            _viewers[ImageType.Image2D].CreateResources(_background);
-            _viewers[ImageType.ImageCube] = new TextureCubeViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
-            _viewers[ImageType.ImageCube].CreateResources(_background);
-            _viewers[ImageType.Image3D] = new Texture3DViewer(context, swapChain, ScrollHorizontal, ScrollVertical);
-            _viewers[ImageType.Image3D].CreateResources(_background);
-
-            if (DataContext?.ImageType == null)
-            {
-                ValidateControls();
-                return;
-            }
-
-            _textureViewer = _viewers[DataContext.ImageType];
-            _textureViewer.UpdateTexture(DataContext);
-            UpdateImageSizeDetails(DataContext);
-            UpdateMipDetails(DataContext);
-            UpdateArrayDetails(DataContext);
-            UpdateDepthSliceDetails(DataContext);
 
             ValidateControls();
+        }
+
+        /// <summary>
+        /// Function called when the renderer is switched.
+        /// </summary>
+        /// <param name="renderer">The current renderer.</param>
+        protected override void OnSwitchRenderer(IContentRenderer renderer)
+        {
+            base.OnSwitchRenderer(renderer);
+            _ribbonForm.ContentRenderer = renderer;
+            _ribbonForm.ResetZoom();
+        }
+
+        /// <summary>Function called when the view should be reset by a <b>null</b> data context.</summary>
+        protected override void ResetDataContext()
+        {
+            base.ResetDataContext();
+
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            _ribbonForm.SetDataContext(null);
+            CropResizeSettings.SetDataContext(null);
+            DimensionSettings.SetDataContext(null);
+            GenMipMapSettings.SetDataContext(null);
+            SetAlpha.SetDataContext(null);
         }
 
         /// <summary>Function called to shut down the view.</summary>
@@ -691,13 +409,31 @@ namespace Gorgon.Editor.ImageEditor
             // Reset the view.
             SetDataContext(null);
 
-            foreach (ITextureViewerService service in _viewers.Values)
-            {
-                service.Dispose();
-            }
+            base.OnShutdown();
+        }
 
-            _background?.Dispose();
-            _background = null;
+        /// <summary>Function to allow applications to set up rendering for their specific use cases.</summary>
+        /// <param name="context">The graphics context from the host application.</param>
+        /// <param name="swapChain">The current swap chain for the rendering panel.</param>
+        protected override void OnSetupContentRenderer(IGraphicsContext context, GorgonSwapChain swapChain)
+        {
+            base.OnSetupContentRenderer(context, swapChain);
+
+            // Grab the instance of the graphics context for any sub controls that require it.
+            _imagePickerForm.GraphicsContext = context;
+
+            ITextureViewer tex2DViewer = new Texture2DViewer(context.Renderer2D, swapChain, DataContext);
+            ITextureViewer tex3DViewer = new Texture3DViewer(context.Renderer2D, swapChain, DataContext);
+            ITextureViewer texCubeViewer = new TextureCubeViewer(context.Renderer2D, swapChain, context.FontFactory, DataContext);
+            tex2DViewer.CreateResources();
+            tex3DViewer.CreateResources();
+            texCubeViewer.CreateResources();
+
+            AddRenderer(tex2DViewer.Name, tex2DViewer);
+            AddRenderer(tex3DViewer.Name, tex3DViewer);
+            AddRenderer(texCubeViewer.Name, texCubeViewer);
+
+            SwitchRenderer(DataContext.ImageType.ToString());
         }
 
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -717,27 +453,10 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             DataContext?.OnLoad();
-            IdleMethod = Idle;
 
-            PanelImage.Select();
+            RenderControl?.Select();
 
             ValidateControls();
-        }
-
-        /// <summary>Function called when the view should be reset by a <b>null</b> data context.</summary>
-        protected override void ResetDataContext()
-        {
-            base.ResetDataContext();
-
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            _ribbonForm.SetDataContext(null);
-            CropResizeSettings.SetDataContext(null);
-            DimensionSettings.SetDataContext(null);
-            GenMipMapSettings.SetDataContext(null);
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -745,7 +464,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
         public void SetDataContext(IImageContent dataContext)
         {
-            base.SetDataContext(dataContext);
+            OnSetDataContext(dataContext);
 
             InitializeFromDataContext(dataContext);
 
@@ -760,8 +479,9 @@ namespace Gorgon.Editor.ImageEditor
             InitializeComponent();
 
             _ribbonForm = new FormRibbon();
-            _ribbonForm.ImageZoomed += RibbonForm_ImageZoomed;
             Ribbon = _ribbonForm.RibbonImageContent;
+
+            _imagePickerForm = new FormImagePicker();
 
             RegisterChildPanel(typeof(DimensionSettings).FullName, DimensionSettings);
             RegisterChildPanel(typeof(CropResizeSettings).FullName, CropResizeSettings);

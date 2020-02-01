@@ -156,7 +156,7 @@ namespace Gorgon.Editor.Services
                             _hostServices.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
                         }
 
-                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
+                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\r\n", validation), plugin.PlugInPath);
 
                         // Remove this plug in.
                         plugins.Unload(plugin.Name);
@@ -170,7 +170,7 @@ namespace Gorgon.Editor.Services
                     // Attempt to gracefully shut the plug in down if we error out.
                     plugin.Shutdown();
 
-                    _hostServices.Log.Print($"ERROR: Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                    _hostServices.Log.Print($"[ERROR] Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
                     _hostServices.Log.LogException(ex);
 
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
@@ -208,7 +208,7 @@ namespace Gorgon.Editor.Services
                             _hostServices.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
                         }
 
-                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\n", validation), plugin.PlugInPath);
+                        _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\r\n", validation), plugin.PlugInPath);
 
                         // Remove this plug in.
                         plugins.Unload(plugin.Name);
@@ -222,7 +222,7 @@ namespace Gorgon.Editor.Services
                     // Attempt to gracefully shut the plug in down if we error out.
                     plugin.Shutdown();
 
-                    _hostServices.Log.Print($"ERROR: Cannot create importer plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                    _hostServices.Log.Print($"[ERROR] Cannot create importer plug in '{plugin.Name}'.", LoggingLevel.Simple);
                     _hostServices.Log.LogException(ex);
 
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
@@ -253,17 +253,15 @@ namespace Gorgon.Editor.Services
 
             string settingsFile = GetContentPlugInSettingsPath(name);
 
-            if (!System.IO.File.Exists(settingsFile))
+            if (!File.Exists(settingsFile))
             {
                 return null;
             }
 
-            using (Stream stream = System.IO.File.Open(settingsFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream stream = File.Open(settingsFile, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var reader = new StreamReader(stream, Encoding.UTF8))
             {
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
-                {
-                    return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
-                }
+                return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
             }
         }
 
@@ -294,12 +292,10 @@ namespace Gorgon.Editor.Services
             }
 
             string settingsFile = GetContentPlugInSettingsPath(name);
-            using (Stream stream = System.IO.File.Open(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (Stream stream = File.Open(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
             {
-                using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
-                {
-                    writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
-                }
+                writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
             }
         }
 
@@ -385,7 +381,7 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(pluginDir));
             }
 
-            IReadOnlyList<string> files = System.IO.Directory.GetFiles(pluginDir, "*.dll");
+            IReadOnlyList<string> files = Directory.GetFiles(pluginDir, "*.dll");
             IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(files, _hostServices.Log);
 
             if (assemblies.Count > 0)

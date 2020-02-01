@@ -25,91 +25,55 @@
 #endregion
 
 using System;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.UI.ViewModels
 {
     /// <summary>
-    /// Common services to inject into view models across the application, including plug ins.
+    /// This object is used to inject common host application services into view models as parameters.
     /// </summary>
-    public class ViewModelInjection
-        : IViewModelInjection
+    /// <typeparam name="T">The type of host services. Must implement <see cref="IHostServices"/>.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// When creating view models, developers should pass custom data used for initialization by inheriting this type. For content, settings, etc... or other built in view model types, there are other 
+    /// base classes for the parameters that should be used.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="IHostServices"/>
+    public class ViewModelInjection<T>
+        : IViewModelInjection<T>
+        where T : IHostServices
     {
-        /// <summary>
-        /// Property to return the log for the application.
-        /// </summary>
-        public IGorgonLog Log
+        /// <summary>Property to return the common services passed from host application.</summary>
+        public T HostServices
         {
             get;
         }
 
-        /// <summary>
-        /// Property to return the busy state service for the application.
-        /// </summary>
-        public IBusyStateService BusyService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the message display service for the application.
-        /// </summary>
-        public IMessageDisplayService MessageDisplay
-        {
-            get;
-        }
-
-        /// <summary>Property to return the clipboard handler for the view model.</summary>
-        public IClipboardHandler Clipboard
-        {
-            get;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="ViewModelInjection"/> class.</summary>
-        /// <param name="hostServices">The services from the host application.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
-        protected ViewModelInjection(IHostServices hostServices)
-        {
-            if (hostServices == null)
-            {
-                throw new ArgumentNullException(nameof(hostServices));
-            }
-
-            Log = hostServices.Log;
-            BusyService = hostServices.BusyService;
-            MessageDisplay = hostServices.MessageDisplay;
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="ViewModelInjection"/> class.</summary>
-        /// <param name="copy">The objects to copy.</param>
+        /// <summary>Initializes a new instance of the <see cref="ViewModelInjection{T}"/> class.</summary>
+        /// <param name="copy">The injection parameter object to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <b>null</b>.</exception>
-        protected ViewModelInjection(IViewModelInjection copy)
+        protected ViewModelInjection(IViewModelInjection<T> copy)
         {
             if (copy == null)
             {
                 throw new ArgumentNullException(nameof(copy));
             }
 
-            Log = copy.Log;
-            BusyService = copy.BusyService;
-            MessageDisplay = copy.MessageDisplay;
-            Clipboard = copy.Clipboard;
+            HostServices = copy.HostServices;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ViewModelInjection"/> class.</summary>
-        /// <param name="log">The log for the application.</param>
-        /// <param name="busyService">The busy service for the application.</param>
-        /// <param name="messageService">The message display service for the application..</param>
-        /// <param name="clipboardHandler">The clipboard handler for the view model.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ViewModelInjection(IGorgonLog log, IBusyStateService busyService, IMessageDisplayService messageService, IClipboardHandler clipboardHandler)
+        /// <summary>Initializes a new instance of the <see cref="ViewModelInjection{T}"/> class.</summary>
+        /// <param name="hostServices">The services from the host application.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
+        public ViewModelInjection(T hostServices)
         {
-            Log = log ?? throw new ArgumentNullException(nameof(log));
-            BusyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
-            MessageDisplay = messageService ?? throw new ArgumentNullException(nameof(messageService));
-            Clipboard = clipboardHandler;
+            if (hostServices == null)
+            {
+                throw new ArgumentNullException(nameof(hostServices));
+            }
+
+            HostServices = hostServices;
         }
     }
 }

@@ -29,13 +29,10 @@ using System.IO;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Properties;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.PlugIns
@@ -345,17 +342,12 @@ namespace Gorgon.Editor.PlugIns
         /// </remarks>
         public void Initialize(IHostContentServices hostServices)
         {
-            if (hostServices == null)
-            {
-                throw new ArgumentNullException(nameof(hostServices));
-            }
-
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {
                 return;
             }
 
-            HostContentServices = hostServices;
+            HostContentServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
             HostServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
 
             OnInitialize();

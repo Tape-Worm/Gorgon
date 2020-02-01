@@ -24,12 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
-using DX = SharpDX;
-
 
 namespace Gorgon.Graphics.Core
 {
@@ -71,8 +65,7 @@ namespace Gorgon.Graphics.Core
             dest.ForcedReadWriteViewSampleCount = src.ForcedReadWriteViewSampleCount;
             dest.IsFrontCounterClockwise = src.IsFrontCounterClockwise;
             dest.IsMultisamplingEnabled = src.IsMultisamplingEnabled;
-            dest.RwScissorRectangles.Clear();
-            dest.RwScissorRectangles.AddRange(src.ScissorRectangles);
+            dest.ScissorRectsEnabled = src.ScissorRectsEnabled;
             dest.SlopeScaledDepthBias = src.SlopeScaledDepthBias;
             dest.UseConservativeRasterization = src.UseConservativeRasterization;
         }
@@ -109,51 +102,41 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to assign a single scissor clipping rectangle to the state.
+        /// Function to enable scissor cipping rectangles.
         /// </summary>
-        /// <param name="scissorRect">The rectangle to assign.</param>
-        /// <param name="index">[Optional] The index of the scissor rectangle.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0, or greater than/equal to 16.</exception>
-        public GorgonRasterStateBuilder ScissorRectangle(DX.Rectangle scissorRect, int index = 0)
+        /// <remarks>
+        /// <para>
+        /// This must be called if the <see cref="GorgonGraphics.SetScissorRect"/>, or <see cref="GorgonGraphics.SetScissorRects"/> methods are to be used. 
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// If no scissor rectangle is set on the <see cref="GorgonGraphics"/> interface, and this is set to true, nothing will be rendered.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonGraphics"/>
+        public GorgonRasterStateBuilder EnableScissorRects()
         {
-            if ((index < 0) || (index >= 16))
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), Resources.GORGFX_ERR_SCISSOR_INDEX_INVALID);
-            }
-
-            WorkingState.RwScissorRectangles.Clear();
-
-            for (int i = 0; i <= index; ++i)
-            {
-                WorkingState.RwScissorRectangles.Add(DX.Rectangle.Empty);
-            }
-
-            WorkingState.RwScissorRectangles[index] = scissorRect;
+            WorkingState.ScissorRectsEnabled = true;
             return this;
         }
 
         /// <summary>
-        /// Function to assign scissor clipping rectangles to the state.
+        /// Function to disable scissor cipping rectangles.
         /// </summary>
-        /// <param name="scissorRects">The rectangles to assign.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonRasterStateBuilder ScissorRectangles(IReadOnlyList<DX.Rectangle> scissorRects)
+        /// <remarks>
+        /// <para>
+        /// This will disable scissor rectangle clipping entirely. Any rectangles assigned via the <see cref="GorgonGraphics.SetScissorRect"/>, or 
+        /// <see cref="GorgonGraphics.SetScissorRects"/> will remain assigned.
+        /// </para>
+        /// </remarks>
+        public GorgonRasterStateBuilder DisableScissorRects()
         {
-            WorkingState.RwScissorRectangles.Clear();
-
-            if (scissorRects == null)
-            {
-                return this;
-            }
-
-            int length = scissorRects.Count.Min(16);
-
-            for (int i = 0; i < length; ++i)
-            {
-                WorkingState.RwScissorRectangles[i] = scissorRects[i];
-            }
-
+            WorkingState.ScissorRectsEnabled = false;
             return this;
         }
 

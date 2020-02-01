@@ -40,7 +40,8 @@ namespace Gorgon.Editor.ProjectData
         public byte[] ReadBuffer
         {
             get;
-        } = new byte[81920];
+            set;
+        }
 
         /// <summary>
         /// Property to return the list of files to decompress.

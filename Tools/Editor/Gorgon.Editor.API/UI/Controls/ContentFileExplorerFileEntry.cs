@@ -55,7 +55,7 @@ namespace Gorgon.Editor.UI.Controls
         /// <summary>
         /// Property to return the content file associated with this entry.
         /// </summary>
-        public OLDE_IContentFile File
+        public IContentFile File
         {
             get;
         }
@@ -130,7 +130,7 @@ namespace Gorgon.Editor.UI.Controls
         /// <param name="contentFile">The content file associated with this entry.</param>
         /// <param name="parent">The parent directory for this file.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/>, or the <paramref name="parent"/> parameter is <b>null</b>.</exception>
-        public ContentFileExplorerFileEntry(OLDE_IContentFile contentFile, ContentFileExplorerDirectoryEntry parent)
+        public ContentFileExplorerFileEntry(IContentFile contentFile, ContentFileExplorerDirectoryEntry parent)
         {
             File = contentFile ?? throw new ArgumentNullException(nameof(contentFile));
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));

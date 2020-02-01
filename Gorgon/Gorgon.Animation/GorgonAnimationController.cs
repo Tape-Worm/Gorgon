@@ -491,13 +491,13 @@ namespace Gorgon.Animation
                 return;
             }
 
-            BuildPlayableTracks(animation);
-
             // Stop the current animation.
             if (CurrentAnimation != null)
             {
                 Stop();
             }
+
+            BuildPlayableTracks(animation);
 
             if (Time > animation.Length)
             {

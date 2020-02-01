@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views
@@ -36,8 +37,13 @@ namespace Gorgon.Editor.Views
     /// Defines which grid rows that are currently being dragged.
     /// </summary>    
     internal class GridRowsDragData
-        : IFileCopyMoveData
+        : IFileCopyMoveData, IContentFileDragData
     {
+        #region Variables.
+        // The list of paths for the files being dragged.
+        private readonly string[] _filePaths;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the grid rows being dragged.
@@ -82,6 +88,16 @@ namespace Gorgon.Editor.Views
             get;
             set;
         }
+
+        /// <summary>Property to return the path to the content file being dragged and dropped.</summary>
+        IReadOnlyList<string> IContentFileDragData.FilePaths => _filePaths;
+
+        /// <summary>Property to set or return whether to cancel the drag/drop operation.</summary>
+        bool IContentFileDragData.Cancel
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -94,10 +110,13 @@ namespace Gorgon.Editor.Views
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileRows"/> parameter is <b>null</b>.</exception>
         public GridRowsDragData(IReadOnlyList<DataGridViewRow> fileRows, int fileColumnIndex, CopyMoveOperation dragOperation)
         {
+            IFile[] files = fileRows.OfType<DataGridViewRow>()
+                                    .Select(item => ((IFile)item.Cells[fileColumnIndex].Value))
+                                    .ToArray();
+
             GridRows = fileRows ?? throw new ArgumentNullException(nameof(fileRows));
-            SourceFiles = fileRows.OfType<DataGridViewRow>()
-                                  .Select(item => ((IFile)item.Cells[fileColumnIndex].Value).ID)
-                                  .ToArray();
+            SourceFiles = files.Select(item => item.ID).ToArray();
+            _filePaths = files.Select(item => item.FullPath).ToArray();
             Operation = dragOperation;
         }
         #endregion

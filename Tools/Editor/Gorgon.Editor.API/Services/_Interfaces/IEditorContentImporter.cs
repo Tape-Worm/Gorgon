@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.IO;
 using System.Threading;
 using Gorgon.IO;
 

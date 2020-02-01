@@ -29,7 +29,6 @@ using System.IO;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -128,8 +127,8 @@ namespace Gorgon.Editor.ImageEditor.Services
             }
 
             using (Stream fileStream = File.Open(physicalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (Stream outStream = _tempWriter.OpenStream(outputFilePath, FileMode.Create))
             using (IGorgonImage image = sourceCodec.LoadFromStream(fileStream))
+            using (Stream outStream = _tempWriter.OpenStream(outputFilePath, FileMode.Create))
             {
                 _log.Print($"Converting '{physicalFilePath}' to DDS file format. Image format [{image.Format}].", LoggingLevel.Verbose);
                 ddsCodec.SaveToStream(image, outStream);

@@ -1,0 +1,147 @@
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2020 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: February 7, 2020 3:36:57 PM
+// 
+#endregion
+
+using Gorgon.Animation;
+using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Renderers;
+using SharpDX;
+
+namespace Gorgon.Editor.Rendering
+{
+    /// <summary>
+    /// Provides animation capability for camera actions.
+    /// </summary>
+    internal class CameraAnimationController<T>
+        : GorgonAnimationController<Gorgon2DOrthoCamera>
+        where T : class, IVisualEditorContent
+    {
+        #region Variables.
+        /// <summary>
+        /// The track registration for the position.
+        /// </summary>
+        public static readonly GorgonTrackRegistration PositionTrack = new GorgonTrackRegistration(nameof(Gorgon2DOrthoCamera.Position), AnimationTrackKeyType.Vector3);
+        /// <summary>
+        /// The track registration for the scale..
+        /// </summary>
+        public static readonly GorgonTrackRegistration ZoomTrack = new GorgonTrackRegistration(nameof(Gorgon2DOrthoCamera.Zoom), AnimationTrackKeyType.Vector2);
+
+        // The renderer that is animating.
+        private readonly DefaultContentRenderer<T> _renderer;
+        #endregion
+
+        #region Methods.
+        /// <summary>Function called when a <see cref="GorgonColor"/> value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnColorUpdate(GorgonTrackRegistration track, Gorgon2DOrthoCamera animObject, GorgonColor value)
+        {
+            // Not needed.
+        }
+
+        /// <summary>Function called when a SharpDX <c>RectangleF</c> value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnRectangleUpdate(GorgonTrackRegistration track, Gorgon2DOrthoCamera animObject, RectangleF value)
+        {
+            // Not needed.
+        }
+
+        /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnSingleValueUpdate(GorgonTrackRegistration track, Gorgon2DOrthoCamera animObject, float value)
+        {
+            // Not needed.
+        }
+
+        /// <summary>Function called when a texture needs to be updated on the object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="texture">The texture to switch to.</param>
+        /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
+        /// <param name="textureArrayIndex">The texture array index.</param>
+        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, Gorgon2DOrthoCamera animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        {
+            // Not needed.
+        }
+
+        /// <summary>Function called when a 2D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, Gorgon2DOrthoCamera animObject, Vector2 value)
+        {
+            if (track.ID != ZoomTrack.ID)
+            {
+                return;
+            }
+
+            animObject.Zoom = value;
+            _renderer.OnZoom();
+        }
+
+        /// <summary>Function called when a 3D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, Gorgon2DOrthoCamera animObject, Vector3 value)
+        {
+            if (track.ID != PositionTrack.ID)
+            {
+                return;
+            }
+
+            animObject.Position = value;
+            _renderer.OnOffset();
+        }
+
+        /// <summary>Function called when a 4D vector value needs to be updated on the animated object.</summary>
+        /// <param name="track">The track currently being processed.</param>
+        /// <param name="animObject">The object to update.</param>
+        /// <param name="value">The value to apply.</param>
+        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, Gorgon2DOrthoCamera animObject, Vector4 value)
+        {
+            // Not needed.
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>Initializes a new instance of the <see cref="CameraAnimationController{T}"/> class.</summary>
+        public CameraAnimationController(DefaultContentRenderer<T> renderer)
+        {
+            _renderer = renderer;
+
+            RegisterTrack(ZoomTrack);
+            RegisterTrack(PositionTrack);
+        }
+        #endregion
+    }
+}

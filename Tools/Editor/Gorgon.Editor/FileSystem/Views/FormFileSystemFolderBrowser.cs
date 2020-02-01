@@ -30,8 +30,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Collections;
-using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.UI;

@@ -20,9 +20,15 @@
 
             if (disposing)
             {
+                SuspendLayout();
+                ContentClosedEvent = null;
+                BubbleDragDropEvent = null;
+                BubbleDragOverEvent = null;
+                BubbleDragEnterEvent = null;
                 _panelViews.Clear();
                 UnassignEvents();
                 Shutdown();
+                ResumeLayout(false);
             }
             base.Dispose(disposing);
         }
@@ -56,7 +62,7 @@
             this.PanelPresenter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelPresenter.Location = new System.Drawing.Point(0, 21);
             this.PanelPresenter.Name = "PanelPresenter";
-            this.PanelPresenter.Size = new System.Drawing.Size(600, 447);
+            this.PanelPresenter.Size = new System.Drawing.Size(440, 447);
             this.PanelPresenter.TabIndex = 0;
             // 
             // PanelContentName
@@ -134,33 +140,36 @@
             // 
             // PanelHost
             // 
+            this.PanelHost.AutoSize = true;
+            this.PanelHost.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PanelHost.Controls.Add(this.PanelHostControls);
             this.PanelHost.Dock = System.Windows.Forms.DockStyle.Right;
-            this.PanelHost.Location = new System.Drawing.Point(240, 21);
+            this.PanelHost.Location = new System.Drawing.Point(440, 21);
             this.PanelHost.MinimumSize = new System.Drawing.Size(160, 0);
             this.PanelHost.Name = "PanelHost";
             this.PanelHost.Padding = new System.Windows.Forms.Padding(1, 0, 0, 1);
-            this.PanelHost.Size = new System.Drawing.Size(360, 447);
+            this.PanelHost.Size = new System.Drawing.Size(160, 447);
             this.PanelHost.TabIndex = 1;
             this.PanelHost.Visible = false;
             // 
             // PanelHostControls
             // 
             this.PanelHostControls.AutoScroll = true;
+            this.PanelHostControls.AutoSize = true;
+            this.PanelHostControls.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PanelHostControls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelHostControls.Location = new System.Drawing.Point(1, 0);
             this.PanelHostControls.Name = "PanelHostControls";
-            this.PanelHostControls.Size = new System.Drawing.Size(359, 446);
+            this.PanelHostControls.Size = new System.Drawing.Size(159, 446);
             this.PanelHostControls.TabIndex = 0;
             // 
             // ContentBaseControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.PanelHost);
             this.Controls.Add(this.PanelPresenter);
+            this.Controls.Add(this.PanelHost);
             this.Controls.Add(this.PanelContentName);
-            this.ForeColor = System.Drawing.Color.White;
             this.Name = "ContentBaseControl";
             this.PanelContentName.ResumeLayout(false);
             this.PanelContentName.PerformLayout();
@@ -169,6 +178,7 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.PanelHost.ResumeLayout(false);
+            this.PanelHost.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -185,6 +195,7 @@
         private System.Windows.Forms.Button ButtonClose;
         private System.Windows.Forms.ToolTip TipButton;
         private System.Windows.Forms.Panel PanelHost;
+        [System.Runtime.CompilerServices.AccessedThroughProperty("HostPanel")]
         private System.Windows.Forms.Panel PanelHostControls;
     }
 }

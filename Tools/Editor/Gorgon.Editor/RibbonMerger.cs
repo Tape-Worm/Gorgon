@@ -30,7 +30,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using ComponentFactory.Krypton.Ribbon;
-using Gorgon.Editor.UI;
 using Gorgon.Math;
 
 namespace Gorgon.Editor
@@ -44,7 +43,6 @@ namespace Gorgon.Editor
     /// </para>
     /// </remarks>
     internal class RibbonMerger
-        : IRibbonMerger
     {
         #region Variables.
         // The list of merged items.
@@ -328,12 +326,11 @@ namespace Gorgon.Editor
         /// Function to merge a ribbon with the target ribbon
         /// </summary>
         /// <param name="ribbon">The ribbon to merge.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ribbon"/> parameter is <b>null</b>.</exception>
         public void Merge(KryptonRibbon ribbon)
         {
             if (ribbon == null)
             {
-                throw new ArgumentNullException(nameof(ribbon));
+                return;
             }
 
             string selectedContext = TargetRibbon.SelectedContext;
@@ -355,12 +352,11 @@ namespace Gorgon.Editor
         /// Function to unmerge the specified ribbon from the target ribbon.
         /// </summary>
         /// <param name="ribbon">The ribbon to unmerge.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ribbon"/> parameter is <b>null</b>.</exception>
         public void Unmerge(KryptonRibbon ribbon)
         {
             if (ribbon == null)
             {
-                throw new ArgumentNullException(nameof(ribbon));
+                return;
             }
 
             KryptonRibbonTab selected = TargetRibbon.SelectedTab;

@@ -671,10 +671,10 @@ namespace Gorgon.IO
             }
 
             // Function to update the physical file information for each file in a directory.
-            void UpdatePhysicalFileInfo(GorgonFileSystemMountPoint mountPoint, VirtualDirectory directory)
+            void UpdatePhysicalFileInfo(GorgonFileSystemMountPoint mount, VirtualDirectory directory)
             {
-                string physicalPath = mountPoint.Provider.MapToPhysicalPath(directory.FullPath, mountPoint);
-                IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> files = mountPoint.Provider.EnumerateFiles(physicalPath, dir);
+                string path = mount.Provider.MapToPhysicalPath(directory.FullPath, mountPoint);
+                IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> files = mountPoint.Provider.EnumerateFiles(path, dir);
 
                 // Update the physical file information on the files.
                 foreach (KeyValuePair<string, IGorgonPhysicalFileInfo> fileInfo in files)

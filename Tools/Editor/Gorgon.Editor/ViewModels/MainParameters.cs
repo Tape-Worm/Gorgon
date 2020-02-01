@@ -24,10 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
@@ -59,7 +57,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to set or return the settings view model.
         /// </summary>
-        public IEditorSettingsVm Settings
+        public IEditorSettings Settings
         {
             get;
             set;
@@ -69,15 +67,6 @@ namespace Gorgon.Editor.ViewModels
         /// Property to set or return the dialog for opening projects.
         /// </summary>
         public EditorFileOpenDialogService OpenDialog
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the dialog for saving projects.
-        /// </summary>
-        public EditorFileSaveDialogService SaveDialog
         {
             get;
             set;
@@ -110,20 +99,12 @@ namespace Gorgon.Editor.ViewModels
             set;
         }
 
-        /// <summary>
-        /// Property to set or return the content plug in service used to manage content plug ins.
-        /// </summary>
-        public IContentPlugInService ContentPlugIns
-        {
-            get;
-            set;
-        }
-
         /// <summary>Initializes a new instance of the MainParameters class.</summary>
+        /// <param name="hostServices">The services from the host application.</param>
         /// <param name="viewModelFactory">The view model factory for creating view models.</param>
-        public MainParameters(ViewModelFactory viewModelFactory)
-            : base(viewModelFactory)
-        {
+        public MainParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
+            : base(hostServices, viewModelFactory)
+        {            
         }
     }
 }

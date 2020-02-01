@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -33,7 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
+    <langversion>7.3</langversion>
     <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
@@ -58,46 +58,37 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ImageImporterPlugin.cs" />
     <Compile Include="ImageEditorPlugin.cs" />
-    <Compile Include="_Internal\Forms\_OLDE_\OLDE_FormRibbon.cs">
+    <Compile Include="_Internal\Forms\FormImagePicker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="_Internal\Forms\_OLDE_\OLDE_FormRibbon.Designer.cs">
-      <DependentUpon>OLDE_FormRibbon.cs</DependentUpon>
+    <Compile Include="_Internal\Forms\FormImagePicker.Designer.cs">
+      <DependentUpon>FormImagePicker.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\ViewModels\ActivateImagePickerArgs.cs" />
+    <Compile Include="_Internal\ViewModels\ImagePickerImportData.cs" />
+    <Compile Include="_Internal\Renderers\TextureCubeViewer.cs" />
+    <Compile Include="_Internal\Renderers\Texture3DViewer.cs" />
+    <Compile Include="_Internal\Renderers\TextureViewer.cs" />
+    <Compile Include="_Internal\Renderers\_Interfaces\ITextureViewer.cs" />
+    <Compile Include="_Internal\Renderers\ImageAnimationController.cs" />
     <Compile Include="_Internal\Services\DdsImageImporter.cs" />
     <Compile Include="_Internal\Services\ImageEditorServices.cs" />
     <Compile Include="_Internal\Services\ExportImageDialogService.cs" />
-    <Compile Include="_Internal\Services\Texture2DViewer.cs" />
-    <Compile Include="_Internal\Services\Texture3DViewer.cs" />
-    <Compile Include="_Internal\Services\TextureCubeViewer.cs" />
+    <Compile Include="_Internal\Renderers\Texture2DViewer.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IExportImageDialogService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImageIOService.cs" />
-    <Compile Include="_Internal\Services\_Interfaces\ITextureViewerService.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_ImageIOService.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_TextureViewerCommon.cs" />
     <Compile Include="_Internal\SharedDataFactory.cs" />
+    <Compile Include="_Internal\ViewModels\CopyToImageArgs.cs" />
     <Compile Include="_Internal\ViewModels\DimensionSettings.cs" />
     <Compile Include="_Internal\ViewModels\DimensionSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\ImageContent.cs" />
+    <Compile Include="_Internal\ViewModels\ImagePickerParameters.cs" />
     <Compile Include="_Internal\ViewModels\Settings.cs" />
     <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\SourceImagePicker.cs" />
+    <Compile Include="_Internal\ViewModels\SourceImagePickerParameters.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IDimensionSettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IImageContent.cs" />
-    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_ImageContentParameters.cs" />
-    <Compile Include="_Internal\Views\ImageAnimationController.cs" />
-    <Compile Include="_Internal\Views\__OLDE__\OLDE_ImageEditorView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\__OLDE__\OLDE_ImageEditorView.Designer.cs">
-      <DependentUpon>OLDE_ImageEditorView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Views\__OLDE__\OLDE_ImageDimensionSettings.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\__OLDE__\OLDE_ImageDimensionSettings.Designer.cs">
-      <DependentUpon>OLDE_ImageDimensionSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\__OLDE__\OLDE_SharedDataFactory.cs" />
     <Compile Include="_Internal\CodecRegistry.cs" />
     <Compile Include="_Internal\Forms\FormRibbon.cs">
       <SubType>Form</SubType>
@@ -107,47 +98,39 @@
     </Compile>
     <Compile Include="_Internal\ViewModels\AlphaSettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IAlphaSettings.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IImagePicker.cs" />
+    <Compile Include="_Internal\ViewModels\ImagePicker.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\ISourceImagePicker.cs" />
     <Compile Include="_Internal\Views\SetAlphaSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="_Internal\Views\SetAlphaSettings.Designer.cs">
       <DependentUpon>SetAlphaSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\Views\ImageEditorView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\ImageEditorView.Designer.cs">
+      <DependentUpon>ImageEditorView.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Internal\_Interfaces\ICodecRegistry.cs" />
-    <Compile Include="__OLDE__\OLDE_ImageAnimationController.cs" />
-    <Compile Include="__OLDE__\OLDE_ImageImporterPlugin.cs" />
     <Compile Include="_Internal\Cube.cs" />
     <Compile Include="_Internal\Native\Win32API.cs" />
     <Compile Include="_Internal\Services\ImageExternalEditService.cs" />
     <Compile Include="_Internal\Services\ImportImageDialogService.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_ExportImageDialogService.cs" />
     <Compile Include="_Internal\CubeVertex.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_TextureCubeViewer.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImageExternalEditService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImportImageDialogService.cs" />
     <Compile Include="_Internal\Services\_Interfaces\IImageUpdaterService.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_ImageEditorServices.cs" />
     <Compile Include="_Internal\Services\ImageUpdaterService.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_Texture3DViewer.cs" />
-    <Compile Include="_Internal\Services\TextureViewerCommon.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_ITextureViewerService.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_Texture2DViewer.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_IExportImageDialogService.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_IImageIOService.cs" />
     <Compile Include="_Internal\Services\ImageIOService.cs" />
-    <Compile Include="_Internal\Services\__OLDE__\OLDE_DdsImageImporter.cs" />
     <Compile Include="_Internal\Services\TexConvCompressor.cs" />
     <Compile Include="_Internal\ViewModels\CodecSetting.cs" />
     <Compile Include="_Internal\ViewModels\CropResizeSettings.cs" />
-    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_Settings.cs" />
-    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_SettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IMipMapSettings.cs" />
     <Compile Include="_Internal\ViewModels\MipMapSettings.cs" />
-    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_DimensionSettings.cs" />
-    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_DimensionSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\ImageContentParameters.cs" />
-    <Compile Include="__OLDE__\OLDE_ImageEditorPlugin.cs" />
     <Compile Include="_Internal\ImageEditorSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -155,8 +138,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_ImageContent.cs" />
-    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_IDimensionSettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ICropResizeSettings.cs" />
     <Compile Include="_Internal\Views\GenMipMapSettings.cs">
       <SubType>UserControl</SubType>
@@ -170,13 +151,6 @@
     <Compile Include="_Internal\Views\ImageCodecSettingsPanel.Designer.cs">
       <DependentUpon>ImageCodecSettingsPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="_Internal\Views\ImageEditorView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\ImageEditorView.Designer.cs">
-      <DependentUpon>ImageEditorView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\ViewModels\__OLDE__\OLDE_IImageContent.cs" />
     <Compile Include="_Internal\Views\ImageDimensionSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -195,6 +169,12 @@
     <Content Include="Gorgon2.ico" />
     <Content Include="Resources\alpha_16x16.png" />
     <Content Include="Resources\alpha_48x48.png" />
+    <None Include="Resources\gauss_blur_48x48.png" />
+    <None Include="Resources\gauss_blur_16x16.png" />
+    <None Include="Resources\image_effect_48x48.png" />
+    <None Include="Resources\image_effect_16x16.png" />
+    <None Include="Resources\no_thumb_64x64.png" />
+    <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\image_20x20.png" />
     <None Include="Resources\Transparency_Pattern.png" />
     <None Include="Resources\opactiy_16x16.png" />
@@ -250,15 +230,15 @@
     <None Include="Resources\center_16x16.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="_Internal\Forms\FormImagePicker.resx">
+      <DependentUpon>FormImagePicker.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Forms\FormRibbon.resx">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Forms\_OLDE_\OLDE_FormRibbon.resx">
-      <DependentUpon>OLDE_FormRibbon.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SetAlphaSettings.resx">
       <DependentUpon>SetAlphaSettings.cs</DependentUpon>
@@ -278,16 +258,13 @@
     <EmbeddedResource Include="_Internal\Views\ImageResizeSettings.resx">
       <DependentUpon>ImageResizeSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\__OLDE__\OLDE_ImageEditorView.resx">
-      <DependentUpon>OLDE_ImageEditorView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\__OLDE__\OLDE_ImageDimensionSettings.resx">
-      <DependentUpon>OLDE_ImageDimensionSettings.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KryptonToolkitSuite5472">
-      <Version>5.472.2098</Version>
+    <PackageReference Include="Krypton.Ribbon.Lite">
+      <Version>5.500.2002.1</Version>
+    </PackageReference>
+    <PackageReference Include="Krypton.Toolkit.Lite">
+      <Version>5.500.2002.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.8</Version>

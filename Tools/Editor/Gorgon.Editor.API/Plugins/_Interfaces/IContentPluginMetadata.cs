@@ -26,12 +26,10 @@
 
 using System;
 using System.Drawing;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Graphics.Imaging;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.PlugIns
 {

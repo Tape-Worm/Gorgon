@@ -25,11 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -56,12 +54,23 @@ namespace Gorgon.Graphics.Core
     {
         #region Common States
         /// <summary>
-        /// Property to return the default raster state.
+        /// The default raster state.
         /// </summary>
         public static GorgonRasterState Default
         {
             get;
         } = new GorgonRasterState();
+
+        /// <summary>
+        /// The default raster state, with scissor rectangles enabled.
+        /// </summary>
+        public static GorgonRasterState ScissorRectanglesEnabled
+        {
+            get;
+        } =new GorgonRasterState
+        {
+            ScissorRectsEnabled = true
+        };
 
         /// <summary>
         /// Wireframe, with no culling.
@@ -99,19 +108,6 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return whether or not scissor clipping is enabled or not.
-        /// </summary>
-        private bool HasScissors => RwScissorRectangles.Count > 0;
-
-        /// <summary>
-        /// Propert to return a read/write version of the scissor rectangles.
-        /// </summary>
-        internal List<DX.Rectangle> RwScissorRectangles
-        {
-            get;
-        } = new List<DX.Rectangle>();
-
         /// <summary>
         /// Property to return the current culling mode.
         /// </summary>
@@ -235,11 +231,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the list of rectangles used for scissor rectangle clipping.
-        /// </summary>
-        public IReadOnlyList<DX.Rectangle> ScissorRectangles => RwScissorRectangles;
-
-        /// <summary>
         /// Property to return whether multisampling anti-aliasing or alpha line anti-aliasing for a render target is enabled or not.
         /// </summary>
         /// <remarks>
@@ -319,6 +310,29 @@ namespace Gorgon.Graphics.Core
             get;
             internal set;
         }
+
+        /// <summary>
+        /// Property to return whwther scissor rectangles are enabled or not.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Scissor rectangles are used to clip pixels on a region defined by a scissor rectangle region. These rectangles are set by calling <see cref="GorgonGraphics.SetScissorRect"/> 
+        /// or <see cref="GorgonGraphics.SetScissorRects"/> on the <see cref="GorgonGraphics"/> interface.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// If no scissor rectangle is set on the <see cref="GorgonGraphics"/> interface, and this is set to true, nothing will be rendered.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonGraphics"/>
+        public bool ScissorRectsEnabled
+        {
+            get;
+            internal set;
+        }
         #endregion
 
         #region Methods.
@@ -341,7 +355,7 @@ namespace Gorgon.Graphics.Core
                 IsFrontCounterClockwise = IsFrontCounterClockwise,
                 SlopeScaledDepthBias = SlopeScaledDepthBias,
                 ForcedSampleCount = ForcedReadWriteViewSampleCount,
-                IsScissorEnabled = ScissorRectangles.Count > 0,
+                IsScissorEnabled = ScissorRectsEnabled,
                 IsDepthClipEnabled = IsDepthClippingEnabled,
                 IsMultisampleEnabled = IsMultisamplingEnabled
             };
@@ -365,7 +379,7 @@ namespace Gorgon.Graphics.Core
                                        && (ForcedReadWriteViewSampleCount == state.ForcedReadWriteViewSampleCount)
                                        && (IsFrontCounterClockwise == state.IsFrontCounterClockwise)
                                        && (IsMultisamplingEnabled == state.IsMultisamplingEnabled)
-                                       && (HasScissors == state.HasScissors)
+                                       && (ScissorRectsEnabled == state.ScissorRectsEnabled)
                                        && (SlopeScaledDepthBias.EqualsEpsilon(state.SlopeScaledDepthBias))
                                        && (UseConservativeRasterization == state.UseConservativeRasterization));
 
@@ -391,7 +405,7 @@ namespace Gorgon.Graphics.Core
             .GenerateHash(ForcedReadWriteViewSampleCount)
             .GenerateHash(IsFrontCounterClockwise)
             .GenerateHash(IsMultisamplingEnabled)
-            .GenerateHash(HasScissors)
+            .GenerateHash(ScissorRectsEnabled)
             .GenerateHash(SlopeScaledDepthBias)
             .GenerateHash(UseConservativeRasterization);
         #endregion
@@ -412,9 +426,9 @@ namespace Gorgon.Graphics.Core
             ForcedReadWriteViewSampleCount = state.ForcedReadWriteViewSampleCount;
             IsFrontCounterClockwise = state.IsFrontCounterClockwise;
             IsMultisamplingEnabled = state.IsMultisamplingEnabled;
-            RwScissorRectangles.AddRange(state.ScissorRectangles);
             SlopeScaledDepthBias = state.SlopeScaledDepthBias;
             UseConservativeRasterization = state.UseConservativeRasterization;
+            ScissorRectsEnabled = state.ScissorRectsEnabled;
         }
 
         /// <summary>

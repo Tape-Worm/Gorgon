@@ -30,8 +30,58 @@ using System.ComponentModel;
 namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// The base interface for Gorgon Editor view models.
+    /// A base view model interface for the gorgon editor.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is the base class for all view models used by the editor and provides the bare minimum in functionality. This object already implements the <see cref="INotifyPropertyChanged"/> 
+    /// and the <see cref="INotifyPropertyChanging"/> interfaces to allow communication with a view. 
+    /// </para>
+    /// <para>
+    /// When implementing a view model, the developers should set up their properties like this:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// public ReturnType PropertyName
+    /// {
+    ///     get => _backingStoreValue;
+    ///     set
+    ///     {
+    ///         // Always check to see if the value has changed. This keeps the view model from being too "chatty" with the UI.
+    ///         if (_backingStoreValue == value)
+    ///         {
+    ///             return;
+    ///         }
+    ///         
+    ///         // Notify that the property is about to change. This allows the view to do any necessary clean up prior to updating the visual side.
+    ///         OnPropertyChanging();
+    ///         _backingStoreValue = value;
+    ///         // Now, notify that the property has changed. The view will intercept the change and update the visual associated with the property.
+    ///         OnPropertyChanged();
+    ///     }
+    /// }
+    /// ]]>
+    /// This setup notifies the view that the property has been updated, and that any associated visual should probably update as well. This is the most common pattern to use, however there will 
+    /// be times when a property notification is required from a method. If that is the case, the <see cref="PropertyMonitor.NotifyPropertyChanged(string)"/>, and 
+    /// <see cref="PropertyMonitor.NotifyPropertyChanging(string)"/> methods should be used like this:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// // This could be a callback function for an IEditorCommand<T> object.
+    /// private void DoCommandAction()
+    /// {
+    ///     NotifyPropertyChanging(nameof(ReadOnlyValue));
+    ///     _readOnlyValue++;
+    ///     NotifyPropertyChanged(nameof(ReadOnlyValue));
+    /// }
+    /// ]]>
+    /// The difference being that for properties, you do not need to specify the name of the property being updated (the compiler figures it out), and in methods you do. 
+    /// </code>
+    /// </code>
+    /// </para>
+    /// <para>
+    /// The view model is also equipped with several events that are used to notify the application that a long running operation is executing. Applications can intercept these events and display a 
+    /// progress panel, or "please wait" panel. These should only be used with asynchronous operations as they will not update correctly if everything is running on the same thread.
+    /// </para>
+    /// </remarks>
     public interface IViewModel
         : INotifyPropertyChanged, INotifyPropertyChanging
     {
@@ -55,16 +105,6 @@ namespace Gorgon.Editor.UI
         /// Event triggered when the progress overlay should be deactivated.
         /// </summary>
         event EventHandler ProgressDeactivated;
-        #endregion
-
-        #region Properties.
-        /// <summary>
-        /// Property to return the clipboard handler for this view model.
-        /// </summary>
-        IClipboardHandler Clipboard
-        {
-            get;
-        }
         #endregion
 
         #region Methods.

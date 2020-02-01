@@ -402,10 +402,12 @@ namespace Gorgon.Renderers.Services
 
             (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, bool noChange) = CalculateRegions(filtered, maxSize, 1);
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (rects.Count > _graphics.VideoAdapter.MaxTextureArrayCount)
             {
                 return (maxSize, 0);
             }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
             return rects.Count == 0 ? (DX.Size2.Zero, 0) : (maxSize, rects.Count.Max(minArrayCount));
         }

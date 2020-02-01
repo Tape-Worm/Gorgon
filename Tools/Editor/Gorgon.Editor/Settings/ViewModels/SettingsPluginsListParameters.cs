@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
@@ -35,7 +34,7 @@ namespace Gorgon.Editor.ViewModels
     /// The parameters for the <see cref="ISettingsPlugInsList"/> view model.
     /// </summary>
     internal class SettingsPlugInsListParameters
-        : ViewModelInjection
+        : ViewModelInjection<IHostServices>
     {
         /// <summary>
         /// Property to set or return the list of plugins.

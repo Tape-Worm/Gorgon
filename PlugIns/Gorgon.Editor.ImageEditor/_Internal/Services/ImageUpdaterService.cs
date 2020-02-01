@@ -393,7 +393,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="startMip">The starting mip map level to copy.</param>
         /// <param name="startArrayOrDepth">The starting array index for 2D images, or depth slice for 3D images.</param>
         /// <param name="alignment">The alignment of the image, relative to the source image.</param>
-        public void CopyTo(IGorgonImage srcImage, IGorgonImage destImage, int startMip, int startArrayOrDepth, Alignment alignment)
+        /// <param name="clearDestination"><b>true</b> to clear the destination, <b>false</b> to keep the image contents.</param>
+        public void CopyTo(IGorgonImage srcImage, IGorgonImage destImage, int startMip, int startArrayOrDepth, Alignment alignment, bool clearDestination = true)
         {
             int mipCount = destImage.MipCount - startMip;
             int arrayCount = destImage.ArrayCount - (destImage.ImageType == ImageType.Image3D ? 0 : startArrayOrDepth);
@@ -432,13 +433,16 @@ namespace Gorgon.Editor.ImageEditor
                         IGorgonImageBuffer destBuffer = destImage.Buffers[mip + startMip, destOffset];
 
                         // Clear the destination buffer before copying.
-                        destBuffer.Data.Fill(0);
+                        if (clearDestination)
+                        {
+                            destBuffer.Data.Fill(0);
+                        }
 
-                        int minWidth = destBuffer.Width.Min(srcBuffer.Width);
-                        int minHeight = destBuffer.Height.Min(srcBuffer.Height);
-                        var copyRegion = new DX.Rectangle(0, 0, minWidth, minHeight);
+                        int maxWidth = destBuffer.Width.Max(srcBuffer.Width);
+                        int maxHeight = destBuffer.Height.Max(srcBuffer.Height);
+                        var copyRegion = new DX.Rectangle(0, 0, srcBuffer.Width, srcBuffer.Height);
 
-                        DX.Point startLoc = GetAnchorStart(new DX.Size2(minWidth, minHeight), ref size, alignment);
+                        DX.Point startLoc = GetAnchorStart(new DX.Size2(maxWidth, maxHeight), ref size, alignment);
 
                         srcBuffer.CopyTo(destBuffer, copyRegion, startLoc.X, startLoc.Y);
                     }

@@ -151,6 +151,44 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>
+        /// Function to retrieve the best <see cref="ZoomLevels"/> for the value passed. 
+        /// </summary>
+        /// <param name="zoomScale">The scale value to evaluate.</param>
+        /// <returns>The zoom level that best matches the scale.</returns>
+        public static ZoomLevels GetZoomLevel(this float zoomScale)
+        {
+            ZoomLevels? result = null;
+
+            for (int i = 0; i < _levels.Length; ++i)
+            {
+                float scale = GetScale(_levels[i]);
+
+                if (scale.EqualsEpsilon(-1))
+                {
+                    continue;
+                }
+
+                if (scale.EqualsEpsilon(zoomScale))
+                {
+                    result =  _levels[i];
+                    break;
+                }
+            }
+
+            if (result != null)
+            {
+                return result.Value;
+            }
+
+            ZoomLevels nextZoom = GetNextNearest(zoomScale);
+            ZoomLevels prevZoom = GetPrevNearest(zoomScale);
+            float nextScale = (GetScale(nextZoom) - zoomScale).Abs();
+            float prevScale = (zoomScale - GetScale(prevZoom)).Abs();
+
+            return (nextScale.EqualsEpsilon(prevScale)) || (nextScale < prevScale) ? nextZoom : prevZoom;
+        }
+
+        /// <summary>
         /// Function to retrieve the nearest previous zoom scale based on the scaling value passed in.
         /// </summary>
         /// <param name="zoomScale">The zoom scaling factor to evalute.</param>

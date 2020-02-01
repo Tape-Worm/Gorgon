@@ -84,7 +84,7 @@ namespace Gorgon.Editor
         /// Function to validate whether the specified property exists on this object.
         /// </summary>
         /// <param name="propertyName">Name of the property to look up.</param>
-        //[DebuggerStepThrough]
+        [DebuggerStepThrough]
         private void ValidatePropertyName(string propertyName)
         {
             if (_properties == null)
@@ -183,6 +183,7 @@ namespace Gorgon.Editor
         /// </note>
         /// </para>
         /// </remarks>
+        [DebuggerStepThrough]
         public void NotifyPropertyChanged(string propertyName)
         {
             if (propertyName == null)
@@ -228,6 +229,7 @@ namespace Gorgon.Editor
         /// </note>
         /// </para>
         /// </remarks>
+        [DebuggerStepThrough]
         public void NotifyPropertyChanging(string propertyName)
         {
             if (propertyName == null)
