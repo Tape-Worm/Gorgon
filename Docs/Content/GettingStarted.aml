@@ -40,7 +40,7 @@
             <listItem>Change the <codeInline>Configuration:</codeInline> dropdown to <codeInline>All configurations</codeInline>.</listItem>
             <listItem><phrase>(Optional, but recommended)</phrase> Uncheck <codeInline>Prefer 32 bit...</codeInline> (it's SO stupid that's the default).</listItem>
             <listItem><phrase>(Visual Studio 2017 only, 2019 does not need this)</phrase> Click <codeInline>Advanced...</codeInline></listItem>              
-            <listItem>On the <codeInline>Language Version:</codeInline> drop down, select <codeInline>C# latest minor version (latest)</codeInline> and click OK.</listItem>
+            <listItem><phrase>(Visual Studio 2017 only, 2019 does not need this)</phrase> On the <codeInline>Language Version:</codeInline> drop down, select <codeInline>C# latest minor version (latest)</codeInline> and click OK.</listItem>
           </list>
           <mediaLink>
             <image xlink:href="ProjProps"/>
