@@ -109,6 +109,24 @@ namespace Gorgon.Editor.ImageEditor
             set;
         }
 
+        /// <summary>
+        /// Property to set or return whether changing mip levels is allowed.
+        /// </summary>
+        public bool AllowMipChange
+        {
+            get;
+            protected set;
+        } = true;
+
+        /// <summary>
+        /// Property to set or return whether changing array indices/depth slices is allowed.
+        /// </summary>
+        public bool AllowArrayDepthChange
+        {
+            get;
+            protected set;
+        } = true;
+
         /// <summary>Property to set or return the opacity of the content in the view.</summary>
         public float Opacity
         {
@@ -204,7 +222,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnLoad();
 
-            Opacity = 0;
+            Opacity = 1.0f;
             CreateTexture();
             AnimateTexture();
 
@@ -319,6 +337,11 @@ namespace Gorgon.Editor.ImageEditor
             switch (args.KeyCode)
             {
                 case Keys.Left:
+                    if (!AllowArrayDepthChange)
+                    {
+                        return;
+                    }
+
                     if (args.Shift)
                     {
                         DataContext.CurrentArrayIndex -= (DataContext.ArrayCount / 2).Max(1).Min(6);
@@ -332,6 +355,11 @@ namespace Gorgon.Editor.ImageEditor
                     args.IsInputKey = true;
                     return;
                 case Keys.Right:
+                    if (!AllowArrayDepthChange)
+                    {
+                        return;
+                    }
+
                     if (args.Shift)
                     {
                         DataContext.CurrentArrayIndex += (DataContext.ArrayCount / 2).Max(1).Min(6);
@@ -345,6 +373,11 @@ namespace Gorgon.Editor.ImageEditor
                     args.IsInputKey = true;
                     return;
                 case Keys.Up:
+                    if (!AllowMipChange)
+                    {
+                        return;
+                    }
+
                     if (args.Shift)
                     {
                         DataContext.CurrentMipLevel -= 2;
@@ -356,6 +389,11 @@ namespace Gorgon.Editor.ImageEditor
                     args.IsInputKey = true;
                     return;
                 case Keys.Down:
+                    if (!AllowMipChange)
+                    {
+                        return;
+                    }
+
                     if (args.Shift)
                     {
                         DataContext.CurrentMipLevel += 2;

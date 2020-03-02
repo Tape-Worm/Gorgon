@@ -20,27 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 7, 2020 11:52:08 PM
+// Created: March 1, 2020 8:36:39 PM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Graphics.Core;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Event arguments for the <see cref="IContentRenderer.ZoomScaleChanged"/> event.
+    /// A previewer for specific effects that support previewing.
     /// </summary>
-    public class ZoomScaleEventArgs
-        : EventArgs
+    internal interface IFxPreviewer
     {
+        #region Properties.
         /// <summary>
-        /// Property to return zoom scale value.
+        /// Property to return the texture holding the unalterd image.
         /// </summary>
-        public float ZoomScale
+        GorgonTexture2DView OriginalTexture
         {
             get;
-            internal set;
         }
+
+        /// <summary>
+        /// Property to return the texture that contains the blurred preview image.
+        /// </summary>
+        GorgonTexture2DView PreviewTexture
+        {
+            get;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to generate a blurred image preview.
+        /// </summary>
+        /// <param name="blurAmount">The amount to blur.</param>
+        void GenerateBlurPreview(int blurAmount);
+        #endregion
     }
 }

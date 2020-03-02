@@ -150,7 +150,7 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>
-        /// Property to set or return the current context name for commands from this content.
+        /// Property to set or return the current context for commands from this content.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -161,7 +161,7 @@ namespace Gorgon.Editor.UI
         /// If the UI does not support contexts, then this property would be ignored.
         /// </para>
         /// </remarks>
-        string CommandContext
+        IEditorContext CommandContext
         {
             get;
             set;

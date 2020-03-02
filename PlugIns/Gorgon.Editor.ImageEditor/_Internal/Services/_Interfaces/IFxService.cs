@@ -20,27 +20,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 7, 2020 11:52:08 PM
+// Created: March 1, 2020 8:20:42 PM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Event arguments for the <see cref="IContentRenderer.ZoomScaleChanged"/> event.
+    /// The service used to apply effects and generate previews for effects.
     /// </summary>
-    public class ZoomScaleEventArgs
-        : EventArgs
+    internal interface IFxService
+        : IDisposable
     {
+        #region Properties.
         /// <summary>
-        /// Property to return zoom scale value.
+        /// Property to return the image that will contain the effect output.
         /// </summary>
-        public float ZoomScale
+        IGorgonImage EffectImage
         {
             get;
-            internal set;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to apply the blur effect.
+        /// </summary>
+        void ApplyBlur();
+
+        /// <summary>
+        /// Function to apply the grayscale effect.
+        /// </summary>
+        void ApplyGrayScale();
+
+        /// <summary>
+        /// Function to assign an image for editing.
+        /// </summary>
+        /// <param name="image">The image to edit.</param>        
+        /// <param name="arrayDepth">The selected array index or depth slice (volume textures).</param>
+        /// <param name="mipLevel">The currently selected mip map level.</param>
+        void SetImage(IGorgonImage image, int arrayDepth, int mipLevel);
+        #endregion
     }
 }

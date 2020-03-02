@@ -64,7 +64,15 @@
     <Compile Include="_Internal\Forms\FormImagePicker.Designer.cs">
       <DependentUpon>FormImagePicker.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\Renderers\TextureFxViewer.cs" />
+    <Compile Include="_Internal\Services\FxService.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IFxPreviewer.cs" />
+    <Compile Include="_Internal\Services\_Interfaces\IFxService.cs" />
     <Compile Include="_Internal\ViewModels\ActivateImagePickerArgs.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\FxBlur.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\FxContext.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\FxContextParameters.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxContext.cs" />
     <Compile Include="_Internal\ViewModels\ImagePickerImportData.cs" />
     <Compile Include="_Internal\Renderers\TextureCubeViewer.cs" />
     <Compile Include="_Internal\Renderers\Texture3DViewer.cs" />
@@ -88,6 +96,7 @@
     <Compile Include="_Internal\ViewModels\SourceImagePicker.cs" />
     <Compile Include="_Internal\ViewModels\SourceImagePickerParameters.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IDimensionSettings.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxBlur.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IImageContent.cs" />
     <Compile Include="_Internal\CodecRegistry.cs" />
     <Compile Include="_Internal\Forms\FormRibbon.cs">
@@ -101,6 +110,12 @@
     <Compile Include="_Internal\ViewModels\_Interfaces\IImagePicker.cs" />
     <Compile Include="_Internal\ViewModels\ImagePicker.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISourceImagePicker.cs" />
+    <Compile Include="_Internal\Views\FxBlurSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\FxBlurSettings.Designer.cs">
+      <DependentUpon>FxBlurSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Internal\Views\SetAlphaSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -169,6 +184,11 @@
     <Content Include="Gorgon2.ico" />
     <Content Include="Resources\alpha_16x16.png" />
     <Content Include="Resources\alpha_48x48.png" />
+    <None Include="Resources\grayscale_16x16.png" />
+    <None Include="Resources\grayscale_48x48.png" />
+    <None Include="Resources\confirm_48x48.png" />
+    <None Include="Resources\confirm_16x16.png" />
+    <None Include="Resources\cancel_48x48.png" />
     <None Include="Resources\gauss_blur_48x48.png" />
     <None Include="Resources\gauss_blur_16x16.png" />
     <None Include="Resources\image_effect_48x48.png" />
@@ -239,6 +259,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\FxBlurSettings.resx">
+      <DependentUpon>FxBlurSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SetAlphaSettings.resx">
       <DependentUpon>SetAlphaSettings.cs</DependentUpon>

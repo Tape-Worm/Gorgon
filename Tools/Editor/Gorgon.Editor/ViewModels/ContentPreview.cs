@@ -211,7 +211,8 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                if (!file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ThumbnailAttr, out string thumbnailName))
+                string thumbnailName = file.Metadata.Thumbnail;
+                if (string.IsNullOrWhiteSpace(thumbnailName))
                 {
                     thumbnailName = Guid.NewGuid().ToString("N");
                 }
@@ -357,7 +358,8 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // If the file already has a link to a thumbnail, remove it.
-                if (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ThumbnailAttr, out string thumbnailName))
+                string thumbnailName = file.Metadata.Thumbnail;
+                if (!string.IsNullOrWhiteSpace(thumbnailName))
                 {
                     IGorgonVirtualFile thumbnailFile = _tempFileSystem.FileSystem.GetFile(thumbDirectory.FullPath + thumbnailName);
 

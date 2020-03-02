@@ -96,7 +96,7 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem,
             this.RibbonTabEditorTools});
-            this.RibbonMain.SelectedContext = null;
+            this.RibbonMain.SelectedContext = "Context1";
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1007, 115);
@@ -108,7 +108,9 @@ namespace Gorgon.Editor
             this.RibbonMain.StateCheckedTracking.RibbonTab.BackColor2 = System.Drawing.Color.SteelBlue;
             this.RibbonMain.StateCheckedTracking.RibbonTab.BackColor3 = System.Drawing.Color.SteelBlue;
             this.RibbonMain.StateCheckedTracking.RibbonTab.BackColor4 = System.Drawing.Color.SteelBlue;
-            this.RibbonMain.StateCommon.RibbonGeneral.ContextTextFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RibbonMain.StateCommon.RibbonGeneral.ContextTextAlign = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
+            this.RibbonMain.StateCommon.RibbonGeneral.ContextTextColor = System.Drawing.Color.White;
+            this.RibbonMain.StateCommon.RibbonGeneral.ContextTextFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.RibbonMain.StateCommon.RibbonGeneral.DisabledDark = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.RibbonMain.StateCommon.RibbonGeneral.DisabledLight = System.Drawing.Color.Silver;
             this.RibbonMain.StateCommon.RibbonGeneral.DropArrowDark = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
@@ -118,7 +120,7 @@ namespace Gorgon.Editor
             this.RibbonMain.StateCommon.RibbonGeneral.RibbonShape = ComponentFactory.Krypton.Toolkit.PaletteRibbonShape.Office365;
             this.RibbonMain.StateCommon.RibbonGeneral.TabSeparatorColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.RibbonMain.StateCommon.RibbonGeneral.TextFont = new System.Drawing.Font("Segoe UI", 9F);
-            this.RibbonMain.StateCommon.RibbonGroupArea.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            this.RibbonMain.StateCommon.RibbonGroupArea.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.RibbonMain.StateCommon.RibbonGroupArea.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.RibbonMain.StateCommon.RibbonGroupArea.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.RibbonMain.StateCommon.RibbonGroupArea.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
@@ -137,7 +139,6 @@ namespace Gorgon.Editor
             this.RibbonMain.StateCommon.RibbonTab.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.RibbonMain.StateCommon.RibbonTab.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.RibbonMain.StateCommon.RibbonTab.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-            this.RibbonMain.StateCommon.RibbonTab.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.RibbonMain.StateCommon.RibbonTab.TextColor = System.Drawing.Color.White;
             this.RibbonMain.StateDisabled.RibbonGroupButtonText.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.RibbonMain.StateDisabled.RibbonGroupCheckBoxText.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));

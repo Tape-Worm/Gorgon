@@ -119,7 +119,7 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// Event triggered when the camera is moved.
         /// </summary>
-        event EventHandler<OffsetEventArgs> IContentRenderer.Offset
+        event EventHandler<OffsetEventArgs> IContentRenderer.OffsetChanged
         {
             add
             {
@@ -151,7 +151,7 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// Event triggered when the camera is zoomed.
         /// </summary>
-        event EventHandler<ZoomScaleEventArgs> IContentRenderer.ZoomScale
+        event EventHandler<ZoomScaleEventArgs> IContentRenderer.ZoomScaleChanged
         {
             add
             {
@@ -195,6 +195,14 @@ namespace Gorgon.Editor.Rendering
         /// </para>
         /// </remarks>
         protected IGorgon2DCamera Camera => _camera;
+
+        /// <summary>
+        /// Property to return the primary render target.
+        /// </summary>
+        /// <remarks>
+        /// Developers can use this property to reset the render target back to the original target after rendering to another target.
+        /// </remarks>
+        protected GorgonRenderTarget2DView MainRenderTarget => _swapChain?.RenderTargetView;
 
         /// <summary>
         /// Property to return the 2D renderer used to draw onto the content view.
@@ -274,6 +282,15 @@ namespace Gorgon.Editor.Rendering
         }
 
         /// <summary>
+        /// Property to set or return whether the renderer is enabled.
+        /// </summary>
+        public bool IsEnabled
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return whether the content can be zoomed.
         /// </summary>
         public bool CanZoom
@@ -316,6 +333,16 @@ namespace Gorgon.Editor.Rendering
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to return the offset of the image.
+        /// </summary>
+        public DX.Vector2 Offset => (DX.Vector2)_camera.Position;
+
+        /// <summary>
+        /// Property to return the current zoom level.
+        /// </summary>
+        public float Zoom => _camera.Zoom.X;
         #endregion
 
         #region Methods.
@@ -437,19 +464,21 @@ namespace Gorgon.Editor.Rendering
                 return;
             }
 
+
             if (((_mouseArgs.Modifiers & Keys.Control) == Keys.Control) && (CanZoom))
             {
                 float targetZoomSize = (_mouseArgs.MouseWheelDelta < 0 ? _camera.Zoom.X.GetPrevNearest() 
                                                                        : _camera.Zoom.X.GetNextNearest()).GetScale();
+
                 MoveTo(_mouseArgs.ClientPosition, targetZoomSize);
                 return;
             }
 
+            int regionWidth = (int)(RenderRegion.Width * 0.5f);
+            int regionHeight = (int)(RenderRegion.Height * 0.5f);
             var newOffset = (DX.Vector2)_camera.Position;
             float horzAmount = (RenderRegion.Width * 0.0125f).Max(1);
             float vertAmount = (RenderRegion.Height * 0.0125f).Max(1);
-            int regionWidth = (int)(RenderRegion.Width * 0.5f);
-            int regionHeight = (int)(RenderRegion.Height * 0.5f);
 
             if ((CanPanVertically) && ((_mouseArgs.Modifiers & Keys.Shift) != Keys.Shift))
             {
@@ -537,15 +566,22 @@ namespace Gorgon.Editor.Rendering
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            OnPropertyChanged(e.PropertyName);
-
-            ResetToWindow();
+            if (IsEnabled)
+            {
+                OnPropertyChanged(e.PropertyName);
+            }
         }
 
         /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e) => OnPropertyChanging(e.PropertyName);
+        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        {
+            if (IsEnabled)
+            {
+                OnPropertyChanging(e.PropertyName);
+            }
+        }
 
         /// <summary>Handles the AfterSwapChainResized event of the SwapChain control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -562,6 +598,17 @@ namespace Gorgon.Editor.Rendering
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs"/> instance containing the event data.</param>
         private void SwapChain_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e) => OnResizeBegin();
+
+        /// <summary>
+        /// Function to set the zoom scale to fit within the content window.
+        /// </summary>
+        /// <returns>The scale value needed to fit within the content window.</returns>
+        private float ZoomToWindow()
+        {
+            var scaling = new DX.Vector2(ClientSize.Width / RenderRegion.Width, ClientSize.Height / RenderRegion.Height);
+
+            return scaling.X.Min(scaling.Y);
+        }
 
         /// <summary>
         /// Function called when a property on the <see cref="DataContext"/> is changing.
@@ -889,17 +936,17 @@ namespace Gorgon.Editor.Rendering
             {
                 Anchor = new DX.Vector2(0.5f, 0.5f)
             };
-
-            if ((_cameraAnimation != null) && (_camAnimController.CurrentAnimation != _cameraAnimation) && (_camAnimController.State != AnimationState.Playing))
-            {
-                ResetToWindow();
-            }
         }
 
         /// <summary>Function to render the content.</summary>
         /// <remarks>This method is called by the view to render the content.</remarks>
         public void Render()
         {
+            if (!IsEnabled)
+            {
+                return;
+            }
+
             _swapChain.RenderTargetView.Clear(BackgroundColor);
             Graphics.SetRenderTarget(_swapChain.RenderTargetView);
 
@@ -957,14 +1004,27 @@ namespace Gorgon.Editor.Rendering
         }
 
         /// <summary>
-        /// Function to set the zoom scale to fit within the content window.
+        /// Function to set the zoom on the view.
         /// </summary>
-        /// <returns>The scale value needed to fit within the content window.</returns>
-        private float ZoomToWindow()
+        /// <param name="zoom">The zoom value to apply.</param>
+        public void SetZoom(float zoom)
         {
-            var scaling = new DX.Vector2(ClientSize.Width / RenderRegion.Width, ClientSize.Height / RenderRegion.Height);
+            if (_camera == null)
+            {
+                return;
+            }
 
-            return scaling.X.Min(scaling.Y);
+            if (zoom <= 0)
+            {
+                ZoomLevel = ZoomLevels.ToWindow;
+                zoom = ZoomToWindow();
+            }
+            else
+            {                
+                ZoomLevel = zoom.GetZoomLevel();
+            }
+            _camera.Zoom = new DX.Vector2(zoom, zoom);
+            OnZoom();
         }
 
         /// <summary>
@@ -1010,6 +1070,7 @@ namespace Gorgon.Editor.Rendering
 
             int regionWidth = (int)(RenderRegion.Width * zoom);
             int regionHeight = (int)(RenderRegion.Height * zoom);
+            var halfRegion = new DX.Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
 
             // If our target size is less than the current view size, then reset the target position to the center of the view.
             if ((!_panHorzEnabled) || (regionWidth <= ClientSize.Width))
@@ -1023,6 +1084,10 @@ namespace Gorgon.Editor.Rendering
             }
 
             float endTime = 0.65f;
+
+            // Lock the target position to the edges of the image.
+            targetPos.X = targetPos.X.Max(-halfRegion.X).Min(halfRegion.X);
+            targetPos.Y = targetPos.Y.Max(-halfRegion.Y).Min(halfRegion.Y);
 
             // Ensure the animation is finished prior to starting a new one.
             if ((_cameraAnimation != null) && (_camAnimController.CurrentAnimation != null) && (_camAnimController.State == AnimationState.Playing))

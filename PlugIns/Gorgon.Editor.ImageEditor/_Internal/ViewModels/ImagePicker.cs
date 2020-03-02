@@ -50,24 +50,6 @@ namespace Gorgon.Editor.ImageEditor
     internal class ImagePicker
         : ViewModelBase<ImagePickerParameters, IHostContentServices>, IImagePicker
     {
-        #region Classes.
-        /// <summary>
-        /// The arguments used to undo/redo an image import or dimension update.
-        /// </summary>
-        private class ImportUndoArgs
-        {
-            /// <summary>
-            /// The file used to store the undo data.
-            /// </summary>
-            public IGorgonVirtualFile UndoFile;
-
-            /// <summary>
-            /// The file used to store the redo data.
-            /// </summary>
-            public IGorgonVirtualFile RedoFile;
-        }
-        #endregion
-
         #region Variables.
         // Flag to indicate that the image picker is active.
         private bool _isActive;

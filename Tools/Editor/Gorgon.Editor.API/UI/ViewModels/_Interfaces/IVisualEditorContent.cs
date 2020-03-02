@@ -40,7 +40,7 @@ namespace Gorgon.Editor.UI
         : IEditorContent, IUndoHandler
     {
         /// <summary>
-        /// Property to return the currently active hosted panel.
+        /// Property to set or return the currently active hosted panel.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -51,6 +51,7 @@ namespace Gorgon.Editor.UI
         IHostedPanelViewModel CurrentHostedPanel
         {
             get;
+            set;
         }
     }
 }

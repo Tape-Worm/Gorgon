@@ -123,6 +123,7 @@
     <Compile Include="UI\Controls\_Interfaces\IContentFileExplorerSearchEntry.cs" />
     <Compile Include="UI\DarkFormsRenderer.cs" />
     <Compile Include="UI\ProgressPanelDisplay.cs" />
+    <Compile Include="UI\ViewModels\EditorContext.cs" />
     <Compile Include="UI\ViewModels\EditorViewModelBase.cs" />
     <Compile Include="UI\ViewModels\ContentViewModelInjection.cs" />
     <Compile Include="UI\ViewModels\ContentEditorViewModelBase.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="UI\ViewModels\HostedPanelViewModelParameters.cs" />
     <Compile Include="UI\ViewModels\SettingsCategoryViewModelParameters.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IContentViewModelInjection.cs" />
+    <Compile Include="UI\ViewModels\_Interfaces\IEditorContext.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IVisualEditorContent.cs" />
     <Compile Include="UI\Views\ContentBaseControl.cs">
       <SubType>UserControl</SubType>
@@ -145,7 +147,7 @@
       <DependentUpon>VisualContentBaseControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\WaitPanelDisplay.cs" />
-    <Compile Include="UI\_Interfaces\IEditorContent.cs" />
+    <Compile Include="UI\ViewModels\_Interfaces\IEditorContent.cs" />
     <Compile Include="UI\Forms\FormName.cs">
       <SubType>Form</SubType>
     </Compile>

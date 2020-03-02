@@ -183,6 +183,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cancel_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("cancel_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap center_16x16 {
             get {
                 object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
@@ -216,6 +226,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap codec_48x48 {
             get {
                 object obj = ResourceManager.GetObject("codec_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap confirm_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("confirm_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap confirm_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("confirm_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -457,6 +487,24 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error applying effects to the image..
+        /// </summary>
+        internal static string GORIMG_ERR_APPLYING_EFFECTS {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_APPLYING_EFFECTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error applying blur to the image..
+        /// </summary>
+        internal static string GORIMG_ERR_BLUR {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_BLUR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error canceling the operation..
         /// </summary>
         internal static string GORIMG_ERR_CANCEL_OP {
@@ -630,6 +678,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_FORMAT_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error removing the color information from  the image..
+        /// </summary>
+        internal static string GORIMG_ERR_GRAYSCALE {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_GRAYSCALE", resourceCulture);
             }
         }
         
@@ -1082,6 +1139,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Apply effects to image.
+        /// </summary>
+        internal static string GORIMG_UNDO_DESC_EFFECTS {
+            get {
+                return ResourceManager.GetString("GORIMG_UNDO_DESC_EFFECTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Conversion to pixel format [{0}].
         /// </summary>
         internal static string GORIMG_UNDO_DESC_FORMAT_CONVERT {
@@ -1132,6 +1198,26 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_UNDO_DESC_SET_ALPHA {
             get {
                 return ResourceManager.GetString("GORIMG_UNDO_DESC_SET_ALPHA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap grayscale_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("grayscale_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap grayscale_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("grayscale_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

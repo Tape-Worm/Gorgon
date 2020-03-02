@@ -337,7 +337,7 @@ namespace Gorgon.Renderers
         {
             if (_hPass != null)
             {
-                Graphics.TemporaryTargets.Return(_hPass);
+                Graphics.TemporaryTargets?.Return(_hPass);
             }
 
             if (_vPass == null)
@@ -345,7 +345,7 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            Graphics.TemporaryTargets.Return(_vPass);
+            Graphics.TemporaryTargets?.Return(_vPass);
         }
 
         /// <summary>
@@ -412,10 +412,10 @@ namespace Gorgon.Renderers
             switch (passIndex)
             {
                 case 0:
-                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);;
                     break;
                 case 1:
-                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColor.White, _hPassView, new DX.RectangleF(0, 0, 1, 1));
+                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColor.White, _hPassView, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
                     break;
             }
         }

@@ -20,27 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 7, 2020 11:52:08 PM
+// Created: February 22, 2020 5:41:00 PM
 // 
 #endregion
 
-using System;
+using Gorgon.Editor.UI;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.ImageEditor.Fx
 {
     /// <summary>
-    /// Event arguments for the <see cref="IContentRenderer.ZoomScaleChanged"/> event.
+    /// The view model for the fx blur settings panel.
     /// </summary>
-    public class ZoomScaleEventArgs
-        : EventArgs
+    internal interface IFxBlur
+        : IHostedPanelViewModel
     {
         /// <summary>
-        /// Property to return zoom scale value.
+        /// Property to set or return the amount of blur to apply.
         /// </summary>
-        public float ZoomScale
+        int BlurAmount
         {
             get;
-            internal set;
+            set;
         }
     }
 }

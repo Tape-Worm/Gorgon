@@ -30,13 +30,13 @@ using DX = SharpDX;
 namespace Gorgon.Editor.Rendering
 {
     /// <summary>
-    /// Event arguments for the <see cref="IContentRenderer.Offset"/> event.
+    /// Event arguments for the <see cref="IContentRenderer.OffsetChanged"/> event.
     /// </summary>
     public class OffsetEventArgs
         : EventArgs
     {
         /// <summary>
-        /// Property to return zoom scale value.
+        /// Property to return the offset.
         /// </summary>
         /// <remarks>
         /// This value is in world space, relative to the <see cref="IContentRenderer.RenderRegion"/>.

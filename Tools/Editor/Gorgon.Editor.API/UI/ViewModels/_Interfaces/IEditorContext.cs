@@ -20,27 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 7, 2020 11:52:08 PM
+// Created: February 23, 2020 3:05:23 PM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Core;
 
-namespace Gorgon.Editor.Rendering
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// Event arguments for the <see cref="IContentRenderer.ZoomScaleChanged"/> event.
+    /// A view model for setting the context for an editor operation.
     /// </summary>
-    public class ZoomScaleEventArgs
-        : EventArgs
+    public interface IEditorContext
+        : IViewModel
     {
         /// <summary>
-        /// Property to return zoom scale value.
+        /// Property to return the context name.
         /// </summary>
-        public float ZoomScale
+        /// <remarks>
+        /// This value is used as a unique ID for the context.
+        /// </remarks>
+        string Name
         {
             get;
-            internal set;
         }
     }
 }

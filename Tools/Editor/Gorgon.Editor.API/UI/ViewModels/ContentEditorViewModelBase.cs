@@ -77,7 +77,7 @@ namespace Gorgon.Editor.UI
         private IEditorAsyncCommand<SaveReason> _saveContentCommand;
 
         // The context for commands from the content.
-        private string _commandContext = string.Empty;
+        private IEditorContext _commandContext;
 
         // The clipboard interface for the view model.
         private IClipboardHandler _clipboardHandler;
@@ -242,7 +242,7 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>
-        /// Property to set or return the current context name for commands from this content.
+        /// Property to set or return the current context for commands from this content.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -253,18 +253,18 @@ namespace Gorgon.Editor.UI
         /// If the UI does not support contexts, then this property would be ignored.
         /// </para>
         /// </remarks>
-        public string CommandContext
+        public IEditorContext CommandContext
         {
             get => _commandContext;
             set
             {
-                if (string.Equals(_commandContext, value ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+                if (_commandContext == value)
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _commandContext = value ?? string.Empty;
+                _commandContext = value;
                 OnPropertyChanged();
             }
         }

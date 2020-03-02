@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -108,6 +109,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the context for the image effects.
+        /// </summary>
+        public IFxContext FxContext
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the format support information for the current video card.
         /// </summary>
         public IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> FormatSupport
@@ -174,6 +183,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="dimensionSettings">The image dimensions settings view model.</param>
         /// <param name="mipMapSettings">The mip map generation settings view model.</param>
         /// <param name="alphaSettings">The set alpha value settings view model.</param>
+        /// <param name="fxContext">The context for the image effects.</param>
         /// <param name="imageData">The image data and related information.</param>
         /// <param name="videoAdapter">Information about the current video adapter.</param>
         /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
@@ -187,6 +197,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             IDimensionSettings dimensionSettings,
             IMipMapSettings mipMapSettings,
             IAlphaSettings alphaSettings,
+            IFxContext fxContext,
             (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,
             IGorgonVideoAdapterInfo videoAdapter,
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
@@ -206,6 +217,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             DimensionSettings = dimensionSettings ?? throw new ArgumentNullException(nameof(dimensionSettings));
             MipMapSettings = mipMapSettings ?? throw new ArgumentNullException(nameof(mipMapSettings));
             AlphaSettings = alphaSettings ?? throw new ArgumentNullException(nameof(alphaSettings));
+            FxContext = fxContext ?? throw new ArgumentNullException(nameof(fxContext));
             VideoAdapterInfo = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
             OriginalFormat = imageData.originalFormat;
         }

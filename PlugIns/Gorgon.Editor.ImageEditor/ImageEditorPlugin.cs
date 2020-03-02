@@ -49,6 +49,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Math;
 using DX = SharpDX;
+using Gorgon.Editor.ImageEditor.Fx;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -73,6 +74,9 @@ namespace Gorgon.Editor.ImageEditor
 
         // No thumbnail image.
         private IGorgonImage _noThumbnail;
+
+        // The effects services for the image editor.
+        private FxService _fxServices;
 
         /// <summary>
         /// The name of the settings file.
@@ -316,6 +320,7 @@ namespace Gorgon.Editor.ImageEditor
                 AlphaValue = _settings.LastAlphaValue,
                 UpdateRange = _settings.LastAlphaRange
             };
+            var blurSettings = new FxBlur();
 
             var injector = new HostedPanelViewModelParameters(HostContentServices);
             
@@ -323,6 +328,7 @@ namespace Gorgon.Editor.ImageEditor
             dimensionSettings.Initialize(new DimensionSettingsParameters(HostContentServices));
             mipSettings.Initialize(injector);
             sourceImagePicker.Initialize(new SourceImagePickerParameters(HostContentServices));            
+            blurSettings.Initialize(injector);
 
             imagePicker.Initialize(new ImagePickerParameters(fileManager, file, HostContentServices)
             {
@@ -333,6 +339,9 @@ namespace Gorgon.Editor.ImageEditor
             });
 
             var content = new ImageContent();
+            var fxContext = new FxContext();
+
+            fxContext.Initialize(new FxContextParameters(content, _fxServices, blurSettings, HostContentServices));
             content.Initialize(new ImageContentParameters(fileManager,
                 file,
                 _settings,
@@ -341,6 +350,7 @@ namespace Gorgon.Editor.ImageEditor
                 dimensionSettings,
                 mipSettings,
                 alphaSettings,
+                fxContext,
                 imageData,
                 HostContentServices.GraphicsContext.Graphics.VideoAdapter,
                 HostContentServices.GraphicsContext.Graphics.FormatSupport,
@@ -352,6 +362,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to provide clean up for the plugin.</summary>
         protected override void OnShutdown()
         {
+            _fxServices?.Dispose();
             _noThumbnail?.Dispose();
 
             if ((_settings?.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
@@ -371,6 +382,8 @@ namespace Gorgon.Editor.ImageEditor
             ViewFactory.Register<IImageContent>(() => new ImageEditorView());
             (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);
 
+            _fxServices = new FxService(HostContentServices.GraphicsContext);
+            _fxServices.LoadResources();
 
             _noThumbnail = Resources.no_thumb_64x64.ToGorgonImage();
         }
@@ -505,7 +518,7 @@ namespace Gorgon.Editor.ImageEditor
                     return null;
                 }
 
-                contentFile.Metadata.Attributes[CommonEditorConstants.ThumbnailAttr] = Path.GetFileName(filePath);
+                contentFile.Metadata.Thumbnail = Path.GetFileName(filePath);
                 return thumbImage;
             }
             catch (Exception ex)

@@ -166,7 +166,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>
-        /// Property to set or return the current <see cref="InputLanguage"/> for the application.
+        /// Property to return the current <see cref="InputLanguage"/> for the application.
         /// </summary>
         /// <remarks>
         /// This is a pass through for the <see cref="Application.CurrentInputLanguage"/> property.

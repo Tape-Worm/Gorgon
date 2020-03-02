@@ -59,15 +59,18 @@ namespace Gorgon.Editor.ImageEditor
 
                 if (_contentRenderer != null)
                 {
-                    ContentRenderer.ZoomScale -= ContentRenderer_ZoomScale;
+                    ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
                 }
 
                 _contentRenderer = value;
 
                 if (_contentRenderer != null)
                 {
-                    ContentRenderer.ZoomScale += ContentRenderer_ZoomScale;
+                    ContentRenderer.ZoomScaleChanged += ContentRenderer_ZoomScale;
+                    _zoomLevel = _contentRenderer.ZoomLevel;
                 }
+
+                UpdateZoomMenu();
             }
         }
         #endregion
@@ -142,6 +145,19 @@ namespace Gorgon.Editor.ImageEditor
             ButtonZoom.TextLine1 = string.Format(Resources.GORIMG_TEXT_ZOOM_BUTTON, _zoomLevel.GetName());
         }
 
+        /// <summary>Handles the PropertyChanged event of the FxContext control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void FxContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IFxContext.EffectsUpdated):
+                    ValidateButtons();
+                    break;
+            }
+        }
+
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
@@ -171,6 +187,33 @@ namespace Gorgon.Editor.ImageEditor
         {
         }
 
+        /// <summary>Handles the Click event of the ButtonGrayScale control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonGrayScale_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.FxContext?.GrayScaleCommand == null) || (!DataContext.FxContext.GrayScaleCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.FxContext.GrayScaleCommand.Execute(null);
+            ValidateButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonGaussBlur control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        private void ButtonGaussBlur_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.FxContext?.ShowBlurCommand == null) || (!DataContext.FxContext.ShowBlurCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.FxContext.ShowBlurCommand.Execute(null);
+            ValidateButtons();
+        }
 
         /// <summary>Handles the Click event of the ButtonGenerateMipMaps control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -214,6 +257,20 @@ namespace Gorgon.Editor.ImageEditor
             DataContext.ShowImageDimensionsCommand.Execute(null);
         }
 
+        /// <summary>Handles the Click event of the ButtonFx control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFx_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.ShowFxCommand == null) || (!DataContext.ShowFxCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.ShowFxCommand.Execute(null);
+            ValidateButtons();
+        }
+
         /// <summary>Handles the CollectionChanged event of the Codecs control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [NotifyCollectionChangedEventArgs] instance containing the event data.</param>
@@ -249,14 +306,20 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Handles the Click event of the ButtonImport control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonImport_Click(object sender, EventArgs e)
+        private async void ButtonImport_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ImportFileCommand == null) || (!DataContext.ImportFileCommand.CanExecute(null)))
+            if ((DataContext?.ImportFileCommand == null) || (!DataContext.ImportFileCommand.CanExecute(0)))
             {
                 return;
             }
 
-            DataContext.ImportFileCommand.Execute(null);
+            float dpi;
+            using (var g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+            {
+                dpi = g.DpiX / 96.0f;
+            }
+
+            await DataContext.ImportFileCommand.ExecuteAsync(dpi);
             ValidateButtons();
         }
 
@@ -391,6 +454,10 @@ namespace Gorgon.Editor.ImageEditor
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
             ButtonPremultipliedAlpha.Enabled = (DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false);
             ButtonSetAlpha.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.ShowSetAlphaCommand?.CanExecute(null) ?? false);
+            ButtonFx.Enabled = DataContext.ShowFxCommand?.CanExecute(null) ?? false;
+            ButtonGaussBlur.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowBlurCommand?.CanExecute(null) ?? false);
+            ButtonGrayScale.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.GrayScaleCommand?.CanExecute(null) ?? false);
+            ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ApplyCommand?.CanExecute(null) ?? false);
 
             if (DataContext.ChangeImageTypeCommand == null)
             {
@@ -522,6 +589,7 @@ namespace Gorgon.Editor.ImageEditor
                 DataContext.Codecs.CollectionChanged -= Codecs_CollectionChanged;
             }
 
+            DataContext.FxContext.PropertyChanged -= FxContext_PropertyChanged;
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
@@ -539,6 +607,32 @@ namespace Gorgon.Editor.ImageEditor
             ItemZoomToWindow.Checked = true;
         }
 
+
+        /// <summary>Handles the Click event of the ButtonFxApply control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxApply_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.FxContext?.ApplyCommand == null) || (!DataContext.FxContext.ApplyCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.FxContext.ApplyCommand.Execute(null);
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxCancel control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxCancel_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.FxContext?.CancelCommand == null) || (!DataContext.FxContext.CancelCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.FxContext.CancelCommand.Execute(null);
+        }
 
         /// <summary>Handles the Click event of the ItemZoomToWindow control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -641,12 +735,13 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
             DataContext.PropertyChanging += DataContext_PropertyChanging;
+            DataContext.FxContext.PropertyChanged += FxContext_PropertyChanged;
 
             if (DataContext.Codecs != null)
             {
                 DataContext.Codecs.CollectionChanged += Codecs_CollectionChanged;
             }
-        }
+        }        
 
         /// <summary>
         /// Function to reset the zoom back to the default.

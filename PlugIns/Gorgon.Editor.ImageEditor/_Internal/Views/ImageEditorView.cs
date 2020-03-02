@@ -28,6 +28,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
@@ -82,12 +83,12 @@ namespace Gorgon.Editor.ImageEditor
             LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = DataContext.ArrayCount > 1;
             LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;
 
-            ButtonNextMip.Enabled = DataContext.CurrentMipLevel < DataContext.MipCount - 1;
-            ButtonPrevMip.Enabled = DataContext.CurrentMipLevel > 0;
-            ButtonNextArrayIndex.Enabled = DataContext.CurrentArrayIndex < DataContext.ArrayCount - 1;
-            ButtonPrevArrayIndex.Enabled = DataContext.CurrentArrayIndex > 0;
-            ButtonNextDepthSlice.Enabled = DataContext.CurrentDepthSlice < DataContext.DepthCount - 1;
-            ButtonPrevDepthSlice.Enabled = DataContext.CurrentDepthSlice > 0;
+            ButtonNextMip.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentMipLevel < DataContext.MipCount - 1);
+            ButtonPrevMip.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentMipLevel > 0);
+            ButtonNextArrayIndex.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentArrayIndex < DataContext.ArrayCount - 1);
+            ButtonPrevArrayIndex.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentArrayIndex > 0);
+            ButtonNextDepthSlice.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentDepthSlice < DataContext.DepthCount - 1);
+            ButtonPrevDepthSlice.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentDepthSlice > 0);
 
             StatusPanel.Visible = true;
         }
@@ -130,6 +131,7 @@ namespace Gorgon.Editor.ImageEditor
             DimensionSettings.SetDataContext(dataContext.DimensionSettings);
             GenMipMapSettings.SetDataContext(dataContext.MipMapSettings);
             SetAlpha.SetDataContext(dataContext.AlphaSettings);
+            FxBlurSettings.SetDataContext(dataContext.FxContext.BlurSettings);
 
             if (dataContext.ImageType == ImageType.Image3D)
             {
@@ -300,6 +302,11 @@ namespace Gorgon.Editor.ImageEditor
 
             if ((DataContext?.CopyToImageCommand == null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
             {
+                if (args.Cancel)
+                {
+                    return;
+                }
+
                 OnBubbleDragDrop(e);
                 return;
             }
@@ -320,13 +327,40 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            if ((DataContext?.CopyToImageCommand == null) || (!DataContext.CopyToImageCommand.CanExecute(new CopyToImageArgs(contentData.FilePaths, 1.0f))))
+            var args = new CopyToImageArgs(contentData.FilePaths, 1.0f);
+
+            if ((DataContext?.CopyToImageCommand == null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
             {
-                OnBubbleDragOver(e);
+                if (!args.Cancel)
+                {
+                    OnBubbleDragOver(e);
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.None;
+                }
                 return;
             }
 
             e.Effect = DragDropEffects.Move;
+        }
+
+        /// <summary>Function called when a property is changing on the data context.</summary>
+        /// <param name="propertyName">The name of the property that is updating.</param>
+        /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
+        protected override void OnPropertyChanging(string propertyName)
+        {
+            base.OnPropertyChanging(propertyName);
+
+            switch (propertyName)
+            {
+                case nameof(IImageContent.CommandContext):
+                    if (DataContext.CommandContext != null)
+                    {
+                        DataContext.CommandContext.OnUnload();
+                    }
+                    break;
+            }
         }
 
         /// <summary>Function called when a property is changed on the data context.</summary>
@@ -338,10 +372,15 @@ namespace Gorgon.Editor.ImageEditor
 
             switch (propertyName)
             {
+                case nameof(IImageContent.Width):
+                case nameof(IImageContent.Height):
+                    UpdateImageSizeDetails(DataContext);
+                    break;
                 case nameof(IImageContent.ArrayCount):
                     UpdateArrayDetails(DataContext);
                     break;
                 case nameof(IImageContent.DepthCount):
+                    UpdateImageSizeDetails(DataContext);
                     UpdateDepthSliceDetails(DataContext);
                     UpdateMipDetails(DataContext);
                     break;
@@ -349,39 +388,67 @@ namespace Gorgon.Editor.ImageEditor
                     UpdateMipDetails(DataContext);
                     break;
                 case nameof(IImageContent.CurrentArrayIndex):
-                    // Don't need to call update texture parameters here, we already use an index by default.
                     UpdateArrayDetails(DataContext);
                     break;
                 case nameof(IImageContent.CurrentDepthSlice):
-                    UpdateDepthSliceDetails(DataContext);
-                    //_textureViewer.UpdateTextureParameters(DataContext);
+                    UpdateDepthSliceDetails(DataContext);                    
                     break;
                 case nameof(IImageContent.CurrentMipLevel):
-                    UpdateMipDetails(DataContext);
-                    //_textureViewer.UpdateTextureParameters(DataContext);
+                    UpdateMipDetails(DataContext);                    
+                    break;
+                case nameof(IImageContent.CommandContext):
+                    if ((DataContext.CommandContext == null) || (!HasRenderer(DataContext.CommandContext.Name)))
+                    {
+                        if (!HasRenderer(DataContext.ImageType.ToString()))
+                        {
+                            break;
+                        }
+
+                        string rendererName = DataContext.ImageType.ToString();
+
+                        if ((Renderer == null) || (!string.Equals(Renderer.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            SwitchRenderer(DataContext.ImageType.ToString(), false);
+                        }
+                        break;
+                    }
+
+                    DataContext.CommandContext.OnLoad();
+                    SwitchRenderer(DataContext.CommandContext.Name, false);
+                    break;
+                case nameof(IImageContent.CurrentHostedPanel) when (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null):
+                    if (!HasRenderer(DataContext.ImageType.ToString()))
+                    {
+                        break;
+                    }
+
+                    SwitchRenderer(DataContext.ImageType.ToString(), false);
                     break;
                 case nameof(IImageContent.ImageType):
                     if (!HasRenderer(DataContext.ImageType.ToString()))
                     {
-                        return;
+                        break;
                     }
 
-                    SwitchRenderer(DataContext.ImageType.ToString());
+                    SwitchRenderer(DataContext.ImageType.ToString(), true);
                     break;
             }
 
             ValidateControls();
         }
 
-        /// <summary>
-        /// Function called when the renderer is switched.
-        /// </summary>
+        /// <summary>Function called when the renderer is switched.</summary>
         /// <param name="renderer">The current renderer.</param>
-        protected override void OnSwitchRenderer(IContentRenderer renderer)
+        /// <param name="resetZoom"><b>true</b> if the zoom should be reset, <b>false</b> if not.</param>
+        protected override void OnSwitchRenderer(IContentRenderer renderer, bool resetZoom)
         {
-            base.OnSwitchRenderer(renderer);
+            base.OnSwitchRenderer(renderer, resetZoom);
             _ribbonForm.ContentRenderer = renderer;
-            _ribbonForm.ResetZoom();
+
+            if (resetZoom)
+            {
+                _ribbonForm.ResetZoom();
+            }
         }
 
         /// <summary>Function called when the view should be reset by a <b>null</b> data context.</summary>
@@ -399,6 +466,7 @@ namespace Gorgon.Editor.ImageEditor
             DimensionSettings.SetDataContext(null);
             GenMipMapSettings.SetDataContext(null);
             SetAlpha.SetDataContext(null);
+            FxBlurSettings.SetDataContext(null);
         }
 
         /// <summary>Function called to shut down the view.</summary>
@@ -425,15 +493,18 @@ namespace Gorgon.Editor.ImageEditor
             ITextureViewer tex2DViewer = new Texture2DViewer(context.Renderer2D, swapChain, DataContext);
             ITextureViewer tex3DViewer = new Texture3DViewer(context.Renderer2D, swapChain, DataContext);
             ITextureViewer texCubeViewer = new TextureCubeViewer(context.Renderer2D, swapChain, context.FontFactory, DataContext);
+            ITextureViewer texFxViewer = new TextureFxViewer(context.Renderer2D, swapChain, DataContext);
             tex2DViewer.CreateResources();
             tex3DViewer.CreateResources();
             texCubeViewer.CreateResources();
-
+            texFxViewer.CreateResources();
+            
             AddRenderer(tex2DViewer.Name, tex2DViewer);
             AddRenderer(tex3DViewer.Name, tex3DViewer);
             AddRenderer(texCubeViewer.Name, texCubeViewer);
+            AddRenderer(texFxViewer.Name, texFxViewer);
 
-            SwitchRenderer(DataContext.ImageType.ToString());
+            SwitchRenderer(DataContext.ImageType.ToString(), true);
         }
 
         /// <summary>Raises the <a href="http://msdn.microsoft.com/en-us/library/system.windows.forms.usercontrol.load.aspx" target="_blank">Load</a> event.</summary>
@@ -469,7 +540,12 @@ namespace Gorgon.Editor.ImageEditor
             InitializeFromDataContext(dataContext);
 
             DataContext = dataContext;
-        }
+
+            if (DataContext == null)
+            {
+                return;
+            }
+        }        
         #endregion
 
         #region Constructor/Finalizer.
@@ -487,6 +563,7 @@ namespace Gorgon.Editor.ImageEditor
             RegisterChildPanel(typeof(CropResizeSettings).FullName, CropResizeSettings);
             RegisterChildPanel(typeof(MipMapSettings).FullName, GenMipMapSettings);
             RegisterChildPanel(typeof(AlphaSettings).FullName, SetAlpha);
+            RegisterChildPanel(typeof(FxBlur).FullName, FxBlurSettings);
         }
         #endregion
     }

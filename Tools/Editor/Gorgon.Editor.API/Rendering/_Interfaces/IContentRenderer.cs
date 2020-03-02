@@ -48,14 +48,30 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// Event triggered when the camera is zoomed.
         /// </summary>
-        event EventHandler<ZoomScaleEventArgs> ZoomScale;
+        event EventHandler<ZoomScaleEventArgs> ZoomScaleChanged;
         /// <summary>
         /// Event triggered when the camera is moved.
         /// </summary>
-        event EventHandler<OffsetEventArgs> Offset;
+        event EventHandler<OffsetEventArgs> OffsetChanged;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the current zoom level.
+        /// </summary>
+        float Zoom
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the offset of the image.
+        /// </summary>
+        DX.Vector2 Offset
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the size of the view client area.
         /// </summary>
@@ -119,6 +135,16 @@ namespace Gorgon.Editor.Rendering
             set;
         }
 
+
+        /// <summary>
+        /// Property to set or return whether the renderer is enabled.
+        /// </summary>
+        bool IsEnabled
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the current zoom level.
         /// </summary>
@@ -134,6 +160,12 @@ namespace Gorgon.Editor.Rendering
         /// </summary>
         /// <param name="offset">The offset to apply to the view, in world space.</param>
         void SetOffset(DX.Vector2 offset);
+
+        /// <summary>
+        /// Function to set the zoom on the view.
+        /// </summary>
+        /// <param name="zoom">The zoom value to apply.</param>
+        void SetZoom(float zoom);
 
         /// <summary>
         /// Function to move the camera to the offset position, and, optionally, the zoom to the offset.

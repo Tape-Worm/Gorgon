@@ -66,8 +66,6 @@ namespace Gorgon.Editor.UI.Views
         #region Variables.
         // A list of renderers used to draw our content to the UI.
         private readonly Dictionary<string, IContentRenderer> _renderers = new Dictionary<string, IContentRenderer>(StringComparer.OrdinalIgnoreCase);
-        // The currently active content renderer.
-        private IContentRenderer _currentRenderer;
         // Flag for event transformation registration.
         private int _transformEventRegister;
         // The data context for the view.
@@ -75,6 +73,16 @@ namespace Gorgon.Editor.UI.Views
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the current renderer.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        protected IContentRenderer Renderer
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to set or return whether horizontal scrolling is supported.
         /// </summary>
@@ -92,10 +100,10 @@ namespace Gorgon.Editor.UI.Views
                 ScrollHorizontal.Visible = value;
                 ButtonCenter.Visible = ScrollHorizontal.Visible && ScrollVertical.Visible;
 
-                if (_currentRenderer != null)
+                if (Renderer != null)
                 {
-                    _currentRenderer.CanPanHorizontally = value;
-                    _currentRenderer.SetOffset(DX.Vector2.Zero);
+                    Renderer.CanPanHorizontally = value;
+                    Renderer.SetOffset(DX.Vector2.Zero);
                 }
             }
         }
@@ -116,10 +124,10 @@ namespace Gorgon.Editor.UI.Views
                 ScrollVertical.Visible = value;
                 ButtonCenter.Visible = ScrollHorizontal.Visible && ScrollVertical.Visible;
 
-                if (_currentRenderer != null)
+                if (Renderer != null)
                 {
-                    _currentRenderer.CanPanVertically = value;
-                    _currentRenderer.SetOffset(DX.Vector2.Zero);
+                    Renderer.CanPanVertically = value;
+                    Renderer.SetOffset(DX.Vector2.Zero);
                 }
             }
         }
@@ -145,7 +153,7 @@ namespace Gorgon.Editor.UI.Views
         private bool Idle()
         {
             OnBeforeRender();
-            _currentRenderer?.Render();
+            Renderer?.Render();
             OnAfterRender();
 
             return true;
@@ -181,12 +189,12 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonCenter_Click(object sender, EventArgs e)
         {
-            if (_currentRenderer == null)
+            if (Renderer == null)
             {
                 return;
             }
 
-            _currentRenderer.MoveTo(DX.Vector2.Zero, - 1);
+            Renderer.MoveTo(DX.Vector2.Zero, - 1);
         }
 
         /// <summary>Handles the ValueChanged event of the ScrollVertical control.</summary>
@@ -194,13 +202,13 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ScrollVertical_ValueChanged(object sender, EventArgs e)
         {
-            if (_currentRenderer == null)
+            if (Renderer == null)
             {
                 return;
             }
 
-            _currentRenderer.SetOffset(new DX.Vector2(ScrollHorizontal.Value, ScrollVertical.Value));
-            _currentRenderer.Render();
+            Renderer.SetOffset(new DX.Vector2(ScrollHorizontal.Value, ScrollVertical.Value));
+            Renderer.Render();
         }
 
         /// <summary>Handles the ValueChanged event of the ScrollHorizontal control.</summary>
@@ -208,13 +216,13 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ScrollHorizontal_ValueChanged(object sender, EventArgs e)
         {
-            if (_currentRenderer == null)
+            if (Renderer == null)
             {
                 return;
             }
 
-            _currentRenderer.SetOffset(new DX.Vector2(ScrollHorizontal.Value, ScrollVertical.Value));
-            _currentRenderer.Render();
+            Renderer.SetOffset(new DX.Vector2(ScrollHorizontal.Value, ScrollVertical.Value));
+            Renderer.Render();
         }
 
         /// <summary>Handles the ZoomScale event of the CurrentRenderer control.</summary>
@@ -229,7 +237,7 @@ namespace Gorgon.Editor.UI.Views
         {
             DisableScrollEvents();
             try
-            {
+            {                
                 ScrollHorizontal.Value = (int)e.Offset.X.Min(ScrollHorizontal.Maximum - 1).Max(ScrollHorizontal.Minimum);
                 ScrollVertical.Value = (int)e.Offset.Y.Min(ScrollVertical.Maximum - 1).Max(ScrollVertical.Minimum);
             }
@@ -248,15 +256,15 @@ namespace Gorgon.Editor.UI.Views
 
             try
             {
-                if ((_currentRenderer == null) || (RenderControl == null))
+                if ((Renderer == null) || (RenderControl == null))
                 {
                     ScrollVertical.Enabled = ScrollHorizontal.Enabled = false;
                     return;
                 }
 
-                if (_currentRenderer.CanPanHorizontally)
+                if (Renderer.CanPanHorizontally)
                 {
-                    int width = (int)(_currentRenderer.RenderRegion.Width * 0.5f);
+                    int width = (int)(Renderer.RenderRegion.Width * 0.5f);
 
                     ScrollHorizontal.Enabled = true;
                     ScrollHorizontal.LargeChange = (int)(width * 0.25f).Max(1);
@@ -269,13 +277,13 @@ namespace Gorgon.Editor.UI.Views
                     ScrollHorizontal.Enabled = false;
                 }
 
-                if (!_currentRenderer.CanPanVertically)
+                if (!Renderer.CanPanVertically)
                 {
                     ScrollVertical.Enabled = false;
                     return;
                 }
 
-                int height = (int)(_currentRenderer.RenderRegion.Height * 0.5f);
+                int height = (int)(Renderer.RenderRegion.Height * 0.5f);
 
                 ScrollVertical.Enabled = true;
                 ScrollVertical.LargeChange = (int)(height * 0.25f).Max(1);
@@ -309,7 +317,7 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void PanelRenderWindow_Resize(object sender, EventArgs e)
         {
-            if (_currentRenderer == null)
+            if (Renderer == null)
             {
                 return;
             }
@@ -356,7 +364,7 @@ namespace Gorgon.Editor.UI.Views
         {
             base.OnResize(e);
 
-            if (_currentRenderer == null)
+            if (Renderer == null)
             {
                 return;
             }
@@ -448,7 +456,8 @@ namespace Gorgon.Editor.UI.Views
         /// Function called when the renderer is switched.
         /// </summary>
         /// <param name="renderer">The current renderer.</param>
-        protected virtual void OnSwitchRenderer(IContentRenderer renderer)
+        /// <param name="resetZoom"><b>true</b> if the zoom should be reset, <b>false</b> if not.</param>
+        protected virtual void OnSwitchRenderer(IContentRenderer renderer, bool resetZoom)
         {
         
         }
@@ -516,6 +525,7 @@ namespace Gorgon.Editor.UI.Views
         /// Function to switch to another registered renderer.
         /// </summary>
         /// <param name="name">The name of the renderer to switch to.</param>
+        /// <param name="resetZoom"><b>true</b> to reset the zoom back to the default, <b>false</b> to leave as-is.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <exception cref="ArgumentException">Thrown if no renderer with the specified <paramref name="name"/> was found.</exception>
@@ -524,7 +534,7 @@ namespace Gorgon.Editor.UI.Views
         /// Developers will this method to switch between renderer types (if multiple renderers are used) to denote editor state. 
         /// </para>
         /// </remarks>
-        protected void SwitchRenderer(string name)
+        protected void SwitchRenderer(string name, bool resetZoom)
         {
             if (name == null)
             {
@@ -541,30 +551,42 @@ namespace Gorgon.Editor.UI.Views
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_CONTENT_RENDERER_NOT_FOUND, name), nameof(name));
             }
 
+            DX.Vector2? offset = null;
+            ZoomLevels zoomLevel = ZoomLevels.ToWindow;
+
             // Blow away any temporary resources registered to the renderer.
-            if (_currentRenderer != null)
+            if (Renderer != null)
             {
-                _currentRenderer.Offset -= CurrentRenderer_Offset;
-                _currentRenderer.ZoomScale -= CurrentRenderer_ZoomScale;
-                _currentRenderer.UnloadResources();
+                offset = Renderer.Offset;
+                zoomLevel = Renderer.ZoomLevel;
+                Renderer.IsEnabled = false;
+                Renderer.OffsetChanged -= CurrentRenderer_Offset;
+                Renderer.ZoomScaleChanged -= CurrentRenderer_ZoomScale;
+                Renderer.UnloadResources();
+                OnSwitchRenderer(null, false);
             }
-            _currentRenderer = null;
+            Renderer = null;
 
             // Ensure temporary resources for the new renderer are available.
             newRenderer.LoadResources();
-            _currentRenderer = newRenderer;
-            _currentRenderer.ZoomScale += CurrentRenderer_ZoomScale;
-            _currentRenderer.Offset += CurrentRenderer_Offset;
-
-            SetupScrollBars();
+            Renderer = newRenderer;
+            Renderer.IsEnabled = true;
+            Renderer.ZoomScaleChanged += CurrentRenderer_ZoomScale;
+            Renderer.OffsetChanged += CurrentRenderer_Offset;
 
             // Reset the current renderer back to the default zoom level.
-            if (_currentRenderer.ZoomLevel != ZoomLevels.ToWindow)
+            SetupScrollBars();
+            if ((resetZoom) || (offset == null))
+            {                
+                Renderer.MoveTo(new DX.Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f), -1);
+            }
+            else
             {
-                _currentRenderer.MoveTo(new DX.Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f), -1);
+                Renderer.SetZoom(zoomLevel.GetScale());
+                Renderer.SetOffset(offset.Value);                
             }
 
-            OnSwitchRenderer(_currentRenderer);
+            OnSwitchRenderer(Renderer, resetZoom);
             
             // Reset the timing for the idle loop so we don't end up with stupid delta values because it takes time to switch.
             GorgonTiming.Reset();
@@ -601,13 +623,18 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            if (_currentRenderer == null)
+            if (Renderer == null)
             {
-                SwitchRenderer("null");
+                _renderers["null"].IsEnabled = true;
+                SwitchRenderer("null", true);
+            }
+            else
+            {
+                _renderers["null"].IsEnabled = false;
             }
 
-            _currentRenderer.CanPanHorizontally = ScrollHorizontal.Visible;
-            _currentRenderer.CanPanVertically = ScrollVertical.Visible;
+            Renderer.CanPanHorizontally = ScrollHorizontal.Visible;
+            Renderer.CanPanVertically = ScrollVertical.Visible;
         }
 
         /// <summary>

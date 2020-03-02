@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Editor.PlugIns;
 using Newtonsoft.Json;
 
@@ -85,6 +86,15 @@ namespace Gorgon.Editor.Metadata
             get;
             private set;
         } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Property to set or return the name of the thumbnail associated with the project item.
+        /// </summary>
+        public string Thumbnail
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Property to return the content plugin metadata associated with this project item.

@@ -238,7 +238,7 @@ namespace Gorgon.Editor.ViewModels
         public string ProjectTitle { get; private set; } = Resources.GOREDIT_NEW_PROJECT;
 
         /// <summary>Property to return the current command context.</summary>
-        public string CommandContext => CurrentContent?.CommandContext ?? string.Empty;
+        public string CommandContext => CurrentContent?.CommandContext?.Name ?? string.Empty;
 
         /// <summary>
         /// Property to return the command to execute when the application is closing.
@@ -433,7 +433,7 @@ namespace Gorgon.Editor.ViewModels
                 // Rebuild item metdata list.
                 foreach (IFile file in directory.Files)
                 {
-                    // TODO: Evaluate dependency linkages.
+#warning Evaluate dependencies.
                     metadata = new ProjectItemMetadata(file.Metadata);
                     metadata.Attributes[ProjectItemTypeAttrName] = ProjectItemType.File.ToString();
                     _projectData.ProjectItems[file.FullPath] = metadata;

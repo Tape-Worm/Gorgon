@@ -128,6 +128,7 @@
             // PanelBody
             // 
             this.PanelBody.AutoSize = true;
+            this.PanelBody.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.PanelBody.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelBody.Location = new System.Drawing.Point(0, 21);
             this.PanelBody.Name = "PanelBody";

@@ -25,6 +25,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -32,6 +33,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     /// Arguments for the <see cref="IImageContent.CopyToImage"/> command.
     /// </summary>
     internal class CopyToImageArgs
+        : CancelEventArgs
     {
         /// <summary>
         /// Property to return the paths to the files being copied into the image.
@@ -49,7 +51,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ViewModels.CopyToImageArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="CopyToImageArgs"/> class.</summary>
         /// <param name="filePaths">The file paths.</param>
         /// <param name="thumbnailDpi">The thumbnail dpi.</param>
         public CopyToImageArgs(IReadOnlyList<string> filePaths, float thumbnailDpi)

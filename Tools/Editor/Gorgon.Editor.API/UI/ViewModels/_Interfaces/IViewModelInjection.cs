@@ -26,7 +26,7 @@
 
 using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.UI.ViewModels
+namespace Gorgon.Editor.UI
 {
     /// <summary>
     /// This object is used to inject common host application services into view models as parameters.

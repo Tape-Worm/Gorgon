@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -40,7 +41,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     internal interface IImageContent
         : IVisualEditorContent, IUndoHandler
     {
-        #region Properties.
         /// <summary>
         /// Property to return the image data.
         /// </summary>
@@ -229,6 +229,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the view model for the blur effect settings.
+        /// </summary>
+        IFxContext FxContext
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command to execute when changing the image type.
         /// </summary>
         IEditorCommand<ImageType> ChangeImageTypeCommand
@@ -239,7 +247,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Property to return the command used import an image file into the current image as an array index or depth slice.
         /// </summary>
-        IEditorCommand<object> ImportFileCommand
+        IEditorAsyncCommand<float> ImportFileCommand
         {
             get;
         }
@@ -269,6 +277,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the command used to show the FX items.
+        /// </summary>
+        IEditorCommand<object> ShowFxCommand
+        {
+            get;
+        }
+
+        /// <summary>
         /// Porperty to return the command used to edit the image in an external application.
         /// </summary>
         IEditorCommand<object> EditInAppCommand
@@ -291,6 +307,5 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             get;
         }
-        #endregion
     }
 }

@@ -108,6 +108,22 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// The arguments used to undo/redo effects applied to the image.
+        /// </summary>
+        private class EffectsUndoArgs
+        {
+            /// <summary>
+            /// The file used to store the undo data.
+            /// </summary>
+            public IGorgonVirtualFile UndoFile;
+
+            /// <summary>
+            /// The file used to store the redo data.
+            /// </summary>
+            public IGorgonVirtualFile RedoFile;
+        }
+
+        /// <summary>
         /// The arguments used to undo/redo an image import or dimension update.
         /// </summary>
         private class ImportDimensionUndoArgs
@@ -484,7 +500,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         public IAlphaSettings AlphaSettings
         {
             get => _alphaSettings;
-            set
+            private set
             {
                 if (_alphaSettings == value)
                 {
@@ -516,11 +532,20 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Property to return the context object for image effects.
+        /// </summary>
+        public IFxContext FxContext
+        {
+            get;
+            private set;
+        }
+
         /// <summary>Property to return the currently active panel.</summary>
         public IHostedPanelViewModel CurrentHostedPanel
         {
             get => _currentPanel;
-            private set
+            set
             {
                 if (_currentPanel == value)
                 {
@@ -553,7 +578,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>Property to import an image file into the current image as an array index or depth slice.</summary>        
-        public IEditorCommand<object> ImportFileCommand
+        public IEditorAsyncCommand<float> ImportFileCommand
         {
             get;
         }
@@ -576,6 +601,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Property to return the command used to show the set alpha settings.
         /// </summary>
         public IEditorCommand<object> ShowSetAlphaCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to show the FX items.
+        /// </summary>
+        public IEditorCommand<object> ShowFxCommand
         {
             get;
         }
@@ -795,8 +828,23 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Function to determine if an image file can be imported into the current image.
         /// </summary>
+        /// <param name="_">Not used.</param>
         /// <returns><b>true</b> if the image can be imported, <b>false</b> if not.</returns>
-        private bool CanImportFile() => (ImageData != null) && ((ImageType == ImageType.Image2D) || (ImageType == ImageType.ImageCube) || (ImageType == ImageType.Image3D));
+        private bool CanImportFile(float _) 
+        {
+            if ((ImageData == null) || (CurrentHostedPanel != null) || (CommandContext != null))
+            {
+                return false;
+            }
+
+            IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
+
+            return selectedFiles.Select(file => ContentFileManager.GetFile(file))
+                        .Where(file => file != null)
+                        .Any(file => (file.Metadata.ContentMetadata != null)
+                                    && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
+                                    && (string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
+        }
 
         /// <summary>
         /// Function to confirm the overwrite of data in the image.
@@ -818,29 +866,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
 
             return HostServices.MessageDisplay.ShowConfirmation(confirmMessage);
-        }
-
-        /// <summary>
-        /// Function to convert the imported image pixel data to the same format as our image.
-        /// </summary>
-        /// <param name="imageData">The imported image data.</param>
-        /// <param name="originalFormat">The original, actual, format of the source image file.</param>
-        /// <returns><b>true</b> if image was converted successfully, or <b>false</b> if the image could not be converted.</returns>
-        private bool ConvertImportFilePixelFormat(IGorgonImage imageData, BufferFormat originalFormat)
-        {
-            // Convert to our target image format before doing anything.
-            if (ImageData.Format != imageData.Format)
-            {
-                if (!imageData.CanConvertToFormat(ImageData.Format))
-                {
-                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GORIMG_ERR_CANNOT_CONVERT, originalFormat, CurrentPixelFormat));
-                    return false;
-                }
-
-                imageData.ConvertToFormat(ImageData.Format);
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -884,58 +909,22 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Function to import an image file into the current array index/depth slice.
         /// </summary>
-        private void DoImportFile()
+        /// <param name="dpi">The DPI for the display.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoImportFileAsync(float dpi)
         {
-            IGorgonImage importImage = null;
-            IGorgonVirtualFile tempFile = null;
-            BufferFormat originalFormat;
-            FileInfo sourceFile;
+            IReadOnlyList<string> selectedFiles = null;
 
-#warning FIX THIS - Not importing from explorer now. Change this to the same implementation as the drag/drop.
             try
             {
-                if (ConfirmImageDataOverwrite() == MessageResponse.No)
-                {
-                    return;
-                }
-
-                HostServices.BusyService.SetBusy();
-                (sourceFile, importImage, tempFile, originalFormat) = _imageIO.ImportImage();
-
-                if ((sourceFile == null) || (importImage == null) || (tempFile == null) || (originalFormat == BufferFormat.Unknown))
-                {
-                    return;
-                }
-
-
-                if (!ConvertImportFilePixelFormat(importImage, originalFormat))
-                {
-                    return;
-                }
-                HostServices.BusyService.SetIdle();
-
-                CropOrResizeSettings.ImportFileDirectory = sourceFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
-                if (CheckForCropResize(importImage, sourceFile.Name))
-                {
-                    return;
-                }
-
-                ImportImageData(sourceFile.Name, importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
-                _settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
+                selectedFiles = ContentFileManager.GetSelectedFiles();
             }
             catch (Exception ex)
             {
                 HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
             }
-            finally
-            {
-                if (tempFile != null)
-                {
-                    _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
-                }
-                importImage?.Dispose();
-                HostServices.BusyService.SetIdle();
-            }
+
+            await DoCopyToImageAsync(new CopyToImageArgs(selectedFiles, dpi));
         }
 
         /// <summary>
@@ -1133,6 +1122,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     continue;
                 }
 
+                if ((!formatInfo.IsCompressed) && (!supportInfo.IsRenderTargetFormat))
+                {
+                    continue;
+                }
+
                 result.Add(format);
             }
 
@@ -1260,14 +1254,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     }
                     else if (!_imageIO.CanHandleBlockCompression)
                     {
-
                         string message = string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format);
                         HostServices.MessageDisplay.ShowError(message);
                         return Task.FromException(new InvalidCastException(message));
                     }
 
                     undoFile = CreateUndoCacheFile();
+                    NotifyPropertyChanging(nameof(ImageData));
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, format);
+                    NotifyPropertyChanged(nameof(ImageData));
 
                     if (redoArgs == null)
                     {
@@ -2158,8 +2153,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private bool CanCopyToImage(CopyToImageArgs args)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if ((args?.ContentFilePaths == null) || (args.ContentFilePaths.Count == 0) || (CurrentHostedPanel != null))
+            if ((args?.ContentFilePaths == null) || (args.ContentFilePaths.Count == 0) || (CurrentHostedPanel != null) || (CommandContext == FxContext))
             {
+                args.Cancel = true;
                 return false;
             }
 #pragma warning restore IDE0046 // Convert to conditional expression
@@ -2709,6 +2705,179 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Function to determine if the FX options can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if the fx options can be shown, <b>false</b> if not.</returns>
+        private bool CanShowFx() => (CurrentHostedPanel == null) && (CommandContext == null);
+
+        /// <summary>
+        /// Function to show the FX options.
+        /// </summary>
+        private void DoShowFx()
+        {
+            if ((FxContext.SetImageCommand != null) || (!FxContext.SetImageCommand.CanExecute(ImageData)))
+            {
+                FxContext.SetImageCommand.Execute(ImageData);
+            }
+            else
+            {
+                return;
+            }
+
+            try
+            {
+                CommandContext = FxContext;               
+            }
+            catch (Exception ex)
+            {
+                HostServices.Log.Print("[Error] Error showing fx options.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Function to determine if the effects can be applied to the main image.
+        /// </summary>
+        /// <returns><b>true</b> if the effects can be applied, <b>false</b> if not.</returns>
+        private bool CanApplyFx() => (FxContext.EffectsUpdated) && (CurrentHostedPanel == null);
+
+        /// <summary>
+        /// Function to apply the effects to the target image.
+        /// </summary>
+        private void DoApplyFx()
+        {
+            EffectsUndoArgs effectsUndoArgs = null;
+
+            Task UndoAction(EffectsUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                Stream inStream = null;
+
+                HostServices.BusyService.SetBusy();
+
+                try
+                {
+                    if (undoArgs.UndoFile == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    inStream = undoArgs.UndoFile.OpenStream();
+                    (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
+                    ImageData.Dispose();
+
+                    NotifyPropertyChanging(nameof(ImageData));
+                    ImageData = image;
+                    NotifyImageUpdated(nameof(ImageData));
+
+                    inStream.Dispose();
+
+                    // This file will be re-created on redo.
+                    DeleteUndoCacheFile(undoArgs.UndoFile);
+                    undoArgs.UndoFile = null;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_APPLYING_EFFECTS);
+                }
+                finally
+                {
+                    inStream?.Dispose();
+                    HostServices.BusyService.SetIdle();
+                }
+
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(EffectsUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                IGorgonVirtualFile undoFile = null;
+                IGorgonVirtualFile redoFile = null;
+                Stream redoFileStream = null;
+                IGorgonImage alteredImage = null;
+
+                try
+                {
+                    HostServices.BusyService.SetBusy();
+
+                    undoFile = CreateUndoCacheFile();
+                    NotifyPropertyChanging(nameof(ImageData));
+
+                    if (redoArgs?.RedoFile != null)
+                    {
+                        // Just reuse the image data in the redo cache item.                        
+                        redoFileStream = redoArgs.RedoFile.OpenStream();
+                        (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
+                        redoFileStream.Dispose();
+
+                        ImageData.Dispose();
+                        ImageData = redoImage;
+
+                        DeleteUndoCacheFile(redoArgs.RedoFile);
+                    }
+                    else
+                    {
+                        int arrayDepth = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;                        
+                        FxContext.FxService.EffectImage.Buffers[0].CopyTo(ImageData.Buffers[CurrentMipLevel, arrayDepth]);
+                        // We are done with the data for now, so we can deallocate it.
+                        FxContext.FxService.SetImage(null, 0, 0);
+                    }
+
+                    NotifyPropertyChanged(nameof(ImageData));
+
+                    // Save the updated data to the working file.
+                    _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
+                    redoFile = CreateUndoCacheFile();
+
+                    if (redoArgs == null)
+                    {
+                        redoArgs = effectsUndoArgs = new EffectsUndoArgs();
+                    }
+
+                    redoArgs.RedoFile = redoFile;
+                    redoArgs.UndoFile = undoFile;
+
+                    ContentState = ContentState.Modified;
+                    CommandContext = null;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_APPLYING_EFFECTS);
+                    if (undoFile != null)
+                    {
+                        DeleteUndoCacheFile(undoFile);
+                    }
+
+                    if (redoFile != null)
+                    {
+                        redoFileStream?.Dispose();
+                        DeleteUndoCacheFile(redoFile);
+                    }
+
+                    effectsUndoArgs = null;
+                    return Task.FromException(ex);
+                }
+                finally
+                {
+                    alteredImage?.Dispose();
+                    HostServices.BusyService.SetIdle();
+                }
+
+                return Task.CompletedTask;
+            }
+
+            Task task = RedoAction(null, CancellationToken.None);
+
+            // If we had an error, do not record the undo state.
+            if (!task.IsFaulted)
+            {
+                _undoService.Record(Resources.GORIMG_UNDO_DESC_EFFECTS, UndoAction, RedoAction, effectsUndoArgs, effectsUndoArgs);
+                // Need to call this so the UI can register our updated undo stack.
+                NotifyPropertyChanged(nameof(UndoCommand));
+            }
+        }
+
         /// <summary>Function to determine the action to take when this content is closing.</summary>
         /// <returns>
         ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
@@ -2745,6 +2914,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _dimensionSettings = injectionParameters.DimensionSettings;
             _mipMapSettings = injectionParameters.MipMapSettings;
             _alphaSettings = injectionParameters.AlphaSettings;
+            FxContext = injectionParameters.FxContext;
             _settings = injectionParameters.Settings;
             _workingFile = injectionParameters.WorkingFile;
             ImageData = injectionParameters.Image;
@@ -2782,12 +2952,16 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 _settings.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
             }
+
+            FxContext.ApplyCommand = new EditorCommand<object>(DoApplyFx, CanApplyFx);
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
             ImageData?.Dispose();
+            FxContext.ApplyCommand = null;
+            FxContext?.OnUnload();
 
             try
             {
@@ -2830,13 +3004,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ConvertFormatCommand = new EditorCommand<BufferFormat>(DoConvertFormat, CanConvertFormat);
             SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveImageTask, CanSaveImage);
             ChangeImageTypeCommand = new EditorCommand<ImageType>(DoChangeImageType, CanChangeImageType);
-            ImportFileCommand = new EditorCommand<object>(DoImportFile, CanImportFile);
+            ImportFileCommand = new EditorAsyncCommand<float>(DoImportFileAsync, CanImportFile);
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
             EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);
             PremultipliedAlphaCommand = new EditorCommand<bool>(DoSetPremultipliedAlpha, CanSetPremultipliedAlpha);
             ShowSetAlphaCommand = new EditorCommand<object>(DoShowSetAlphaValue, CanShowSetAlphaValue);
             CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);
+            ShowFxCommand = new EditorCommand<object>(() => DoShowFx(), CanShowFx);            
         }
         #endregion
     }
