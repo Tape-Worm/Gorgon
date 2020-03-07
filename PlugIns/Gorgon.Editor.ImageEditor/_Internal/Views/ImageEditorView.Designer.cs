@@ -54,12 +54,14 @@
             this.ButtonPrevMip = new System.Windows.Forms.Button();
             this.ButtonNextMip = new System.Windows.Forms.Button();
             this.LabelMipLevel = new System.Windows.Forms.Label();
+            this.FxEmbossSettings = new Gorgon.Editor.ImageEditor.FxEmbossSettings();
+            this.FxSharpenSettings = new Gorgon.Editor.ImageEditor.FxSharpenSettings();
+            this.FxBlurSettings = new Gorgon.Editor.ImageEditor.FxBlurSettings();
+            this.CropResizeSettings = new Gorgon.Editor.ImageEditor.ImageResizeSettings();
+            this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
             this.SetAlpha = new Gorgon.Editor.ImageEditor.SetAlphaSettings();
             this.GenMipMapSettings = new Gorgon.Editor.ImageEditor.GenMipMapSettings();
-            this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
-            this.CropResizeSettings = new Gorgon.Editor.ImageEditor.ImageResizeSettings();
-            this.FxBlurSettings = new Gorgon.Editor.ImageEditor.FxBlurSettings();
-            this.FxSharpenSettings = new Gorgon.Editor.ImageEditor.FxSharpenSettings();
+            this.FxEdgeSettings = new Gorgon.Editor.ImageEditor.FxEdgeSettings();
             this.StatusPanel.SuspendLayout();
             this.HostPanel.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
@@ -79,6 +81,8 @@
             // 
             // HostPanel
             // 
+            this.HostPanel.Controls.Add(this.FxEdgeSettings);
+            this.HostPanel.Controls.Add(this.FxEmbossSettings);
             this.HostPanel.Controls.Add(this.FxSharpenSettings);
             this.HostPanel.Controls.Add(this.FxBlurSettings);
             this.HostPanel.Controls.Add(this.CropResizeSettings);
@@ -338,6 +342,69 @@
             this.LabelMipLevel.Text = "Mip level:";
             this.LabelMipLevel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // FxEmbossSettings
+            // 
+            this.FxEmbossSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.FxEmbossSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.FxEmbossSettings.ForeColor = System.Drawing.Color.White;
+            this.FxEmbossSettings.Location = new System.Drawing.Point(0, 240);
+            this.FxEmbossSettings.MinimumSize = new System.Drawing.Size(300, 120);
+            this.FxEmbossSettings.Name = "FxEmbossSettings";
+            this.FxEmbossSettings.Size = new System.Drawing.Size(300, 120);
+            this.FxEmbossSettings.TabIndex = 10;
+            this.FxEmbossSettings.Text = "Emboss Settings";
+            // 
+            // FxSharpenSettings
+            // 
+            this.FxSharpenSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.FxSharpenSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.FxSharpenSettings.ForeColor = System.Drawing.Color.White;
+            this.FxSharpenSettings.Location = new System.Drawing.Point(0, 122);
+            this.FxSharpenSettings.MinimumSize = new System.Drawing.Size(300, 120);
+            this.FxSharpenSettings.Name = "FxSharpenSettings";
+            this.FxSharpenSettings.Size = new System.Drawing.Size(300, 120);
+            this.FxSharpenSettings.TabIndex = 9;
+            this.FxSharpenSettings.Text = "Sharpen Settings";
+            // 
+            // FxBlurSettings
+            // 
+            this.FxBlurSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.FxBlurSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.FxBlurSettings.ForeColor = System.Drawing.Color.White;
+            this.FxBlurSettings.Location = new System.Drawing.Point(0, 0);
+            this.FxBlurSettings.MinimumSize = new System.Drawing.Size(300, 120);
+            this.FxBlurSettings.Name = "FxBlurSettings";
+            this.FxBlurSettings.Size = new System.Drawing.Size(300, 120);
+            this.FxBlurSettings.TabIndex = 8;
+            this.FxBlurSettings.Text = "Gaussian Blur Settings";
+            this.FxBlurSettings.Visible = false;
+            // 
+            // CropResizeSettings
+            // 
+            this.CropResizeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.CropResizeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.CropResizeSettings.ForeColor = System.Drawing.Color.White;
+            this.CropResizeSettings.Location = new System.Drawing.Point(0, 0);
+            this.CropResizeSettings.MinimumSize = new System.Drawing.Size(300, 400);
+            this.CropResizeSettings.Name = "CropResizeSettings";
+            this.CropResizeSettings.Size = new System.Drawing.Size(300, 400);
+            this.CropResizeSettings.TabIndex = 8;
+            this.CropResizeSettings.Text = "Resize Image";
+            this.CropResizeSettings.Visible = false;
+            // 
+            // DimensionSettings
+            // 
+            this.DimensionSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.DimensionSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.DimensionSettings.ForeColor = System.Drawing.Color.White;
+            this.DimensionSettings.Location = new System.Drawing.Point(0, 0);
+            this.DimensionSettings.MinimumSize = new System.Drawing.Size(300, 345);
+            this.DimensionSettings.Name = "DimensionSettings";
+            this.DimensionSettings.Size = new System.Drawing.Size(300, 345);
+            this.DimensionSettings.TabIndex = 8;
+            this.DimensionSettings.Text = "Image Dimensions";
+            this.DimensionSettings.Visible = false;
+            // 
             // SetAlpha
             // 
             this.SetAlpha.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
@@ -364,56 +431,16 @@
             this.GenMipMapSettings.Text = "Generate Mip Maps";
             this.GenMipMapSettings.Visible = false;
             // 
-            // DimensionSettings
+            // FxEdgeSettings
             // 
-            this.DimensionSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.DimensionSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.DimensionSettings.ForeColor = System.Drawing.Color.White;
-            this.DimensionSettings.Location = new System.Drawing.Point(0, 0);
-            this.DimensionSettings.MinimumSize = new System.Drawing.Size(300, 345);
-            this.DimensionSettings.Name = "DimensionSettings";
-            this.DimensionSettings.Size = new System.Drawing.Size(300, 345);
-            this.DimensionSettings.TabIndex = 8;
-            this.DimensionSettings.Text = "Image Dimensions";
-            this.DimensionSettings.Visible = false;
-            // 
-            // CropResizeSettings
-            // 
-            this.CropResizeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.CropResizeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.CropResizeSettings.ForeColor = System.Drawing.Color.White;
-            this.CropResizeSettings.Location = new System.Drawing.Point(0, 0);
-            this.CropResizeSettings.MinimumSize = new System.Drawing.Size(300, 400);
-            this.CropResizeSettings.Name = "CropResizeSettings";
-            this.CropResizeSettings.Size = new System.Drawing.Size(300, 400);
-            this.CropResizeSettings.TabIndex = 8;
-            this.CropResizeSettings.Text = "Resize Image";
-            this.CropResizeSettings.Visible = false;
-            // 
-            // FxBlurSettings
-            // 
-            this.FxBlurSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.FxBlurSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.FxBlurSettings.ForeColor = System.Drawing.Color.White;
-            this.FxBlurSettings.Location = new System.Drawing.Point(0, 0);
-            this.FxBlurSettings.MinimumSize = new System.Drawing.Size(300, 120);
-            this.FxBlurSettings.Name = "FxBlurSettings";
-            this.FxBlurSettings.Size = new System.Drawing.Size(300, 120);
-            this.FxBlurSettings.TabIndex = 8;
-            this.FxBlurSettings.Text = "Gaussian Blur Settings";
-            this.FxBlurSettings.Visible = false;
-            // 
-            // FxSharpenSettings
-            // 
-            this.FxSharpenSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.FxSharpenSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.FxSharpenSettings.ForeColor = System.Drawing.Color.White;
-            this.FxSharpenSettings.Location = new System.Drawing.Point(0, 122);
-            this.FxSharpenSettings.MinimumSize = new System.Drawing.Size(300, 120);
-            this.FxSharpenSettings.Name = "FxSharpenSettings";
-            this.FxSharpenSettings.Size = new System.Drawing.Size(300, 120);
-            this.FxSharpenSettings.TabIndex = 9;
-            this.FxSharpenSettings.Text = "Sharpen Settings";
+            this.FxEdgeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.FxEdgeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.FxEdgeSettings.ForeColor = System.Drawing.Color.White;
+            this.FxEdgeSettings.Location = new System.Drawing.Point(0, 407);
+            this.FxEdgeSettings.Name = "FxEdgeSettings";
+            this.FxEdgeSettings.Size = new System.Drawing.Size(300, 256);
+            this.FxEdgeSettings.TabIndex = 11;
+            this.FxEdgeSettings.Text = "Edge Detection Settings";
             // 
             // ImageEditorView
             // 
@@ -453,5 +480,7 @@
         private ImageResizeSettings CropResizeSettings;
         private FxBlurSettings FxBlurSettings;
         private FxSharpenSettings FxSharpenSettings;
+        private FxEmbossSettings FxEmbossSettings;
+        private FxEdgeSettings FxEdgeSettings;
     }
 }

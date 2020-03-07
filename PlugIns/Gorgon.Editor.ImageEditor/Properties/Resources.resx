@@ -491,9 +491,6 @@ Please try again.</value>
   <data name="GORIMG_TEXT_UNDO" xml:space="preserve">
     <value>Undoing previous action...</value>
   </data>
-  <data name="GORIMG_ERR_GRAYSCALE" xml:space="preserve">
-    <value>There was an error removing the color information from  the image.</value>
-  </data>
   <data name="GORIMG_TEXT_ARRAY_INDEX_COUNT" xml:space="preserve">
     <value>Array index count:</value>
   </data>

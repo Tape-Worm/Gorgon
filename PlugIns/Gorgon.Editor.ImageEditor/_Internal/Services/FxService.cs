@@ -240,15 +240,16 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Function to generate a sharpen image preview.
         /// </summary>
-        /// <param name="sharpenAmount">The amount to sharpen.</param>
-        public void SharpenPreview(int sharpenAmount)
+        /// <param name="amount">The amount to sharpen or emboss.</param>
+        /// <param name="emboss"><b>true</b> to use the emboss effect, <b>false</b> to use sharpening.</param>
+        public void SharpenEmbossPreview(int amount, bool emboss)
         {
             // Reset to the original texture.
             GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
             // Render the blurring effect by ping-ponging between the render targets to generate the image.
-            _sharpEmboss.UseEmbossing = false;
-            _sharpEmboss.Amount = sharpenAmount / 100.0f;
+            _sharpEmboss.UseEmbossing = emboss;
+            _sharpEmboss.Amount = amount / 100.0f;
             _sharpEmboss.Render(_texture, _effectTargetPing);
             PreviewTexture = _effectTexturePing;
 

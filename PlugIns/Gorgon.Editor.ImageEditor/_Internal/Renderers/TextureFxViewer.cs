@@ -58,6 +58,8 @@ namespace Gorgon.Editor.ImageEditor
         private int _passes = 1;
         // The amount to sharpen.
         private int _sharpAmount = 50;
+        // The amount to sharpen.
+        private int _embossAmount = 50;
         // The service used to apply effects.
         private readonly IFxPreviewer _fxPreviewer;
         #endregion
@@ -70,6 +72,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             DataContext.FxContext.BlurSettings.PropertyChanged -= FxBlurSettings_PropertyChanged;
             DataContext.FxContext.SharpenSettings.PropertyChanged -= SharpenSettings_PropertyChanged;
+            DataContext.FxContext.EmbossSettings.PropertyChanged -= EmbossSettings_PropertyChanged;
             base.Dispose(disposing);
         }
 
@@ -82,6 +85,19 @@ namespace Gorgon.Editor.ImageEditor
             {
                 case nameof(IFxSharpen.Amount):
                     _sharpAmount = DataContext.FxContext.SharpenSettings.Amount;
+                    break;
+            }
+        }
+
+        /// <summary>Handles the PropertyChanged event of the EmbossSettings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void EmbossSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IFxEmboss.Amount):
+                    _embossAmount = DataContext.FxContext.EmbossSettings.Amount;
                     break;
             }
         }
@@ -110,7 +126,11 @@ namespace Gorgon.Editor.ImageEditor
             }
             else if (DataContext.CurrentHostedPanel == DataContext.FxContext.SharpenSettings)
             {
-                _fxPreviewer.SharpenPreview(_sharpAmount);
+                _fxPreviewer.SharpenEmbossPreview(_sharpAmount, false);
+            }
+            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.EmbossSettings)
+            {
+                _fxPreviewer.SharpenEmbossPreview(_embossAmount, true);
             }
         }
 
@@ -130,7 +150,11 @@ namespace Gorgon.Editor.ImageEditor
                     }
                     else if ((DataContext.CurrentHostedPanel == DataContext.FxContext.SharpenSettings))
                     {
-                        _fxPreviewer.SharpenPreview(_sharpAmount);
+                        _fxPreviewer.SharpenEmbossPreview(_sharpAmount, false);
+                    }
+                    else if ((DataContext.CurrentHostedPanel == DataContext.FxContext.EmbossSettings))
+                    {
+                        _fxPreviewer.SharpenEmbossPreview(_embossAmount, true);
                     }
                     break;
             }
@@ -188,6 +212,7 @@ namespace Gorgon.Editor.ImageEditor
             _fxPreviewer = (IFxPreviewer)dataContext.FxContext.FxService;
             dataContext.FxContext.BlurSettings.PropertyChanged += FxBlurSettings_PropertyChanged;
             dataContext.FxContext.SharpenSettings.PropertyChanged += SharpenSettings_PropertyChanged;
+            dataContext.FxContext.EmbossSettings.PropertyChanged += EmbossSettings_PropertyChanged;
             AllowArrayDepthChange = false;
             AllowMipChange = false;
         }        

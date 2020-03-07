@@ -74,6 +74,14 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Property to return the view model for the emboss effect settings.
+        /// </summary>
+        IFxEmboss EmbossSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command used to assign the working image
         /// </summary>
         IEditorCommand<IGorgonImage> SetImageCommand
@@ -126,6 +134,14 @@ namespace Gorgon.Editor.ImageEditor
         /// Property to return the command to show the sharpen effect settings.
         /// </summary>
         IEditorCommand<object> ShowSharpenCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to show the emboss effect settings.
+        /// </summary>
+        IEditorCommand<object> ShowEmbossCommand
         {
             get;
         }

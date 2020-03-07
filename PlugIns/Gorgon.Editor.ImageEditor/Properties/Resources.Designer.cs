@@ -753,15 +753,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error removing the color information from  the image..
-        /// </summary>
-        internal static string GORIMG_ERR_GRAYSCALE {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_GRAYSCALE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error while trying to retrieve the current image information.
         ///
         ///Please try again..

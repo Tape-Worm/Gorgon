@@ -234,7 +234,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxEmboss_Click(object sender, EventArgs e)
         {
+            if ((DataContext?.FxContext?.ShowEmbossCommand == null) || (!DataContext.FxContext.ShowEmbossCommand.CanExecute(null)))
+            {
+                return;
+            }
 
+            DataContext.FxContext.ShowEmbossCommand.Execute(null);
+            ValidateButtons();
         }
 
         /// <summary>Handles the Click event of the ButtonFxEdgeDetect control.</summary>
@@ -535,6 +541,7 @@ namespace Gorgon.Editor.ImageEditor
             ButtonGrayScale.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.GrayScaleCommand?.CanExecute(null) ?? false);
             ButtonFxInvert.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.InvertCommand?.CanExecute(null) ?? false);
             ButtonFxSharpen.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowSharpenCommand?.CanExecute(null) ?? false);
+            ButtonFxEmboss.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowEmbossCommand?.CanExecute(null) ?? false);
             ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ApplyCommand?.CanExecute(null) ?? false);
 
             if (DataContext.ChangeImageTypeCommand == null)

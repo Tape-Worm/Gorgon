@@ -20,55 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 1, 2020 8:36:39 PM
+// Created: March 6, 2020 1:30:22 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Graphics.Core;
+using System.Windows.Forms;
+using Gorgon.Editor.UI.Controls;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.ImageEditor.Fx;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// A previewer for specific effects that support previewing.
+    /// The settings for the edge filter effect.
     /// </summary>
-    internal interface IFxPreviewer
+    internal partial class FxEdgeSettings 
+        : EditorSubPanelCommon
     {
         #region Properties.
-        /// <summary>
-        /// Property to return the texture holding the unalterd image.
-        /// </summary>
-        GorgonTexture2DView OriginalTexture
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the texture that contains the blurred preview image.
-        /// </summary>
-        GorgonTexture2DView PreviewTexture
-        {
-            get;
-        }
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to generate a blurred image preview.
-        /// </summary>
-        /// <param name="blurAmount">The amount to blur.</param>
-        void GenerateBlurPreview(int blurAmount);
+        #endregion
 
-        /// <summary>
-        /// Function to generate a sharpen or emboss image preview.
-        /// </summary>
-        /// <param name="amount">The amount to sharpen or emboss.</param>
-        /// <param name="emboss"><b>true</b> to use the emboss effect, <b>false</b> to use sharpening.</param>
-        void SharpenEmbossPreview(int amount, bool emboss);
+        #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="FxEdgeSettings"/> class.</summary>
+        public FxEdgeSettings() => InitializeComponent();
         #endregion
     }
 }

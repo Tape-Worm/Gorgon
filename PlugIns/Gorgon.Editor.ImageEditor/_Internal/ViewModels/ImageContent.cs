@@ -1141,15 +1141,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <param name="format">The format to change to.</param>
         /// <returns><b>true</b> if the conversion can take place, <b>false</b> if not.</returns>
-        private bool CanConvertFormat(BufferFormat format)
-        {
-            if (format == BufferFormat.Unknown)
-            {
-                return (CurrentHostedPanel == null) && (CommandContext == null);
-            }
-
-            return format != ImageData.Format;
-        }
+        private bool CanConvertFormat(BufferFormat format) => format == BufferFormat.Unknown ? (CurrentHostedPanel == null) && (CommandContext == null) : format != ImageData.Format;
 
         /// <summary>
         /// Function to create an undo cache file from the working file.

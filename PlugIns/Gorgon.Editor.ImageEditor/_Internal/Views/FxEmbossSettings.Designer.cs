@@ -1,6 +1,6 @@
 ﻿namespace Gorgon.Editor.ImageEditor
 {
-    partial class FxSharpenSettings
+    partial class FxEmbossSettings
     {
         /// <summary> 
         /// Required designer variable.
@@ -34,29 +34,29 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.NumericSharpenAmount = new System.Windows.Forms.NumericUpDown();
+            this.NumericEmbossAmount = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.PanelBody.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericSharpenAmount)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericEmbossAmount)).BeginInit();
             this.SuspendLayout();
             // 
             // PanelBody
             // 
-            this.PanelBody.Controls.Add(this.NumericSharpenAmount);
+            this.PanelBody.Controls.Add(this.NumericEmbossAmount);
             this.PanelBody.Controls.Add(this.label1);
             this.PanelBody.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.PanelBody.Size = new System.Drawing.Size(265, 59);
             // 
-            // NumericSharpenAmount
+            // NumericEmbossAmount
             // 
-            this.NumericSharpenAmount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.NumericSharpenAmount.Dock = System.Windows.Forms.DockStyle.Top;
-            this.NumericSharpenAmount.Location = new System.Drawing.Point(3, 21);
-            this.NumericSharpenAmount.Name = "NumericSharpenAmount";
-            this.NumericSharpenAmount.Size = new System.Drawing.Size(259, 23);
-            this.NumericSharpenAmount.TabIndex = 3;
-            this.NumericSharpenAmount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.NumericSharpenAmount.ValueChanged += new System.EventHandler(this.NumericSharpenAmount_ValueChanged);
+            this.NumericEmbossAmount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.NumericEmbossAmount.Dock = System.Windows.Forms.DockStyle.Top;
+            this.NumericEmbossAmount.Location = new System.Drawing.Point(3, 21);
+            this.NumericEmbossAmount.Name = "NumericEmbossAmount";
+            this.NumericEmbossAmount.Size = new System.Drawing.Size(259, 23);
+            this.NumericEmbossAmount.TabIndex = 3;
+            this.NumericEmbossAmount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.NumericEmbossAmount.ValueChanged += new System.EventHandler(this.NumericEmbossAmount_ValueChanged);
             // 
             // label1
             // 
@@ -65,19 +65,19 @@
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
             this.label1.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.label1.Size = new System.Drawing.Size(98, 21);
+            this.label1.Size = new System.Drawing.Size(96, 21);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Sharpen amount:";
+            this.label1.Text = "Emboss amount:";
             // 
-            // FxSharpenSettings
+            // FxEmbossSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "FxSharpenSettings";
+            this.Name = "FxEmbossSettings";
             this.Size = new System.Drawing.Size(265, 116);
             this.PanelBody.ResumeLayout(false);
             this.PanelBody.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NumericSharpenAmount)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericEmbossAmount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -85,7 +85,7 @@
 
         #endregion
 
-        private System.Windows.Forms.NumericUpDown NumericSharpenAmount;
+        private System.Windows.Forms.NumericUpDown NumericEmbossAmount;
         private System.Windows.Forms.Label label1;
     }
 }

@@ -80,6 +80,15 @@ namespace Gorgon.Editor.ImageEditor.Fx
         }
 
         /// <summary>
+        /// Property to return the view model for the emboss effect settings.
+        /// </summary>
+        public IFxEmboss EmbossSettings
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Property to return whether effects have been applied to the image.
         /// </summary>
         public bool EffectsUpdated
@@ -158,6 +167,14 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Property to return the command to show the sharpen effect settings.
         /// </summary>
         public IEditorCommand<object> ShowSharpenCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to show the emboss effect settings.
+        /// </summary>
+        public IEditorCommand<object> ShowEmbossCommand
         {
             get;
         }
@@ -293,7 +310,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
             }
             catch (Exception ex)
             {
-                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_GRAYSCALE);
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_APPLYING_EFFECTS);
             }
         }
 
@@ -315,7 +332,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
             }
             catch (Exception ex)
             {
-                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_GRAYSCALE);
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_APPLYING_EFFECTS);
             }
         }
 
@@ -346,6 +363,33 @@ namespace Gorgon.Editor.ImageEditor.Fx
             }
         }
 
+        /// <summary>
+        /// Function to determine if the emboss settings can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if they can be shown, <b>false</b> if not.</returns>
+        private bool CanShowEmboss() => _imageContent.CurrentHostedPanel == null;
+
+        /// <summary>
+        /// Function to display the emboss effect settings.
+        /// </summary>
+        private void DoShowEmboss()
+        {
+            _hostServices.BusyService.SetBusy();
+
+            try
+            {
+                _imageContent.CurrentHostedPanel = EmbossSettings;
+            }
+            catch (Exception ex)
+            {
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                _hostServices.BusyService.SetIdle();
+            }
+        }
+
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
@@ -359,13 +403,16 @@ namespace Gorgon.Editor.ImageEditor.Fx
         protected override void OnInitialize(FxContextParameters injectionParameters)
         {
             _imageContent = injectionParameters.ImageContent;
-            BlurSettings = injectionParameters.BlurSettings;
-            SharpenSettings = injectionParameters.SharpenSettings;
             _hostServices = injectionParameters.HostServices;            
             _fxService = injectionParameters.FxService;
 
+            BlurSettings = injectionParameters.BlurSettings;
+            SharpenSettings = injectionParameters.SharpenSettings;
+            EmbossSettings = injectionParameters.EmbossSettings;
+
             BlurSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
             SharpenSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
+            EmbossSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
@@ -396,6 +443,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
             GrayScaleCommand = new EditorCommand<object>(DoGrayScale, CanGrayScale);
             InvertCommand = new EditorCommand<object>(DoInvert, CanInvert);
             ShowSharpenCommand = new EditorCommand<object>(DoShowSharpen, CanShowSharpen);
+            ShowEmbossCommand = new EditorCommand<object>(DoShowEmboss, CanShowEmboss);
         }
         #endregion
     }

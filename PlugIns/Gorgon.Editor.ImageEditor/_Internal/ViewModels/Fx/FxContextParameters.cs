@@ -61,6 +61,14 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the settings for the emboss effect.
+        /// </summary>
+        public IFxEmboss EmbossSettings
+        {
+            get;
+        }
         
         /// <summary>
         /// Property to return the service used to apply effects and generate previews for effects.
@@ -75,15 +83,17 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="fxService">The service used to apply effects and generate previews for effects.</param>
         /// <param name="blurSettings">The settings for the blur effect.</param>
         /// <param name="sharpenSettings">The settings for the sharpen effect.</param>
+        /// <param name="embossSettings">The settings for the emboss effect.</param>
         /// <param name="hostServices">The services from the host application.</param>
         /// <exception cref="ArgumentNullException">Thrown when the parameters are <b>null</b>.</exception>
-        public FxContextParameters(IImageContent imageContent, IFxService fxService, IFxBlur blurSettings, IFxSharpen sharpenSettings, IHostContentServices hostServices)
+        public FxContextParameters(IImageContent imageContent, IFxService fxService, IFxBlur blurSettings, IFxSharpen sharpenSettings, IFxEmboss embossSettings, IHostContentServices hostServices)
             : base(hostServices)
         {
             FxService = fxService ?? throw new ArgumentNullException(nameof(fxService));
             ImageContent = imageContent ?? throw new ArgumentNullException(nameof(imageContent));
             BlurSettings = blurSettings ?? throw new ArgumentNullException(nameof(blurSettings));
             SharpenSettings = sharpenSettings ?? throw new ArgumentNullException(nameof(sharpenSettings));
+            EmbossSettings = embossSettings ?? throw new ArgumentNullException(nameof(embossSettings));
         }
     }
 }

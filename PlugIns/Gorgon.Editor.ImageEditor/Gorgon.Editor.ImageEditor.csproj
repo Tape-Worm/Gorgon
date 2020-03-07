@@ -72,8 +72,10 @@
     <Compile Include="_Internal\ViewModels\Fx\FxBlur.cs" />
     <Compile Include="_Internal\ViewModels\Fx\FxContext.cs" />
     <Compile Include="_Internal\ViewModels\Fx\FxContextParameters.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\FxEmboss.cs" />
     <Compile Include="_Internal\ViewModels\Fx\FxSharpen.cs" />
     <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxContext.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxEmboss.cs" />
     <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxSharpen.cs" />
     <Compile Include="_Internal\ViewModels\ImagePickerImportData.cs" />
     <Compile Include="_Internal\Renderers\TextureCubeViewer.cs" />
@@ -117,6 +119,18 @@
     </Compile>
     <Compile Include="_Internal\Views\FxBlurSettings.Designer.cs">
       <DependentUpon>FxBlurSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\FxEdgeSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\FxEdgeSettings.Designer.cs">
+      <DependentUpon>FxEdgeSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\FxEmbossSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\FxEmbossSettings.Designer.cs">
+      <DependentUpon>FxEmbossSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\Views\FxSharpenSettings.cs">
       <SubType>UserControl</SubType>
@@ -286,6 +300,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\FxBlurSettings.resx">
       <DependentUpon>FxBlurSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\FxEdgeSettings.resx">
+      <DependentUpon>FxEdgeSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\FxEmbossSettings.resx">
+      <DependentUpon>FxEmbossSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\FxSharpenSettings.resx">
       <DependentUpon>FxSharpenSettings.cs</DependentUpon>
