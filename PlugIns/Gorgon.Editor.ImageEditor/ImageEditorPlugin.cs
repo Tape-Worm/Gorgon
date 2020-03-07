@@ -321,6 +321,7 @@ namespace Gorgon.Editor.ImageEditor
                 UpdateRange = _settings.LastAlphaRange
             };
             var blurSettings = new FxBlur();
+            var sharpenSettings = new FxSharpen();
 
             var injector = new HostedPanelViewModelParameters(HostContentServices);
             
@@ -329,6 +330,7 @@ namespace Gorgon.Editor.ImageEditor
             mipSettings.Initialize(injector);
             sourceImagePicker.Initialize(new SourceImagePickerParameters(HostContentServices));            
             blurSettings.Initialize(injector);
+            sharpenSettings.Initialize(injector);
 
             imagePicker.Initialize(new ImagePickerParameters(fileManager, file, HostContentServices)
             {
@@ -341,7 +343,7 @@ namespace Gorgon.Editor.ImageEditor
             var content = new ImageContent();
             var fxContext = new FxContext();
 
-            fxContext.Initialize(new FxContextParameters(content, _fxServices, blurSettings, HostContentServices));
+            fxContext.Initialize(new FxContextParameters(content, _fxServices, blurSettings, sharpenSettings, HostContentServices));
             content.Initialize(new ImageContentParameters(fileManager,
                 file,
                 _settings,

@@ -71,6 +71,15 @@ namespace Gorgon.Editor.ImageEditor.Fx
         }
 
         /// <summary>
+        /// Property to return the view model for the sharpen effect settings.
+        /// </summary>
+        public IFxSharpen SharpenSettings
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Property to return whether effects have been applied to the image.
         /// </summary>
         public bool EffectsUpdated
@@ -133,6 +142,22 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Property to return the command to apply the grayscale effect.
         /// </summary>
         public IEditorCommand<object> GrayScaleCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to apply the invert effect.
+        /// </summary>
+        public IEditorCommand<object> InvertCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to show the sharpen effect settings.
+        /// </summary>
+        public IEditorCommand<object> ShowSharpenCommand
         {
             get;
         }
@@ -224,24 +249,24 @@ namespace Gorgon.Editor.ImageEditor.Fx
         }
 
         /// <summary>
-        /// Function to apply the blur effect to the working image.
+        /// Function to apply the current effect that is in preview mode to the working image.
         /// </summary>
-        private void DoBlur()
+        private void DoPreviewedEffect()
         {
             IGorgonImage image = null;
 
             _hostServices.BusyService.SetBusy();
-            
+
             try
             {
-                _fxService.ApplyBlur();               
+                _fxService.ApplyPreviewedEffect();
 
                 _imageContent.CurrentHostedPanel = null;
                 EffectsUpdated = true;
             }
             catch (Exception ex)
             {
-                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_BLUR);
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_APPLYING_EFFECTS);
             }
             finally
             {
@@ -272,6 +297,55 @@ namespace Gorgon.Editor.ImageEditor.Fx
             }
         }
 
+        /// <summary>
+        /// Function to determine if the invert effect can be applied.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanInvert() => _imageContent.CurrentHostedPanel == null;
+
+        /// <summary>
+        /// Function to apply the invert effect to the working image.
+        /// </summary>
+        private void DoInvert()
+        {
+            try
+            {
+                _fxService.ApplyInvert();
+                EffectsUpdated = true;
+            }
+            catch (Exception ex)
+            {
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_GRAYSCALE);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the sharpen settings can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if they can be shown, <b>false</b> if not.</returns>
+        private bool CanShowSharpen() => _imageContent.CurrentHostedPanel == null;
+
+        /// <summary>
+        /// Function to display the sharpen effect settings.
+        /// </summary>
+        private void DoShowSharpen()
+        {
+            _hostServices.BusyService.SetBusy();
+
+            try
+            {
+                _imageContent.CurrentHostedPanel = SharpenSettings;
+            }
+            catch (Exception ex)
+            {
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                _hostServices.BusyService.SetIdle();
+            }
+        }
+
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
@@ -286,9 +360,12 @@ namespace Gorgon.Editor.ImageEditor.Fx
         {
             _imageContent = injectionParameters.ImageContent;
             BlurSettings = injectionParameters.BlurSettings;
-            _hostServices = injectionParameters.HostServices;
-            BlurSettings.OkCommand = new EditorCommand<object>(DoBlur);
+            SharpenSettings = injectionParameters.SharpenSettings;
+            _hostServices = injectionParameters.HostServices;            
             _fxService = injectionParameters.FxService;
+
+            BlurSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
+            SharpenSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
@@ -317,6 +394,8 @@ namespace Gorgon.Editor.ImageEditor.Fx
             ShowBlurCommand = new EditorCommand<object>(DoShowGaussBlurSettings, CanShowGaussBlurSettings);
             CancelCommand = new EditorCommand<object>(DoCancelFx);
             GrayScaleCommand = new EditorCommand<object>(DoGrayScale, CanGrayScale);
+            InvertCommand = new EditorCommand<object>(DoInvert, CanInvert);
+            ShowSharpenCommand = new EditorCommand<object>(DoShowSharpen, CanShowSharpen);
         }
         #endregion
     }

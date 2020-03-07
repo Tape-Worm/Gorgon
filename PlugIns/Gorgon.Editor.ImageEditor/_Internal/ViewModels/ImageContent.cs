@@ -836,7 +836,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 return false;
             }
-
+            
             IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
             return selectedFiles.Select(file => ContentFileManager.GetFile(file))
@@ -931,13 +931,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if the image dimensions editor can be shown.
         /// </summary>
         /// <returns><b>true</b> if the editor can be shown, <b>false</b> if not.</returns>
-        private bool CanShowImageDimensions() => (ImageData != null) && (DimensionSettings?.UpdateImageInfoCommand != null) && (DimensionSettings.UpdateImageInfoCommand.CanExecute(ImageData));
+        private bool CanShowImageDimensions() => (ImageData != null) && (DimensionSettings?.UpdateImageInfoCommand != null) && (DimensionSettings.UpdateImageInfoCommand.CanExecute(ImageData))
+                && (CurrentHostedPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to determine if the mip map generation settings can be shown.
         /// </summary>
         /// <returns><b>true</b> if the settings can be shown, <b>false</b> if not.</returns>
-        private bool CanShowMipGeneration() => (ImageData != null) && (MipSupport) && (MipMapSettings?.UpdateImageInfoCommand != null) && (MipMapSettings.UpdateImageInfoCommand.CanExecute(ImageData));
+        private bool CanShowMipGeneration() => (ImageData != null) && (MipSupport) && (MipMapSettings?.UpdateImageInfoCommand != null) && (MipMapSettings.UpdateImageInfoCommand.CanExecute(ImageData))
+                && (CurrentHostedPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to show or hide the image dimensions editor.
@@ -1040,13 +1042,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => _undoService.CanUndo && CurrentHostedPanel == null;
+        private bool CanUndo() => (_undoService.CanUndo) && (CurrentHostedPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => _undoService.CanRedo && CurrentHostedPanel == null;
+        private bool CanRedo() => (_undoService.CanRedo) && (CurrentHostedPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -1137,9 +1139,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Function to determine if format conversion can happen.
         /// </summary>
-        /// <param name="format">The format to convert to.</param>
+        /// <param name="format">The format to change to.</param>
         /// <returns><b>true</b> if the conversion can take place, <b>false</b> if not.</returns>
-        private bool CanConvertFormat(BufferFormat format) => (format == ImageData.Format) || (format == BufferFormat.Unknown) ? false : true;
+        private bool CanConvertFormat(BufferFormat format)
+        {
+            if (format == BufferFormat.Unknown)
+            {
+                return (CurrentHostedPanel == null) && (CommandContext == null);
+            }
+
+            return format != ImageData.Format;
+        }
 
         /// <summary>
         /// Function to create an undo cache file from the working file.
@@ -1240,6 +1250,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 {
                     HostServices.BusyService.SetBusy();
 
+                    // Don't convert the same format.
+                    if (format == ImageData.Format)
+                    {
+                        return Task.FromException(new InvalidCastException("Will not see me"));
+                    }
+
                     var destFormat = new GorgonFormatInfo(format);
 
                     // Ensure that we can actually convert.
@@ -1298,6 +1314,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_FORMAT_CONVERT, format), UndoAction, RedoAction, convertUndoArgs, convertUndoArgs);
             }
         }
+
+        /// <summary>
+        /// Function to determine if the image can be exported.
+        /// </summary>
+        /// <param name="_">Not used.</param>
+        /// <returns><b>true</b> if the image can be exported, <b>false</b> if not.</returns>
+        private bool CanExportImage(IGorgonImageCodec _) => (CurrentHostedPanel == null) && (CommandContext == null) && (_codecs.Count > 0);
 
         /// <summary>
         /// Function to export this image to the physical file system.
@@ -1877,33 +1900,27 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns><b>true</b> if the image can change types, <b>false</b> if not.</returns>
         private bool CanChangeImageType(ImageType imageType)
         {
+            if ((CurrentHostedPanel != null) || (CommandContext != null))
+            {
+                return false;
+            }
+
             if (!_formatSupport.ContainsKey(CurrentPixelFormat))
             {
                 return false;
             }
 
-            if ((imageType == ImageType.ImageCube)
-                && ((_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.TextureCube) != BufferFormatSupport.TextureCube))
+            switch (imageType)
             {
-                return false;
+                case ImageType.ImageCube when ((_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.TextureCube) != BufferFormatSupport.TextureCube):
+                case ImageType.Image3D when ((Width > _videoAdapter.MaxTexture3DWidth) || (Height > _videoAdapter.MaxTexture3DHeight)):
+                    return false;
+                case ImageType.Image2D when ImageType == ImageType.ImageCube:
+                case ImageType.ImageCube when ImageType == ImageType.Image2D:
+                    return true;
+                default:
+                    return _formatSupport[CurrentPixelFormat].IsTextureFormat(ImageType);
             }
-
-            if (((ImageType == ImageType.Image2D) && (imageType == ImageType.ImageCube))
-                || ((ImageType == ImageType.ImageCube) && (imageType == ImageType.Image2D)))
-            {
-                return true;
-            }
-
-            // Ensure that the current pixel format is supported.
-#pragma warning disable IDE0046 // Convert to conditional expression
-            if (!_formatSupport[CurrentPixelFormat].IsTextureFormat(ImageType))
-            {
-                return false;
-            }
-
-            return (imageType != ImageType.Image3D)
-                || ((Width <= _videoAdapter.MaxTexture3DWidth) && (Height <= _videoAdapter.MaxTexture3DHeight));
-#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -2034,6 +2051,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 _undoService.Record(string.Format(Resources.GORIMG_UNDO_DESC_IMAGE_TYPE, newImageType), UndoAction, RedoAction, imageTypeUndoArgs, imageTypeUndoArgs);
             }
         }
+
+        /// <summary>
+        /// Function to determine if the image can be edited in an external application.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanEditInApp() => (CurrentHostedPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to edit the current image in an application.
@@ -2525,6 +2548,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <returns></returns>
         private bool CanShowSetAlphaValue() => (ImageData != null)
+                && (CurrentHostedPanel == null)
+                && (CommandContext == null)
                 && (ImageData.FormatInfo.HasAlpha)
                 && (ImageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
 
@@ -3000,14 +3025,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             UndoCommand = new EditorCommand<object>(DoUndoAsync, CanUndo);
             RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
-            ExportImageCommand = new EditorCommand<IGorgonImageCodec>(DoExportImage);
+            ExportImageCommand = new EditorCommand<IGorgonImageCodec>(DoExportImage, CanExportImage);
             ConvertFormatCommand = new EditorCommand<BufferFormat>(DoConvertFormat, CanConvertFormat);
             SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveImageTask, CanSaveImage);
             ChangeImageTypeCommand = new EditorCommand<ImageType>(DoChangeImageType, CanChangeImageType);
             ImportFileCommand = new EditorAsyncCommand<float>(DoImportFileAsync, CanImportFile);
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
-            EditInAppCommand = new EditorCommand<object>(DoEditInApp, () => ImageData != null);
+            EditInAppCommand = new EditorCommand<object>(DoEditInApp, CanEditInApp);
             PremultipliedAlphaCommand = new EditorCommand<bool>(DoSetPremultipliedAlpha, CanSetPremultipliedAlpha);
             ShowSetAlphaCommand = new EditorCommand<object>(DoShowSetAlphaValue, CanShowSetAlphaValue);
             CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);

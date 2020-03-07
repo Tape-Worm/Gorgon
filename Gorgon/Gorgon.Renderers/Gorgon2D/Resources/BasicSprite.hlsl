@@ -424,35 +424,33 @@ cbuffer GorgonSharpenEmbossEffect : register(b1)
 // A pixel shader to sharpen the color on a texture.
 float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
 {
-	static float kernel[9] =
-	{
-		0.0f, -1.0f, 0.0f, 
-		-1.0f, 5.0f, -1.0f, 
-		0.0f, -1.0f, 0.0f
-	};
-
-	float2 offset[9] =
+	float2 offset[8] =
 	{
 		float2(-sharpEmbossTexelDistance.x, -sharpEmbossTexelDistance.y),
 		float2(0.0, -sharpEmbossTexelDistance.y),
-		float2(sharpEmbossTexelDistance.x, -sharpEmbossTexelDistance.y),
+		float2(-sharpEmbossTexelDistance.x, 0),
 		float2(-sharpEmbossTexelDistance.x, 0.0),
-		float2(0.0, 0.0),
 		float2(sharpEmbossTexelDistance.x, 0.0),
+		float2(sharpEmbossTexelDistance.x, sharpEmbossTexelDistance.y),
 		float2(-sharpEmbossTexelDistance.x, sharpEmbossTexelDistance.y),
-		float2(0.0, sharpEmbossTexelDistance.y),
-		float2(sharpEmbossTexelDistance.x, sharpEmbossTexelDistance.y)
+		float2(sharpEmbossTexelDistance.x, -sharpEmbossTexelDistance.y)
 	};
 
-	float4 result = 0;
-	
-	for (int i = 0; i < 9; i++) 
-	{
-		float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[i], vertex.uv.z)) * vertex.color;
-		result += float4((color.rgb * sharpEmbossAmount) * kernel[i], color.a);
-	}
+	const float convolution = -0.5f;
+	float mainConvolution = 1.0f + ((-convolution * 8.0f) * sharpEmbossAmount);
 
-	return result;
+	float4 c = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float4 c0 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[0], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c1 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[1], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c2 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[2], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c3 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[3], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c4 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[4], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c5 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[5], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c6 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[6], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c7 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[7], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c8 = c * mainConvolution;
+
+	return saturate(((c0 + c1 + c2 + c3 + c4 + c5 + c6 + c7) * sharpEmbossAmount) + c8);
 }
 
 // A pixel shader to sharpen the color on a texture.

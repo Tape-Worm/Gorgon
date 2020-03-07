@@ -204,7 +204,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Handles the Click event of the ButtonGaussBlur control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
-        private void ButtonGaussBlur_Click(object sender, EventArgs e)
+        private void ButtonFxGaussBlur_Click(object sender, EventArgs e)
         {
             if ((DataContext?.FxContext?.ShowBlurCommand == null) || (!DataContext.FxContext.ShowBlurCommand.CanExecute(null)))
             {
@@ -213,6 +213,82 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext.FxContext.ShowBlurCommand.Execute(null);
             ValidateButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxSharpen control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxSharpen_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.FxContext?.ShowSharpenCommand == null) || (!DataContext.FxContext.ShowSharpenCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.FxContext.ShowSharpenCommand.Execute(null);
+            ValidateButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxEmboss control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxEmboss_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxEdgeDetect control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxEdgeDetect_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxInvert control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxInvert_Click(object sender, EventArgs e)
+        {
+            if ((DataContext?.FxContext?.InvertCommand == null) || (!DataContext.FxContext.InvertCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            DataContext.FxContext.InvertCommand.Execute(null);
+            ValidateButtons();
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxBurn control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxBurn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxOneBit control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxOneBit_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxDodge control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxDodge_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>Handles the Click event of the ButtonFxPosterize control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFxPosterize_Click(object sender, EventArgs e)
+        {
+
         }
 
         /// <summary>Handles the Click event of the ButtonGenerateMipMaps control.</summary>
@@ -442,21 +518,23 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            ButtonImport.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.FilesAreSelected);
-            ButtonEditInApp.Enabled = DataContext.CurrentHostedPanel == null;
-            ButtonDimensions.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.ShowImageDimensionsCommand != null) && (DataContext.ShowImageDimensionsCommand.CanExecute(null));
-            ButtonGenerateMipMaps.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.ShowMipGenerationCommand != null) && (DataContext.ShowMipGenerationCommand.CanExecute(null));
-            ButtonImageFormat.Enabled = DataContext.CurrentHostedPanel == null;
-            ButtonImageType.Enabled = DataContext.CurrentHostedPanel == null;
+            ButtonImport.Enabled = DataContext.ImportFileCommand?.CanExecute(0) ?? false;
+            ButtonEditInApp.Enabled = DataContext.EditInAppCommand?.CanExecute(null) ?? false;
+            ButtonDimensions.Enabled = DataContext.ShowImageDimensionsCommand?.CanExecute(null) ?? false;
+            ButtonGenerateMipMaps.Enabled = DataContext.ShowMipGenerationCommand?.CanExecute(null) ?? false;
+            ButtonImageFormat.Enabled = DataContext.ConvertFormatCommand?.CanExecute(BufferFormat.Unknown) ?? false;
+            ButtonImageType.Enabled = DataContext.ChangeImageTypeCommand?.CanExecute(ImageType.Unknown) ?? false;
             ButtonImageUndo.Enabled = DataContext.UndoCommand?.CanExecute(null) ?? false;
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
-            ButtonExport.Enabled = MenuCodecs.Items.Count > 0;
+            ButtonExport.Enabled = DataContext.ExportImageCommand?.CanExecute(null) ?? false;
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-            ButtonPremultipliedAlpha.Enabled = (DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false);
-            ButtonSetAlpha.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.ShowSetAlphaCommand?.CanExecute(null) ?? false);
+            ButtonPremultipliedAlpha.Enabled = DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false;
+            ButtonSetAlpha.Enabled = DataContext.ShowSetAlphaCommand?.CanExecute(null) ?? false;
             ButtonFx.Enabled = DataContext.ShowFxCommand?.CanExecute(null) ?? false;
             ButtonGaussBlur.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowBlurCommand?.CanExecute(null) ?? false);
             ButtonGrayScale.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.GrayScaleCommand?.CanExecute(null) ?? false);
+            ButtonFxInvert.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.InvertCommand?.CanExecute(null) ?? false);
+            ButtonFxSharpen.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowSharpenCommand?.CanExecute(null) ?? false);
             ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ApplyCommand?.CanExecute(null) ?? false);
 
             if (DataContext.ChangeImageTypeCommand == null)

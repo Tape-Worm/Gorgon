@@ -56,6 +56,8 @@ namespace Gorgon.Editor.ImageEditor
         #region Variables.
         // The number of blur passes.
         private int _passes = 1;
+        // The amount to sharpen.
+        private int _sharpAmount = 50;
         // The service used to apply effects.
         private readonly IFxPreviewer _fxPreviewer;
         #endregion
@@ -67,7 +69,21 @@ namespace Gorgon.Editor.ImageEditor
         protected override void Dispose(bool disposing)
         {
             DataContext.FxContext.BlurSettings.PropertyChanged -= FxBlurSettings_PropertyChanged;
+            DataContext.FxContext.SharpenSettings.PropertyChanged -= SharpenSettings_PropertyChanged;
             base.Dispose(disposing);
+        }
+
+        /// <summary>Handles the PropertyChanged event of the SharpenSettings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void SharpenSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IFxSharpen.Amount):
+                    _sharpAmount = DataContext.FxContext.SharpenSettings.Amount;
+                    break;
+            }
         }
 
         /// <summary>Handles the PropertyChanged event of the FxBlurSettings control.</summary>
@@ -89,9 +105,13 @@ namespace Gorgon.Editor.ImageEditor
         private void RenderFx()
         {
             if (DataContext.CurrentHostedPanel == DataContext.FxContext.BlurSettings)
-            {                
+            {
                 _fxPreviewer.GenerateBlurPreview(_passes);
-            }            
+            }
+            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.SharpenSettings)
+            {
+                _fxPreviewer.SharpenPreview(_sharpAmount);
+            }
         }
 
         /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
@@ -107,6 +127,10 @@ namespace Gorgon.Editor.ImageEditor
                     if ((DataContext.CurrentHostedPanel == DataContext.FxContext.BlurSettings))
                     {
                         _fxPreviewer.GenerateBlurPreview(_passes);
+                    }
+                    else if ((DataContext.CurrentHostedPanel == DataContext.FxContext.SharpenSettings))
+                    {
+                        _fxPreviewer.SharpenPreview(_sharpAmount);
                     }
                     break;
             }
@@ -163,6 +187,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             _fxPreviewer = (IFxPreviewer)dataContext.FxContext.FxService;
             dataContext.FxContext.BlurSettings.PropertyChanged += FxBlurSettings_PropertyChanged;
+            dataContext.FxContext.SharpenSettings.PropertyChanged += SharpenSettings_PropertyChanged;
             AllowArrayDepthChange = false;
             AllowMipChange = false;
         }        

@@ -59,6 +59,7 @@
             this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
             this.CropResizeSettings = new Gorgon.Editor.ImageEditor.ImageResizeSettings();
             this.FxBlurSettings = new Gorgon.Editor.ImageEditor.FxBlurSettings();
+            this.FxSharpenSettings = new Gorgon.Editor.ImageEditor.FxSharpenSettings();
             this.StatusPanel.SuspendLayout();
             this.HostPanel.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
@@ -78,6 +79,7 @@
             // 
             // HostPanel
             // 
+            this.HostPanel.Controls.Add(this.FxSharpenSettings);
             this.HostPanel.Controls.Add(this.FxBlurSettings);
             this.HostPanel.Controls.Add(this.CropResizeSettings);
             this.HostPanel.Controls.Add(this.DimensionSettings);
@@ -338,6 +340,9 @@
             // 
             // SetAlpha
             // 
+            this.SetAlpha.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.SetAlpha.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.SetAlpha.ForeColor = System.Drawing.Color.White;
             this.SetAlpha.Location = new System.Drawing.Point(0, 0);
             this.SetAlpha.MinimumSize = new System.Drawing.Size(300, 320);
             this.SetAlpha.Name = "SetAlpha";
@@ -349,15 +354,21 @@
             // GenMipMapSettings
             // 
             this.GenMipMapSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.GenMipMapSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.GenMipMapSettings.ForeColor = System.Drawing.Color.White;
             this.GenMipMapSettings.Location = new System.Drawing.Point(0, 0);
             this.GenMipMapSettings.MinimumSize = new System.Drawing.Size(300, 150);
             this.GenMipMapSettings.Name = "GenMipMapSettings";
             this.GenMipMapSettings.Size = new System.Drawing.Size(300, 150);
             this.GenMipMapSettings.TabIndex = 8;
+            this.GenMipMapSettings.Text = "Generate Mip Maps";
             this.GenMipMapSettings.Visible = false;
             // 
             // DimensionSettings
             // 
+            this.DimensionSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.DimensionSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.DimensionSettings.ForeColor = System.Drawing.Color.White;
             this.DimensionSettings.Location = new System.Drawing.Point(0, 0);
             this.DimensionSettings.MinimumSize = new System.Drawing.Size(300, 345);
             this.DimensionSettings.Name = "DimensionSettings";
@@ -368,6 +379,9 @@
             // 
             // CropResizeSettings
             // 
+            this.CropResizeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.CropResizeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.CropResizeSettings.ForeColor = System.Drawing.Color.White;
             this.CropResizeSettings.Location = new System.Drawing.Point(0, 0);
             this.CropResizeSettings.MinimumSize = new System.Drawing.Size(300, 400);
             this.CropResizeSettings.Name = "CropResizeSettings";
@@ -388,6 +402,18 @@
             this.FxBlurSettings.TabIndex = 8;
             this.FxBlurSettings.Text = "Gaussian Blur Settings";
             this.FxBlurSettings.Visible = false;
+            // 
+            // FxSharpenSettings
+            // 
+            this.FxSharpenSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.FxSharpenSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.FxSharpenSettings.ForeColor = System.Drawing.Color.White;
+            this.FxSharpenSettings.Location = new System.Drawing.Point(0, 122);
+            this.FxSharpenSettings.MinimumSize = new System.Drawing.Size(300, 120);
+            this.FxSharpenSettings.Name = "FxSharpenSettings";
+            this.FxSharpenSettings.Size = new System.Drawing.Size(300, 120);
+            this.FxSharpenSettings.TabIndex = 9;
+            this.FxSharpenSettings.Text = "Sharpen Settings";
             // 
             // ImageEditorView
             // 
@@ -426,5 +452,6 @@
         private ImageDimensionSettings DimensionSettings;
         private ImageResizeSettings CropResizeSettings;
         private FxBlurSettings FxBlurSettings;
+        private FxSharpenSettings FxSharpenSettings;
     }
 }

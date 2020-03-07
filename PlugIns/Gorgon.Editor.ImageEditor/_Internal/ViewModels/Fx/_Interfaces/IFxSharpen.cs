@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 1, 2020 8:36:39 PM
+// Created: March 6, 2020 1:37:30 PM
 // 
 #endregion
 
@@ -29,45 +29,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Graphics.Core;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// A previewer for specific effects that support previewing.
+    /// The settings view model for the sharpen effects.
     /// </summary>
-    internal interface IFxPreviewer
+    internal interface IFxSharpen
+        : IHostedPanelViewModel
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the texture holding the unalterd image.
+        /// Property to set or return the amount to sharpen.
         /// </summary>
-        GorgonTexture2DView OriginalTexture
+        int Amount
         {
             get;
+            set;
         }
-
-        /// <summary>
-        /// Property to return the texture that contains the blurred preview image.
-        /// </summary>
-        GorgonTexture2DView PreviewTexture
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to generate a blurred image preview.
-        /// </summary>
-        /// <param name="blurAmount">The amount to blur.</param>
-        void GenerateBlurPreview(int blurAmount);
-
-        /// <summary>
-        /// Function to generate a sharpen image preview.
-        /// </summary>
-        /// <param name="sharpenAmount">The amount to sharpen.</param>
-        void SharpenPreview(int sharpenAmount);
-        #endregion
     }
 }

@@ -53,6 +53,10 @@ namespace Gorgon.Editor.ImageEditor
         private Gorgon2DGaussBlurEffect _blur;
         // The gray scale effect.
         private Gorgon2DGrayScaleEffect _grayScale;
+        // The sharpen/emboss effect.
+        private Gorgon2DSharpenEmbossEffect _sharpEmboss;
+        // The invert effect.
+        private Gorgon2DInvertEffect _invert;
         // The target used to render the effect into.
         private GorgonRenderTarget2DView _effectTargetPing;
         private GorgonRenderTarget2DView _effectTargetPong;
@@ -164,9 +168,28 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
-        /// Function to apply the blur effect.
+        /// Function to apply the invert effect.
         /// </summary>
-        public void ApplyBlur()
+        public void ApplyInvert()
+        {
+            GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
+
+            // Render the blurring effect by ping-ponging between the render targets to generate the image.
+            _invert.Render(_texture, _effectTargetPing);
+
+            using (IGorgonImage image = _effectTexturePing.Texture.ToImage())
+            {
+                image.Buffers[0].CopyTo(_workingImage.Buffers[0]);
+            }
+
+            _graphics.Graphics.SetRenderTarget(originalRtv);
+
+            // Recreate the texture so we can see the result.
+            CreateTexture();
+        }
+
+        /// <summary>Function to apply the current effect that is using a preview.</summary>
+        public void ApplyPreviewedEffect()
         {
             if (PreviewTexture == null)
             {
@@ -215,6 +238,24 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to generate a sharpen image preview.
+        /// </summary>
+        /// <param name="sharpenAmount">The amount to sharpen.</param>
+        public void SharpenPreview(int sharpenAmount)
+        {
+            // Reset to the original texture.
+            GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
+
+            // Render the blurring effect by ping-ponging between the render targets to generate the image.
+            _sharpEmboss.UseEmbossing = false;
+            _sharpEmboss.Amount = sharpenAmount / 100.0f;
+            _sharpEmboss.Render(_texture, _effectTargetPing);
+            PreviewTexture = _effectTexturePing;
+
+            _graphics.Graphics.SetRenderTarget(originalRtv);
+        }
+
+        /// <summary>
         /// Function to assign an image for editing.
         /// </summary>
         /// <param name="image">The image to edit.</param>        
@@ -253,6 +294,8 @@ namespace Gorgon.Editor.ImageEditor
                 srcBuffer.CopyTo(_workingImage.Buffers[0]);
             }
 
+            _sharpEmboss.TextureSize = new DX.Size2F(_workingImage.Width, _workingImage.Height);            
+
             CreateTexture();
         }
 
@@ -262,6 +305,8 @@ namespace Gorgon.Editor.ImageEditor
         public void LoadResources()
         {
             _grayScale = new Gorgon2DGrayScaleEffect(_graphics.Renderer2D);
+            _invert = new Gorgon2DInvertEffect(_graphics.Renderer2D);
+            _sharpEmboss = new Gorgon2DSharpenEmbossEffect(_graphics.Renderer2D);
             _blur = new Gorgon2DGaussBlurEffect(_graphics.Renderer2D, 9)
             {
                 BlurRadius = 1
@@ -275,8 +320,12 @@ namespace Gorgon.Editor.ImageEditor
             SetImage(null, 0, 0);
 
             Gorgon2DGrayScaleEffect grayScale = Interlocked.Exchange(ref _grayScale, null);
+            Gorgon2DInvertEffect invert = Interlocked.Exchange(ref _invert, null);
+            Gorgon2DSharpenEmbossEffect sharp = Interlocked.Exchange(ref _sharpEmboss, null);
             Gorgon2DGaussBlurEffect blur = Interlocked.Exchange(ref _blur, null);
             grayScale?.Dispose();
+            sharp?.Dispose();
+            invert?.Dispose();
             blur?.Dispose();
         }
         #endregion

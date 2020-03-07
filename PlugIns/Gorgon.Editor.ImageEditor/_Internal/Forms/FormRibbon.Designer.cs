@@ -100,9 +100,19 @@
             this.GroupImageFilters = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonGaussBlur = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFxSharpen = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupLines4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonFxEmboss = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFxEdgeDetect = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.GroupImageColor = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple6 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonGrayScale = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFxInvert = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonFxBurn = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFxDodge = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFxOneBit = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFxPosterize = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).BeginInit();
             this.MenuImageType.SuspendLayout();
             this.MenuZoom.SuspendLayout();
@@ -118,7 +128,6 @@
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage,
             this.TabEffects});
-            this.RibbonImageContent.SelectedContext = null;
             this.RibbonImageContent.SelectedTab = this.TabEffects;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
@@ -562,7 +571,7 @@
             this.GroupFinalize,
             this.GroupImageFilters,
             this.GroupImageColor});
-            this.TabEffects.KeyTip = "F";
+            this.TabEffects.KeyTip = "E";
             this.TabEffects.Text = "Image Effects";
             // 
             // GroupFinalize
@@ -606,14 +615,16 @@
             this.GroupImageFilters.AllowCollapsed = false;
             this.GroupImageFilters.DialogBoxLauncher = false;
             this.GroupImageFilters.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
-            this.kryptonRibbonGroupTriple4});
-            this.GroupImageFilters.KeyTipGroup = "I";
+            this.kryptonRibbonGroupTriple4,
+            this.kryptonRibbonGroupLines4});
+            this.GroupImageFilters.KeyTipGroup = "L";
             this.GroupImageFilters.TextLine1 = "Filters";
             // 
             // kryptonRibbonGroupTriple4
             // 
             this.kryptonRibbonGroupTriple4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonGaussBlur});
+            this.ButtonGaussBlur,
+            this.ButtonFxSharpen});
             // 
             // ButtonGaussBlur
             // 
@@ -623,21 +634,60 @@
             this.ButtonGaussBlur.TextLine2 = "Blur";
             this.ButtonGaussBlur.ToolTipBody = "Blurs the image using a gaussian blur algorithm.";
             this.ButtonGaussBlur.ToolTipTitle = "Gaussian Blur";
-            this.ButtonGaussBlur.Click += new System.EventHandler(this.ButtonGaussBlur_Click);
+            this.ButtonGaussBlur.Click += new System.EventHandler(this.ButtonFxGaussBlur_Click);
+            // 
+            // ButtonFxSharpen
+            // 
+            this.ButtonFxSharpen.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.sharpen_48x48;
+            this.ButtonFxSharpen.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.sharpen_16x16;
+            this.ButtonFxSharpen.KeyTip = "S";
+            this.ButtonFxSharpen.TextLine1 = "Sharpen";
+            this.ButtonFxSharpen.ToolTipBody = "Sharpens the image by making the edges between colors more \r\npronounced.";
+            this.ButtonFxSharpen.ToolTipTitle = "Sharpen";
+            this.ButtonFxSharpen.Click += new System.EventHandler(this.ButtonFxSharpen_Click);
+            // 
+            // kryptonRibbonGroupLines4
+            // 
+            this.kryptonRibbonGroupLines4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonFxEmboss,
+            this.ButtonFxEdgeDetect});
+            // 
+            // ButtonFxEmboss
+            // 
+            this.ButtonFxEmboss.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.emboss_48x48;
+            this.ButtonFxEmboss.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.emboss_16x16;
+            this.ButtonFxEmboss.KeyTip = "M";
+            this.ButtonFxEmboss.TextLine1 = "Emboss";
+            this.ButtonFxEmboss.ToolTipBody = "Applies an emboss effect to the image.";
+            this.ButtonFxEmboss.ToolTipTitle = "Emboss";
+            this.ButtonFxEmboss.Click += new System.EventHandler(this.ButtonFxEmboss_Click);
+            // 
+            // ButtonFxEdgeDetect
+            // 
+            this.ButtonFxEdgeDetect.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.edge_detect_48x48;
+            this.ButtonFxEdgeDetect.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.edge_detect_16x16;
+            this.ButtonFxEdgeDetect.KeyTip = "E";
+            this.ButtonFxEdgeDetect.TextLine1 = "Edge";
+            this.ButtonFxEdgeDetect.TextLine2 = "Detect";
+            this.ButtonFxEdgeDetect.ToolTipBody = "Applies a filter to detect the edges of the image.";
+            this.ButtonFxEdgeDetect.ToolTipTitle = "Edge Detect";
+            this.ButtonFxEdgeDetect.Click += new System.EventHandler(this.ButtonFxEdgeDetect_Click);
             // 
             // GroupImageColor
             // 
             this.GroupImageColor.AllowCollapsed = false;
             this.GroupImageColor.DialogBoxLauncher = false;
             this.GroupImageColor.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
-            this.kryptonRibbonGroupTriple6});
+            this.kryptonRibbonGroupTriple6,
+            this.kryptonRibbonGroupLines1});
             this.GroupImageColor.KeyTipGroup = "C";
             this.GroupImageColor.TextLine1 = "Color";
             // 
             // kryptonRibbonGroupTriple6
             // 
             this.kryptonRibbonGroupTriple6.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonGrayScale});
+            this.ButtonGrayScale,
+            this.ButtonFxInvert});
             // 
             // ButtonGrayScale
             // 
@@ -648,6 +698,63 @@
             this.ButtonGrayScale.ToolTipBody = "Removes all color information.";
             this.ButtonGrayScale.ToolTipTitle = "Grayscale";
             this.ButtonGrayScale.Click += new System.EventHandler(this.ButtonGrayScale_Click);
+            // 
+            // ButtonFxInvert
+            // 
+            this.ButtonFxInvert.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.invert_48x48;
+            this.ButtonFxInvert.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.invert_16x16;
+            this.ButtonFxInvert.KeyTip = "I";
+            this.ButtonFxInvert.TextLine1 = "Invert";
+            this.ButtonFxInvert.ToolTipBody = "Inverts the image colors.";
+            this.ButtonFxInvert.ToolTipTitle = "Invert";
+            this.ButtonFxInvert.Click += new System.EventHandler(this.ButtonFxInvert_Click);
+            // 
+            // kryptonRibbonGroupLines1
+            // 
+            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonFxBurn,
+            this.ButtonFxDodge,
+            this.ButtonFxOneBit,
+            this.ButtonFxPosterize});
+            // 
+            // ButtonFxBurn
+            // 
+            this.ButtonFxBurn.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.burn_48x48;
+            this.ButtonFxBurn.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.burn_16x16;
+            this.ButtonFxBurn.TextLine1 = "Burn";
+            this.ButtonFxBurn.ToolTipBody = "Apply a burn effect to the image.";
+            this.ButtonFxBurn.ToolTipTitle = "Burn";
+            this.ButtonFxBurn.Click += new System.EventHandler(this.ButtonFxBurn_Click);
+            // 
+            // ButtonFxDodge
+            // 
+            this.ButtonFxDodge.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.dodge_48x48;
+            this.ButtonFxDodge.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.dodge_16x16;
+            this.ButtonFxDodge.KeyTip = "D";
+            this.ButtonFxDodge.TextLine1 = "Dodge";
+            this.ButtonFxDodge.ToolTipBody = "Apply a dodge effect to the image.";
+            this.ButtonFxDodge.ToolTipTitle = "Dodge";
+            this.ButtonFxDodge.Click += new System.EventHandler(this.ButtonFxDodge_Click);
+            // 
+            // ButtonFxOneBit
+            // 
+            this.ButtonFxOneBit.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.onebit_48x48;
+            this.ButtonFxOneBit.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.onebit_16x16;
+            this.ButtonFxOneBit.KeyTip = "1";
+            this.ButtonFxOneBit.TextLine1 = "1 bit";
+            this.ButtonFxOneBit.ToolTipBody = "Converts the image to simulate 1 bit (2 colors) per pixel.";
+            this.ButtonFxOneBit.ToolTipTitle = "One bit";
+            this.ButtonFxOneBit.Click += new System.EventHandler(this.ButtonFxOneBit_Click);
+            // 
+            // ButtonFxPosterize
+            // 
+            this.ButtonFxPosterize.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.posterize_48x48;
+            this.ButtonFxPosterize.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.posterize_16x16;
+            this.ButtonFxPosterize.KeyTip = "P";
+            this.ButtonFxPosterize.TextLine1 = "Posterize";
+            this.ButtonFxPosterize.ToolTipBody = "Applies a posterize effect to the image.";
+            this.ButtonFxPosterize.ToolTipTitle = "Posterize";
+            this.ButtonFxPosterize.Click += new System.EventHandler(this.ButtonFxPosterize_Click);
             // 
             // FormRibbon
             // 
@@ -727,5 +834,15 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupImageColor;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple6;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonGrayScale;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxBurn;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxDodge;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxInvert;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxPosterize;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxOneBit;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines4;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxEdgeDetect;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxEmboss;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxSharpen;
     }
 }

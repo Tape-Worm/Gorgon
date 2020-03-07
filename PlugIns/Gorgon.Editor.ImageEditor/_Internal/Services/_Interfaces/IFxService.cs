@@ -51,9 +51,14 @@ namespace Gorgon.Editor.ImageEditor
 
         #region Methods.
         /// <summary>
-        /// Function to apply the blur effect.
+        /// Function to apply the current effect that is using a preview.
         /// </summary>
-        void ApplyBlur();
+        void ApplyPreviewedEffect();
+
+        /// <summary>
+        /// Function to apply the invert effect.
+        /// </summary>
+        void ApplyInvert();
 
         /// <summary>
         /// Function to apply the grayscale effect.

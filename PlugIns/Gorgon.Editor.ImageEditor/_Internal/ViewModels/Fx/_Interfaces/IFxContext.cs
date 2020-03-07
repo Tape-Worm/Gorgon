@@ -66,6 +66,14 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Property to return the view model for the sharpen effect settings.
+        /// </summary>
+        IFxSharpen SharpenSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command used to assign the working image
         /// </summary>
         IEditorCommand<IGorgonImage> SetImageCommand
@@ -102,6 +110,22 @@ namespace Gorgon.Editor.ImageEditor
         /// Property to return the command to apply the grayscale effect.
         /// </summary>
         IEditorCommand<object> GrayScaleCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to apply the invert effect.
+        /// </summary>
+        IEditorCommand<object> InvertCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to show the sharpen effect settings.
+        /// </summary>
+        IEditorCommand<object> ShowSharpenCommand
         {
             get;
         }

@@ -72,7 +72,9 @@
     <Compile Include="_Internal\ViewModels\Fx\FxBlur.cs" />
     <Compile Include="_Internal\ViewModels\Fx\FxContext.cs" />
     <Compile Include="_Internal\ViewModels\Fx\FxContextParameters.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\FxSharpen.cs" />
     <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxContext.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxSharpen.cs" />
     <Compile Include="_Internal\ViewModels\ImagePickerImportData.cs" />
     <Compile Include="_Internal\Renderers\TextureCubeViewer.cs" />
     <Compile Include="_Internal\Renderers\Texture3DViewer.cs" />
@@ -115,6 +117,12 @@
     </Compile>
     <Compile Include="_Internal\Views\FxBlurSettings.Designer.cs">
       <DependentUpon>FxBlurSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\FxSharpenSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\FxSharpenSettings.Designer.cs">
+      <DependentUpon>FxSharpenSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="_Internal\Views\SetAlphaSettings.cs">
       <SubType>UserControl</SubType>
@@ -184,6 +192,22 @@
     <Content Include="Gorgon2.ico" />
     <Content Include="Resources\alpha_16x16.png" />
     <Content Include="Resources\alpha_48x48.png" />
+    <None Include="Resources\edge_detect_48x48.png" />
+    <None Include="Resources\edge_detect_16x16.png" />
+    <None Include="Resources\emboss_48x48.png" />
+    <None Include="Resources\emboss_16x16.png" />
+    <None Include="Resources\sharpen_48x48.png" />
+    <None Include="Resources\sharpen_16x16.png" />
+    <None Include="Resources\posterize_48x48.png" />
+    <None Include="Resources\posterize_16x16.png" />
+    <None Include="Resources\onebit_48x48.png" />
+    <None Include="Resources\onebit_16x16.png" />
+    <None Include="Resources\invert_48x48.png" />
+    <None Include="Resources\invert_16x16.png" />
+    <None Include="Resources\dodge_48x48.png" />
+    <None Include="Resources\dodge_16x16.png" />
+    <None Include="Resources\burn_48x48.png" />
+    <None Include="Resources\burn_16x16.png" />
     <None Include="Resources\grayscale_16x16.png" />
     <None Include="Resources\grayscale_48x48.png" />
     <None Include="Resources\confirm_48x48.png" />
@@ -262,6 +286,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\FxBlurSettings.resx">
       <DependentUpon>FxBlurSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\FxSharpenSettings.resx">
+      <DependentUpon>FxSharpenSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\SetAlphaSettings.resx">
       <DependentUpon>SetAlphaSettings.cs</DependentUpon>
