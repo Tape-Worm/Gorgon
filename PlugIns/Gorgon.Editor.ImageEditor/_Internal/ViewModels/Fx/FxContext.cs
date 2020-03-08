@@ -60,7 +60,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         private IFxService _fxService;
         #endregion
 
-        #region Properties.
+        #region Properties.        
         /// <summary>
         /// Property to return the view model for the blur fx settings.
         /// </summary>
@@ -83,6 +83,15 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Property to return the view model for the emboss effect settings.
         /// </summary>
         public IFxEmboss EmbossSettings
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the view model for the edge detection effect settings.
+        /// </summary>
+        public IFxEdgeDetect EdgeDetectSettings
         {
             get;
             private set;
@@ -175,6 +184,14 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Property to return the command to show the emboss effect settings.
         /// </summary>
         public IEditorCommand<object> ShowEmbossCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to show the edge detection settings.
+        /// </summary>
+        public IEditorCommand<object> ShowEdgeDetectCommand
         {
             get;
         }
@@ -390,6 +407,33 @@ namespace Gorgon.Editor.ImageEditor.Fx
             }
         }
 
+        /// <summary>
+        /// Function to determine if the edge detect effect settings can be displayed.
+        /// </summary>
+        /// <returns><b>true</b> if the effect settings can be displayed, <b>false</b> if not.</returns>
+        private bool CanShowEdgeDetect() => _imageContent.CurrentHostedPanel == null;
+
+        /// <summary>
+        /// Function to show the edge detection effect settings.
+        /// </summary>
+        private void DoShowEdgeDetect()
+        {
+            _hostServices.BusyService.SetBusy();
+
+            try
+            {
+                _imageContent.CurrentHostedPanel = EdgeDetectSettings;
+            }
+            catch (Exception ex)
+            {
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                _hostServices.BusyService.SetIdle();
+            }
+        }
+
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
@@ -409,10 +453,12 @@ namespace Gorgon.Editor.ImageEditor.Fx
             BlurSettings = injectionParameters.BlurSettings;
             SharpenSettings = injectionParameters.SharpenSettings;
             EmbossSettings = injectionParameters.EmbossSettings;
+            EdgeDetectSettings = injectionParameters.EdgeDetectSettings;
 
             BlurSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
             SharpenSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
             EmbossSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
+            EdgeDetectSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
@@ -444,6 +490,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
             InvertCommand = new EditorCommand<object>(DoInvert, CanInvert);
             ShowSharpenCommand = new EditorCommand<object>(DoShowSharpen, CanShowSharpen);
             ShowEmbossCommand = new EditorCommand<object>(DoShowEmboss, CanShowEmboss);
+            ShowEdgeDetectCommand = new EditorCommand<object>(DoShowEdgeDetect, CanShowEdgeDetect);
         }
         #endregion
     }

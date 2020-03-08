@@ -54,6 +54,7 @@
             this.ButtonPrevMip = new System.Windows.Forms.Button();
             this.ButtonNextMip = new System.Windows.Forms.Button();
             this.LabelMipLevel = new System.Windows.Forms.Label();
+            this.FxEdgeSettings = new Gorgon.Editor.ImageEditor.FxEdgeSettings();
             this.FxEmbossSettings = new Gorgon.Editor.ImageEditor.FxEmbossSettings();
             this.FxSharpenSettings = new Gorgon.Editor.ImageEditor.FxSharpenSettings();
             this.FxBlurSettings = new Gorgon.Editor.ImageEditor.FxBlurSettings();
@@ -61,7 +62,6 @@
             this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
             this.SetAlpha = new Gorgon.Editor.ImageEditor.SetAlphaSettings();
             this.GenMipMapSettings = new Gorgon.Editor.ImageEditor.GenMipMapSettings();
-            this.FxEdgeSettings = new Gorgon.Editor.ImageEditor.FxEdgeSettings();
             this.StatusPanel.SuspendLayout();
             this.HostPanel.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
@@ -342,6 +342,20 @@
             this.LabelMipLevel.Text = "Mip level:";
             this.LabelMipLevel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // FxEdgeSettings
+            // 
+            this.FxEdgeSettings.AutoSize = true;
+            this.FxEdgeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.FxEdgeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.FxEdgeSettings.ForeColor = System.Drawing.Color.White;
+            this.FxEdgeSettings.Location = new System.Drawing.Point(0, 140);
+            this.FxEdgeSettings.MinimumSize = new System.Drawing.Size(300, 520);
+            this.FxEdgeSettings.Name = "FxEdgeSettings";
+            this.FxEdgeSettings.Size = new System.Drawing.Size(300, 520);
+            this.FxEdgeSettings.TabIndex = 0;
+            this.FxEdgeSettings.Text = "Edge Detection Settings";
+            this.FxEdgeSettings.Visible = false;
+            // 
             // FxEmbossSettings
             // 
             this.FxEmbossSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
@@ -351,7 +365,7 @@
             this.FxEmbossSettings.MinimumSize = new System.Drawing.Size(300, 120);
             this.FxEmbossSettings.Name = "FxEmbossSettings";
             this.FxEmbossSettings.Size = new System.Drawing.Size(300, 120);
-            this.FxEmbossSettings.TabIndex = 10;
+            this.FxEmbossSettings.TabIndex = 0;
             this.FxEmbossSettings.Text = "Emboss Settings";
             // 
             // FxSharpenSettings
@@ -363,7 +377,7 @@
             this.FxSharpenSettings.MinimumSize = new System.Drawing.Size(300, 120);
             this.FxSharpenSettings.Name = "FxSharpenSettings";
             this.FxSharpenSettings.Size = new System.Drawing.Size(300, 120);
-            this.FxSharpenSettings.TabIndex = 9;
+            this.FxSharpenSettings.TabIndex = 0;
             this.FxSharpenSettings.Text = "Sharpen Settings";
             // 
             // FxBlurSettings
@@ -375,7 +389,7 @@
             this.FxBlurSettings.MinimumSize = new System.Drawing.Size(300, 120);
             this.FxBlurSettings.Name = "FxBlurSettings";
             this.FxBlurSettings.Size = new System.Drawing.Size(300, 120);
-            this.FxBlurSettings.TabIndex = 8;
+            this.FxBlurSettings.TabIndex = 0;
             this.FxBlurSettings.Text = "Gaussian Blur Settings";
             this.FxBlurSettings.Visible = false;
             // 
@@ -431,17 +445,6 @@
             this.GenMipMapSettings.Text = "Generate Mip Maps";
             this.GenMipMapSettings.Visible = false;
             // 
-            // FxEdgeSettings
-            // 
-            this.FxEdgeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.FxEdgeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.FxEdgeSettings.ForeColor = System.Drawing.Color.White;
-            this.FxEdgeSettings.Location = new System.Drawing.Point(0, 407);
-            this.FxEdgeSettings.Name = "FxEdgeSettings";
-            this.FxEdgeSettings.Size = new System.Drawing.Size(300, 256);
-            this.FxEdgeSettings.TabIndex = 11;
-            this.FxEdgeSettings.Text = "Edge Detection Settings";
-            // 
             // ImageEditorView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -451,6 +454,7 @@
             this.StatusPanel.ResumeLayout(false);
             this.StatusPanel.PerformLayout();
             this.HostPanel.ResumeLayout(false);
+            this.HostPanel.PerformLayout();
             this.PanelImageViewControls.ResumeLayout(false);
             this.PanelImageViewControls.PerformLayout();
             this.ResumeLayout(false);

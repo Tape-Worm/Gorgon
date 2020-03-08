@@ -82,6 +82,14 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Property to return the view model for the edge detection effect settings.
+        /// </summary>
+        IFxEdgeDetect EdgeDetectSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command used to assign the working image
         /// </summary>
         IEditorCommand<IGorgonImage> SetImageCommand
@@ -142,6 +150,14 @@ namespace Gorgon.Editor.ImageEditor
         /// Property to return the command to show the emboss effect settings.
         /// </summary>
         IEditorCommand<object> ShowEmbossCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to show the edge detection settings.
+        /// </summary>
+        IEditorCommand<object> ShowEdgeDetectCommand
         {
             get;
         }

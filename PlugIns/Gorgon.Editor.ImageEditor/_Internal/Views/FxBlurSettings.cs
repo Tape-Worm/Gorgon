@@ -135,7 +135,9 @@ namespace Gorgon.Editor.ImageEditor
         {
             if (dataContext == null)
             {
+                NumericBlurAmount.ValueChanged -= NumericBlurAmount_ValueChanged;
                 NumericBlurAmount.Value = 1;
+                NumericBlurAmount.ValueChanged += NumericBlurAmount_ValueChanged;
                 return;
             }
 

@@ -674,4 +674,8 @@ Mip Count: {5}</value>
   <data name="edge_detect_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\edge_detect_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GORIMG_TEXT_COLOR_VALUES" xml:space="preserve">
+    <value>Red: {0} Green: {1} Blue: {2}
+Alpha: {3}</value>
+  </data>
 </root>

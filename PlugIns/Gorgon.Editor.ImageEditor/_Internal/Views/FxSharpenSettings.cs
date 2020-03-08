@@ -135,7 +135,9 @@ namespace Gorgon.Editor.ImageEditor
         {
             if (dataContext == null)
             {
+                NumericSharpenAmount.ValueChanged -= NumericSharpenAmount_ValueChanged;
                 NumericSharpenAmount.Value = 1;
+                NumericSharpenAmount.ValueChanged += NumericSharpenAmount_ValueChanged;
                 return;
             }
 

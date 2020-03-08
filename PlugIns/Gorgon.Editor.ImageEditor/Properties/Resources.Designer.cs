@@ -965,6 +965,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Red: {0} Green: {1} Blue: {2}
+        ///Alpha: {3}.
+        /// </summary>
+        internal static string GORIMG_TEXT_COLOR_VALUES {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_COLOR_VALUES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Crop to {0}x{1}.
         /// </summary>
         internal static string GORIMG_TEXT_CROP_TO {

@@ -57,6 +57,8 @@ namespace Gorgon.Editor.ImageEditor
         private Gorgon2DSharpenEmbossEffect _sharpEmboss;
         // The invert effect.
         private Gorgon2DInvertEffect _invert;
+        // The edge detection effect.
+        private Gorgon2DSobelEdgeDetectEffect _edgeDetect;
         // The target used to render the effect into.
         private GorgonRenderTarget2DView _effectTargetPing;
         private GorgonRenderTarget2DView _effectTargetPong;
@@ -206,13 +208,61 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to generate an edge detection preview.
+        /// </summary>
+        /// <param name="threshold">The threshold for the detection.</param>
+        /// <param name="offset">The offset for the edge lines.</param>
+        /// <param name="color">The color of the edge lines.</param>
+        /// <param name="overlay"><b>true</b> to overlay the edges on the original image, <b>false</b> to replace the image with edges.</param>
+        public void GenerateEdgeDetectPreview(int threshold, float offset, GorgonColor color, bool overlay)
+        {
+            if (_texture == null)
+            {
+                return;
+            }
+
+            // Reset to the original texture.
+            GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
+
+            _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+
+            _edgeDetect.EdgeThreshold = (threshold / 100.0f);
+            _edgeDetect.LineColor = color;
+            _edgeDetect.LineThickness = offset;
+
+            _graphics.Graphics.SetRenderTarget(_effectTargetPing);
+
+            if (overlay)
+            {
+                _graphics.Renderer2D.Begin();
+                _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColor.White, _texture, new DX.RectangleF(0, 0, 1, 1));
+                _graphics.Renderer2D.End();
+            }
+
+            _edgeDetect.Begin(GorgonBlendState.ModulatedAlphaAdd);
+            _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColor.White, _texture, new DX.RectangleF(0, 0, 1, 1));
+            _edgeDetect.End();
+            
+            PreviewTexture = _effectTexturePing;
+
+            _graphics.Graphics.SetRenderTarget(originalRtv);
+        }
+
+        /// <summary>
         /// Function to generate a blurred image preview.
         /// </summary>
         /// <param name="blurAmount">The amount to blur.</param>
         public void GenerateBlurPreview(int blurAmount)
         {
+            if (_texture == null)
+            {
+                return;
+            }
+
             // Reset to the original texture.
             PreviewTexture = _texture;
+            _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+            _effectTargetPong.Clear(GorgonColor.BlackTransparent);
             GorgonRenderTarget2DView outputTarget = _effectTargetPing;
 
             GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
@@ -242,10 +292,17 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="amount">The amount to sharpen or emboss.</param>
         /// <param name="emboss"><b>true</b> to use the emboss effect, <b>false</b> to use sharpening.</param>
-        public void SharpenEmbossPreview(int amount, bool emboss)
+        public void GenerateSharpenEmbossPreview(int amount, bool emboss)
         {
+            if (_texture == null)
+            {
+                return;
+            }
+
             // Reset to the original texture.
             GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
+
+            _effectTargetPing.Clear(GorgonColor.BlackTransparent);
 
             // Render the blurring effect by ping-ponging between the render targets to generate the image.
             _sharpEmboss.UseEmbossing = emboss;
@@ -295,7 +352,7 @@ namespace Gorgon.Editor.ImageEditor
                 srcBuffer.CopyTo(_workingImage.Buffers[0]);
             }
 
-            _sharpEmboss.TextureSize = new DX.Size2F(_workingImage.Width, _workingImage.Height);            
+            _edgeDetect.TextureSize = _sharpEmboss.TextureSize = new DX.Size2F(_workingImage.Width, _workingImage.Height);   
 
             CreateTexture();
         }
@@ -308,6 +365,12 @@ namespace Gorgon.Editor.ImageEditor
             _grayScale = new Gorgon2DGrayScaleEffect(_graphics.Renderer2D);
             _invert = new Gorgon2DInvertEffect(_graphics.Renderer2D);
             _sharpEmboss = new Gorgon2DSharpenEmbossEffect(_graphics.Renderer2D);
+            _edgeDetect = new Gorgon2DSobelEdgeDetectEffect(_graphics.Renderer2D)
+            {
+                EdgeThreshold = 0.5f,
+                LineThickness = 1.0f,
+                LineColor = GorgonColor.Black                
+            };
             _blur = new Gorgon2DGaussBlurEffect(_graphics.Renderer2D, 9)
             {
                 BlurRadius = 1
@@ -324,6 +387,8 @@ namespace Gorgon.Editor.ImageEditor
             Gorgon2DInvertEffect invert = Interlocked.Exchange(ref _invert, null);
             Gorgon2DSharpenEmbossEffect sharp = Interlocked.Exchange(ref _sharpEmboss, null);
             Gorgon2DGaussBlurEffect blur = Interlocked.Exchange(ref _blur, null);
+            Gorgon2DSobelEdgeDetectEffect edge = Interlocked.Exchange(ref _edgeDetect, null);
+            edge?.Dispose();
             grayScale?.Dispose();
             sharp?.Dispose();
             invert?.Dispose();

@@ -134,6 +134,7 @@ namespace Gorgon.Editor.ImageEditor
             FxBlurSettings.SetDataContext(dataContext.FxContext.BlurSettings);
             FxSharpenSettings.SetDataContext(dataContext.FxContext.SharpenSettings);
             FxEmbossSettings.SetDataContext(dataContext.FxContext.EmbossSettings);
+            FxEdgeSettings.SetDataContext(dataContext.FxContext.EdgeDetectSettings);
 
             if (dataContext.ImageType == ImageType.Image3D)
             {
@@ -471,6 +472,7 @@ namespace Gorgon.Editor.ImageEditor
             FxBlurSettings.SetDataContext(null);
             FxSharpenSettings.SetDataContext(null);
             FxEmbossSettings.SetDataContext(null);
+            FxEdgeSettings.SetDataContext(null);
         }
 
         /// <summary>Function called to shut down the view.</summary>
@@ -564,7 +566,8 @@ namespace Gorgon.Editor.ImageEditor
             RegisterChildPanel(typeof(AlphaSettings).FullName, SetAlpha);
             RegisterChildPanel(typeof(FxBlur).FullName, FxBlurSettings);
             RegisterChildPanel(typeof(FxSharpen).FullName, FxSharpenSettings);
-            RegisterChildPanel(typeof(FxEmboss).FullName, FxEmbossSettings);            
+            RegisterChildPanel(typeof(FxEmboss).FullName, FxEmbossSettings);
+            RegisterChildPanel(typeof(FxEdgeDetect).FullName, FxEdgeSettings);
         }
         #endregion
     }

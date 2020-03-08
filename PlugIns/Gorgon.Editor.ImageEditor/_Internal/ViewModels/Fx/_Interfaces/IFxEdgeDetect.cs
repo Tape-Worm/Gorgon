@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 1, 2020 8:36:39 PM
+// Created: March 6, 2020 1:37:30 PM
 // 
 #endregion
 
@@ -29,56 +29,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// A previewer for specific effects that support previewing.
+    /// The settings view model for the edge detect effect.
     /// </summary>
-    internal interface IFxPreviewer
+    internal interface IFxEdgeDetect
+        : IHostedPanelViewModel
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the texture holding the unalterd image.
+        /// Property to set or return the threshold for detecting edges (as a percentage).
         /// </summary>
-        GorgonTexture2DView OriginalTexture
+        int Threshold
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the texture that contains the blurred preview image.
+        /// Property to set or return the amount to offset the edge line widths.
         /// </summary>
-        GorgonTexture2DView PreviewTexture
+        float Offset
         {
             get;
+            set;
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to generate a blurred image preview.
-        /// </summary>
-        /// <param name="blurAmount">The amount to blur.</param>
-        void GenerateBlurPreview(int blurAmount);
 
         /// <summary>
-        /// Function to generate a sharpen or emboss image preview.
+        /// Property to set or return the color of the edge lines.
         /// </summary>
-        /// <param name="amount">The amount to sharpen or emboss.</param>
-        /// <param name="emboss"><b>true</b> to use the emboss effect, <b>false</b> to use sharpening.</param>
-        void GenerateSharpenEmbossPreview(int amount, bool emboss);
+        GorgonColor LineColor
+        {
+            get;
+            set;
+        }
 
         /// <summary>
-        /// Function to generate an edge detection preview.
+        /// Property to set or return whether the edges should be overlaid on top of the original image or not.
         /// </summary>
-        /// <param name="threshold">The threshold for the detection.</param>
-        /// <param name="offset">The offset for the edge lines.</param>
-        /// <param name="color">The color of the edge lines.</param>
-        /// <param name="overlay"><b>true</b> to overlay the edges on the original image, <b>false</b> to replace the image with edges.</param>
-        void GenerateEdgeDetectPreview(int threshold, float offset, GorgonColor color, bool overlay);
-        #endregion
+        bool Overlay
+        {
+            get;
+            set;
+        }
     }
 }

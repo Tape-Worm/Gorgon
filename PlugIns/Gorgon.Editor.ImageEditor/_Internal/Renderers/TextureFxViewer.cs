@@ -60,6 +60,14 @@ namespace Gorgon.Editor.ImageEditor
         private int _sharpAmount = 50;
         // The amount to sharpen.
         private int _embossAmount = 50;
+        // The threshold for the edge detect effect.
+        private int _edgeThreshold = 50;
+        // The offset for the edge detect lines.
+        private float _edgeOffset = 1.0f;
+        // The color for the lines in the edge detect effect.
+        private GorgonColor _edgeColor = GorgonColor.Black;
+        // Flag to indicate that the edge detection effect is overlaid on top of the original image.
+        private bool _edgeOverlay = true;
         // The service used to apply effects.
         private readonly IFxPreviewer _fxPreviewer;
         #endregion
@@ -70,10 +78,37 @@ namespace Gorgon.Editor.ImageEditor
         ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            DataContext.FxContext.BlurSettings.PropertyChanged -= FxBlurSettings_PropertyChanged;
-            DataContext.FxContext.SharpenSettings.PropertyChanged -= SharpenSettings_PropertyChanged;
-            DataContext.FxContext.EmbossSettings.PropertyChanged -= EmbossSettings_PropertyChanged;
+            if (disposing)
+            {
+                DataContext.FxContext.BlurSettings.PropertyChanged -= FxBlurSettings_PropertyChanged;
+                DataContext.FxContext.SharpenSettings.PropertyChanged -= SharpenSettings_PropertyChanged;
+                DataContext.FxContext.EmbossSettings.PropertyChanged -= EmbossSettings_PropertyChanged;
+                DataContext.FxContext.EdgeDetectSettings.PropertyChanged -= EdgeDetectSettings_PropertyChanged;
+            }
             base.Dispose(disposing);
+        }
+
+        /// <summary>Handles the PropertyChanged event of the EdgeDetectSettings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void EdgeDetectSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IFxEdgeDetect.Threshold):
+                    _edgeThreshold = DataContext.FxContext.EdgeDetectSettings.Threshold;
+                    break;
+                case nameof(IFxEdgeDetect.Offset):
+                    _edgeOffset = DataContext.FxContext.EdgeDetectSettings.Offset;
+                    break;
+                case nameof(IFxEdgeDetect.LineColor):
+                    _edgeColor = DataContext.FxContext.EdgeDetectSettings.LineColor;
+                    break;
+                case nameof(IFxEdgeDetect.Overlay):
+                    _edgeOverlay = DataContext.FxContext.EdgeDetectSettings.Overlay;
+                    break;
+            }
+            RenderFx();
         }
 
         /// <summary>Handles the PropertyChanged event of the SharpenSettings control.</summary>
@@ -85,6 +120,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 case nameof(IFxSharpen.Amount):
                     _sharpAmount = DataContext.FxContext.SharpenSettings.Amount;
+                    RenderFx();
                     break;
             }
         }
@@ -98,6 +134,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 case nameof(IFxEmboss.Amount):
                     _embossAmount = DataContext.FxContext.EmbossSettings.Amount;
+                    RenderFx();
                     break;
             }
         }
@@ -111,6 +148,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 case nameof(IFxBlur.BlurAmount):
                     _passes = DataContext.FxContext.BlurSettings.BlurAmount;
+                    RenderFx();
                     break;
             }            
         }
@@ -126,11 +164,15 @@ namespace Gorgon.Editor.ImageEditor
             }
             else if (DataContext.CurrentHostedPanel == DataContext.FxContext.SharpenSettings)
             {
-                _fxPreviewer.SharpenEmbossPreview(_sharpAmount, false);
+                _fxPreviewer.GenerateSharpenEmbossPreview(_sharpAmount, false);
             }
             else if (DataContext.CurrentHostedPanel == DataContext.FxContext.EmbossSettings)
             {
-                _fxPreviewer.SharpenEmbossPreview(_embossAmount, true);
+                _fxPreviewer.GenerateSharpenEmbossPreview(_embossAmount, true);
+            }
+            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.EdgeDetectSettings)
+            {
+                _fxPreviewer.GenerateEdgeDetectPreview(_edgeThreshold, _edgeOffset, _edgeColor, _edgeOverlay);
             }
         }
 
@@ -144,18 +186,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (propertyName)
             {
                 case nameof(IImageContent.CurrentHostedPanel):
-                    if ((DataContext.CurrentHostedPanel == DataContext.FxContext.BlurSettings))
-                    {
-                        _fxPreviewer.GenerateBlurPreview(_passes);
-                    }
-                    else if ((DataContext.CurrentHostedPanel == DataContext.FxContext.SharpenSettings))
-                    {
-                        _fxPreviewer.SharpenEmbossPreview(_sharpAmount, false);
-                    }
-                    else if ((DataContext.CurrentHostedPanel == DataContext.FxContext.EmbossSettings))
-                    {
-                        _fxPreviewer.SharpenEmbossPreview(_embossAmount, true);
-                    }
+                    RenderFx();
                     break;
             }
         }
@@ -164,8 +195,6 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>This is the method that developers should override in order to draw their content to the view.</remarks>
         protected override void DrawTexture()
         {
-            RenderFx();
-
             Graphics.SetRenderTarget(MainRenderTarget);
 
             var color = new GorgonColor(GorgonColor.White, Opacity);            
@@ -192,6 +221,9 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             RenderRegion = new DX.RectangleF(0, 0, _fxPreviewer.PreviewTexture.Width, _fxPreviewer.PreviewTexture.Height);
+
+            // Render previews.
+            RenderFx();
         }
 
         /// <summary>Function to destroy the texture when done with it.</summary>
@@ -213,6 +245,7 @@ namespace Gorgon.Editor.ImageEditor
             dataContext.FxContext.BlurSettings.PropertyChanged += FxBlurSettings_PropertyChanged;
             dataContext.FxContext.SharpenSettings.PropertyChanged += SharpenSettings_PropertyChanged;
             dataContext.FxContext.EmbossSettings.PropertyChanged += EmbossSettings_PropertyChanged;
+            dataContext.FxContext.EdgeDetectSettings.PropertyChanged += EdgeDetectSettings_PropertyChanged;
             AllowArrayDepthChange = false;
             AllowMipChange = false;
         }        

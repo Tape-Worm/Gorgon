@@ -135,7 +135,9 @@ namespace Gorgon.Editor.ImageEditor
         {
             if (dataContext == null)
             {
+                NumericEmbossAmount.ValueChanged -= NumericEmbossAmount_ValueChanged;
                 NumericEmbossAmount.Value = 1;
+                NumericEmbossAmount.ValueChanged += NumericEmbossAmount_ValueChanged;
                 return;
             }
 

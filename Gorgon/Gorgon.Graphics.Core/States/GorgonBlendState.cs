@@ -84,6 +84,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public static readonly GorgonBlendState Inverted;
 
+        /// <summary>
+        /// Modulated blending on render target 0 with additive alpha channel blend.
+        /// </summary>
+        public static readonly GorgonBlendState ModulatedAlphaAdd;
         #endregion
 
         #region Properties.
@@ -318,6 +322,15 @@ namespace Gorgon.Graphics.Core
                 DestinationColorBlend = Blend.InverseSourceAlpha
             };
 
+            // Modulated blending with alpha add.
+            ModulatedAlphaAdd = new GorgonBlendState
+            {
+                IsBlendingEnabled = true,
+                SourceColorBlend = Blend.SourceAlpha,
+                DestinationColorBlend = Blend.InverseSourceAlpha,
+                SourceAlphaBlend = Blend.One,
+                DestinationAlphaBlend = Blend.One,
+            };
 
             // Additive
             Additive = new GorgonBlendState

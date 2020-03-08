@@ -50,6 +50,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
@@ -73,9 +77,11 @@
     <Compile Include="_Internal\ViewModels\Fx\FxContext.cs" />
     <Compile Include="_Internal\ViewModels\Fx\FxContextParameters.cs" />
     <Compile Include="_Internal\ViewModels\Fx\FxEmboss.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\FxEdgeDetect.cs" />
     <Compile Include="_Internal\ViewModels\Fx\FxSharpen.cs" />
     <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxContext.cs" />
     <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxEmboss.cs" />
+    <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxEdgeDetect.cs" />
     <Compile Include="_Internal\ViewModels\Fx\_Interfaces\IFxSharpen.cs" />
     <Compile Include="_Internal\ViewModels\ImagePickerImportData.cs" />
     <Compile Include="_Internal\Renderers\TextureCubeViewer.cs" />
