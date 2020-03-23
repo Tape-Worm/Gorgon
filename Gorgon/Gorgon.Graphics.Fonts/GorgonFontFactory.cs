@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
@@ -249,7 +250,7 @@ namespace Gorgon.Graphics.Fonts
         }
 
         /// <summary>
-        /// Function to load a try type font into the font factory for rasterization.
+        /// Function to load a true type font into the font factory for rasterization.
         /// </summary>
         /// <param name="path">The path to the font on the file system.</param>
         /// <returns>The font family for loaded font.</returns>
@@ -273,6 +274,32 @@ namespace Gorgon.Graphics.Fonts
             }
 
             _externalFonts.AddFontFile(path);
+
+            return _externalFonts.Families[_externalFonts.Families.Length - 1];
+        }
+		
+		/// <summary>
+        /// Function to load a true type font into the font factory for rasterization.
+        /// </summary>
+        /// <param name="memory">The pointer to the font in memory.</param>
+        /// <returns>The font family for loaded font.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="memory"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this to load a true type from memory into the factory. The factory will use this to build a <see cref="GorgonFont"/> based on your font.
+        /// </para>
+        /// </remarks>
+	    public FontFamily LoadTrueTypeFontFamily(IntPtr memory)
+        {
+            if (memory == IntPtr.Zero())
+            {
+                throw new ArgumentNullException(nameof(memory));
+            }
+			
+			IntPtr fontMem = Marshal.AllocCoTaskMem(memory.Length);
+			Marshal.Copy(memory, 0, fontMem, memory.Length);
+			
+            _externalFonts.AddMemoryFont(fontMem, memory.Length);
 
             return _externalFonts.Families[_externalFonts.Families.Length - 1];
         }
