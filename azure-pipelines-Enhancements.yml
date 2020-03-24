@@ -8,7 +8,7 @@ name: 3.0.$(Rev:r).$(DayOfYear)-BugFix
 trigger:
   branches:
     include:
-    - BugFixes
+    - Enhancements
 
 jobs:
 - job: 'Release'
@@ -20,7 +20,7 @@ jobs:
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
 
-  displayName: Release-BugFix
+  displayName: Release-Enhancements
     
   steps:
   - task: PowerShell@2
@@ -159,7 +159,7 @@ jobs:
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Debug'
 
-  displayName: Debug-BugFix
+  displayName: Debug-Enhancements
    
   steps:
   - task: PowerShell@2
@@ -168,10 +168,7 @@ jobs:
       targetType: filePath
       filePath: '.\VersionUpdater.ps1'
 
-  - task: NuGetToolInstaller@1
-    inputs:
-      versionSpec: 
-      checkLatest: true
+  - task: NuGetToolInstaller@0
   
   - task: NuGetCommand@2
     inputs:
@@ -273,4 +270,4 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: BugFixDrop
+      artifactName: EnhancementsFixDrop
