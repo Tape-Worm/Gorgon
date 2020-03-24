@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Achafexp.ttf" />
     <None Include="Resources\Gorgon_Logo_Small.DDS" />
   </ItemGroup>
   <ItemGroup>

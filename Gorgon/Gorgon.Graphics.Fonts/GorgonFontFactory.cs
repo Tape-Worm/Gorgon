@@ -28,8 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
+using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -119,6 +121,25 @@ namespace Gorgon.Graphics.Fonts
                     || (left.PackingSpacing != right.PackingSpacing)
                     || (!left.Size.EqualsEpsilon(right.Size))
                     || (!left.Characters.SequenceEqual(right.Characters)));
+
+        /// <summary>
+        /// Function to locate a newly loaded external font.
+        /// </summary>
+        /// <param name="currentFonts">The current list of fonts, prior to loading the external font.</param>
+        /// <returns>The font family for the font, or <b>null</b> if not found.</returns>
+        private FontFamily GetExternalFontFamily(HashSet<string> currentFonts)
+        {
+            var newFonts = new HashSet<string>(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
+            newFonts.ExceptWith(currentFonts);
+            string newFont = newFonts.FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(newFont))
+            {
+                return null;
+            }
+
+            return _externalFonts.Families.FirstOrDefault(item => string.Equals(item.Name, newFont, StringComparison.OrdinalIgnoreCase));
+        }
 
         /// <summary>
         /// Function to register a font within the font cache.
@@ -251,6 +272,67 @@ namespace Gorgon.Graphics.Fonts
         /// <summary>
         /// Function to load a try type font into the font factory for rasterization.
         /// </summary>
+        /// <param name="stream">The stream containing the true type font data.</param>
+        /// <param name="size">[Optional] The size of the font data, in bytes.</param>
+        /// <returns>The font family for the loaded font.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown when no more data can be read from the <paramref name="stream"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this to load a true type from the disk into the factory. The factory will use this to build a <see cref="GorgonFont"/> based on your font.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="size"/> parameter is not specified, then the entire length of the stream will be used.
+        /// </para>
+        /// </remarks>
+	    public FontFamily LoadTrueTypeFontFamily(Stream stream, int? size = null)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
+            }
+
+            if (size == null)
+            {
+                size = (int)stream.Length;
+            }
+
+            if (size < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(size));
+            }
+
+            if (stream.Position > (stream.Length - size.Value))
+            {
+                throw new EndOfStreamException();
+            }
+
+            var currentFonts = new HashSet<string>(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
+
+            byte[] data = new byte[size.Value];
+            stream.Read(data, 0, data.Length);            
+
+            unsafe
+            {
+                fixed (byte* ptr = data)
+                {                    
+                    _externalFonts.AddMemoryFont(new IntPtr(ptr), data.Length);
+                }
+            }
+
+            return GetExternalFontFamily(currentFonts);
+        }
+
+        /// <summary>
+        /// Function to load a try type font into the font factory for rasterization.
+        /// </summary>
         /// <param name="path">The path to the font on the file system.</param>
         /// <returns>The font family for loaded font.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
@@ -272,9 +354,11 @@ namespace Gorgon.Graphics.Fonts
                 throw new ArgumentEmptyException(nameof(path));
             }
 
+            var currentFonts = new HashSet<string>(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
+
             _externalFonts.AddFontFile(path);
 
-            return _externalFonts.Families[_externalFonts.Families.Length - 1];
+            return GetExternalFontFamily(currentFonts);
         }
 
         /// <summary>
