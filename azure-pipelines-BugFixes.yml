@@ -30,6 +30,9 @@ jobs:
       filePath: '.\VersionUpdater.ps1'
 
   - task: NuGetToolInstaller@1
+    inputs:
+      versionSpec: 
+      checkLatest: true
 
   - task: NuGetCommand@2
     inputs:
