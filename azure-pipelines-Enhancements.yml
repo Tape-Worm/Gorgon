@@ -3,12 +3,12 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
-name: 3.0.$(Rev:r).$(DayOfYear)-BugFix
+name: 3.0.$(Rev:r).$(DayOfYear)-Enhance
 
 trigger:
   branches:
     include:
-    - BugFixes
+    - Enhancements
 
 jobs:
 - job: 'Release'
@@ -20,7 +20,7 @@ jobs:
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
 
-  displayName: Release-BugFix
+  displayName: Release-Enhancements
     
   steps:
   - task: PowerShell@2
@@ -159,7 +159,7 @@ jobs:
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Debug'
 
-  displayName: Debug-BugFix
+  displayName: Debug-Enhancements
    
   steps:
   - task: PowerShell@2
@@ -273,4 +273,4 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: BugFixDrop
+      artifactName: EnhancementsFixDrop

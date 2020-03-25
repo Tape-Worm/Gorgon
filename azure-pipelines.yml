@@ -27,7 +27,10 @@ jobs:
       targetType: filePath
       filePath: '.\VersionUpdater.ps1'
 
-  - task: NuGetToolInstaller@0
+  - task: NuGetToolInstaller@1
+    inputs:
+      versionSpec: 
+      checkLatest: true
 
   - task: NuGetCommand@2
     inputs:
@@ -170,7 +173,10 @@ jobs:
       targetType: filePath
       filePath: '.\VersionUpdater.ps1'
 
-  - task: NuGetToolInstaller@0
+  - task: NuGetToolInstaller@1
+    inputs:
+      versionSpec: 
+      checkLatest: true
 
   - task: NuGetCommand@2
     inputs:
