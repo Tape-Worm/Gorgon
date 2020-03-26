@@ -90,6 +90,22 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Property to return the view model for the posterize effect settings.
+        /// </summary>
+        IFxPosterize PosterizeSettings
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the view model for the one bit effect settings.
+        /// </summary>
+        IFxOneBit OneBitSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command used to assign the working image
         /// </summary>
         IEditorCommand<IGorgonImage> SetImageCommand
@@ -158,6 +174,38 @@ namespace Gorgon.Editor.ImageEditor
         /// Property to return the command to show the edge detection settings.
         /// </summary>
         IEditorCommand<object> ShowEdgeDetectCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to show the posterize settings.
+        /// </summary>
+        IEditorCommand<object> ShowPosterizeCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to show the one bit effect settings.
+        /// </summary>
+        IEditorCommand<object> ShowOneBitCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to apply the burn effect.
+        /// </summary>
+        IEditorCommand<object> BurnCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to apply the dodge effect.
+        /// </summary>
+        IEditorCommand<object> DodgeCommand
         {
             get;
         }

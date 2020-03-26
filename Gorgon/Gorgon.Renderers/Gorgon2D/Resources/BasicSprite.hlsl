@@ -480,23 +480,36 @@ float4 GorgonPixelShaderEmboss(GorgonSpriteVertex vertex) : SV_Target
 cbuffer GorgonPosterizeEffect : register(b1)
 {
 	bool posterizeUseAlpha;
-	float posterizeExponent;
-	int posterizeBits;
+	float posterizeGamma;
+	int posterizeColors;
 }
 
 // Function to posterize texture data.
 float4 GorgonPixelShaderPosterize(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-
-	if (!posterizeUseAlpha)	
-		color.rgb = pow(floor((pow(color.rgb, posterizeExponent) * posterizeBits)) / posterizeBits, 1.0f / posterizeExponent);
-	else
-		color = pow(floor((pow(color, posterizeExponent) * posterizeBits)) / posterizeBits, 1.0f / posterizeExponent);
-
+	float4 posterColor = color;	
+	
 	REJECT_ALPHA(color.a);
 
-	return color;
+	posterColor = pow(posterColor, posterizeGamma);
+	
+	posterColor *= (posterizeColors - 1);
+	posterColor = floor(posterColor);
+	posterColor /= (posterizeColors - 1);
+	
+	posterColor = pow(posterColor, 1.0f / posterizeGamma);
+	
+	if (!posterizeUseAlpha)
+	{
+		posterColor.a = color.a;
+	}
+	else
+	{
+		REJECT_ALPHA(posterColor.a);
+	}
+	
+	return posterColor;
 }
 #endif
 

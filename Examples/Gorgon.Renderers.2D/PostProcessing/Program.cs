@@ -276,7 +276,7 @@ namespace Gorgon.Examples
             // The posterize effect.
             _posterizeEffect = new Gorgon2DPosterizedEffect(_renderer)
             {
-                Bits = 10
+                ColorCount = 10
             };
 
             // The 1 bit effect.

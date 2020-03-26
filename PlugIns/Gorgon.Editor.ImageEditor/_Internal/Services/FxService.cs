@@ -37,6 +37,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Graphics;
+using Gorgon.Core;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -59,6 +60,12 @@ namespace Gorgon.Editor.ImageEditor
         private Gorgon2DInvertEffect _invert;
         // The edge detection effect.
         private Gorgon2DSobelEdgeDetectEffect _edgeDetect;
+        // The burn/dodge effect.
+        private Gorgon2DBurnDodgeEffect _burnDodgeEffect;
+        // The posterize effect.
+        private Gorgon2DPosterizedEffect _posterizeEffect;
+        // The 1 bit effect.
+        private Gorgon2D1BitEffect _oneBitEffect;
         // The target used to render the effect into.
         private GorgonRenderTarget2DView _effectTargetPing;
         private GorgonRenderTarget2DView _effectTargetPong;
@@ -150,15 +157,14 @@ namespace Gorgon.Editor.ImageEditor
             _blur.BlurRenderTargetsSize = new DX.Size2(size, size);
         }
 
-        /// <summary>Function to apply the grayscale effect.</summary>
-        public void ApplyGrayScale()
+        /// <summary>
+        /// Function called after an effect has been applied.
+        /// </summary>
+        /// <param name="effectTexture">The texture containing the image with the effect applied.</param>
+        /// <param name="originalRtv">The original render target before the effect was applied.</param>
+        private void AfterApplyEffect(GorgonTexture2DView effectTexture, GorgonRenderTargetView originalRtv)
         {
-            GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
-
-            // Render the blurring effect by ping-ponging between the render targets to generate the image.
-            _grayScale.Render(_texture, _effectTargetPing);
-
-            using (IGorgonImage image = _effectTexturePing.Texture.ToImage())
+            using (IGorgonImage image = effectTexture.Texture.ToImage())
             {
                 image.Buffers[0].CopyTo(_workingImage.Buffers[0]);
             }
@@ -167,6 +173,17 @@ namespace Gorgon.Editor.ImageEditor
 
             // Recreate the texture so we can see the result.
             CreateTexture();
+        }
+
+        /// <summary>Function to apply the grayscale effect.</summary>
+        public void ApplyGrayScale()
+        {
+            GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
+
+            // Render the blurring effect by ping-ponging between the render targets to generate the image.
+            _grayScale.Render(_texture, _effectTargetPing);
+
+            AfterApplyEffect(_effectTexturePing, originalRtv);
         }
 
         /// <summary>
@@ -179,15 +196,22 @@ namespace Gorgon.Editor.ImageEditor
             // Render the blurring effect by ping-ponging between the render targets to generate the image.
             _invert.Render(_texture, _effectTargetPing);
 
-            using (IGorgonImage image = _effectTexturePing.Texture.ToImage())
-            {
-                image.Buffers[0].CopyTo(_workingImage.Buffers[0]);
-            }
+            AfterApplyEffect(_effectTexturePing, originalRtv);
+        }
 
-            _graphics.Graphics.SetRenderTarget(originalRtv);
+        /// <summary>
+        /// Function to apply the dodge/burn effect.
+        /// </summary>
+        /// <param name="useDodge"><b>true</b> to apply the dodge effect, <b>false</b> to apply the burn effect.</param>
+        public void ApplyDodgeBurn(bool useDodge)
+        {
+            GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-            // Recreate the texture so we can see the result.
-            CreateTexture();
+            // Render the blurring effect by ping-ponging between the render targets to generate the image.
+            _burnDodgeEffect.UseDodge = useDodge;
+            _burnDodgeEffect.Render(_texture, _effectTargetPing);
+
+            AfterApplyEffect(_effectTexturePing, originalRtv);
         }
 
         /// <summary>Function to apply the current effect that is using a preview.</summary>
@@ -288,6 +312,28 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to generate a posterize effect preview.
+        /// </summary>
+        /// <param name="amount">The amount to posterize.</param>
+        public void GeneratePosterizePreview(int amount)
+        {
+            if (_texture == null)
+            {
+                return;
+            }
+
+            GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
+
+            _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+
+            _posterizeEffect.ColorCount = amount;
+            _posterizeEffect.Render(_texture, _effectTargetPing);
+            PreviewTexture = _effectTexturePing;
+
+            _graphics.Graphics.SetRenderTarget(originalRtv);
+        }
+
+        /// <summary>
         /// Function to generate a sharpen image preview.
         /// </summary>
         /// <param name="amount">The amount to sharpen or emboss.</param>
@@ -304,10 +350,32 @@ namespace Gorgon.Editor.ImageEditor
 
             _effectTargetPing.Clear(GorgonColor.BlackTransparent);
 
-            // Render the blurring effect by ping-ponging between the render targets to generate the image.
             _sharpEmboss.UseEmbossing = emboss;
             _sharpEmboss.Amount = amount / 100.0f;
             _sharpEmboss.Render(_texture, _effectTargetPing);
+            PreviewTexture = _effectTexturePing;
+
+            _graphics.Graphics.SetRenderTarget(originalRtv);
+        }
+
+        /// <summary>Function to generate a one bit effect preview.</summary>
+        /// <param name="range">The threshold range of colors to consider as "on".</param>
+        /// <param name="invert">
+        ///   <b>true</b> to invert the colors, <b>false</b> to leave as-is.</param>
+        public void GenerateOneBitPreview(GorgonRangeF range, bool invert)
+        {
+            if (_texture == null)
+            {
+                return;
+            }
+
+            GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
+
+            _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+                        
+            _oneBitEffect.Threshold = range;
+            _oneBitEffect.Invert = invert;
+            _oneBitEffect.Render(_texture, _effectTargetPing);
             PreviewTexture = _effectTexturePing;
 
             _graphics.Graphics.SetRenderTarget(originalRtv);
@@ -365,6 +433,12 @@ namespace Gorgon.Editor.ImageEditor
             _grayScale = new Gorgon2DGrayScaleEffect(_graphics.Renderer2D);
             _invert = new Gorgon2DInvertEffect(_graphics.Renderer2D);
             _sharpEmboss = new Gorgon2DSharpenEmbossEffect(_graphics.Renderer2D);
+            _burnDodgeEffect = new Gorgon2DBurnDodgeEffect(_graphics.Renderer2D);
+            _posterizeEffect = new Gorgon2DPosterizedEffect(_graphics.Renderer2D);
+            _oneBitEffect = new Gorgon2D1BitEffect(_graphics.Renderer2D)
+            {
+                ConvertAlphaChannel = false
+            };
             _edgeDetect = new Gorgon2DSobelEdgeDetectEffect(_graphics.Renderer2D)
             {
                 EdgeThreshold = 0.5f,
@@ -388,6 +462,12 @@ namespace Gorgon.Editor.ImageEditor
             Gorgon2DSharpenEmbossEffect sharp = Interlocked.Exchange(ref _sharpEmboss, null);
             Gorgon2DGaussBlurEffect blur = Interlocked.Exchange(ref _blur, null);
             Gorgon2DSobelEdgeDetectEffect edge = Interlocked.Exchange(ref _edgeDetect, null);
+            Gorgon2DBurnDodgeEffect burnDodge = Interlocked.Exchange(ref _burnDodgeEffect, null);
+            Gorgon2DPosterizedEffect posterize = Interlocked.Exchange(ref _posterizeEffect, null);
+            Gorgon2D1BitEffect oneBit = Interlocked.Exchange(ref _oneBitEffect, null);
+            oneBit?.Dispose();
+            posterize?.Dispose();
+            burnDodge?.Dispose();
             edge?.Dispose();
             grayScale?.Dispose();
             sharp?.Dispose();

@@ -31,6 +31,7 @@ using DX = SharpDX;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
+using Gorgon.Math;
 
 namespace Gorgon.Renderers
 {
@@ -49,19 +50,20 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Settings for the effect shader.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        [StructLayout(LayoutKind.Sequential, Pack = 16)]
         private struct Settings
         {
-            private readonly int _posterizeAlpha;                               // Flag to posterize the alpha channel.
+            // Flag to posterize the alpha channel.
+            private readonly int _posterizeAlpha;                               
 
             /// <summary>
-            /// Exponent power for the posterization.
+            /// Gamma for the posterization.
             /// </summary>
-            public readonly float PosterizeExponent;
+            public readonly float PosterizeGamma;
             /// <summary>
-            /// Number of bits to reduce down to.
+            /// Number of colors to reduce down to.
             /// </summary>
-            public readonly int PosterizeBits;
+            public readonly int PosterizeColorCount;
 
             /// <summary>
             /// Property to return whether to posterize the alpha channel.
@@ -73,12 +75,12 @@ namespace Gorgon.Renderers
             /// </summary>
             /// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
             /// <param name="power">The power.</param>
-            /// <param name="bits">The bits.</param>
-            public Settings(bool useAlpha, float power, int bits)
+            /// <param name="count">The number of colors.</param>
+            public Settings(bool useAlpha, float power, int count)
             {
                 _posterizeAlpha = Convert.ToInt32(useAlpha);
-                PosterizeExponent = power;
-                PosterizeBits = bits;
+                PosterizeGamma = power;
+                PosterizeColorCount = count;
             }
         }
         #endregion
@@ -111,54 +113,48 @@ namespace Gorgon.Renderers
                     return;
                 }
 
-                _settings = new Settings(value, _settings.PosterizeExponent, _settings.PosterizeBits);
+                _settings = new Settings(value, _settings.PosterizeGamma, _settings.PosterizeColorCount);
                 _isUpdated = true;
             }
         }
 
         /// <summary>
-        /// Property to set or return the exponent power for the effect.
+        /// Property to set or return the gamma value for the effect.
         /// </summary>
-        public float Power
+        public float Gamma
         {
-            get => _settings.PosterizeExponent;
+            get => _settings.PosterizeGamma;
             set
             {
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (_settings.PosterizeExponent == value)
+                if (_settings.PosterizeGamma.EqualsEpsilon(value))
                 {
                     return;
                 }
 
-                if (value < 1e-6f)
-                {
-                    value = 1e-6f;
-                }
+                value = value.Max(0.1f).Min(10.0f);
 
-                _settings = new Settings(_settings.PosterizeAlpha, value, _settings.PosterizeBits);
+                _settings = new Settings(_settings.PosterizeAlpha, value, _settings.PosterizeColorCount);
                 _isUpdated = true;
             }
         }
 
         /// <summary>
-        /// Property to set or return the number of bits to reduce down to for the effect.
+        /// Property to set or return the number of colors to reduce down to for the effect.
         /// </summary>
-        public int Bits
+        public int ColorCount
         {
-            get => _settings.PosterizeBits;
+            get => _settings.PosterizeColorCount;
             set
             {
-                if (_settings.PosterizeBits == value)
+                if (_settings.PosterizeColorCount == value)
                 {
                     return;
                 }
 
-                if (value < 1)
-                {
-                    value = 1;
-                }
+                value = value.Min(255).Max(2);
 
-                _settings = new Settings(_settings.PosterizeAlpha, _settings.PosterizeExponent, value);
+                _settings = new Settings(_settings.PosterizeAlpha, _settings.PosterizeGamma, value);
                 _isUpdated = true;
             }
         }
@@ -307,7 +303,7 @@ namespace Gorgon.Renderers
         public Gorgon2DPosterizedEffect(Gorgon2D renderer)
             : base(renderer, Resources.GOR2D_EFFECT_POSTERIZE, Resources.GOR2D_EFFECT_POSTERIZE_DESC, 1)
         {
-            _settings = new Settings(false, 1.0f, 8);
+            _settings = new Settings(false, 1.0f, 4);
             Macros.Add(new GorgonShaderMacro("POSTERIZE_EFFECT"));
         }
         #endregion

@@ -135,6 +135,8 @@ namespace Gorgon.Editor.ImageEditor
             FxSharpenSettings.SetDataContext(dataContext.FxContext.SharpenSettings);
             FxEmbossSettings.SetDataContext(dataContext.FxContext.EmbossSettings);
             FxEdgeSettings.SetDataContext(dataContext.FxContext.EdgeDetectSettings);
+            FxPosterizeSettings.SetDataContext(dataContext.FxContext.PosterizeSettings);
+            Fx1BitSettings.SetDataContext(dataContext.FxContext.OneBitSettings);
 
             if (dataContext.ImageType == ImageType.Image3D)
             {
@@ -568,6 +570,8 @@ namespace Gorgon.Editor.ImageEditor
             RegisterChildPanel(typeof(FxSharpen).FullName, FxSharpenSettings);
             RegisterChildPanel(typeof(FxEmboss).FullName, FxEmbossSettings);
             RegisterChildPanel(typeof(FxEdgeDetect).FullName, FxEdgeSettings);
+            RegisterChildPanel(typeof(FxPosterize).FullName, FxPosterizeSettings);
+            RegisterChildPanel(typeof(FxOneBit).FullName, Fx1BitSettings);
         }
         #endregion
     }

@@ -50,7 +50,7 @@
             this.PanelCaptionBorder.Name = "PanelCaptionBorder";
             this.PanelCaptionBorder.Padding = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.PanelCaptionBorder.Size = new System.Drawing.Size(539, 21);
-            this.PanelCaptionBorder.TabIndex = 14;
+            this.PanelCaptionBorder.TabIndex = 0;
             // 
             // panel2
             // 
@@ -83,7 +83,7 @@
             this.PanelConfirmCancel.Location = new System.Drawing.Point(0, 457);
             this.PanelConfirmCancel.Name = "PanelConfirmCancel";
             this.PanelConfirmCancel.Size = new System.Drawing.Size(539, 36);
-            this.PanelConfirmCancel.TabIndex = 15;
+            this.PanelConfirmCancel.TabIndex = 9999;
             // 
             // ButtonOK
             // 
@@ -133,7 +133,7 @@
             this.PanelBody.Location = new System.Drawing.Point(0, 21);
             this.PanelBody.Name = "PanelBody";
             this.PanelBody.Size = new System.Drawing.Size(539, 436);
-            this.PanelBody.TabIndex = 16;
+            this.PanelBody.TabIndex = 1;
             // 
             // EditorSubPanelCommon
             // 

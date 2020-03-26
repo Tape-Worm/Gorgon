@@ -1149,7 +1149,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns>The undo cache file.</returns>
         private IGorgonVirtualFile CreateUndoCacheFile()
         {
-            string undoFilePath = Path.Combine(_undoCacheDir.FullPath, $"u_{Guid.NewGuid().ToString("N")}");
+            string undoFilePath = Path.Combine(_undoCacheDir.FullPath, $"u_{Guid.NewGuid():N}");
             using (Stream outStream = _imageIO.ScratchArea.OpenStream(undoFilePath, FileMode.Create))
             using (Stream inStream = _workingFile.OpenStream())
             {

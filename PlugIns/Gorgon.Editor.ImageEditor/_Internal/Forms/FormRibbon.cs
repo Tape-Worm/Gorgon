@@ -276,7 +276,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxBurn_Click(object sender, EventArgs e)
         {
+            if ((DataContext?.FxContext?.BurnCommand == null) || (!DataContext.FxContext.BurnCommand.CanExecute(null)))
+            {
+                return;
+            }
 
+            DataContext.FxContext.BurnCommand.Execute(null);
+            ValidateButtons();
         }
 
         /// <summary>Handles the Click event of the ButtonFxOneBit control.</summary>
@@ -284,7 +290,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxOneBit_Click(object sender, EventArgs e)
         {
+            if ((DataContext?.FxContext?.ShowOneBitCommand == null) || (!DataContext.FxContext.ShowOneBitCommand.CanExecute(null)))
+            {
+                return;
+            }
 
+            DataContext.FxContext.ShowOneBitCommand.Execute(null);
+            ValidateButtons();
         }
 
         /// <summary>Handles the Click event of the ButtonFxDodge control.</summary>
@@ -292,7 +304,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxDodge_Click(object sender, EventArgs e)
         {
+            if ((DataContext?.FxContext?.DodgeCommand == null) || (!DataContext.FxContext.DodgeCommand.CanExecute(null)))
+            {
+                return;
+            }
 
+            DataContext.FxContext.DodgeCommand.Execute(null);
+            ValidateButtons();
         }
 
         /// <summary>Handles the Click event of the ButtonFxPosterize control.</summary>
@@ -300,7 +318,13 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxPosterize_Click(object sender, EventArgs e)
         {
+            if ((DataContext?.FxContext?.ShowPosterizeCommand == null) || (!DataContext.FxContext.ShowPosterizeCommand.CanExecute(null)))
+            {
+                return;
+            }
 
+            DataContext.FxContext.ShowPosterizeCommand.Execute(null);
+            ValidateButtons();
         }
 
         /// <summary>Handles the Click event of the ButtonGenerateMipMaps control.</summary>
@@ -549,7 +573,11 @@ namespace Gorgon.Editor.ImageEditor
             ButtonFxSharpen.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowSharpenCommand?.CanExecute(null) ?? false);
             ButtonFxEmboss.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowEmbossCommand?.CanExecute(null) ?? false);
             ButtonFxEdgeDetect.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowEdgeDetectCommand?.CanExecute(null) ?? false);
-            ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ApplyCommand?.CanExecute(null) ?? false);
+            ButtonFxBurn.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.BurnCommand?.CanExecute(null) ?? false);
+            ButtonFxDodge.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.DodgeCommand?.CanExecute(null) ?? false);
+            ButtonFxPosterize.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowPosterizeCommand?.CanExecute(null) ?? false);
+            ButtonFxOneBit.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowOneBitCommand?.CanExecute(null) ?? false);
+            ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ApplyCommand?.CanExecute(null) ?? false);            
 
             if (DataContext.ChangeImageTypeCommand == null)
             {

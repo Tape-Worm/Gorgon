@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 1, 2020 8:20:42 PM
+// Created: March 26, 2020 9:05:58 PM
 // 
 #endregion
 
@@ -29,55 +29,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Graphics.Imaging;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// The service used to apply effects and generate previews for effects.
+    /// The settings view model for the one bit effect.
     /// </summary>
-    internal interface IFxService
-        : IDisposable
+    internal interface IFxOneBit
+        : IHostedPanelViewModel
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the image that will contain the effect output.
+        /// Property to set or return the maximum threshold to convert to white (or black if inverted).
         /// </summary>
-        IGorgonImage EffectImage
+        int MaxWhiteThreshold
         {
             get;
+            set;
         }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to apply the current effect that is using a preview.
-        /// </summary>
-        void ApplyPreviewedEffect();
 
         /// <summary>
-        /// Function to apply the invert effect.
+        /// Property to set or return the minimum threshold to convert to white (or black if inverted).
         /// </summary>
-        void ApplyInvert();
+        int MinWhiteThreshold
+        {
+            get;
+            set;
+        }
 
         /// <summary>
-        /// Function to apply the grayscale effect.
+        /// Property to set or return the flag used to invert the black/white values.
         /// </summary>
-        void ApplyGrayScale();
-
-        /// <summary>
-        /// Function to apply the burn effect.
-        /// </summary>
-        /// <param name="useDodge"><b>true</b> to apply the dodge effect, <b>false</b> to apply the burn effect.</param>
-        void ApplyDodgeBurn(bool useDodge);
-
-        /// <summary>
-        /// Function to assign an image for editing.
-        /// </summary>
-        /// <param name="image">The image to edit.</param>        
-        /// <param name="arrayDepth">The selected array index or depth slice (volume textures).</param>
-        /// <param name="mipLevel">The currently selected mip map level.</param>
-        void SetImage(IGorgonImage image, int arrayDepth, int mipLevel);
-        #endregion
+        bool Invert
+        {
+            get;
+            set;
+        }
     }
 }

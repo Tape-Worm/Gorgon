@@ -104,7 +104,7 @@ namespace Gorgon.Editor.ImageEditor
             IGorgonImageInfo metaData = null;
             IGorgonVirtualFile workFile = null;
             IGorgonImage importImage = null;
-            string workFilePath = $"{Path.GetFileNameWithoutExtension(filePath)}_import_{Guid.NewGuid().ToString("N")}";
+            string workFilePath = $"{Path.GetFileNameWithoutExtension(filePath)}_import_{Guid.NewGuid():N}";
 
             // Try to determine if we can actually read the file using an installed codec, if we can't, then try to find a suitable codec.
             using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))

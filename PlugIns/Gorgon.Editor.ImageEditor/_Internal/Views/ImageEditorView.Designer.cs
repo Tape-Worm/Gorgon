@@ -62,6 +62,8 @@
             this.DimensionSettings = new Gorgon.Editor.ImageEditor.ImageDimensionSettings();
             this.SetAlpha = new Gorgon.Editor.ImageEditor.SetAlphaSettings();
             this.GenMipMapSettings = new Gorgon.Editor.ImageEditor.GenMipMapSettings();
+            this.Fx1BitSettings = new Gorgon.Editor.ImageEditor.Fx1BitSettings();
+            this.FxPosterizeSettings = new Gorgon.Editor.ImageEditor.FxPosterizeSettings();
             this.StatusPanel.SuspendLayout();
             this.HostPanel.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
@@ -81,10 +83,12 @@
             // 
             // HostPanel
             // 
-            this.HostPanel.Controls.Add(this.FxEdgeSettings);
+            this.HostPanel.Controls.Add(this.Fx1BitSettings);
+            this.HostPanel.Controls.Add(this.FxPosterizeSettings);
             this.HostPanel.Controls.Add(this.FxEmbossSettings);
             this.HostPanel.Controls.Add(this.FxSharpenSettings);
             this.HostPanel.Controls.Add(this.FxBlurSettings);
+            this.HostPanel.Controls.Add(this.FxEdgeSettings);
             this.HostPanel.Controls.Add(this.CropResizeSettings);
             this.HostPanel.Controls.Add(this.DimensionSettings);
             this.HostPanel.Controls.Add(this.SetAlpha);
@@ -348,7 +352,7 @@
             this.FxEdgeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.FxEdgeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FxEdgeSettings.ForeColor = System.Drawing.Color.White;
-            this.FxEdgeSettings.Location = new System.Drawing.Point(0, 140);
+            this.FxEdgeSettings.Location = new System.Drawing.Point(0, 0);
             this.FxEdgeSettings.MinimumSize = new System.Drawing.Size(300, 520);
             this.FxEdgeSettings.Name = "FxEdgeSettings";
             this.FxEdgeSettings.Size = new System.Drawing.Size(300, 520);
@@ -358,18 +362,21 @@
             // 
             // FxEmbossSettings
             // 
+            this.FxEmbossSettings.AutoSize = true;
             this.FxEmbossSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.FxEmbossSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FxEmbossSettings.ForeColor = System.Drawing.Color.White;
-            this.FxEmbossSettings.Location = new System.Drawing.Point(0, 240);
+            this.FxEmbossSettings.Location = new System.Drawing.Point(0, 8);
             this.FxEmbossSettings.MinimumSize = new System.Drawing.Size(300, 120);
             this.FxEmbossSettings.Name = "FxEmbossSettings";
             this.FxEmbossSettings.Size = new System.Drawing.Size(300, 120);
             this.FxEmbossSettings.TabIndex = 0;
             this.FxEmbossSettings.Text = "Emboss Settings";
+            this.FxEmbossSettings.Visible = false;
             // 
             // FxSharpenSettings
             // 
+            this.FxSharpenSettings.AutoSize = true;
             this.FxSharpenSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.FxSharpenSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FxSharpenSettings.ForeColor = System.Drawing.Color.White;
@@ -379,9 +386,11 @@
             this.FxSharpenSettings.Size = new System.Drawing.Size(300, 120);
             this.FxSharpenSettings.TabIndex = 0;
             this.FxSharpenSettings.Text = "Sharpen Settings";
+            this.FxSharpenSettings.Visible = false;
             // 
             // FxBlurSettings
             // 
+            this.FxBlurSettings.AutoSize = true;
             this.FxBlurSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.FxBlurSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FxBlurSettings.ForeColor = System.Drawing.Color.White;
@@ -402,7 +411,7 @@
             this.CropResizeSettings.MinimumSize = new System.Drawing.Size(300, 400);
             this.CropResizeSettings.Name = "CropResizeSettings";
             this.CropResizeSettings.Size = new System.Drawing.Size(300, 400);
-            this.CropResizeSettings.TabIndex = 8;
+            this.CropResizeSettings.TabIndex = 0;
             this.CropResizeSettings.Text = "Resize Image";
             this.CropResizeSettings.Visible = false;
             // 
@@ -415,7 +424,7 @@
             this.DimensionSettings.MinimumSize = new System.Drawing.Size(300, 345);
             this.DimensionSettings.Name = "DimensionSettings";
             this.DimensionSettings.Size = new System.Drawing.Size(300, 345);
-            this.DimensionSettings.TabIndex = 8;
+            this.DimensionSettings.TabIndex = 0;
             this.DimensionSettings.Text = "Image Dimensions";
             this.DimensionSettings.Visible = false;
             // 
@@ -428,7 +437,7 @@
             this.SetAlpha.MinimumSize = new System.Drawing.Size(300, 320);
             this.SetAlpha.Name = "SetAlpha";
             this.SetAlpha.Size = new System.Drawing.Size(300, 320);
-            this.SetAlpha.TabIndex = 8;
+            this.SetAlpha.TabIndex = 0;
             this.SetAlpha.Text = "Set Alpha";
             this.SetAlpha.Visible = false;
             // 
@@ -441,9 +450,37 @@
             this.GenMipMapSettings.MinimumSize = new System.Drawing.Size(300, 150);
             this.GenMipMapSettings.Name = "GenMipMapSettings";
             this.GenMipMapSettings.Size = new System.Drawing.Size(300, 150);
-            this.GenMipMapSettings.TabIndex = 8;
+            this.GenMipMapSettings.TabIndex = 0;
             this.GenMipMapSettings.Text = "Generate Mip Maps";
             this.GenMipMapSettings.Visible = false;
+            // 
+            // Fx1BitSettings
+            // 
+            this.Fx1BitSettings.AutoSize = true;
+            this.Fx1BitSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.Fx1BitSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.Fx1BitSettings.ForeColor = System.Drawing.Color.White;
+            this.Fx1BitSettings.Location = new System.Drawing.Point(0, 16);
+            this.Fx1BitSettings.MinimumSize = new System.Drawing.Size(300, 120);
+            this.Fx1BitSettings.Name = "Fx1BitSettings";
+            this.Fx1BitSettings.Size = new System.Drawing.Size(300, 304);
+            this.Fx1BitSettings.TabIndex = 0;
+            this.Fx1BitSettings.Text = "1-Bit Settings";
+            this.Fx1BitSettings.Visible = false;
+            // 
+            // FxPosterizeSettings
+            // 
+            this.FxPosterizeSettings.AutoSize = true;
+            this.FxPosterizeSettings.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.FxPosterizeSettings.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.FxPosterizeSettings.ForeColor = System.Drawing.Color.White;
+            this.FxPosterizeSettings.Location = new System.Drawing.Point(0, 32);
+            this.FxPosterizeSettings.MinimumSize = new System.Drawing.Size(300, 170);
+            this.FxPosterizeSettings.Name = "FxPosterizeSettings";
+            this.FxPosterizeSettings.Size = new System.Drawing.Size(300, 170);
+            this.FxPosterizeSettings.TabIndex = 0;
+            this.FxPosterizeSettings.Text = "Posterize Settings";
+            this.FxPosterizeSettings.Visible = false;
             // 
             // ImageEditorView
             // 
@@ -486,5 +523,7 @@
         private FxSharpenSettings FxSharpenSettings;
         private FxEmbossSettings FxEmbossSettings;
         private FxEdgeSettings FxEdgeSettings;
+        private Fx1BitSettings Fx1BitSettings;
+        private FxPosterizeSettings FxPosterizeSettings;
     }
 }

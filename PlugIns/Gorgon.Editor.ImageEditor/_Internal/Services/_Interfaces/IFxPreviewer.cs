@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
@@ -79,6 +80,19 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="color">The color of the edge lines.</param>
         /// <param name="overlay"><b>true</b> to overlay the edges on the original image, <b>false</b> to replace the image with edges.</param>
         void GenerateEdgeDetectPreview(int threshold, float offset, GorgonColor color, bool overlay);
+
+        /// <summary>
+        /// Function to generate a one bit effect preview.
+        /// </summary>
+        /// <param name="range">The threshold range of colors to consider as "on".</param>
+        /// <param name="invert"><b>true</b> to invert the colors, <b>false</b> to leave as-is.</param>
+        void GenerateOneBitPreview(GorgonRangeF range, bool invert);
+
+        /// <summary>
+        /// Function to generate a posterize effect preview.
+        /// </summary>
+        /// <param name="amount">The amount to posterize.</param>
+        void GeneratePosterizePreview(int amount);
         #endregion
     }
 }

@@ -97,6 +97,20 @@ namespace Gorgon.Editor.ImageEditor.Fx
             private set;
         }
 
+        /// <summary>Property to return the view model for the posterize effect settings.</summary>
+        public IFxPosterize PosterizeSettings
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>Property to return the view model for the one bit effect settings.</summary>
+        public IFxOneBit OneBitSettings
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return whether effects have been applied to the image.
         /// </summary>
@@ -197,6 +211,14 @@ namespace Gorgon.Editor.ImageEditor.Fx
         }
 
         /// <summary>
+        /// Property to return the command to show the one bit effect settings.
+        /// </summary>
+        public IEditorCommand<object> ShowOneBitCommand
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command to cancel the effects operations.
         /// </summary>
         public IEditorCommand<object> CancelCommand
@@ -211,6 +233,26 @@ namespace Gorgon.Editor.ImageEditor.Fx
         {
             get;
             set;
+        }
+
+        /// <summary>Property to return the command to apply the burn effect.</summary>
+        public IEditorCommand<object> BurnCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to apply the dodge effect.
+        /// </summary>
+        public IEditorCommand<object> DodgeCommand
+        {
+            get;
+        }
+
+        /// <summary>Property to return the command to show the posterize settings.</summary>
+        public IEditorCommand<object> ShowPosterizeCommand
+        {
+            get;
         }
         #endregion
 
@@ -334,7 +376,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// <summary>
         /// Function to determine if the invert effect can be applied.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><b>true</b> if the effect can be applied, <b>false</b> if not.</returns>
         private bool CanInvert() => _imageContent.CurrentHostedPanel == null;
 
         /// <summary>
@@ -345,6 +387,50 @@ namespace Gorgon.Editor.ImageEditor.Fx
             try
             {
                 _fxService.ApplyInvert();
+                EffectsUpdated = true;
+            }
+            catch (Exception ex)
+            {
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_APPLYING_EFFECTS);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the burn effect can be applied.
+        /// </summary>
+        /// <returns><b>true</b> if the effect can be applied, <b>false</b> if not.</returns>
+        private bool CanBurn() => _imageContent.CurrentHostedPanel == null;
+
+        /// <summary>
+        /// Function to apply the burn effect to the working image.
+        /// </summary>
+        private void DoBurn()
+        {
+            try
+            {
+                _fxService.ApplyDodgeBurn(false);
+                EffectsUpdated = true;
+            }
+            catch (Exception ex)
+            {
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_APPLYING_EFFECTS);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the dodge effect can be applied.
+        /// </summary>
+        /// <returns><b>true</b> if the effect can be applied, <b>false</b> if not.</returns>
+        private bool CanDodge() => _imageContent.CurrentHostedPanel == null;
+
+        /// <summary>
+        /// Function to apply the burn effect to the working image.
+        /// </summary>
+        private void DoDodge()
+        {
+            try
+            {
+                _fxService.ApplyDodgeBurn(true);
                 EffectsUpdated = true;
             }
             catch (Exception ex)
@@ -408,6 +494,60 @@ namespace Gorgon.Editor.ImageEditor.Fx
         }
 
         /// <summary>
+        /// Function to determine if the posterize effect settings can be displayed.
+        /// </summary>
+        /// <returns><b>true</b> if the effect settings can be displayed, <b>false</b> if not.</returns>
+        private bool CanShowPosterize() => _imageContent.CurrentHostedPanel == null;
+
+        /// <summary>
+        /// Function to show the posterize effect settings.
+        /// </summary>
+        private void DoShowPosterize()
+        {
+            _hostServices.BusyService.SetBusy();
+
+            try
+            {
+                _imageContent.CurrentHostedPanel = PosterizeSettings;
+            }
+            catch (Exception ex)
+            {
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                _hostServices.BusyService.SetIdle();
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the 1 bit effect settings can be displayed.
+        /// </summary>
+        /// <returns><b>true</b> if the effect settings can be displayed, <b>false</b> if not.</returns>
+        private bool CanShowOneBit() => _imageContent.CurrentHostedPanel == null;
+
+        /// <summary>
+        /// Function to show the 1 bit effect settings.
+        /// </summary>
+        private void DoShowOneBit()
+        {
+            _hostServices.BusyService.SetBusy();
+
+            try
+            {
+                _imageContent.CurrentHostedPanel = OneBitSettings;
+            }
+            catch (Exception ex)
+            {
+                _hostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+            }
+            finally
+            {
+                _hostServices.BusyService.SetIdle();
+            }
+        }
+
+        /// <summary>
         /// Function to determine if the edge detect effect settings can be displayed.
         /// </summary>
         /// <returns><b>true</b> if the effect settings can be displayed, <b>false</b> if not.</returns>
@@ -454,11 +594,15 @@ namespace Gorgon.Editor.ImageEditor.Fx
             SharpenSettings = injectionParameters.SharpenSettings;
             EmbossSettings = injectionParameters.EmbossSettings;
             EdgeDetectSettings = injectionParameters.EdgeDetectSettings;
+            PosterizeSettings = injectionParameters.PosterizeSettings;
+            OneBitSettings = injectionParameters.OneBitSettings;
 
             BlurSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
             SharpenSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
             EmbossSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
             EdgeDetectSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
+            PosterizeSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
+            OneBitSettings.OkCommand = new EditorCommand<object>(DoPreviewedEffect);
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
@@ -488,9 +632,13 @@ namespace Gorgon.Editor.ImageEditor.Fx
             CancelCommand = new EditorCommand<object>(DoCancelFx);
             GrayScaleCommand = new EditorCommand<object>(DoGrayScale, CanGrayScale);
             InvertCommand = new EditorCommand<object>(DoInvert, CanInvert);
+            BurnCommand = new EditorCommand<object>(DoBurn, CanBurn);
+            DodgeCommand = new EditorCommand<object>(DoDodge, CanDodge);
             ShowSharpenCommand = new EditorCommand<object>(DoShowSharpen, CanShowSharpen);
             ShowEmbossCommand = new EditorCommand<object>(DoShowEmboss, CanShowEmboss);
             ShowEdgeDetectCommand = new EditorCommand<object>(DoShowEdgeDetect, CanShowEdgeDetect);
+            ShowPosterizeCommand = new EditorCommand<object>(DoShowPosterize, CanShowPosterize);
+            ShowOneBitCommand = new EditorCommand<object>(DoShowOneBit, CanShowOneBit);
         }
         #endregion
     }

@@ -68,6 +68,13 @@ namespace Gorgon.Editor.ImageEditor
         private GorgonColor _edgeColor = GorgonColor.Black;
         // Flag to indicate that the edge detection effect is overlaid on top of the original image.
         private bool _edgeOverlay = true;
+        // The amount to posterize.
+        private int _posterizeAmount = 4;
+        // The threshold for the 1 bit effect.
+        private int _oneBitMin = 127;
+        private int _oneBitMax = 255;
+        // The invert flag for the 1 bit effect.
+        private bool _oneBitInvert;
         // The service used to apply effects.
         private readonly IFxPreviewer _fxPreviewer;
         #endregion
@@ -84,8 +91,44 @@ namespace Gorgon.Editor.ImageEditor
                 DataContext.FxContext.SharpenSettings.PropertyChanged -= SharpenSettings_PropertyChanged;
                 DataContext.FxContext.EmbossSettings.PropertyChanged -= EmbossSettings_PropertyChanged;
                 DataContext.FxContext.EdgeDetectSettings.PropertyChanged -= EdgeDetectSettings_PropertyChanged;
+                DataContext.FxContext.PosterizeSettings.PropertyChanged -= PosterizeSettings_PropertyChanged;
+                DataContext.FxContext.OneBitSettings.PropertyChanged -= OneBitSettings_PropertyChanged;
             }
             base.Dispose(disposing);
+        }
+
+        /// <summary>Handles the <see cref="E:BitSettingsPropertyChanged"/> event.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void OneBitSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IFxOneBit.MinWhiteThreshold):
+                    _oneBitMin = DataContext.FxContext.OneBitSettings.MinWhiteThreshold;
+                    break;
+                case nameof(IFxOneBit.MaxWhiteThreshold):                    
+                    _oneBitMax = DataContext.FxContext.OneBitSettings.MaxWhiteThreshold;
+                    break;
+                case nameof(IFxOneBit.Invert):
+                    _oneBitInvert = DataContext.FxContext.OneBitSettings.Invert;
+                    break;
+            }
+            RenderFx();
+        }
+
+        /// <summary>Handles the PropertyChanged event of the PosterizeSettings control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void PosterizeSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IFxPosterize.Amount):
+                    _posterizeAmount = DataContext.FxContext.PosterizeSettings.Amount;
+                    break;
+            }
+            RenderFx();
         }
 
         /// <summary>Handles the PropertyChanged event of the EdgeDetectSettings control.</summary>
@@ -174,6 +217,14 @@ namespace Gorgon.Editor.ImageEditor
             {
                 _fxPreviewer.GenerateEdgeDetectPreview(_edgeThreshold, _edgeOffset, _edgeColor, _edgeOverlay);
             }
+            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.PosterizeSettings)
+            {
+                _fxPreviewer.GeneratePosterizePreview(_posterizeAmount);
+            }
+            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.OneBitSettings)
+            {
+                _fxPreviewer.GenerateOneBitPreview(new GorgonRangeF(_oneBitMin / 255.0f, _oneBitMax / 255.0f), _oneBitInvert);
+            }
         }
 
         /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
@@ -246,9 +297,11 @@ namespace Gorgon.Editor.ImageEditor
             dataContext.FxContext.SharpenSettings.PropertyChanged += SharpenSettings_PropertyChanged;
             dataContext.FxContext.EmbossSettings.PropertyChanged += EmbossSettings_PropertyChanged;
             dataContext.FxContext.EdgeDetectSettings.PropertyChanged += EdgeDetectSettings_PropertyChanged;
+            dataContext.FxContext.PosterizeSettings.PropertyChanged += PosterizeSettings_PropertyChanged;
+            dataContext.FxContext.OneBitSettings.PropertyChanged += OneBitSettings_PropertyChanged;
             AllowArrayDepthChange = false;
             AllowMipChange = false;
-        }        
+        }
         #endregion
     }
 }

@@ -324,6 +324,8 @@ namespace Gorgon.Editor.ImageEditor
             var sharpenSettings = new FxSharpen();
             var embossSettings = new FxEmboss();
             var edgeDetectSettings = new FxEdgeDetect();
+            var posterizeSettings = new FxPosterize();
+            var oneBitSettings = new FxOneBit();
 
             var injector = new HostedPanelViewModelParameters(HostContentServices);
             
@@ -335,6 +337,7 @@ namespace Gorgon.Editor.ImageEditor
             sharpenSettings.Initialize(injector);
             embossSettings.Initialize(injector);
             edgeDetectSettings.Initialize(injector);
+            posterizeSettings.Initialize(injector);
 
             imagePicker.Initialize(new ImagePickerParameters(fileManager, file, HostContentServices)
             {
@@ -347,7 +350,7 @@ namespace Gorgon.Editor.ImageEditor
             var content = new ImageContent();
             var fxContext = new FxContext();
 
-            fxContext.Initialize(new FxContextParameters(content, _fxServices, blurSettings, sharpenSettings, embossSettings, edgeDetectSettings, HostContentServices));
+            fxContext.Initialize(new FxContextParameters(content, _fxServices, blurSettings, sharpenSettings, embossSettings, edgeDetectSettings, posterizeSettings, oneBitSettings, HostContentServices));
             content.Initialize(new ImageContentParameters(fileManager,
                 file,
                 _settings,

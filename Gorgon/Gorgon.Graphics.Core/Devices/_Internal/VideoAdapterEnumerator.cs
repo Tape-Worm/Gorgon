@@ -114,7 +114,7 @@ namespace Gorgon.Graphics.Core
 
                 foreach (GorgonVideoMode mode in output.VideoModes)
                 {
-                    log.Print($"{mode.ToString().PadRight(70)}\tScaling: {mode.Scaling.ToString().PadRight(20)}Scanline Order: {mode.ScanlineOrder.ToString().PadRight(25)}Stereo: {mode.SupportsStereo}",
+                    log.Print($"{mode,70}\tScaling: {mode.Scaling,20}Scanline Order: {mode.ScanlineOrder,25}Stereo: {mode.SupportsStereo}",
                                LoggingLevel.Verbose);
                 }
 
