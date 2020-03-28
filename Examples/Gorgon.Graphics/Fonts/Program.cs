@@ -212,6 +212,15 @@ namespace Gorgon.Examples
                 fontFamilies.Add(externFont);
             }
 
+            // Load this font from our resources section.
+            window.UpdateStatus($"Loading Resource Font...");
+            using (MemoryStream stream = new MemoryStream(Resources.Achafexp))
+            {
+                Drawing.FontFamily resFont = GorgonExample.Fonts.LoadTrueTypeFontFamily(stream);
+                _fontFamilies.Insert(0, resFont.Name);
+                fontFamilies.Add(resFont);
+            }
+
             window.UpdateStatus(null);
 
             fontFamilies.AddRange(Drawing.FontFamily.Families);
