@@ -49,13 +49,6 @@ namespace Gorgon.Editor.SpriteEditor
     internal partial class FormRibbon
         : KryptonForm, IDataContext<ISpriteContent>
     {
-        #region Events.
-        /// <summary>
-        /// Event triggered when the zoom menu is updated.
-        /// </summary>
-        public event EventHandler<ZoomEventArgs> ImageZoomed;
-        #endregion
-
         #region Variables.
         // The list of menu items associated with the zoom level.
         private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
@@ -157,9 +150,6 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 return;
             }
-
-            EventHandler<ZoomEventArgs> handler = ImageZoomed;
-            ImageZoomed?.Invoke(this, new ZoomEventArgs(ZoomLevel));
         }
 
         /// <summary>
@@ -202,12 +192,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void ManualVertexEditor_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
+/*            switch (e.PropertyName)
             {
                 case nameof(IManualInputViewModel.IsActive):
                     ButtonSpriteCornerManualInput.Checked = DataContext.ManualVertexEditor.IsActive;
                     break;
-            }
+            }*/
 
             ValidateButtons();
         }
@@ -217,7 +207,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void ManualRectangleEditor_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
+/*            switch (e.PropertyName)
             {
                 case nameof(IManualInputViewModel.IsActive):
                     ButtonClipManualInput.Checked = DataContext.ManualRectangleEditor.IsActive;
@@ -239,7 +229,7 @@ namespace Gorgon.Editor.SpriteEditor
                     NumericFixedWidth.Value = ((decimal)DataContext.ManualRectangleEditor.FixedSize.Width).Min(NumericFixedWidth.Maximum).Max(NumericFixedWidth.Minimum);
                     NumericFixedHeight.Value = ((decimal)DataContext.ManualRectangleEditor.FixedSize.Height).Min(NumericFixedHeight.Maximum).Max(NumericFixedHeight.Minimum);
                     break;
-            }
+            }*/
 
             ValidateButtons();
         }
@@ -280,12 +270,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericPadding_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext?.ManualRectangleEditor == null)
+/*            if (DataContext?.ManualRectangleEditor == null)
             {
                 return;
             }
 
-            DataContext.ManualRectangleEditor.Padding = (int)NumericPadding.Value;
+            DataContext.ManualRectangleEditor.Padding = (int)NumericPadding.Value;*/
 
             ValidateButtons();
         }
@@ -295,7 +285,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericFixedWidth_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext?.ManualRectangleEditor?.SetFixedWidthHeightCommand == null)
+/*            if (DataContext?.ManualRectangleEditor?.SetFixedWidthHeightCommand == null)
             {
                 return;
             }
@@ -318,7 +308,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext.ManualRectangleEditor.SetFixedWidthHeightCommand.Execute(size);
+            DataContext.ManualRectangleEditor.SetFixedWidthHeightCommand.Execute(size);*/
         }
 
         /// <summary>Handles the ValueChanged event of the NumericFixedHeight control.</summary>
@@ -326,7 +316,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericFixedHeight_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext?.ManualRectangleEditor?.SetFixedWidthHeightCommand == null)
+/*            if (DataContext?.ManualRectangleEditor?.SetFixedWidthHeightCommand == null)
             {
                 return;
             }
@@ -349,7 +339,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext.ManualRectangleEditor.SetFixedWidthHeightCommand.Execute(size);
+            DataContext.ManualRectangleEditor.SetFixedWidthHeightCommand.Execute(size);*/
         }
 
         /// <summary>Handles the Click event of the ButtonFixedSize control.</summary>
@@ -359,12 +349,12 @@ namespace Gorgon.Editor.SpriteEditor
         {
             var size = new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value);
 
-            if ((DataContext?.ManualRectangleEditor?.ToggleFixedSizeCommand == null) || (!DataContext.ManualRectangleEditor.ToggleFixedSizeCommand.CanExecute(size)))
+/*            if ((DataContext?.ManualRectangleEditor?.ToggleFixedSizeCommand == null) || (!DataContext.ManualRectangleEditor.ToggleFixedSizeCommand.CanExecute(size)))
             {
                 return;
             }
 
-            DataContext.ManualRectangleEditor.ToggleFixedSizeCommand.Execute(size);
+            DataContext.ManualRectangleEditor.ToggleFixedSizeCommand.Execute(size);*/
             ValidateButtons();
         }
 
@@ -374,12 +364,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSpriteClipFullSize_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.Texture == null) || (DataContext?.ManualRectangleEditor == null))
+/*            if ((DataContext?.Texture == null) || (DataContext?.ManualRectangleEditor == null))
             {
                 return;
             }
 
-            DataContext.ManualRectangleEditor.Rectangle = new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
+            DataContext.ManualRectangleEditor.Rectangle = new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);*/
             ValidateButtons();
         }
 
@@ -572,12 +562,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSpriteCornerReset_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ManualVertexEditor?.ResetOffsetCommand == null) || (!DataContext.ManualVertexEditor.ResetOffsetCommand.CanExecute(null)))
+/*            if ((DataContext?.ManualVertexEditor?.ResetOffsetCommand == null) || (!DataContext.ManualVertexEditor.ResetOffsetCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.ManualVertexEditor.ResetOffsetCommand.Execute(null);
+            DataContext.ManualVertexEditor.ResetOffsetCommand.Execute(null);*/
             ValidateButtons();
         }
 
@@ -587,12 +577,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSpritePickApply_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ManualRectangleEditor?.ApplyCommand == null) || (!DataContext.ManualRectangleEditor.ApplyCommand.CanExecute(null)))
+/*            if ((DataContext?.ManualRectangleEditor?.ApplyCommand == null) || (!DataContext.ManualRectangleEditor.ApplyCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.ManualRectangleEditor.ApplyCommand.Execute(null);
+            DataContext.ManualRectangleEditor.ApplyCommand.Execute(null);*/
             ValidateButtons();
         }
 
@@ -601,12 +591,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSpritePickCancel_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ManualRectangleEditor?.CancelCommand == null) || (!DataContext.ManualRectangleEditor.CancelCommand.CanExecute(null)))
+/*            if ((DataContext?.ManualRectangleEditor?.CancelCommand == null) || (!DataContext.ManualRectangleEditor.CancelCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.ManualRectangleEditor.CancelCommand.Execute(null);
+            DataContext.ManualRectangleEditor.CancelCommand.Execute(null);*/
             ValidateButtons();
         }
 
@@ -615,12 +605,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSpriteClipApply_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ManualRectangleEditor?.ApplyCommand == null) || (!DataContext.ManualRectangleEditor.ApplyCommand.CanExecute(null)))
+/*            if ((DataContext?.ManualRectangleEditor?.ApplyCommand == null) || (!DataContext.ManualRectangleEditor.ApplyCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.ManualRectangleEditor.ApplyCommand.Execute(null);
+            DataContext.ManualRectangleEditor.ApplyCommand.Execute(null);*/
             ValidateButtons();
         }
 
@@ -629,12 +619,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSpriteClipCancel_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ManualRectangleEditor?.CancelCommand == null) || (!DataContext.ManualRectangleEditor.CancelCommand.CanExecute(null)))
+/*            if ((DataContext?.ManualRectangleEditor?.CancelCommand == null) || (!DataContext.ManualRectangleEditor.CancelCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.ManualRectangleEditor.CancelCommand.Execute(null);
+            DataContext.ManualRectangleEditor.CancelCommand.Execute(null);*/
             ValidateButtons();
         }
 
@@ -643,12 +633,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSpriteCornerOffsetApply_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ManualVertexEditor?.ApplyCommand == null) || (!DataContext.ManualVertexEditor.ApplyCommand.CanExecute(null)))
+/*            if ((DataContext?.ManualVertexEditor?.ApplyCommand == null) || (!DataContext.ManualVertexEditor.ApplyCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.ManualVertexEditor.ApplyCommand.Execute(null);
+            DataContext.ManualVertexEditor.ApplyCommand.Execute(null);*/
             ValidateButtons();
 
         }
@@ -658,12 +648,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSpriteCornerOffsetCancel_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ManualVertexEditor?.CancelCommand == null) || (!DataContext.ManualVertexEditor.CancelCommand.CanExecute(null)))
+/*            if ((DataContext?.ManualVertexEditor?.CancelCommand == null) || (!DataContext.ManualVertexEditor.CancelCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.ManualVertexEditor.CancelCommand.Execute(null);
+            DataContext.ManualVertexEditor.CancelCommand.Execute(null);*/
             ValidateButtons();
         }
 
@@ -748,7 +738,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            if (DataContext.ManualRectangleEditor != null)
+/*            if (DataContext.ManualRectangleEditor != null)
             {
                 DataContext.ManualRectangleEditor.PropertyChanged -= ManualRectangleEditor_PropertyChanged;
             }
@@ -756,7 +746,7 @@ namespace Gorgon.Editor.SpriteEditor
             if (DataContext.ManualVertexEditor != null)
             {
                 DataContext.ManualVertexEditor.PropertyChanged -= ManualVertexEditor_PropertyChanged;
-            }
+            }*/
 
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
@@ -866,12 +856,12 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            if (dataContext.ManualRectangleEditor != null)
+/*            if (dataContext.ManualRectangleEditor != null)
             {
                 NumericPadding.Value = dataContext.ManualRectangleEditor.Padding.Min((int)NumericPadding.Maximum).Max((int)NumericPadding.Minimum);
                 NumericFixedWidth.Value = ((decimal)dataContext.ManualRectangleEditor.FixedSize.Width).Min(NumericFixedWidth.Maximum).Max(NumericFixedWidth.Minimum);
                 NumericFixedHeight.Value = ((decimal)dataContext.ManualRectangleEditor.FixedSize.Height).Min(NumericFixedHeight.Maximum).Max(NumericFixedHeight.Minimum);
-            }
+            }*/
 
             MenuItemSmooth.Checked = !dataContext.IsPixellated;
             MenuItemPixelated.Checked = !MenuItemSmooth.Checked;
@@ -910,7 +900,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            if (DataContext.ManualRectangleEditor != null)
+/*            if (DataContext.ManualRectangleEditor != null)
             {
                 DataContext.ManualRectangleEditor.PropertyChanged += ManualRectangleEditor_PropertyChanged;
             }
@@ -918,7 +908,7 @@ namespace Gorgon.Editor.SpriteEditor
             if (DataContext.ManualVertexEditor != null)
             {
                 DataContext.ManualVertexEditor.PropertyChanged += ManualVertexEditor_PropertyChanged;
-            }
+            }*/
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
             DataContext.PropertyChanging += DataContext_PropertyChanging;
@@ -938,7 +928,7 @@ namespace Gorgon.Editor.SpriteEditor
             // Temporary
             EnableRibbon(true);
 
-            ButtonZoomSprite.Enabled = !DataContext.IsSubPanelModal;
+            ButtonZoomSprite.Enabled = true;
 
             ButtonNewSprite.Enabled = DataContext.NewSpriteCommand?.CanExecute(null) ?? false;
             ButtonClipSprite.Enabled = DataContext.SpriteClipCommand?.CanExecute(null) ?? false;
@@ -954,14 +944,14 @@ namespace Gorgon.Editor.SpriteEditor
 
             ButtonClipManualInput.Enabled = DataContext.ToggleManualClipRectCommand?.CanExecute(null) ?? false;
             ButtonSpriteCornerManualInput.Enabled = DataContext.ToggleManualVertexEditCommand?.CanExecute(-1) ?? false;
-            ButtonSpriteCornerReset.Enabled = DataContext.ManualVertexEditor?.ResetOffsetCommand?.CanExecute(null) ?? false;
+            //ButtonSpriteCornerReset.Enabled = DataContext.ManualVertexEditor?.ResetOffsetCommand?.CanExecute(null) ?? false;
 
             ButtonSpriteTextureFilter.Enabled = DataContext.SetTextureFilteringCommand?.CanExecute(MenuItemPixelated.Checked
                 ? SampleFilter.MinMagMipPoint
                 : SampleFilter.MinPointMagMipLinear) ?? false;
             ButtonSpriteTextureWrap.Enabled = DataContext.ShowWrappingEditorCommand?.CanExecute(null) ?? false;
 
-            if (DataContext.ManualVertexEditor != null)
+            /*if (DataContext.ManualVertexEditor != null)
             {
                 ButtonSpriteCornerOffsetApply.Enabled = DataContext.ManualVertexEditor.ApplyCommand?.CanExecute(null) ?? false;
             }
@@ -976,7 +966,7 @@ namespace Gorgon.Editor.SpriteEditor
             ButtonSpriteClipApply.Enabled = DataContext.ManualRectangleEditor.ApplyCommand?.CanExecute(null) ?? false;
             ButtonSpriteClipCancel.Enabled = DataContext.ManualRectangleEditor.CancelCommand?.CanExecute(null) ?? false;
             ButtonSpritePickApply.Enabled = DataContext.ManualRectangleEditor.ApplyCommand?.CanExecute(null) ?? false;
-            ButtonSpritePickCancel.Enabled = DataContext.ManualRectangleEditor.CancelCommand?.CanExecute(null) ?? false;
+            ButtonSpritePickCancel.Enabled = DataContext.ManualRectangleEditor.CancelCommand?.CanExecute(null) ?? false;*/
 
 #warning There's some kind of bug in the krypton ribbon regarding the enabled state and numerics. 
             /*LabelFixedHeight.Enabled = 
@@ -984,7 +974,7 @@ namespace Gorgon.Editor.SpriteEditor
 				NumericFixedWidth.Enabled = 
 				NumericFixedHeight.Enabled = 
 				DataContext.ManualRectangleEditor.SetFixedWidthHeightCommand?.CanExecute(new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value)) ?? false;*/
-            ButtonSpriteClipFullSize.Enabled = DataContext.ManualRectangleEditor.SetFullSizeCommand?.CanExecute(null) ?? false;
+            //ButtonSpriteClipFullSize.Enabled = DataContext.ManualRectangleEditor.SetFullSizeCommand?.CanExecute(null) ?? false;
         }
         #endregion
 

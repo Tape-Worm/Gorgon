@@ -100,7 +100,7 @@ namespace Gorgon.UI
             {
                 return;
             }
-
+            
             CreateCueFont();
         }
 
@@ -117,8 +117,8 @@ namespace Gorgon.UI
 
                     if ((!string.IsNullOrEmpty(Text))
                         || (string.IsNullOrWhiteSpace(_cueText))
-                        || (Focused))
-                    {
+                        || (Focused))                    
+                    {                        
                         break;
                     }
 

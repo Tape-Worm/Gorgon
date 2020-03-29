@@ -358,4 +358,13 @@ These platforms are incompatible and cannot be mixed.</value>
   <data name="GOREDIT_ERR_CONTENT_RENDERER_NOT_FOUND" xml:space="preserve">
     <value>There is no content renderer with the name '{0}'.</value>
   </data>
+  <data name="GOREDIT_ERR_UNABLE_TO_LOAD_PLUGINS" xml:space="preserve">
+    <value>There was an error while loading the plug ins.</value>
+  </data>
+  <data name="GOREDIT_ERR_UNABLE_TO_UNLOAD_PLUGINS" xml:space="preserve">
+    <value>There was an error while unloading the plug ins.</value>
+  </data>
+  <data name="GOREDIT_CAPTION_FILE_COLUMN" xml:space="preserve">
+    <value>File</value>
+  </data>
 </root>

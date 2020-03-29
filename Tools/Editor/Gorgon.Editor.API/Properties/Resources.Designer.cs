@@ -221,6 +221,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        internal static string GOREDIT_CAPTION_FILE_COLUMN {
+            get {
+                return ResourceManager.GetString("GOREDIT_CAPTION_FILE_COLUMN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error updating the associated file information after it was moved.
         ///
         ///This content will now close in order to avoid corrupting the file..
@@ -423,6 +432,24 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_STREAM_READ_ONLY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_STREAM_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while loading the plug ins..
+        /// </summary>
+        internal static string GOREDIT_ERR_UNABLE_TO_LOAD_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_UNABLE_TO_LOAD_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while unloading the plug ins..
+        /// </summary>
+        internal static string GOREDIT_ERR_UNABLE_TO_UNLOAD_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_UNABLE_TO_UNLOAD_PLUGINS", resourceCulture);
             }
         }
         

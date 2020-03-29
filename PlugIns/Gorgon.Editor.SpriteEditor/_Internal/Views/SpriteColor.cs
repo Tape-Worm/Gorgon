@@ -36,14 +36,14 @@ namespace Gorgon.Editor.SpriteEditor
     /// A color selection control for the sprite.
     /// </summary>
     internal partial class SpriteColor
-        : EditorSubPanelCommon, IDataContext<ISpriteColorEdit>
+        : EditorSubPanelCommon//, IDataContext<ISpriteColorEdit>
     {
         #region Variables.
         // The list of vertices that were selected.
         private readonly GorgonColor[] _selectedColors = new GorgonColor[4];
         #endregion
 
-        #region Properties.
+/*        #region Properties.
         /// <summary>
         /// Property to return the data context for the view.
         /// </summary>
@@ -53,7 +53,7 @@ namespace Gorgon.Editor.SpriteEditor
             get;
             private set;
         }
-        #endregion
+        #endregion*/
 
         #region Methods.
         /// <summary>Handles the ColorChanged event of the Picker control.</summary>
@@ -61,7 +61,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="T:Gorgon.Editor.UI.Controls.ColorChangedEventArgs"/> instance containing the event data.</param>
         private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 return;
             }
@@ -79,7 +79,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             DataContext.SpriteColor = _selectedColors;
-            DataContext.SelectedColor = e.Color;
+            DataContext.SelectedColor = e.Color;*/
             ValidateOk();
         }
 
@@ -88,12 +88,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 return;
             }
 
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
+            DataContext.PropertyChanged -= DataContext_PropertyChanged;*/
         }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -101,7 +101,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            int firstSelected = 0;
+            /*int firstSelected = 0;
 
             switch (e.PropertyName)
             {
@@ -139,7 +139,7 @@ namespace Gorgon.Editor.SpriteEditor
                         Picker.ColorChanged += Picker_ColorChanged;
                     }
                     break;
-            }
+            }*/
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Gorgon.Editor.SpriteEditor
             UnassignEvents();
             Picker.OriginalColor = Picker.SelectedColor = GorgonColor.BlackTransparent;
         }
-
+        /*
         /// <summary>
         /// Function to initialize the control with the data context.
         /// </summary>
@@ -208,7 +208,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
         protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
-
+        */
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
@@ -220,9 +220,9 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext?.OnLoad();
+            //DataContext?.OnLoad();
         }
-
+        /*
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -238,11 +238,11 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }
+        }*/
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteColor"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SpriteColor"/> class.</summary>
         public SpriteColor() => InitializeComponent();
         #endregion
     }

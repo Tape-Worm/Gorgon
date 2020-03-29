@@ -1024,7 +1024,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_SAVE_CONTENT);
+                if (saveReason != SaveReason.ContentShutdown)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_SAVE_CONTENT);
+                }
+                else
+                {
+                    throw;
+                }
             }
             finally
             {

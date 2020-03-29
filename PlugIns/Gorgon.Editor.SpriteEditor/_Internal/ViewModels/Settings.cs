@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using DX = SharpDX;
@@ -33,8 +34,8 @@ namespace Gorgon.Editor.SpriteEditor
     /// <summary>
     /// The view model used to manipulate the settings for the plug in.
     /// </summary>
-    internal class EditorPlugInSettings
-        : ViewModelBase<SettingsParameters>, IEditorPlugInSettings, ISpritePickMaskEditor
+    internal class Settings
+        : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings//, ISpritePickMaskEditor
     {
         #region Variables.
         // The plug in settings.
@@ -139,7 +140,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
         }
 
-        /// <summary>Property to set or return whether the crop/resize settings is active or not.</summary>
+        /*/// <summary>Property to set or return whether the crop/resize settings is active or not.</summary>
         bool IHostedPanelViewModel.IsActive
         {
             get => _isActive;
@@ -170,7 +171,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 // Empty on purpose.
             }
-        }
+        }*/
         #endregion
 
         #region Methods.

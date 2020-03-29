@@ -44,7 +44,7 @@ namespace Gorgon.Graphics.Core
         /// This specifies the function to evaluate with stencil data being read/written and existing stencil data.
         /// </para>
         /// <para>
-        /// The default value is <see cref="Core.Comparison.Always"/>.
+        /// The default value is <see cref="Comparison.Always"/>.
         /// </para>
         /// </remarks>
         public Comparison Comparison

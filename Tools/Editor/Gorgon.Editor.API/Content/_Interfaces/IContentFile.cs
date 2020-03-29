@@ -46,14 +46,6 @@ namespace Gorgon.Editor.Content
 
         #region Properties.
         /// <summary>
-        /// Property to return the list of dependencies for this content.
-        /// </summary>
-        IReadOnlyList<IContentFile> Dependencies
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to set or return whether the file has changes.
         /// </summary>
         bool IsChanged
@@ -100,14 +92,14 @@ namespace Gorgon.Editor.Content
         /// <summary>
         /// Function to link a content file to be dependant upon this content.
         /// </summary>
-        /// <param name="child">The child content to link to this content.</param>
-        void LinkContent(IContentFile child);
+        /// <param name="file">The file to link to this content.</param>
+        void LinkContent(IContentFile file);
 
         /// <summary>
         /// Function to unlink a content file from being dependant upon this content.
         /// </summary>
-        /// <param name="child">The child content to unlink from this content.</param>
-        void UnlinkContent(IContentFile child);
+        /// <param name="file">The file to unlink from this content.</param>
+        void UnlinkContent(IContentFile file);
 
         /// <summary>
         /// Function to remove all child dependency links from this content.

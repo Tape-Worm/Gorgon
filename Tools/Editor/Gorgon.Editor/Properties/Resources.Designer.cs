@@ -713,6 +713,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot move the directory &apos;{0}&apos; because the file &apos;{1}&apos; is open in the editor..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_MOVE_DIR_OPEN_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_DIR_OPEN_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot move the directory because there is a directory with the same name in the destination directory..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR {
@@ -731,6 +740,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot move the file &apos;{0}&apos; because it is open in the editor..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_MOVE_FILE_OPEN_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_FILE_OPEN_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error opening the content file &apos;{0}&apos;.
         ///
         ///Please try again..
@@ -738,6 +756,24 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_OPEN_CONTENT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_OPEN_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot rename the directory &apos;{0}&apos; because the file &apos;{1}&apos; is open in the editor..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_RENAME_DIR_OPEN_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_RENAME_DIR_OPEN_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot rename the file &apos;{0}&apos; because it is open in the editor..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_RENAME_FILE_OPEN_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_RENAME_FILE_OPEN_FILE", resourceCulture);
             }
         }
         

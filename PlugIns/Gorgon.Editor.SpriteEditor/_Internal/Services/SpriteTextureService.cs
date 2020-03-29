@@ -25,9 +25,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -35,6 +38,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.IO;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
@@ -44,7 +48,6 @@ namespace Gorgon.Editor.SpriteEditor
     /// Functionality for handling an associated sprite texture.
     /// </summary>
     internal class SpriteTextureService
-        : ISpriteTextureService
     {
         #region Variables.
         // The graphics interface for the application.
@@ -52,13 +55,13 @@ namespace Gorgon.Editor.SpriteEditor
         // The 2D renderer for the application.
         private readonly Gorgon2D _renderer;
         // The content file manager.
-        private readonly OLDE_IContentFileManager _fileManager;
+        private readonly IContentFileManager _fileManager;
         // The image codec used to read image file data.
-        private readonly IGorgonImageCodec _codec;
-        #endregion
-
-        #region Properties.
-
+        private readonly IGorgonImageCodec _imageCodec;
+        // The codec used to read sprite data.
+        private readonly IGorgonSpriteCodec _spriteCodec;
+        // The logging interface for debug logging.
+        private readonly IGorgonLog _log;
         #endregion
 
         #region Methods.
@@ -71,7 +74,6 @@ namespace Gorgon.Editor.SpriteEditor
         {
             GorgonRenderTargetView oldRtv = _graphics.RenderTargets[0];
             GorgonRenderTarget2DView convertTarget = null;
-            GorgonTexture2DView rtvTexture;
             IGorgonImage tempImage = null;
             BufferFormat targetFormat = texture.FormatInformation.IsSRgb ? BufferFormat.R8G8B8A8_UNorm_SRgb : BufferFormat.R8G8B8A8_UNorm;
 
@@ -123,7 +125,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <param name="file">The file to evaluate.</param>
         /// <returns><b>true</b> if the file is an image, supported by this editor, or <b>false</b> if not.</returns>
-        public bool IsContentImage(OLDE_IContentFile file) => ((file != null)
+        public bool IsContentImage(IContentFile file) => ((file != null)
                 && (file.Metadata != null)
                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 && (string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
@@ -161,31 +163,54 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to load an associated sprite texture for sprite content.</summary>
         /// <param name="spriteContent">The sprite content file to use.</param>
         /// <returns>The texture associated with the sprite, and the content file associated with that texture, or <b>null</b> if no sprite texture was found.</returns>
-        public async Task<(GorgonTexture2DView, OLDE_IContentFile)> LoadFromSpriteContentAsync(OLDE_IContentFile spriteContent)
+        public async Task<(GorgonTexture2DView, IContentFile)> LoadFromSpriteContentAsync(IContentFile spriteContent)
         {
-            if ((spriteContent.Metadata == null)
-                || (spriteContent.Metadata.DependsOn.Count == 0))
-            {
-                return (null, null);
-            }
+            Debug.Assert(spriteContent.Metadata != null, "No meta data for sprite content!");
 
-            (IGorgonImage imageData, OLDE_IContentFile file) = await Task.Run(() =>
+            _log.Print($"Loading sprite texture for '{spriteContent.Path}'...", LoggingLevel.Verbose);
+            (IGorgonImage imageData, IContentFile file) = await Task.Run(() =>
             {
-                if (!spriteContent.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string dependency))
+                if ((!spriteContent.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> dependency))
+                        || (dependency.Count == 0))
                 {
-                    return (null, null);
+                    _log.Print("[WARNING] No sprite texture dependency found, interrogating sprite data...", LoggingLevel.Verbose);
+                    // If there's no linkage, then see if the sprite has the path information embedded within its data.
+                    using (Stream spriteStream = _fileManager.OpenStream(spriteContent.Path, FileMode.Open))
+                    {
+                        string textureName = _spriteCodec.GetAssociatedTextureName(spriteStream);                        
+
+                        if ((string.IsNullOrWhiteSpace(textureName))
+                            || (!_fileManager.FileExists(textureName)))
+                        {
+                            
+                            return (null, null);
+                        }
+                        
+                        dependency = new List<string> { textureName };
+                    }                    
                 }
 
-                OLDE_IContentFile imageFile = _fileManager.GetFile(dependency);
+                _log.Print($"Found sprite texture '{dependency[0]}'...", LoggingLevel.Verbose);
+                IContentFile imageFile = _fileManager.GetFile(dependency[0]);
 
                 if (!IsContentImage(imageFile))
                 {
+                    _log.Print($"[ERROR] '{dependency[0]}' not found in project or is not an image content file.", LoggingLevel.Simple);
                     return (null, null);
                 }
 
-                using (Stream stream = imageFile.OpenRead())
+                using (Stream stream = _fileManager.OpenStream(imageFile.Path, FileMode.Open))
                 {
-                    return !_codec.IsReadable(stream) ? ((IGorgonImage, OLDE_IContentFile imageFile))(null, null) : (_codec.LoadFromStream(stream), imageFile);
+                    if (!_imageCodec.IsReadable(stream))
+                    {
+                        _log.Print($"[ERROR] '{dependency[0]}' is not a {_imageCodec.Name} file.", LoggingLevel.Simple);
+                        return ((IGorgonImage, IContentFile imageFile))(null, null);
+                    }
+                    else
+                    {
+                        _log.Print($"Texture '{dependency[0]}' found and loaded.", LoggingLevel.Verbose);
+                        return (_imageCodec.LoadFromStream(stream), imageFile);
+                    }
                 }
             });
 
@@ -215,27 +240,29 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <param name="file">The content file for the texture.</param>
         /// <returns>The texture from the file system.</returns>
-        /// <exception cref="FileNotFoundException">Thrown if the file on the <paramref name="path"/> was not found.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the <paramref name="file"/> was not found.</exception>
         /// <exception cref="GorgonException">Thrown if the content file is not an image that can be read by using the default codec.</exception>
-        public async Task<GorgonTexture2DView> LoadTextureAsync(OLDE_IContentFile file)
+        public async Task<GorgonTexture2DView> LoadTextureAsync(IContentFile file)
         {
             if (!IsContentImage(file))
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORSPR_ERR_NOT_SUPPORTED, file.Path));
             }
 
-            IGorgonImage imageData = await Task.Run(() =>
+            IGorgonImage LoadImage()
             {
-                using (Stream stream = file.OpenRead())
+                using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
                 {
-                    if (!_codec.IsReadable(stream))
+                    if (!_imageCodec.IsReadable(stream))
                     {
                         throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORSPR_ERR_TEXTURE_CANNOT_READ, file.Path));
                     }
 
-                    return _codec.LoadFromStream(stream);
+                    return _imageCodec.LoadFromStream(stream);
                 }
-            });
+            }
+
+            IGorgonImage imageData = await Task.Run(LoadImage);
 
             try
             {
@@ -258,28 +285,32 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <param name="file">The file to retrieve metadata from.</param>
         /// <returns>The metadata for the file, or <b>null</b> if the file is not an image.</returns>        
-        public IGorgonImageInfo GetImageMetadata(OLDE_IContentFile file)
+        public IGorgonImageInfo GetImageMetadata(IContentFile file)
         {
-            using (Stream stream = file.OpenRead())
+            using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
             {
-                return ((!_codec.IsReadable(stream)) || (!IsContentImage(file)))
+                return ((!_imageCodec.IsReadable(stream)) || (!IsContentImage(file)))
                     ? null
-                    : _codec.GetMetaData(stream);
+                    : _imageCodec.GetMetaData(stream);
             }
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteTextureService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SpriteTextureService"/> class.</summary>
         /// <param name="graphicsContext">The graphics context for the application.</param>
         /// <param name="fileManager">The content file manager.</param>
-        /// <param name="codec">The codec used to read image data.</param>
-        public SpriteTextureService(IGraphicsContext graphicsContext, OLDE_IContentFileManager fileManager, IGorgonImageCodec codec)
+        /// <param name="spriteCodec">The codec used to read sprite data.</param>
+        /// <param name="imageCodec">The codec used to read image data.</param>
+        /// <param name="log">The logging interface for debug logging.</param>
+        public SpriteTextureService(IGraphicsContext graphicsContext, IContentFileManager fileManager, IGorgonSpriteCodec spriteCodec, IGorgonImageCodec imageCodec, IGorgonLog log)
         {
             _graphics = graphicsContext.Graphics;
             _renderer = graphicsContext.Renderer2D;
             _fileManager = fileManager;
-            _codec = codec;
+            _imageCodec = imageCodec;
+            _spriteCodec = spriteCodec;
+            _log = log;
         }
         #endregion
     }

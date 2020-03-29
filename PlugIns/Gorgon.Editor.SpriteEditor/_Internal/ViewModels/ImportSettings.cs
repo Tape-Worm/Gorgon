@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 20, 2019 2:22:57 PM
+// Created: April 24, 2019 11:16:33 AM
 // 
 #endregion
 
@@ -30,97 +30,28 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using Gorgon.Core;
-using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.ImageEditor
+namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// Settings view model for image codecs.
+    /// The view model for the importer plug in settings.
     /// </summary>
-    internal class Settings
-        : PlugInsCategory<SettingsParameters>, ISettings
+    internal class ImportSettings
+        : PlugInsCategory<ImportSettingsParameters>, IImportSettings
     {
         #region Variables.
-        // The underlying settings for the plug in.
-        private ImageEditorSettings _settings;
-        // The registry for image codecs.
-        private ICodecRegistry _codecs;
-        // The range for the alpha setting funtionality.
-        private GorgonRange _alphaRange;
+        // The backing store for the settings.
+        private SpriteImportSettings _settings;
+
+        // The codecs for the plug in.
+        private CodecRegistry _codecs;
         #endregion
 
         #region Properties.
-        /// <summary>Property to return the file name that will hold the plug ins.</summary>
-        protected override string SettingsFileName => typeof(ImageEditorPlugIn).FullName;
-
-        /// <summary>Gets the name.</summary>
-        public override string Name => Resources.GORIMG_IMPORT_DESC;
-
-        /// <summary>
-        /// Property to return the last used alpha value when setting the alpha channel on an image.
-        /// </summary>
-        public int LastAlphaValue
-        {
-            get => _settings.AlphaValue;
-            set
-            {
-                if (_settings.AlphaValue == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.AlphaValue = value;
-                OnPropertyChanged();
-            }
-        }
-            
-
-        /// <summary>
-        /// Property to return the last used alpha value when setting the alpha channel on an image.
-        /// </summary>
-        public GorgonRange LastAlphaRange
-        {
-            get => _alphaRange;
-            set
-            {
-                if (_alphaRange.Equals(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                 _alphaRange = new GorgonRange(value.Minimum, value.Maximum);
-                _settings.AlphaRangeMin = value.Minimum;
-                _settings.AlphaRangeMax = value.Maximum;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the to the directory that was last used for importing/exporting.
-        /// </summary>
-        public string LastImportExportPath
-        {
-            get => _settings.LastImportExportPath;
-            set
-            {
-                if (string.Equals(_settings.LastImportExportPath, value, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.LastImportExportPath = value;
-                OnPropertyChanged();
-            }
-        }
-
         /// <summary>
         /// Property to return the list of selected codecs.
         /// </summary>
@@ -137,56 +68,11 @@ namespace Gorgon.Editor.ImageEditor
             get;
         } = new ObservableCollection<CodecSetting>();
 
-        /// <summary>Property to set or return the width of the picker window.</summary>
-        public int PickerWidth
-        {
-            get => _settings.PickerWidth;
-            set
-            {
-                if (_settings.PickerWidth == value)
-                {
-                    return;
-                }
+        /// <summary>Property to return the name of this object.</summary>
+        public override string Name => Resources.GORSPR_IMPORT_DESC;
 
-                OnPropertyChanging();
-                _settings.PickerWidth = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the height of the picker window.</summary>
-        public int PickerHeight
-        {
-            get => _settings.PickerHeight;
-            set
-            {
-                if (_settings.PickerHeight == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.PickerHeight = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to set or return the state of the picker window.</summary>
-        public int PickerWindowState
-        {
-            get => _settings.PickerWindowState;
-            set
-            {
-                if (_settings.PickerWindowState == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.PickerWindowState = value;
-                OnPropertyChanged();
-            }
-        }        
+        /// <summary>Property to return the file name that will hold the plug ins.</summary>
+        protected override string SettingsFileName => SpriteEditorPlugIn.SettingsFilename;
         #endregion
 
         #region Methods.
@@ -218,22 +104,12 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
-        /// Function to determine if the selected plug in assemblies can be unloaded.
+        /// Function to unload the selected plug in assemblies.
         /// </summary>
-        /// <returns><b>true</b> if the plug in assemblies can be removed, <b>false</b> if not.</returns>
-        protected override bool CanUnloadPlugInAssemblies() => SelectedCodecs.Count > 0;
-
-        /// <summary>Function to retrieve the underlying object used to hold the settings.</summary>
-        /// <returns>The object that holds the settings.</returns>
-        protected override object OnGetSettings() => _settings;
-
-        /// <summary>Function to unload previously loaded plug ins.</summary>
-        /// <returns>
-        ///   <b>true</b> to indicate that the operation succeeded, or <b>false</b> if it was cancelled.</returns>
         protected override bool OnUnloadPlugIns()
         {
             IReadOnlyList<CodecSetting> selected = SelectedCodecs.ToArray();
-            IReadOnlyList<GorgonImageCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
+            IReadOnlyList<GorgonSpriteCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
             MessageResponse response = MessageResponse.None;
 
             if (plugIns.Count == 0)
@@ -241,11 +117,11 @@ namespace Gorgon.Editor.ImageEditor
                 return true;
             }
 
-            foreach (GorgonImageCodecPlugIn plugIn in plugIns)
+            foreach (GorgonSpriteCodecPlugIn plugIn in plugIns)
             {
                 if ((response != MessageResponse.YesToAll) && (response != MessageResponse.NoToAll))
                 {
-                    response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: plugIns.Count > 1);
+                    response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: plugIns.Count > 1);
                 }
 
                 if (response == MessageResponse.NoToAll)
@@ -274,9 +150,9 @@ namespace Gorgon.Editor.ImageEditor
             return true;
         }
 
-        /// <summary>Function to load plugins from selected assemblies.</summary>
-        /// <returns>
-        ///   <b>true</b> to indicate that the operation succeeded, or <b>false</b> if it was cancelled.</returns>
+        /// <summary>
+        /// Function to load in a plug in assembly.
+        /// </summary>
         protected override bool OnLoadPlugIns()
         {
             string lastCodecPath = _settings.LastCodecPlugInPath.FormatDirectory(Path.DirectorySeparatorChar);
@@ -286,8 +162,8 @@ namespace Gorgon.Editor.ImageEditor
                 lastCodecPath = AppDomain.CurrentDomain.BaseDirectory;
             }
 
-            OpenCodecDialog.DialogTitle = Resources.GORIMG_CAPTION_SELECT_CODEC_DLL;
-            OpenCodecDialog.FileFilter = Resources.GORIMG_FILTER_SELECT_CODEC;
+            OpenCodecDialog.DialogTitle = Resources.GORSPR_CAPTION_SELECT_CODEC_DLL;
+            OpenCodecDialog.FileFilter = Resources.GORSPR_FILTER_SELECT_CODEC;
             OpenCodecDialog.InitialDirectory = new DirectoryInfo(lastCodecPath);
 
             string path = OpenCodecDialog.GetFilename();
@@ -298,11 +174,11 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             HostServices.BusyService.SetBusy();
-            IReadOnlyList<GorgonImageCodecPlugIn> codecs = _codecs.AddCodecPlugIn(path, out IReadOnlyList<string> errors);
+            IReadOnlyList<GorgonSpriteCodecPlugIn> codecs = _codecs.AddCodecPlugIn(path, out IReadOnlyList<string> errors);
 
             if (errors.Count > 0)
             {
-                HostServices.MessageDisplay.ShowError(Resources.GORIMG_ERR_CODEC_LOAD_ERRORS_PRESENT, details: string.Join("\n\n", errors.Select((item, index) => $"Error #{index + 1}\n--------------\n{item}")));
+                HostServices.MessageDisplay.ShowError(Resources.GORSPR_ERR_CODEC_LOAD_ERRORS_PRESENT, details: string.Join("\n\n", errors.Select((item, index) => $"Error #{index + 1}\n--------------\n{item}")));
 
                 if (codecs.Count == 0)
                 {
@@ -310,11 +186,11 @@ namespace Gorgon.Editor.ImageEditor
                 }
             }
 
-            foreach (GorgonImageCodecPlugIn plugin in codecs)
+            foreach (GorgonSpriteCodecPlugIn plugin in codecs)
             {
-                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
                 {
-                    IGorgonImageCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
+                    IGorgonSpriteCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
                     if (codec == null)
                     {
@@ -327,25 +203,37 @@ namespace Gorgon.Editor.ImageEditor
 
             _settings.LastCodecPlugInPath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
 
+            // Store the settings now.
             return true;
         }
+
+        /// <summary>
+        /// Function to determine if the selected plug in assemblies can be unloaded.
+        /// </summary>
+        /// <returns><b>true</b> if the plug in assemblies can be removed, <b>false</b> if not.</returns>
+        protected override bool CanUnloadPlugInAssemblies() => SelectedCodecs.Count > 0;
+
+        /// <summary>Function to retrieve the underlying object used to hold the settings.</summary>
+        /// <returns>The object that holds the settings.</returns>
+        protected override object OnGetSettings() => _settings;
 
         /// <summary>Function to inject dependencies for the view model.</summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(SettingsParameters injectionParameters)            
+        protected override void OnInitialize(ImportSettingsParameters injectionParameters)
         {
             base.OnInitialize(injectionParameters);
+
             _settings = injectionParameters.Settings;
             _codecs = injectionParameters.Codecs;
-            _alphaRange = new GorgonRange(_settings.AlphaRangeMin, _settings.AlphaRangeMax);
-            foreach (GorgonImageCodecPlugIn plugin in _codecs.CodecPlugIns)
+
+            foreach (GorgonSpriteCodecPlugIn plugin in _codecs.CodecPlugIns)
             {
-                foreach (GorgonImageCodecDescription desc in plugin.Codecs)
+                foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
                 {
-                    IGorgonImageCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
+                    IGorgonSpriteCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
                     if (codec == null)
                     {

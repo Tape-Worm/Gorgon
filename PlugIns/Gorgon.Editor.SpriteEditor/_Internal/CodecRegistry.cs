@@ -42,7 +42,6 @@ namespace Gorgon.Editor.SpriteEditor
     /// A registry for the sprite codecs used by the plug ins in this assembly.
     /// </summary>
     internal class CodecRegistry
-        : ICodecRegistry
     {
         #region Variables.
         // The cache containing the plug in assemblies.

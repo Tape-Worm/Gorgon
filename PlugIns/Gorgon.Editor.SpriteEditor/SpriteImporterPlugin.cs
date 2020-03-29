@@ -45,10 +45,10 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The image editor settings.
-        private IImporterPlugInSettings _settings;
+        private IImportSettings _settings;
 
         // The codecs registered with the plug in.
-        private ICodecRegistry _codecs;
+        private CodecRegistry _codecs;
 
         // The plug in cache for image codecs.
         private GorgonMefPlugInCache _pluginCache;
@@ -56,46 +56,34 @@ namespace Gorgon.Editor.SpriteEditor
 
         #region Methods.
         /// <summary>
-        /// Function to retrieve the codec used by the image.
+        /// Function to retrieve the codec used by the sprite.
         /// </summary>
-        /// <param name="file">The file containing the image content.</param>
+        /// <param name="filePath">Path to the file containing the image content.</param>
         /// <returns>The codec used to read the file.</returns>
-        private IGorgonSpriteCodec GetCodec(FileInfo file)
+        public static IGorgonSpriteCodec GetCodec(string filePath, CodecRegistry codecs)
         {
-            Stream stream = null;
+            string fileExtension = Path.GetExtension(filePath);
 
-            try
+            // Locate the file extension.
+            if (string.IsNullOrWhiteSpace(fileExtension))
             {
-                // Locate the file extension.
-                if (!string.IsNullOrWhiteSpace(file.Extension))
-                {
-                    var extension = new GorgonFileExtension(file.Extension);
-
-                    // Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
-                    (GorgonFileExtension, IGorgonSpriteCodec codec)[] results = _codecs.CodecFileTypes.Where(item => item.extension == extension).ToArray();
-
-                    if (results.Length == 0)
-                    {
-                        return null;
-                    }
-
-                    stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                    foreach (IGorgonSpriteCodec codec in results.Select(item => item.codec))
-                    {
-                        if (codec.IsReadable(stream))
-                        {
-                            return codec;
-                        }
-                    }
-                }
+                return null;
             }
-            finally
+                    
+            var extension = new GorgonFileExtension(fileExtension);
+
+            // Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
+            (GorgonFileExtension, IGorgonSpriteCodec codec)[] results = codecs.CodecFileTypes.Where(item => item.extension == extension).ToArray();
+
+            if (results.Length == 0)
             {
-                stream?.Dispose();
+                return null;
             }
 
-            return null;
+            using (Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                return results.Select(item => item.codec).FirstOrDefault(item => item.IsReadable(stream));
+            }
         }
 
         /// <summary>Function to retrieve the settings interface for this plug in.</summary>
@@ -111,29 +99,29 @@ namespace Gorgon.Editor.SpriteEditor
         /// <see cref="OnInitialize()"/> method or the settings will not display.
         /// </para>
         /// </remarks>
-        protected override ISettingsCategoryViewModel OnGetSettings() => _settings;
+        protected override ISettingsCategory OnGetSettings() => _settings;
 
         /// <summary>Function to provide initialization for the plugin.</summary>
         /// <param name="pluginService">The plugin service used to access other plugins.</param>
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
         protected override void OnInitialize()
         {
-            ViewFactory.Register<IImporterPlugInSettings>(() => new SpriteCodecSettingsPanel());
+            ViewFactory.Register<IImportSettings>(() => new SpriteCodecSettingsPanel());
 
-            _pluginCache = new GorgonMefPlugInCache(CommonServices.Log);
+            _pluginCache = new GorgonMefPlugInCache(HostContentServices.Log);
 
-            SpriteImportSettings settings = ContentPlugInService.ReadContentSettings<SpriteImportSettings>(typeof(SpriteImporterPlugIn).FullName);
+            SpriteImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteImportSettings>(SpriteEditorPlugIn.SettingsFilename);
 
             if (settings == null)
             {
                 settings = new SpriteImportSettings();
             }
-
-            _codecs = new CodecRegistry(_pluginCache, GraphicsContext.Renderer2D, CommonServices.Log);
+            
+            _codecs = new CodecRegistry(_pluginCache, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
             _codecs.LoadFromSettings(settings);
 
-            var settingsVm = new ImporterPlugInSettings();
-            settingsVm.Initialize(new ImportPlugInSettingsParameters(settings, _codecs, new FileOpenDialogService(), ContentPlugInService, CommonServices));
+            var settingsVm = new ImportSettings();
+            settingsVm.Initialize(new ImportSettingsParameters(settings, _codecs, new FileOpenDialogService(), _pluginCache, HostContentServices));
             _settings = settingsVm;
         }
 
@@ -148,34 +136,51 @@ namespace Gorgon.Editor.SpriteEditor
                     _settings.WriteSettingsCommand.Execute(null);
                 }
 
-                ViewFactory.Unregister<IImporterPlugInSettings>();
+                ViewFactory.Unregister<IImportSettings>();
+
+                foreach (IDisposable codec in _codecs.Codecs.OfType<IDisposable>())
+                {
+                    codec.Dispose();
+                }
+
+                _pluginCache?.Dispose();
             }
             catch (Exception ex)
             {
                 // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-                CommonServices.Log.LogException(ex);
+                HostContentServices.Log.LogException(ex);
             }
         }
 
         /// <summary>Function to open a content object from this plugin.</summary>
-        /// <param name="sourceFile">The file being imported.</param>
-        /// <param name="fileSystem">The file system containing the file being imported.</param>
-        /// <returns>A new <see cref="T:Gorgon.Editor.Services.IEditorContentImporter"/> object.</returns>
-        protected override IEditorContentImporter OnCreateImporter(FileInfo sourceFile, IGorgonFileSystem fileSystem) =>
-            new GorgonSpriteImporter(sourceFile, GetCodec(sourceFile), GraphicsContext.Renderer2D, fileSystem, CommonServices.Log);
+        /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
+        /// <remarks>This method creates an instance of the custom content importer. The application will use the object returned to perform the actual import process.</remarks>
+        protected override IEditorContentImporter OnCreateImporter() => new GorgonSpriteImporter(ProjectFileSystem, TemporaryFileSystem, _codecs, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>
-        /// <param name="file">The content file to evaluate.</param>
+        /// <param name="filePath">The path to the file to evaluate.</param>
         /// <returns>
         ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
-        protected override bool OnCanOpenContent(FileInfo file) => GetCodec(file) != null;
+        /// <remarks>
+        ///   <para>
+        /// This method is used to determine if the file specified by the <paramref name="filePath" /> passed to the method can be opened by this plug in. If the method returns <b>true</b>, then the host
+        /// application will convert the file using the importer produced by this plug in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+        /// </para>
+        ///   <para>
+        /// The <paramref name="filePath" /> is a path to the file on the project virtual file system.
+        /// </para>
+        ///   <para>
+        /// Implementors may use whatever method they desire to determine if the file can be opened (e.g. checking file extensions, examining file headers, etc...).
+        /// </para>
+        /// </remarks>
+        protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) != null;
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteImporterPlugIn"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SpriteImporterPlugIn"/> class.</summary>
         public SpriteImporterPlugIn()
             : base(Resources.GORSPR_IMPORT_DESC)
-        {
+        {            
         }
         #endregion
     }

@@ -300,7 +300,7 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter Sprite Name.
+        ///   Looks up a localized string similar to New Sprite.
         /// </summary>
         internal static string GORSPR_CAPTION_SPRITE_NAME {
             get {
@@ -611,6 +611,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter a name for the sprite....
+        /// </summary>
+        internal static string GORSPR_TEXT_CUE_SPRITE_NAME {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_CUE_SPRITE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading image &apos;{0}&apos;....
         /// </summary>
         internal static string GORSPR_TEXT_LOADING_IMAGE {
@@ -714,6 +723,16 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap image_20x20 {
+            get {
+                object obj = ResourceManager.GetObject("image_20x20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap left_16x16 {
             get {
                 object obj = ResourceManager.GetObject("left_16x16", resourceCulture);
@@ -737,6 +756,16 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static System.Drawing.Bitmap manual_input_48x48 {
             get {
                 object obj = ResourceManager.GetObject("manual_input_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap no_thumb_sprite_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("no_thumb_sprite_64x64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -968,6 +997,16 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
             get {
                 object obj = ResourceManager.GetObject("SpriteEditor_Bg_1024x1024", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Transparency_Pattern {
+            get {
+                object obj = ResourceManager.GetObject("Transparency_Pattern", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

@@ -37,16 +37,16 @@ namespace Gorgon.Editor.SpriteEditor
     /// A view used to manually update the sprite anchor value.
     /// </summary>
     internal partial class SpriteAnchor
-        : EditorSubPanelCommon, IDataContext<ISpriteAnchorEdit>
+        : EditorSubPanelCommon//, IDataContext<ISpriteAnchorEdit>
     {
-        #region Properties.
+/*        #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
         public ISpriteAnchorEdit DataContext
         {
             get;
             private set;
         }
-        #endregion
+        #endregion*/
 
         #region Methods.        
         /// <summary>Handles the ValueChanged event of the NumericHorizontal control.</summary>
@@ -54,12 +54,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericHorizontal_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 return;
             }
 
-            DataContext.AnchorPosition = new DX.Vector2((float)NumericHorizontal.Value, DataContext.AnchorPosition.Y);
+            DataContext.AnchorPosition = new DX.Vector2((float)NumericHorizontal.Value, DataContext.AnchorPosition.Y);*/
             ValidateOk();
         }
 
@@ -68,12 +68,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericVertical_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 return;
             }
 
-            DataContext.AnchorPosition = new DX.Vector2(DataContext.AnchorPosition.X, (float)NumericVertical.Value);
+            DataContext.AnchorPosition = new DX.Vector2(DataContext.AnchorPosition.X, (float)NumericVertical.Value);*/
             ValidateOk();
         }
 
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Alignment_AlignmentChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 return;
             }
@@ -130,7 +130,7 @@ namespace Gorgon.Editor.SpriteEditor
                     NumericHorizontal.Value = w;
                     NumericVertical.Value = h;
                     break;
-            }
+            }*/
         }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -138,7 +138,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
+            /*switch (e.PropertyName)
             {
                 case nameof(ISpriteAnchorEdit.Bounds):
                     NumericVertical.Minimum = NumericHorizontal.Minimum = 0;
@@ -153,11 +153,12 @@ namespace Gorgon.Editor.SpriteEditor
 
                     SetAlignment(DataContext);
                     break;
-            }
+            }*/
 
             ValidateOk();
         }
 
+        /*
         /// <summary>
         /// Function to set up the alignment on the alignment control.
         /// </summary>
@@ -230,18 +231,18 @@ namespace Gorgon.Editor.SpriteEditor
                 Alignment.AlignmentChanged += Alignment_AlignmentChanged;
             }
         }
-
+        */
         /// <summary>
         /// Function to unassign any events.
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 return;
             }
 
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
+            DataContext.PropertyChanged -= DataContext_PropertyChanged;*/
         }
 
         /// <summary>
@@ -249,7 +250,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void ResetDataContext()
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 return;
             }
@@ -258,9 +259,14 @@ namespace Gorgon.Editor.SpriteEditor
             Alignment.Alignment = Gorgon.UI.Alignment.UpperLeft;
             NumericHorizontal.Value = NumericVertical.Value = 0M;
             NumericVertical.Minimum = NumericHorizontal.Minimum = 0;
-            NumericVertical.Maximum = NumericHorizontal.Maximum = int.MaxValue;
+            NumericVertical.Maximum = NumericHorizontal.Maximum = int.MaxValue;*/
         }
-
+        /*
+        /// <summary>Function called to validate the OK button.</summary>
+        /// <returns>
+        ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
+        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+         
         /// <summary>
         /// Function to initialize the control from the data context.
         /// </summary>
@@ -316,7 +322,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext.CancelCommand.Execute(null);
         }
-
+        */
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
@@ -328,13 +334,9 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext?.OnLoad();
+            //DataContext?.OnLoad();
         }
-
-        /// <summary>Function called to validate the OK button.</summary>
-        /// <returns>
-        ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+        /*
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
@@ -351,11 +353,11 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }
+        }*/
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteAnchor"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SpriteAnchor"/> class.</summary>
         public SpriteAnchor() => InitializeComponent();
         #endregion
     }

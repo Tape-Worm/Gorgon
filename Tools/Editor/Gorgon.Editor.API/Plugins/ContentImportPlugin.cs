@@ -114,6 +114,18 @@ namespace Gorgon.Editor.PlugIns
         }
 
         /// <summary>
+        /// Property to return the file system used by the project.
+        /// </summary>
+        /// <remarks>
+        /// Importer plug ins can use this to read in dependencies and other content files from the project.
+        /// </remarks>
+        protected IGorgonFileSystem ProjectFileSystem
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Property to return the type of this plug in.
         /// </summary>
         /// <remarks>
@@ -205,9 +217,11 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Function called when a project is loaded/created.
         /// </summary>
+        /// <param name="projectFileSystem">The file system used by the project.</param>
         /// <param name="tempFileSystem">The file system used to hold temporary working data.</param>
-        public void ProjectOpened(IGorgonFileSystemWriter<Stream> tempFileSystem)
+        public void ProjectOpened(IGorgonFileSystem projectFileSystem, IGorgonFileSystemWriter<Stream> tempFileSystem)
         {
+            ProjectFileSystem = projectFileSystem;
             TemporaryFileSystem = tempFileSystem;
             OnProjectOpened();
         }
@@ -349,7 +363,6 @@ namespace Gorgon.Editor.PlugIns
 
             HostContentServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
             HostServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
-
             OnInitialize();
         }
         #endregion

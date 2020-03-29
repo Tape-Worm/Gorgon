@@ -38,44 +38,49 @@ using DX = SharpDX;
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// A renderer used to render into the sprite area when there is no sprite active.
+    /// A renderer used to render when the sprite lacks a texture association.
     /// </summary>
-    internal class NoTextureRenderer
-        : SpriteContentRenderer
+    internal class NoTextureViewer
+        : SpriteViewer
     {
         #region Variables.
         // The texture to display when a sprite lacks a texture association.
         private GorgonTexture2DView _noImage;
-        #endregion        
+        #endregion
 
         #region Methods.
-        /// <summary>Function called to render the sprite data.</summary>
-        /// <returns>The presentation interval to use when rendering.</returns>
-        protected override int OnRender()
+        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
+        /// <param name="disposing">
+        ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
-            var clientSize = new DX.Size2F(SwapChain.Width, SwapChain.Height);
-            float newSize = clientSize.Width < clientSize.Height ? clientSize.Width : clientSize.Height;
-            var size = new DX.Size2F(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
-            var halfClient = new DX.Size2F(clientSize.Width / 2.0f, clientSize.Height / 2.0f);
-            var pos = new DX.Vector2((int)(halfClient.Width - size.Width / 2.0f), (int)(halfClient.Height - size.Height / 2.0f));
+            if (disposing)
+            {
+                _noImage?.Dispose();
+            }
 
-            Graphics.SetRenderTarget(SwapChain.RenderTargetView);
-            SwapChain.RenderTargetView.Clear(BackgroundColor);
+            base.Dispose(disposing);
+        }
+
+        /// <summary>Function to render the background.</summary>
+        /// <remarks>Developers can override this method to render a custom background.</remarks>
+        protected sealed override void OnRenderBackground()
+        {
+            float newSize = RenderRegion.Width < RenderRegion.Height ? RenderRegion.Width : RenderRegion.Height;
+            var size = new DX.Size2F(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));            
+            var halfClient = new DX.Size2F(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+            var pos = new DX.Vector2((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
 
             Renderer.Begin();
             Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColor.White, _noImage, new DX.RectangleF(0, 0, 1, 1));
             Renderer.End();
-
-            return 1;
         }
 
-        /// <summary>Function called to perform custom loading of resources.</summary>
-        protected override void OnLoad()
+
+        /// <summary>Function called during resource creation.</summary>
+        protected sealed override void OnCreateResources()
         {
-            if (_noImage != null)
-            {
-                return;
-            }
+            base.OnCreateResources();
 
             using (var stream = new MemoryStream(Resources.SpriteEditor_Bg_1024x1024))
             {
@@ -86,25 +91,19 @@ namespace Gorgon.Editor.SpriteEditor
                 });
             }
         }
-
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public override void Dispose()
-        {
-            GorgonTexture2DView noImage = Interlocked.Exchange(ref _noImage, null);
-            noImage?.Dispose();
-
-            base.Dispose();
-        }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteContentRenderer"/> class.</summary>
-        /// <param name="graphics">The graphics interface for the application.</param>
-        /// <param name="swapChain">The swap chain for the render area.</param>
+        /// <summary>Initializes a new instance of the <see cref="NoTextureViewer"/> class.</summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
-        public NoTextureRenderer(GorgonGraphics graphics, GorgonSwapChain swapChain, Gorgon2D renderer)
-            : base(null, graphics, swapChain, renderer, 1.0f)
+        /// <param name="swapChain">The swap chain for the render area.</param>
+        /// <param name="sprite">The sprite used for rendering.</param>
+        public NoTextureViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent sprite)
+            : base("SpriteNoTextureRenderer", renderer, swapChain, sprite)
         {
+            CanPanHorizontally = false;
+            CanPanHorizontally = false;
+            CanZoom = false;            
         }
         #endregion
     }

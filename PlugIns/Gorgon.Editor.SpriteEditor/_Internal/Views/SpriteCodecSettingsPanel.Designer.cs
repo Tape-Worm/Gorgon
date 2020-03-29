@@ -20,8 +20,8 @@
 
             if (disposing)
             {
-                DataContext?.OnUnload();
-                UnassignEvents();
+                /*DataContext?.OnUnload();
+                UnassignEvents();*/
             }
 
             base.Dispose(disposing);

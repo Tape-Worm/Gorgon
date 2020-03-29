@@ -1352,7 +1352,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the file/files can be deleted, <b>false</b> if not.</returns>
-        private bool CanDeleteFile(DeleteArgs args) => SelectedFiles.Count > 0;
+        private bool CanDeleteFile(DeleteArgs args) => (SelectedFiles.Count > 0) && (!SelectedFiles[0].IsOpen);
 
         /// <summary>
         /// Function to delete a file (or files) from the file system.
@@ -1589,7 +1589,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the file can be deleted, or <b>false</b> is not.</returns>
-        private bool CanRenameFile(RenameArgs args) => SelectedFiles.Count == 1;
+        private bool CanRenameFile(RenameArgs args) => (SelectedFiles.Count == 1) && (!SelectedFiles[0].IsOpen);
 
         /// <summary>
         /// Function to rename a file.
@@ -1614,6 +1614,12 @@ namespace Gorgon.Editor.ViewModels
                 {
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, args.NewName));
                     args.Cancel = true;
+                    return;
+                }                
+
+                if (selected.IsOpen)
+                {
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_RENAME_FILE_OPEN_FILE, selected.Name));
                     return;
                 }
 
@@ -1679,7 +1685,16 @@ namespace Gorgon.Editor.ViewModels
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, args.NewName));
                     args.Cancel = true;
                     return;
-                }                    
+                }
+
+                IFile openFile = CheckForOpenFile(selected);
+
+                if (openFile != null)
+                {
+                    args.Cancel = true;
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_RENAME_DIR_OPEN_FILE, selected.Name, openFile.Name));
+                    return;
+                }
 
                 // Ensure that we can actually update the virtual directory object.
                 if ((selected.RenameCommand == null) || (!selected.RenameCommand.CanExecute(args)))
@@ -1814,6 +1829,14 @@ namespace Gorgon.Editor.ViewModels
                 srcDirectory = _directories[copyData.SourceDirectory];
                 destDirectory = _directories[copyData.DestinationDirectory];
 
+                IFile openFile = CheckForOpenFile(srcDirectory);
+
+                if (openFile != null)
+                {                    
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_DIR_OPEN_FILE, srcDirectory.Name, openFile.Name));
+                    return;
+                }
+
                 UpdateProgress(srcDirectory.FullPath, 0, Resources.GOREDIT_TEXT_MOVING, cancelSource.Cancel);
 
                 _fileSystemWriter.VirtualDirectoryMoved += DirectoryMoved;
@@ -1904,7 +1927,8 @@ namespace Gorgon.Editor.ViewModels
             foreach (string filePath in copyData.SourceFiles)
             {
                 if ((!_files.TryGetValue(filePath, out IFile file))
-                    || ((file.Parent == destDirectory) && (copyData.Operation == CopyMoveOperation.Move)))
+                    || ((file.Parent == destDirectory) && (copyData.Operation == CopyMoveOperation.Move))
+                    || ((file.IsOpen) && (copyData.Operation == CopyMoveOperation.Move)))
                 {
                     return false;
                 }
@@ -1972,6 +1996,14 @@ namespace Gorgon.Editor.ViewModels
                     }
 
                     srcFiles.Add(file);
+                }
+
+                IFile openFile = srcFiles.FirstOrDefault(item => item.IsOpen);
+
+                if (openFile != null)
+                {
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_FILE_OPEN_FILE, openFile.Name));
+                    return;
                 }
 
                 destDirectory = _directories[args.DestinationDirectory];
@@ -2730,11 +2762,13 @@ namespace Gorgon.Editor.ViewModels
                 DoSelectDirectory(Root.ID);
                 if ((SelectedDirectory == null) || (SelectedDirectory.Files.Count == 0))
                 {
+                    OnFileSystemUpdated();
                     return;
                 }
 
                 SelectedFiles.Add(SelectedDirectory.Files[0]);
                 OnSelectedFileCountChanged();
+                OnFileSystemUpdated();
             }
             catch (Exception ex)
             {
@@ -3105,11 +3139,15 @@ namespace Gorgon.Editor.ViewModels
 
             (string mask, int searchPatternState, IDirectory parentDir, bool usePattern) = GetSearchState(directoryPath, searchMask);
 
-            IEnumerable<IContentFile> paths = recursive ? parentDir.Directories
-                                                                 .Traverse(d => d.Directories)
-                                                                 .SelectMany(item => item.Files)
-                                                                 .Cast<IContentFile>()
-                                                      : parentDir.Files.Cast<IContentFile>();
+            IEnumerable<IContentFile> paths = parentDir.Files.Cast<IContentFile>();
+
+            if (recursive)
+            {
+                paths = paths.Concat(parentDir.Directories
+                                              .Traverse(d => d.Directories)
+                                              .SelectMany(item => item.Files)
+                                              .Cast<IContentFile>());
+            }
 
             switch (searchPatternState)
             {

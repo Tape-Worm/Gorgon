@@ -76,7 +76,7 @@ namespace Gorgon.Editor.Rendering
 
             if (_step > _marchAntsTexture.Value.Width)
             {
-                _step = 0;
+                _step -= _marchAntsTexture.Value.Width;
             }
 
             _renderer.DrawRectangle(rect, GorgonColor.White,

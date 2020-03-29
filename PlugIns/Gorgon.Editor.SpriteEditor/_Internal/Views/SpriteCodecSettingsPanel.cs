@@ -38,7 +38,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// The panel used to display settings for image codec support.
     /// </summary>
     internal partial class SpriteCodecSettingsPanel
-        : SettingsBaseControl, IDataContext<IImporterPlugInSettings>
+        : SettingsBaseControl, IDataContext<IImportSettings>
     {
         #region Properties.
         /// <summary>Property to return the ID of the panel.</summary>
@@ -47,7 +47,7 @@ namespace Gorgon.Editor.SpriteEditor
 
         /// <summary>Property to return the data context assigned to this view.</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public IImporterPlugInSettings DataContext
+        public IImportSettings DataContext
         {
             get;
             private set;
@@ -74,7 +74,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to populate the list of codecs.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void FillList(IImporterPlugInSettings dataContext)
+        private void FillList(IImportSettings dataContext)
         {
             ListCodecs.BeginUpdate();
 
@@ -274,7 +274,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to initialize the control from the specified data context.
         /// </summary>
         /// <param name="dataContext">The data context to apply.</param>
-        private void InitializeFromDataContext(IImporterPlugInSettings dataContext)
+        private void InitializeFromDataContext(IImportSettings dataContext)
         {
             if (dataContext == null)
             {
@@ -297,7 +297,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IImporterPlugInSettings dataContext)
+        public void SetDataContext(IImportSettings dataContext)
         {
             UnassignEvents();
 

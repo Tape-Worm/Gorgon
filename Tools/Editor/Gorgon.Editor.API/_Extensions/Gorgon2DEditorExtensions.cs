@@ -402,10 +402,13 @@ namespace Gorgon.IO
             GorgonTexture2D texture = null;
             if (overrideTexture == null)
             {
-                if (fileMetadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string imagePath))
+                if (fileMetadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> imagePaths))
                 {
-                    texture = GetTexture(renderer.Graphics, fileSystem, metaData, imagePath, textureUsage, supportedImageCodecs);
-                    overrideTexture = texture.GetShaderResourceView();
+                    if ((imagePaths != null) && (imagePaths.Count > 0))
+                    {
+                        texture = GetTexture(renderer.Graphics, fileSystem, metaData, imagePaths[0], textureUsage, supportedImageCodecs);
+                        overrideTexture = texture.GetShaderResourceView();
+                    }
                 }
             }
 

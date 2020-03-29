@@ -81,11 +81,11 @@ namespace Gorgon.Editor.Metadata
         /// Property to return the list of item paths that this item depends on.
         /// </summary>
         [JsonProperty(PropertyName = "Dependencies")]
-        public Dictionary<string, string> DependsOn
+        public Dictionary<string, List<string>> DependsOn
         {
             get;
             private set;
-        } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        } = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Property to set or return the name of the thumbnail associated with the project item.

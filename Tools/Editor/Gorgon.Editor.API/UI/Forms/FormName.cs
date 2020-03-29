@@ -94,8 +94,8 @@ namespace Gorgon.Editor.UI.Forms
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TextName_Leave(object sender, EventArgs e)
         {
-            PanelLocateText.BackColor = BackColor;
-            TextName.BackColor = BackColor;
+            PanelUnderline.BackColor = DarkFormsRenderer.WindowBackground;
+            TextName.BackColor = DarkFormsRenderer.WindowBackground;
             TextName.ForeColor = ForeColor;
 
             if (!string.IsNullOrWhiteSpace(TextName.Text))
@@ -127,8 +127,7 @@ namespace Gorgon.Editor.UI.Forms
                 return;
             }
 
-            PanelLocateText.BackColor = BackColor;
-            TextName.BackColor = BackColor;
+            TextName.BackColor = DarkFormsRenderer.WindowBackground;
             TextName.ForeColor = ForeColor;
         }
 
@@ -137,10 +136,10 @@ namespace Gorgon.Editor.UI.Forms
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TextName_Enter(object sender, EventArgs e)
         {
+            PanelUnderline.BackColor = Color.Black;
             TextName.Parent.BackColor = TextName.BackColor = Color.White;
             TextName.ForeColor = BackColor;
             TextName.SelectAll();
-            PanelLocateText.BackColor = Color.Black;
         }
 
         /// <summary>Handles the TextChanged event of the TextName control.</summary>

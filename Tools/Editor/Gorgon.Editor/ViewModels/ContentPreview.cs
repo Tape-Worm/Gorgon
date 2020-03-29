@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Variables.
         // The directory path for thumbnails this session.
-        private readonly static string _thumbnailPath = $"/Thumbnails_{Guid.NewGuid():N}/";
+        private readonly static string _thumbnailPath = $"/Thumbnails/";
         // The file explorer view model, used to track selection changes.
         private IFileExplorer _fileExplorer;
         // The file manager for content.

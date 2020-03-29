@@ -188,13 +188,51 @@ namespace Gorgon.Editor.UI.Controls
         }
 
         /// <summary>
+        /// Property to set or return whether to use single selection, or multi-selection.
+        /// </summary>
+        [Browsable(true), Category("Behavior"), Description("Sets whether to allow single or multiple selections."), DefaultValue(true)]
+        public bool MultiSelect
+        {
+            get => GridFiles.MultiSelect;
+            set 
+            {
+                if (value == GridFiles.MultiSelect)
+                {
+                    return;
+                }
+
+                GridFiles.MultiSelect = value;                
+
+                GetCheckboxHeader();
+            }
+        }
+
+        /// <summary>
         /// Property to set or return whether search is available or not.
         /// </summary>
-        [Browsable(true), Category("Behavior"), Description("Sets whether search is available or not.")]
+        [Browsable(true), Category("Behavior"), Description("Sets whether search is available or not."), DefaultValue(true)]
         public bool ShowSearch
         {
             get => TextSearch.Visible;
             set => TextSearch.Visible = value;
+        }
+
+        /// <summary>
+        /// Property to set or return the text to display in the file column header.
+        /// </summary>
+        [Browsable(true), Category("Appearance"), Description("Sets the text to display in the file column header."), DefaultValue("File")]
+        public string FileColumnText
+        {
+            get => ColumnLocation.HeaderText;
+            set
+            {
+                if (string.Equals(value, ColumnFullFilePath.HeaderText, StringComparison.CurrentCulture))
+                {
+                    return;
+                }
+
+                ColumnLocation.HeaderText = value;
+            }
         }
         #endregion
 
@@ -355,7 +393,7 @@ namespace Gorgon.Editor.UI.Controls
                     if (row.Cells[ColumnSelected.Index].Value.IfNull(false) != entry.IsSelected)
                     {
                         row.Cells[ColumnSelected.Index].Value = entry.IsSelected;
-
+                        
                         if (entry.IsSelected)
                         {
                             EventHandler<ContentFileEntrySelectedEventArgs> selectHandler = FileEntrySelected;
@@ -376,6 +414,19 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         private void GetCheckboxHeader()
         {
+            if (_checkBoxHeader != null)
+            {
+                _checkBoxHeader.Click -= CheckboxHeader_Click;
+                GridFiles.Controls.Remove(_checkBoxHeader);
+                _checkBoxHeader.Dispose();
+                _checkBoxHeader = null;
+            }
+
+            if (!MultiSelect)
+            {
+                return;
+            }
+
             Rectangle rect = GridFiles.GetCellDisplayRectangle(0, -1, true);
             // set checkbox header to center of header cell. +1 pixel to position 
             rect.Y = 3;
@@ -522,6 +573,12 @@ namespace Gorgon.Editor.UI.Controls
                 return;
             }
 
+            if (!MultiSelect)
+            {
+                dirEntry.IsExpanded = !dirEntry.IsExpanded;
+                return;
+            }
+
             IEnumerable<ContentFileExplorerFileEntry> files = dirEntry.Files;
 
             if ((ModifierKeys & Keys.Control) == Keys.Control)
@@ -546,7 +603,7 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         private void SetCheckState()
         {
-            if (_checkBoxHeader == null)
+            if ((_checkBoxHeader == null) || (!MultiSelect))
             {
                 return;
             }
@@ -591,22 +648,35 @@ namespace Gorgon.Editor.UI.Controls
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
         private void GridFiles_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if ((e.ColumnIndex != ColumnSelected.Index) || (e.RowIndex < 0))
+            if (((MultiSelect) && (e.ColumnIndex != ColumnSelected.Index)) || (e.RowIndex < 0))
             {
                 return;
             }
 
             DataGridViewRow row = GridFiles.Rows[e.RowIndex];
 
-            if ((IsDirectoryRow(row)) && (_rowDirsXref.TryGetValue(row, out ContentFileExplorerDirectoryEntry dirEntry)))
+            if ((IsDirectoryRow(row)) && (_rowDirsXref.TryGetValue(row, out ContentFileExplorerDirectoryEntry dirEntry)) && (e.ColumnIndex == 0))
             {
                 dirEntry.IsExpanded = !dirEntry.IsExpanded;
                 return;
             }
 
+            if (!MultiSelect)
+            {
+                foreach (DataGridViewRow otherRow in GridFiles.Rows)
+                {
+                    if (!_rowFilesXref.TryGetValue(otherRow, out ContentFileExplorerFileEntry otherFileEntry))
+                    {
+                        continue;
+                    }
+
+                    otherFileEntry.IsSelected = false;
+                }                
+            }
+
             if (_rowFilesXref.TryGetValue(row, out ContentFileExplorerFileEntry fileEntry))
             {
-                if (GridFiles.SelectedRows.Count == 1)
+                if (GridFiles.SelectedRows.Count == 1) 
                 {
                     fileEntry.IsSelected = !fileEntry.IsSelected;
                     SetCheckState();
@@ -619,7 +689,7 @@ namespace Gorgon.Editor.UI.Controls
                 return;
             }
 
-            bool checkValue = !fileEntry.IsSelected;
+            bool checkValue = (!MultiSelect) || (!fileEntry.IsSelected);
 
             foreach (DataGridViewRow selectedRow in GridFiles.SelectedRows)
             {
@@ -721,6 +791,10 @@ namespace Gorgon.Editor.UI.Controls
             Rectangle bounds = e.CellBounds;
             e.PaintBackground(e.CellBounds, (e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected);
 
+            if (!MultiSelect)
+            {
+                return;
+            }
 
             bounds.Height = bounds.Width = (int)(12 * dpiScaling);
             bounds.X = e.CellBounds.X + e.CellBounds.Width / 2 - bounds.Width / 2;

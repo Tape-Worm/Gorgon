@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
@@ -380,11 +381,46 @@ namespace Gorgon.Editor.ViewModels
             RefreshMetadata();
         }
 
-        void IContentFile.LinkContent(IContentFile child) => throw new NotImplementedException();
+        /// <summary>Function to link a content file to be dependant upon this content.</summary>
+        /// <param name="file">The file to link to this content.</param>
+        void IContentFile.LinkContent(IContentFile file)
+        {
+            if (file == null)
+            {
+                return;
+            }
 
-        void IContentFile.UnlinkContent(IContentFile child) => throw new NotImplementedException();
+            if (!Metadata.DependsOn.TryGetValue(file.Metadata.ContentMetadata.ContentTypeID, out List<string> paths))
+            {
+                Metadata.DependsOn[file.Metadata.ContentMetadata.ContentTypeID] = paths = new List<string>();
+            }
 
-        void IContentFile.ClearLinks() => throw new NotImplementedException();
+            if (!paths.Any(item => string.Equals(file.Path, item, StringComparison.OrdinalIgnoreCase)))
+            {
+                paths.Add(file.Path);
+            }
+        }
+
+        /// <summary>Function to unlink a content file from being dependant upon this content.</summary>
+        /// <param name="file">The file to unlink from this content.</param>
+        void IContentFile.UnlinkContent(IContentFile file)
+        {
+            if (file == null)
+            {
+                return;
+            }
+
+            if (!Metadata.DependsOn.TryGetValue(file.Metadata.ContentMetadata.ContentTypeID, out List<string> paths))
+            {
+                return;
+            }
+            
+            string path = paths.FirstOrDefault(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase));
+            paths.Remove(path);
+        }
+
+        /// <summary>Function to remove all child dependency links from this content.</summary>
+        void IContentFile.ClearLinks() => _metadata.DependsOn.Clear();
 
         /// <summary>Function to notify that the metadata should be refreshed.</summary>
         void IContentFile.RefreshMetadata() => RefreshMetadata();

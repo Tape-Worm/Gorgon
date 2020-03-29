@@ -20,55 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 10, 2019 8:26:04 AM
+// Created: March 15, 2019 11:53:17 AM
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
-using Gorgon.Editor.UI;
+using System.Windows.Forms;
+using Gorgon.Editor.Rendering;
+using Gorgon.Graphics;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// The view model for the manual vertex edit window.
+    /// Provides rendering functionality for the sprite editor.
     /// </summary>
-    internal interface IManualVertexEditor
-        : IManualInputViewModel
+    internal interface ISpriteViewer
+        : IContentRenderer
     {
+        #region Properties.
         /// <summary>
-        /// Property to set or return the vertex offset for the selected vertex.
+        /// Property to set or return the opacity of the content in the view.
         /// </summary>
-        DX.Vector2 Offset
+        float TextureOpacity
         {
             get;
             set;
         }
 
-        /// <summary>
-        /// Property to set or return the vertex index.
-        /// </summary>
-        int SelectedVertexIndex
+        /// <summary>Property to set or return the opacity of the sprite in the view.</summary>        
+        float SpriteOpacity
         {
             get;
             set;
         }
+        #endregion
 
+        #region Methods.
         /// <summary>
-        /// Property to return the command used to reset the vertex offset back to 0x0.
+        /// Function to create resources required for the lifetime of the viewer.
         /// </summary>
-        IEditorCommand<object> ResetOffsetCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the vertices that are being edited.
-        /// </summary>
-        IReadOnlyList<DX.Vector2> Vertices
-        {
-            get;
-            set;
-        }
+        void CreateResources();
+        #endregion
     }
 }

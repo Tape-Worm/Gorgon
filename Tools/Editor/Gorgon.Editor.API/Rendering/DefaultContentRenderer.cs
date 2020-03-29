@@ -82,8 +82,6 @@ namespace Gorgon.Editor.Rendering
         private readonly object _offsetEventLock = new object();
         // Flag to indicate that the resources are loaded.
         private int _resourcesLoading;
-        // The texture used to draw the background.
-        private GorgonTexture2DView _backgroundPattern;
         // The swap chain for the content view.
         private readonly GorgonSwapChain _swapChain;
         // The camera for our content.
@@ -180,8 +178,17 @@ namespace Gorgon.Editor.Rendering
             }
         }
         #endregion
-        
+
         #region Properties.
+        /// <summary>
+        /// Property to return the default texture used to draw the background.
+        /// </summary>
+        protected GorgonTexture2DView BackgroundPattern
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the camera used to control the content view.
         /// </summary>
@@ -797,14 +804,13 @@ namespace Gorgon.Editor.Rendering
                 SetDataContext(null);
             }
 
-            if (_backgroundPattern == null)
+            if (BackgroundPattern == null)
             {
                 return;
             }
 
             UnloadResources();
         }
-
 
         /// <summary>
         /// Function to render the background.
@@ -816,10 +822,10 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         protected virtual void OnRenderBackground()
         {
-            var textureSize = new DX.RectangleF(0, 0, RenderRegion.Width / _backgroundPattern.Width * _camera.Zoom.X, RenderRegion.Height / _backgroundPattern.Height * _camera.Zoom.X);
+            var textureSize = new DX.RectangleF(0, 0, RenderRegion.Width / BackgroundPattern.Width * _camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * _camera.Zoom.X);
 
             Renderer.Begin(camera: _camera);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), GorgonColor.White, _backgroundPattern, textureSize);
+            Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), GorgonColor.White, BackgroundPattern, textureSize);
             Renderer.End();
         }
 
@@ -911,7 +917,7 @@ namespace Gorgon.Editor.Rendering
 
             Graphics.SetRenderTarget(_swapChain.RenderTargetView);
 
-            _backgroundPattern = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("ContentEditor_Bg_Pattern")
+            BackgroundPattern = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("ContentEditor_Bg_Pattern")
             {
                 Usage = ResourceUsage.Immutable,
                 Width = CommonEditorResources.CheckerBoardPatternImage.Width,
@@ -983,9 +989,8 @@ namespace Gorgon.Editor.Rendering
             _swapChain.AfterSwapChainResized -= SwapChain_AfterSwapChainResized;
             _swapChain.BeforeSwapChainResized -= SwapChain_BeforeSwapChainResized;
 
-            GorgonTexture2DView bgTexture = Interlocked.Exchange(ref _backgroundPattern, null);
-
-            bgTexture?.Dispose();
+            BackgroundPattern?.Dispose();
+            BackgroundPattern = null;
         }
 
         /// <summary>

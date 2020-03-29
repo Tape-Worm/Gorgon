@@ -129,7 +129,7 @@ namespace Gorgon.Graphics.Core
         /// Property to return the triangle fill mode.
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="Core.FillMode.Solid"/>.
+        /// The default value is <see cref="FillMode.Solid"/>.
         /// </remarks>
         public FillMode FillMode
         {

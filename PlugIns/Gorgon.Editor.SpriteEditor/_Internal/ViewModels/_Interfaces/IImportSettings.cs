@@ -20,87 +20,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 23, 2019 4:30:59 PM
+// Created: April 24, 2019 11:12:27 AM
 // 
 #endregion
 
+using System.Collections.ObjectModel;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// The view model for the manual rectangle editor for sprite clipping.
+    /// The view model for the importer plug in settings.
     /// </summary>
-    internal interface IManualRectangleEditor
-        : IManualInputViewModel
+    internal interface IImportSettings
+        : ISettingsCategory
     {
         /// <summary>
-        /// Property to set or return the rectangle dimensions.
+        /// Property to return the list of selected codecs.
         /// </summary>
-        DX.RectangleF Rectangle
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return whether to use a fixed size for the rectangle, or free form.
-        /// </summary>
-        bool IsFixedSize
+        ObservableCollection<CodecSetting> SelectedCodecs
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the width and height to use when 
+        /// Propery to return the paths to the codec plug ins.
         /// </summary>
-        DX.Size2F FixedSize
+        ObservableCollection<CodecSetting> CodecPlugInPaths
         {
             get;
         }
 
         /// <summary>
-        /// Property to set or return the current texture array index.
+        /// Property to return the command for writing setting data.
         /// </summary>
-        int TextureArrayIndex
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the padding, in pixels, applied to the selection rectangle.
-        /// </summary>
-        int Padding
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the command used to toggle the fixed size rectangle.
-        /// </summary>
-        IEditorCommand<DX.Size2F> ToggleFixedSizeCommand
+        IEditorCommand<object> WriteSettingsCommand
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the command to execute when assigning the fixed width/height.
+        /// Property to return the command for loading a plug in assembly.
         /// </summary>
-        IEditorCommand<DX.Size2F> SetFixedWidthHeightCommand
+        IEditorCommand<object> LoadPlugInAssemblyCommand
         {
             get;
         }
 
         /// <summary>
-        /// Property to set or return the command to set the region to the full size of the texture.
+        /// Property to return the command to unloading a plug in assembly.
         /// </summary>
-        IEditorCommand<object> SetFullSizeCommand
+        IEditorCommand<object> UnloadPlugInAssembliesCommand
         {
             get;
-            set;
         }
     }
 }

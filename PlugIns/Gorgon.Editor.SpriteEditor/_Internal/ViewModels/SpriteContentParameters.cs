@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
@@ -39,7 +40,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// Parameters for the <see cref="ISpriteContent"/> view model.
     /// </summary>
     internal class SpriteContentParameters
-        : OLDE_ContentViewModelInjectionCommon
+        : ContentViewModelInjection
     {
         /// <summary>
         /// Property to return the sprite being edited.
@@ -50,17 +51,9 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the file manager used to access external content.
-        /// </summary>
-        public OLDE_IContentFileManager ContentFileManager
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the content file for the sprite texture.
         /// </summary>
-        public OLDE_IContentFile SpriteTextureFile
+        public IContentFile SpriteTextureFile
         {
             get;
         }
@@ -75,17 +68,9 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the file system used to write out temporary working data.
-        /// </summary>
-        public IGorgonFileSystemWriter<Stream> ScratchArea
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the texture service used to read sprite texture data.
         /// </summary>
-        public ISpriteTextureService TextureService
+        public SpriteTextureService TextureService
         {
             get;
         }
@@ -98,7 +83,7 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Property to return the manual rectangle editor view model.
         /// </summary>
         public IManualRectangleEditor ManualRectangleEditor
@@ -128,12 +113,12 @@ namespace Gorgon.Editor.SpriteEditor
         public ISpriteWrappingEditor SpriteWrappingEditor
         {
             get;
-        }
+        }*/
 
         /// <summary>
         /// Property to return the settings view model.
         /// </summary>
-        public IEditorPlugInSettings Settings
+        public IImportSettings Settings
         {
             get;
         }
@@ -146,6 +131,7 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
+        /*
         /// <summary>
         /// Property to return the view model for the sprite color editor.
         /// </summary>
@@ -168,8 +154,36 @@ namespace Gorgon.Editor.SpriteEditor
         public ISamplerBuildService SamplerBuilder
         {
             get;
+        }*/
+
+        /// <summary>Initializes a new instance of the <see cref="SpriteContentParameters"/> class.</summary>
+        /// <param name="sprite">The sprite data.</param>
+        /// <param name="textureFile">The texture file linked to the sprite.</param>
+        /// <param name="textureService">The service used to handle textures for the sprite.</param>
+        /// <param name="undoService">The undo service.</param>
+        /// <param name="codec">The sprite codec for the sprite file.</param>
+        /// <param name="fileManager">The file manager for content files.</param>
+        /// <param name="file">The file that contains the content.</param>
+        /// <param name="commonServices">The common services for the application.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
+        public SpriteContentParameters(GorgonSprite sprite,
+                                       IContentFile textureFile,
+                                       SpriteTextureService textureService,
+                                       IUndoService undoService,
+                                       IGorgonSpriteCodec codec,
+                                       IContentFileManager fileManager, 
+                                       IContentFile file,
+                                       IHostContentServices commonServices)
+            : base(fileManager, file, commonServices)
+        {
+            Sprite = sprite ?? throw new ArgumentNullException(nameof(sprite));
+            SpriteCodec = codec ?? throw new ArgumentNullException(nameof(codec));
+            SpriteTextureFile = textureFile;
+            TextureService = textureService ?? throw new ArgumentNullException(nameof(textureService));
+            UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
         }
 
+            /*
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteContentParameters"/> class.</summary>
         /// <param name="factory">The factory for building sprite content data.</param>
         /// <param name="spriteFile">The sprite file.</param>
@@ -225,6 +239,6 @@ namespace Gorgon.Editor.SpriteEditor
             SpriteWrappingEditor = wrapEditor ?? throw new ArgumentNullException(nameof(wrapEditor));
             SamplerBuilder = samplerBuilder ?? throw new ArgumentNullException(nameof(samplerBuilder));
             SpriteTextureFile = spriteTextureFile;
-        }
+        }*/
     }
 }

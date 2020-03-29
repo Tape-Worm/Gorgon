@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,37 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 6, 2019 11:57:34 AM
+// Created: April 10, 2020 11:58:11 AM
 // 
 #endregion
 
-using Gorgon.Editor.UI;
-using DX = SharpDX;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.SpriteEditor
 {
     /// <summary>
-    /// The view model for the sprite anchor panel.
+    /// The arguments for the <see cref="ISpriteContent.SetTextureCommand"/>.
     /// </summary>
-    internal interface ISpriteAnchorEdit
-        : IHostedPanelViewModel
+    internal class SetTextureArgs
+        : CancelEventArgs
     {
         /// <summary>
-        /// Property to set or return the bounds for the sprite, in sprite space.
+        /// Property to return the file containing the texture data.
         /// </summary>
-        DX.RectangleF Bounds
+        public string TextureFilePath
         {
             get;
-            set;
         }
 
-        /// <summary>
-        /// Property to set or return the anchor position, in sprite space.
-        /// </summary>
-        DX.Vector2 AnchorPosition
-        {
-            get;
-            set;
-        }
+        /// <summary>Initializes a new instance of the <see cref="SetTextureArgs"/> class.</summary>
+        /// <param name="textureFilePath">The path to the file containing the texture data.</param>
+        public SetTextureArgs(string textureFilePath) => TextureFilePath = textureFilePath;
     }
 }

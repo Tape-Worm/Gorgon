@@ -110,9 +110,10 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function called when a project is loaded/created.
         /// </summary>
+        /// <param name="projectFileSystem">The read only file system used by the project.</param>
         /// <param name="fileManager">The content file manager for the project.</param>
         /// <param name="temporaryFileSystem">The file system used to hold temporary working data.</param>
-        void ProjectActivated(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> temporaryFileSystem);
+        void ProjectActivated(IGorgonFileSystem projectFileSystem, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> temporaryFileSystem);
 
         /// <summary>
         /// Function called when a project is unloaded.

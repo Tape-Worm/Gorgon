@@ -38,14 +38,14 @@ namespace Gorgon.Editor.SpriteEditor
     /// A color selection control for the sprite pick tool mask color.
     /// </summary>
     internal partial class SpritePickMaskColor
-        : EditorSubPanelCommon, IDataContext<ISpritePickMaskEditor>
+        : EditorSubPanelCommon//, IDataContext<ISpritePickMaskEditor>
     {
         #region Variables.
         // The original mask value.
         private ClipMask _originalMask = ClipMask.Alpha;
         #endregion
 
-        #region Properties.
+        /*#region Properties.
         /// <summary>
         /// Property to return the data context for the view.
         /// </summary>
@@ -55,7 +55,7 @@ namespace Gorgon.Editor.SpriteEditor
             get;
             private set;
         }
-        #endregion
+        #endregion*/
 
         #region Methods.
         /// <summary>Handles the Click event of the RadioAlpha control.</summary>
@@ -63,7 +63,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void RadioAlpha_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 TableAlphaOnly.Visible = RadioAlpha.Checked;
                 Picker.Visible = !RadioAlpha.Checked;
@@ -76,7 +76,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext.ClipMaskType = RadioAlpha.Checked ? ClipMask.Alpha : ClipMask.Color;
+            DataContext.ClipMaskType = RadioAlpha.Checked ? ClipMask.Alpha : ClipMask.Color;*/
         }
 
         /// <summary>Handles the ValueChanged event of the NumericAlpha control.</summary>
@@ -100,7 +100,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void SliderAlpha_PercentualValueChanged(object sender, EventArgs e)
         {
-            int alpha = (int)(SliderAlpha.ValuePercentual * 255);
+            /*int alpha = (int)(SliderAlpha.ValuePercentual * 255);
             ColorShow.LowerColor = Color.FromArgb(alpha, Color.White);
 
             if (alpha != NumericAlpha.Value)
@@ -111,7 +111,7 @@ namespace Gorgon.Editor.SpriteEditor
             if ((DataContext != null) && (!DataContext.ClipMaskValue.Alpha.EqualsEpsilon(SliderAlpha.ValuePercentual)))
             {
                 DataContext.ClipMaskValue = new GorgonColor(Picker.SelectedColor, SliderAlpha.ValuePercentual);
-            }
+            }*/
 
             ValidateOk();
         }
@@ -121,12 +121,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="T:Gorgon.Editor.UI.Controls.ColorChangedEventArgs"/> instance containing the event data.</param>
         private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
         {
-            if ((DataContext == null) || (DataContext.ClipMaskValue.Equals(e.Color)))
+            /*if ((DataContext == null) || (DataContext.ClipMaskValue.Equals(e.Color)))
             {
                 return;
             }
 
-            DataContext.ClipMaskValue = e.Color;
+            DataContext.ClipMaskValue = e.Color;*/
             ValidateOk();
         }
 
@@ -135,12 +135,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            /*if (DataContext == null)
             {
                 return;
             }
 
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
+            DataContext.PropertyChanged -= DataContext_PropertyChanged;*/
         }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -148,7 +148,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
+            /*switch (e.PropertyName)
             {
                 case nameof(ISpritePickMaskEditor.IsActive):
                     // If we activate the control, then reset its values.
@@ -176,7 +176,7 @@ namespace Gorgon.Editor.SpriteEditor
                         Picker.SelectedColor = DataContext.ClipMaskValue;
                     }
                     break;
-            }
+            }*/
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace Gorgon.Editor.SpriteEditor
             SliderAlpha.ValuePercentual = 0.0f;
             Picker.OriginalColor = Picker.SelectedColor = GorgonColor.BlackTransparent;
         }
-
+        /*
         /// <summary>
         /// Function to initialize the control with the data context.
         /// </summary>
@@ -259,7 +259,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             return (DataContext != null) && ((_originalMask != DataContext.ClipMaskType) || (!DataContext.ClipMaskValue.Equals(in color)));
         }
-
+        */
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
@@ -271,9 +271,9 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext?.OnLoad();
+            //DataContext?.OnLoad();
         }
-
+        /*
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -289,11 +289,11 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }
+        }*/
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.SpriteEditor.SpriteColor"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SpriteColor"/> class.</summary>
         public SpritePickMaskColor() => InitializeComponent();
         #endregion
     }

@@ -75,8 +75,6 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Variables.
-        // The list of missing metadata links.
-        private readonly List<string> _missingMetadataLinks = new List<string>();
         // The factory used to create view models.
         private ViewModelFactory _viewModelFactory;
         // The project data for the view model.
@@ -433,10 +431,22 @@ namespace Gorgon.Editor.ViewModels
                 // Rebuild item metdata list.
                 foreach (IFile file in directory.Files)
                 {
-#warning Evaluate dependencies.
                     metadata = new ProjectItemMetadata(file.Metadata);
                     metadata.Attributes[ProjectItemTypeAttrName] = ProjectItemType.File.ToString();
                     _projectData.ProjectItems[file.FullPath] = metadata;
+
+                    // Copy the dependency data for each file.
+                    foreach (KeyValuePair<string, List<string>> dependency in file.Metadata.DependsOn)
+                    {
+                        foreach (string path in dependency.Value)
+                        {
+                            // Ensure that the file we are dependent upon is still available, if it's not, then there's no need to record it.
+                            if ((!string.IsNullOrWhiteSpace(path)) && (ContentFileManager.FileExists(path)))
+                            {
+                                metadata.DependsOn[dependency.Key] = dependency.Value;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -929,160 +939,142 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoCreateContentAsync(Guid id)
         {
+            IContentFile file = null;
+            IDirectory directory = null;
+            Stream contentStream = null;
+
             try
-            {
+            {                
+                IContentPlugInMetadata metadata = _contentCreators.FirstOrDefault(item => id == item.NewIconID);
+
+                Debug.Assert(metadata != null, $"Could not locate the content plugin metadata for {id}.");
+
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));                                
+                
+                ContentPlugIn plugin = HostServices.ContentPlugInService.PlugIns.FirstOrDefault(item => item.Value == metadata).Value;
+
+                Debug.Assert(plugin != null, $"Could not locate the content plug in for {id}.");
+                
+                directory = _fileExplorer.SelectedDirectory ?? _fileExplorer.Root;
 
 
-                /*
-                if (!Guid.TryParse(contentID, out Guid guid))
+                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
+
+                // Ensure we don't wipe out any changes.
+                if ((CurrentContent?.SaveContentCommand != null) && (CurrentContent.ContentState != ContentState.Unmodified))
                 {
-                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_INVALID_CONTENT_TYPE_ID);
+                    MessageResponse response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name));
+
+                    switch (response)
+                    {
+                        case MessageResponse.Cancel:
+                            return;
+                        case MessageResponse.Yes:
+                            // Save with a content shutdown state. This will be used to handle any errors, at this call site, during save.
+                            if (CurrentContent.SaveContentCommand.CanExecute(SaveReason.ContentShutdown))
+                            {
+                                await CurrentContent.SaveContentCommand.ExecuteAsync(SaveReason.ContentShutdown);
+                            }
+                            break;
+                    }
+
+                    // Shut down the current stuff.
+                    ResetContent();
                 }
 
-                IContentPlugInMetadata metaData = ContentCreators.FirstOrDefault(item => guid == item.NewIconID);
+                // Get a new name (and any default data).
+                (string contentName, byte[] contentData, ProjectItemMetadata contentMetadata) = await plugin.GetDefaultContentAsync(plugin.ContentTypeID, directory.Files.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
 
-                Debug.Assert(metaData != null, $"Could not locate the content plugin metadata for {contentID}.");
-
-                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metaData.ContentType));
-
-                ContentPlugIn plugin = _contentPlugIns.PlugIns.FirstOrDefault(item => item.Value == metaData).Value;
-
-                Debug.Assert(plugin != null, $"Could not locate the content plug in for {contentID}.");
-#warning FIX THIS - Change this to a command.
-                string path = await CurrentProject.CreateNewContentItemAsync(metaData, plugin);
-
-                if (string.IsNullOrWhiteSpace(path))
+                if ((contentName == null) || (contentData == null))
                 {
                     return;
                 }
 
-                HideWaitPanel();
+                // Now that we have a file, we need to populate it with default data from the content plugin.
+                string path = $"{directory.FullPath}{contentName.FormatFileName()}";
+                contentStream = ContentFileManager.OpenStream(path, FileMode.Create);
+                contentStream.Write(contentData, 0, contentData.Length);
+                contentStream.Dispose();
 
-                IFileExplorerNodeVm parentNode = _fileExplorer.SelectedNode ?? _fileExplorer.RootNode;
-                Stream contentStream = null;
-                var args = new CreateContentFileArgs(parentNode);
+                file = ContentFileManager.GetFile(path);
+                Debug.Assert(file != null, $"File {path} was not found!");
 
-                try
+                // Copy the attribute and dependency metadata to the actual file object.
+                file.Metadata.Attributes.Clear();
+                file.Metadata.DependsOn.Clear();
+                foreach (KeyValuePair<string, string> attr in contentMetadata.Attributes)
                 {
-                    ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
-
-                    // Ensure we don't wipe out any changes.
-                    if ((CurrentContent?.SaveContentCommand != null) && (CurrentContent.ContentState != ContentState.Unmodified))
-                    {
-                        MessageResponse response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name));
-
-                        switch (response)
-                        {
-                            case MessageResponse.Cancel:
-                                return null;
-                            case MessageResponse.Yes:
-                                if (CurrentContent.SaveContentCommand.CanExecute(SaveReason.ContentShutdown))
-                                {
-                                    await CurrentContent.SaveContentCommand.ExecuteAsync(SaveReason.ContentShutdown);
-                                }
-                                break;
-                        }
-
-                        // Shut down the current stuff.
-                        ResetContent();
-                    }
-
-                    // Create the actual file.
-                    args.Name = plugin.ContentTypeID;
-
-                    // Get a new name (and any default data).
-                    (string contentName, byte[] contentData) = await plugin.GetDefaultContentAsync(args.Name, parentNode.Children.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
-
-                    if ((contentName == null) || (contentData == null))
-                    {
-                        return null;
-                    }
-
-                    args.Name = contentName;
-
-                    if ((_fileExplorer?.CreateContentFileCommand == null) || (!_fileExplorer.CreateContentFileCommand.CanExecute(args)))
-                    {
-                        return null;
-                    }
-
-                    _fileExplorer.CreateContentFileCommand.Execute(args);
-
-                    if (args.Cancel)
-                    {
-                        return null;
-                    }
-
-                    // Now that we have a file, we need to populate it with default data from the content plugin.
-                    contentStream = args.ContentFile.OpenWrite();
-                    contentStream.Write(contentData, 0, contentData.Length);
-                    contentStream.Dispose();
-
-                    args.Node.Refresh();
-
-                    // Since we already know our plug in, we can assign it here.
-                    _viewModelFactory.ContentPlugIns.AssignContentPlugIn(args.ContentFile, _contentFileManager, metadata);
-
-                    // Mark this item as new.
-                    args.ContentFile.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = "true";
-
-                    await SaveProjectMetadataAsync();
-
-                    // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
-                    RefreshFilePreview(args.ContentFile);
-                    
-                }
-                catch (Exception)
-                {
-                    // If we fail, for any reason, destroy the node.
-                    if (args.Node != null)
-                    {
-                        args.Node.Parent.Children.Remove(args.Node);
-                        File.Delete(args.Node.PhysicalPath);
-                    }
-
-                    throw;
-                }
-                finally
-                {
-                    contentStream?.Dispose();
-                    HideWaitPanel();
+                    file.Metadata.Attributes[attr.Key] = attr.Value;
                 }
 
-                // We have our content, we can now open it as we normally would.
-                if ((!string.IsNullOrWhiteSpace(filePath)) && (CurrentProject?.FileExplorer?.OpenContentFileCommand != null)
-                    && (CurrentProject.FileExplorer.OpenContentFileCommand.CanExecute(filePath)))
+                foreach (KeyValuePair<string, List<string>> dependency in contentMetadata.DependsOn)
                 {
-                    CurrentProject.FileExplorer.OpenContentFileCommand.Execute(filePath);
-                }
+                    file.Metadata.DependsOn[dependency.Key] = new List<string>(dependency.Value);
+                }                
+                
+                // Indicate that this file is new.
+                file.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = bool.TrueString;
+                file.RefreshMetadata();
 
-                return args.ContentFile;*/
+                SaveProjectMetadata();                    
             }
             catch (Exception ex)
             {
                 HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_CONTENT_CREATION);
-            }
-            finally
-            {
-                HideWaitPanel();
-            }
-        }
 
-        /// <summary>Handles the DependenciesUpdated event of the ContentFile control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ContentFile_DependenciesUpdated(object sender, EventArgs e)
-        {
-            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_SAVING, ProjectTitle));
-                        
-            try
-            {
-                // When we update the dependencies on content, we need to persist those changes to the file system as soon as possible.
-                DoSaveProjectMetadata();
+                // If we fail, for any reason, destroy the file.
+                if ((file != null) && (ContentFileManager.FileExists(file.Path)))
+                {
+                    ContentFileManager.DeleteFile(file.Path);
+                }
+                return;
             }
             finally
             {
+                contentStream?.Dispose();   
                 HideWaitPanel();
             }
+
+            // From here on out, our file is ready. We only need open it. We do this outside of the try-catch-finally because the commands
+            // that are executed here are already wrapped in their own exception handlers.
+
+            // Ensure we're in the correct directory.
+            if (FileExplorer.SelectedDirectory != directory)
+            {
+                if ((FileExplorer.SelectDirectoryCommand != null) && (FileExplorer.SelectDirectoryCommand.CanExecute(directory.FullPath)))
+                {
+                    FileExplorer.SelectDirectoryCommand.Execute(directory.FullPath);
+                }
+
+                // If we failed for any reason, then don't bother continuing.
+                if (FileExplorer.SelectedDirectory != directory)
+                {
+                    return;
+                }
+            }
+
+            // Get the file from the virtual file system so we can retrieve its ID.
+            IFile virtualFile = directory.Files.FirstOrDefault(item => string.Equals(item.FullPath, file.Path, StringComparison.OrdinalIgnoreCase));
+
+            // There should be no chance of this happening.
+            Debug.Assert(virtualFile != null, $"File not {file.Path} found in file system.");
+
+            IReadOnlyList<string> selectedFile = new[] { virtualFile.ID };
+            if ((FileExplorer.SelectFileCommand != null) && (FileExplorer.SelectFileCommand.CanExecute(selectedFile)))
+            {
+                FileExplorer.SelectFileCommand.Execute(selectedFile);
+            }
+
+            if ((FileExplorer.SelectedFiles.Count == 0)
+                || (FileExplorer.SelectedFiles[0] != virtualFile)
+                || (FileExplorer?.OpenContentFileCommand == null)
+                || (!FileExplorer.OpenContentFileCommand.CanExecute(null)))
+            {
+                return;
+            }
+
+            // Open the new content file.
+            await FileExplorer.OpenContentFileCommand.ExecuteAsync(null);
         }
 
         /// <summary>

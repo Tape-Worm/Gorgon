@@ -214,7 +214,7 @@ namespace Gorgon.Graphics.Core
         /// This provides extra functionality used when performing a blending operation. See <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh404484(v=vs.85).aspx">this link</a> for more details.
         /// </para>
         /// <para>
-        /// The default value is <see cref="Core.LogicOperation.Noop"/>.
+        /// The default value is <see cref="LogicOperation.Noop"/>.
         /// </para>
         /// </remarks>
         public LogicOperation LogicOperation
@@ -231,7 +231,7 @@ namespace Gorgon.Graphics.Core
         /// This provides the ability to allow writes to only the specified component(s) defined in the mask. To define multiple components, combine the flags with the OR operator.
         /// </para>
         /// <para>
-        /// The default value is <see cref="Core.WriteMask.All"/>.
+        /// The default value is <see cref="WriteMask.All"/>.
         /// </para>
         /// </remarks>
         public WriteMask WriteMask

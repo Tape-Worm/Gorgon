@@ -128,9 +128,11 @@
     <Compile Include="UI\ViewModels\ContentViewModelInjection.cs" />
     <Compile Include="UI\ViewModels\ContentEditorViewModelBase.cs" />
     <Compile Include="UI\ViewModels\HostedPanelViewModelBase.cs" />
+    <Compile Include="UI\ViewModels\PlugInsCategory.cs" />
     <Compile Include="UI\ViewModels\SettingsCategoryBase.cs" />
     <Compile Include="UI\ViewModels\HostedPanelViewModelParameters.cs" />
     <Compile Include="UI\ViewModels\SettingsCategoryViewModelParameters.cs" />
+    <Compile Include="UI\ViewModels\PlugInsCategoryViewModelParameters.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IContentViewModelInjection.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IEditorContext.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IVisualEditorContent.cs" />

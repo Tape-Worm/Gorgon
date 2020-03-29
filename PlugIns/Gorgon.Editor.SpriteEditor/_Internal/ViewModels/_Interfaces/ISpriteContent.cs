@@ -49,10 +49,10 @@ namespace Gorgon.Editor.SpriteEditor
     /// The view model for sprite content.
     /// </summary>
     internal interface ISpriteContent
-        : OLDE_IEditorContent, IUndoHandler, Olde_IDragDropHandler<OLDE_IContentFileDragData>
+        : IVisualEditorContent, IUndoHandler
     {
         #region Properties.
-        /// <summary>
+        /*/// <summary>
         /// Property to return the editor used to modify the texture wrapping state for a sprite.
         /// </summary>
         ISpriteWrappingEditor WrappingEditor
@@ -74,7 +74,7 @@ namespace Gorgon.Editor.SpriteEditor
         ISpriteAnchorEdit AnchorEditor
         {
             get;
-        }
+        }*/
 
         /// <summary>Property to return the currently active panel.</summary>
         IHostedPanelViewModel CurrentPanel
@@ -83,22 +83,14 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return whether the sub panel is modal or not.
-        /// </summary>
-        bool IsSubPanelModal
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the view model for the plug in settings.
         /// </summary>
-        IEditorPlugInSettings Settings
+        IImportSettings Settings
         {
             get;
         }
 
-        /// <summary>
+/*        /// <summary>
         /// Property to return the view model for the manual rectangle editor interface.
         /// </summary>
         IManualRectangleEditor ManualRectangleEditor
@@ -120,7 +112,9 @@ namespace Gorgon.Editor.SpriteEditor
         ISpritePickMaskEditor SpritePickMaskEditor
         {
             get;
-        }
+        }*/
+
+
 
         /// <summary>
         /// Property to return the buffer that contains the image data for the <see cref="Texture"/>.
@@ -315,9 +309,18 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to set the texture on the sprite.
+        /// </summary>
+        IEditorAsyncCommand<SetTextureArgs> SetTextureCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+#warning Should be a command
         /// <summary>
         /// Function to extract the image data from a sprite.
         /// </summary>

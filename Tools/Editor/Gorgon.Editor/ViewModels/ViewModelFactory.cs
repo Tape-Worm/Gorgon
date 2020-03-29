@@ -538,6 +538,7 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer fileExplorer = null;
             var result = new ProjectEditor();
             var tempFileSystem = new GorgonFileSystem(_hostContentServices.Log);
+            GorgonFileSystem fileSystem = null;
             IGorgonFileSystemWriter<Stream> tempWriter = null;
 
             await Task.Run(() =>
@@ -548,7 +549,7 @@ namespace Gorgon.Editor.ViewModels
                 tempWriter = new GorgonFileSystemWriter(tempFileSystem, tempFileSystem, writeLocation);
                 tempFileSystem.Mount(projectData.TempDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar), "/");
                 tempWriter.Mount();
-                var fileSystem = new GorgonFileSystem(_hostContentServices.Log);
+                fileSystem = new GorgonFileSystem(_hostContentServices.Log);
                 IGorgonFileSystemWriter<FileStream> writer = new GorgonFileSystemWriter(fileSystem,
                                                                                         fileSystem,
                                                                                         projectData.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar),
@@ -579,7 +580,7 @@ namespace Gorgon.Editor.ViewModels
                 ContentCreators = _contentCreators
             });
 
-            _hostContentServices.ContentPlugInService.ProjectActivated(fileExplorer, tempWriter);
+            _hostContentServices.ContentPlugInService.ProjectActivated(fileSystem, fileExplorer, tempWriter);
 
             // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.
             projectData.ProjectItems.Clear();
