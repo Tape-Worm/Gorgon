@@ -166,10 +166,10 @@ namespace Gorgon.Renderers
             ref Gorgon2DVertex v2 = ref vertices[vertexOffset + 2];
             ref Gorgon2DVertex v3 = ref vertices[vertexOffset + 3];
 
-            v0.UV = new DX.Vector3(textureRegion.TopLeft, textureArrayIndex);
-            v1.UV = new DX.Vector3(textureRegion.TopRight, textureArrayIndex);
-            v2.UV = new DX.Vector3(textureRegion.BottomLeft, textureArrayIndex);
-            v3.UV = new DX.Vector3(textureRegion.BottomRight, textureArrayIndex);
+            v0.UV = new DX.Vector4(textureRegion.TopLeft, textureArrayIndex, 1);
+            v1.UV = new DX.Vector4(textureRegion.TopRight, textureArrayIndex, 1);
+            v2.UV = new DX.Vector4(textureRegion.BottomLeft, textureArrayIndex, 1);
+            v3.UV = new DX.Vector4(textureRegion.BottomRight, textureArrayIndex, 1);
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace Gorgon.Renderers
 
                 vertex.Position = new DX.Vector4(DX.Vector3.Zero, 1.0f);
                 vertex.Color = GorgonColor.White;
-                vertex.UV = DX.Vector3.Zero;
+                vertex.UV = DX.Vector4.UnitW;
                 vertex.Angle = DX.Vector2.Zero;
             }
         }

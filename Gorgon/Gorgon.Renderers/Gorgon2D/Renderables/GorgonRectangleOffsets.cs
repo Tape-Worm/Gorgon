@@ -105,7 +105,7 @@ namespace Gorgon.Renderers
                 }
 
                 _renderable.UpperLeftOffset = value;
-                _renderable.HasTransformChanges = true;
+                _renderable.HasTextureChanges = _renderable.HasTransformChanges = true;
             }
         }
 
@@ -123,7 +123,7 @@ namespace Gorgon.Renderers
                 }
 
                 _renderable.UpperRightOffset = value;
-                _renderable.HasTransformChanges = true;
+                _renderable.HasTextureChanges = _renderable.HasTransformChanges = true;
             }
         }
 
@@ -141,7 +141,7 @@ namespace Gorgon.Renderers
                 }
 
                 _renderable.LowerLeftOffset = value;
-                _renderable.HasTransformChanges = true;
+                _renderable.HasTextureChanges = _renderable.HasTransformChanges = true;
             }
         }
 
@@ -159,7 +159,7 @@ namespace Gorgon.Renderers
                 }
 
                 _renderable.LowerRightOffset = value;
-                _renderable.HasTransformChanges = true;
+                _renderable.HasTextureChanges = _renderable.HasTransformChanges = true;
             }
         }
 
@@ -203,6 +203,7 @@ namespace Gorgon.Renderers
             }
 
             _renderable.LowerLeftOffset = _renderable.LowerRightOffset = _renderable.UpperRightOffset = _renderable.UpperLeftOffset;
+            _renderable.HasTextureChanges = _renderable.HasTransformChanges = true;
         }
 
         /// <summary>

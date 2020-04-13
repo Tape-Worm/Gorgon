@@ -1379,25 +1379,25 @@ namespace Gorgon.Renderers
                 if (textureRegion == null)
                 {
                     // Calculate the texture.
-                    v0.UV = new DX.Vector3(region.Left / texture.Width, region.Top / texture.Height, textureArrayIndex);
-                    v1.UV = new DX.Vector3(region.Right / texture.Width, region.Top / texture.Height, textureArrayIndex);
-                    v2.UV = new DX.Vector3(region.Left / texture.Width, region.Bottom / texture.Height, textureArrayIndex);
-                    v3.UV = new DX.Vector3(region.Right / texture.Width, region.Bottom / texture.Height, textureArrayIndex);
+                    v0.UV = new DX.Vector4(region.Left / texture.Width, region.Top / texture.Height, textureArrayIndex, 1);
+                    v1.UV = new DX.Vector4(region.Right / texture.Width, region.Top / texture.Height, textureArrayIndex, 1);
+                    v2.UV = new DX.Vector4(region.Left / texture.Width, region.Bottom / texture.Height, textureArrayIndex, 1);
+                    v3.UV = new DX.Vector4(region.Right / texture.Width, region.Bottom / texture.Height, textureArrayIndex, 1);
                 }
                 else
                 {
-                    v0.UV = new DX.Vector3(textureRegion.Value.TopLeft, textureArrayIndex);
-                    v1.UV = new DX.Vector3(textureRegion.Value.TopRight, textureArrayIndex);
-                    v2.UV = new DX.Vector3(textureRegion.Value.BottomLeft, textureArrayIndex);
-                    v3.UV = new DX.Vector3(textureRegion.Value.BottomRight, textureArrayIndex);
+                    v0.UV = new DX.Vector4(textureRegion.Value.TopLeft, textureArrayIndex, 1);
+                    v1.UV = new DX.Vector4(textureRegion.Value.TopRight, textureArrayIndex, 1);
+                    v2.UV = new DX.Vector4(textureRegion.Value.BottomLeft, textureArrayIndex, 1);
+                    v3.UV = new DX.Vector4(textureRegion.Value.BottomRight, textureArrayIndex, 1);
                 }
             }
             else
             {
-                v0.UV = DX.Vector3.Zero;
-                v1.UV = new DX.Vector3(1.0f, 0, 0);
-                v2.UV = new DX.Vector3(0, 1.0f, 0);
-                v3.UV = new DX.Vector3(1.0f, 1.0f, 0);
+                v0.UV = DX.Vector4.UnitW;
+                v1.UV = new DX.Vector4(1.0f, 0, 0, 1);
+                v2.UV = new DX.Vector4(0, 1.0f, 0, 1);
+                v3.UV = new DX.Vector4(1.0f, 1.0f, 0, 1);
 
                 texture = _defaultTexture;
             }
@@ -1460,19 +1460,19 @@ namespace Gorgon.Renderers
             {
                 Color = point1.Color,
                 Position = new DX.Vector4(point1.Position, depth, 1.0f),
-                UV = texture != null ? new DX.Vector3(point1.TextureCoordinate, point1.TextureArrayIndex) : DX.Vector3.Zero
+                UV = texture != null ? new DX.Vector4(point1.TextureCoordinate, point1.TextureArrayIndex, 1) : DX.Vector4.UnitW
             };
             _primitiveRenderable.Vertices[1] = new Gorgon2DVertex
             {
                 Color = point2.Color,
                 Position = new DX.Vector4(point2.Position, depth, 1.0f),
-                UV = texture != null ? new DX.Vector3(point2.TextureCoordinate, point2.TextureArrayIndex) : DX.Vector3.Zero
+                UV = texture != null ? new DX.Vector4(point2.TextureCoordinate, point2.TextureArrayIndex, 1) : DX.Vector4.UnitW
             };
             _primitiveRenderable.Vertices[2] = new Gorgon2DVertex
             {
                 Color = point3.Color,
                 Position = new DX.Vector4(point3.Position, depth, 1.0f),
-                UV = texture != null ? new DX.Vector3(point3.TextureCoordinate, point3.TextureArrayIndex) : DX.Vector3.Zero
+                UV = texture != null ? new DX.Vector4(point3.TextureCoordinate, point3.TextureArrayIndex, 1) : DX.Vector4.UnitW
             };
             _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
@@ -1680,10 +1680,10 @@ namespace Gorgon.Renderers
                 if (textureRegion == null)
                 {
                     // Calculate the texture.
-                    v0.UV = new DX.Vector3(start1.X / texture.Width, start1.Y / texture.Height, textureArrayIndex);
-                    v1.UV = new DX.Vector3(end1.X / texture.Width, end1.Y / texture.Height, textureArrayIndex);
-                    v2.UV = new DX.Vector3(start2.X / texture.Width, start2.Y / texture.Height, textureArrayIndex);
-                    v3.UV = new DX.Vector3(end2.X / texture.Width, end2.Y / texture.Height, textureArrayIndex);
+                    v0.UV = new DX.Vector4(start1.X / texture.Width, start1.Y / texture.Height, textureArrayIndex, 1);
+                    v1.UV = new DX.Vector4(end1.X / texture.Width, end1.Y / texture.Height, textureArrayIndex, 1);
+                    v2.UV = new DX.Vector4(start2.X / texture.Width, start2.Y / texture.Height, textureArrayIndex, 1);
+                    v3.UV = new DX.Vector4(end2.X / texture.Width, end2.Y / texture.Height, textureArrayIndex, 1);
                 }
                 else
                 {
@@ -1705,26 +1705,26 @@ namespace Gorgon.Renderers
                         bounds.Bottom = bounds.Bottom.Max(_primitiveRenderable.Vertices[i].Position.Y);
                     }
 
-                    v0.UV = new DX.Vector3((((start1.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                    v0.UV = new DX.Vector4((((start1.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                            (((start1.Y - bounds.Top) / bounds.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                           textureArrayIndex);
-                    v1.UV = new DX.Vector3((((end1.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                           textureArrayIndex, 1);
+                    v1.UV = new DX.Vector4((((end1.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                            (((end1.Y - bounds.Top) / bounds.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                           textureArrayIndex);
-                    v2.UV = new DX.Vector3((((start2.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                           textureArrayIndex, 1);
+                    v2.UV = new DX.Vector4((((start2.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                            (((start2.Y - bounds.Top) / bounds.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                           textureArrayIndex);
-                    v3.UV = new DX.Vector3((((end2.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                           textureArrayIndex, 1);
+                    v3.UV = new DX.Vector4((((end2.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                            (((end2.Y - bounds.Top) / bounds.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                           textureArrayIndex);
+                                           textureArrayIndex, 1);
                 }
             }
             else
             {
-                v0.UV = DX.Vector3.Zero;
-                v1.UV = new DX.Vector3(1.0f, 0, 0);
-                v2.UV = new DX.Vector3(0, 1.0f, 0);
-                v3.UV = new DX.Vector3(1.0f, 1.0f, 0);
+                v0.UV = DX.Vector4.UnitW;
+                v1.UV = new DX.Vector4(1.0f, 0, 0, 1);
+                v2.UV = new DX.Vector4(0, 1.0f, 0, 1);
+                v3.UV = new DX.Vector4(1.0f, 1.0f, 0, 1);
 
                 texture = _defaultTexture;
             }
@@ -1793,15 +1793,15 @@ namespace Gorgon.Renderers
 
             var radius = new DX.Vector2(region.Width * 0.5f, region.Height * 0.5f);
 
-            DX.Vector3 uvCenter = DX.Vector3.Zero;
+            DX.Vector4 uvCenter = DX.Vector4.UnitW;
 
             if (texture != null)
             {
                 uvCenter = textureRegion == null
-                               ? new DX.Vector3(centerPoint.X / texture.Width, centerPoint.Y / texture.Height, textureArrayIndex)
-                               : new DX.Vector3((((centerPoint.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                               ? new DX.Vector4(centerPoint.X / texture.Width, centerPoint.Y / texture.Height, textureArrayIndex, 1)
+                               : new DX.Vector4((((centerPoint.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                                 (((centerPoint.Y - region.Top) / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                                textureArrayIndex);
+                                                textureArrayIndex, 1);
 
             }
 
@@ -1814,17 +1814,17 @@ namespace Gorgon.Renderers
 
                 var point = new DX.Vector2((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
 
-                DX.Vector3 uv = DX.Vector3.Zero;
+                DX.Vector4 uv = DX.Vector4.UnitW;
 
                 if (texture != null)
                 {
                     uv = textureRegion == null
-                             ? new DX.Vector3(point.X / texture.Width,
+                             ? new DX.Vector4(point.X / texture.Width,
                                               point.Y / texture.Height,
-                                              textureArrayIndex)
-                             : new DX.Vector3((((point.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                              textureArrayIndex, 1)
+                             : new DX.Vector4((((point.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                               (((point.Y - region.Top) / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                              textureArrayIndex);
+                                              textureArrayIndex, 1);
                 }
 
                 ref Gorgon2DVertex v = ref _primitiveRenderable.Vertices[vertexIndex++];
@@ -1926,30 +1926,30 @@ namespace Gorgon.Renderers
                 var innerPoint = new DX.Vector2((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
                 var outerPoint = new DX.Vector2((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
 
-                DX.Vector3 uvInner = DX.Vector3.Zero;
-                DX.Vector3 uvOuter = DX.Vector3.Zero;
+                DX.Vector4 uvInner = DX.Vector4.UnitW;
+                DX.Vector4 uvOuter = DX.Vector4.UnitW;
 
                 if (texture != null)
                 {
                     if (textureRegion == null)
                     {
-                        uvOuter = new DX.Vector3(outerPoint.X / texture.Width,
+                        uvOuter = new DX.Vector4(outerPoint.X / texture.Width,
                                                  outerPoint.Y / texture.Height,
-                                                 textureArrayIndex);
-                        uvInner = new DX.Vector3(innerPoint.X / texture.Width,
+                                                 textureArrayIndex, 1);
+                        uvInner = new DX.Vector4(innerPoint.X / texture.Width,
                                                  innerPoint.Y / texture.Height,
-                                                 textureArrayIndex);
+                                                 textureArrayIndex, 1);
                     }
                     else
                     {
                         DX.RectangleF scaleRegion = region;
                         scaleRegion.Inflate(thickness * 0.5f, thickness * 0.5f);
-                        uvOuter = new DX.Vector3((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                        uvOuter = new DX.Vector4((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                                  (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                                 textureArrayIndex);
-                        uvInner = new DX.Vector3((((innerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                                 textureArrayIndex, 1);
+                        uvInner = new DX.Vector4((((innerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                                  (((innerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                                 textureArrayIndex);
+                                                 textureArrayIndex, 1);
                     }
                 }
 
@@ -2039,15 +2039,15 @@ namespace Gorgon.Renderers
 
             var radius = new DX.Vector2(region.Width * 0.5f, region.Height * 0.5f);
 
-            DX.Vector3 uvCenter = DX.Vector3.Zero;
+            DX.Vector4 uvCenter = DX.Vector4.UnitW;
 
             if (texture != null)
             {
                 uvCenter = textureRegion == null
-                               ? new DX.Vector3(centerPoint.X / texture.Width, centerPoint.Y / texture.Height, textureArrayIndex)
-                               : new DX.Vector3((((centerPoint.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                               ? new DX.Vector4(centerPoint.X / texture.Width, centerPoint.Y / texture.Height, textureArrayIndex, 1)
+                               : new DX.Vector4((((centerPoint.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                                 (((centerPoint.Y - region.Top) / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                                textureArrayIndex);
+                                                textureArrayIndex, 1);
 
             }
 
@@ -2060,17 +2060,17 @@ namespace Gorgon.Renderers
 
                 var point = new DX.Vector2((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
 
-                DX.Vector3 uv = DX.Vector3.Zero;
+                DX.Vector4 uv = DX.Vector4.UnitW;
 
                 if (texture != null)
                 {
                     uv = textureRegion == null
-                             ? new DX.Vector3(point.X / texture.Width,
+                             ? new DX.Vector4(point.X / texture.Width,
                                               point.Y / texture.Height,
-                                              textureArrayIndex)
-                             : new DX.Vector3((((point.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                              textureArrayIndex, 1)
+                             : new DX.Vector4((((point.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                               (((point.Y - region.Top) / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                              textureArrayIndex);
+                                              textureArrayIndex, 1);
                 }
 
                 ref Gorgon2DVertex v = ref _primitiveRenderable.Vertices[vertexIndex++];
@@ -2157,30 +2157,30 @@ namespace Gorgon.Renderers
                 var innerPoint = new DX.Vector2((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
                 var outerPoint = new DX.Vector2((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
 
-                DX.Vector3 uvInner = DX.Vector3.Zero;
-                DX.Vector3 uvOuter = DX.Vector3.Zero;
+                DX.Vector4 uvInner = DX.Vector4.UnitW;
+                DX.Vector4 uvOuter = DX.Vector4.UnitW;
 
                 if (texture != null)
                 {
                     if (textureRegion == null)
                     {
-                        uvOuter = new DX.Vector3(outerPoint.X / texture.Width,
+                        uvOuter = new DX.Vector4(outerPoint.X / texture.Width,
                                                  outerPoint.Y / texture.Height,
-                                                 textureArrayIndex);
-                        uvInner = new DX.Vector3(innerPoint.X / texture.Width,
+                                                 textureArrayIndex, 1);
+                        uvInner = new DX.Vector4(innerPoint.X / texture.Width,
                                                  innerPoint.Y / texture.Height,
-                                                 textureArrayIndex);
+                                                 textureArrayIndex, 1);
                     }
                     else
                     {
                         DX.RectangleF scaleRegion = region;
                         scaleRegion.Inflate(thickness * 0.5f, thickness * 0.5f);
-                        uvOuter = new DX.Vector3((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                        uvOuter = new DX.Vector4((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                                  (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                                 textureArrayIndex);
-                        uvInner = new DX.Vector3((((innerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                                 textureArrayIndex, 1);
+                        uvInner = new DX.Vector4((((innerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                                  (((innerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
-                                                 textureArrayIndex);
+                                                 textureArrayIndex, 1);
                     }
                 }
 
