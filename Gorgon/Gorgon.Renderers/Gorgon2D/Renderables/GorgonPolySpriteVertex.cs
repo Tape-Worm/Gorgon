@@ -60,7 +60,7 @@ namespace Gorgon.Renderers
         public DX.Vector2 TextureCoordinate
         {
             get => (DX.Vector2)Vertex.UV;
-            internal set => Vertex.UV = new DX.Vector3(value, Vertex.UV.Z);
+            internal set => Vertex.UV = new DX.Vector4(value, Vertex.UV.Z, 0);
         }
         #endregion
 
@@ -75,7 +75,7 @@ namespace Gorgon.Renderers
         {
             Position = new DX.Vector4(position, 0, 1.0f),
             Color = color,
-            UV = new DX.Vector3(textureCoordinate, 0)
+            UV = new DX.Vector4(textureCoordinate, 0, 0)
         };
         #endregion
     }

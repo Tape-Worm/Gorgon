@@ -115,7 +115,7 @@ float4 MaskPixels(float4 hdrTexel)
 // The shader used to upsample an image.
 float4 UpSampleBlur(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 blurTexel = _blurTexture.Sample(_blurSampler, vertex.uv);	
+	float4 blurTexel = _blurTexture.Sample(_blurSampler, vertex.uv.xyz);	
 	return UpSample(_gorgonTexture, _gorgonSampler, vertex.uv.xy) + blurTexel;
 }
 
@@ -135,7 +135,7 @@ float4 FilterBrightPass(GorgonSpriteVertex vertex) : SV_Target
 // The shader used to build up the final pass and composite our scene.
 float4 FinalPass(GorgonSpriteVertex vertex) : SV_Target
 {
-	float3 hdrTexel = SRgbToLinear(_gorgonTexture.Sample(_gorgonSampler, vertex.uv).rgb);
+	float3 hdrTexel = SRgbToLinear(_gorgonTexture.Sample(_gorgonSampler, vertex.uv.xyz).rgb);
 	float3 blurTexel = UpSample(_blurTexture, _blurSampler, vertex.uv.xy);
 	float4 dirtTexel = _dirtTexture.Sample(_dirtSampler, float3(vertex.uv.xy * _dirtTransform.zw + _dirtTransform.xy, 0));
 	

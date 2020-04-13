@@ -319,7 +319,9 @@ namespace Gorgon.Graphics.Core
             {
                 IsBlendingEnabled = true,
                 SourceColorBlend = Blend.SourceAlpha,
-                DestinationColorBlend = Blend.InverseSourceAlpha
+                DestinationColorBlend = Blend.InverseSourceAlpha,
+                SourceAlphaBlend = Blend.One,
+                DestinationAlphaBlend = Blend.InverseSourceAlpha
             };
 
             // Modulated blending with alpha add.

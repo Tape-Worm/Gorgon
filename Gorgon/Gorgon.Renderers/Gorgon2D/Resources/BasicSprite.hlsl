@@ -13,7 +13,7 @@ struct GorgonSpriteVertex
 {
    float4 position : SV_POSITION;
    float4 color : COLOR;
-   float3 uv : TEXCOORD;
+   float4 uv : TEXCOORD;
    float2 angle : ANGLE;
 };
 
@@ -72,6 +72,12 @@ float3 LinearToSRgb(float3 c)
     return sRGB;
 }
 
+// Function to sample the main texture.
+float4 SampleMainTexture(float4 uv, float4 vertexColor)
+{
+	return _gorgonTexture.Sample(_gorgonSampler, float3(uv.xy / uv.w, uv.z)) * vertexColor;
+}
+
 // Creates a 4x4 matrix from the 4, 4 component floating point values (columns).
 float4x4 CreateFrom4x4FromFloat4(float4 c0, float4 c1, float4 c2, float4 c3)
 {
@@ -109,7 +115,7 @@ GorgonPolySpriteVertex GorgonVertexShaderPoly(GorgonSpriteVertex vertex)
 // Our default pixel shader with textures with alpha testing.
 float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float4 color = SampleMainTexture(vertex.uv, vertex.color);
 
 	REJECT_ALPHA(color.a);
 		
@@ -137,7 +143,7 @@ cbuffer GorgonInvertEffect : register(b1)
 // A pixel shader to invert the color on a texture.
 float4 GorgonPixelShaderInvert(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float4 color = SampleMainTexture(vertex.uv, vertex.color);
 
 	if (invertUseAlpha)
 	{
@@ -164,7 +170,7 @@ cbuffer GorgonBurnDodgeEffect : register(b1)
 // Function to perform a linear image burn/dodge.
 float4 GorgonPixelShaderLinearBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float4 color = SampleMainTexture(vertex.uv, vertex.color);
 
 	REJECT_ALPHA(color.a);
 	
@@ -181,7 +187,7 @@ float4 GorgonPixelShaderLinearBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 // Function to perform an image burn/dodge.
 float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float4 color = SampleMainTexture(vertex.uv, vertex.color);
 
 	REJECT_ALPHA(color.a);
 
@@ -211,7 +217,7 @@ float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 // A pixel shader that converts to gray scale.
 float4 GorgonPixelShaderGrayScale(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float4 color = SampleMainTexture(vertex.uv, vertex.color);
 
 	REJECT_ALPHA(color.a);
 
@@ -238,7 +244,7 @@ float4 GorgonPixelShader1Bit(GorgonSpriteVertex vertex) : SV_Target
 
 	if (oneBitUseAverage)
 	{
-		color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+		color = SampleMainTexture(vertex.uv, vertex.color);
 		color.rgb = (color.r + color.g + color.b) / 3.0f;
 	}
 	else
@@ -298,7 +304,7 @@ float4 GorgonPixelShaderWaveEffect(GorgonSpriteVertex vertex) : SV_Target
 		uv.y += cos((uv.x + wavePeriod) * length) * amp;
 	}
 			
-	color = _gorgonTexture.Sample(_gorgonSampler, float3(uv, vertex.uv.z)) * vertex.color;
+	color = SampleMainTexture(float4(uv, vertex.uv.z, vertex.uv.w), vertex.color);	
 	REJECT_ALPHA(color.a);
 	return color;
 }
@@ -312,7 +318,7 @@ cbuffer GorgonDisplacementEffect : register(b1)
 }
 
 // The displacement shader encoder.
-float2 GorgonPixelShaderDisplacementEncoder(float3 uv)
+float2 GorgonPixelShaderDisplacementEncoder(float2 uv)
 {
 	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, uv);
 
@@ -326,8 +332,8 @@ float2 GorgonPixelShaderDisplacementEncoder(float3 uv)
 // The displacement shader decoder.
 float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Target
 {	
-	float2 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv);		
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset.xy, vertex.uv.z)) * vertex.color;
+	float2 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv.xy);		
+	float4 color = SampleMainTexture(float4(vertex.uv.xy + offset.xy, vertex.uv.z, vertex.uv.w), vertex.color);	
 
 	REJECT_ALPHA(color.a);
 
@@ -368,7 +374,7 @@ float4 GorgonPixelShaderGaussBlurNoAlpha(GorgonSpriteVertex vertex) : SV_Target
 		int arrayIndex = i / 4;
 		int componentIndex = i % 4;
 		float2 offset = _passIndex == 0 ? float2(_offsets[arrayIndex][componentIndex], 0) : float2(0, _offsets[arrayIndex][componentIndex]);
-		float4 texSample = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset, vertex.uv.z));
+		float4 texSample = SampleMainTexture(float4(vertex.uv.xy + offset, vertex.uv.z, vertex.uv.w), float4(1, 1, 1, 1));
 
 		blurSample.rgb += texSample.rgb * _weights[arrayIndex][componentIndex];	
 		blurSample.a = texSample.a;
@@ -390,7 +396,7 @@ float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
 		int arrayIndex = i / 4;
 		int componentIndex = i % 4;
 		float2 offset = _passIndex == 0 ? float2(_offsets[arrayIndex][componentIndex], 0) : float2(0, _offsets[arrayIndex][componentIndex]);
-		float4 texSample = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset, vertex.uv.z));
+		float4 texSample = SampleMainTexture(float4(vertex.uv.xy + offset, vertex.uv.z, vertex.uv.w), float4(1, 1, 1, 1));
 
 		// Skip blurring if there's no alpha.  If there's no alpha, then there's nothing to contribute to the blur.
 		// We can't use clip() here because it causes smearing when animating the image.		
@@ -439,15 +445,15 @@ float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
 	const float convolution = -0.5f;
 	float mainConvolution = 1.0f + ((-convolution * 8.0f) * sharpEmbossAmount);
 
-	float4 c = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-	float4 c0 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[0], vertex.uv.z)) * vertex.color) * convolution;
-	float4 c1 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[1], vertex.uv.z)) * vertex.color) * convolution;
-	float4 c2 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[2], vertex.uv.z)) * vertex.color) * convolution;
-	float4 c3 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[3], vertex.uv.z)) * vertex.color) * convolution;
-	float4 c4 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[4], vertex.uv.z)) * vertex.color) * convolution;
-	float4 c5 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[5], vertex.uv.z)) * vertex.color) * convolution;
-	float4 c6 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[6], vertex.uv.z)) * vertex.color) * convolution;
-	float4 c7 = (_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[7], vertex.uv.z)) * vertex.color) * convolution;
+	float4 c = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy / vertex.uv.w), vertex.uv.z) * vertex.color;
+	float4 c0 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[0]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
+	float4 c1 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[1]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
+	float4 c2 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[2]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
+	float4 c3 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[3]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
+	float4 c4 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[4]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
+	float4 c5 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[5]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
+	float4 c6 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[6]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
+	float4 c7 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[7]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
 	float4 c8 = c * mainConvolution;
 
 	return saturate(((c0 + c1 + c2 + c3 + c4 + c5 + c6 + c7) * sharpEmbossAmount) + c8);
@@ -463,9 +469,9 @@ float4 GorgonPixelShaderEmboss(GorgonSpriteVertex vertex) : SV_Target
 			
 	REJECT_ALPHA(alpha);
 	
-	texelPosition = float3(vertex.uv.xy + sharpEmbossTexelDistance, vertex.uv.z);
+	texelPosition = float3((vertex.uv.xy + sharpEmbossTexelDistance) / vertex.uv.w, vertex.uv.z);
 	color -= (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * amount);
-	texelPosition = float3(vertex.uv.xy - sharpEmbossTexelDistance, vertex.uv.z);
+	texelPosition = float3((vertex.uv.xy - sharpEmbossTexelDistance) / vertex.uv.w, vertex.uv.z);
 	color += (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * amount);
 
 	color.a = alpha;
@@ -487,7 +493,7 @@ cbuffer GorgonPosterizeEffect : register(b1)
 // Function to posterize texture data.
 float4 GorgonPixelShaderPosterize(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float4 color = SampleMainTexture(vertex.uv, vertex.color);
 	float4 posterColor = color;	
 	
 	REJECT_ALPHA(color.a);
@@ -525,7 +531,7 @@ cbuffer GorgonSobelEdgeDetectEffect : register(b1)
 // Function to perform a sobel edge detection.
 float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 {
-	float2 uv = vertex.uv.xy;
+	float2 uv = vertex.uv.xy / vertex.uv.w;
 	float4 s00 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + -sobelOffset, vertex.uv.z));
 	float4 s01 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + float2( 0,   -sobelOffset.y), vertex.uv.z));
 	float4 s02 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + float2( sobelOffset.x, -sobelOffset.y), vertex.uv.z));

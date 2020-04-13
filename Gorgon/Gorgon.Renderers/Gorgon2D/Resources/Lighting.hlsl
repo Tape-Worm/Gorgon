@@ -135,7 +135,7 @@ GorgonSpriteLitVertex GorgonVertexLitShader(GorgonSpriteVertex vertex)
 	
     output.worldPos = vertex.position.xyz;
     output.position = mul(ViewProjection, vertex.position);
-    output.uv = vertex.uv;
+    output.uv = vertex.uv.xyz;
     output.color = vertex.color;
 
     return output;

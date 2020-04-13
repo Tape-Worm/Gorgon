@@ -42,7 +42,7 @@ GorgonLitVertex GorgonVertexShaderGBuffer(GorgonSpriteVertex vertex)
 	
 	output.worldPos = vertex.position.xyz;
 	output.position = mul(ViewProjection, vertex.position);
-	output.uv = vertex.uv;
+	output.uv = vertex.uv.xyz;
 	output.color = vertex.color;
 
 	// We encode our rotation cosine and sine in our vertex data so that we don't need to perform the calculation more than needed.

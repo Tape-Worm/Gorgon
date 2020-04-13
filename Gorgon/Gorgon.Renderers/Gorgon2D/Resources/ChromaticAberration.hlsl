@@ -53,9 +53,9 @@ float4 ChromaticAberration(GorgonSpriteVertex vertex) : SV_Target
 // A simplified chromatic aberration effect that is applied to the whole screen.
 float4 ChromaticAberrationSimple(GorgonSpriteVertex vertex) : SV_Target
 {
-	float r = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy - _settings.xy, vertex.uv.z)).r;
-	float g = _gorgonTexture.Sample(_gorgonSampler, vertex.uv, 0).g;
-	float b = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + _settings.xy, vertex.uv.z)).b;
+	float r = _gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy - _settings.xy) / vertex.uv.w, vertex.uv.z)).r;
+	float g = _gorgonTexture.Sample(_gorgonSampler, vertex.uv.xyz / vertex.uv.w, 0).g;
+	float b = _gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + _settings.xy) / vertex.uv.w, vertex.uv.z)).b;
 
 	return float4(r, g, b, 1.0f);
 }
