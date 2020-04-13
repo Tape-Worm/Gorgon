@@ -55,15 +55,15 @@ namespace Gorgon.Input
         /// <summary>
         /// Left pointing device button pressed (same as <see cref="Left"/>).
         /// </summary>
-        Button1 = 1,
+        Button1 = Left,
         /// <summary>
         /// Right pointing device button pressed (same as <see cref="Right"/>).
         /// </summary>
-        Button2 = 2,
+        Button2 = Right,
         /// <summary>
         /// Middle pointing device button pressed (same as <see cref="Middle"/>).
         /// </summary>
-        Button3 = 4,
+        Button3 = Middle,
         /// <summary>
         /// Fourth pointing device button pressed.
         /// </summary>

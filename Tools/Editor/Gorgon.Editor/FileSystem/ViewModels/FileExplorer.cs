@@ -2912,7 +2912,11 @@ namespace Gorgon.Editor.ViewModels
             IGorgonVirtualDirectory virtualDir = _fileSystemWriter.CreateDirectory(parentDir.FullPath + name);
 
             // Function to update the UI.
-            void UpdateUI(object context) => _factory.CreateDirectory((IGorgonVirtualDirectory)context, parentDir);
+            void UpdateUI(object context)
+            {
+                _factory.CreateDirectory((IGorgonVirtualDirectory)context, parentDir);
+                OnFileSystemUpdated();
+            }
 
             // We need to invoke this back on the main thread.
             if (_syncContext != SynchronizationContext.Current)
@@ -2962,7 +2966,11 @@ namespace Gorgon.Editor.ViewModels
             _fileSystemWriter.DeleteDirectory(dir.FullPath);
 
             // Update the UI.
-            void UpdateUI(object context) => dir.Parent.Directories.Remove(dir);
+            void UpdateUI(object context)
+            {
+                dir.Parent.Directories.Remove(dir);
+                OnFileSystemUpdated();
+            }
 
             if (_syncContext != SynchronizationContext.Current)
             {
@@ -3080,8 +3088,10 @@ namespace Gorgon.Editor.ViewModels
 
                 if ((fileViewModel.RefreshCommand != null) && (fileViewModel.RefreshCommand.CanExecute(null)))
                 {
-                    fileViewModel.RefreshCommand.Execute(null);
+                    fileViewModel.RefreshCommand.Execute(null);                    
                 }
+
+                OnFileSystemUpdated();
             }            
 
             // When the file is closed, update the UI.
@@ -3301,11 +3311,12 @@ namespace Gorgon.Editor.ViewModels
                 throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GOREDIT_ERR_FILE_LOCKED, path));
             }
 
-            _fileSystemWriter.DeleteFile(file.FullPath);
+            _fileSystemWriter.DeleteFile(file.FullPath);            
 
             // Update UI.
             void UpdateUI(object context)
             {
+                OnFileSystemUpdated();
                 file.Parent.Files.Remove(file);
 
                 if ((_searchFiles == null) || (!_searchFiles.Remove(file)))

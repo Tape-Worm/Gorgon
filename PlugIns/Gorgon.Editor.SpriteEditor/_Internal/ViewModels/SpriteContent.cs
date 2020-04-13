@@ -31,7 +31,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -50,7 +49,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// Content view model for a sprite.
     /// </summary>
     internal class SpriteContent
-        : ContentEditorViewModelBase<SpriteContentParameters>, ISpriteContent        
+        : ContentEditorViewModelBase<SpriteContentParameters>, ISpriteContent
     {
         #region Classes.
         /// <summary>
@@ -83,21 +82,9 @@ namespace Gorgon.Editor.SpriteEditor
             /// </summary>
             public DX.Vector2 Anchor;
             /// <summary>
-            /// The texture filter for the sprite.
+            /// The current sampler state.
             /// </summary>
-            public SampleFilter Filter;
-            /// <summary>
-            /// The horizontal texture wrapping state.
-            /// </summary>
-            public TextureWrap HorizontalWrap;
-            /// <summary>
-            /// The vertical texture wrapping state.
-            /// </summary>
-            public TextureWrap VerticalWrap;
-            /// <summary>
-            /// The color of the border while in <see cref="TextureWrap.Border"/> mode.
-            /// </summary>
-            public GorgonColor BorderColor;
+            public GorgonSamplerState SamplerState;
         }
         #endregion
 
@@ -111,34 +98,22 @@ namespace Gorgon.Editor.SpriteEditor
             GorgonColor.White
         };
 
+        // The sprite content services.
+        private SpriteContentServices _contentServices;
         // The sprite being edited.
         private GorgonSprite _sprite;
-        // The undo service.
-        private IUndoService _undoService;
         // The texture file associated with the sprite.
         private IContentFile _textureFile;
-        // The file manager used to access external content files.
-        private IContentFileManager _contentFiles;
-        // The sprite texture service.
-        private SpriteTextureService _textureService;
         // The codec used to read/write sprite data.
         private IGorgonSpriteCodec _spriteCodec;
         // The original texture.
         private IContentFile _originalTexture;
-        // The currently active tool for editing the sprite.
-        private SpriteEditTool _currentTool = SpriteEditTool.None;
-        // The image data for the sprite texture.
-        private IGorgonImage _imageData;
-        // The factory used to create sprite content data.
-        private ISpriteContentFactory _factory;
         // The currently active panel.
         private IHostedPanelViewModel _currentPanel;
-        // The sampler build service.
-        //private ISamplerBuildService _samplerBuilder;
         #endregion
 
         #region Properties.
-        /*/// <summary>
+        /// <summary>
         /// Property to return the sprite color editor.
         /// </summary>
         public ISpriteColorEdit ColorEditor
@@ -156,15 +131,6 @@ namespace Gorgon.Editor.SpriteEditor
             private set;
         }
 
-        /// <summary>
-        /// Property to return the editor used to modify the texture wrapping state for a sprite.
-        /// </summary>
-        public ISpriteWrappingEditor WrappingEditor
-        {
-            get;
-            private set;
-        }*/
-
         /// <summary>Property to return whether the sprite will use nearest neighbour filtering, or bilinear filtering.</summary>
         public bool IsPixellated => (_sprite.TextureSampler != null) && (_sprite.TextureSampler.Filter == SampleFilter.MinMagMipPoint);
 
@@ -173,120 +139,25 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         public GorgonSamplerState SamplerState => _sprite.TextureSampler ?? GorgonSamplerState.Default;
 
-        /// <summary>Property to return the currently active panel.</summary>
-        public IHostedPanelViewModel CurrentPanel
-        {
-            get => _currentPanel;
-            private set
-            {
-                if (_currentPanel == value)
-                {
-                    return;
-                }
-
-                if (_currentPanel != null)
-                {
-                    _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
-                    _currentPanel.IsActive = false;
-                }
-
-                OnPropertyChanging();
-                _currentPanel = value;
-                OnPropertyChanged();
-
-                if (_currentPanel != null)
-                {
-                    _currentPanel.IsActive = true;
-                    _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
-                }
-            }
-        }
-
         /// <summary>Property to return the type of content.</summary>
         public override string ContentType => CommonEditorContentTypes.SpriteType;
 
         /// <summary>
         /// Property to return the view model for the plug in settings.
         /// </summary>
-        public IImportSettings Settings
-        {
-            get;
-            private set;
-        }
-
-        /*
-        /// <summary>
-        /// Property to return the view model for the manual rectangle editor interface.
-        /// </summary>
-        public IManualRectangleEditor ManualRectangleEditor
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>Property to return the view model for the manual vertex editor interface.</summary>
-        public IManualVertexEditor ManualVertexEditor
+        public ISettings Settings
         {
             get;
             private set;
         }
 
         /// <summary>
-        /// Property tor return the view model for the sprite picker mask color editor.
+        /// Property to return the context for the sprite clipper.
         /// </summary>
-        public ISpritePickMaskEditor SpritePickMaskEditor
+        public ISpriteClipContext SpriteClipContext
         {
             get;
             private set;
-        }
-        */
-        /// <summary>
-        /// Property to set or return the currently active tool for editing the sprite.
-        /// </summary>
-        public SpriteEditTool CurrentTool
-        {
-            get => _currentTool;
-            set
-            {
-                if (_currentTool == value)
-                {
-                    return;
-                }
-
-                CurrentPanel = null;
-
-                OnPropertyChanging();
-                _currentTool = value;
-                OnPropertyChanged();
-
-                NotifyPropertyChanged(nameof(SupportsArrayChange));
-                /*
-                if (ManualRectangleEditor != null)
-                {
-                    ManualRectangleEditor.IsActive = false;
-                }
-
-                if (ManualVertexEditor != null)
-                {
-                    ManualVertexEditor.IsActive = false;
-                }
-
-                switch (value)
-                {
-                    case SpriteEditTool.CornerResize:
-                        CommandContext = "SpriteCornerOffsets";
-                        break;
-                    case SpriteEditTool.SpriteClip:
-                        CommandContext = "ClipSprite";
-                        break;
-                    case SpriteEditTool.SpritePick:
-                        CommandContext = "SpritePick";
-                        break;
-                    default:
-                        CommandContext = string.Empty;
-                        break;
-                }*/
-            }
         }
 
         /// <summary>
@@ -302,9 +173,15 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
+                NotifyPropertyChanging(nameof(SpriteInfo));
+                NotifyPropertyChanging(nameof(ArrayIndex));
+                NotifyPropertyChanging(nameof(ArrayCount));
                 OnPropertyChanging();
                 _sprite.TextureRegion = value;
                 OnPropertyChanged();
+                NotifyPropertyChanged(nameof(ArrayCount));
+                NotifyPropertyChanged(nameof(ArrayIndex));
+                NotifyPropertyChanged(nameof(SpriteInfo));
             }
         }
 
@@ -325,8 +202,6 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanging();
                 _sprite.TextureArrayIndex = value.Min((Texture?.Texture.ArrayCount ?? 1) - 1).Max(0);
                 OnPropertyChanged();
-
-                NotifyPropertyChanged(nameof(ImageData));
             }
         }
 
@@ -343,12 +218,13 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
+                NotifyPropertyChanging(nameof(SupportsArrayChange));
                 OnPropertyChanging();
                 _sprite.Texture = value;
                 OnPropertyChanged();
+                NotifyPropertyChanged(nameof(SupportsArrayChange));
 
                 ContentState = ContentState.Modified;
-                NotifyPropertyChanged(nameof(SupportsArrayChange));
             }
         }
 
@@ -427,14 +303,9 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the buffer that contains the image data for the <see cref="Texture"/>.
-        /// </summary>
-        public IGorgonImage ImageData => _imageData;
-
-        /// <summary>
         /// Property to return whether the currently loaded texture supports array changes.
         /// </summary>
-        public bool SupportsArrayChange => (Texture != null) && (Texture.Texture.ArrayCount > 1) && ((CurrentTool == SpriteEditTool.SpritePick) || (CurrentTool == SpriteEditTool.SpriteClip));
+        public bool SupportsArrayChange => (Texture != null) && (Texture.Texture.ArrayCount > 1) && ((CommandContext == SpriteClipContext));// || (CurrentTool == SpriteEditTool.SpriteClip));
 
         /// <summary>
         /// Property to set or return the size of the sprite.
@@ -449,9 +320,11 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
+                NotifyPropertyChanging(nameof(SpriteInfo));
                 OnPropertyChanging();
                 _sprite.Size = value;
                 OnPropertyChanged();
+                NotifyPropertyChanged(nameof(SpriteInfo));
             }
         }
 
@@ -467,14 +340,6 @@ namespace Gorgon.Editor.SpriteEditor
         /// Property to return the command used to redo an action.
         /// </summary>
         public IEditorCommand<object> RedoCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to show the sprite sprite picker mask color editor.
-        /// </summary>
-        public IEditorCommand<object> ShowSpritePickMaskEditorCommand
         {
             get;
         }
@@ -506,15 +371,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the command to execute when creating a new sprite.
         /// </summary>
-        public IEditorCommand<object> NewSpriteCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when toggling the manual input.
-        /// </summary>
-        public IEditorCommand<object> ToggleManualClipRectCommand
+        public IEditorAsyncCommand<object> NewSpriteCommand
         {
             get;
         }
@@ -575,24 +432,95 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-        /// <summary>Property to set or return the currently active hosted panel.</summary>
-        /// <remarks>
-        /// This property holds the view model for the currently active hosted panel which can be used for parameters for an operation on the content. Setting this value will bring the panel up on the UI and
-        /// setting it to <b>null</b> will remove it.
-        /// </remarks>
-        public IHostedPanelViewModel CurrentHostedPanel
+        /// <summary>Property to return the currently active panel.</summary>
+        public IHostedPanelViewModel CurrentPanel
+        {
+            get => _currentPanel;
+            set
+            {
+                if (_currentPanel == value)
+                {
+                    return;
+                }
+
+                if (_currentPanel != null)
+                {
+                    _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
+                    _currentPanel.IsActive = false;
+                }
+
+                OnPropertyChanging();
+                _currentPanel = value;
+                OnPropertyChanged();
+
+                if (_currentPanel != null)
+                {
+                    _currentPanel.IsActive = true;
+                    _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
+                }
+            }
+        }
+
+        /// <summary>Property to return the total number of array indices in the sprite texture.</summary>
+        public int ArrayCount => Texture?.Texture.ArrayCount ?? 0;
+
+        /// <summary>Property to return information about the sprite.</summary>
+        public string SpriteInfo
+        {
+            get
+            {
+                if (Texture == null)
+                {
+                    return string.Empty;
+                }
+
+                DX.Rectangle rect = Texture.ToPixel(TextureCoordinates);
+                return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, rect.Left, rect.Top, rect.Right, rect.Bottom, rect.Width, rect.Height);
+            }
+        }
+
+        /// <summary>Property to return the context for the sprite picker.</summary>
+        public ISpritePickContext SpritePickContext
         {
             get;
-            set;
+            private set;
+        }
+
+        /// <summary>Property to return the view model for the vertex editor interface.</summary>
+        public ISpriteVertexEditContext SpriteVertexEditContext
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>Property to return the editor used to modify the texture wrapping state for a sprite.</summary>
+        public ISpriteTextureWrapEdit WrappingEditor
+        {
+            get;
+            private set;
         }
         #endregion
 
         #region Methods.
+        /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void ColorEditor_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ISpriteColorEdit.IsActive):
+                    CurrentPanel = ColorEditor.IsActive ? ColorEditor : null;
+                    break;
+            }
+        }
+
         /// <summary>
         /// Function to set up a texture file that is associated with the sprite.
         /// </summary>
+        /// <param name="spriteFile">The file containing the sprite data.</param>
         /// <param name="textureFile">The current texture file.</param>
-        private void SetupTextureFile(IContentFile textureFile)
+        private void SetupTextureFile(IContentFile spriteFile, IContentFile textureFile)
         {
             if (_textureFile != null)
             {
@@ -606,7 +534,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            File.LinkContent(_textureFile);
+            spriteFile.LinkContent(_textureFile);
 
             _textureFile.IsOpen = true;
         }
@@ -619,7 +547,7 @@ namespace Gorgon.Editor.SpriteEditor
         private bool CanSetTexture(SetTextureArgs args)
         {
             if ((string.IsNullOrWhiteSpace(args.TextureFilePath))
-                || (CurrentTool != SpriteEditTool.None)
+                || (CommandContext != null)
                 || (!ContentFileManager.FileExists(args.TextureFilePath)))
             {
                 args.Cancel = true;
@@ -628,17 +556,78 @@ namespace Gorgon.Editor.SpriteEditor
 
             IContentFile file = ContentFileManager.GetFile(args.TextureFilePath);
 
-            if (!_textureService.IsContentImage(file))
+            if (!_contentServices.TextureService.IsContentImage(file))
             {
                 args.Cancel = true;
                 return false;
             }
 
-            IGorgonImageInfo metadata = _textureService.GetImageMetadata(file);
+            IGorgonImageInfo metadata = _contentServices.TextureService.GetImageMetadata(file);
 
             args.Cancel = (metadata.ImageType != ImageType.Image2D) && (metadata.ImageType != ImageType.ImageCube);
 
             return !args.Cancel;
+        }
+
+        /// <summary>
+        /// Function to assign a new texture to the sprite.
+        /// </summary>
+        /// <param name="spriteFile">The current sprite file.</param>
+        /// <param name="textureFile">The texture file to load.</param>
+        /// <param name="arrayIndex">The texture array index to use.</param>
+        /// <returns><b>true</b> if the texture loaded successfully, <b>false</b> if not.</returns>
+        private async Task<bool> SetTextureAsync(IContentFile spriteFile, IContentFile textureFile, int arrayIndex)
+        {
+            GorgonTexture2DView texture;
+            IGorgonImageInfo imageInfo;
+
+            imageInfo = _contentServices.TextureService.GetImageMetadata(textureFile);
+
+            if (imageInfo == null)
+            {
+                HostServices.MessageDisplay.ShowError(string.Format(Resources.GORSPR_ERR_NOT_AN_IMAGE, textureFile.Path));
+                return false;
+            }
+
+            if ((imageInfo.ImageType == ImageType.Image1D) || (imageInfo.ImageType == ImageType.Image3D))
+            {
+                HostServices.MessageDisplay.ShowError(Resources.GORSPR_ERR_NOT_2D_IMAGE);
+                return false;
+            }
+
+            texture = await _contentServices.TextureService.LoadTextureAsync(textureFile);
+
+            Texture?.Dispose();
+            Texture = texture;
+
+            // Copy the image data.
+            if ((SpritePickContext?.GetImageDataCommand != null) && (SpritePickContext.GetImageDataCommand.CanExecute(null)))
+            {
+                await SpritePickContext.GetImageDataCommand.ExecuteAsync(null);
+            }
+
+            spriteFile?.UnlinkContent(_textureFile);
+
+            SetupTextureFile(spriteFile, textureFile);
+
+            if (File.Metadata.Attributes.ContainsKey(CommonEditorConstants.IsNewAttr))
+            {
+                File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
+            }
+
+            // Store the sprite array index as this may change based on the texture array count.
+            if (arrayIndex == -1)
+            {
+                arrayIndex = ArrayIndex.Min(texture.Texture.ArrayCount - 1);
+            }
+
+            ArrayIndex = arrayIndex;
+
+            // Adjust the texture coordinates so that they appear in the correct place on the texture.
+            TextureCoordinates = texture.ToTexel(new DX.Rectangle((int)(TextureCoordinates.X * texture.Width), (int)(TextureCoordinates.Y * texture.Height),
+                                                                  (int)Size.Width, (int)Size.Height));
+
+            return true;
         }
 
         /// <summary>
@@ -659,55 +648,15 @@ namespace Gorgon.Editor.SpriteEditor
 
                 try
                 {
-                    GorgonTexture2DView texture;
-                    IGorgonImageInfo imageInfo;
-
-                    imageInfo = _textureService.GetImageMetadata(newTextureFile);
-
-                    if (imageInfo == null)
+                    if (!await SetTextureAsync(File, newTextureFile, textureArgs.ArrayIndex))
                     {
-                        HostServices.MessageDisplay.ShowError(string.Format(Resources.GORSPR_ERR_NOT_AN_IMAGE, newTextureFile.Path));
                         return false;
                     }
 
-                    if ((imageInfo.ImageType == ImageType.Image1D) || (imageInfo.ImageType == ImageType.Image3D))
+                    if (textureArgs.ArrayIndex != ArrayIndex)
                     {
-                        HostServices.MessageDisplay.ShowError(Resources.GORSPR_ERR_NOT_2D_IMAGE);
-                        return false;
+                        textureArgs.ArrayIndex = ArrayIndex;
                     }
-
-                    texture = await _textureService.LoadTextureAsync(newTextureFile);
-
-                    Texture?.Dispose();
-                    Texture = texture;
-
-                    // Copy the image data.
-                    await ExtractImageDataAsync();
-
-                    File?.UnlinkContent(_textureFile);
-
-                    SetupTextureFile(newTextureFile);
-
-                    File.LinkContent(_textureFile);
-
-                    if (File.Metadata.Attributes.ContainsKey(CommonEditorConstants.IsNewAttr))
-                    {
-                        File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
-                    }
-
-                    // Store the sprite array index as this may change based on the texture array count.
-                    if (textureArgs.ArrayIndex == -1)
-                    {
-                        textureArgs.ArrayIndex = ArrayIndex.Min(texture.Texture.ArrayCount - 1);
-                    }
-
-                    ArrayIndex = textureArgs.ArrayIndex;
-
-                    // Adjust the texture coordinates so that they appear in the correct place on the texture.
-                    TextureCoordinates = texture.ToTexel(new DX.Rectangle((int)(TextureCoordinates.X * texture.Width), (int)(TextureCoordinates.Y * texture.Height), 
-                                                                          (int)Size.Width, (int)Size.Height));
-
-                    NotifyPropertyChanged(nameof(ImageData));
                 }
                 catch (Exception ex)
                 {
@@ -745,7 +694,7 @@ namespace Gorgon.Editor.SpriteEditor
             // If we initially don't have a texture, then don't record the action.
             if (!string.IsNullOrWhiteSpace(textureUndoArgs?.CurrentTexturePath))
             {
-                _undoService.Record(Resources.GORSPR_UNDO_DESC_TEXTURE, UndoAction, RedoAction, textureUndoArgs, textureRedoArgs);
+                _contentServices.UndoService.Record(Resources.GORSPR_UNDO_DESC_TEXTURE, UndoAction, RedoAction, textureUndoArgs, textureRedoArgs);
                 // Need to call this so the UI can register our updated undo stack.
                 NotifyPropertyChanged(nameof(UndoCommand));
             }
@@ -755,13 +704,13 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => (_undoService != null) && (_undoService.CanUndo) && (_currentTool == SpriteEditTool.None) && (CurrentPanel == null);
+        private bool CanUndo() => (_contentServices.UndoService.CanUndo) && (CommandContext == null) && (CurrentPanel == null);
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => (_undoService != null) && (_undoService.CanRedo) && (_currentTool == SpriteEditTool.None) && (CurrentPanel == null);
+        private bool CanRedo() => (_contentServices.UndoService.CanRedo) && (CommandContext == null) && (CurrentPanel == null);
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -770,7 +719,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             try
             {
-                await _undoService.Redo();
+                await _contentServices.UndoService.Redo();
             }
             catch (Exception ex)
             {
@@ -785,7 +734,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             try
             {
-                await _undoService.Undo();
+                await _contentServices.UndoService.Undo();
             }
             catch (Exception ex)
             {
@@ -797,235 +746,285 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if a new sprite can be created.
         /// </summary>
         /// <returns><b>true</b> if a new sprite can be created, <b>false</b> if not.</returns>
-        private bool CanCreateSprite() => (CurrentTool == SpriteEditTool.None) && (CurrentPanel == null);
-        /*
-                /// <summary>
-                /// Function to create a new sprite.
-                /// </summary>
-                private async void DoCreateSprite()
-                {
-                    MemoryStream stream = null;
-
-                    try
-                    {
-                        // If this content is currently in a modified state, ask if we want to save first.
-                        if (ContentState != ContentState.Unmodified)
-                        {
-                            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_CLOSE, File.Name), allowCancel: true);
-
-                            switch (response)
-                            {
-                                case MessageResponse.Yes:
-                                    // This task is synchronous, so we can call Wait() here and not require an async method.
-                                    BusyState.SetBusy();
-                                    SaveSprite();
-                                    BusyState.SetIdle();
-                                    break;
-                                case MessageResponse.Cancel:
-                                    return;
-                            }
-                        }
-
-                        var existingItems = new HashSet<string>(_contentFiles.EnumeratePaths(_contentFiles.CurrentDirectory, "*").Select(item =>
-                        {
-                            // Get the last path part.
-                            if (item.EndsWith("/", StringComparison.OrdinalIgnoreCase))
-                            {
-                                item = item.Substring(0, item.Length - 1);
-                            }
-
-                            return Path.GetFileName(item);
-                        }), StringComparer.CurrentCultureIgnoreCase);
-
-                        (string newName, byte[] newContent) = await _factory.GetDefaultContentAsync(File.Name, existingItems);
-
-                        if ((newName == null) || (newContent == null))
-                        {
-                            return;
-                        }
-
-                        BusyState.SetBusy();
-
-                        // Remove the undo stack, we don't need it now, this is a new piece of content.
-                        _undoService.ClearStack();
-                        CurrentTool = SpriteEditTool.None;
-                        CurrentPanel = null;
-
-                        // Deserialize the sprite, might as well use it since we have it.
-                        stream = new MemoryStream(newContent);
-                        GorgonSprite newSprite = _spriteCodec.FromStream(stream);
-                        newSprite.Texture = Texture;
-
-                        // Link our current texture with the new file.
-                        OLDE_IContentFile newFile = _contentFiles.WriteFile(Path.Combine(_contentFiles.CurrentDirectory, newName), s => _spriteCodec.Save(newSprite, s));
-                        _textureFile.LinkContent(newFile);
-
-                        // We set to unmodified here because the new sprite was saved with the current texture.
-                        ContentState = ContentState.Unmodified;
-
-                        // Update the backing store for the view model so we can start using the new sprite.
-                        _sprite = newSprite;
-                        File = newFile;
-
-                        // Reset the size of the sprite to match the new texture coordinates.
-                        _sprite.Size = newSprite.Texture.ToPixel(newSprite.TextureRegion).ToRectangleF().Size;
-
-                        // Set all vertices as selected on the color editor.
-                        ColorEditor.SelectedVertices = new bool[] { true, true, true, true };
-
-                        NotifyPropertyChanged(nameof(ArrayIndex));
-                        NotifyPropertyChanged(nameof(TextureCoordinates));
-                        NotifyPropertyChanged(nameof(ImageData));
-                        NotifyPropertyChanged(nameof(Texture));
-                        NotifyPropertyChanged(nameof(VertexColors));
-                        NotifyPropertyChanged(nameof(VertexOffsets));
-                        NotifyPropertyChanged(nameof(Size));
-                        NotifyPropertyChanged(nameof(IsPixellated));
-                        NotifyPropertyChanged(nameof(SamplerState));
-
-                        newFile.SaveMetadata();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_CREATE_SPRITE);
-                        CloseContentCommand.Execute(new CloseContentArgs(false));
-                    }
-                    finally
-                    {
-                        stream?.Dispose();
-                        BusyState.SetIdle();
-                    }
-                }
-
-                /// <summary>
-                /// Function to determine if the current color can be comitted.
-                /// </summary>
-                /// <returns><b>true</b> if the color can be comitted, <b>false</b> if not.</returns>
-                private bool CanCommitColorChange() => (ColorEditor != null) && (!ColorEditor.SpriteColor.SequenceEqual(ColorEditor.OriginalSpriteColor));
-
-                /// <summary>
-                /// Function called to change the color of the sprite.
-                /// </summary>
-                private void DoCommitColorChange()
-                {
-
-                    bool SetColor(IReadOnlyList<GorgonColor> colors)
-                    {
-                        try
-                        {
-                            VertexColors = colors;
-                            ContentState = ContentState.Modified;
-
-                            CurrentPanel = null;
-
-                            return true;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                            return false;
-                        }
-                    }
-
-                    Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
-                    {
-                        SetColor(undoArgs.VertexColor);
-                        return Task.CompletedTask;
-                    }
-
-                    Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
-                    {
-                        SetColor(redoArgs.VertexColor);
-                        return Task.CompletedTask;
-                    }
-
-                    var colorUndoArgs = new SpriteUndoArgs
-                    {
-                        VertexColor = _sprite.CornerColors.ToArray()
-                    };
-
-                    var colorRedoArgs = new SpriteUndoArgs
-                    {
-                        VertexColor = ColorEditor.SpriteColor.ToArray()
-                    };
-
-                    if (!SetColor(colorRedoArgs.VertexColor))
-                    {
-                        return;
-                    }
-
-                    _undoService.Record(Resources.GORSPR_UNDO_DESC_COLOR, UndoAction, RedoAction, colorUndoArgs, colorRedoArgs);
-                    NotifyPropertyChanged(nameof(UndoCommand));
-                }
-
-                /// <summary>
-                /// Function to determine if the current vertex offset changes can be comitted.
-                /// </summary>
-                /// <param name="offsets">The vertex offsets to check.</param>
-                /// <returns><b>true</b> if the vertex offset changes can be comitted, <b>false</b> if not.</returns>
-                private bool CanCommitVertexOffsets(IReadOnlyList<DX.Vector3> offsets) => (CurrentPanel == null) && (!_sprite.CornerOffsets.SequenceEqual(offsets));
-
-                /// <summary>
-                /// Function called to change the vertex offsets of the sprite.
-                /// </summary>
-                /// <param name="vertexOffsets">The offsets to apply.</param>
-                private void DoCommitVertexOffsets(IReadOnlyList<DX.Vector3> vertexOffsets)
-                {
-                    bool SetVertices(IReadOnlyList<DX.Vector3> offsets)
-                    {
-                        try
-                        {
-                            VertexOffsets = offsets;
-                            ContentState = ContentState.Modified;
-
-                            CurrentPanel = null;
-
-                            return true;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                            return false;
-                        }
-                    }
-
-                    Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
-                    {
-                        SetVertices(undoArgs.VertexOffset);
-                        return Task.CompletedTask;
-                    }
-
-                    Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
-                    {
-                        SetVertices(redoArgs.VertexOffset);
-                        return Task.CompletedTask;
-                    }
-
-                    var vtxUndoArgs = new SpriteUndoArgs
-                    {
-                        VertexOffset = _sprite.CornerOffsets.ToArray()
-                    };
-
-                    var vtxRedoArgs = new SpriteUndoArgs
-                    {
-                        VertexOffset = vertexOffsets
-                    };
-
-                    if (!SetVertices(vertexOffsets))
-                    {
-                        return;
-                    }
-
-                    _undoService.Record(Resources.GORSPR_UNDO_DESC_CORNER_OFFSET, UndoAction, RedoAction, vtxUndoArgs, vtxRedoArgs);
-                    NotifyPropertyChanged(nameof(UndoCommand));
-                }*/
+        private bool CanCreateSprite() => (CommandContext == null) && (CurrentPanel == null);
 
         /// <summary>
-        /// Function to save the sprite data back to the content file.
+        /// Function to create a new sprite based on the current sprite.
         /// </summary>
-        private void SaveSprite()
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoCreateSpriteAsync()
         {
             Stream outStream = null;
+
+            void SaveSprite() => _spriteCodec.Save(_sprite, outStream);
+
+            try
+            {
+                // If this content is currently in a modified state, ask if we want to save first.
+                if (ContentState != ContentState.Unmodified)
+                {
+                    MessageResponse response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_CLOSE, File.Name), allowCancel: true);
+
+                    switch (response)
+                    {
+                        case MessageResponse.Yes:
+                            ShowWaitPanel(Resources.GORSPR_TEXT_SAVING);
+                            File.IsOpen = false;
+                            outStream = ContentFileManager.OpenStream(File.Path, FileMode.Create);
+                            await Task.Run(SaveSprite);
+                            outStream.Dispose();
+                            File.IsOpen = true;
+                            HideWaitPanel();
+                            break;
+                        case MessageResponse.Cancel:
+                            return;
+                    }
+                }
+
+                (string newName, IContentFile textureFile, DX.Size2F size) = _contentServices.NewSpriteService.GetNewSpriteName(File, _textureFile, _sprite.Size);
+
+                if (newName == null)
+                {
+                    return;
+                }
+
+                string spriteDirectory = Path.GetDirectoryName(File.Path).FormatPath('/');
+
+                if (string.IsNullOrWhiteSpace(spriteDirectory))
+                {
+                    spriteDirectory = "/";
+                }
+
+                string spritePath = spriteDirectory + newName.FormatFileName();
+
+                IContentFile existingFile = ContentFileManager.GetFile(spritePath);
+                if (existingFile != null)
+                {
+                    // We cannot overwrite a file that's already open for editing.
+                    if (existingFile.IsOpen)
+                    {
+                        HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_ERR_FILESYSTEM_ITEM_EXISTS, spritePath));
+                        return;
+                    }
+
+                    if (HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_SPRITE_EXISTS, spritePath)) != MessageResponse.Yes)
+                    {
+                        return;
+                    }
+                }
+
+                // Copy the current sprite state into a new file.
+                ShowWaitPanel(Resources.GORSPR_TEXT_SAVING);
+
+                // Create the file first.
+                outStream = ContentFileManager.OpenStream(spritePath, FileMode.Create);
+                await Task.Run(SaveSprite);
+                outStream.Dispose();
+
+                IContentFile file = ContentFileManager.GetFile(spritePath);
+
+                if (file == null)
+                {
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GORSPR_ERR_SPRITE_NOT_FOUND, newName));
+                    await CloseContentCommand.ExecuteAsync(new CloseContentArgs(false));
+                    return;
+                }
+
+                ContentState = ContentState.Unmodified;
+
+                // Update the sprite size.
+                if (Size != size)
+                {
+                    Size = size;
+                    TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);
+                    ContentState = ContentState.Modified;
+                }
+
+                // Load the texture if we've changed it.
+                if (!string.Equals(textureFile.Path, _textureFile.Path, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (await SetTextureAsync(file, textureFile, -1))
+                    {
+                        // Set the new texture as the original.
+                        _originalTexture = _textureFile;
+                        ContentState = ContentState.Modified;
+                    }
+                }
+
+                // Write the updated data.
+                if (ContentState == ContentState.Modified)
+                {
+                    outStream = ContentFileManager.OpenStream(spritePath, FileMode.Create);
+                    await Task.Run(SaveSprite);
+                    outStream.Dispose();
+
+                    ContentState = ContentState.Unmodified;
+                }
+
+                File = file;
+
+                // Remove all undo states since we're now working with a new file.
+                _contentServices.UndoService.ClearStack();
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_CREATE_SPRITE);
+                // If we fail to create the new sprite, we need to shut the editor down because our state
+                // could be corrupt.
+                await CloseContentCommand.ExecuteAsync(new CloseContentArgs(false));
+            }
+            finally
+            {
+                HideWaitPanel();
+            }
+        }
+
+
+        /// <summary>
+        /// Function to determine if the current color can be comitted.
+        /// </summary>
+        /// <returns><b>true</b> if the color can be comitted, <b>false</b> if not.</returns>
+        private bool CanCommitColorChange() => (ColorEditor != null) && (!ColorEditor.SpriteColor.SequenceEqual(ColorEditor.OriginalSpriteColor));
+
+        /// <summary>
+        /// Function called to change the color of the sprite.
+        /// </summary>
+        private void DoCommitColorChange()
+        {
+
+            bool SetColor(IReadOnlyList<GorgonColor> colors)
+            {
+                try
+                {
+                    VertexColors = colors;
+                    ContentState = ContentState.Modified;
+
+                    CurrentPanel = null;
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
+                }
+            }
+
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetColor(undoArgs.VertexColor);
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetColor(redoArgs.VertexColor);
+                return Task.CompletedTask;
+            }
+
+            var colorUndoArgs = new SpriteUndoArgs
+            {
+                VertexColor = _sprite.CornerColors.ToArray()
+            };
+
+            var colorRedoArgs = new SpriteUndoArgs
+            {
+                VertexColor = ColorEditor.SpriteColor.ToArray()
+            };
+
+            if (!SetColor(colorRedoArgs.VertexColor))
+            {
+                return;
+            }
+
+            _contentServices.UndoService.Record(Resources.GORSPR_UNDO_DESC_COLOR, UndoAction, RedoAction, colorUndoArgs, colorRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>
+        /// Function to determine if the current vertex offset changes can be comitted.
+        /// </summary>
+        /// <returns><b>true</b> if the vertex offset changes can be comitted, <b>false</b> if not.</returns>
+        private bool CanCommitVertexOffsets() => (CurrentPanel == null) 
+                                              && (!_sprite.CornerOffsets.Select(item => (DX.Vector2)item)
+                                                                        .SequenceEqual(SpriteVertexEditContext.Vertices));
+
+        /// <summary>
+        /// Function called to change the vertex offsets of the sprite.
+        /// </summary>
+        private void DoCommitVertexOffsets()
+        {
+            bool SetVertices(IReadOnlyList<DX.Vector3> offsets)
+            {
+                try
+                {
+                    VertexOffsets = offsets;
+                    ContentState = ContentState.Modified;
+
+                    CommandContext = null;
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
+                }
+            }
+
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetVertices(undoArgs.VertexOffset);
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetVertices(redoArgs.VertexOffset);
+                return Task.CompletedTask;
+            }
+
+            var vtxUndoArgs = new SpriteUndoArgs
+            {
+                VertexOffset = _sprite.CornerOffsets.ToArray()
+            };
+
+            DX.Vector3[] verts = SpriteVertexEditContext.Vertices.Select(item => (DX.Vector3)item).ToArray();
+
+            var vtxRedoArgs = new SpriteUndoArgs
+            {
+                VertexOffset = verts
+            };
+
+            if (!SetVertices(verts))
+            {
+                return;
+            }
+
+            _contentServices.UndoService.Record(Resources.GORSPR_UNDO_DESC_CORNER_OFFSET, UndoAction, RedoAction, vtxUndoArgs, vtxRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>
+        /// Function to determine if the current content can be saved.
+        /// </summary>
+        /// <param name="saveReason">The reason why the content is being saved.</param>
+        /// <returns><b>true</b> if the content can be saved, <b>false</b> if not.</returns>
+        private bool CanSaveSprite(SaveReason saveReason) => (ContentState != ContentState.Unmodified)
+                                                            && (((CommandContext == null) && (CurrentPanel == null)) || (saveReason != SaveReason.UserSave));
+
+        /// <summary>
+        /// Function to save the sprite back to the project file system.
+        /// </summary>
+        /// <param name="saveReason">The reason why the content is being saved.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoSaveSpriteTask(SaveReason saveReason)
+        {
+            Stream outStream = null;
+
+            ShowWaitPanel(Resources.GORSPR_TEXT_SAVING);
+
+            void SaveSprite() => _spriteCodec.Save(_sprite, outStream);
 
             try
             {
@@ -1037,41 +1036,15 @@ namespace Gorgon.Editor.SpriteEditor
 
                 File.IsOpen = false;
                 outStream = ContentFileManager.OpenStream(File.Path, FileMode.Create);
-                _spriteCodec.Save(_sprite, outStream);
+                await Task.Run(SaveSprite);
                 outStream.Dispose();
                 File.IsOpen = true;
 
-                File.Refresh();                
+                File.Refresh();
 
                 _originalTexture = _textureFile;
+
                 ContentState = ContentState.Unmodified;
-            }
-            finally
-            {
-                File.IsOpen = true;
-                outStream?.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Function to determine if the current content can be saved.
-        /// </summary>
-        /// <param name="saveReason">The reason why the content is being saved.</param>
-        /// <returns><b>true</b> if the content can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveSprite(SaveReason saveReason) => (ContentState != ContentState.Unmodified) && (((CurrentTool == SpriteEditTool.None) && (CurrentPanel == null)) || (saveReason != SaveReason.UserSave));
-
-        /// <summary>
-        /// Function to save the sprite back to the project file system.
-        /// </summary>
-        /// <param name="saveReason">The reason why the content is being saved.</param>
-        /// <returns>A task for asynchronous operation.</returns>
-        private Task DoSaveSpriteTask(SaveReason saveReason)
-        {
-            HostServices.BusyService.SetBusy();
-
-            try
-            {
-                SaveSprite();
             }
             catch (Exception ex)
             {
@@ -1079,694 +1052,540 @@ namespace Gorgon.Editor.SpriteEditor
             }
             finally
             {
-                HostServices.BusyService.SetIdle();
-            }
+                File.IsOpen = true;
+                outStream?.Dispose();
 
-            return Task.FromResult<object>(null);
+                HideWaitPanel();
+            }
         }
 
-                /*/// <summary>
-                /// Function to determine whether the vertex edit(s) can be applied.
-                /// </summary>
-                /// <returns><b>true</b> if the edits can be applied, <b>false</b> if not.</returns>
-                private bool CanApplyVertexEdit()
+        /// <summary>
+        /// Function to determine if the current editor picking coordinates can be applied to the sprite or not.
+        /// </summary>
+        /// <returns><b>true</b> if the coordinates can be applied, <b>false</b> if not.</returns>
+        private bool CanApplyPick()
+        {
+            if ((Texture == null) || (CurrentPanel != null) || (CommandContext != SpritePickContext))
+            {
+                return false;
+            }
+
+            DX.RectangleF texCoords = Texture.ToTexel(SpritePickContext.SpriteRectangle.ToRectangle());
+
+            return ((!_sprite.TextureRegion.Equals(ref texCoords)) || (_sprite.TextureArrayIndex != SpritePickContext.ArrayIndex));
+        }
+
+        /// <summary>
+        /// Function to apply the pick coordinates to the sprite.
+        /// </summary>
+        private void DoApplyPick()
+        {
+            bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<DX.Vector3> vertexOffsets)
+            {
+                try
                 {
-                    if ((CurrentTool != SpriteEditTool.CornerResize) || (CurrentPanel != null) || (Texture == null) || (ManualVertexEditor == null))
-                    {
-                        return false;
-                    }
+                    var textureRect = coordinates.ToRectangle();
+                    textureRect.Inflate(SpritePickContext.Padding, SpritePickContext.Padding);
+                    TextureCoordinates = Texture.ToTexel(textureRect);
+                    Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
+                    ArrayIndex = index;
+                    VertexOffsets = vertexOffsets;
 
-                    IEnumerable<DX.Vector3> newOffsets = ManualVertexEditor.Vertices.Select(item => new DX.Vector3(item.X, item.Y, 0));
+                    CommandContext = null;
+                    ContentState = ContentState.Modified;
 
-                    return !VertexOffsets.SequenceEqual(newOffsets);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
+                }
+            }
+
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetTextureCoordinates(undoArgs.TextureCoordinates, undoArgs.ArrayIndex, undoArgs.VertexOffset);
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetTextureCoordinates(redoArgs.TextureCoordinates, redoArgs.ArrayIndex, redoArgs.VertexOffset);
+                return Task.CompletedTask;
+            }
+
+            var texCoordUndoArgs = new SpriteUndoArgs
+            {
+                TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
+                ArrayIndex = ArrayIndex,
+                VertexOffset = _sprite.CornerOffsets.ToArray()
+            };
+            var texCoordRedoArgs = new SpriteUndoArgs
+            {
+                TextureCoordinates = SpritePickContext.SpriteRectangle,
+                ArrayIndex = SpritePickContext.ArrayIndex,
+                VertexOffset = new DX.Vector3[_sprite.CornerOffsets.Count]
+            };
+
+            if (!SetTextureCoordinates(texCoordRedoArgs.TextureCoordinates, texCoordRedoArgs.ArrayIndex, texCoordRedoArgs.VertexOffset))
+            {
+                return;
+            }
+
+            _contentServices.UndoService.Record(Resources.GORSPR_UNDO_DESC_CLIP, UndoAction, RedoAction, texCoordUndoArgs, texCoordRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>
+        /// Function to determine if the current editor clipping coordinates can be applied to the sprite or not.
+        /// </summary>
+        /// <returns><b>true</b> if the coordinates can be applied, <b>false</b> if not.</returns>
+        private bool CanApplyClip()
+        {
+            if ((Texture == null) || (CurrentPanel != null) || (CommandContext != SpriteClipContext))
+            {
+                return false;
+            }
+
+            DX.RectangleF texCoords = Texture.ToTexel(SpriteClipContext.SpriteRectangle.ToRectangle());
+
+            return ((!_sprite.TextureRegion.Equals(ref texCoords)) || (_sprite.TextureArrayIndex != SpriteClipContext.ArrayIndex));
+        }
+
+        /// <summary>
+        /// Function to apply the clipping coordinates to the sprite.
+        /// </summary>
+        private void DoApplyClip()
+        {
+            bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<DX.Vector3> vertexOffsets)
+            {
+                try
+                {
+                    TextureCoordinates = Texture.ToTexel(coordinates.ToRectangle());
+                    Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
+                    ArrayIndex = index;
+                    VertexOffsets = vertexOffsets;
+
+                    CommandContext = null;
+                    ContentState = ContentState.Modified;
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
+                }
+            }
+
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetTextureCoordinates(undoArgs.TextureCoordinates, undoArgs.ArrayIndex, undoArgs.VertexOffset);
+                return Task.CompletedTask;
+            }
+
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetTextureCoordinates(redoArgs.TextureCoordinates, redoArgs.ArrayIndex, redoArgs.VertexOffset);
+                return Task.CompletedTask;
+            }
+
+            var texCoordUndoArgs = new SpriteUndoArgs
+            {
+                TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
+                ArrayIndex = ArrayIndex,
+                VertexOffset = _sprite.CornerOffsets.ToArray()
+            };
+            var texCoordRedoArgs = new SpriteUndoArgs
+            {
+                TextureCoordinates = SpriteClipContext.SpriteRectangle,
+                ArrayIndex = SpriteClipContext.ArrayIndex,
+                VertexOffset = new DX.Vector3[_sprite.CornerOffsets.Count]
+            };
+
+            if (!SetTextureCoordinates(texCoordRedoArgs.TextureCoordinates, texCoordRedoArgs.ArrayIndex, texCoordRedoArgs.VertexOffset))
+            {
+                return;
+            }
+
+            _contentServices.UndoService.Record(Resources.GORSPR_UNDO_DESC_CLIP, UndoAction, RedoAction, texCoordUndoArgs, texCoordRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>
+        /// Function to determine if the sprite picker can activate or not.
+        /// </summary>
+        /// <returns><b>true</b> if it can activate, <b>false</b> if not.</returns>
+        private bool CanSpritePick() => ((CommandContext == null) || (CommandContext == SpritePickContext))
+                                            && (Texture != null)
+                                            && (CurrentPanel == null);
+
+        /// <summary>
+        /// Function to activate (or deactivate) the sprite picker tool.
+        /// </summary>
+        private void DoSpritePick()
+        {
+            try
+            {
+                if (CommandContext == SpritePickContext)
+                {
+                    CommandContext = null;
+                    return;
                 }
 
-                /// <summary>
-                /// Function to apply vertex offsets to the sprite.
-                /// </summary>
-                private void DoApplyVertexEdit()
+                // Let the user know that performance may be an issue here with a large texture (32 bit 4096x4096 image should be around 67 MB).
+                if ((Settings.ShowImageSizeWarning) && (Texture.Texture.SizeInBytes > 67108864))
                 {
-                    bool SetVertices(IReadOnlyList<DX.Vector3> offsets)
-                    {
-                        try
-                        {
-                            VertexOffsets = offsets;
-                            ContentState = ContentState.Modified;
-
-                            CurrentPanel = null;
-
-                            return true;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                            return false;
-                        }
-                    }
-
-                    Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
-                    {
-                        SetVertices(undoArgs.VertexOffset);
-                        return Task.CompletedTask;
-                    }
-
-                    Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
-                    {
-                        SetVertices(redoArgs.VertexOffset);
-                        return Task.CompletedTask;
-                    }
-
-                    var vtxUndoArgs = new SpriteUndoArgs
-                    {
-                        VertexOffset = _sprite.CornerOffsets.ToArray()
-                    };
-
-                    var vtxRedoArgs = new SpriteUndoArgs
-                    {
-                        VertexOffset = ManualVertexEditor.Vertices.Select(item => new DX.Vector3(item.X, item.Y, 0)).ToArray()
-                    };
-
-                    if (!SetVertices(vtxRedoArgs.VertexOffset))
-                    {
-                        return;
-                    }
-
-                    CurrentTool = SpriteEditTool.None;
-
-                    _undoService.Record(Resources.GORSPR_UNDO_DESC_CORNER_OFFSET, UndoAction, RedoAction, vtxUndoArgs, vtxRedoArgs);
-                    NotifyPropertyChanged(nameof(UndoCommand));
+                    HostServices.MessageDisplay.ShowWarning(string.Format(Resources.GORSPR_WRN_LARGE_IMAGE, Texture.Width, Texture.Height));
                 }
 
-                /// <summary>
-                /// Function to cancel the vertex offset editing.
-                /// </summary>
-                private void DoCancelVertexEdit()
+                CommandContext = SpritePickContext;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpritePickContext.Name));
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if a sprite can be clipped.
+        /// </summary>
+        /// <returns><b>true</b> if the sprite can be clipped, <b>false</b> if not.</returns>
+        private bool CanSpriteClip() => ((CommandContext == null) || (CommandContext == SpriteClipContext))
+                                            && (Texture != null)
+                                            && (CurrentPanel == null);
+
+        /// <summary>
+        /// Function to activate (or deactivate) the sprite clipper tool.
+        /// </summary>
+        private void DoSpriteClip()
+        {
+            try
+            {
+                if (CommandContext == SpriteClipContext)
                 {
-                    if (ManualVertexEditor == null)
-                    {
-                        return;
-                    }
-
-                    try
-                    {
-                        ManualVertexEditor.Vertices = VertexOffsets.Select(item => new DX.Vector2(item.X, item.Y)).ToArray();
-
-                        // Resetting the tool will submit the texture coordinates and execute the actual command to assign the values. Need to do it this way for now, 
-                        // the information required to set the coordinates are passed in from the clipper.
-                        CurrentTool = SpriteEditTool.None;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                    }
+                    CommandContext = null;
+                    return;
                 }
 
-                /// <summary>
-                /// Function to determine if the current editor clipping coordinates can be applied to the sprite or not.
-                /// </summary>
-                /// <returns><b>true</b> if the coordinates can be applied, <b>false</b> if not.</returns>
-                private bool CanApplyClip()
+                CommandContext = SpriteClipContext;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpriteClipContext.Name));
+            }
+        }
+
+        /// Function to determine if the sprite vertex offsets can be adjusted.
+        /// </summary>
+        /// <returns><b>true</b> if the vertices can be adjusted, <b>false</b> if not.</returns>
+        private bool CanSpriteVertexOffset() => (Texture != null) && ((CommandContext == null) || (CommandContext == SpriteVertexEditContext)) && (CurrentPanel == null);
+
+        /// <summary>
+        /// Function to activate the sprite vertex editing functionality.
+        /// </summary>
+        private void DoSpriteVertexOffset()
+        {
+            try
+            {
+                if (CommandContext == SpriteVertexEditContext)
                 {
-                    if (((CurrentTool != SpriteEditTool.SpriteClip) && (CurrentTool != SpriteEditTool.SpritePick))
-                        || ((CurrentPanel != null) && (CurrentPanel != SpritePickMaskEditor))
-                        || (Texture == null) || (ManualRectangleEditor == null))
-                    {
-                        return false;
-                    }
-
-                    DX.Rectangle oldCoordinates = Texture.ToPixel(TextureCoordinates);
-                    var newCoordinates = ManualRectangleEditor.Rectangle.ToRectangle();
-
-                    return (!newCoordinates.IsEmpty)
-                        && ((!oldCoordinates.Equals(ref newCoordinates)) || (ArrayIndex != ManualRectangleEditor.TextureArrayIndex))
-                        && (ManualRectangleEditor.TextureArrayIndex >= 0)
-                        && (ManualRectangleEditor.TextureArrayIndex < Texture.Texture.ArrayCount);
+                    CommandContext = null;
+                    return;
                 }
 
-                /// <summary>
-                /// Function to apply the clipping coordinates to the sprite.
-                /// </summary>
-                private void DoApplyClip()
+                CommandContext = SpriteVertexEditContext;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpriteVertexEditContext.Name));
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the color editor panel can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if the color editor panel can be shown, <b>false</b> if not.</returns>
+        private bool CanShowColorEditor() => (Texture != null) && (CommandContext == null) && (CurrentPanel == null);
+
+        /// <summary>
+        /// Function to show or hide the sprite color editor.
+        /// </summary>
+        private void DoShowSpriteColorEditor()
+        {
+            try
+            {
+                ColorEditor.OriginalSpriteColor = ColorEditor.SpriteColor = _sprite.CornerColors;
+                CurrentPanel = ColorEditor;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the anchor editor panel can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if the anchor editor can be shown, or <b>false</b> if not.</returns>
+        private bool CanShowAnchorEditor() => (Texture != null) && (CommandContext == null) && (CurrentPanel == null);
+
+        /// <summary>
+        /// Function to show or hide the sprite anchor editor.
+        /// </summary>
+        private void DoShowSpriteAnchorEditor()
+        {
+            try
+            {
+                CurrentPanel = AnchorEditor;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the sprite texture wrapping editor panel can be shown.
+        /// </summary>
+        /// <returns><b>true</b> if the texture wrapping editor panel can be shown, <b>false</b> if not.</returns>
+        private bool CanShowWrappingEditor() => (Texture != null) && (CommandContext == null) && (CurrentPanel == null);
+
+        /// <summary>
+        /// Function to show or hide the sprite texture wrapping editor.
+        /// </summary>
+        private void DoShowWrappingEditor()
+        {
+            try
+            {
+                WrappingEditor.CurrentSampler = SamplerState;
+                CurrentPanel = WrappingEditor;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the changes to sprite texture wrapping can be committed back to the sprite.
+        /// </summary>
+        /// <returns><b>true</b> if the changes can be committed, <b>false</b> if not.</returns>
+        private bool CanCommitWrappingChange() => ((WrappingEditor != null) && (Texture != null) 
+            && ((SamplerState.WrapU != WrappingEditor.HorizontalWrapping)
+                 || (SamplerState.WrapV != WrappingEditor.VerticalWrapping)
+                 || (!SamplerState.BorderColor.Equals(WrappingEditor.BorderColor))));
+
+        /// <summary>
+        /// Function to commit the texture wrapping changes back to the sprite.
+        /// </summary>
+        private void DoCommitWrappingChange()
+        {
+            bool SetWrapping(GorgonSamplerState state)
+            {
+                try
                 {
-                    try
-                    {
-                        bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<DX.Vector3> vertexOffsets)
-                        {
-                            try
-                            {
-                                ManualRectangleEditor.IsActive = false;
+                    _sprite.TextureSampler = state == GorgonSamplerState.Default ? null : state;
 
-                                TextureCoordinates = Texture.ToTexel(coordinates.ToRectangle());
-                                Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
-                                ArrayIndex = index;
-                                VertexOffsets = vertexOffsets;
+                    NotifyPropertyChanged(nameof(SamplerState));
 
-                                ContentState = ContentState.Modified;
-
-                                return true;
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                                return false;
-                            }
-                        }
-
-                        Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
-                        {
-                            SetTextureCoordinates(undoArgs.TextureCoordinates, undoArgs.ArrayIndex, undoArgs.VertexOffset);
-                            return Task.CompletedTask;
-                        }
-
-                        Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
-                        {
-                            SetTextureCoordinates(redoArgs.TextureCoordinates, redoArgs.ArrayIndex, redoArgs.VertexOffset);
-                            return Task.CompletedTask;
-                        }
-
-                        var texCoordUndoArgs = new SpriteUndoArgs
-                        {
-                            TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
-                            ArrayIndex = ArrayIndex,
-                            VertexOffset = _sprite.CornerOffsets.ToArray()
-                        };
-                        var texCoordRedoArgs = new SpriteUndoArgs
-                        {
-                            TextureCoordinates = ManualRectangleEditor.Rectangle,
-                            ArrayIndex = ManualRectangleEditor.TextureArrayIndex,
-                            VertexOffset = new DX.Vector3[_sprite.CornerOffsets.Count]
-                        };
-
-                        if (!SetTextureCoordinates(texCoordRedoArgs.TextureCoordinates, texCoordRedoArgs.ArrayIndex, texCoordRedoArgs.VertexOffset))
-                        {
-                            return;
-                        }
-
-                        CurrentTool = SpriteEditTool.None;
-
-                        _undoService.Record(Resources.GORSPR_UNDO_DESC_CLIP, UndoAction, RedoAction, texCoordUndoArgs, texCoordRedoArgs);
-                        NotifyPropertyChanged(nameof(UndoCommand));
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                    }
+                    ContentState = ContentState.Modified;
+                    CurrentPanel = null;
+                    return true;
                 }
-
-                /// <summary>
-                /// Function to cancel the clipping coordinate editing.
-                /// </summary>
-                private void DoCancelClip()
+                catch (Exception ex)
                 {
-                    if (ManualRectangleEditor == null)
-                    {
-                        return;
-                    }
-
-                    try
-                    {
-                        ManualRectangleEditor.Rectangle = Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
-                        ManualRectangleEditor.TextureArrayIndex = ArrayIndex;
-
-                        // Resetting the tool will submit the texture coordinates and execute the actual command to assign the values. Need to do it this way for now, 
-                        // the information required to set the coordinates are passed in from the clipper.
-                        CurrentTool = SpriteEditTool.None;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                    }
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
                 }
+            }
 
-                /// <summary>
-                /// Function to determine if the sprite dimensions can be set to the full size of the texture or not.
-                /// </summary>
-                /// <returns><b>true</b> if the dimensions can be set, <b>false</b> if not.</returns>
-                private bool CanSetFullSize() => (CurrentTool == SpriteEditTool.SpriteClip)
-                    && (CurrentPanel == null)
-                    && (Texture != null)
-                    && (ManualRectangleEditor != null)
-                    && (!ManualRectangleEditor.IsFixedSize)
-                    && (!ManualRectangleEditor.Rectangle.Equals(new DX.RectangleF(0, 0, Texture.Width, Texture.Height)));
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetWrapping(undoArgs.SamplerState);
+                return Task.CompletedTask;
+            }
 
-                /// <summary>
-                /// Function to set the editing texture coordinates to the full size of the texture.
-                /// </summary>
-                private void DoSetFullSize()
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetWrapping(redoArgs.SamplerState);
+                return Task.CompletedTask;
+            }
+
+            var wrapUndoArgs = new SpriteUndoArgs
+            {
+                SamplerState = SamplerState
+            };
+
+            var wrapRedoArgs = new SpriteUndoArgs
+            {
+                SamplerState = WrappingEditor.CurrentSampler
+            };
+
+            if (!SetWrapping(wrapRedoArgs.SamplerState))
+            {
+                return;
+            }
+
+            _contentServices.UndoService.Record(Resources.GORSPR_UNDO_DESC_WRAP, UndoAction, RedoAction, wrapUndoArgs, wrapRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>
+        /// Function to determine if the current anchor value can be comitted.
+        /// </summary>
+        /// <returns><b>true</b> if the anchor value can be comitted, <b>false</b> if not.</returns>
+        private bool CanCommitAnchorChange()
+        {
+            if ((AnchorEditor == null) || (Texture == null))
+            {
+                return false;
+            }
+
+            var halfSprite = new DX.Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
+            DX.Vector2 anchorPosition = new DX.Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X, 
+                                                       _sprite.Anchor.Y * Size.Height - halfSprite.Y).Truncate();
+            return (!AnchorEditor.Anchor.Equals(ref anchorPosition));
+        }
+
+        /// <summary>
+        /// Function called to change the anchor value of the sprite.
+        /// </summary>
+        private void DoCommitAnchorChange()
+        {
+            var halfSprite = new DX.Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
+
+            bool SetAnchor(DX.Vector2 anchor)
+            {
+                try
                 {
-                    try
-                    {
-                        ManualRectangleEditor.Rectangle = new DX.RectangleF(0, 0, Texture.Width, Texture.Height);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                    }
+                    Anchor = anchor;
+                    ContentState = ContentState.Modified;
+
+                    CurrentPanel = null;
+
+                    return true;
                 }
-
-                /// <summary>
-                /// Function to determine if the sprite picker can activate or not.
-                /// </summary>
-                /// <returns><b>true</b> if it can activate, <b>false</b> if not.</returns>
-                private bool CanSpritePick() => ((CurrentTool == SpriteEditTool.None) || (CurrentTool == SpriteEditTool.SpritePick))
-                                                    && (ImageData != null)
-                                                    && (ImageData.Format == BufferFormat.R8G8B8A8_UNorm)
-                                                    && (CurrentPanel == null);
-
-                /// <summary>
-                /// Function to activate (or deactivate) the sprite picker tool.
-                /// </summary>
-                private void DoSpritePick()
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        if (CurrentTool == SpriteEditTool.SpritePick)
-                        {
-                            CurrentTool = SpriteEditTool.None;
-                            return;
-                        }
-
-                        // Let the user know that performance may be an issue here with a large texture (32 bit 4096x4096 image should be around 67 MB).
-                        if ((Settings.ShowImageSizeWarning) && (ImageData.Buffers[0, ArrayIndex].Data.SizeInBytes > 67108864))
-                        {
-                            MessageDisplay.ShowWarning(string.Format(Resources.GORSPR_WRN_LARGE_IMAGE, ImageData.Width, ImageData.Height));
-                        }
-
-                        CurrentTool = SpriteEditTool.SpritePick;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpriteEditTool.SpritePick));
-                    }
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
                 }
+            }
 
-                /// <summary>
-                /// Function to determine if a sprite can be clipped.
-                /// </summary>
-                /// <returns><b>true</b> if the sprite can be clipped, <b>false</b> if not.</returns>
-                private bool CanSpriteClip() => ((CurrentTool == SpriteEditTool.None) || (CurrentTool == SpriteEditTool.SpriteClip))
-                                                    && (Texture != null)
-                                                    && (CurrentPanel == null);
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetAnchor(undoArgs.Anchor);
+                return Task.CompletedTask;
+            }
 
-                /// <summary>
-                /// Function to activate (or deactivate) the sprite clipper tool.
-                /// </summary>
-                private void DoSpriteClip()
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetAnchor(redoArgs.Anchor);
+                return Task.CompletedTask;
+            }
+                        
+            var anchorUndoArgs = new SpriteUndoArgs
+            {
+                Anchor = _sprite.Anchor
+            };
+
+            var anchorRedoArgs = new SpriteUndoArgs
+            {
+                Anchor = new DX.Vector2((AnchorEditor.Anchor.X + halfSprite.X) / Size.Width,
+                                        (AnchorEditor.Anchor.Y + halfSprite.Y) / Size.Height)
+            };
+
+            if (!SetAnchor(anchorRedoArgs.Anchor))
+            {
+                return;
+            }
+
+            _contentServices.UndoService.Record(Resources.GORSPR_UNDO_DESC_ANCHOR, UndoAction, RedoAction, anchorUndoArgs, anchorRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
+
+        /// <summary>
+        /// Function to determine if a texture filter can be set on the sprite or not.
+        /// </summary>
+        /// <param name="state">The sampler state.</param>
+        /// <returns><b>true</b> if the filter can be set, <b>false</b> if not.</returns>
+        private bool CanSetTextureFilter(SampleFilter state) => (CurrentPanel == null) && (CommandContext == null);
+
+        /// <summary>
+        /// Function to set the texture sampler filter on the sprite.
+        /// </summary>
+        /// <param name="filter">The filter to apply.</param>
+        private void DoSetTextureFilter(SampleFilter filter)
+        {
+            bool SetState(GorgonSamplerState samplerState)
+            {
+                try
                 {
-                    try
-                    {
-                        if (CurrentTool == SpriteEditTool.SpriteClip)
-                        {
-                            CurrentTool = SpriteEditTool.None;
-                            return;
-                        }
+                    _sprite.TextureSampler = samplerState;
 
-                        CurrentTool = SpriteEditTool.SpriteClip;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpriteEditTool.SpriteClip));
-                    }
+                    NotifyPropertyChanged(nameof(SamplerState));
+                    NotifyPropertyChanged(nameof(IsPixellated));
+
+                    ContentState = ContentState.Modified;
+                    return true;
                 }
-
-                /// <summary>
-                /// Function to determine if the sprite vertex offsets can be adjusted.
-                /// </summary>
-                /// <returns><b>true</b> if the vertices can be adjusted, <b>false</b> if not.</returns>
-                private bool CanSpriteVertexOffset() => (Texture != null) && ((CurrentTool == SpriteEditTool.None) || (CurrentTool == SpriteEditTool.CornerResize)) && (CurrentPanel == null);
-
-                /// <summary>
-                /// Function to activate the sprite vertex editing functionality.
-                /// </summary>
-                private void DoSpriteVertexOffset()
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        if (CurrentTool == SpriteEditTool.CornerResize)
-                        {
-                            CurrentTool = SpriteEditTool.None;
-                            return;
-                        }
-
-                        CurrentTool = SpriteEditTool.CornerResize;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpriteEditTool.CornerResize));
-                    }
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
+                    return false;
                 }
+            }
 
-                /// <summary>
-                /// Function to determine if manual clipping rectangle can be toggled.
-                /// </summary>
-                /// <returns><b>true</b> if it can be toggled, <b>false</b> if not.</returns>
-                private bool CanToggleManualClipRect() => CurrentTool == SpriteEditTool.SpriteClip;
+            Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
+            {
+                SetState(undoArgs.SamplerState);
+                return Task.CompletedTask;
+            }
 
-                /// <summary>
-                /// Function to toggle the manual clipping rectangle interface.
-                /// </summary>
-                private void DoToggleManualClipRect()
-                {
-                    try
+            Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
+            {
+                SetState(redoArgs.SamplerState);
+                return Task.CompletedTask;
+            }
+
+            GorgonSamplerState newState = null;
+
+            switch (filter)
+            {
+                case SampleFilter.MinMagMipPoint:
+                    if ((SamplerState == GorgonSamplerState.Default) || (SamplerState == null))
                     {
-                        ManualRectangleEditor.IsActive = !ManualRectangleEditor.IsActive;
+                        newState = GorgonSamplerState.PointFiltering;
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Log.Print("[ERROR] Could not toggle the manual input system.", LoggingLevel.Simple);
-                        Log.LogException(ex);
+                        newState = _contentServices.SampleStateBuilder.ResetTo(SamplerState)
+                                                                      .Filter(SampleFilter.MinMagMipPoint)
+                                                                      .Build();
                     }
-                }
+                    break;
+            }                                  
 
-                /// <summary>
-                /// Function to determine if manual vertex editing can be toggled.
-                /// </summary>
-                /// <returns><b>true</b> if it can be toggled, <b>false</b> if not.</returns>
-                private bool CanToggleManualVertexEdit() => (CurrentTool == SpriteEditTool.CornerResize);
+            var anchorUndoArgs = new SpriteUndoArgs
+            {
+                SamplerState = SamplerState
+            };
 
-                /// <summary>
-                /// Function to toggle the manual vertex editing interface.
-                /// </summary>
-                private void DoToggleManualVertexEdit()
-                {
-                    try
-                    {
-                        ManualVertexEditor.IsActive = !ManualVertexEditor.IsActive;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Print("[ERROR] Could not toggle the manual input system.", LoggingLevel.Simple);
-                        Log.LogException(ex);
-                    }
-                }
+            var anchorRedoArgs = new SpriteUndoArgs
+            {
+                SamplerState = newState
+            };
 
-                /// <summary>
-                /// Function to determine if the sprite picker mask color editor panel can be shown.
-                /// </summary>
-                /// <returns><b>true</b> if the color editor panel can be shown, <b>false</b> if not.</returns>
-                private bool CanShowPickMaskEditor() => (Texture != null) && (CurrentTool == SpriteEditTool.SpritePick) && (CurrentPanel == null);
+            if (!SetState(newState))
+            {
+                return;
+            }
 
-                /// <summary>
-                /// Function to show or hide the sprite picker mask color editor.
-                /// </summary>
-                private void DoShowPickMaskEditor()
-                {
-                    try
-                    {
-                        CurrentPanel = SpritePickMaskEditor;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                    }
-                }
-
-                /// <summary>
-                /// Function to determine if the color editor panel can be shown.
-                /// </summary>
-                /// <returns><b>true</b> if the color editor panel can be shown, <b>false</b> if not.</returns>
-                private bool CanShowColorEditor() => (Texture != null) && (CurrentTool == SpriteEditTool.None) && (CurrentPanel == null);
-
-                /// <summary>
-                /// Function to show or hide the sprite color editor.
-                /// </summary>
-                private void DoShowSpriteColorEditor()
-                {
-                    try
-                    {
-                        CurrentTool = SpriteEditTool.None;
-                        ColorEditor.OriginalSpriteColor = ColorEditor.SpriteColor = _sprite.CornerColors;
-                        CurrentPanel = ColorEditor;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                    }
-                }
-
-                /// <summary>
-                /// Function to determine if the anchor editor panel can be shown.
-                /// </summary>
-                /// <returns><b>true</b> if the anchor editor can be shown, or <b>false</b> if not.</returns>
-                private bool CanShowAnchorEditor() => (Texture != null) && (CurrentTool == SpriteEditTool.None) && (CurrentPanel == null);
-
-                /// <summary>
-                /// Function to show or hide the sprite anchor editor.
-                /// </summary>
-                private void DoShowSpriteAnchorEditor()
-                {
-                    try
-                    {
-                        CurrentTool = SpriteEditTool.None;
-                        AnchorEditor.Bounds = new DX.RectangleF(0, 0, _sprite.Size.Width, _sprite.Size.Height);
-                        AnchorEditor.AnchorPosition = new DX.Vector2(_sprite.Anchor.X * _sprite.Size.Width, _sprite.Anchor.Y * _sprite.Size.Height);
-                        CurrentPanel = AnchorEditor;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                    }
-                }
-
-                /// <summary>
-                /// Function to determine if the sprite texture wrapping editor panel can be shown.
-                /// </summary>
-                /// <returns><b>true</b> if the texture wrapping editor panel can be shown, <b>false</b> if not.</returns>
-                private bool CanShowWrappingEditor() => (Texture != null) && (CurrentTool == SpriteEditTool.None) && (CurrentPanel == null);
-
-                /// <summary>
-                /// Function to show or hide the sprite texture wrapping editor.
-                /// </summary>
-                private void DoShowWrappingEditor()
-                {
-                    try
-                    {
-                        CurrentPanel = WrappingEditor;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                    }
-                }
-
-                /// <summary>
-                /// Function to determine if the changes to sprite texture wrapping can be committed back to the sprite.
-                /// </summary>
-                /// <returns><b>true</b> if the changes can be committed, <b>false</b> if not.</returns>
-                private bool CanCommitWrappingChange()
-                {
-        #pragma warning disable IDE0046 // Convert to conditional expression
-                    if ((WrappingEditor == null) || (Texture == null))
-                    {
-                        return false;
-                    }
-
-                    return ((SamplerState.WrapU != WrappingEditor.HorizontalWrapping) || (SamplerState.WrapV != WrappingEditor.VerticalWrapping) || (!SamplerState.BorderColor.Equals(WrappingEditor.BorderColor)));
-        #pragma warning restore IDE0046 // Convert to conditional expression
-                }
-
-                /// <summary>
-                /// Function to commit the texture wrapping changes back to the sprite.
-                /// </summary>
-                private void DoCommitWrappingChange()
-                {
-                    bool SetWrapping(TextureWrap wrapU, TextureWrap wrapV, GorgonColor borderColor)
-                    {
-                        try
-                        {
-                            if ((SamplerState.WrapU == wrapU) && (SamplerState.WrapV == wrapV) && (SamplerState.BorderColor.Equals(in borderColor)))
-                            {
-                                return false;
-                            }
-
-                            GorgonSamplerState state = _samplerBuilder.GetSampler(SamplerState.Filter, wrapU, wrapV, borderColor);
-                            _sprite.TextureSampler = state == GorgonSamplerState.Default ? null : state;
-
-                            NotifyPropertyChanged(nameof(SamplerState));
-
-                            ContentState = ContentState.Modified;
-                            CurrentPanel = null;
-                            return true;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                            return false;
-                        }
-                    }
-
-                    Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
-                    {
-                        SetWrapping(undoArgs.HorizontalWrap, undoArgs.VerticalWrap, undoArgs.BorderColor);
-                        return Task.CompletedTask;
-                    }
-
-                    Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
-                    {
-                        SetWrapping(redoArgs.HorizontalWrap, redoArgs.VerticalWrap, redoArgs.BorderColor);
-                        return Task.CompletedTask;
-                    }
-
-                    var wrapUndoArgs = new SpriteUndoArgs
-                    {
-                        HorizontalWrap = SamplerState.WrapU,
-                        VerticalWrap = SamplerState.WrapV,
-                        BorderColor = SamplerState.BorderColor
-                    };
-
-                    var wrapRedoArgs = new SpriteUndoArgs
-                    {
-                        HorizontalWrap = WrappingEditor.HorizontalWrapping,
-                        VerticalWrap = WrappingEditor.VerticalWrapping,
-                        BorderColor = WrappingEditor.BorderColor
-                    };
-
-                    if (!SetWrapping(wrapRedoArgs.HorizontalWrap, wrapRedoArgs.VerticalWrap, wrapRedoArgs.BorderColor))
-                    {
-                        return;
-                    }
-
-                    _undoService.Record(Resources.GORSPR_UNDO_DESC_WRAP, UndoAction, RedoAction, wrapUndoArgs, wrapRedoArgs);
-                    NotifyPropertyChanged(nameof(UndoCommand));
-                }
-
-                /// <summary>
-                /// Function to determine if the current anchor value can be comitted.
-                /// </summary>
-                /// <returns><b>true</b> if the anchor value can be comitted, <b>false</b> if not.</returns>
-                private bool CanCommitAnchorChange()
-                {
-                    if ((AnchorEditor == null) || (Texture == null))
-                    {
-                        return false;
-                    }
-
-                    DX.Vector2 anchorPosition = new DX.Vector2(_sprite.Anchor.X * Size.Width, _sprite.Anchor.Y * Size.Height).Truncate();
-                    return (!AnchorEditor.AnchorPosition.Equals(ref anchorPosition));
-                }
-
-                /// <summary>
-                /// Function called to change the anchor value of the sprite.
-                /// </summary>
-                private void DoCommitAnchorChange()
-                {
-                    bool SetAnchor(DX.Vector2 anchor)
-                    {
-                        try
-                        {
-                            Anchor = new DX.Vector2(anchor.X / Size.Width, anchor.Y / Size.Height);
-                            ContentState = ContentState.Modified;
-
-                            CurrentPanel = null;
-
-                            return true;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                            return false;
-                        }
-                    }
-
-                    Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
-                    {
-                        SetAnchor(undoArgs.Anchor);
-                        return Task.CompletedTask;
-                    }
-
-                    Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
-                    {
-                        SetAnchor(redoArgs.Anchor);
-                        return Task.CompletedTask;
-                    }
-
-                    var anchorUndoArgs = new SpriteUndoArgs
-                    {
-                        Anchor = new DX.Vector2(_sprite.Anchor.X * Size.Width, _sprite.Anchor.Y * Size.Height)
-                    };
-
-                    var anchorRedoArgs = new SpriteUndoArgs
-                    {
-                        Anchor = AnchorEditor.AnchorPosition
-                    };
-
-                    if (!SetAnchor(AnchorEditor.AnchorPosition))
-                    {
-                        return;
-                    }
-
-                    _undoService.Record(Resources.GORSPR_UNDO_DESC_ANCHOR, UndoAction, RedoAction, anchorUndoArgs, anchorRedoArgs);
-                    NotifyPropertyChanged(nameof(UndoCommand));
-                }
-
-                /// <summary>
-                /// Function to determine if a texture filter can be set on the sprite or not.
-                /// </summary>
-                /// <param name="_">Not used.</param>
-                /// <returns><b>true</b> if the filter can be set, <b>false</b> if not.</returns>
-                private bool CanSetTextureFilter(SampleFilter _) => (CurrentPanel == null) && (WrappingEditor != null);
-
-                /// <summary>
-                /// Function to set the texture sampler filter on the sprite.
-                /// </summary>
-                /// <param name="filter">The filter to apply.</param>
-                private void DoSetTextureFilter(SampleFilter filter)
-                {
-                    bool SetAnchor(SampleFilter samplerState)
-                    {
-                        try
-                        {
-                            if (SamplerState.Filter == filter)
-                            {
-                                return false;
-                            }
-
-                            GorgonSamplerState state = _samplerBuilder.GetSampler(filter, SamplerState.WrapU, SamplerState.WrapV, SamplerState.BorderColor);
-                            _sprite.TextureSampler = state == GorgonSamplerState.Default ? null : state;
-
-                            NotifyPropertyChanged(nameof(SamplerState));
-                            NotifyPropertyChanged(nameof(IsPixellated));
-
-                            ContentState = ContentState.Modified;
-                            return true;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_UPDATING);
-                            return false;
-                        }
-                    }
-
-                    Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken)
-                    {
-                        SetAnchor(undoArgs.Filter);
-                        return Task.CompletedTask;
-                    }
-
-                    Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken)
-                    {
-                        SetAnchor(redoArgs.Filter);
-                        return Task.CompletedTask;
-                    }
-
-                    var anchorUndoArgs = new SpriteUndoArgs
-                    {
-                        Filter = _sprite.TextureSampler == null ? SampleFilter.MinMagMipLinear : _sprite.TextureSampler.Filter
-                    };
-
-                    var anchorRedoArgs = new SpriteUndoArgs
-                    {
-                        Filter = filter
-                    };
-
-                    if (!SetAnchor(anchorRedoArgs.Filter))
-                    {
-                        return;
-                    }
-
-                    _undoService.Record(Resources.GORSPR_UNDO_DESC_SAMPLER, UndoAction, RedoAction, anchorUndoArgs, anchorRedoArgs);
-                    NotifyPropertyChanged(nameof(UndoCommand));
-                }*/
+            _contentServices.UndoService.Record(Resources.GORSPR_UNDO_DESC_SAMPLER, UndoAction, RedoAction, anchorUndoArgs, anchorRedoArgs);
+            NotifyPropertyChanged(nameof(UndoCommand));
+        }
 
         /// <summary>Handles the PropertyChanged event of the CurrentPanel control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -1787,19 +1606,118 @@ namespace Gorgon.Editor.SpriteEditor
                     break;
             }
         }
-        /*
+
+        /// <summary>Function to initialize the content.</summary>
+        /// <param name="injectionParameters">Common view model dependency injection parameters from the application.</param>
+        protected override void OnInitialize(SpriteContentParameters injectionParameters)
+        {
+            base.OnInitialize(injectionParameters);
+
+            Settings = injectionParameters.Settings;
+            _sprite = injectionParameters.Sprite;
+            _contentServices = injectionParameters.ContentServices;
+            _spriteCodec = injectionParameters.SpriteCodec;
+            _originalTexture = injectionParameters.SpriteTextureFile;
+            SpriteClipContext = injectionParameters.SpriteClipContext;
+            SpritePickContext = injectionParameters.SpritePickContext;
+            SpriteVertexEditContext = injectionParameters.SpriteVertexEditContext;
+            ColorEditor = injectionParameters.ColorEditor;
+            AnchorEditor = injectionParameters.AnchorEditor;
+            WrappingEditor = injectionParameters.TextureWrappingEditor;
+
+            SetupTextureFile(File, injectionParameters.SpriteTextureFile);
+
+            SpriteClipContext.ApplyCommand = new EditorCommand<object>(DoApplyClip, CanApplyClip);
+            SpritePickContext.ApplyCommand = new EditorCommand<object>(DoApplyPick, CanApplyPick);
+            SpriteVertexEditContext.ApplyCommand = new EditorCommand<object>(DoCommitVertexOffsets, CanCommitVertexOffsets);
+            ColorEditor.OkCommand = new EditorCommand<object>(DoCommitColorChange, CanCommitColorChange);
+            AnchorEditor.OkCommand = new EditorCommand<object>(DoCommitAnchorChange, CanCommitAnchorChange);
+            WrappingEditor.OkCommand = new EditorCommand<object>(DoCommitWrappingChange, CanCommitWrappingChange);
+        }
+
+        /// <summary>Function called when the associated view is loaded.</summary>
+        public override void OnLoad()
+        {
+            base.OnLoad();
+
+            // Mark this file as open in the editor.
+            if (_textureFile != null)
+            {
+                _textureFile.IsOpen = true;
+            }
+
+            SpriteClipContext?.OnLoad();
+            SpritePickContext?.OnLoad();
+            SpriteVertexEditContext?.OnLoad();
+            ColorEditor?.OnLoad();
+            AnchorEditor?.OnLoad();
+            WrappingEditor?.OnLoad();
+        }
+
+        /// <summary>Function called when the associated view is unloaded.</summary>
+        public override void OnUnload()
+        {
+            WrappingEditor?.OnUnload();
+            AnchorEditor?.OnUnload();
+            ColorEditor?.OnUnload();
+            SpriteVertexEditContext?.OnUnload();
+            SpritePickContext?.OnUnload();
+            SpriteClipContext?.OnUnload();
+
+            if (CurrentPanel != null)
+            {
+                CurrentPanel = null;
+            }
+
+            if (SpriteClipContext != null)
+            {
+                SpriteClipContext.ApplyCommand = null;
+            }
+
+            if (SpritePickContext != null)
+            {
+                SpritePickContext.ApplyCommand = null;
+            }
+
+            CurrentPanel = null;
+
+            if (AnchorEditor != null)
+            {
+                AnchorEditor.OkCommand = null;
+            }
+
+            if (ColorEditor != null)
+            {
+                ColorEditor.OkCommand = null;
+            }
+
+            CommandContext = null;
+
+            // If a texture was assigned, but not saved, then remove the link.
+            if (_originalTexture != _textureFile)
+            {
+                File.UnlinkContent(_textureFile);
+                File.LinkContent(_originalTexture);
+            }
+
+            SetupTextureFile(File, null);
+            _sprite?.Texture?.Dispose();
+
+            base.OnUnload();
+        }
+
         /// <summary>Function to determine the action to take when this content is closing.</summary>
         /// <returns>
         ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
         /// <remarks>PlugIn authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
-        protected override async Task<bool> OnCloseContentTask()
+        protected override async Task<bool> OnCloseContentTaskAsync()
         {
             if (ContentState == ContentState.Unmodified)
             {
                 return true;
             }
 
-            MessageResponse response = MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_CLOSE, File.Name), allowCancel: true);
+            MessageResponse response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_CLOSE, File.Name), allowCancel: true);
 
             switch (response)
             {
@@ -1811,237 +1729,6 @@ namespace Gorgon.Editor.SpriteEditor
                 default:
                     return true;
             }
-        }*/
-
-        /// <summary>Function to initialize the content.</summary>
-        /// <param name="injectionParameters">Common view model dependency injection parameters from the application.</param>
-        protected override void OnInitialize(SpriteContentParameters injectionParameters)
-        {
-            base.OnInitialize(injectionParameters);
-
-            Settings = injectionParameters.Settings;
-            _factory = injectionParameters.Factory;
-            _sprite = injectionParameters.Sprite;
-            _undoService = injectionParameters.UndoService;
-            _contentFiles = injectionParameters.ContentFileManager;
-            _spriteCodec = injectionParameters.SpriteCodec;
-            _textureService = injectionParameters.TextureService;
-            _originalTexture = injectionParameters.SpriteTextureFile;
-
-            SetupTextureFile(injectionParameters.SpriteTextureFile);
-
-            /*_samplerBuilder = injectionParameters.SamplerBuilder;
-            ManualRectangleEditor = injectionParameters.ManualRectangleEditor;
-            ManualVertexEditor = injectionParameters.ManualVertexEditor;
-            SpritePickMaskEditor = injectionParameters.SpritePickMaskEditor;
-            ColorEditor = injectionParameters.ColorEditor;
-            AnchorEditor = injectionParameters.AnchorEditor;
-            WrappingEditor = injectionParameters.SpriteWrappingEditor;            
-
-            
-
-            ColorEditor.OkCommand = new EditorCommand<object>(DoCommitColorChange, CanCommitColorChange);
-            AnchorEditor.OkCommand = new EditorCommand<object>(DoCommitAnchorChange, CanCommitAnchorChange);
-            WrappingEditor.OkCommand = new EditorCommand<object>(DoCommitWrappingChange, CanCommitWrappingChange);
-
-            ManualRectangleEditor.ApplyCommand = new EditorCommand<object>(DoApplyClip, CanApplyClip);
-            ManualRectangleEditor.CancelCommand = new EditorCommand<object>(DoCancelClip);
-            ManualRectangleEditor.SetFullSizeCommand = new EditorCommand<object>(DoSetFullSize, CanSetFullSize);
-
-            ManualVertexEditor.ApplyCommand = new EditorCommand<object>(DoApplyVertexEdit, CanApplyVertexEdit);
-            ManualVertexEditor.CancelCommand = new EditorCommand<object>(DoCancelVertexEdit);*/
-        }
-
-        /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
-        {
-            base.OnLoad();
-            
-            // Mark this file as open in the editor.
-            if (_textureFile != null)
-            {
-                _textureFile.IsOpen = true;
-            }            
-        }
-
-        /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
-        {
-            CurrentPanel = null;
-            /*
-            if (ColorEditor != null)
-            {
-                ColorEditor.OkCommand = null;
-            }
-            */
-            CurrentTool = SpriteEditTool.None;
-            
-            // If a texture was assigned, but not saved, then remove the link.
-            // TODO: When undoing this, we will need to reset the linkages at each undo level (store in params).
-            if (_originalTexture != _textureFile)
-            {
-                File.UnlinkContent(_textureFile);
-                File.LinkContent(_originalTexture);
-            }
-
-            _imageData?.Dispose();
-
-            SetupTextureFile(null);
-            _sprite?.Texture?.Dispose();
-            
-            base.OnUnload();
-        }
-        /*
-        /// <summary>Function to determine if an object can be dropped.</summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <returns>
-        ///   <b>true</b> if the data can be dropped, <b>false</b> if not.</returns>
-        public bool CanDrop(OLDE_IContentFileDragData dragData)
-        {
-            // Don't open the same file, it's already loaded, or is not a content image, or a tool is active.            
-            if (((_textureFile != null) && (string.Equals(_textureFile.Path, dragData.File.Path, StringComparison.OrdinalIgnoreCase)))
-                || (!_textureService.IsContentImage(dragData.File))
-                || (_currentTool != SpriteEditTool.None)
-                || (CurrentPanel != null))
-            {
-                dragData.Cancel = true;
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>Function to drop the payload for a drag drop operation.</summary>
-        /// <param name="dragData">The drag/drop data.</param>
-        /// <param name="afterDrop">[Optional] The method to execute after the drop operation is completed.</param>
-        public async void Drop(OLDE_IContentFileDragData dragData, Action afterDrop = null)
-        {
-            SpriteUndoArgs textureUndoArgs = null;
-            SpriteUndoArgs textureRedoArgs = null;
-
-            async Task<bool> AssignTextureAsync(SpriteUndoArgs args)
-            {
-                OLDE_IContentFile newTextureFile = args.CurrentTexture;
-
-                ShowWaitPanel(string.Format(Resources.GORSPR_TEXT_LOADING_IMAGE, newTextureFile.Path));
-
-                try
-                {
-
-                    GorgonTexture2DView texture;
-                    IGorgonImageInfo imageInfo;
-
-                    imageInfo = _textureService.GetImageMetadata(newTextureFile);
-
-                    if (imageInfo == null)
-                    {
-                        MessageDisplay.ShowError(string.Format(Resources.GORSPR_ERR_NOT_AN_IMAGE, newTextureFile.Path));
-                        return false;
-                    }
-
-                    if ((imageInfo.ImageType == ImageType.Image1D) || (imageInfo.ImageType == ImageType.Image3D))
-                    {
-                        MessageDisplay.ShowError(Resources.GORSPR_ERR_NOT_2D_IMAGE);
-                        return false;
-                    }
-
-                    texture = await _textureService.LoadTextureAsync(newTextureFile);
-
-                    Texture?.Dispose();
-                    Texture = texture;
-
-                    // Copy the image data.
-                    await ExtractImageDataAsync();
-
-                    _textureFile?.UnlinkContent(File);
-
-                    SetupTextureFile(newTextureFile);
-
-                    _textureFile.LinkContent(File);
-
-                    if (File.Metadata.Attributes.ContainsKey(CommonEditorConstants.IsNewAttr))
-                    {
-                        Size = new DX.Size2F(texture.Width, texture.Height);
-                        File.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
-                    }
-                    else
-                    {
-                        DX.Rectangle updatedSize = texture.ToPixel(TextureCoordinates);
-                        // Readjust the size to change with the texture coordinates.
-                        Size = new DX.Size2F(updatedSize.Width, updatedSize.Height);
-                    }
-
-                    // Store the sprite array index as this may change based on the texture array count.
-                    if (args.ArrayIndex == -1)
-                    {
-                        args.ArrayIndex = ArrayIndex.Min(texture.Texture.ArrayCount - 1);
-                    }
-
-                    ArrayIndex = args.ArrayIndex;
-                    NotifyPropertyChanged(nameof(ImageData));
-                }
-                catch (Exception ex)
-                {
-                    MessageDisplay.ShowError(ex, Resources.GORSPR_ERR_TEXTURE_REPLACE);
-                    return false;
-                }
-                finally
-                {
-                    HideWaitPanel();
-                }
-
-                return true;
-            }
-
-            async Task UndoAction(SpriteUndoArgs undoArgs, CancellationToken cancelToken) => await AssignTextureAsync(undoArgs);
-
-            async Task RedoAction(SpriteUndoArgs redoArgs, CancellationToken cancelToken) => await AssignTextureAsync(redoArgs);
-
-            textureUndoArgs = new SpriteUndoArgs
-            {
-                CurrentTexture = _textureFile,
-                ArrayIndex = ArrayIndex
-            };
-            textureRedoArgs = new SpriteUndoArgs
-            {
-                CurrentTexture = dragData.File,
-                ArrayIndex = -1
-            };
-
-            if (!await AssignTextureAsync(textureRedoArgs))
-            {
-                return;
-            }
-
-            // If we initially don't have a texture, then don't record the action.
-            if (textureUndoArgs?.CurrentTexture != null)
-            {
-                _undoService.Record(Resources.GORSPR_UNDO_DESC_TEXTURE, UndoAction, RedoAction, textureUndoArgs, textureRedoArgs);
-                // Need to call this so the UI can register our updated undo stack.
-                NotifyPropertyChanged(nameof(UndoCommand));
-            }
-        }*/
-
-        /// <summary>
-        /// Function to extract the image data from a sprite.
-        /// </summary>
-        /// <returns>A task for asynchronous operation.</returns>
-        public async Task ExtractImageDataAsync()
-        {
-            /*IGorgonImage image = Interlocked.Exchange(ref _imageData, null);
-            image?.Dispose();
-
-            if (_sprite.Texture == null)
-            {
-                return;
-            }
-
-            image = await _textureService.GetSpriteTextureImageDataAsync(_sprite.Texture);
-
-            Interlocked.Exchange(ref _imageData, image);
-
-            NotifyPropertyChanged(nameof(ImageData));*/
-            await Task.CompletedTask;
         }
         #endregion
 
@@ -2052,20 +1739,16 @@ namespace Gorgon.Editor.SpriteEditor
             SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveSpriteTask, CanSaveSprite);
             UndoCommand = new EditorCommand<object>(DoUndoAsync, CanUndo);
             RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
-            /*SpritePickCommand = new EditorCommand<object>(DoSpritePick, CanSpritePick);
             SpriteClipCommand = new EditorCommand<object>(DoSpriteClip, CanSpriteClip);
-            NewSpriteCommand = new EditorCommand<object>(DoCreateSprite, CanCreateSprite);
-            ToggleManualClipRectCommand = new EditorCommand<object>(DoToggleManualClipRect, CanToggleManualClipRect);
-            ToggleManualVertexEditCommand = new EditorCommand<object>(DoToggleManualVertexEdit, CanToggleManualVertexEdit);
+            SpritePickCommand = new EditorCommand<object>(DoSpritePick, CanSpritePick);
+            NewSpriteCommand = new EditorAsyncCommand<object>(DoCreateSpriteAsync, CanCreateSprite);
             ShowColorEditorCommand = new EditorCommand<object>(DoShowSpriteColorEditor, CanShowColorEditor);
-            ShowAnchorEditorCommand = new EditorCommand<object>(DoShowSpriteAnchorEditor, CanShowAnchorEditor);
-            ShowSpritePickMaskEditorCommand = new EditorCommand<object>(DoShowPickMaskEditor, CanShowPickMaskEditor);
             SpriteVertexOffsetCommand = new EditorCommand<object>(DoSpriteVertexOffset, CanSpriteVertexOffset);
-            SetVertexOffsetsCommand = new EditorCommand<IReadOnlyList<DX.Vector3>>(DoCommitVertexOffsets, CanCommitVertexOffsets);
-            SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);
-            ShowWrappingEditorCommand = new EditorCommand<object>(DoShowWrappingEditor, CanShowWrappingEditor);*/
+            ShowAnchorEditorCommand = new EditorCommand<object>(DoShowSpriteAnchorEditor, CanShowAnchorEditor);
+            ShowWrappingEditorCommand = new EditorCommand<object>(DoShowWrappingEditor, CanShowWrappingEditor);
+            SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);            
             SetTextureCommand = new EditorAsyncCommand<SetTextureArgs>(DoSetTexture, CanSetTexture);
         }
-        #endregion*/
+        #endregion
     }
 }

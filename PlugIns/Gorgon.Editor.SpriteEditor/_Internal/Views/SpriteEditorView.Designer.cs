@@ -46,23 +46,36 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (disposing)
             {
+                if (RenderWindow != null)
+                {
+                    RenderWindow.PreviewKeyDown -= PanelRenderWindow_PreviewKeyDown;
+                }
+
+                if (_ribbonForm != null)
+                {
+                    _ribbonForm.ButtonSpriteCornerManualInput.Click -= VertexEditViewer_ToggleManualInput;
+                    _ribbonForm.ButtonClipManualInput.Click -= ClipViewer_ToggleManualInput;
+                }
+
                 if (_parentForm != null)
                 {
                     _parentForm.Move -= ParentForm_Move;
                     _parentForm = null;
                 }
 
-				/*
-                _manualRectEditor.Move -= ManualInput_Move;
+                UnregisterChildPanel(typeof(SpriteTextureWrapEdit).FullName);
+                UnregisterChildPanel(typeof(SpritePickMaskEditor).FullName);
+                UnregisterChildPanel(typeof(SpriteColorEdit).FullName);
+                UnregisterChildPanel(typeof(SpriteAnchorEdit).FullName);
+
                 _manualRectEditor.ResizeEnd -= ManualInput_ResizeEnd;
                 _manualRectEditor.FormClosing -= ManualInput_ClosePanel;
-                _manualVertexEditor.Move -= ManualInput_Move;
-                _manualVertexEditor.ResizeEnd -= ManualInput_ResizeEnd;
-                _manualVertexEditor.FormClosing -= ManualInput_ClosePanel;
+                _manualVertexEditor.ResizeEnd -= ManualVertexInput_ResizeEnd;
+                _manualVertexEditor.FormClosing -= ManualVertexInput_ClosePanel;
                 
                 _manualRectEditor.Dispose();
                 _manualVertexEditor.Dispose();
-				*/                
+
                 _ribbonForm?.Dispose();
             }
 
@@ -114,7 +127,7 @@ namespace Gorgon.Editor.SpriteEditor
             // SpriteWrapping
             // 
             this.SpriteWrapping.AutoSize = true;
-            this.SpriteWrapping.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.SpriteWrapping.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.SpriteWrapping.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.SpriteWrapping.ForeColor = System.Drawing.Color.White;
             this.SpriteWrapping.Location = new System.Drawing.Point(0, 64);
@@ -127,9 +140,10 @@ namespace Gorgon.Editor.SpriteEditor
             // SpritePickMaskColor
             // 
             this.SpritePickMaskColor.AutoSize = true;
-            this.SpritePickMaskColor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.SpritePickMaskColor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.SpritePickMaskColor.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.SpritePickMaskColor.ForeColor = System.Drawing.Color.White;
+            this.SpritePickMaskColor.IsModal = false;
             this.SpritePickMaskColor.Location = new System.Drawing.Point(0, 128);
             this.SpritePickMaskColor.Name = "SpritePickMaskColor";
             this.SpritePickMaskColor.Size = new System.Drawing.Size(389, 406);
@@ -140,7 +154,7 @@ namespace Gorgon.Editor.SpriteEditor
             // SpriteColorSelector
             // 
             this.SpriteColorSelector.AutoSize = true;
-            this.SpriteColorSelector.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.SpriteColorSelector.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.SpriteColorSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.SpriteColorSelector.ForeColor = System.Drawing.Color.White;
             this.SpriteColorSelector.Location = new System.Drawing.Point(0, 32);
@@ -152,12 +166,12 @@ namespace Gorgon.Editor.SpriteEditor
             // 
             // SpriteAnchorSelector
             // 
-            this.SpriteAnchorSelector.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.SpriteAnchorSelector.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.SpriteAnchorSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.SpriteAnchorSelector.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.SpriteAnchorSelector.ForeColor = System.Drawing.Color.White;
             this.SpriteAnchorSelector.Location = new System.Drawing.Point(0, 0);
             this.SpriteAnchorSelector.Name = "SpriteAnchorSelector";
-            this.SpriteAnchorSelector.Size = new System.Drawing.Size(300, 241);
+            this.SpriteAnchorSelector.Size = new System.Drawing.Size(300, 289);
             this.SpriteAnchorSelector.TabIndex = 1;
             this.SpriteAnchorSelector.Text = "Sprite Anchor";
             this.SpriteAnchorSelector.Visible = false;

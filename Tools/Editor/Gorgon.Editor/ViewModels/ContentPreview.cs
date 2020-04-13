@@ -76,6 +76,11 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the task used for loading the image preview.
+        /// </summary>
+        public Task LoadingTask => _loadPreviewTask;
+
         /// <summary>Property to return the title for the previewed content.</summary>        
         public string Title
         {

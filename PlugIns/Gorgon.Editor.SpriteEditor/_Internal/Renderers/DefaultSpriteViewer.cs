@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -37,6 +33,7 @@ using System.Threading;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
 using Gorgon.Math;
+using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -46,6 +43,13 @@ namespace Gorgon.Editor.SpriteEditor
     internal class DefaultSpriteViewer
         : SpriteViewer
     {
+        #region Constants.
+        /// <summary>
+        /// The name of the viewer.
+        /// </summary>
+        public const string ViewerName = "DefaultSpriteViewer";
+        #endregion
+
         #region Variables.
         // Marching ants rectangle.
         private readonly IMarchingAnts _marchAnts;
@@ -54,12 +58,33 @@ namespace Gorgon.Editor.SpriteEditor
         // The sprite texture to display in the background.
         private GorgonTexture2DView _spriteTexture;
         // The sprite to render.
-        private GorgonSprite _sprite;
+        private readonly GorgonSprite _sprite;
         // The region where the sprite is located on the texture.
         private DX.RectangleF _spriteRegion;
         #endregion
 
         #region Methods.
+        /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
+        /// <param name="propertyName">The name of the property that was changed.</param>
+        /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
+        protected override void OnPropertyChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(ISpriteContent.Anchor):
+                case nameof(ISpriteContent.Size):
+                case nameof(ISpriteContent.VertexOffsets):
+                case nameof(ISpriteContent.TextureCoordinates):
+                case nameof(ISpriteContent.ArrayIndex):
+                case nameof(ISpriteContent.IsPixellated):
+                    UpdateSprite();
+                    break;
+                case nameof(ISpriteContent.VertexColors):
+                    UpdateSpriteColors();
+                    break;
+            }
+        }
+
         /// <summary>
         /// Function to update the sprite colors.
         /// </summary>
@@ -135,13 +160,13 @@ namespace Gorgon.Editor.SpriteEditor
         {
             GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
             GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;            
-            var clearRegion = DataContext.Texture.ToPixel(DataContext.TextureCoordinates).ToRectangleF();
+            var clearRegion = DataContext.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
 
             _spriteTarget.Clear(GorgonColor.BlackTransparent);
 
             Graphics.SetRenderTarget(_spriteTarget);
             Renderer.PrimitiveAlphaTestRange = null;
-            Renderer.Begin();
+            Renderer.Begin(Gorgon2DBatchState.ModulatedAlphaOverwrite);
 
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height),
                                          GorgonColor.White,
@@ -203,7 +228,7 @@ namespace Gorgon.Editor.SpriteEditor
             // So, we can just get the camera to tell us where that is.
             var spriteTopLeft = new DX.Vector3(_spriteRegion.TopLeft, 0);
             var spriteBottomRight = new DX.Vector3(_spriteRegion.BottomRight, 0);
-            var spriteAnchor = new DX.Vector3((DataContext.Anchor.X * _spriteRegion.Width) + _spriteRegion.Left, _spriteRegion.Top + (DataContext.Anchor.Y * _spriteRegion.Height), 0);
+            var spriteAnchor = new DX.Vector3((DataContext.Anchor.X * DataContext.Size.Width) + _sprite.Position.X, _sprite.Position.Y + (DataContext.Anchor.Y * DataContext.Size.Height), 0);
             Camera.Unproject(ref spriteTopLeft, out DX.Vector3 transformedTopLeft);
             Camera.Unproject(ref spriteBottomRight, out DX.Vector3 transformedBottomRight);
             Camera.Unproject(ref spriteAnchor, out DX.Vector3 transformedAnchor);
@@ -223,13 +248,14 @@ namespace Gorgon.Editor.SpriteEditor
             RenderSpriteTexture();
 
             Renderer.Begin(camera: Camera);
+
             Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
-                                                           halfRegion.Y,
-                                                           RenderRegion.Width,
-                                                           RenderRegion.Height),
+                                                            halfRegion.Y,
+                                                            RenderRegion.Width,
+                                                            RenderRegion.Height),
                                         new GorgonColor(GorgonColor.White, TextureOpacity),
                                         _spriteTexture,
-                                        new DX.RectangleF(0, 0, 1, 1),                                        
+                                        new DX.RectangleF(0, 0, 1, 1),
                                         textureSampler: GorgonSamplerState.PointFiltering);
             
             Renderer.DrawSprite(_sprite);
@@ -238,11 +264,27 @@ namespace Gorgon.Editor.SpriteEditor
             // Draw in client space.
             Renderer.Begin();
 
-            Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColor.Black);
+            Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColor.Black);            
             Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 3, transformedAnchor.Y - 3, 6, 6), GorgonColor.White);
 
             _marchAnts.Draw(marchAntsRect);
             Renderer.End();
+        }
+
+        /// <summary>Function to set the default zoom/offset for the viewer.</summary>
+        public override void DefaultZoom()
+        {
+            if (DataContext?.Texture == null)
+            {
+                return;
+            }
+                        
+            ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(_spriteRegion);
+
+            var spritePosition = (DX.Vector2)Camera.Unproject(new DX.Vector3(_spriteRegion.X + _spriteRegion.Width * 0.5f,
+                                                                             _spriteRegion.Y + _spriteRegion.Height * 0.5f, 0));
+
+            MoveTo(spritePosition, spriteZoomLevel.GetScale());
         }
         #endregion
 
@@ -253,7 +295,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The view model to assign to the renderer.</param>
         /// <param name="marchingAnts">The marching ants selection rectangle renderer.</param>
         public DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IMarchingAnts marchingAnts)
-            : base(nameof(SpriteEditTool.None), renderer, swapChain, dataContext)
+            : base(ViewerName, renderer, swapChain, dataContext)
         {
             _sprite = new GorgonSprite();
             _marchAnts = marchingAnts;

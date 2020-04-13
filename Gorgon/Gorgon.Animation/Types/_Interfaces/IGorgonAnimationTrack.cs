@@ -114,6 +114,16 @@ namespace Gorgon.Animation
         {
             get;
         }
+
+        /// <summary>
+        /// Property to set or return whether this track is enabled during animation.
+        /// </summary>
+        [JsonProperty("isEnabled")]
+        bool IsEnabled
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.

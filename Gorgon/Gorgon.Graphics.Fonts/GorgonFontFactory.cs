@@ -31,7 +31,6 @@ using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -133,12 +132,9 @@ namespace Gorgon.Graphics.Fonts
             newFonts.ExceptWith(currentFonts);
             string newFont = newFonts.FirstOrDefault();
 
-            if (string.IsNullOrWhiteSpace(newFont))
-            {
-                return null;
-            }
-
-            return _externalFonts.Families.FirstOrDefault(item => string.Equals(item.Name, newFont, StringComparison.OrdinalIgnoreCase));
+            return string.IsNullOrWhiteSpace(newFont)
+                ? null
+                : _externalFonts.Families.FirstOrDefault(item => string.Equals(item.Name, newFont, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

@@ -62,6 +62,8 @@ namespace Gorgon.Editor.UI.Controls
             // The column containing the file path.
             private readonly DataGridViewColumn _columnFile;
             #endregion
+
+            #region Methods.
             /// <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
             /// <param name="x">The first object to compare.</param>
             /// <param name="y">The second object to compare.</param>
@@ -106,7 +108,9 @@ namespace Gorgon.Editor.UI.Controls
             /// <paramref name="x" /> is greater than <paramref name="y" />.
             /// </returns>
             int IComparer.Compare(object x, object y) => Compare((DataGridViewRow)x, (DataGridViewRow)y);
+            #endregion
 
+            #region Constructor.
             /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Controls.GorgonContentFileExplorer.FileComparer"/> class.</summary>
             /// <param name="gridView">The grid view.</param>
             /// <param name="directory">The directory.</param>
@@ -119,6 +123,7 @@ namespace Gorgon.Editor.UI.Controls
                 _columnDirectoryName = directoryName;
                 _columnFile = file;
             }
+            #endregion
         }
         #endregion
 
@@ -310,6 +315,7 @@ namespace Gorgon.Editor.UI.Controls
             LabelNoFiles.Visible = false;
             GridFiles.Enabled = TextSearch.Enabled = true;
             var rows = new List<DataGridViewRow>();
+            var selected = new List<DataGridViewRow>();
 
             foreach (ContentFileExplorerDirectoryEntry dirEntry in _entries)
             {
@@ -327,6 +333,11 @@ namespace Gorgon.Editor.UI.Controls
                     _fileRowsXref[fileEntry] = row;
                     row.Cells[ColumnLocation.Index].ToolTipText = fileEntry.FullPath;
 
+                    if (fileEntry.IsSelected)
+                    {
+                        selected.Add(row);
+                    }
+
                     fileEntry.PropertyChanged += FileEntry_PropertyChanged;
                 }
 
@@ -334,6 +345,16 @@ namespace Gorgon.Editor.UI.Controls
             }
 
             GridFiles.Rows.AddRange(rows.ToArray());
+
+            foreach (DataGridViewRow row in selected)
+            {
+                row.Selected = true;
+            }
+
+            if (selected.Count > 0)
+            {
+                GridFiles.FirstDisplayedScrollingRowIndex = selected[selected.Count - 1].Index;
+            }
 
             SetCheckState();
 

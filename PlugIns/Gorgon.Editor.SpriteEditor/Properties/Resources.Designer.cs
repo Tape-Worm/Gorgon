@@ -331,6 +331,17 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The sprite &apos;{0}&apos; already exists.
+        ///
+        ///Would you like to overwrite it?.
+        /// </summary>
+        internal static string GORSPR_CONFIRM_SPRITE_EXISTS {
+            get {
+                return ResourceManager.GetString("GORSPR_CONFIRM_SPRITE_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sprite.
         /// </summary>
         internal static string GORSPR_CONTENT_TYPE {
@@ -460,6 +471,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error switching to manual input..
+        /// </summary>
+        internal static string GORSPR_ERR_MANUAL_CLIP {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_MANUAL_CLIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no codec loaded that can read the file &apos;{0}&apos;..
         /// </summary>
         internal static string GORSPR_ERR_NO_CODEC {
@@ -529,6 +549,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_ERR_SAVE_SPRITE {
             get {
                 return ResourceManager.GetString("GORSPR_ERR_SAVE_SPRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sprite &apos;{0}&apos; was not found in the file system..
+        /// </summary>
+        internal static string GORSPR_ERR_SPRITE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_SPRITE_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -625,6 +654,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_TEXT_LOADING_IMAGE {
             get {
                 return ResourceManager.GetString("GORSPR_TEXT_LOADING_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving....
+        /// </summary>
+        internal static string GORSPR_TEXT_SAVING {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_SAVING", resourceCulture);
             }
         }
         

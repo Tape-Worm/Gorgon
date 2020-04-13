@@ -27,7 +27,6 @@
 using System.Collections.Generic;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels
 {

@@ -218,7 +218,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
         /// <see cref="DefaultContentRenderer{T}.OnUnload"/> method.
         /// </remarks>
-        protected sealed override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
 
@@ -233,7 +233,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>
         /// Developers should always override this method if they've overridden the <see cref="DefaultContentRenderer{T}.OnLoad"/> method. Failure to do so can cause memory leakage.
         /// </remarks>
-        protected sealed override void OnUnload()
+        protected override void OnUnload()
         {
             base.OnUnload();
 

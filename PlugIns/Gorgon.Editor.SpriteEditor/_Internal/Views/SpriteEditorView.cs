@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -36,12 +35,10 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.Timing;
+using Gorgon.UI;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
@@ -55,40 +52,28 @@ namespace Gorgon.Editor.SpriteEditor
         #region Variables.
         // The form for the ribbon.
         private readonly FormRibbon _ribbonForm;
-        // The previous zoom setting for restoration.
-        private ZoomLevels _oldZoomLevel = ZoomLevels.ToWindow;
-        // The previous scroll setting for restoration.
-        private DX.Vector2 _oldScroll;
         // The rectangle clipping service used to capture sprite data.
         private IRectClipperService _clipperService;
         // The service used to edit the sprite vertices.
-        //private ISpriteVertexEditService _vertexEditService;
+        private SpriteVertexEditService _vertexEditService;
         // The picking service used to capture sprite data.
-        private IPickClipperService _pickService;
+        private PickClipperService _pickService;        
         // The anchor editing service.
-        //private IAnchorEditService _anchorService;
+        private SpriteAnchorEditService _anchorService;
         // Marching ants renderer.
-        private IMarchingAnts _marchAnts;
-        // Flag to indicate that the surface is dragging.
-        private bool _isDragging;
-        // The starting point of the drag operation.
-        private DX.Vector2 _dragStart;
+        private IMarchingAnts _marchAnts;        
         // Manual input for the sprite clipping rectangle.
-        //private readonly FormManualRectangleEdit _manualRectEditor;
+        private readonly FormManualRectangleEdit _manualRectEditor;
         // Manual input for the sprite vertex editing.
-        //private readonly FormManualVertexEdit _manualVertexEditor;
-        // The UI refresh timer, used to keep UI elements from updating too rapidly.
-        private readonly IGorgonTimer _uiRefreshTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerMultimedia() : new GorgonTimerQpc();
+        private readonly FormManualVertexEdit _manualVertexEditor;
         // The parent form that is hosting this control hierarchy.
         private Form _parentForm;
-        // The views to render depending on state.
-        //private readonly Dictionary<string, ISpriteContentRenderer> _renderers = new Dictionary<string, ISpriteContentRenderer>(StringComparer.OrdinalIgnoreCase);
-        // Flag to indicate that scrolling should be disabled.
-        private bool _disableScrolling;
-        // The current sprite renderer.
-        //private ISpriteContentRenderer _currentRenderer;
         // The texture for the anchor icon.
         private GorgonTexture2DView _anchorTexture;
+        // The current sprite information presenter.
+        private ISpriteInfo _spriteInfo;
+        // The current sprite texture array index updater.
+        private IArrayUpdate _arrayUpdater;
         #endregion
 
         #region Properties.
@@ -104,9 +89,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to validate the controls on the view.
         /// </summary>
-        private void ValidateControls()
+        private void ValidateButtons()
         {
             _ribbonForm.ValidateButtons();
+            _ribbonForm.ButtonZoomSprite.Enabled = (DataContext?.Texture != null) && (Renderer?.CanZoom ?? false);
             
             if (DataContext?.Texture == null)
             {
@@ -114,18 +100,12 @@ namespace Gorgon.Editor.SpriteEditor
                 LabelArrayIndex.Visible = LabelArrayIndexDetails.Visible = ButtonNextArrayIndex.Visible = ButtonPrevArrayIndex.Visible = false;
                 return;
             }
-            
-            int arrayIndex = DataContext.ArrayIndex;
-            /*
-            if (DataContext.CurrentTool != SpriteEditTool.None)
-            {
-                arrayIndex = _currentRenderer.TextureArrayIndex;
-            }*/
 
             LabelArrayIndex.Visible = LabelArrayIndexDetails.Visible = LabelSpriteInfo.Visible = true;
-            ButtonNextArrayIndex.Visible = ButtonPrevArrayIndex.Visible = DataContext.SupportsArrayChange;
-            ButtonNextArrayIndex.Enabled = (arrayIndex) < DataContext.Texture.Texture.ArrayCount - 1;
-            ButtonPrevArrayIndex.Enabled = (arrayIndex) > 0;            
+            ButtonNextArrayIndex.Visible = ButtonPrevArrayIndex.Visible = _spriteInfo?.SupportsArrayChange ?? false;
+
+            ButtonNextArrayIndex.Enabled = _arrayUpdater?.UpdateArrayIndexCommand?.CanExecute(1) ?? false;
+            ButtonPrevArrayIndex.Enabled = _arrayUpdater?.UpdateArrayIndexCommand?.CanExecute(-1) ?? false;
         }
 
         /// <summary>Handles the Click event of the ButtonPrevArrayIndex control.</summary>
@@ -133,10 +113,19 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevArrayIndex_Click(object sender, EventArgs e)
         {
-            //--_currentRenderer.TextureArrayIndex;
-            ValidateControls();
+            if (DataContext == null)
+            {
+                return;
+            }
 
-            UpdateArrayPanel(DataContext);
+            if ((_arrayUpdater?.UpdateArrayIndexCommand == null) || (!_arrayUpdater.UpdateArrayIndexCommand.CanExecute(-1)))
+            {
+                return;
+            }
+            _arrayUpdater.UpdateArrayIndexCommand.Execute(-1);
+
+            ValidateButtons();
+            UpdateArrayPanel();
         }
 
         /// <summary>Handles the Click event of the ButtonNextArrayIndex control.</summary>
@@ -144,10 +133,21 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextArrayIndex_Click(object sender, EventArgs e)
         {
-            //++_currentRenderer.TextureArrayIndex;
-            ValidateControls();
+            if (DataContext == null)
+            {
+                return;
+            }
 
-            UpdateArrayPanel(DataContext);
+            if ((_arrayUpdater?.UpdateArrayIndexCommand == null) || (!_arrayUpdater.UpdateArrayIndexCommand.CanExecute(1)))
+            {
+                return;
+            }
+
+            _arrayUpdater.UpdateArrayIndexCommand.Execute(1);
+
+            ValidateButtons();
+
+            UpdateArrayPanel();
         }
 
         /// <summary>Handles the Move event of the ParentForm control.</summary>
@@ -155,46 +155,81 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ParentForm_Move(object sender, EventArgs e)
         {
-            //ManualInputWindowPositioning(_manualRectEditor);
-            //ManualInputWindowPositioning(_manualVertexEditor);
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            ManualInputWindowPositioning(_manualRectEditor, DataContext.Settings.ManualRectangleEditorBounds);
+            ManualInputWindowPositioning(_manualVertexEditor, DataContext.Settings.ManualVertexEditorBounds);
         }
 
-        /// <summary>Handles the PropertyChanged event of the ManualVertexEditor control.</summary>
+        /// <summary>Handles the PropertyChanged event of the SpritePickContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void ManualVertexEditor_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void SpritePickContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            /*switch (e.PropertyName)
+            switch (e.PropertyName)
             {
-                case nameof(IManualVertexEditor.IsActive):
-                    if (DataContext.ManualVertexEditor.IsActive)
-                    {
-                        ManualInputWindowPositioning(_manualVertexEditor);
-                        return;
-                    }
+                case nameof(ISpritePickContext.ImageData):
+                    RenderControl.Cursor = Cursor.Current = Cursors.Default;
 
-                    ManualInput_ResizeEnd(_manualVertexEditor, EventArgs.Empty);
+                    UpdateArrayPanel();
+                    UpdateSpriteDimensionsPanel();
                     break;
-            }*/
+                case nameof(ISpritePickContext.SpriteInfo):
+                    UpdateSpriteDimensionsPanel();
+                    break;
+                case nameof(ISpritePickContext.ArrayIndex):
+                    UpdateArrayPanel();
+                    break;
+            }
         }
 
-        /// <summary>Handles the PropertyChanged event of the ManualRectangleEditor control.</summary>
+        /// <summary>Handles the PropertyChanged event of the SpriteClipContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void ManualRectangleEditor_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void SpriteClipContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            /*switch (e.PropertyName)
+            switch (e.PropertyName)
             {
-                case nameof(IManualRectangleEditor.IsActive):
-                    if (DataContext.ManualRectangleEditor.IsActive)
-                    {
-                        ManualInputWindowPositioning(_manualRectEditor);
-                        return;
-                    }
-
-                    ManualInput_ResizeEnd(_manualRectEditor, EventArgs.Empty);
+                case nameof(ISpriteClipContext.SpriteInfo):
+                    UpdateSpriteDimensionsPanel();
                     break;
-            }*/
+                case nameof(ISpriteClipContext.ArrayIndex):
+                    UpdateArrayPanel();
+                    break;
+            }
+        }
+
+        /// <summary>Handles the ResizeEnd event of the ManualInput control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ManualVertexInput_ResizeEnd(object sender, EventArgs e)
+        {
+            var form = (Form)sender;
+            Point pos = RenderControl.PointToScreen(new Point(RenderControl.ClientSize.Width - 128, 0));
+            var snapRect = new Rectangle(pos.X, pos.Y, 128, 128);
+
+            if ((form.DesktopBounds.Right >= snapRect.Left) && (form.DesktopBounds.Right <= snapRect.Right)
+                && (form.DesktopBounds.Top >= snapRect.Top) && (form.DesktopBounds.Top <= snapRect.Bottom)
+                && ((ModifierKeys & Keys.Alt) != Keys.Alt))
+            {
+                // Disable to stop the form from being dragged any further.
+                form.Enabled = false;
+                if (DataContext != null)
+                {
+                    DataContext.Settings.ManualVertexEditorBounds = null;
+                }
+                ManualInputWindowPositioning(form, DataContext.Settings.ManualVertexEditorBounds);
+                form.Enabled = true;
+                return;
+            }
+
+            DataContext.Settings.ManualVertexEditorBounds = new DX.Rectangle(form.DesktopBounds.Left,
+                                                                                form.DesktopBounds.Top,
+                                                                                form.DesktopBounds.Width,
+                                                                                form.DesktopBounds.Height);
         }
 
         /// <summary>Handles the ResizeEnd event of the ManualInput control.</summary>
@@ -202,34 +237,36 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ManualInput_ResizeEnd(object sender, EventArgs e)
         {
-            /*var form = (IManualInputControl)sender;
+            var form = (Form)sender;
             Point pos = RenderControl.PointToScreen(new Point(RenderControl.ClientSize.Width - 128, 0));
             var snapRect = new Rectangle(pos.X, pos.Y, 128, 128);
 
             if ((form.DesktopBounds.Right >= snapRect.Left) && (form.DesktopBounds.Right <= snapRect.Right)
-                && (form.DesktopBounds.Top >= snapRect.Top) && (form.DesktopBounds.Top <= snapRect.Bottom))
+                && (form.DesktopBounds.Top >= snapRect.Top) && (form.DesktopBounds.Top <= snapRect.Bottom)
+                && ((ModifierKeys & Keys.Alt) != Keys.Alt))
             {
                 // Disable to stop the form from being dragged any further.
                 form.Enabled = false;
                 if (DataContext != null)
                 {
-                    form.DataContext.Position = null;
+                    DataContext.Settings.ManualRectangleEditorBounds = null;
                 }
-                ManualInputWindowPositioning(form);
+                ManualInputWindowPositioning(form, DataContext.Settings.ManualRectangleEditorBounds);
                 form.Enabled = true;
                 return;
             }
 
-            form.DataContext.Position = new DX.Point(form.DesktopBounds.Left, form.DesktopBounds.Top);*/
+            DataContext.Settings.ManualRectangleEditorBounds = new DX.Rectangle(form.DesktopBounds.Left, 
+                                                                                form.DesktopBounds.Top, 
+                                                                                form.DesktopBounds.Width,
+                                                                                form.DesktopBounds.Height);
         }
 
         /// <summary>Handles the ClosePanel event of the ManualRectangleEditor control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ManualInput_ClosePanel(object sender, FormClosingEventArgs e)
+        private void ManualVertexInput_ClosePanel(object sender, FormClosingEventArgs e)
         {
-            /*var form = (IManualInputControl)sender;
-
             if (DataContext == null)
             {
                 return;
@@ -237,25 +274,73 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (e.CloseReason == CloseReason.UserClosing)
             {
-                IManualInputViewModel viewModel = form.DataContext;
-
-                if (viewModel == null)
-                {
-                    form.Hide();
-                }
-                else
-                {
-                    viewModel.IsActive = false;
-                }
-
+                _manualVertexEditor.Hide();
+                _ribbonForm.ButtonSpriteCornerManualInput.Checked = false;
+                _ribbonForm.ValidateButtons();
                 e.Cancel = true;
-            }*/
+            }
         }
 
-        /// <summary>Handles the Move event of the ManualInput control.</summary>
+        /// <summary>Handles the ClosePanel event of the ManualRectangleEditor control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ManualInput_Move(object sender, EventArgs e) => Idle();
+        private void ManualInput_ClosePanel(object sender, FormClosingEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                _manualRectEditor.Hide();
+                _ribbonForm.ButtonClipManualInput.Checked = false;
+                _ribbonForm.ValidateButtons();
+                e.Cancel = true;
+            }
+        }
+
+        /// <summary>Handles the ToggleManualInput event of the VertexEditViewer control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void VertexEditViewer_ToggleManualInput(object sender, EventArgs e)
+        {
+            if (_manualVertexEditor.Visible)
+            {
+                _manualVertexEditor.Hide();
+
+                _ribbonForm.ButtonSpriteCornerManualInput.Checked = false;
+                _ribbonForm.ValidateButtons();
+                return;
+            }
+
+            _manualVertexEditor.Show(GorgonApplication.MainForm);
+            ManualInputWindowPositioning(_manualVertexEditor, DataContext.Settings.ManualVertexEditorBounds);
+
+            _ribbonForm.ButtonSpriteCornerManualInput.Checked = true;
+            _ribbonForm.ValidateButtons();
+        }
+
+        /// <summary>Handles the ToggleManualInput event of the ClipViewer control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ClipViewer_ToggleManualInput(object sender, EventArgs e) 
+        {
+            if (_manualRectEditor.Visible)
+            {
+                _manualRectEditor.Hide();
+
+                _ribbonForm.ButtonClipManualInput.Checked = false;
+                _ribbonForm.ValidateButtons();
+                return;
+            }
+
+            _manualRectEditor.Show(GorgonApplication.MainForm);
+            ManualInputWindowPositioning(_manualRectEditor, DataContext.Settings.ManualRectangleEditorBounds);
+                        
+            _ribbonForm.ButtonClipManualInput.Checked = true;
+            _ribbonForm.ValidateButtons();
+        }
 
         /// <summary>Handles the PreviewKeyDown event of the PanelRenderWindow control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -269,37 +354,35 @@ namespace Gorgon.Editor.SpriteEditor
 
             switch (e.KeyCode)
             {
+                case Keys.Enter:
+                    if (_ribbonForm.ButtonSpriteClipApply.Enabled)
+                    {
+                        _ribbonForm.ButtonSpriteClipApply.PerformClick();
+                        e.IsInputKey = true;                        
+                    }
+                    break;
+                case Keys.Escape:
+                    if (_ribbonForm.ButtonSpriteClipCancel.Enabled)
+                    {
+                        _ribbonForm.ButtonSpriteClipCancel.PerformClick();
+                        e.IsInputKey = true;
+                    }
+                    break;
                 case Keys.OemPeriod:
                     if (ButtonNextArrayIndex.Enabled)
                     {
                         ButtonNextArrayIndex.PerformClick();
+                        e.IsInputKey = true;
                     }
                     break;
                 case Keys.Oemcomma:
                     if (ButtonPrevArrayIndex.Enabled)
                     {
                         ButtonPrevArrayIndex.PerformClick();
+                        e.IsInputKey = true;
                     }
                     break;
             }
-        }
-
-        /// <summary>
-        /// Function to handle idle time and rendering.
-        /// </summary>
-        /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
-        private bool Idle()
-        {
-            // Update every 2nd frame (if we're frame limited on the presentation).
-            if (_uiRefreshTimer.Milliseconds > 120)
-            {
-                UpdateSpriteDimensionsPanel(DataContext);
-                _uiRefreshTimer.Reset();
-            }
-
-            //_currentRenderer?.Render();
-
-            return true;
         }
 
         /// <summary>
@@ -308,78 +391,79 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The data context to use.</param>
         private void InitializeFromDataContext(ISpriteContent dataContext)
         {
+            _spriteInfo = dataContext;
+            _arrayUpdater = null;
+
             if (dataContext == null)
-            {
+            {                
                 ResetDataContext();
                 return;
             }
-
+            
             _ribbonForm.SetDataContext(dataContext);
-            /*_manualRectEditor.SetDataContext(dataContext?.ManualRectangleEditor);
-            _manualVertexEditor.SetDataContext(dataContext?.ManualVertexEditor);
+            _manualRectEditor.SetDataContext(dataContext?.SpriteClipContext);
+            _manualVertexEditor.SetDataContext(dataContext?.SpriteVertexEditContext);
+            SpritePickMaskColor.SetDataContext(dataContext?.SpritePickContext.SpritePickMaskEditor);
             SpriteColorSelector.SetDataContext(dataContext?.ColorEditor);
             SpriteAnchorSelector.SetDataContext(dataContext?.AnchorEditor);
-            SpritePickMaskColor.SetDataContext(dataContext?.SpritePickMaskEditor);
-            SpriteWrapping.SetDataContext(dataContext?.WrappingEditor);*/
+            SpriteWrapping.SetDataContext(dataContext?.WrappingEditor);
 
-            UpdateArrayPanel(dataContext);
-            UpdateSpriteDimensionsPanel(dataContext);
-
-            /*
-            if (DataContext?.ManualRectangleEditor != null)
+            UpdateArrayPanel();
+            UpdateSpriteDimensionsPanel();
+                        
+            if (dataContext?.SpriteClipContext != null)
             {
-                DataContext.ManualRectangleEditor.PropertyChanged += ManualRectangleEditor_PropertyChanged;
+                dataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
             }
 
-            if (DataContext?.ManualVertexEditor != null)
+            if (dataContext?.SpritePickContext != null)
             {
-                DataContext.ManualVertexEditor.PropertyChanged += ManualVertexEditor_PropertyChanged;
-            }*/
+                dataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
+            }
         }
 
         /// <summary>
         /// Function to update the sprite dimensions control.
         /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void UpdateSpriteDimensionsPanel(ISpriteContent dataContext)
+        private void UpdateSpriteDimensionsPanel()
         {
-            if (dataContext?.Texture == null)
-            {
-                return;
-            }
-
-            /*string spriteInfoText = _currentRenderer == null ? string.Empty : _currentRenderer.SpriteInfo;
+            string spriteInfoText = _spriteInfo?.SpriteInfo ?? string.Empty;            
 
             if (string.Equals(spriteInfoText, LabelSpriteInfo.Text, StringComparison.CurrentCulture))
             {
                 return;
             }
 
-            LabelSpriteInfo.Text = spriteInfoText;*/
+            LabelSpriteInfo.Text = spriteInfoText;
         }
 
         /// <summary>
         /// Function to update the panel with the array controls.
         /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void UpdateArrayPanel(ISpriteContent dataContext)
+        private void UpdateArrayPanel()
         {
-            if (dataContext == null)
+            string arrayInfo = _spriteInfo == null ? string.Empty : $"{_spriteInfo.ArrayIndex + 1}/{_spriteInfo.ArrayCount}";
+
+            if (string.Equals(arrayInfo, LabelArrayIndexDetails.Text, StringComparison.CurrentCulture))
             {
                 return;
             }
 
-            int arrayIndex = dataContext.ArrayIndex;
+            LabelArrayIndexDetails.Text = arrayInfo;
+        }
 
-            /*switch (dataContext.CurrentTool)
-            {
-                case SpriteEditTool.SpriteClip:
-                case SpriteEditTool.SpritePick:
-                    arrayIndex = _currentRenderer.TextureArrayIndex;
-                    break;
-            }*/
+        /// <summary>Function called when the view should be reset by a <b>null</b> data context.</summary>
+        protected override void ResetDataContext()
+        {
+            _ribbonForm.SetDataContext(null);
+            _manualRectEditor.SetDataContext(null);
+            _manualVertexEditor.SetDataContext(null);
+            SpritePickMaskColor.SetDataContext(null);
+            SpriteColorSelector.SetDataContext(null);
+            SpriteWrapping.SetDataContext(null);
+            SpriteAnchorSelector.SetDataContext(null);
 
-            LabelArrayIndexDetails.Text = $"{arrayIndex + 1}/{dataContext.Texture?.Texture.ArrayCount ?? 0}";
+            base.ResetDataContext();
         }
 
         /// <summary>Function to handle a drag enter event on the render control.</summary>
@@ -432,23 +516,17 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="propertyName">The name of the property that is updating.</param>
         /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
         protected override void OnPropertyChanging(string propertyName)
-        {            
-            /*switch (e.PropertyName)
-            {
-                case nameof(ISpriteContent.CurrentPanel):
-                    if (DataContext.CurrentPanel != null)
-                    {
-                        DataContext.CurrentPanel.IsActive = false;
-                    }
+        {
+            base.OnPropertyChanging(propertyName);
 
-                    ClearPanelHost();
-                    IsPanelHostActive = false;
-                    break;
-                case nameof(ISpriteContent.CurrentTool):
+            switch (propertyName)
+            {
+                case nameof(ISpriteContent.CommandContext):
+                    DataContext.CommandContext?.OnUnload();
                     RenderControl.Cursor = Cursor.Current = Cursors.Default;
-                    ValidateControls();
+                    ValidateButtons();
                     break;
-            }*/
+            }
         }
 
         /// <summary>Function called when a property is changed on the data context.</summary>        
@@ -456,42 +534,74 @@ namespace Gorgon.Editor.SpriteEditor
         /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
         protected override void OnPropertyChanged(string propertyName)
         {
+            string rendererName;
+
+            base.OnPropertyChanged(propertyName);
+
             switch (propertyName)
             {
                 case nameof(ISpriteContent.Texture):
-                case nameof(ISpriteContent.ImageData):
-                    SwitchRenderer(nameof(SpriteEditTool.None), true);
+                    SwitchRenderer(DefaultSpriteViewer.ViewerName, true);
+                    RenderControl.Cursor = Cursor.Current = Cursors.Default;
 
-                    //RenderControl.Cursor = _currentRenderer.CurrentCursor;
-
-                    UpdateArrayPanel(DataContext);
-                    UpdateSpriteDimensionsPanel(DataContext);
+                    UpdateArrayPanel();
+                    UpdateSpriteDimensionsPanel();
                     break;
-/*                case nameof(ISpriteContent.CurrentTool):
-                    SwitchRenderer(DataContext);
-                    RenderControl.Cursor = _currentRenderer.CurrentCursor;
-                    UpdateArrayPanel(DataContext);
-                    UpdateSpriteDimensionsPanel(DataContext);
-                    break;
-                case nameof(ISpriteContent.ArrayIndex):
-                    _currentRenderer.TextureArrayIndex = DataContext.ArrayIndex;
-                    UpdateArrayPanel(DataContext);
+                case nameof(ISpriteContent.SpriteInfo):
+                    UpdateSpriteDimensionsPanel();
                     break;
                 case nameof(ISpriteContent.CurrentPanel):
-                    if (DataContext.CurrentPanel != null)
+                    if ((DataContext.CurrentPanel == null) || (!HasRenderer(DataContext.CurrentPanel.GetType().FullName)))
                     {
-                        Control panel = GetRegisteredPanel<Control>(DataContext.CurrentPanel.GetType());
-                        IsPanelHostActive = true;
-                        panel.Visible = true;
-                        AddControlToPanelHost(panel);
-                        DataContext.ColorEditor.IsActive = true;
+                        rendererName = DataContext.Texture != null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
+
+                        if (string.Equals(Renderer?.Name, rendererName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        rendererName = DataContext.CurrentPanel.GetType().FullName;
                     }
 
-                    SwitchRenderer(DataContext);
-                    break;*/
+                    // Only switch if we're not on the same renderer.
+                    if (!string.Equals(Renderer?.Name, rendererName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        SwitchRenderer(rendererName, false);
+                    }
+
+                    UpdateSpriteDimensionsPanel();
+                    UpdateArrayPanel();
+                    break;
+                case nameof(ISpriteContent.CommandContext):
+                    _spriteInfo = (DataContext.CommandContext as ISpriteInfo) ?? DataContext; 
+                    _arrayUpdater = DataContext.CommandContext as IArrayUpdate;                    
+
+                    if ((DataContext.CommandContext == null) || (!HasRenderer(DataContext.CommandContext.Name)))
+                    {
+                        rendererName = DataContext.Texture != null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
+                    }
+                    else
+                    {
+                        DataContext.CommandContext.OnLoad();
+                        rendererName = DataContext.CommandContext.Name;                        
+                    }
+
+                    // Only switch if we're not on the same renderer.
+                    if (!string.Equals(Renderer?.Name, rendererName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        SwitchRenderer(rendererName, false);
+                    }
+                    UpdateSpriteDimensionsPanel();
+                    UpdateArrayPanel();
+                    break;
+                case nameof(ISpriteContent.ArrayIndex):                                        
+                    UpdateArrayPanel();
+                    break;
             }
 
-            ValidateControls();
+            ValidateButtons();
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Resize"/> event.</summary>
@@ -500,116 +610,26 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnResize(e);
 
-            /*if ((DataContext?.Texture == null) || (_currentRenderer == null))
+            if (DataContext == null)
             {
                 return;
             }
 
-            // Resize the image to fit the new boundaries.
-            if (_ribbonForm.ZoomLevel == ZoomLevels.ToWindow)
-            {
-                ChangeZoomLevel(ZoomLevels.ToWindow);
-            }
-            else
-            {
-                string panelID = DataContext.CurrentPanel?.GetType().FullName;
-
-                if (!string.IsNullOrWhiteSpace(panelID))
-                {
-                    UpdateRenderer(_ribbonForm.ZoomScaling, GetScrollValue(), 0.5f, false);
-                    Control panel = GetRegisteredPanel<Control>(panelID);
-
-                    if (panel == null)
-                    {
-                        ShiftRenderRegionForPanel(false, 0);
-                    }
-                    else
-                    {
-                        ShiftRenderRegionForPanel(DataContext.CurrentPanel.IsModal, panel.Width);
-                    }
-                }
-                else
-                {
-                    ChangeZoomLevel(ZoomLevels.ToWindow);
-                }
-            }
-
-            UpdateRenderer(_ribbonForm.ZoomScaling, GetScrollValue(), _currentRenderer.InitialTextureAlpha);
-
-            ManualInputWindowPositioning(_manualRectEditor);
-            ManualInputWindowPositioning(_manualVertexEditor);*/
+            ManualInputWindowPositioning(_manualRectEditor, DataContext.Settings.ManualRectangleEditorBounds);
+            ManualInputWindowPositioning(_manualVertexEditor, DataContext.Settings.ManualVertexEditorBounds);
         }
-        /*
-        /// <summary>Function to allow user defined setup of the graphics context with this control.</summary>
-        /// <param name="context">The context being assigned.</param>
-        /// <param name="swapChain">The swap chain assigned to the <see cref="P:Gorgon.Editor.UI.Views.ContentBaseControl.RenderControl"/>.</param>
-        private void SetupGraphics123(IGraphicsContext context, GorgonSwapChain swapChain)
-        {
-            _marchAnts = new MarchingAnts(context.Renderer2D);
-            _clipperService = new RectClipperService(context.Renderer2D, _marchAnts);
-            _vertexEditService = new SpriteVertexEditService(context.Renderer2D);
-
-            _pickService = new PickClipperService
-            {
-                ClipMask = DataContext?.Settings?.ClipMaskType ?? ClipMask.Alpha,
-                ClipMaskValue = DataContext?.Settings?.ClipMaskValue ?? new GorgonColor(1, 0, 1, 0)
-            };
-
-            using (var stream = new MemoryStream(Resources.anchor_24x24))
-            {
-                _anchorTexture = GorgonTexture2DView.FromStream(context.Graphics, stream, new GorgonCodecDds(),
-                    options: new GorgonTexture2DLoadOptions
-                    {
-                        Name = "Sprite Editor Anchor Sprite",
-                        Binding = TextureBinding.ShaderResource,
-                        Usage = ResourceUsage.Immutable
-                    });
-            }
-
-            _anchorService = new AnchorEditService(context.Renderer2D, new GorgonSprite
-            {
-                Texture = _anchorTexture,
-                Size = new DX.Size2F(_anchorTexture.Width, _anchorTexture.Height),
-                // Place the hotspot on rope hole at the top of the handle.
-                Anchor = new DX.Vector2(0.5f, 0.125f)
-            });
-
-            ChangeZoomLevel(ZoomLevels.ToWindow);
-
-            _renderers["null"] = new NoTextureRenderer(context.Graphics, swapChain, context.Renderer2D);
-            _renderers["default"] = new DefaultSpriteRenderer(DataContext, context.Graphics, swapChain, context.Renderer2D, _marchAnts, _ribbonForm.ZoomScaling);
-            _renderers[nameof(SpriteEditTool.SpriteClip)] = new SpriteClipRenderer(DataContext, context.Graphics, swapChain, context.Renderer2D, _clipperService, _ribbonForm.ZoomScaling);
-            _renderers[nameof(SpriteEditTool.SpritePick)] = new SpritePickRenderer(DataContext, context.Graphics, swapChain, context.Renderer2D, _pickService, _marchAnts, _ribbonForm.ZoomScaling);
-            _renderers[typeof(SpriteColorEdit).FullName] = new SpriteColorRenderer(DataContext, context.Graphics, swapChain, context.Renderer2D, _ribbonForm.ZoomScaling);
-            _renderers[typeof(SpriteAnchorEdit).FullName] = new SpriteAnchorRenderer(DataContext, context.Graphics, swapChain, context.Renderer2D, _anchorService, _ribbonForm.ZoomScaling);
-            _renderers[nameof(SpriteEditTool.CornerResize)] = new SpriteVertexOffsetRenderer(DataContext, context.Graphics, swapChain, context.Renderer2D, _vertexEditService, _ribbonForm.ZoomScaling);
-            _renderers[typeof(SpriteWrappingEditor).FullName] = new SpriteWrappingRenderer(DataContext, context.Graphics, swapChain, context.Renderer2D, _ribbonForm.ZoomScaling);
-
-            foreach (ISpriteContentRenderer renderer in _renderers.Values)
-            {
-                renderer.BackgroundColor = RenderControl.BackColor;
-                renderer.ScrollUpdated += Renderer_ScrollUpdated;
-            }
-
-            SwitchRenderer(DataContext);
-        }
-        */
 
         /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
         protected override void OnShutdown()
         {
             DataContext?.OnUnload();
-
-            _clipperService?.Dispose();
-            //_vertexEditService?.Dispose();
+                        
+            _clipperService?.Dispose();            
+            _vertexEditService?.Dispose();
             _marchAnts?.Dispose();
             _anchorTexture?.Dispose();
-            /*
-            foreach (ISpriteContentRenderer renderer in _renderers.Values)
-            {
-                renderer.ScrollUpdated -= Renderer_ScrollUpdated;
-                renderer.Dispose();
-            }*/
+
+            base.OnShutdown();
         }
 
         /// <summary>Handles the ParentChanged event of the SpriteEditorView control.</summary>
@@ -631,6 +651,28 @@ namespace Gorgon.Editor.SpriteEditor
             }
         }
 
+        /// <summary>Function called when the renderer is switched.</summary>
+        /// <param name="renderer">The current renderer.</param>
+        /// <param name="resetZoom"><b>true</b> if the zoom should be reset, <b>false</b> if not.</param>
+        protected override void OnSwitchRenderer(IContentRenderer renderer, bool resetZoom)
+        {
+            base.OnSwitchRenderer(renderer, resetZoom);
+            _ribbonForm.ContentRenderer = renderer;
+
+            if (renderer == null)
+            {
+                return;
+            }
+
+            var spriteViewer = (ISpriteViewer)renderer;
+            spriteViewer.DefaultZoom();
+
+            if (resetZoom)
+            {
+                _ribbonForm.ResetZoom();
+            }
+        }
+
         /// <summary>Function to allow applications to set up rendering for their specific use cases.</summary>
         /// <param name="context">The graphics context from the host application.</param>
         /// <param name="swapChain">The current swap chain for the rendering panel.</param>
@@ -638,18 +680,69 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnSetupContentRenderer(context, swapChain);
 
+            using (var stream = new MemoryStream(Resources.anchor_24x24))
+            {
+                _anchorTexture = GorgonTexture2DView.FromStream(context.Graphics, stream, new GorgonCodecDds(),
+                    options: new GorgonTexture2DLoadOptions
+                    {
+                        Name = "Sprite Editor Anchor Sprite",
+                        Binding = TextureBinding.ShaderResource,
+                        Usage = ResourceUsage.Immutable
+                    });
+            }
+
             _marchAnts = new MarchingAnts(context.Renderer2D);
+            _clipperService = new RectClipperService(context.Renderer2D, _marchAnts);
+            _pickService = new PickClipperService();
+            _vertexEditService = new SpriteVertexEditService(context.Renderer2D);
+            _anchorService = new SpriteAnchorEditService(context.Renderer2D, new GorgonSprite
+            {
+                Texture = _anchorTexture,
+                Size = new DX.Size2F(_anchorTexture.Width, _anchorTexture.Height),
+                // Place the hotspot on rope hole at the top of the handle.
+                Anchor = new DX.Vector2(0.5f, 0.125f)
+            }, DataContext?.AnchorEditor?.Bounds ?? new DX.Rectangle
+            {
+                Left = -context.Graphics.VideoAdapter.MaxTextureWidth / 2,
+                Top = -context.Graphics.VideoAdapter.MaxTextureHeight / 2,
+                Right = context.Graphics.VideoAdapter.MaxTextureWidth / 2 - 1,
+                Bottom = context.Graphics.VideoAdapter.MaxTextureHeight / 2 - 1,
+            });
 
             ISpriteViewer noTexture = new NoTextureViewer(context.Renderer2D, swapChain, DataContext);
-            ISpriteViewer defaultViewer = new DefaultSpriteViewer(context.Renderer2D, swapChain, DataContext, _marchAnts);
+            ISpriteViewer defaultViewer = new DefaultSpriteViewer(context.Renderer2D, swapChain, DataContext, _marchAnts);            
+            var clipViewer = new ClipSpriteViewer(context.Renderer2D, swapChain, DataContext, _clipperService);
+            var pickViewer = new PickSpriteViewer(context.Renderer2D, swapChain, DataContext, _pickService, _marchAnts);
+            var colorEditViewer = new ColorEditViewer(context.Renderer2D, swapChain, DataContext);
+            var vertexEditViewer = new VertexEditViewer(context.Renderer2D, swapChain, DataContext, _vertexEditService);
+            var anchorEditViewer = new AnchorEditViewer(context.Renderer2D, swapChain, DataContext, _anchorService);
+            var wrapEditViewer = new TextureWrapViewer(context.Renderer2D, swapChain, DataContext);
             noTexture.CreateResources();
             defaultViewer.CreateResources();
+            clipViewer.CreateResources();
+            pickViewer.CreateResources();
+            colorEditViewer.CreateResources();
+            vertexEditViewer.CreateResources();
+            anchorEditViewer.CreateResources();
+            wrapEditViewer.CreateResources();
 
-            AddRenderer(noTexture.Name, noTexture);
-            AddRenderer(nameof(SpriteEditTool.None), defaultViewer);
+            AddRenderer(noTexture.Name, noTexture);            
+            AddRenderer(defaultViewer.Name, defaultViewer);
+            AddRenderer(clipViewer.Name, clipViewer);
+            AddRenderer(pickViewer.Name, pickViewer);
+            AddRenderer(colorEditViewer.Name, colorEditViewer);
+            AddRenderer(vertexEditViewer.Name, vertexEditViewer);
+            AddRenderer(anchorEditViewer.Name, anchorEditViewer);
+            AddRenderer(wrapEditViewer.Name, wrapEditViewer);
 
-            SwitchRenderer(DataContext.Texture == null ? noTexture.Name : defaultViewer.Name, true);
-        }
+            string currentRenderer = DataContext.Texture == null ? noTexture.Name : defaultViewer.Name;
+            SwitchRenderer(currentRenderer, true);
+
+            clipViewer.ToggleManualInput += ClipViewer_ToggleManualInput;
+            vertexEditViewer.ToggleManualInput += VertexEditViewer_ToggleManualInput;
+
+            ValidateButtons();
+        }        
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
@@ -671,7 +764,7 @@ namespace Gorgon.Editor.SpriteEditor
             ShowFocusState(true);
             RenderControl?.Select();
 
-            ValidateControls();
+            ValidateButtons();
         }
 
         /// <summary>Handles the GotFocus event of the RenderControl control.</summary>
@@ -688,9 +781,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function used to update the position of the manual input window.
         /// </summary>
         /// <param name="manualInput">The form being positioned.</param>
-        /*private void ManualInputWindowPositioning(IManualInputControl manualInput)
+        /// <param name="prevPositioning">The previous position of the window.</param>
+        private void ManualInputWindowPositioning(Form manualInput, DX.Rectangle? prevPositioning)
         {
-            if ((manualInput?.DataContext == null) || (!manualInput.Visible))
+            if ((manualInput == null) || (!manualInput.Visible))
             {
                 return;
             }
@@ -698,17 +792,18 @@ namespace Gorgon.Editor.SpriteEditor
             manualInput.ResizeEnd -= ManualInput_ResizeEnd;
             try
             {
-                if (manualInput.DataContext.Position == null)
+                if (prevPositioning == null)
                 {
                     manualInput.Location = RenderControl.PointToScreen(new Point(RenderControl.ClientSize.Width - manualInput.Width, 0));
                     return;
                 }
 
-                var pt = new Point(manualInput.DataContext.Position.Value.X, manualInput.DataContext.Position.Value.Y);
+                var pt = new Point(prevPositioning.Value.X, prevPositioning.Value.Y);
                 if (!Screen.AllScreens.Any(item => item.WorkingArea.Contains(pt)))
                 {
                     manualInput.Location = RenderControl.PointToScreen(new Point(RenderControl.ClientSize.Width - manualInput.Width, 0));
-                    manualInput.DataContext.Position = null;
+                    DataContext.Settings.ManualRectangleEditorBounds = null;
+                    DataContext.Settings.ManualVertexEditorBounds = null;
                     return;
                 }
 
@@ -718,22 +813,22 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 manualInput.ResizeEnd += ManualInput_ResizeEnd;
             }
-        }*/
+        }
 
         /// <summary>Function to unassign events for the data context.</summary>
         protected override void UnassignEvents()
         {
             base.UnassignEvents();
 
-            /*if (DataContext?.ManualRectangleEditor != null)
+            if (DataContext?.SpriteClipContext != null)
             {
-                DataContext.ManualRectangleEditor.PropertyChanged -= ManualRectangleEditor_PropertyChanged;
+                DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
             }
 
-            if (DataContext?.ManualVertexEditor != null)
+            if (DataContext?.SpritePickContext != null)
             {
-                DataContext.ManualVertexEditor.PropertyChanged -= ManualVertexEditor_PropertyChanged;
-            }*/
+                DataContext.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
+            }
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -756,23 +851,27 @@ namespace Gorgon.Editor.SpriteEditor
             InitializeComponent();
 
             _ribbonForm = new FormRibbon();
+            _ribbonForm.ButtonClipManualInput.Click += ClipViewer_ToggleManualInput;
+            _ribbonForm.ButtonSpriteCornerManualInput.Click += VertexEditViewer_ToggleManualInput;
             Ribbon = _ribbonForm.RibbonSpriteContent;
+
+            if (RenderWindow != null)
+            {
+                RenderWindow.PreviewKeyDown += PanelRenderWindow_PreviewKeyDown;
+            }
             
-            /*
             _manualRectEditor = new FormManualRectangleEdit();
             _manualRectEditor.ResizeEnd += ManualInput_ResizeEnd;
             _manualRectEditor.FormClosing += ManualInput_ClosePanel;
-            _manualRectEditor.Move += ManualInput_Move;
 
             _manualVertexEditor = new FormManualVertexEdit();
-            _manualVertexEditor.ResizeEnd += ManualInput_ResizeEnd;
-            _manualVertexEditor.FormClosing += ManualInput_ClosePanel;
-            _manualVertexEditor.Move += ManualInput_Move;
+            _manualVertexEditor.ResizeEnd += ManualVertexInput_ResizeEnd;
+            _manualVertexEditor.FormClosing += ManualVertexInput_ClosePanel;
 
             RegisterChildPanel(typeof(SpriteColorEdit).FullName, SpriteColorSelector);
-            RegisterChildPanel(typeof(SpriteAnchorEdit).FullName, SpriteAnchorSelector);
-            RegisterChildPanel(typeof(ISpritePickMaskEditor).FullName, SpritePickMaskColor);
-            RegisterChildPanel(typeof(SpriteWrappingEditor).FullName, SpriteWrapping);*/
+            RegisterChildPanel(typeof(SpritePickMaskEditor).FullName, SpritePickMaskColor);
+            RegisterChildPanel(typeof(SpriteAnchorEdit).FullName, SpriteAnchorSelector);            
+            RegisterChildPanel(typeof(SpriteTextureWrapEdit).FullName, SpriteWrapping);
         }
         #endregion
     }

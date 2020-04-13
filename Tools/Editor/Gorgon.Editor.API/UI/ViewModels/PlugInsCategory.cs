@@ -25,13 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
-using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.UI
 {

@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.Views
 {
@@ -147,8 +148,10 @@ namespace Gorgon.Editor.Views
             if ((SelectedRows.Count > 0) && (row.Selected))
             {
                 _passThruEventArgs = e;
-                Size dragSize = SystemInformation.DragSize;
-                _dragRegion = new Rectangle(e.Location.X - dragSize.Width / 2, e.Location.Y - dragSize.Height / 2, dragSize.Width, dragSize.Height);
+                float dpiScale = DeviceDpi / 96.0f;
+                var dragSize = new Size((int)(SystemInformation.DragSize.Width * dpiScale).FastCeiling() * 2, (int)(SystemInformation.DragSize.Height * dpiScale).FastCeiling() * 2);
+                var dragLocation = new Point((int)(e.Location.X - dragSize.Width / 2.0f).FastFloor(), (int)(e.Location.Y - dragSize.Height / 2.0f).FastFloor());
+                _dragRegion = new Rectangle(dragLocation, dragSize);
                 return;
             }
             

@@ -445,7 +445,7 @@ float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
 	const float convolution = -0.5f;
 	float mainConvolution = 1.0f + ((-convolution * 8.0f) * sharpEmbossAmount);
 
-	float4 c = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy / vertex.uv.w), vertex.uv.z) * vertex.color;
+	float4 c = _gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy / vertex.uv.w), vertex.uv.z)) * vertex.color;
 	float4 c0 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[0]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
 	float4 c1 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[1]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;
 	float4 c2 = (_gorgonTexture.Sample(_gorgonSampler, float3((vertex.uv.xy + offset[2]) / vertex.uv.w, vertex.uv.z)) * vertex.color) * convolution;

@@ -4,12 +4,13 @@ using System.Linq;
 using Gorgon.Animation.Properties;
 using Gorgon.Math;
 
-namespace Gorgon.Animation._Internal
+namespace Gorgon.Animation
 {
     /// <summary>
     /// The concrete version of a <see cref="IGorgonTrackKeyBuilder{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of key frame.</typeparam>
+    /// <seealso cref="GorgonAnimationBuilder"/>.
     internal class TrackKeyBuilder<T>
         : IGorgonTrackKeyBuilder<T>
         where T : class, IGorgonKeyFrame
@@ -23,21 +24,30 @@ namespace Gorgon.Animation._Internal
 
         #region Properties.
         /// <summary>
+        /// Property to return the interpolation mode for the track.
+        /// </summary>
+        public TrackInterpolationMode InterpolationMode
+        {
+            get;
+            private set;
+        } = TrackInterpolationMode.Linear;
+
+        /// <summary>
+        /// Property to return whether this track is initially disabled or enabled.
+        /// </summary>
+        public bool IsEnabled 
+        { 
+            get; 
+            private set; 
+        } = true;
+
+        /// <summary>
         /// Property to return the list of keys for the builder.
         /// </summary>
         public List<T> Keys
         {
             get;
         } = new List<T>();
-
-        /// <summary>
-        /// Property to return the current track interpolation mode.
-        /// </summary>
-        public TrackInterpolationMode Mode 
-        { 
-            get; 
-            private set; 
-        } = TrackInterpolationMode.Linear;
         #endregion
 
         #region Methods.
@@ -218,7 +228,33 @@ namespace Gorgon.Animation._Internal
         /// <remarks>Not all track types provide interpolation modes, in those cases, this value will be ignored.</remarks>
         public IGorgonTrackKeyBuilder<T> SetInterpolationMode(TrackInterpolationMode mode)
         {
-            Mode = mode;
+            InterpolationMode = mode;
+            return this;
+        }
+
+        public IGorgonTrackKeyBuilder<T> Enabled()
+        {
+            Enabled(true);
+            return this;
+        }
+
+        /// <summary>Function to mark the track as enabled.</summary>
+        /// <param name="isEnabled">
+        ///   <b>true</b> if the track should be enabled initially, or <b>false</b> if not.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <remarks>Enabled tracks will play during the animation, disabled ones will not.</remarks>
+        public IGorgonTrackKeyBuilder<T> Enabled(bool isEnabled)
+        {
+            IsEnabled = isEnabled;
+            return this;
+        }
+
+        /// <summary>Function to mark the track as disabled.</summary>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <remarks>Enabled tracks will play during the animation, disabled ones will not.</remarks>
+        public IGorgonTrackKeyBuilder<T> Disabled()
+        {
+            Enabled(false);
             return this;
         }
         #endregion
@@ -231,7 +267,7 @@ namespace Gorgon.Animation._Internal
         public TrackKeyBuilder(GorgonAnimationBuilder parent)
         {
             _parent = parent;
-            _comparer = new KeyframeIndexComparer<T>();
+            _comparer = new KeyframeIndexComparer<T>();            
         }
         #endregion
     }

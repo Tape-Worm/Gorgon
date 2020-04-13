@@ -184,6 +184,7 @@ namespace Gorgon.IO
             foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> track in tracks.Where(item => item.Value.KeyFrames.Count > 0))
             {
                 binWriter.Write(track.Key);
+                binWriter.Write(track.Value.IsEnabled);
                 binWriter.Write(track.Value.KeyFrames.Count);
 
                 for (int i = 0; i < track.Value.KeyFrames.Count; ++i)
@@ -244,6 +245,7 @@ namespace Gorgon.IO
             {
                 binWriter.Write(track.Key);
                 binWriter.WriteValue(track.Value.InterpolationMode);
+                binWriter.Write(track.Value.IsEnabled);
                 binWriter.Write(track.Value.KeyFrames.Count);
 
                 for (int i = 0; i < track.Value.KeyFrames.Count; ++i)
@@ -278,6 +280,8 @@ namespace Gorgon.IO
                 string trackName = binReader.ReadString();
 
                 IGorgonTrackKeyBuilder<GorgonKeyTexture2D> trackBuilder = builder.Edit2DTexture(trackName);
+
+                trackBuilder.Enabled(binReader.ReadBoolean());
 
                 int keyCount = binReader.ReadInt32();                
 
@@ -346,6 +350,7 @@ namespace Gorgon.IO
                 IGorgonTrackKeyBuilder<Tk> builder = getBuilder(trackName);
 
                 builder.SetInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
+                builder.Enabled(binReader.ReadBoolean());
                 int keyCount = binReader.ReadInt32();
 
                 for (int j = 0; j < keyCount; ++j)

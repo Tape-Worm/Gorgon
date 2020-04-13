@@ -458,4 +458,18 @@ The performance of the current tool may be impacted by this.</value>
   <data name="Transparency_Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Transparency_Pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GORSPR_ERR_MANUAL_CLIP" xml:space="preserve">
+    <value>There was an error switching to manual input.</value>
+  </data>
+  <data name="GORSPR_TEXT_SAVING" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+  <data name="GORSPR_ERR_SPRITE_NOT_FOUND" xml:space="preserve">
+    <value>The sprite '{0}' was not found in the file system.</value>
+  </data>
+  <data name="GORSPR_CONFIRM_SPRITE_EXISTS" xml:space="preserve">
+    <value>The sprite '{0}' already exists.
+
+Would you like to overwrite it?</value>
+  </data>
 </root>

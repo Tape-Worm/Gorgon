@@ -94,10 +94,12 @@ namespace Gorgon.Editor.SpriteEditor
                     Binding = TextureBinding.ShaderResource
                 });
 
+                _graphics.SetRenderTarget(convertTarget);
+
                 for (int i = 0; i < texture.ArrayCount; ++i)
                 {
                     convertTarget.Clear(GorgonColor.BlackTransparent);
-                    _graphics.SetRenderTarget(convertTarget);
+                    
                     _renderer.Begin();
                     _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, texture.Width, texture.Height),
                         GorgonColor.White,

@@ -83,7 +83,7 @@ namespace Gorgon.Editor.ImageEditor.Native
         /// <summary>
         /// Open by executable name.
         /// </summary>
-        OpenByExeName = 0x00000002,
+        OpenByExeName = InitializeByExeName,
         /// <summary>
         /// Initialize default to the star (*) registry entry.
         /// </summary>

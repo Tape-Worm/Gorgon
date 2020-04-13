@@ -182,7 +182,7 @@ namespace Gorgon.IO
         /// <param name="reader">The JSON reader.</param>
         /// <param name="converter">The converter for key frame data.</param>
         /// <param name="track">The track list to update.</param>
-        private void ReadTrack<Tk, Tc>(JsonTextReader reader, Tc converter, Dictionary<string, (List<Tk> keys, TrackInterpolationMode interpolation)> track)
+        private void ReadTrack<Tk, Tc>(JsonTextReader reader, Tc converter, Dictionary<string, (List<Tk> keys, TrackInterpolationMode interpolation, bool isEnabled)> track)
             where Tk : class, IGorgonKeyFrame
             where Tc : JsonConverter<Tk>
         {
@@ -195,7 +195,8 @@ namespace Gorgon.IO
             {
                 string trackName = reader.Value.ToString();
                 List<Tk> keys = ReadKeyData<Tk, Tc>(reader, converter, out TrackInterpolationMode interpolation);
-                track[trackName] = (keys, interpolation);
+                bool isEnabled = reader.ReadAsBoolean() ?? true;
+                track[trackName] = (keys, interpolation, isEnabled);
             }
         }
 
@@ -238,13 +239,13 @@ namespace Gorgon.IO
             var vec4Converter = new JsonVector4KeyConverter();
             var rectConverter = new JsonRectKeyConverter();
 
-            var vec4 = new Dictionary<string, (List<GorgonKeyVector4>, TrackInterpolationMode)>(StringComparer.OrdinalIgnoreCase);
-            var vec3 = new Dictionary<string, (List<GorgonKeyVector3>, TrackInterpolationMode)>(StringComparer.OrdinalIgnoreCase);
-            var vec2 = new Dictionary<string, (List<GorgonKeyVector2>, TrackInterpolationMode)>(StringComparer.OrdinalIgnoreCase);
-            var singles = new Dictionary<string, (List<GorgonKeySingle>, TrackInterpolationMode)>(StringComparer.OrdinalIgnoreCase);
-            var colors = new Dictionary<string, (List<GorgonKeyGorgonColor>, TrackInterpolationMode)>(StringComparer.OrdinalIgnoreCase);
-            var rects = new Dictionary<string, (List<GorgonKeyRectangle>, TrackInterpolationMode)>(StringComparer.OrdinalIgnoreCase);
-            var textures = new Dictionary<string, (List<GorgonKeyTexture2D>, TrackInterpolationMode)>(StringComparer.OrdinalIgnoreCase);
+            var vec4 = new Dictionary<string, (List<GorgonKeyVector4>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
+            var vec3 = new Dictionary<string, (List<GorgonKeyVector3>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
+            var vec2 = new Dictionary<string, (List<GorgonKeyVector2>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
+            var singles = new Dictionary<string, (List<GorgonKeySingle>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
+            var colors = new Dictionary<string, (List<GorgonKeyGorgonColor>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
+            var rects = new Dictionary<string, (List<GorgonKeyRectangle>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
+            var textures = new Dictionary<string, (List<GorgonKeyTexture2D>, TrackInterpolationMode, bool)>(StringComparer.OrdinalIgnoreCase);
 
             using (var baseReader = new StringReader(json))
             using (var reader = new JsonTextReader(baseReader))
@@ -312,10 +313,11 @@ namespace Gorgon.IO
 
             if (singles.Count > 0)
             {
-                foreach (KeyValuePair<string, (List<GorgonKeySingle> keys, TrackInterpolationMode interpolation)> track in singles)
+                foreach (KeyValuePair<string, (List<GorgonKeySingle> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in singles)
                 {
                     builder.EditSingle(track.Key)
                            .SetInterpolationMode(track.Value.interpolation)
+                           .Enabled(track.Value.isEnabled)
                            .SetKeys(track.Value.keys)
                            .EndEdit();
                 }
@@ -323,10 +325,11 @@ namespace Gorgon.IO
 
             if (vec2.Count > 0)
             {
-                foreach (KeyValuePair<string, (List<GorgonKeyVector2> keys, TrackInterpolationMode interpolation)> track in vec2)
+                foreach (KeyValuePair<string, (List<GorgonKeyVector2> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in vec2)
                 {
                     builder.EditVector2(track.Key)
                            .SetInterpolationMode(track.Value.interpolation)
+                           .Enabled(track.Value.isEnabled)
                            .SetKeys(track.Value.keys)
                            .EndEdit();
                 }
@@ -334,10 +337,11 @@ namespace Gorgon.IO
 
             if (vec3.Count > 0)
             {
-                foreach (KeyValuePair<string, (List<GorgonKeyVector3> keys, TrackInterpolationMode interpolation)> track in vec3)
+                foreach (KeyValuePair<string, (List<GorgonKeyVector3> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in vec3)
                 {
                     builder.EditVector3(track.Key)
                            .SetInterpolationMode(track.Value.interpolation)
+                           .Enabled(track.Value.isEnabled)
                            .SetKeys(track.Value.keys)
                            .EndEdit();
                 }
@@ -345,10 +349,11 @@ namespace Gorgon.IO
 
             if (vec4.Count > 0)
             {
-                foreach (KeyValuePair<string, (List<GorgonKeyVector4> keys, TrackInterpolationMode interpolation)> track in vec4)
+                foreach (KeyValuePair<string, (List<GorgonKeyVector4> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in vec4)
                 {
                     builder.EditVector4(track.Key)
                            .SetInterpolationMode(track.Value.interpolation)
+                           .Enabled(track.Value.isEnabled)
                            .SetKeys(track.Value.keys)
                            .EndEdit();
                 }
@@ -356,10 +361,11 @@ namespace Gorgon.IO
 
             if (rects.Count > 0)
             {
-                foreach (KeyValuePair<string, (List<GorgonKeyRectangle> keys, TrackInterpolationMode interpolation)> track in rects)
+                foreach (KeyValuePair<string, (List<GorgonKeyRectangle> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in rects)
                 {
                     builder.EditRectangle(track.Key)
                            .SetInterpolationMode(track.Value.interpolation)
+                           .Enabled(track.Value.isEnabled)
                            .SetKeys(track.Value.keys)
                            .EndEdit();
                 }
@@ -367,10 +373,11 @@ namespace Gorgon.IO
 
             if (colors.Count > 0)
             {
-                foreach (KeyValuePair<string, (List<GorgonKeyGorgonColor> keys, TrackInterpolationMode interpolation)> track in colors)
+                foreach (KeyValuePair<string, (List<GorgonKeyGorgonColor> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in colors)
                 {
                     builder.EditColor(track.Key)
                            .SetInterpolationMode(track.Value.interpolation)
+                           .Enabled(track.Value.isEnabled)
                            .SetKeys(track.Value.keys)
                            .EndEdit();
                 }
@@ -378,10 +385,11 @@ namespace Gorgon.IO
 
             if (textures.Count > 0)
             {
-                foreach (KeyValuePair<string, (List<GorgonKeyTexture2D> keys, TrackInterpolationMode interpolation)> track in textures)
+                foreach (KeyValuePair<string, (List<GorgonKeyTexture2D> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in textures)
                 {
                     builder.Edit2DTexture(track.Key)
                            .SetInterpolationMode(track.Value.interpolation)
+                           .Enabled(track.Value.isEnabled)
                            .SetKeys(track.Value.keys)
                            .EndEdit();
                 }

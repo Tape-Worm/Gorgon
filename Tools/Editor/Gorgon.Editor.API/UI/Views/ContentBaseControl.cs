@@ -35,8 +35,6 @@ using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.UI.Views
@@ -282,14 +280,14 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>Handles the Click event of the ButtonClose control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
-        private void ButtonClose_Click(object sender, EventArgs e)
+        private async void ButtonClose_Click(object sender, EventArgs e)
         {
             EventHandler handler = null;
             var args = new CloseContentArgs(true);
 
             if ((_dataContext?.CloseContentCommand != null) && (_dataContext.CloseContentCommand.CanExecute(args)))
             {
-                _dataContext.CloseContentCommand.Execute(args);
+                await _dataContext.CloseContentCommand.ExecuteAsync(args);
             }
 
             if (args.Cancel)
@@ -392,6 +390,76 @@ namespace Gorgon.Editor.UI.Views
         }
 
         /// <summary>
+        /// Function to show a hosted panel.
+        /// </summary>
+        /// <param name="control">The control to show.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Only a single control can be active in the host at a time. Adding another control will hide the previous control.
+        /// </para>
+        /// </remarks>
+        protected void ShowHostedPanel(Control control)
+        {
+            if (control == null)
+            {
+                throw new ArgumentNullException(nameof(control));
+            }
+
+            Control hostParent = PanelHostControls;
+
+            try
+            {
+                while (hostParent != null)
+                {
+                    hostParent.SuspendLayout();
+                    hostParent = hostParent.Parent;
+                }
+
+                control.SuspendLayout();
+
+                foreach (Control hostControl in PanelHostControls.Controls.OfType<Control>().Where(item => item != control))
+                {
+                    hostControl.Visible = false;
+                }                
+
+                control.Left = 0;
+                control.Top = 0;
+
+                // Our control width should be within this range.  
+                if (control.Width > 640)
+                {
+                    control.Width = 640;
+                }
+
+                if (control.Width < 300)
+                {
+                    control.Width = 300;
+                }
+
+                int newWidth = control.Width + PanelHost.Padding.Left;
+                if (control.Height > PanelHostControls.ClientSize.Height)
+                {
+                    newWidth += SystemInformation.VerticalScrollBarWidth;
+                }
+
+                PanelHost.Width = newWidth;
+                PanelHostControls.Visible = PanelHost.Visible = true;
+                control.Visible = true;
+                PanelHostControls.AutoScrollMinSize = new Size(0, control.Height);
+            }
+            finally
+            {
+                hostParent = control;
+                while (hostParent != null)
+                {
+                    hostParent.ResumeLayout();
+                    hostParent = hostParent.Parent;
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to show the control keyboard focus state.
         /// </summary>
         /// <param name="isFocused"><b>true</b> if focused, <b>false</b> if not.</param>
@@ -448,69 +516,6 @@ namespace Gorgon.Editor.UI.Views
         }
 
         /// <summary>
-        /// Function to show a hosted panel.
-        /// </summary>
-        /// <param name="control">The control to show.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// Only a single control can be active in the host at a time. Adding another control will hide the previous control.
-        /// </para>
-        /// </remarks>
-        protected void ShowHostedPanel(Control control)
-        {
-            if (control == null)
-            {
-                throw new ArgumentNullException(nameof(control));
-            }
-
-            try
-            {
-                PanelHost.SuspendLayout();
-                PanelHostControls.SuspendLayout();
-                control.SuspendLayout();
-
-                foreach (Control hostControl in PanelHostControls.Controls.OfType<Control>().Where(item => item != control))
-                {
-                    hostControl.Visible = false;
-                }
-
-                control.Visible = PanelHostControls.Visible = PanelHost.Visible = true;
-
-                control.Left = 0;
-                control.Top = 0;
-
-                // Our control width should be within this range.  
-                if (control.Width > 640)
-                {
-                    control.Width = 640;
-                }
-
-                if (control.Width < 300)
-                {
-                    control.Width = 300;
-                }
-
-                PanelHost.Width = control.Width + PanelHost.Padding.Left;
-                if (control.Height > PanelHostControls.ClientSize.Height)
-                {
-                    PanelHost.Width += SystemInformation.VerticalScrollBarWidth;
-                }
-
-                PanelHostControls.AutoScrollMinSize = new Size(0, control.Height);
-            }
-            finally
-            {
-                control.ResumeLayout(false);
-                control.PerformLayout();
-                PanelHostControls.ResumeLayout(false);
-                PanelHostControls.PerformLayout();
-                PanelHost.ResumeLayout(false);
-                PanelHost.PerformLayout();
-            }
-        }
-
-        /// <summary>
         /// Function to hide the host panel controls.
         /// </summary>
         protected void HideHostedPanels()
@@ -521,50 +526,6 @@ namespace Gorgon.Editor.UI.Views
             }
 
             PanelHost.Visible = PanelHostControls.Visible = false;            
-        }
-
-        /// <summary>
-        /// Function to render the swap chain contents to a GDI+ bitmap.
-        /// </summary>
-        /// <param name="graphics">The GDI+ graphics interface.</param>
-        /// <remarks>
-        /// <para>
-        /// Use this method to send the backbuffer for the <see cref="SwapChain"/> to a GDI+ bitmap when the control is being rendered to a bitmap or printed. The <see cref="GorgonOverlayPanel"/> renders 
-        /// the control to a bitmap to achieve the transparency effect it uses, and without this method anything on the swap chain will not be drawn under the overlay.
-        /// </para>
-        /// </remarks>
-        protected void RenderSwapChainToBitmap(System.Drawing.Graphics graphics)
-        {
-            if ((IsDesignTime) || (SwapChain == null) || (IdleMethod == null))
-            {
-                return;
-            }
-
-            // This method is used to capture the D3D rendering when rendering to a GDI+ bitmap (as used by the overlay).
-            // Without it, no image is rendered and only a dark grey background is visible.
-
-            IGorgonImage swapBufferImage = null;
-            Bitmap gdiBitmap = null;
-
-            try
-            {
-                IdleMethod();
-
-                swapBufferImage = SwapChain.CopyBackBufferToImage();
-                gdiBitmap = swapBufferImage.Buffers[0].ToBitmap();
-                swapBufferImage.Dispose();
-
-                graphics.DrawImage(gdiBitmap, new Point(0, 0));
-            }
-            catch
-            {
-                // Empty on purpose.  Don't need to worry about exceptions here, if things fail, they fail and state should not be corrupted.
-            }
-            finally
-            {
-                gdiBitmap?.Dispose();
-                swapBufferImage?.Dispose();
-            }
         }
 
         /// <summary>

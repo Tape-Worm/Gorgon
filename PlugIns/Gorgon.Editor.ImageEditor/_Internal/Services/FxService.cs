@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using DX = SharpDX;
 using Gorgon.Renderers;
@@ -263,7 +259,7 @@ namespace Gorgon.Editor.ImageEditor
                 _graphics.Renderer2D.End();
             }
 
-            _edgeDetect.Begin(GorgonBlendState.ModulatedAlphaAdd);
+            _edgeDetect.Begin();
             _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColor.White, _texture, new DX.RectangleF(0, 0, 1, 1));
             _edgeDetect.End();
             
@@ -433,6 +429,7 @@ namespace Gorgon.Editor.ImageEditor
             _grayScale = new Gorgon2DGrayScaleEffect(_graphics.Renderer2D);
             _invert = new Gorgon2DInvertEffect(_graphics.Renderer2D);
             _sharpEmboss = new Gorgon2DSharpenEmbossEffect(_graphics.Renderer2D);
+            _sharpEmboss.Precache();
             _burnDodgeEffect = new Gorgon2DBurnDodgeEffect(_graphics.Renderer2D);
             _posterizeEffect = new Gorgon2DPosterizedEffect(_graphics.Renderer2D);
             _oneBitEffect = new Gorgon2D1BitEffect(_graphics.Renderer2D)

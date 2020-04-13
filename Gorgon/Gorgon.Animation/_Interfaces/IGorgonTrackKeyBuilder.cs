@@ -44,6 +44,40 @@ namespace Gorgon.Animation
         IGorgonTrackKeyBuilder<T> Clear();
 
         /// <summary>
+        /// Function to mark the track as enabled.
+        /// </summary>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <remarks>
+        /// <para>
+        /// Enabled tracks will play during the animation, disabled ones will not.
+        /// </para>
+        /// </remarks>
+        IGorgonTrackKeyBuilder<T> Enabled();
+
+        /// <summary>
+        /// Function to mark the track as enabled.
+        /// </summary>
+        /// <param name="isEnabled"><b>true</b> if the track should be enabled initially, or <b>false</b> if not.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <remarks>
+        /// <para>
+        /// Enabled tracks will play during the animation, disabled ones will not.
+        /// </para>
+        /// </remarks>
+        IGorgonTrackKeyBuilder<T> Enabled(bool isEnabled);
+
+        /// <summary>
+        /// Function to mark the track as disabled.
+        /// </summary>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <remarks>
+        /// <para>
+        /// Enabled tracks will play during the animation, disabled ones will not.
+        /// </para>
+        /// </remarks>
+        IGorgonTrackKeyBuilder<T> Disabled();
+
+        /// <summary>
         /// Function to set a key to the track.  
         /// </summary>
         /// <param name="key">The key to add.</param>

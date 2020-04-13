@@ -35,13 +35,11 @@ namespace Gorgon.Editor.SpriteEditor
     /// The view model used to manipulate the settings for the plug in.
     /// </summary>
     internal class Settings
-        : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings//, ISpritePickMaskEditor
+        : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings
     {
         #region Variables.
         // The plug in settings.
         private SpriteEditorSettings _settings;
-        // Flag to indicate that the panel is active.
-        private bool _isActive;
         #endregion
 
         #region Properties.
@@ -122,7 +120,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to set or return the flag used to show a warning when a large image is being used with the <see cref="SpriteEditTool.SpritePick"/> tool.
+        /// Property to set or return the flag used to show a warning when a large image is being used with the sprite picker tool.
         /// </summary>
         public bool ShowImageSizeWarning
         {
@@ -140,22 +138,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
         }
 
-        /*/// <summary>Property to set or return whether the crop/resize settings is active or not.</summary>
-        bool IHostedPanelViewModel.IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _isActive = value;
-                OnPropertyChanged();
-            }
-        }
+        /*
 
         /// <summary>Property to return whether the panel is modal.</summary>
         bool IHostedPanelViewModel.IsModal => true;

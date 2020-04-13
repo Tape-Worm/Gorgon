@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 
@@ -35,6 +36,14 @@ namespace Gorgon.Editor.ViewModels
     internal interface IContentPreview
         : IViewModel
     {
+        /// <summary>
+        /// Property to return the task used for loading the image preview.
+        /// </summary>
+        Task LoadingTask
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the preview image to display.
         /// </summary>

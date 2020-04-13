@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Buffers;
 using Gorgon.Graphics;
 using DX = SharpDX;
 

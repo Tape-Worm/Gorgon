@@ -244,7 +244,7 @@ namespace Gorgon.Editor.Rendering
         /// </summary>
         public bool CanPanHorizontally
         {
-            get => (_camera == null) || (!_panHorzEnabled) ? false : ContentSize.Width > ClientSize.Width;
+            get => (_camera != null) && (_panHorzEnabled) && (ContentSize.Width > ClientSize.Width);
             set => _panHorzEnabled = value;
         }
 
@@ -253,7 +253,7 @@ namespace Gorgon.Editor.Rendering
         /// </summary>
         public bool CanPanVertically
         {
-            get => (_camera == null) || (!_panVertEnabled) ? false : ContentSize.Height > ClientSize.Height;
+            get => (_camera != null) && (_panVertEnabled) && (ContentSize.Height > ClientSize.Height);
             set => _panVertEnabled = value;
         }
 
@@ -595,6 +595,15 @@ namespace Gorgon.Editor.Rendering
         /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
         private void SwapChain_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
         {
+            // Because we have multiple swap chains, we need to reset it back to our swap chain.
+            // Otherwise the camera will use the correct swap chain.
+            if (Graphics.RenderTargets[0] != _swapChain.RenderTargetView)
+            {
+                Graphics.SetRenderTarget(_swapChain.RenderTargetView);
+            }
+
+            _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
+
             ClientSize = e.Size;
             OnResizeEnd();
 
@@ -615,6 +624,24 @@ namespace Gorgon.Editor.Rendering
             var scaling = new DX.Vector2(ClientSize.Width / RenderRegion.Width, ClientSize.Height / RenderRegion.Height);
 
             return scaling.X.Min(scaling.Y);
+        }
+
+        /// <summary>
+        /// Function to retrieve the nearest zoom level that fits within the specified rectangle.
+        /// </summary>
+        /// <param name="region">The region to zoom in on.</param>
+        /// <returns>The zoom level value needed to fit within the content window.</returns>
+        protected ZoomLevels GetNearestZoomFromRectangle(DX.RectangleF region)
+        {
+            if ((region.Width < 1) || (region.Height < 1))
+            {
+                region = new DX.RectangleF(region.X, region.Y, 1, 1);
+            }                
+
+            var scaling = new DX.Vector2(ClientSize.Width / region.Width, ClientSize.Height / region.Height);
+            float scaleValue = scaling.X.Min(scaling.Y);
+
+            return scaleValue.GetZoomLevel();
         }
 
         /// <summary>
@@ -799,17 +826,12 @@ namespace Gorgon.Editor.Rendering
                 return;
             }
 
+            UnloadResources();
+
             if (DataContext != null)
             {
                 SetDataContext(null);
             }
-
-            if (BackgroundPattern == null)
-            {
-                return;
-            }
-
-            UnloadResources();
         }
 
         /// <summary>
@@ -924,6 +946,8 @@ namespace Gorgon.Editor.Rendering
                 Height = CommonEditorResources.CheckerBoardPatternImage.Height
             }, CommonEditorResources.CheckerBoardPatternImage);
 
+            ClientSize = new DX.Size2(_swapChain.Width, _swapChain.Height);
+
             _swapChain.BeforeSwapChainResized += SwapChain_BeforeSwapChainResized;
             _swapChain.AfterSwapChainResized += SwapChain_AfterSwapChainResized;
             
@@ -935,13 +959,13 @@ namespace Gorgon.Editor.Rendering
             _swapChain.Window.KeyUp += Window_KeyUp;
             _swapChain.Window.PreviewKeyDown += Window_PreviewKeyDown;
 
-            // Let the custom renderer set up its own stuff.
-            OnLoad();
-
             _camera = new Gorgon2DOrthoCamera(Renderer, new DX.Size2F(RenderRegion.Width, RenderRegion.Height))
             {
                 Anchor = new DX.Vector2(0.5f, 0.5f)
             };
+
+            // Let the custom renderer set up its own stuff.
+            OnLoad();
         }
 
         /// <summary>Function to render the content.</summary>
@@ -1037,6 +1061,88 @@ namespace Gorgon.Editor.Rendering
         /// </summary>
         /// <param name="offset">The offset to apply to the view, in client space.</param>
         /// <param name="zoom">The amount to zoom, normalized percentage (1 = 100%, 0.5 = 50%, 4 = 400%, etc...).</param>
+        /// <param name="ignoreBoundaries"><b>true</b> to ignore the region boundaries, <b>false</b> to respect them.</param>
+        /// <remarks>
+        /// <para>
+        /// This method animates the camera to move it to a location on the content, with an optional zoom scale value. To put the camera at a desired location without zooming, or animation use the 
+        /// <see cref="SetOffset"/> method.
+        /// </para>
+        /// <para>
+        /// To zoom to the current window size, set the <paramref name="zoom"/> value to less than or equal to 0.
+        /// </para>
+        /// </remarks>
+        protected void ForceMoveTo(DX.Vector2 offset, float zoom, bool ignoreBoundaries)
+        {
+            if (_camera == null)
+            {
+                return;
+            }
+
+            if (zoom <= 0)
+            {
+                ZoomLevel = ZoomLevels.ToWindow;
+                zoom = ZoomToWindow();
+            }
+            else
+            {
+                ZoomLevel = zoom.GetZoomLevel();
+                zoom = ZoomLevel.GetScale();
+            }
+
+            float currentSize = _camera.Zoom.X;
+            DX.Vector3 currentPos = _camera.Position;
+            DX.Vector3 targetPos = _camera.Project((DX.Vector3)offset);
+
+            int regionWidth = (int)(RenderRegion.Width * zoom);
+            int regionHeight = (int)(RenderRegion.Height * zoom);
+            var halfRegion = new DX.Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+
+            // If our target size is less than the current view size, then reset the target position to the center of the view.
+            if ((!ignoreBoundaries) && (regionWidth <= ClientSize.Width))
+            {
+                targetPos.X = 0;
+            }
+
+            if ((!ignoreBoundaries) && (regionHeight <= ClientSize.Height))
+            {
+                targetPos.Y = 0;
+            }
+
+            float endTime = 0.65f;
+
+            // Lock the target position to the edges of the image.
+            targetPos.X = targetPos.X.Max(-halfRegion.X).Min(halfRegion.X);
+            targetPos.Y = targetPos.Y.Max(-halfRegion.Y).Min(halfRegion.Y);
+
+            // Ensure the animation is finished prior to starting a new one.
+            if ((_cameraAnimation != null) && (_camAnimController.CurrentAnimation != null) && (_camAnimController.State == AnimationState.Playing))
+            {
+                endTime = _cameraAnimation.Length - _camAnimController.Time;
+                _camAnimController.Time = _cameraAnimation.Length;
+                _camAnimController.Update();
+            }
+
+            _cameraAnimation = _animBuilder.Clear()
+                                           .EditVector2(nameof(IGorgon2DCamera.Zoom))
+                                           .SetInterpolationMode(TrackInterpolationMode.Spline)
+                                           .SetKey(new GorgonKeyVector2(0, new DX.Vector2(currentSize)))
+                                           .SetKey(new GorgonKeyVector2(endTime, new DX.Vector2(zoom)))
+                                           .EndEdit()
+                                           .EditVector3(nameof(IGorgon2DCamera.Position))
+                                           .SetInterpolationMode(TrackInterpolationMode.Spline)
+                                           .SetKey(new GorgonKeyVector3(0, currentPos))
+                                           .SetKey(new GorgonKeyVector3(endTime, targetPos))
+                                           .EndEdit()
+                                           .Build("CamAnim");
+
+            _camAnimController.Play(_camera, _cameraAnimation);
+        }
+
+        /// <summary>
+        /// Function to move the camera to the offset position, and, optionally, the zoom to the offset.
+        /// </summary>
+        /// <param name="offset">The offset to apply to the view, in client space.</param>
+        /// <param name="zoom">The amount to zoom, normalized percentage (1 = 100%, 0.5 = 50%, 4 = 400%, etc...).</param>
         /// <remarks>
         /// <para>
         /// This method animates the camera to move it to a location on the content, with an optional zoom scale value. To put the camera at a desired location without zooming, or animation use the 
@@ -1058,64 +1164,7 @@ namespace Gorgon.Editor.Rendering
                 zoom = 1.0f;
             }
 
-            if (zoom <= 0)
-            {
-                ZoomLevel = ZoomLevels.ToWindow;
-                zoom = ZoomToWindow();
-            }
-            else
-            {
-                ZoomLevel = zoom.GetZoomLevel();
-                zoom = ZoomLevel.GetScale();
-            }
-
-            float currentSize = _camera.Zoom.X;
-            DX.Vector3 currentPos = _camera.Position;            
-            DX.Vector3 targetPos = _camera.Project((DX.Vector3)offset);
-
-            int regionWidth = (int)(RenderRegion.Width * zoom);
-            int regionHeight = (int)(RenderRegion.Height * zoom);
-            var halfRegion = new DX.Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
-
-            // If our target size is less than the current view size, then reset the target position to the center of the view.
-            if ((!_panHorzEnabled) || (regionWidth <= ClientSize.Width))
-            {
-                targetPos.X = 0;
-            }
-
-            if ((!_panVertEnabled) || (regionHeight <= ClientSize.Height))
-            {
-                targetPos.Y = 0;
-            }
-
-            float endTime = 0.65f;
-
-            // Lock the target position to the edges of the image.
-            targetPos.X = targetPos.X.Max(-halfRegion.X).Min(halfRegion.X);
-            targetPos.Y = targetPos.Y.Max(-halfRegion.Y).Min(halfRegion.Y);
-
-            // Ensure the animation is finished prior to starting a new one.
-            if ((_cameraAnimation != null) && (_camAnimController.CurrentAnimation != null) && (_camAnimController.State == AnimationState.Playing))
-            {
-                endTime = _cameraAnimation.Length - _camAnimController.Time;
-                _camAnimController.Time = _cameraAnimation.Length;
-                _camAnimController.Update();
-            }
-                
-            _cameraAnimation = _animBuilder.Clear()
-                                           .EditVector2(nameof(IGorgon2DCamera.Zoom))
-                                           .SetInterpolationMode(TrackInterpolationMode.Spline)
-                                           .SetKey(new GorgonKeyVector2(0, new DX.Vector2(currentSize)))
-                                           .SetKey(new GorgonKeyVector2(endTime, new DX.Vector2(zoom)))
-                                           .EndEdit()
-                                           .EditVector3(nameof(IGorgon2DCamera.Position))
-                                           .SetInterpolationMode(TrackInterpolationMode.Spline)
-                                           .SetKey(new GorgonKeyVector3(0, currentPos))
-                                           .SetKey(new GorgonKeyVector3(endTime, targetPos))
-                                           .EndEdit()            
-                                           .Build("CamAnim");
-
-            _camAnimController.Play(_camera, _cameraAnimation);
+            ForceMoveTo(offset, zoom, false);
         }
         #endregion
 

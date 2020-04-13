@@ -29,12 +29,8 @@ using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using System.Diagnostics;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Core;
-using Gorgon.Math;
 using Gorgon.Editor.Rendering;
-using System.Windows.Forms;
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Fx;
 
@@ -80,24 +76,7 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Methods.
-        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
-        /// <param name="disposing">
-        ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                DataContext.FxContext.BlurSettings.PropertyChanged -= FxBlurSettings_PropertyChanged;
-                DataContext.FxContext.SharpenSettings.PropertyChanged -= SharpenSettings_PropertyChanged;
-                DataContext.FxContext.EmbossSettings.PropertyChanged -= EmbossSettings_PropertyChanged;
-                DataContext.FxContext.EdgeDetectSettings.PropertyChanged -= EdgeDetectSettings_PropertyChanged;
-                DataContext.FxContext.PosterizeSettings.PropertyChanged -= PosterizeSettings_PropertyChanged;
-                DataContext.FxContext.OneBitSettings.PropertyChanged -= OneBitSettings_PropertyChanged;
-            }
-            base.Dispose(disposing);
-        }
-
-        /// <summary>Handles the <see cref="E:BitSettingsPropertyChanged"/> event.</summary>
+        /// <summary>Handles the BitSettingsPropertyChanged event.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void OneBitSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -201,27 +180,27 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void RenderFx()
         {
-            if (DataContext.CurrentHostedPanel == DataContext.FxContext.BlurSettings)
+            if (DataContext.CurrentPanel == DataContext.FxContext.BlurSettings)
             {
                 _fxPreviewer.GenerateBlurPreview(_passes);
             }
-            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.SharpenSettings)
+            else if (DataContext.CurrentPanel == DataContext.FxContext.SharpenSettings)
             {
                 _fxPreviewer.GenerateSharpenEmbossPreview(_sharpAmount, false);
             }
-            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.EmbossSettings)
+            else if (DataContext.CurrentPanel == DataContext.FxContext.EmbossSettings)
             {
                 _fxPreviewer.GenerateSharpenEmbossPreview(_embossAmount, true);
             }
-            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.EdgeDetectSettings)
+            else if (DataContext.CurrentPanel == DataContext.FxContext.EdgeDetectSettings)
             {
                 _fxPreviewer.GenerateEdgeDetectPreview(_edgeThreshold, _edgeOffset, _edgeColor, _edgeOverlay);
             }
-            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.PosterizeSettings)
+            else if (DataContext.CurrentPanel == DataContext.FxContext.PosterizeSettings)
             {
                 _fxPreviewer.GeneratePosterizePreview(_posterizeAmount);
             }
-            else if (DataContext.CurrentHostedPanel == DataContext.FxContext.OneBitSettings)
+            else if (DataContext.CurrentPanel == DataContext.FxContext.OneBitSettings)
             {
                 _fxPreviewer.GenerateOneBitPreview(new GorgonRangeF(_oneBitMin / 255.0f, _oneBitMax / 255.0f), _oneBitInvert);
             }
@@ -236,7 +215,7 @@ namespace Gorgon.Editor.ImageEditor
 
             switch (propertyName)
             {
-                case nameof(IImageContent.CurrentHostedPanel):
+                case nameof(IImageContent.CurrentPanel):
                     RenderFx();
                     break;
             }
@@ -256,7 +235,7 @@ namespace Gorgon.Editor.ImageEditor
                                                            RenderRegion.Width,
                                                            RenderRegion.Height),
                                         color,
-                                        DataContext.CurrentHostedPanel == null ? _fxPreviewer.OriginalTexture : _fxPreviewer.PreviewTexture,
+                                        DataContext.CurrentPanel == null ? _fxPreviewer.OriginalTexture : _fxPreviewer.PreviewTexture,
                                         new DX.RectangleF(0, 0, 1, 1),
                                         DataContext.CurrentArrayIndex,
                                         textureSampler: GorgonSamplerState.PointFiltering);
@@ -282,6 +261,37 @@ namespace Gorgon.Editor.ImageEditor
         {
             // Textures are handled in the previewer.
         }
+
+        /// <summary>Function called when the renderer needs to clean up any resource data.</summary>
+        /// <remarks>Developers should always override this method if they've overridden the <see cref="DefaultContentRenderer{T}.OnLoad"/> method. Failure to do so can cause memory leakage.</remarks>
+        protected override void OnUnload()
+        {
+            DataContext.FxContext.BlurSettings.PropertyChanged -= FxBlurSettings_PropertyChanged;
+            DataContext.FxContext.SharpenSettings.PropertyChanged -= SharpenSettings_PropertyChanged;
+            DataContext.FxContext.EmbossSettings.PropertyChanged -= EmbossSettings_PropertyChanged;
+            DataContext.FxContext.EdgeDetectSettings.PropertyChanged -= EdgeDetectSettings_PropertyChanged;
+            DataContext.FxContext.PosterizeSettings.PropertyChanged -= PosterizeSettings_PropertyChanged;
+            DataContext.FxContext.OneBitSettings.PropertyChanged -= OneBitSettings_PropertyChanged;
+
+            base.OnUnload();
+        }
+
+        /// <summary>Function called when the renderer needs to load any resource data.</summary>
+        /// <remarks>
+        /// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
+        /// <see cref="DefaultContentRenderer{T}.OnUnload"/> method.
+        /// </remarks>
+        protected override void OnLoad()
+        {
+            base.OnLoad();
+
+            DataContext.FxContext.BlurSettings.PropertyChanged += FxBlurSettings_PropertyChanged;
+            DataContext.FxContext.SharpenSettings.PropertyChanged += SharpenSettings_PropertyChanged;
+            DataContext.FxContext.EmbossSettings.PropertyChanged += EmbossSettings_PropertyChanged;
+            DataContext.FxContext.EdgeDetectSettings.PropertyChanged += EdgeDetectSettings_PropertyChanged;
+            DataContext.FxContext.PosterizeSettings.PropertyChanged += PosterizeSettings_PropertyChanged;
+            DataContext.FxContext.OneBitSettings.PropertyChanged += OneBitSettings_PropertyChanged;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -293,12 +303,6 @@ namespace Gorgon.Editor.ImageEditor
             : base(ViewerName, "Gorgon2DTextureArrayView", 0, renderer, swapChain, dataContext)
         {
             _fxPreviewer = (IFxPreviewer)dataContext.FxContext.FxService;
-            dataContext.FxContext.BlurSettings.PropertyChanged += FxBlurSettings_PropertyChanged;
-            dataContext.FxContext.SharpenSettings.PropertyChanged += SharpenSettings_PropertyChanged;
-            dataContext.FxContext.EmbossSettings.PropertyChanged += EmbossSettings_PropertyChanged;
-            dataContext.FxContext.EdgeDetectSettings.PropertyChanged += EdgeDetectSettings_PropertyChanged;
-            dataContext.FxContext.PosterizeSettings.PropertyChanged += PosterizeSettings_PropertyChanged;
-            dataContext.FxContext.OneBitSettings.PropertyChanged += OneBitSettings_PropertyChanged;
             AllowArrayDepthChange = false;
             AllowMipChange = false;
         }

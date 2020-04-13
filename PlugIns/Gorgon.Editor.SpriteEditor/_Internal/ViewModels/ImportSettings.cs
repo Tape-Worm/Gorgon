@@ -52,6 +52,9 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Properties.
+        /// <summary>Property to return the file name that will hold the plug ins.</summary>
+        protected override string SettingsFileName => SpriteImporterPlugIn.SettingsFilename;
+
         /// <summary>
         /// Property to return the list of selected codecs.
         /// </summary>
@@ -70,9 +73,6 @@ namespace Gorgon.Editor.SpriteEditor
 
         /// <summary>Property to return the name of this object.</summary>
         public override string Name => Resources.GORSPR_IMPORT_DESC;
-
-        /// <summary>Property to return the file name that will hold the plug ins.</summary>
-        protected override string SettingsFileName => SpriteEditorPlugIn.SettingsFilename;
         #endregion
 
         #region Methods.

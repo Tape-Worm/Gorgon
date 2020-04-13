@@ -62,7 +62,7 @@ namespace Gorgon.Native
         /// <summary>Key: Enter</summary>
         Enter = 0x000D,
         /// <summary>Key: Return</summary>
-        Return = 0x000D,
+        Return = Enter,
         /// <summary>Key: ShiftKey</summary>
         ShiftKey = 0x0010,
         /// <summary>Key: ControlKey</summary>
@@ -74,13 +74,13 @@ namespace Gorgon.Native
         /// <summary>Key: CapsLock</summary>
         CapsLock = 0x0014,
         /// <summary>Key: Capital</summary>
-        Capital = 0x0014,
+        Capital = CapsLock,
         /// <summary>Key: HangulMode</summary>
         HangulMode = 0x0015,
         /// <summary>Key: HanguelMode</summary>
-        HanguelMode = 0x0015,
+        HanguelMode = HangulMode,
         /// <summary>Key: KanaMode</summary>
-        KanaMode = 0x0015,
+        KanaMode = HangulMode,
         /// <summary>Key: JunjaMode</summary>
         JunjaMode = 0x0017,
         /// <summary>Key: FinalMode</summary>
@@ -88,7 +88,7 @@ namespace Gorgon.Native
         /// <summary>Key: KanjiMode</summary>
         KanjiMode = 0x0019,
         /// <summary>Key: HanjaMode</summary>
-        HanjaMode = 0x0019,
+        HanjaMode = KanjiMode,
         /// <summary>Key: Escape</summary>
         Escape = 0x001B,
         /// <summary>Key: IMEConvert</summary>
@@ -98,7 +98,7 @@ namespace Gorgon.Native
         /// <summary>Key: IMEAccept</summary>
         IMEAccept = 0x001E,
         /// <summary>Key: IMEAceept</summary>
-        IMEAceept = 0x001E,
+        IMEAceept = IMEAccept,
         /// <summary>Key: IMEModeChange</summary>
         IMEModeChange = 0x001F,
         /// <summary>Key: Space</summary>
@@ -106,11 +106,11 @@ namespace Gorgon.Native
         /// <summary>Key: Prior</summary>
         Prior = 0x0021,
         /// <summary>Key: PageUp</summary>
-        PageUp = 0x0021,
+        PageUp = Prior,
         /// <summary>Key: PageDown</summary>
         PageDown = 0x0022,
         /// <summary>Key: Next</summary>
-        Next = 0x0022,
+        Next = PageDown,
         /// <summary>Key: End</summary>
         End = 0x0023,
         /// <summary>Key: Home</summary>
@@ -132,7 +132,7 @@ namespace Gorgon.Native
         /// <summary>Key: Snapshot</summary>
         Snapshot = 0x002C,
         /// <summary>Key: PrintScreen</summary>
-        PrintScreen = 0x002C,
+        PrintScreen = Snapshot,
         /// <summary>Key: Insert</summary>
         Insert = 0x002D,
         /// <summary>Key: Delete</summary>
@@ -354,7 +354,7 @@ namespace Gorgon.Native
         /// <summary>Key: OemSemicolon</summary>
         OemSemicolon = 0x00BA,
         /// <summary>Key: Oem1</summary>
-        Oem1 = 0x00BA,
+        Oem1 = OemSemicolon,
         /// <summary>Key: Oemplus</summary>
         Oemplus = 0x00BB,
         /// <summary>Key: Oemcomma</summary>
@@ -366,33 +366,33 @@ namespace Gorgon.Native
         /// <summary>Key: Oem2</summary>
         Oem2 = 0x00BF,
         /// <summary>Key: OemQuestion</summary>
-        OemQuestion = 0x00BF,
+        OemQuestion = Oem2,
         /// <summary>Key: Oem3</summary>
         Oem3 = 0x00C0,
         /// <summary>Key: Oemtilde</summary>
-        Oemtilde = 0x00C0,
+        Oemtilde = Oem3,
         /// <summary>Key: Oem4</summary>
         Oem4 = 0x00DB,
         /// <summary>Key: OemOpenBrackets</summary>
-        OemOpenBrackets = 0x00DB,
+        OemOpenBrackets = Oem4,
         /// <summary>Key: OemPipe</summary>
         OemPipe = 0x00DC,
         /// <summary>Key: Oem5</summary>
-        Oem5 = 0x00DC,
+        Oem5 = OemPipe,
         /// <summary>Key: OemCloseBrackets</summary>
         OemCloseBrackets = 0x00DD,
         /// <summary>Key: Oem6</summary>
-        Oem6 = 0x00DD,
+        Oem6 = OemCloseBrackets,
         /// <summary>Key: OemQuotes</summary>
         OemQuotes = 0x00DE,
         /// <summary>Key: Oem7</summary>
-        Oem7 = 0x00DE,
+        Oem7 = OemQuotes,
         /// <summary>Key: Oem8</summary>
         Oem8 = 0x00DF,
         /// <summary>Key: Oem102</summary>
         Oem102 = 0x00E2,
         /// <summary>Key: OemBackslash</summary>
-        OemBackslash = 0x00E2,
+        OemBackslash = Oem102,
         /// <summary>Key: ProcessKey</summary>
         ProcessKey = 0x00E5,
         /// <summary>Key: Packet</summary>
@@ -418,13 +418,13 @@ namespace Gorgon.Native
         /// <summary>Key: KeyCode</summary>
         KeyCode = 0xFFFF,
         /// <summary>Key: Shift</summary>
-        Shift = 0x0000,
+        Shift = None,
         /// <summary>Key: Control</summary>
-        Control = 0x0000,
+        Control = None,
         /// <summary>Key: Alt</summary>
-        Alt = 0x0000,
+        Alt = None,
         /// <summary>Key: Modifiers</summary>
-        Modifiers = 0x0000
+        Modifiers = None
     }
     #endregion
 

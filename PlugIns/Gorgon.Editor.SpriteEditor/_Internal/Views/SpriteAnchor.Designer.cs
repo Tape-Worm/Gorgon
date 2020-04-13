@@ -21,7 +21,7 @@
             if (disposing)
             {
                 UnassignEvents();
-                //DataContext?.OnUnload();
+                DataContext?.OnUnload();
             }
 
             base.Dispose(disposing);
@@ -41,6 +41,8 @@
             this.NumericHorizontal = new System.Windows.Forms.NumericUpDown();
             this.NumericVertical = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.CheckRotate = new System.Windows.Forms.CheckBox();
+            this.CheckScale = new System.Windows.Forms.CheckBox();
             this.PanelBody.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -60,13 +62,17 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.Alignment, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.CheckRotate, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.CheckScale, 0, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(212, 251);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -94,11 +100,11 @@
             this.tableLayoutPanel2.Controls.Add(this.NumericHorizontal, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.NumericVertical, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.label3, 1, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(11, 6);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(10, 6);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(190, 29);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(191, 29);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // NumericHorizontal
@@ -124,7 +130,7 @@
             // NumericVertical
             // 
             this.NumericVertical.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.NumericVertical.Location = new System.Drawing.Point(107, 3);
+            this.NumericVertical.Location = new System.Drawing.Point(108, 3);
             this.NumericVertical.Maximum = new decimal(new int[] {
             262144,
             0,
@@ -147,9 +153,49 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(89, 7);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(12, 15);
+            this.label3.Size = new System.Drawing.Size(13, 15);
             this.label3.TabIndex = 4;
             this.label3.Text = "x";
+            // 
+            // CheckRotate
+            // 
+            this.CheckRotate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.CheckRotate.Appearance = System.Windows.Forms.Appearance.Button;
+            this.CheckRotate.AutoSize = true;
+            this.CheckRotate.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.CheckRotate.FlatAppearance.CheckedBackColor = System.Drawing.Color.CornflowerBlue;
+            this.CheckRotate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DarkOrange;
+            this.CheckRotate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+            this.CheckRotate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.CheckRotate.Location = new System.Drawing.Point(3, 152);
+            this.CheckRotate.Name = "CheckRotate";
+            this.CheckRotate.Size = new System.Drawing.Size(206, 23);
+            this.CheckRotate.TabIndex = 2;
+            this.CheckRotate.Text = "Test Rotation";
+            this.CheckRotate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.CheckRotate.UseVisualStyleBackColor = true;
+            this.CheckRotate.Click += new System.EventHandler(this.CheckRotate_Click);
+            // 
+            // CheckScale
+            // 
+            this.CheckScale.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.CheckScale.Appearance = System.Windows.Forms.Appearance.Button;
+            this.CheckScale.AutoSize = true;
+            this.CheckScale.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+            this.CheckScale.FlatAppearance.CheckedBackColor = System.Drawing.Color.CornflowerBlue;
+            this.CheckScale.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DarkOrange;
+            this.CheckScale.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+            this.CheckScale.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.CheckScale.Location = new System.Drawing.Point(3, 181);
+            this.CheckScale.Name = "CheckScale";
+            this.CheckScale.Size = new System.Drawing.Size(206, 25);
+            this.CheckScale.TabIndex = 3;
+            this.CheckScale.Text = "Test Scaling";
+            this.CheckScale.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.CheckScale.UseVisualStyleBackColor = true;
+            this.CheckScale.Click += new System.EventHandler(this.CheckScale_Click);
             // 
             // SpriteAnchor
             // 
@@ -178,5 +224,7 @@
         private System.Windows.Forms.NumericUpDown NumericHorizontal;
         private System.Windows.Forms.NumericUpDown NumericVertical;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox CheckRotate;
+        private System.Windows.Forms.CheckBox CheckScale;
     }
 }

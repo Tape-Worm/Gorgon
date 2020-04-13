@@ -26,7 +26,6 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;

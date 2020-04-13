@@ -275,54 +275,62 @@ namespace Gorgon.Animation
             for (int i = 0; i < _playableTracks.Count; ++i)
             {
                 GorgonTrackRegistration registration = _playableTracks[i];
+                
 
                 switch (registration.KeyType)
                 {
                     case AnimationTrackKeyType.Single:
                         if ((CurrentAnimation.SingleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeySingle> singleTrack))
-                            && (TrackKeyProcessor.TryUpdateSingle(CurrentAnimation.Length, singleTrack, _time, out float singleValue)))
+                            && (TrackKeyProcessor.TryUpdateSingle(CurrentAnimation.Length, singleTrack, _time, out float singleValue))
+                            && (singleTrack.IsEnabled))
                         {
                             OnSingleValueUpdate(registration, _animatedObject, singleValue);
                         }
                         break;
                     case AnimationTrackKeyType.Vector2:
                         if ((CurrentAnimation.Vector2Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector2> vec2DTrack))
-                            && (TrackKeyProcessor.TryUpdateVector2(CurrentAnimation.Length, vec2DTrack, _time, out DX.Vector2 vec2DValue)))
+                            && (TrackKeyProcessor.TryUpdateVector2(CurrentAnimation.Length, vec2DTrack, _time, out DX.Vector2 vec2DValue))
+                            && (vec2DTrack.IsEnabled))
                         {
                             OnVector2ValueUpdate(registration, _animatedObject, vec2DValue);
                         }
                         break;
                     case AnimationTrackKeyType.Vector3:
                         if ((CurrentAnimation.Vector3Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector3> vec3DTrack))
-                            && (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation.Length, vec3DTrack, _time, out DX.Vector3 vec3DValue)))
+                            && (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation.Length, vec3DTrack, _time, out DX.Vector3 vec3DValue))
+                            && (vec3DTrack.IsEnabled))
                         {
                             OnVector3ValueUpdate(registration, _animatedObject, vec3DValue);
                         }
                         break;
                     case AnimationTrackKeyType.Vector4:
                         if ((CurrentAnimation.Vector4Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector4> vec4DTrack))
-                            && (TrackKeyProcessor.TryUpdateVector4(CurrentAnimation.Length, vec4DTrack, _time, out DX.Vector4 vec4DValue)))
+                            && (TrackKeyProcessor.TryUpdateVector4(CurrentAnimation.Length, vec4DTrack, _time, out DX.Vector4 vec4DValue))
+                            && (vec4DTrack.IsEnabled))
                         {
                             OnVector4ValueUpdate(registration, _animatedObject, vec4DValue);
                         }
                         break;
                     case AnimationTrackKeyType.Rectangle:
                         if ((CurrentAnimation.RectangleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyRectangle> rectTrack))
-                            && (TrackKeyProcessor.TryUpdateRectBounds(CurrentAnimation.Length, rectTrack, _time, out DX.RectangleF rectValue)))
+                            && (TrackKeyProcessor.TryUpdateRectBounds(CurrentAnimation.Length, rectTrack, _time, out DX.RectangleF rectValue))
+                            && (rectTrack.IsEnabled))
                         {
                             OnRectangleUpdate(registration, _animatedObject, rectValue);
                         }
                         break;
                     case AnimationTrackKeyType.Color:
                         if ((CurrentAnimation.ColorTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyGorgonColor> colorTrack))
-                            && (TrackKeyProcessor.TryUpdateColor(CurrentAnimation.Length, colorTrack, _time, out GorgonColor colorValue)))
+                            && (TrackKeyProcessor.TryUpdateColor(CurrentAnimation.Length, colorTrack, _time, out GorgonColor colorValue))
+                            && (colorTrack.IsEnabled))
                         {
                             OnColorUpdate(registration, _animatedObject, colorValue);
                         }
                         break;
                     case AnimationTrackKeyType.Texture2D:
                         if ((CurrentAnimation.Texture2DTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyTexture2D> textureTrack))
-                            && (TrackKeyProcessor.TryUpdateTexture2D(CurrentAnimation.Length, textureTrack, _time, out GorgonTexture2DView texture, out DX.RectangleF texCoords, out int texArray)))
+                            && (TrackKeyProcessor.TryUpdateTexture2D(CurrentAnimation.Length, textureTrack, _time, out GorgonTexture2DView texture, out DX.RectangleF texCoords, out int texArray))
+                            && (textureTrack.IsEnabled))
                         {
                             OnTexture2DUpdate(registration, _animatedObject, texture, texCoords, texArray);
                         }

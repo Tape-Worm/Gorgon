@@ -91,7 +91,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
             set;
-        }
+        } = true;
 
         /// <summary>
         /// Property to set or return the type of masking to perform when picking and clipping.
@@ -101,7 +101,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get;
             set;
-        }
+        } = ClipMask.Alpha;
 
         /// <summary>
         /// Property to set or return the sprite picker mask color.

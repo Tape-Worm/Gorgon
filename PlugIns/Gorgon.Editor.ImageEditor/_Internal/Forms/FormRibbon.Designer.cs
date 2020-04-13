@@ -128,7 +128,8 @@
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage,
             this.TabEffects});
-            this.RibbonImageContent.SelectedTab = this.TabEffects;
+            this.RibbonImageContent.SelectedContext = null;
+            this.RibbonImageContent.SelectedTab = this.TabImage;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
             // 
@@ -437,6 +438,7 @@
             this.ButtonZoom.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.zoom_16x16;
             this.ButtonZoom.KeyTip = "Z";
             this.ButtonZoom.TextLine1 = "Zoom";
+            this.ButtonZoom.ToolTipBody = "Zooms in or out on the image by the specified percentage.";
             this.ButtonZoom.ToolTipTitle = "Zoom";
             // 
             // MenuZoom

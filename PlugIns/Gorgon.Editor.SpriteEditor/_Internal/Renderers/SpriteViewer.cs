@@ -24,20 +24,12 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
-using Gorgon.Editor.SpriteEditor.Properties;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -58,40 +50,40 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return whether the opactiy animation is playing.
         /// </summary>
-        protected bool IsAnimating => _animController.State == AnimationState.Playing;
+        protected virtual bool IsAnimating => _animController.State == AnimationState.Playing;
 
         /// <summary>Property to set or return the opacity of the sprite texture in the view.</summary>        
         public float TextureOpacity
         {
             get;
             set;
-        } = 1.0f;
+        }
 
         /// <summary>Property to set or return the opacity of the sprite in the view.</summary>        
         public float SpriteOpacity
         {
             get;
             set;
-        } = 1.0f;
+        }
         #endregion
 
         #region Methods.
         /// <summary>
         /// Function to animate the sprite texture opacity.
         /// </summary>
-        protected void AnimateTexture()
+        protected virtual void AnimateTexture()
         {
             _animController.Stop();
 
             _opacityAnimation = _animationBuilder.Clear()
                                                  .EditSingle(nameof(ISpriteViewer.TextureOpacity))
                                                  .SetInterpolationMode(TrackInterpolationMode.Spline)
-                                                 .SetKey(new GorgonKeySingle(0, 0))
+                                                 .SetKey(new GorgonKeySingle(0, TextureOpacity))
                                                  .SetKey(new GorgonKeySingle(0.35f, 0.5f))
                                                  .EndEdit()
                                                  .EditSingle(nameof(ISpriteViewer.SpriteOpacity))
                                                  .SetInterpolationMode(TrackInterpolationMode.Spline)
-                                                 .SetKey(new GorgonKeySingle(0, 0))
+                                                 .SetKey(new GorgonKeySingle(0, SpriteOpacity))
                                                  .SetKey(new GorgonKeySingle(0.525f, DataContext.VertexColors.Max(item => item.Alpha)))
                                                  .EndEdit()
                                                  .Build("OpacityAnimation");
@@ -130,18 +122,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnLoad();
 
-            SpriteOpacity = 1.0f;
-            TextureOpacity = 0.5f;
             AnimateTexture();
-        }
-
-        /// <summary>Function called when the renderer needs to clean up any resource data.</summary>
-        /// <remarks>
-        /// Developers should always override this method if they've overridden the <see cref="DefaultContentRenderer{T}.OnLoad"/> method. Failure to do so can cause memory leakage.
-        /// </remarks>
-        protected override void OnUnload()
-        {
-            base.OnUnload();
         }
 
         /// <summary>
@@ -153,6 +134,9 @@ namespace Gorgon.Editor.SpriteEditor
 
         /// <summary>Function to create resources required for the lifetime of the viewer.</summary>
         public void CreateResources() => OnCreateResources();
+
+        /// <summary>Function to set the default zoom/offset for the viewer.</summary>
+        public abstract void DefaultZoom();
         #endregion
 
         #region Constructor/Finalizer.

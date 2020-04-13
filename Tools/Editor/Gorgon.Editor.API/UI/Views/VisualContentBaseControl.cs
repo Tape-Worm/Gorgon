@@ -381,13 +381,13 @@ namespace Gorgon.Editor.UI.Views
 
             switch (propertyName)
             {
-                case nameof(IVisualEditorContent.CurrentHostedPanel):
-                    if (_dataContext.CurrentHostedPanel == null)
+                case nameof(IVisualEditorContent.CurrentPanel):
+                    if (_dataContext.CurrentPanel == null)
                     {
                         break;
                     }
 
-                    string viewModelTypeName = _dataContext.CurrentHostedPanel.GetType().FullName;
+                    string viewModelTypeName = _dataContext.CurrentPanel.GetType().FullName;
                     Control hostControl = GetRegisteredPanel<EditorSubPanelCommon>(viewModelTypeName);
 
                     if (hostControl != null)
@@ -409,15 +409,15 @@ namespace Gorgon.Editor.UI.Views
 
             switch (propertyName)
             {
-                case nameof(IVisualEditorContent.CurrentHostedPanel):
-                    if (_dataContext.CurrentHostedPanel == null)
+                case nameof(IVisualEditorContent.CurrentPanel):
+                    if (_dataContext.CurrentPanel == null)
                     {
                         HideHostedPanels();
                         SetupScrollBars();
                         break;
                     }
 
-                    string viewModelTypeName = _dataContext.CurrentHostedPanel.GetType().FullName;
+                    string viewModelTypeName = _dataContext.CurrentPanel.GetType().FullName;
                     Control hostControl = GetRegisteredPanel<EditorSubPanelCommon>(viewModelTypeName);
 
                     ShowHostedPanel(hostControl);
@@ -576,6 +576,7 @@ namespace Gorgon.Editor.UI.Views
 
             // Reset the current renderer back to the default zoom level.
             SetupScrollBars();
+
             if ((resetZoom) || (offset == null))
             {                
                 Renderer.MoveTo(new DX.Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f), -1);
@@ -587,10 +588,12 @@ namespace Gorgon.Editor.UI.Views
             }
 
             OnSwitchRenderer(Renderer, resetZoom);
-            
+
+            ButtonCenter.Enabled = Renderer?.CanZoom ?? false;
+
             // Reset the timing for the idle loop so we don't end up with stupid delta values because it takes time to switch.
             GorgonTiming.Reset();
-        }        
+        }
 
         /// <summary>
         /// Function to allow applications to set up rendering for their specific use cases.

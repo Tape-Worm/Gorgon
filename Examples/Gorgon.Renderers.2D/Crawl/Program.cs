@@ -180,7 +180,7 @@ namespace Gorgon.Examples
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
 
             // Create the window, and size it to our resolution.
-            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Sprites");
+            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Opening Crawl");
 
             try
             {

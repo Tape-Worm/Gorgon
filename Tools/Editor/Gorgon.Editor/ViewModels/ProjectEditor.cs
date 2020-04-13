@@ -681,8 +681,18 @@ namespace Gorgon.Editor.ViewModels
                     {
                         await CurrentContent.SaveContentCommand.ExecuteAsync(saveReason);
 
-                        // Refresh the preview after we've saved.
-                        RefreshFilePreview(CurrentContent.File.Path);
+                        if (_contentPreviewer != null)
+                        {
+                            // Wait for the previewer to finish its load operation (if the app is closing it'll destroy the area where the thumbnails are saved, so we'll need to ensure
+                            // it doesn't wipe those directories away until after the preview is complete).
+                            await _contentPreviewer.LoadingTask;
+                        }
+
+                        // Refresh the preview after the user has saved, or the content pane was closed. Don't bother refreshing when closing the project itself, there's no need.
+                        if (saveReason != SaveReason.AppProjectShutdown)
+                        {
+                            RefreshFilePreview(CurrentContent.File.Path);
+                        }
                     }
 
                     break;

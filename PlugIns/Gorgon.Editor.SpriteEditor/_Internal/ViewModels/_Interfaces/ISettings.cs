@@ -73,7 +73,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to set or return the flag used to show a warning when a large image is being used with the <see cref="SpriteEditTool.SpritePick"/> tool.
+        /// Property to set or return the flag used to show a warning when a large image is being used with the sprite picker tool.
         /// </summary>
         bool ShowImageSizeWarning
         {

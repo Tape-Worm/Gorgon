@@ -68,6 +68,18 @@
     </Compile>
     <Compile Include="_Internal\CodecRegistry.cs" />
     <Compile Include="_Internal\CodecSetting.cs" />
+    <Compile Include="_Internal\Forms\FormManualRectangleEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="_Internal\Forms\FormManualRectangleEdit.Designer.cs">
+      <DependentUpon>FormManualRectangleEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Forms\FormManualVertexEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="_Internal\Forms\FormManualVertexEdit.Designer.cs">
+      <DependentUpon>FormManualVertexEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="_Internal\Forms\FormNewSprite.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,25 +92,58 @@
     <Compile Include="_Internal\Forms\FormRibbon.Designer.cs">
       <DependentUpon>FormRibbon.cs</DependentUpon>
     </Compile>
+    <Compile Include="_Internal\Renderers\AnchorEditViewer.cs" />
+    <Compile Include="_Internal\Renderers\ClipSpriteViewer.cs" />
     <Compile Include="_Internal\Renderers\DefaultSpriteViewer.cs" />
     <Compile Include="_Internal\Renderers\ImageAnimationController.cs" />
     <Compile Include="_Internal\Renderers\NoTextureViewer.cs" />
+    <Compile Include="_Internal\Renderers\PickSpriteViewer.cs" />
+    <Compile Include="_Internal\Renderers\SingleSpriteViewer.cs" />
+    <Compile Include="_Internal\Renderers\ColorEditViewer.cs" />
     <Compile Include="_Internal\Renderers\SpriteViewer.cs" />
+    <Compile Include="_Internal\Renderers\TextureWrapViewer.cs" />
+    <Compile Include="_Internal\Renderers\VertexEditViewer.cs" />
     <Compile Include="_Internal\Renderers\_Interfaces\ISpriteViewer.cs" />
+    <Compile Include="_Internal\Services\SpriteAnchorEditService.cs" />
     <Compile Include="_Internal\Services\GorgonSpriteImporter.cs" />
-    <Compile Include="_Internal\Services\_Interfaces\IPickClipperService.cs" />
+    <Compile Include="_Internal\Services\NewSpriteService.cs" />
+    <Compile Include="_Internal\Services\PickClipperService.cs" />
+    <Compile Include="_Internal\Services\SpriteContentServices.cs" />
     <Compile Include="_Internal\Services\SpriteTextureService.cs" />
+    <Compile Include="_Internal\Services\SpriteVertexEditService.cs" />
     <Compile Include="_Internal\SpriteEditorSettings.cs" />
     <Compile Include="_Internal\ViewModels\SetTextureArgs.cs" />
     <Compile Include="_Internal\ViewModels\Settings.cs" />
     <Compile Include="_Internal\ViewModels\ImportSettings.cs" />
     <Compile Include="_Internal\ViewModels\ImportSettingsParameters.cs" />
     <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteAnchorEditor\SpriteAnchorEdit.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteAnchorEditor\SpriteAnchorEditParameters.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteAnchorEditor\_Interfaces\ISpriteAnchorEdit.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteColorEditor\SpriteColorEdit.cs" />
+    <Compile Include="_Internal\ViewModels\SpritePick\SpritePickContext.cs" />
+    <Compile Include="_Internal\ViewModels\SpritePick\SpritePickContextParameters.cs" />
+    <Compile Include="_Internal\ViewModels\SpritePick\SpritePickMaskEditorParameters.cs" />
+    <Compile Include="_Internal\ViewModels\SpritePick\SpritePickMaskEditor.cs" />
+    <Compile Include="_Internal\ViewModels\SpritePick\_Interfaces\ISpritePickContext.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteClip\SpriteClipContext.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteClip\SpriteClipContextParameters.cs" />
     <Compile Include="_Internal\ViewModels\SpriteContent.cs" />
     <Compile Include="_Internal\ViewModels\SpriteContentParameters.cs" />
+    <Compile Include="_Internal\ViewModels\SpritePick\_Interfaces\ISpritePickMaskEditor.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteTextureWrapping\SpriteTextureWrapEditParameters.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteTextureWrapping\SpriteTextureWrapEdit.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteTextureWrapping\_Interfaces\ISpriteTextureWrapEdit.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteVertexEditor\SpriteVertexEditContext.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteVertexEditor\SpriteVertexEditContextParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IArrayUpdate.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteColorEditor\_Interfaces\ISpriteColorEdit.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteInfo.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISettings.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IImportSettings.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteClip\_Interfaces\ISpriteClipContext.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteContent.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteVertexEditor\_Interfaces\ISpriteVertexEditContext.cs" />
     <Compile Include="_Internal\Views\SpriteAnchor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -135,7 +180,6 @@
     <Compile Include="_Internal\Views\SpriteWrap.Designer.cs">
       <DependentUpon>SpriteWrap.cs</DependentUpon>
     </Compile>
-    <Compile Include="_Internal\_Interfaces\ISpriteContentFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
@@ -205,6 +249,12 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Forms\FormManualRectangleEdit.resx">
+      <DependentUpon>FormManualRectangleEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Forms\FormManualVertexEdit.resx">
+      <DependentUpon>FormManualVertexEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Forms\FormNewSprite.resx">
       <DependentUpon>FormNewSprite.cs</DependentUpon>
@@ -279,13 +329,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krypton.Ribbon.Lite">
-      <Version>5.500.2003</Version>
+      <Version>5.500.2005</Version>
     </PackageReference>
     <PackageReference Include="Krypton.Toolkit.Lite">
-      <Version>5.500.2003</Version>
+      <Version>5.500.2005</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.8</Version>
+      <Version>3.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -308,9 +358,7 @@
       <Version>4.7.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="__OLDE__\_Internal\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>REM Editor copy

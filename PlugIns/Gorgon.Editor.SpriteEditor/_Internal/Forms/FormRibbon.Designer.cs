@@ -21,6 +21,12 @@
             if (disposing)
             {
                 UnassignEvents();
+
+                if (_contentRenderer != null)
+                {
+                    ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
+                }
+
                 DataContext = null;
             }
 
@@ -138,25 +144,26 @@
             this.RibbonTabSpriteManualInput,
             this.RibbonTabCornerEditing,
             this.RibbonTabSpritePick});
-            this.RibbonSpriteContent.SelectedTab = this.TabSprite;
+            this.RibbonSpriteContent.SelectedContext = null;
+            this.RibbonSpriteContent.SelectedTab = this.RibbonTabCornerEditing;
             this.RibbonSpriteContent.Size = new System.Drawing.Size(1594, 115);
             this.RibbonSpriteContent.TabIndex = 0;
             // 
             // ContextClipSprite
             // 
-            this.ContextClipSprite.ContextName = "ClipSprite";
-            this.ContextClipSprite.ContextTitle = "Clip Sprite";
+            this.ContextClipSprite.ContextName = "ContextSpriteClip";
+            this.ContextClipSprite.ContextTitle = "Clip";
             // 
             // ContextSpriteCornerOffsets
             // 
             this.ContextSpriteCornerOffsets.ContextColor = System.Drawing.Color.ForestGreen;
-            this.ContextSpriteCornerOffsets.ContextName = "SpriteCornerOffsets";
-            this.ContextSpriteCornerOffsets.ContextTitle = "Corner Offsets";
+            this.ContextSpriteCornerOffsets.ContextName = "ContextCornerOffsets";
+            this.ContextSpriteCornerOffsets.ContextTitle = "Corner";
             // 
             // ContextPickSprite
             // 
             this.ContextPickSprite.ContextColor = System.Drawing.Color.Blue;
-            this.ContextPickSprite.ContextName = "SpritePick";
+            this.ContextPickSprite.ContextName = "ContextSpritePick";
             this.ContextPickSprite.ContextTitle = "Pick";
             // 
             // TabSprite
@@ -192,7 +199,8 @@
             this.ButtonNewSprite.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.ButtonNewSprite.TextLine1 = "New";
             this.ButtonNewSprite.TextLine2 = "Sprite";
-            this.ButtonNewSprite.ToolTipBody = "Creates a new sprite for the currently loaded image.";
+            this.ButtonNewSprite.ToolTipBody = "Creates a new sprite based on the current sprite being edited.\r\n\r\nAll sprite prop" +
+    "erties (except the name) will be copied to the \r\nnew sprite.";
             this.ButtonNewSprite.ToolTipTitle = "New sprite";
             this.ButtonNewSprite.Click += new System.EventHandler(this.ButtonNewSprite_Click);
             // 
@@ -410,6 +418,7 @@
             this.ButtonZoomSprite.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.zoom_16x16;
             this.ButtonZoomSprite.KeyTip = "Z";
             this.ButtonZoomSprite.TextLine1 = "Zoom";
+            this.ButtonZoomSprite.ToolTipBody = "Zooms in or out on the sprite texture by the specified percentage.";
             this.ButtonZoomSprite.ToolTipTitle = "Zoom";
             // 
             // MenuZoom
@@ -521,6 +530,7 @@
             // 
             // Item3200Percent
             // 
+            this.Item3200Percent.CheckOnClick = true;
             this.Item3200Percent.Name = "Item3200Percent";
             this.Item3200Percent.Size = new System.Drawing.Size(133, 22);
             this.Item3200Percent.Tag = "Percent3200";
@@ -529,6 +539,7 @@
             // 
             // Item6400Percent
             // 
+            this.Item6400Percent.CheckOnClick = true;
             this.Item6400Percent.Name = "Item6400Percent";
             this.Item6400Percent.Size = new System.Drawing.Size(133, 22);
             this.Item6400Percent.Tag = "Percent6400";
@@ -537,7 +548,7 @@
             // 
             // RibbonTabSpriteManualInput
             // 
-            this.RibbonTabSpriteManualInput.ContextName = "ClipSprite";
+            this.RibbonTabSpriteManualInput.ContextName = "ContextSpriteClip";
             this.RibbonTabSpriteManualInput.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
             this.RibbonGroupSpriteClipFinal,
             this.RibbonGroupManualClipping});
@@ -610,7 +621,6 @@
             this.ButtonClipManualInput.ToolTipBody = "Allows for precise adjustment of the sprite clipping rectangle via numeric values" +
     " typed in by the user.";
             this.ButtonClipManualInput.ToolTipTitle = "Numeric entry";
-            this.ButtonClipManualInput.Click += new System.EventHandler(this.ButtonClipManualInput_Click);
             // 
             // ButtonSpriteClipFullSize
             // 
@@ -634,6 +644,9 @@
             this.ButtonFixedSize.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.fixed_size_16x16;
             this.ButtonFixedSize.KeyTip = "X";
             this.ButtonFixedSize.TextLine1 = "Fixed Size";
+            this.ButtonFixedSize.ToolTipBody = "Locks the width and height of the clipping rectangle \r\nto the respective values i" +
+    "n the text boxes.";
+            this.ButtonFixedSize.ToolTipTitle = "Fixed Size";
             this.ButtonFixedSize.Click += new System.EventHandler(this.ButtonFixedSize_Click);
             // 
             // kryptonRibbonGroupTriple8
@@ -669,7 +682,7 @@
             0,
             0,
             0});
-            this.NumericFixedWidth.ValueChanged += new System.EventHandler(this.NumericFixedWidth_ValueChanged);
+            this.NumericFixedWidth.ValueChanged += new System.EventHandler(this.NumericFixed_ValueChanged);
             // 
             // kryptonRibbonGroupTriple9
             // 
@@ -704,11 +717,11 @@
             0,
             0,
             0});
-            this.NumericFixedHeight.ValueChanged += new System.EventHandler(this.NumericFixedHeight_ValueChanged);
+            this.NumericFixedHeight.ValueChanged += new System.EventHandler(this.NumericFixed_ValueChanged);
             // 
             // RibbonTabCornerEditing
             // 
-            this.RibbonTabCornerEditing.ContextName = "SpriteCornerOffsets";
+            this.RibbonTabCornerEditing.ContextName = "ContextCornerOffsets";
             this.RibbonTabCornerEditing.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
             this.RibbonGroupSpriteCornerOffsetFinal,
             this.RibbonGroupSpriteVertexCorner});
@@ -776,7 +789,6 @@
             this.ButtonSpriteCornerManualInput.TextLine2 = "Entry";
             this.ButtonSpriteCornerManualInput.ToolTipBody = resources.GetString("ButtonSpriteCornerManualInput.ToolTipBody");
             this.ButtonSpriteCornerManualInput.ToolTipTitle = "Numeric entry";
-            this.ButtonSpriteCornerManualInput.Click += new System.EventHandler(this.ButtonSpriteCornerOffsetManualInput_Click);
             // 
             // ButtonSpriteCornerReset
             // 
@@ -790,7 +802,7 @@
             // 
             // RibbonTabSpritePick
             // 
-            this.RibbonTabSpritePick.ContextName = "SpritePick";
+            this.RibbonTabSpritePick.ContextName = "ContextSpritePick";
             this.RibbonTabSpritePick.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
             this.RibbonGroupPickFinalize,
             this.RibbonGroupRegion});
@@ -849,6 +861,7 @@
             // 
             // ButtonPickMaskColor
             // 
+            this.ButtonPickMaskColor.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
             this.ButtonPickMaskColor.ImageLarge = global::Gorgon.Editor.SpriteEditor.Properties.Resources.color_pick_48x48;
             this.ButtonPickMaskColor.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.color_pick_16x16;
             this.ButtonPickMaskColor.KeyTip = "M";
@@ -877,15 +890,14 @@
             // 
             // NumericPadding
             // 
-            this.NumericPadding.DecimalPlaces = 99;
             this.NumericPadding.Maximum = new decimal(new int[] {
-            16384,
+            16,
             0,
             0,
             0});
             this.NumericPadding.MaximumSize = new System.Drawing.Size(96, 0);
             this.NumericPadding.MinimumSize = new System.Drawing.Size(96, 0);
-            this.NumericPadding.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.NumericPadding.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.NumericPadding.ValueChanged += new System.EventHandler(this.NumericPadding_ValueChanged);
             // 
             // FormRibbon
@@ -917,7 +929,6 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteUndo;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteRedo;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LinesSprite2;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonZoomSprite;
         private System.Windows.Forms.ContextMenuStrip MenuZoom;
         private System.Windows.Forms.ToolStripMenuItem ItemZoomToWindow;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
@@ -950,18 +961,14 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab RibbonTabSpriteManualInput;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupManualClipping;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonClipManualInput;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab RibbonTabCornerEditing;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupSpriteVertexCorner;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple3;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteCornerManualInput;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteCornerReset;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonContext ContextSpriteCornerOffsets;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupSpriteClipFinal;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple5;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteClipApply;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteClipCancel;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup RibbonGroupSpriteCornerOffsetFinal;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple6;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteCornerOffsetApply;
@@ -988,5 +995,10 @@
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLabel LabelPadding;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupNumericUpDown NumericPadding;
+        internal ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonClipManualInput;
+        internal ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteClipApply;
+        internal ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteClipCancel;
+        internal ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonZoomSprite;
+        internal ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSpriteCornerManualInput;
     }
 }

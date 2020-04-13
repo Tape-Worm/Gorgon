@@ -34,7 +34,7 @@ namespace Gorgon.Renderers
     public sealed class Gorgon2DBatchState
     {
         /// <summary>
-        /// A default batch state that turns off blending.
+        /// A pre-defined batch state that turns off blending.
         /// </summary>
         public static readonly Gorgon2DBatchState NoBlend = new Gorgon2DBatchState
         {
@@ -42,7 +42,15 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A default batch state that sets up additive blending.
+        /// A pre-defined batch state that sets up modulated blending for color values, and using the source alpha channel to overwrite the destination alpha channel.
+        /// </summary>
+        public static readonly Gorgon2DBatchState ModulatedAlphaOverwrite = new Gorgon2DBatchState
+        {
+            BlendState = GorgonBlendState.ModulatedAlphaOverwrite
+        };
+
+        /// <summary>
+        /// A pre-defined batch state that sets up additive blending.
         /// </summary>
         public static readonly Gorgon2DBatchState AdditiveBlend = new Gorgon2DBatchState
         {
@@ -50,7 +58,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A default batch state that sets up soft additive blending.
+        /// A pre-defined batch state that sets up soft additive blending.
         /// </summary>
         public static readonly Gorgon2DBatchState SoftAdditiveBlend = new Gorgon2DBatchState
         {
@@ -58,7 +66,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A default batch state that sets up premultiplied blending.
+        /// A pre-defined batch state that sets up premultiplied blending.
         /// </summary>
         public static readonly Gorgon2DBatchState PremultipliedBlend = new Gorgon2DBatchState
         {
@@ -66,7 +74,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A default batch state that sets up wirefame mode with no culling.
+        /// A pre-defined batch state that sets up wirefame mode with no culling.
         /// </summary>
         public static readonly Gorgon2DBatchState WireFrameNoCulling = new Gorgon2DBatchState
         {
@@ -74,7 +82,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A default batch state that enabled depth testing/writing and no blending.
+        /// A pre-defined batch state that enabled depth testing/writing and no blending.
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabledNoBlend = new Gorgon2DBatchState
         {
@@ -83,7 +91,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A default batch state that enabled depth testing/writing and modulated blending.
+        /// A pre-defined batch state that enabled depth testing/writing and modulated blending.
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabled = new Gorgon2DBatchState
         {
@@ -92,7 +100,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A default batch state that enabled depth testing/writing and additive blending.
+        /// A pre-defined batch state that enabled depth testing/writing and additive blending.
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabledAdditiveBlend = new Gorgon2DBatchState
         {
@@ -101,7 +109,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A default batch state that enabled depth testing/writing and premultiplied blending.
+        /// A pre-defined batch state that enabled depth testing/writing and premultiplied blending.
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabledPremultipliedBlend = new Gorgon2DBatchState
         {

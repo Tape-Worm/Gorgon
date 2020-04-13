@@ -40,7 +40,6 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
 using System.Collections.ObjectModel;
-using Gorgon.IO;
 
 namespace Gorgon.Editor.ImageEditor
 {

@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.IO;
@@ -46,10 +45,6 @@ namespace Gorgon.Graphics.Fonts.Codecs
         #region Constants.
         // BRSHDATA chunk.
         private const string BrushChunk = "BRSHDATA";
-        // FONTHIGH chunk.
-        private const string FontHeightChunk = "FONTHIGH";
-        // KERNPAIR chunk.
-        private const string KernDataChunk = "KERNPAIR";
         // FONTINFO chunk.
         private const string FontInfoChunk = "FONTINFO";
         // Header for a Gorgon font file.
@@ -125,50 +120,6 @@ namespace Gorgon.Graphics.Fonts.Codecs
         }
 
         /// <summary>
-        /// Function to write out the kerning pair information for the font.
-        /// </summary>
-        /// <param name="fontData">The font data to write.</param>
-        /// <param name="fontFile">The font file that is being persisted.</param>
-        private static void WriteKerningValues(GorgonFont fontData, GorgonChunkFileWriter fontFile)
-        {
-            GorgonBinaryWriter writer = fontFile.OpenChunk(KernDataChunk);
-
-            writer.Write(fontData.KerningPairs.Count);
-
-            foreach (KeyValuePair<GorgonKerningPair, int> kerningInfo in fontData.KerningPairs)
-            {
-                writer.Write(kerningInfo.Key.LeftCharacter);
-                writer.Write(kerningInfo.Key.RightCharacter);
-                writer.Write(kerningInfo.Value);
-            }
-
-            fontFile.CloseChunk();
-        }
-
-        /// <summary>
-        /// Function to read the kerning pairs for the font, if they exist.
-        /// </summary>
-        /// <param name="fontFile">Font file to read.</param>
-        private static Dictionary<GorgonKerningPair, int> ReadKernPairs(GorgonChunkFileReader fontFile)
-        {
-            var result = new Dictionary<GorgonKerningPair, int>();
-            GorgonBinaryReader reader = fontFile.OpenChunk(KernDataChunk);
-
-            // Read optional kerning information.
-            int kernCount = reader.ReadInt32();
-
-            for (int i = 0; i < kernCount; ++i)
-            {
-                var kernPair = new GorgonKerningPair(reader.ReadChar(), reader.ReadChar());
-                result[kernPair] = reader.ReadInt32();
-            }
-
-            fontFile.CloseChunk();
-
-            return result;
-        }
-
-        /// <summary>
         /// Function to write the font data to the stream.
         /// </summary>
         /// <param name="fontData">The font data to write.</param>
@@ -206,24 +157,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 writer.Write(fontInfo.UseKerningPairs);
                 fontFile.CloseChunk();
 
-                writer = fontFile.OpenChunk(FontHeightChunk);
-                writer.Write(fontData.FontHeight);
-                writer.Write(fontData.LineHeight);
-                writer.Write(fontData.Ascent);
-                writer.Write(fontData.Descent);
-                fontFile.CloseChunk();
-
                 if (fontInfo.Brush != null)
                 {
                     writer = fontFile.OpenChunk(BrushChunk);
                     writer.Write((int)fontInfo.Brush.BrushType);
                     fontInfo.Brush.WriteBrushData(writer);
                     fontFile.CloseChunk();
-                }
-
-                if (fontInfo.UseKerningPairs)
-                {
-                    WriteKerningValues(fontData, fontFile);
                 }
             }
             finally
@@ -288,15 +227,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     return Factory.GetFont(fontInfo);
                 }
 
-#warning Is this needed anymore? 
-                GorgonBinaryReader reader = fontFile.OpenChunk(FontHeightChunk);
-
-                // Read in information about the font height.
-                reader.ReadSingle();
-                reader.ReadSingle();
-                reader.ReadSingle();
-                reader.ReadSingle();
-                fontFile.CloseChunk();
+                GorgonBinaryReader reader = null;
 
                 if (fontFile.Chunks.Contains(BrushChunk))
                 {
@@ -329,16 +260,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 {
                     fontInfo.Brush = new GorgonGlyphSolidBrush();
                 }
-
-                // If this font has kerning data, then load that in.
-#warning Is this really needed?
-                //IReadOnlyDictionary<GorgonKerningPair, int> kerningPairs = null;
-
-                if (fontFile.Chunks.Contains(KernDataChunk))
-                {
-                    ReadKernPairs(fontFile);
-                }
-
+                
                 return Factory.GetFont(fontInfo);
             }
             finally

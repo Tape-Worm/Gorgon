@@ -542,7 +542,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>Property to return the currently active panel.</summary>
-        public IHostedPanelViewModel CurrentHostedPanel
+        public IHostedPanelViewModel CurrentPanel
         {
             get => _currentPanel;
             set
@@ -650,9 +650,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             switch (e.PropertyName)
             {
                 case nameof(IHostedPanelViewModel.IsActive):
-                    if ((CurrentHostedPanel != null) && (!CurrentHostedPanel.IsActive))
+                    if ((CurrentPanel != null) && (!CurrentPanel.IsActive))
                     {
-                        CurrentHostedPanel = null;
+                        CurrentPanel = null;
                     }
                     break;
             }
@@ -832,7 +832,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns><b>true</b> if the image can be imported, <b>false</b> if not.</returns>
         private bool CanImportFile(float _) 
         {
-            if ((ImageData == null) || (CurrentHostedPanel != null) || (CommandContext != null))
+            if ((ImageData == null) || (CurrentPanel != null) || (CommandContext != null))
             {
                 return false;
             }
@@ -885,7 +885,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 return false;
             }
 
-            CurrentHostedPanel = null;
+            CurrentPanel = null;
 
             CropOrResizeSettings.AllowedModes = ((ImageData.Width < importImage.Width) || (ImageData.Height < importImage.Height)) ? (CropResizeMode.Crop | CropResizeMode.Resize) : CropResizeMode.Resize;
             if ((CropOrResizeSettings.CurrentMode & CropOrResizeSettings.AllowedModes) != CropOrResizeSettings.CurrentMode)
@@ -901,7 +901,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             // Take a copy of the image here because we'll need to destroy it later.
             CropOrResizeSettings.ImportImage = importImage.Clone();
             CropOrResizeSettings.TargetImageSize = new DX.Size2(width, height);
-            CurrentHostedPanel = CropOrResizeSettings;
+            CurrentPanel = CropOrResizeSettings;
 
             return true;
         }
@@ -932,14 +932,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <returns><b>true</b> if the editor can be shown, <b>false</b> if not.</returns>
         private bool CanShowImageDimensions() => (ImageData != null) && (DimensionSettings?.UpdateImageInfoCommand != null) && (DimensionSettings.UpdateImageInfoCommand.CanExecute(ImageData))
-                && (CurrentHostedPanel == null) && (CommandContext == null);
+                && (CurrentPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to determine if the mip map generation settings can be shown.
         /// </summary>
         /// <returns><b>true</b> if the settings can be shown, <b>false</b> if not.</returns>
         private bool CanShowMipGeneration() => (ImageData != null) && (MipSupport) && (MipMapSettings?.UpdateImageInfoCommand != null) && (MipMapSettings.UpdateImageInfoCommand.CanExecute(ImageData))
-                && (CurrentHostedPanel == null) && (CommandContext == null);
+                && (CurrentPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to show or hide the image dimensions editor.
@@ -948,15 +948,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (CurrentHostedPanel == DimensionSettings)
+                if (CurrentPanel == DimensionSettings)
                 {
-                    CurrentHostedPanel = null;
+                    CurrentPanel = null;
                     return;
                 }
 
                 DimensionSettings.UpdateImageInfoCommand.Execute(ImageData);
                 DimensionSettings.MipSupport = MipSupport;
-                CurrentHostedPanel = DimensionSettings;
+                CurrentPanel = DimensionSettings;
             }
             catch (Exception ex)
             {
@@ -971,7 +971,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (CurrentHostedPanel == MipMapSettings)
+                if (CurrentPanel == MipMapSettings)
                 {
                     return;
                 }
@@ -983,7 +983,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 }
 
                 MipMapSettings.UpdateImageInfoCommand?.Execute(ImageData);
-                CurrentHostedPanel = MipMapSettings;
+                CurrentPanel = MipMapSettings;
             }
             catch (Exception ex)
             {
@@ -1049,13 +1049,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => (_undoService.CanUndo) && (CurrentHostedPanel == null) && (CommandContext == null);
+        private bool CanUndo() => (_undoService.CanUndo) && (CurrentPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => (_undoService.CanRedo) && (CurrentHostedPanel == null) && (CommandContext == null);
+        private bool CanRedo() => (_undoService.CanRedo) && (CurrentPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -1148,7 +1148,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <param name="format">The format to change to.</param>
         /// <returns><b>true</b> if the conversion can take place, <b>false</b> if not.</returns>
-        private bool CanConvertFormat(BufferFormat format) => format == BufferFormat.Unknown ? (CurrentHostedPanel == null) && (CommandContext == null) : format != ImageData.Format;
+        private bool CanConvertFormat(BufferFormat format) => format == BufferFormat.Unknown ? (CurrentPanel == null) && (CommandContext == null) : format != ImageData.Format;
 
         /// <summary>
         /// Function to create an undo cache file from the working file.
@@ -1319,7 +1319,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <param name="_">Not used.</param>
         /// <returns><b>true</b> if the image can be exported, <b>false</b> if not.</returns>
-        private bool CanExportImage(IGorgonImageCodec _) => (CurrentHostedPanel == null) && (CommandContext == null) && (_codecs.Count > 0);
+        private bool CanExportImage(IGorgonImageCodec _) => (CurrentPanel == null) && (CommandContext == null) && (_codecs.Count > 0);
 
         /// <summary>
         /// Function to export this image to the physical file system.
@@ -1455,7 +1455,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             {
                 image.Dispose();
                 CropOrResizeSettings.ImportImage = null;
-                CurrentHostedPanel = null;
+                CurrentPanel = null;
             }
         }
 
@@ -1687,7 +1687,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     redoArgs.UndoFile = undoFile;
                     redoArgs.RedoFile = redoFile;
 
-                    CurrentHostedPanel = null;
+                    CurrentPanel = null;
 
                     return Task.CompletedTask;
                 }
@@ -1851,7 +1851,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     NotifyPropertyChanged(nameof(ImageData));
                     ContentState = ContentState.Modified;
 
-                    CurrentHostedPanel = null;
+                    CurrentPanel = null;
 
                     return Task.CompletedTask;
                 }
@@ -1899,7 +1899,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns><b>true</b> if the image can change types, <b>false</b> if not.</returns>
         private bool CanChangeImageType(ImageType imageType)
         {
-            if ((CurrentHostedPanel != null) || (CommandContext != null))
+            if ((CurrentPanel != null) || (CommandContext != null))
             {
                 return false;
             }
@@ -2055,7 +2055,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if the image can be edited in an external application.
         /// </summary>
         /// <returns></returns>
-        private bool CanEditInApp() => (CurrentHostedPanel == null) && (CommandContext == null);
+        private bool CanEditInApp() => (CurrentPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to edit the current image in an application.
@@ -2175,7 +2175,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private bool CanCopyToImage(CopyToImageArgs args)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if ((args?.ContentFilePaths == null) || (args.ContentFilePaths.Count == 0) || (CurrentHostedPanel != null) || (CommandContext == FxContext))
+            if ((args?.ContentFilePaths == null) || (args.ContentFilePaths.Count == 0) || (CurrentPanel != null) || (CommandContext == FxContext))
             {
                 args.Cancel = true;
                 return false;
@@ -2547,7 +2547,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <returns></returns>
         private bool CanShowSetAlphaValue() => (ImageData != null)
-                && (CurrentHostedPanel == null)
+                && (CurrentPanel == null)
                 && (CommandContext == null)
                 && (ImageData.FormatInfo.HasAlpha)
                 && (ImageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
@@ -2559,12 +2559,12 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (CurrentHostedPanel == AlphaSettings)
+                if (CurrentPanel == AlphaSettings)
                 {
                     return;
                 }
 
-                CurrentHostedPanel = AlphaSettings;
+                CurrentPanel = AlphaSettings;
             }
             catch (Exception ex)
             {
@@ -2662,7 +2662,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     NotifyPropertyChanged(nameof(ImageData));
                     ContentState = ContentState.Modified;
 
-                    CurrentHostedPanel = null;
+                    CurrentPanel = null;
 
                     return Task.CompletedTask;
                 }
@@ -2733,7 +2733,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if the FX options can be shown.
         /// </summary>
         /// <returns><b>true</b> if the fx options can be shown, <b>false</b> if not.</returns>
-        private bool CanShowFx() => (CurrentHostedPanel == null) && (CommandContext == null);
+        private bool CanShowFx() => (CurrentPanel == null) && (CommandContext == null);
 
         /// <summary>
         /// Function to show the FX options.
@@ -2765,7 +2765,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if the effects can be applied to the main image.
         /// </summary>
         /// <returns><b>true</b> if the effects can be applied, <b>false</b> if not.</returns>
-        private bool CanApplyFx() => (FxContext.EffectsUpdated) && (CurrentHostedPanel == null);
+        private bool CanApplyFx() => (FxContext.EffectsUpdated) && (CurrentPanel == null);
 
         /// <summary>
         /// Function to apply the effects to the target image.
@@ -2994,7 +2994,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _settings.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
                 }
 
-                CurrentHostedPanel = null;
+                CurrentPanel = null;
 
                 if (_workingFile != null)
                 {

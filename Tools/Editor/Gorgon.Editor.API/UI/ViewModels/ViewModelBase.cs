@@ -27,7 +27,6 @@
 using System;
 using System.ComponentModel;
 using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.UI

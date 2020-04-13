@@ -48,7 +48,7 @@ namespace Gorgon.Editor.UI
         /// setting it to <b>null</b> will remove it.
         /// </para>
         /// </remarks>
-        IHostedPanelViewModel CurrentHostedPanel
+        IHostedPanelViewModel CurrentPanel
         {
             get;
             set;

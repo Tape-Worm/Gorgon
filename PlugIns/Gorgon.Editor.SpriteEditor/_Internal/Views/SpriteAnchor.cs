@@ -37,29 +37,52 @@ namespace Gorgon.Editor.SpriteEditor
     /// A view used to manually update the sprite anchor value.
     /// </summary>
     internal partial class SpriteAnchor
-        : EditorSubPanelCommon//, IDataContext<ISpriteAnchorEdit>
+        : EditorSubPanelCommon, IDataContext<ISpriteAnchorEdit>
     {
-/*        #region Properties.
+        #region Variables.
+        // Mid point of top side.
+        private float _midTop;
+        // Mid point of left side.
+        private float _midLeft;
+        // Mid point of bottom side.
+        private float _midBottom;
+        // Mid point of right side.
+        private float _midRight;
+        #endregion
+
+        #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
         public ISpriteAnchorEdit DataContext
         {
             get;
             private set;
         }
-        #endregion*/
+        #endregion
 
         #region Methods.        
+        /// <summary>
+        /// Function to set the mid points for the edges of the sprite.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void SetMidPoints(ISpriteAnchorEdit dataContext)
+        {
+            _midTop = dataContext.SpriteBounds[0].Y + (dataContext.SpriteBounds[1].Y - dataContext.SpriteBounds[0].Y) * 0.5f;
+            _midLeft = dataContext.SpriteBounds[0].X + (dataContext.SpriteBounds[3].X - dataContext.SpriteBounds[0].X) * 0.5f;
+            _midBottom = dataContext.SpriteBounds[3].Y + (dataContext.SpriteBounds[2].Y - dataContext.SpriteBounds[3].Y) * 0.5f;
+            _midRight = dataContext.SpriteBounds[2].X + (dataContext.SpriteBounds[1].X - dataContext.SpriteBounds[2].X) * 0.5f;
+        }
+
         /// <summary>Handles the ValueChanged event of the NumericHorizontal control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericHorizontal_ValueChanged(object sender, EventArgs e)
         {
-            /*if (DataContext == null)
+            if (DataContext == null)
             {
                 return;
             }
 
-            DataContext.AnchorPosition = new DX.Vector2((float)NumericHorizontal.Value, DataContext.AnchorPosition.Y);*/
+            DataContext.Anchor = new DX.Vector2((float)NumericHorizontal.Value, DataContext.Anchor.Y);
             ValidateOk();
         }
 
@@ -68,12 +91,40 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericVertical_ValueChanged(object sender, EventArgs e)
         {
-            /*if (DataContext == null)
+            if (DataContext == null)
             {
                 return;
             }
 
-            DataContext.AnchorPosition = new DX.Vector2(DataContext.AnchorPosition.X, (float)NumericVertical.Value);*/
+            DataContext.Anchor = new DX.Vector2(DataContext.Anchor.X, (float)NumericVertical.Value);
+            ValidateOk();
+        }
+
+        /// <summary>Handles the Click event of the CheckRotate control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CheckRotate_Click(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.PreviewRotation = CheckRotate.Checked;
+            ValidateOk();
+        }
+
+        /// <summary>Handles the Click event of the CheckScale control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CheckScale_Click(object sender, EventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            DataContext.PreviewScale = CheckScale.Checked;
             ValidateOk();
         }
 
@@ -82,55 +133,50 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Alignment_AlignmentChanged(object sender, EventArgs e)
         {
-            /*if (DataContext == null)
+            if (DataContext == null)
             {
                 return;
             }
 
-            decimal w = (decimal)DataContext.Bounds.Width;
-            decimal h = (decimal)DataContext.Bounds.Height;
-            decimal mx = (int)(w * 0.5M);
-            decimal my = (int)(h * 0.5M);
-
             switch (Alignment.Alignment)
             {
                 case Gorgon.UI.Alignment.UpperLeft:
-                    NumericHorizontal.Value = 0;
-                    NumericVertical.Value = 0;
+                    NumericHorizontal.Value = (decimal)DataContext.SpriteBounds[0].X;
+                    NumericVertical.Value = (decimal)DataContext.SpriteBounds[0].Y;
                     break;
                 case Gorgon.UI.Alignment.UpperCenter:
-                    NumericHorizontal.Value = mx;
-                    NumericVertical.Value = 0;
+                    NumericHorizontal.Value = (decimal)DataContext.MidPoint.X;
+                    NumericVertical.Value = (decimal)_midTop;
                     break;
                 case Gorgon.UI.Alignment.UpperRight:
-                    NumericHorizontal.Value = w;
-                    NumericVertical.Value = 0;
+                    NumericHorizontal.Value = (decimal)DataContext.SpriteBounds[1].X;
+                    NumericVertical.Value = (decimal)DataContext.SpriteBounds[1].Y;
                     break;
                 case Gorgon.UI.Alignment.CenterLeft:
-                    NumericHorizontal.Value = 0;
-                    NumericVertical.Value = my;
+                    NumericHorizontal.Value = (decimal)_midLeft;
+                    NumericVertical.Value = (decimal)DataContext.MidPoint.Y;
                     break;
                 case Gorgon.UI.Alignment.Center:
-                    NumericHorizontal.Value = mx;
-                    NumericVertical.Value = my;
+                    NumericHorizontal.Value = (decimal)DataContext.MidPoint.X;
+                    NumericVertical.Value = (decimal)DataContext.MidPoint.Y;
                     break;
                 case Gorgon.UI.Alignment.CenterRight:
-                    NumericHorizontal.Value = w;
-                    NumericVertical.Value = my;
+                    NumericHorizontal.Value = (decimal)_midRight;
+                    NumericVertical.Value = (decimal)DataContext.MidPoint.Y;
                     break;
                 case Gorgon.UI.Alignment.LowerLeft:
-                    NumericHorizontal.Value = 0;
-                    NumericVertical.Value = h;
+                    NumericHorizontal.Value = (decimal)DataContext.SpriteBounds[3].X;
+                    NumericVertical.Value = (decimal)DataContext.SpriteBounds[3].Y;
                     break;
                 case Gorgon.UI.Alignment.LowerCenter:
-                    NumericHorizontal.Value = mx;
-                    NumericVertical.Value = h;
+                    NumericHorizontal.Value = (decimal)DataContext.MidPoint.X;
+                    NumericVertical.Value = (decimal)_midBottom;
                     break;
                 case Gorgon.UI.Alignment.LowerRight:
-                    NumericHorizontal.Value = w;
-                    NumericVertical.Value = h;
+                    NumericHorizontal.Value = (decimal)DataContext.SpriteBounds[2].X;
+                    NumericVertical.Value = (decimal)DataContext.SpriteBounds[2].Y;
                     break;
-            }*/
+            }
         }
 
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
@@ -138,27 +184,38 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            /*switch (e.PropertyName)
+            switch (e.PropertyName)
             {
+                case nameof(ISpriteAnchorEdit.PreviewScale):
+                    CheckScale.Checked = DataContext.PreviewScale;
+                    break;
+                case nameof(ISpriteAnchorEdit.PreviewRotation):
+                    CheckRotate.Checked = DataContext.PreviewRotation;
+                    break;
+                case nameof(ISpriteAnchorEdit.SpriteBounds):
+                    SetMidPoints(DataContext);
+                    SetAlignment(DataContext);
+                    break;
                 case nameof(ISpriteAnchorEdit.Bounds):
-                    NumericVertical.Minimum = NumericHorizontal.Minimum = 0;
-                    NumericHorizontal.Maximum = (decimal)DataContext.Bounds.Width;
-                    NumericVertical.Maximum = (decimal)DataContext.Bounds.Height;
+                    NumericHorizontal.Minimum = DataContext.Bounds.Left;
+                    NumericHorizontal.Maximum = DataContext.Bounds.Right;
+
+                    NumericVertical.Minimum = DataContext.Bounds.Top;
+                    NumericVertical.Maximum = DataContext.Bounds.Bottom;
 
                     SetAlignment(DataContext);
                     break;
-                case nameof(ISpriteAnchorEdit.AnchorPosition):
-                    NumericHorizontal.Value = (decimal)DataContext.AnchorPosition.X;
-                    NumericVertical.Value = (decimal)DataContext.AnchorPosition.Y;
+                case nameof(ISpriteAnchorEdit.Anchor):
+                    NumericHorizontal.Value = (decimal)DataContext.Anchor.X;
+                    NumericVertical.Value = (decimal)DataContext.Anchor.Y;
 
                     SetAlignment(DataContext);
                     break;
-            }*/
+            }
 
             ValidateOk();
         }
 
-        /*
         /// <summary>
         /// Function to set up the alignment on the alignment control.
         /// </summary>
@@ -176,54 +233,51 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                float w = dataContext.Bounds.Width;
-                float h = dataContext.Bounds.Height;
-                float mx = (int)(w * 0.5f);
-                float my = (int)(h * 0.5f);
-
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(0)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(0)))
+                // Corner positions.
+                if ((dataContext.Anchor.X.EqualsEpsilon(dataContext.SpriteBounds[0].X)) && (dataContext.Anchor.Y.EqualsEpsilon(dataContext.SpriteBounds[0].Y)))
                 {
                     Alignment.Alignment = Gorgon.UI.Alignment.UpperLeft;
                 }
 
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(mx)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(0)))
-                {
-                    Alignment.Alignment = Gorgon.UI.Alignment.UpperCenter;
-                }
-
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(w)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(0)))
+                if ((dataContext.Anchor.Y.EqualsEpsilon(dataContext.SpriteBounds[1].X)) && (dataContext.Anchor.Y.EqualsEpsilon(dataContext.SpriteBounds[1].Y)))
                 {
                     Alignment.Alignment = Gorgon.UI.Alignment.UpperRight;
                 }
 
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(0)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(my)))
+                if ((dataContext.Anchor.Y.EqualsEpsilon(dataContext.SpriteBounds[2].X)) && (dataContext.Anchor.Y.EqualsEpsilon(dataContext.SpriteBounds[2].Y)))
                 {
-                    Alignment.Alignment = Gorgon.UI.Alignment.CenterLeft;
+                    Alignment.Alignment = Gorgon.UI.Alignment.LowerRight;
                 }
 
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(mx)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(my)))
-                {
-                    Alignment.Alignment = Gorgon.UI.Alignment.Center;
-                }
-
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(w)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(my)))
-                {
-                    Alignment.Alignment = Gorgon.UI.Alignment.CenterRight;
-                }
-
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(0)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(h)))
+                if ((dataContext.Anchor.Y.EqualsEpsilon(dataContext.SpriteBounds[3].X)) && (dataContext.Anchor.Y.EqualsEpsilon(dataContext.SpriteBounds[3].Y)))
                 {
                     Alignment.Alignment = Gorgon.UI.Alignment.LowerLeft;
                 }
 
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(mx)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(h)))
+                // Center positions.
+                if ((dataContext.Anchor.X.EqualsEpsilon(dataContext.MidPoint.X)) && (dataContext.Anchor.Y.EqualsEpsilon(dataContext.MidPoint.Y)))
+                {
+                    Alignment.Alignment = Gorgon.UI.Alignment.Center;
+                }
+
+                if ((dataContext.Anchor.X.EqualsEpsilon(dataContext.MidPoint.X)) && (dataContext.Anchor.Y.EqualsEpsilon(_midTop)))
+                {
+                    Alignment.Alignment = Gorgon.UI.Alignment.UpperCenter;
+                }
+
+                if ((dataContext.Anchor.Y.EqualsEpsilon(_midLeft)) && (dataContext.Anchor.Y.EqualsEpsilon(dataContext.MidPoint.Y)))
+                {
+                    Alignment.Alignment = Gorgon.UI.Alignment.CenterLeft;
+                }
+
+                if ((dataContext.Anchor.X.EqualsEpsilon(dataContext.MidPoint.X)) && (dataContext.Anchor.Y.EqualsEpsilon(_midBottom)))
                 {
                     Alignment.Alignment = Gorgon.UI.Alignment.LowerCenter;
                 }
 
-                if ((dataContext.AnchorPosition.X.EqualsEpsilon(w)) && (dataContext.AnchorPosition.Y.EqualsEpsilon(h)))
+                if ((dataContext.Anchor.Y.EqualsEpsilon(_midRight)) && (dataContext.Anchor.Y.EqualsEpsilon(dataContext.MidPoint.Y)))
                 {
-                    Alignment.Alignment = Gorgon.UI.Alignment.LowerRight;
+                    Alignment.Alignment = Gorgon.UI.Alignment.CenterRight;
                 }
             }
             finally
@@ -231,18 +285,18 @@ namespace Gorgon.Editor.SpriteEditor
                 Alignment.AlignmentChanged += Alignment_AlignmentChanged;
             }
         }
-        */
+        
         /// <summary>
         /// Function to unassign any events.
         /// </summary>
         private void UnassignEvents()
         {
-            /*if (DataContext == null)
+            if (DataContext == null)
             {
                 return;
             }
 
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;*/
+            DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
 
         /// <summary>
@@ -250,7 +304,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void ResetDataContext()
         {
-            /*if (DataContext == null)
+            if (DataContext == null)
             {
                 return;
             }
@@ -258,10 +312,11 @@ namespace Gorgon.Editor.SpriteEditor
             UnassignEvents();
             Alignment.Alignment = Gorgon.UI.Alignment.UpperLeft;
             NumericHorizontal.Value = NumericVertical.Value = 0M;
-            NumericVertical.Minimum = NumericHorizontal.Minimum = 0;
-            NumericVertical.Maximum = NumericHorizontal.Maximum = int.MaxValue;*/
+            NumericVertical.Minimum = NumericHorizontal.Minimum = -16384;
+            NumericVertical.Maximum = NumericHorizontal.Maximum = 16384;
+            CheckRotate.Checked = CheckScale.Checked = false;
         }
-        /*
+        
         /// <summary>Function called to validate the OK button.</summary>
         /// <returns>
         ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
@@ -279,15 +334,19 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            NumericHorizontal.Value = (decimal)dataContext.AnchorPosition.X;
-            NumericVertical.Value = (decimal)dataContext.AnchorPosition.Y;
+            NumericHorizontal.Value = (decimal)dataContext.Anchor.X;
+            NumericVertical.Value = (decimal)dataContext.Anchor.Y;
 
-            NumericHorizontal.Minimum = 0;
-            NumericHorizontal.Maximum = (decimal)dataContext.Bounds.Width - 1;
+            NumericHorizontal.Minimum = dataContext.Bounds.Left;
+            NumericHorizontal.Maximum = dataContext.Bounds.Right;
 
-            NumericVertical.Minimum = 0;
-            NumericVertical.Maximum = (decimal)dataContext.Bounds.Height - 1;
+            NumericVertical.Minimum = dataContext.Bounds.Top;
+            NumericVertical.Maximum = dataContext.Bounds.Bottom;
 
+            CheckRotate.Checked = dataContext.PreviewRotation;
+            CheckScale.Checked = dataContext.PreviewScale;
+
+            SetMidPoints(dataContext);
             SetAlignment(dataContext);
 
             ValidateOk();
@@ -322,7 +381,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext.CancelCommand.Execute(null);
         }
-        */
+        
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
@@ -334,9 +393,8 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            //DataContext?.OnLoad();
+            DataContext?.OnLoad();
         }
-        /*
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
@@ -353,7 +411,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }*/
+        }
         #endregion
 
         #region Constructor/Finalizer.

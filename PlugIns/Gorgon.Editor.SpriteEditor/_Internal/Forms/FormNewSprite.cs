@@ -61,7 +61,9 @@ namespace Gorgon.Editor.SpriteEditor
         // The cancellation token source for the preview thread.
         private CancellationTokenSource _cancelSource;
         // The task used to load the preview image.
-        private Task<IGorgonImage> _previewTask;        
+        private Task<IGorgonImage> _previewTask;
+        // The original size for the sprite.
+        private DX.Size2F? _originalSize;
         // The path to the preview directory.
         private static readonly string _previewDirPath = $"/Thumbnails/";
         #endregion
@@ -191,12 +193,15 @@ namespace Gorgon.Editor.SpriteEditor
                 PicturePreview.Image = _previewImage = image.Buffers[0].ToBitmap();
 
                 // Default width/height to the image size.
-                NumericWidth.Value = metaData.Width.Max(1).Min((int)NumericWidth.Maximum);
-                NumericHeight.Value = metaData.Height.Max(1).Min((int)NumericHeight.Maximum);
+                if (_originalSize == null)
+                {
+                    NumericWidth.Value = metaData.Width.Max(1).Min((int)NumericWidth.Maximum);
+                    NumericHeight.Value = metaData.Height.Max(1).Min((int)NumericHeight.Maximum);
+                }
 
                 TextureFile = e.FileEntry.File;
             }
-            catch(Exception ex)
+            catch
             {
                 // Do nothing.                 
                 _previewImage?.Dispose();
@@ -229,7 +234,7 @@ namespace Gorgon.Editor.SpriteEditor
                 FillTextureList(_textures);
                 return;
             }
-
+            
             FillTextureList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray());
         }
 
@@ -296,6 +301,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void FillTextureList(IReadOnlyList<IContentFile> textures)
         {
+            ContentFileExplorerFileEntry selectedTexture = null;
             var dirs = new Dictionary<string, ContentFileExplorerDirectoryEntry>(StringComparer.OrdinalIgnoreCase);
 
             foreach (IContentFile texture in textures.OrderBy(item => item.Path))
@@ -314,10 +320,25 @@ namespace Gorgon.Editor.SpriteEditor
                     fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
                 }
 
-                fileEntries.Add(new ContentFileExplorerFileEntry(texture, dirEntry));
+                var file = new ContentFileExplorerFileEntry(texture, dirEntry);
+
+                if (TextureFile == texture)
+                {
+                    selectedTexture = file;
+                    file.IsSelected = true;
+                }
+
+                fileEntries.Add(file);
             }
 
             FileTextures.Entries = dirs.Values.ToArray();
+
+            if (selectedTexture == null)
+            {
+                return;
+            }
+
+            FileTextures_FileEntrySelected(FileTextures, new ContentFileEntrySelectedEventArgs(selectedTexture));
         }
 
         /// <summary>Handles the <see cref="UserControl.Load"/> event.</summary>
@@ -334,10 +355,27 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to populate the file list with available textures from the project file system.
         /// </summary>
         /// <param name="textures">The textures to display.</param>
-        public void FillTextures(IReadOnlyList<IContentFile> textures)
+        /// <param name="currentTexture">[Optional] The currently active texture file.</param>
+        public void FillTextures(IReadOnlyList<IContentFile> textures, IContentFile currentTexture = null)
         {
             _textures = textures;
+            TextureFile = currentTexture;
             FillTextureList(textures);
+        }
+
+        /// <summary>
+        /// Function to assign the original size for the sprite.
+        /// </summary>
+        /// <param name="size">The size to assign, or <b>null</b> to automatically size.</param>
+        public void SetOriginalSize(DX.Size2F? size)
+        {
+            _originalSize = size;
+
+            if (_originalSize != null)
+            {
+                NumericWidth.Value = (int)_originalSize.Value.Width.Max(1).Min((int)NumericWidth.Maximum);
+                NumericHeight.Value = (int)_originalSize.Value.Height.Max(1).Min((int)NumericHeight.Maximum);
+            }
         }
         #endregion
 

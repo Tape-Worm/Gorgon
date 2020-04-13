@@ -32,6 +32,7 @@ using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -110,6 +111,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             DataContext.AlphaValue = (int)NumericAlphaValue.Value;
+            ImageAlpha.Refresh();
         }
 
 
@@ -118,7 +120,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
         private void ImageAlpha_Paint(object sender, PaintEventArgs e)
         {
-            using (var brush = new SolidBrush(Color.FromArgb((int)NumericAlphaValue.Value, 255, 255, 255)))
+            using (var brush = new SolidBrush(Color.FromArgb((255 - (int)NumericAlphaValue.Value).Max(0).Min(255), 255, 255, 255)))
             {
                 e.Graphics.FillRectangle(brush, ImageAlpha.ClientRectangle);
             }

@@ -26,7 +26,6 @@
 
 using System.IO;
 using System.Linq;
-using System.Threading;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -43,6 +42,13 @@ namespace Gorgon.Editor.SpriteEditor
     internal class NoTextureViewer
         : SpriteViewer
     {
+        #region Constants.
+        /// <summary>
+        /// The name of the viewer.
+        /// </summary>
+        public const string ViewerName = "SpriteNoTextureRenderer";
+        #endregion
+
         #region Variables.
         // The texture to display when a sprite lacks a texture association.
         private GorgonTexture2DView _noImage;
@@ -91,6 +97,12 @@ namespace Gorgon.Editor.SpriteEditor
                 });
             }
         }
+
+        /// <summary>Function to set the default zoom/offset for the viewer.</summary>
+        public override void DefaultZoom()
+        {
+            // This viewer cannot pan or zoom.
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -99,7 +111,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="swapChain">The swap chain for the render area.</param>
         /// <param name="sprite">The sprite used for rendering.</param>
         public NoTextureViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent sprite)
-            : base("SpriteNoTextureRenderer", renderer, swapChain, sprite)
+            : base(ViewerName, renderer, swapChain, sprite)
         {
             CanPanHorizontally = false;
             CanPanHorizontally = false;

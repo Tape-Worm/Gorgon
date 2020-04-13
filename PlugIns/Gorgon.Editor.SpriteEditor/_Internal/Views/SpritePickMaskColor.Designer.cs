@@ -21,7 +21,7 @@
             if (disposing)
             {
                 UnassignEvents();
-                //DataContext?.OnUnload();
+                DataContext?.OnUnload();
             }
 
             base.Dispose(disposing);

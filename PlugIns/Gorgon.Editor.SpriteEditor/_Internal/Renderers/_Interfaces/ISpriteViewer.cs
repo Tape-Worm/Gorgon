@@ -24,12 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
-using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -62,6 +57,11 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to create resources required for the lifetime of the viewer.
         /// </summary>
         void CreateResources();
+
+        /// <summary>
+        /// Function to set the default zoom/offset for the viewer.
+        /// </summary>
+        void DefaultZoom();
         #endregion
     }
 }

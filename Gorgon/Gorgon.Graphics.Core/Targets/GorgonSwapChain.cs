@@ -490,7 +490,7 @@ namespace Gorgon.Graphics.Core
                 // When we're done, tell the system that the resize is complete.
                 _resizeState.Resized = true;
 
-                Window_Resize(this, e);
+                Window_Layout(this, new LayoutEventArgs(Window, nameof(Window.Size)));
             }
             catch (Exception ex)
             {
@@ -517,15 +517,20 @@ namespace Gorgon.Graphics.Core
             _originalSize = new DX.Size2(ParentForm.ClientSize.Width, ParentForm.ClientSize.Height);
         }
 
-        /// <summary>
-        /// Handles the Resize event of the Window control.
-        /// </summary>
+        /// <summary>Handles the Layout event of the Window control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void Window_Resize(object sender, EventArgs e)
+        /// <param name="e">The <see cref="LayoutEventArgs"/> instance containing the event data.</param>
+        private void Window_Layout(object sender, LayoutEventArgs e)
         {
             try
             {
+                if ((e.AffectedControl != Window) 
+                    || ((!string.Equals(e.AffectedProperty, nameof(Window.Size), StringComparison.OrdinalIgnoreCase))
+                    && (!string.Equals(e.AffectedProperty, nameof(Window.Bounds), StringComparison.OrdinalIgnoreCase))))
+                {
+                    return;
+                }
+
                 // The user will handle the resizing, so do nothing.
                 if (DoNotAutoResizeBackBuffer)
                 {
@@ -1261,7 +1266,7 @@ namespace Gorgon.Graphics.Core
 
             if (Window != null)
             {
-                Window.Resize -= Window_Resize;
+                Window.Layout -= Window_Layout;
             }
 
             if (swapChain == null)
@@ -1339,7 +1344,7 @@ namespace Gorgon.Graphics.Core
 
             CreateResources(-1);
 
-            Window.Resize += Window_Resize;
+            Window.Layout += Window_Layout;
 
             // We assign these events to the parent form so that a window resize is smooth, currently using the Resize event only introduces massive
             // lag when resizing the back buffers. This will counter that by only resizing when the resize operation ends.
@@ -1350,7 +1355,7 @@ namespace Gorgon.Graphics.Core
             ParentForm.Activated += ParentForm_Activated;
             ParentForm.Deactivate += ParentForm_Deactivated;
 
-        }
+        }        
         #endregion
     }
 }

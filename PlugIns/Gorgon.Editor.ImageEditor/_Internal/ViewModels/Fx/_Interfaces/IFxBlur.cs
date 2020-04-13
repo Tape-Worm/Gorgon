@@ -25,8 +25,6 @@
 #endregion
 
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.ImageEditor.Fx
 {

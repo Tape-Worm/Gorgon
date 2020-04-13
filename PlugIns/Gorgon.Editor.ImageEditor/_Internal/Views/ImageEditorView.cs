@@ -83,12 +83,12 @@ namespace Gorgon.Editor.ImageEditor
             LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = DataContext.ArrayCount > 1;
             LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;
 
-            ButtonNextMip.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentMipLevel < DataContext.MipCount - 1);
-            ButtonPrevMip.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentMipLevel > 0);
-            ButtonNextArrayIndex.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentArrayIndex < DataContext.ArrayCount - 1);
-            ButtonPrevArrayIndex.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentArrayIndex > 0);
-            ButtonNextDepthSlice.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentDepthSlice < DataContext.DepthCount - 1);
-            ButtonPrevDepthSlice.Enabled = (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentDepthSlice > 0);
+            ButtonNextMip.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentMipLevel < DataContext.MipCount - 1);
+            ButtonPrevMip.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentMipLevel > 0);
+            ButtonNextArrayIndex.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentArrayIndex < DataContext.ArrayCount - 1);
+            ButtonPrevArrayIndex.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentArrayIndex > 0);
+            ButtonNextDepthSlice.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentDepthSlice < DataContext.DepthCount - 1);
+            ButtonPrevDepthSlice.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentDepthSlice > 0);
 
             StatusPanel.Visible = true;
         }
@@ -421,7 +421,7 @@ namespace Gorgon.Editor.ImageEditor
                     DataContext.CommandContext.OnLoad();
                     SwitchRenderer(DataContext.CommandContext.Name, false);
                     break;
-                case nameof(IImageContent.CurrentHostedPanel) when (DataContext.CurrentHostedPanel == null) && (DataContext.CommandContext == null):
+                case nameof(IImageContent.CurrentPanel) when (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null):
                     if (!HasRenderer(DataContext.ImageType.ToString()))
                     {
                         break;

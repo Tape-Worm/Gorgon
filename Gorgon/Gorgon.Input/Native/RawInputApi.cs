@@ -250,7 +250,7 @@ namespace Gorgon.Native
         /// <summary>If set, the mouse button click does not activate the other window.</summary>
         CaptureMouse = 0x00000200,
         /// <summary>If set, the application-defined keyboard device hot keys are not handled. However, the system hot keys; for example, ALT+TAB and CTRL+ALT+DEL, are still handled. By default, all keyboard hotkeys are handled. NoHotKeys can be specified even if NoLegacy is not specified and WindowHandle is <b>null</b>.</summary>
-        NoHotKeys = 0x00000200,
+        NoHotKeys = CaptureMouse,
         /// <summary>If set, application keys are handled.  NoLegacy must be specified.  Keyboard only.</summary>
         AppKeys = 0x00000400,
         /// <summary>If set, this enables the caller to receive input in the background only if the foreground application does not process it. In other words, if the foreground application is not registered for raw input, then the background application that is registered will receive the input.</summary>

@@ -26,6 +26,8 @@
 
 using System;
 using System.Windows.Forms;
+using Gorgon.Editor.Rendering;
+using Gorgon.Renderers;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.Services
@@ -49,6 +51,15 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the camera being used.
+        /// </summary>
+        IGorgon2DCamera Camera
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return whether we're in the middle of a drag operation or not.
         /// </summary>
@@ -92,33 +103,6 @@ namespace Gorgon.Editor.Services
             get;
             set;
         }
-
-        /// <summary>
-        /// Property to set or return the mouse position in the client area of the primary rendering window.
-        /// </summary>
-        DX.Vector2 MousePosition
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the function used to transform a rectangle from local clip space to window client space.
-        /// </summary>
-        Func<DX.RectangleF, DX.RectangleF> RectToClient
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the function used to transform a point from window client space into local clip space.
-        /// </summary>
-        Func<DX.Vector2, DX.Vector2> PointFromClient
-        {
-            get;
-            set;
-        }
         #endregion
 
         #region Methods.
@@ -135,23 +119,23 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function called when the mouse button is moved.
         /// </summary>
-        /// <param name="button">The button that was held down while moving.</param>
+        /// <param name="mouseArgs">The arguments for the mouse events.</param>
         /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseMove(MouseButtons button);
+        bool MouseMove(MouseArgs mouseArgs);
 
         /// <summary>
         /// Function called when the mouse button is pressed.
         /// </summary>
-        /// <param name="button">The button that was pressed.</param>
+        /// <param name="mouseArgs">The arguments for the mouse events.</param>
         /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseDown(MouseButtons button);
+        bool MouseDown(MouseArgs mouseArgs);
 
         /// <summary>
         /// Function called when the mouse button is released.
         /// </summary>
-        /// <param name="button">The mouse button that was released.</param>
+        /// <param name="mouseArgs">The arguments for the mouse events.</param>
         /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        bool MouseUp(MouseButtons button);
+        bool MouseUp(MouseArgs mouseArgs);
 
         /// <summary>
         /// Function called when a key is held down.

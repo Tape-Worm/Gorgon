@@ -33,7 +33,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Drawing = System.Drawing;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.Services
@@ -59,8 +58,6 @@ namespace Gorgon.Editor.Services
         private DX.Vector2 _startDrag;
         // The rectangle dimensions when dragging has begun.
         private DX.RectangleF _dragRect;
-        // The region representing our rectangle to draw on the screen.
-        private DX.RectangleF _screenRect;
         // The icon used for keyboard manual input.
         private Lazy<GorgonTexture2DView> _keyboardIcon;
         // Flag to indicate that the selection can be moved.
@@ -69,21 +66,88 @@ namespace Gorgon.Editor.Services
         private bool _allowResize = true;
         // Flag to indicate that manual input is allowed.
         private bool _showManualInput = true;
-        // The boundaries for the clipping rectangle.
-        private DX.RectangleF _bounds;
+        // The mouse position in the client area of the primary rendering window.
+        private DX.Vector2 _mousePosition;
+        // The mouse position in local clipping space.
+        private DX.Vector2 _localMousePosition;
+        // The rectangle in screen coordinates.
+        private DX.RectangleF _screenRect;
+        // The camera for rendering.
+        private IGorgon2DCamera _camera;
         #endregion
 
         #region Events.
+        // Event for rectangle updates.        
+        private event EventHandler RectChangedEvent;
+
+        // Event for keyboard icon click.
+        private event EventHandler KeyboardIconClickedEvent;
+
         /// <summary>Event triggered when the keyboard icon is clicked.</summary>
-        public event EventHandler KeyboardIconClicked;
+        public event EventHandler KeyboardIconClicked
+        {
+            add
+            {
+                if (value == null)
+                {
+                    KeyboardIconClickedEvent = null;
+                    return;
+                }
+
+                KeyboardIconClickedEvent += value;
+            }
+            remove
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                KeyboardIconClickedEvent -= value;
+            }
+        }
 
         /// <summary>
         /// Event triggered when the rectangle coordinates have been altered.
         /// </summary>
-        public event EventHandler RectChanged;
+        public event EventHandler RectChanged
+        {
+            add
+            {
+                if (value == null)
+                {
+                    RectChangedEvent = null;
+                    return;
+                }
+
+                RectChangedEvent += value;
+            }
+            remove
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                RectChangedEvent -= value;
+            }
+        }
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the camera being used.
+        /// </summary>
+        public IGorgon2DCamera Camera
+        {
+            get => _camera;
+            set
+            {
+                _camera = value;
+                SetupHandles();
+            }
+        }
+
         /// <summary>
         /// Property to return whether we're in the middle of a drag operation or not.
         /// </summary>
@@ -98,17 +162,8 @@ namespace Gorgon.Editor.Services
         /// </summary>
         public DX.RectangleF Bounds
         {
-            get => _bounds;
-            set
-            {
-                if (_bounds.Equals(ref value))
-                {
-                    return;
-                }
-
-                _bounds = value;
-                SetupHandles();
-            }
+            get;
+            set;
         }
 
         /// <summary>
@@ -123,6 +178,7 @@ namespace Gorgon.Editor.Services
                 SetupHandles();
             }
         }
+
         /// <summary>
         /// Property to set or return whether resizing is allowed.
         /// </summary>
@@ -135,6 +191,7 @@ namespace Gorgon.Editor.Services
                 SetupHandles();
             }
         }
+
         /// <summary>
         /// Property to set or return whether to show the manual input icon.
         /// </summary>
@@ -202,34 +259,7 @@ namespace Gorgon.Editor.Services
                 SetupHandles();
                 OnRectChanged();
             }
-        }
-
-        /// <summary>
-        /// Property to set or return the mouse position in the client area of the primary rendering window.
-        /// </summary>
-        public DX.Vector2 MousePosition
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the function used to transform a rectangle from local clip space to window client space.
-        /// </summary>
-        public Func<DX.RectangleF, DX.RectangleF> RectToClient
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the function used to transform a point from window client space into local clip space.
-        /// </summary>
-        public Func<DX.Vector2, DX.Vector2> PointFromClient
-        {
-            get;
-            set;
-        }
+        }        
         #endregion
 
         #region Methods.
@@ -238,7 +268,7 @@ namespace Gorgon.Editor.Services
         /// </summary>
         private void OnRectChanged()
         {
-            EventHandler handler = RectChanged;
+            EventHandler handler = RectChangedEvent;
             handler?.Invoke(this, EventArgs.Empty);
         }
 
@@ -257,7 +287,19 @@ namespace Gorgon.Editor.Services
                 return;
             }
 
-            _screenRect = RectToClient == null ? _clipRect : RectToClient(_clipRect);
+            var half = new DX.Vector3(Bounds.Width * 0.5f, Bounds.Height * 0.5f, 0);
+            DX.Vector3 spriteTopLeft = new DX.Vector3(Rectangle.TopLeft, 0) - half;
+            DX.Vector3 spriteBottomRight = new DX.Vector3(Rectangle.BottomRight, 0) - half;
+            _camera.Unproject(ref spriteTopLeft, out DX.Vector3 transformedTopLeft);
+            _camera.Unproject(ref spriteBottomRight, out DX.Vector3 transformedBottomRight);
+
+            _screenRect = new DX.RectangleF
+            {
+                Left = transformedTopLeft.X,
+                Top = transformedTopLeft.Y,
+                Right = transformedBottomRight.X,
+                Bottom = transformedBottomRight.Y
+            };
 
             _handles[0].HandleBounds = AllowResize ? new DX.RectangleF(_screenRect.Left - 8, _screenRect.Top - 8, 8, 8) : DX.RectangleF.Empty;
             _handles[1].HandleBounds = AllowResize ? new DX.RectangleF(_screenRect.Right, _screenRect.Top - 8, 8, 8) : DX.RectangleF.Empty;
@@ -283,11 +325,10 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to perform the dragging on the handles or the body of the selection.
         /// </summary>
-        /// <param name="mouse">The current mouse coordinates, transformed into local image space.</param>
-        private void DragHandles(DX.Vector2 mouse)
+        private void DragHandles()
         {
-            DX.Vector2.Subtract(ref mouse, ref _startDrag, out DX.Vector2 dragDelta);
-
+            DX.Vector2.Subtract(ref _localMousePosition, ref _startDrag, out DX.Vector2 dragDelta);
+            dragDelta = dragDelta.Ceiling();
 
             switch (_activeHandleIndex)
             {
@@ -373,6 +414,7 @@ namespace Gorgon.Editor.Services
                     break;
                 // Drag body.
                 case 8:
+                    DX.Size2F size = _clipRect.Size;
                     var moveRect = new DX.RectangleF
                     {
                         Left = _dragRect.Left + dragDelta.X,
@@ -382,34 +424,33 @@ namespace Gorgon.Editor.Services
                     };
 
                     if (!Bounds.IsEmpty)
-                    {
+                    {                        
                         if (moveRect.Left < Bounds.Left)
                         {
                             moveRect.Left = Bounds.Left;
-                            moveRect.Right = _clipRect.Right;
+                            moveRect.Width = size.Width;
                         }
 
                         if (moveRect.Top < Bounds.Top)
                         {
                             moveRect.Top = Bounds.Top;
-                            moveRect.Bottom = _clipRect.Bottom;
+                            moveRect.Height = size.Height;
                         }
 
                         if (moveRect.Right > Bounds.Right)
-                        {
-                            moveRect.Left = _clipRect.Left;
-                            moveRect.Right = Bounds.Right;
+                        {                            
+                            moveRect.Left = Bounds.Right - size.Width;
+                            moveRect.Width = size.Width;
                         }
 
                         if (moveRect.Bottom > Bounds.Bottom)
                         {
-                            moveRect.Top = _clipRect.Top;
-                            moveRect.Bottom = Bounds.Bottom;
-                        }
+                            moveRect.Top = Bounds.Bottom - size.Height;
+                            moveRect.Height = size.Height;
+                        }                        
                     }
 
                     Rectangle = moveRect;
-
                     break;
             }
         }
@@ -437,7 +478,7 @@ namespace Gorgon.Editor.Services
                     continue;
                 }
 
-                if ((handleBounds.Contains(MousePosition)) && (!IsDragging))
+                if ((handleBounds.Contains(_mousePosition)) && (!IsDragging))
                 {
                     _activeHandleIndex = i;
                     mouseCursor = _handles[_activeHandleIndex].HandleCursor;
@@ -459,10 +500,13 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function called when the mouse button is moved.
         /// </summary>
-        /// <param name="button">The button that was held down while moving.</param>
+        /// <param name="mouseArgs">The arguments for the mouse events.</param>
         /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        public bool MouseMove(MouseButtons button)
+        public bool MouseMove(MouseArgs mouseArgs)
         {
+            _mousePosition = mouseArgs.ClientPosition;
+            _localMousePosition = mouseArgs.CameraSpacePosition;
+
             GetActiveHandle();
 
             if ((_activeHandleIndex == -1) || (_activeHandleIndex > 8))
@@ -470,14 +514,14 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 
-            if (button != MouseButtons.Left)
+            if (mouseArgs.MouseButtons != MouseButtons.Left)
             {
                 IsDragging = false;
             }
 
             if (IsDragging)
             {
-                DragHandles(PointFromClient != null ? PointFromClient(MousePosition) : MousePosition);
+                DragHandles();
             }
 
             return true;
@@ -486,10 +530,12 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function called when the mouse button is pressed.
         /// </summary>
-        /// <param name="button">The button that was pressed.</param>
+        /// <param name="mouseArgs">The arguments for the mouse events.</param>
         /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        public bool MouseDown(MouseButtons button)
+        public bool MouseDown(MouseArgs mouseArgs)
         {
+            _mousePosition = mouseArgs.ClientPosition;
+            _localMousePosition = mouseArgs.CameraSpacePosition;
             GetActiveHandle();
 
             if ((_activeHandleIndex == -1) || (_activeHandleIndex > 8))
@@ -499,7 +545,7 @@ namespace Gorgon.Editor.Services
 
             // Only drag if we've moved a little bit while having the mouse button held down.
             IsDragging = true;
-            _startDrag = PointFromClient != null ? PointFromClient(MousePosition) : MousePosition;
+            _startDrag = _localMousePosition;
             _dragRect = _clipRect;
             return true;
         }
@@ -507,10 +553,12 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function called when the mouse button is released.
         /// </summary>
-        /// <param name="button">The mouse button that was released.</param>
+        /// <param name="mouseArgs">The arguments for the mouse events.</param>
         /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
-        public bool MouseUp(MouseButtons button)
+        public bool MouseUp(MouseArgs mouseArgs)
         {
+            _mousePosition = mouseArgs.ClientPosition;
+            _localMousePosition = mouseArgs.CameraSpacePosition;
             GetActiveHandle();
 
             if (_activeHandleIndex == -1)
@@ -520,13 +568,14 @@ namespace Gorgon.Editor.Services
 
             if ((_activeHandleIndex == 9) && (!IsDragging))
             {
-                EventHandler handler = KeyboardIconClicked;
+                EventHandler handler = KeyboardIconClickedEvent;
                 handler?.Invoke(this, EventArgs.Empty);
             }
 
-            if (button == MouseButtons.Left)
+            if (mouseArgs.MouseButtons == MouseButtons.Left)
             {
                 _startDrag = DX.Vector2.Zero;
+                _dragRect = DX.RectangleF.Empty;
                 IsDragging = false;
             }
 
@@ -561,54 +610,49 @@ namespace Gorgon.Editor.Services
             }
 
             _dragRect = _clipRect;
-            _startDrag = PointFromClient != null ? PointFromClient(MousePosition) : MousePosition;
-            int scale = (int)(_screenRect.Width / _clipRect.Width).Max(1);
-            offset *= scale;
+            _startDrag = _localMousePosition;
+            int handle = _activeHandleIndex;
 
             switch (key)
             {
                 case Keys.Up:
-                case Keys.NumPad8:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X, Cursor.Position.Y - offset);
-                    MousePosition = new DX.Vector2(MousePosition.X, MousePosition.Y - offset);
+                case Keys.NumPad8:                                       
+                    _localMousePosition = new DX.Vector2(_localMousePosition.X, _localMousePosition.Y - offset);
                     break;
                 case Keys.Down:
                 case Keys.NumPad2:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X, Cursor.Position.Y + offset);
-                    MousePosition = new DX.Vector2(MousePosition.X, MousePosition.Y + offset);
+                    _localMousePosition = new DX.Vector2(_localMousePosition.X, _localMousePosition.Y + offset);
                     break;
                 case Keys.Right:
                 case Keys.NumPad6:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X + offset, Cursor.Position.Y);
-                    MousePosition = new DX.Vector2(MousePosition.X + offset, MousePosition.Y);
+                    _localMousePosition = new DX.Vector2(_localMousePosition.X + offset, _localMousePosition.Y);
                     break;
                 case Keys.Left:
                 case Keys.NumPad4:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X - offset, Cursor.Position.Y);
-                    MousePosition = new DX.Vector2(MousePosition.X - offset, MousePosition.Y);
+                    _localMousePosition = new DX.Vector2(_localMousePosition.X - offset, _localMousePosition.Y);
                     break;
                 case Keys.NumPad7:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X - offset, Cursor.Position.Y - offset);
-                    MousePosition = new DX.Vector2(MousePosition.X - offset, MousePosition.Y - offset);
+                    _localMousePosition = new DX.Vector2(_localMousePosition.X - offset, _localMousePosition.Y - offset);
                     break;
                 case Keys.NumPad9:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X + offset, Cursor.Position.Y - offset);
-                    MousePosition = new DX.Vector2(MousePosition.X + offset, MousePosition.Y - offset);
+                    _localMousePosition = new DX.Vector2(_localMousePosition.X + offset, _localMousePosition.Y - offset);
                     break;
                 case Keys.NumPad1:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X - offset, Cursor.Position.Y + offset);
-                    MousePosition = new DX.Vector2(MousePosition.X - offset, MousePosition.Y + offset);
+                    _localMousePosition = new DX.Vector2(_localMousePosition.X - offset, _localMousePosition.Y + offset);
                     break;
                 case Keys.NumPad3:
-                    Cursor.Position = new Drawing.Point(Cursor.Position.X + offset, Cursor.Position.Y + offset);
-                    MousePosition = new DX.Vector2(MousePosition.X + offset, MousePosition.Y + offset);
+                    _localMousePosition = new DX.Vector2(_localMousePosition.X + offset, _localMousePosition.Y + offset);
                     break;
                 default:
                     return false;
             }
 
-            DragHandles(PointFromClient != null ? PointFromClient(MousePosition) : MousePosition);
+            DragHandles();
 
+            DX.RectangleF handleRect = _handles[handle].HandleBounds;
+            var clientPos = new DX.Vector2(handleRect.X + (handleRect.Width * 0.5f), handleRect.Y + (handleRect.Height * 0.5f));
+            _mousePosition = clientPos;
+                        
             return true;
         }
 
@@ -622,7 +666,7 @@ namespace Gorgon.Editor.Services
         /// </summary>
         public void Render()
         {
-            if (_screenRect.IsEmpty)
+            if (_clipRect.IsEmpty)
             {
                 return;
             }
@@ -668,6 +712,9 @@ namespace Gorgon.Editor.Services
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
+            RectChangedEvent = null;
+            KeyboardIconClickedEvent = null;
+
             Lazy<GorgonTexture2DView> keyIcon = Interlocked.Exchange(ref _keyboardIcon, null);
 
             if (keyIcon?.IsValueCreated ?? false)
@@ -678,9 +725,9 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Services.RectClipperService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="RectClipperService"/> class.</summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
-        /// <param name="marchingAnts">The marching ants.</param>
+        /// <param name="marchingAnts">The marching ants rectangle used to display the selection region.</param>
         public RectClipperService(Gorgon2D renderer, IMarchingAnts marchingAnts)
         {
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));

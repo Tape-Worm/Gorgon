@@ -533,6 +533,7 @@ namespace Gorgon.Animation
             {
                 singles[builder.Key] = new SingleTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
                 {
+                    IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
                 };
             }
@@ -541,6 +542,7 @@ namespace Gorgon.Animation
             {
                 vec2[builder.Key] = new Vector2Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
                 {
+                    IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
                 };
             }
@@ -549,6 +551,7 @@ namespace Gorgon.Animation
             {
                 vec3[builder.Key] = new Vector3Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
                 {
+                    IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
                 };
             }
@@ -557,6 +560,7 @@ namespace Gorgon.Animation
             {
                 vec4[builder.Key] = new Vector4Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
                 {
+                    IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
                 };
             }
@@ -565,6 +569,7 @@ namespace Gorgon.Animation
             {
                 rect[builder.Key] = new RectBoundsTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
                 {
+                    IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
                 };
             }
@@ -573,6 +578,7 @@ namespace Gorgon.Animation
             {
                 color[builder.Key] = new ColorTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
                 {
+                    IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
                 };
             }
@@ -581,6 +587,7 @@ namespace Gorgon.Animation
             {
                 texture[builder.Key] = new Texture2DViewTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
                 {
+                    IsEnabled = builder.Value.IsEnabled,
                     // Textures don't use interpolation.
                     InterpolationMode = TrackInterpolationMode.None
                 };
@@ -621,6 +628,7 @@ namespace Gorgon.Animation
             {
                 var trackBuilder = new TrackKeyBuilder<GorgonKeySingle>(this);
                 trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Enabled();
                 trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeySingle(item)));
                 _singleTracks[track.Key] = trackBuilder;
             }
@@ -629,6 +637,7 @@ namespace Gorgon.Animation
             {
                 var trackBuilder = new TrackKeyBuilder<GorgonKeyVector2>(this);
                 trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Enabled();
                 trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector2(item)));
                 _vector2Tracks[track.Key] = trackBuilder;
             }
@@ -637,6 +646,7 @@ namespace Gorgon.Animation
             {
                 var trackBuilder = new TrackKeyBuilder<GorgonKeyVector3>(this);
                 trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Enabled();
                 trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector3(item)));
                 _vector3Tracks[track.Key] = trackBuilder;
             }
@@ -645,6 +655,7 @@ namespace Gorgon.Animation
             {
                 var trackBuilder = new TrackKeyBuilder<GorgonKeyVector4>(this);
                 trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Enabled();
                 trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyVector4(item)));
                 _vector4Tracks[track.Key] = trackBuilder;
             }
@@ -653,6 +664,7 @@ namespace Gorgon.Animation
             {
                 var trackBuilder = new TrackKeyBuilder<GorgonKeyRectangle>(this);
                 trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Enabled();
                 trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyRectangle(item)));
                 _rectangleTracks[track.Key] = trackBuilder;
             }
@@ -661,6 +673,7 @@ namespace Gorgon.Animation
             {
                 var trackBuilder = new TrackKeyBuilder<GorgonKeyGorgonColor>(this);
                 trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Enabled();
                 trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyGorgonColor(item)));
                 _colorTracks[track.Key] = trackBuilder;
             }
@@ -669,6 +682,7 @@ namespace Gorgon.Animation
             {
                 var trackBuilder = new TrackKeyBuilder<GorgonKeyTexture2D>(this);
                 trackBuilder.SetInterpolationMode(track.Value.InterpolationMode);
+                trackBuilder.Enabled();
                 trackBuilder.Keys.AddRange(track.Value.KeyFrames.Select(item => new GorgonKeyTexture2D(item)));
                 _textureTracks[track.Key] = trackBuilder;
             }

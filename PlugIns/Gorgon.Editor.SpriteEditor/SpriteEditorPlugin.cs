@@ -59,7 +59,7 @@ namespace Gorgon.Editor.SpriteEditor
     /// Gorgon sprite editor content plug in interface.
     /// </summary>
     internal class SpriteEditorPlugIn
-        : ContentPlugIn, IContentPlugInMetadata, ISpriteContentFactory
+        : ContentPlugIn, IContentPlugInMetadata
     {
         #region Constants.
         // The attribute key name for the sprite codec attribute.
@@ -370,11 +370,14 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     Binding = TextureBinding.ShaderResource,
                     Usage = ResourceUsage.Immutable,
-                    Name = imageFile.Path
+                    Name = imageFile.Path,
+                    IsTextureCube = false       // We have force texture cube off so that our image will render correctly.
                 });
-                GorgonSprite sprite = _defaultCodec.FromStream(inStream, texture);                
+                GorgonSprite sprite = _defaultCodec.FromStream(inStream, texture);
 
-                return (sprite, imageFile, null);
+                // If we don't have a texture by this point, then update the preview to show that there's no image attached.
+                return sprite.Texture == null ? ((GorgonSprite sprite, IContentFile imageFile, IGorgonImage thumbNail))(null, null, _noImage.Clone()) 
+                                              : ((GorgonSprite sprite, IContentFile imageFile, IGorgonImage thumbNail))(sprite, imageFile, null);
             }
             catch (Exception ex)
             {
@@ -431,7 +434,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Function to register plug in specific search keywords with the system search.</summary>
-        /// <typeparam name="T">The type of object being searched, must implement <see cref="T:Gorgon.Core.IGorgonNamedObject"/>.</typeparam>
+        /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
         /// <param name="searchService">The search service to use for registration.</param>
         protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService)
         {
@@ -468,60 +471,73 @@ namespace Gorgon.Editor.SpriteEditor
                 stream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
                 sprite = _defaultCodec.FromStream(stream, spriteImage);
 
-                var settings = new Settings();
-                //ISpritePickMaskEditor spritePickMaskEditor = settings;
+                // We don't have a texture attached to this guy (probably due to a mismatch in the metadata), so we'll unlink it 
+                // and remove any reference to any image that might have been loaded.
+                if ((sprite.Texture == null) && (imageFile != null))
+                {
+                    file.UnlinkContent(imageFile);
+
+                    spriteImage?.Dispose();
+                    imageFile.IsOpen = false;
+                    imageFile = null;
+                }
+
+                var settings = new Settings();                
                 settings.Initialize(new SettingsParameters(_settings, HostContentServices));
 
-                /*var manualRectEdit = new ManualRectangleEditor();
-                manualRectEdit.Initialize(new ManualInputParameters(settings, CommonServices));
-
-                var manualVertexEdit = new ManualVertexEditor();
-                manualVertexEdit.Initialize(new ManualInputParameters(settings, CommonServices));
+                var spritePickMaskEditor = new SpritePickMaskEditor();
+                spritePickMaskEditor.Initialize(new SpritePickMaskEditorParameters(settings, HostContentServices));
 
                 var colorEditor = new SpriteColorEdit();
-                colorEditor.Initialize(CommonServices);
-
+                colorEditor.Initialize(new HostedPanelViewModelParameters(HostContentServices));
+                
                 var anchorEditor = new SpriteAnchorEdit();
-                anchorEditor.Initialize(CommonServices);
+                anchorEditor.Initialize(new SpriteAnchorEditParameters(new DX.Rectangle
+                {
+                    Left = -HostContentServices.GraphicsContext.Graphics.VideoAdapter.MaxTextureWidth / 2,
+                    Top = -HostContentServices.GraphicsContext.Graphics.VideoAdapter.MaxTextureHeight / 2,
+                    Right = HostContentServices.GraphicsContext.Graphics.VideoAdapter.MaxTextureWidth / 2 - 1,
+                    Bottom = HostContentServices.GraphicsContext.Graphics.VideoAdapter.MaxTextureHeight / 2 - 1,
+                }, HostContentServices));
 
-                var samplerBuilder = new SamplerBuildService(new GorgonSamplerStateBuilder(GraphicsContext.Graphics));
+                var builder = new GorgonSamplerStateBuilder(HostContentServices.GraphicsContext.Graphics);
+                var wrapEditor = new SpriteTextureWrapEdit();
+                wrapEditor.Initialize(new SpriteTextureWrapEditParameters(builder, HostContentServices));
+                wrapEditor.CurrentSampler = sprite.TextureSampler;
 
-                var wrapEditor = new SpriteWrappingEditor();
-                wrapEditor.Initialize(new SpriteWrappingEditorParameters(samplerBuilder, CommonServices));*/
+                var spriteClipContext = new SpriteClipContext();
+                var spritePickContext = new SpritePickContext();
+                var spriteVertexEditContext = new SpriteVertexEditContext();
+
+                var spriteContentServices = new SpriteContentServices(new NewSpriteService(fileManager, _ddsCodec),
+                                                                      textureService, 
+                                                                      undoService,
+                                                                      builder);
 
                 content.Initialize(new SpriteContentParameters(
                     sprite,
                     imageFile,
-                    textureService,
-                    undoService,
-                    _defaultCodec,
-                    ContentFileManager,
-                    file,
-                    HostContentServices));
-                /*content.Initialize(new SpriteContentParameters(this,
-                    file,
-                    imageFile,
-                    fileManager,
-                    textureService,
-                    sprite,
-                    _defaultCodec,
-                    manualRectEdit,
-                    manualVertexEdit,
-                    spritePickMaskEditor,
+                    settings,
+                    spriteClipContext,
+                    spritePickContext,
+                    spriteVertexEditContext,
                     colorEditor,
                     anchorEditor,
                     wrapEditor,
-                    samplerBuilder,
-                    settings,
-                    undoService,
-                    scratchArea,
-                    CommonServices));*/
+                    spriteContentServices,
+                    _defaultCodec,
+                    fileManager,
+                    file,
+                    HostContentServices));
 
-                // If we have a texture, then read its data into RAM.
-                /*if (sprite.Texture != null)
+                spriteClipContext.Initialize(new SpriteClipContextParameters(content, HostContentServices));
+                spritePickContext.Initialize(new SpritePickContextParameters(content, spritePickMaskEditor, spriteContentServices.TextureService, HostContentServices));
+                spriteVertexEditContext.Initialize(new SpriteVertexEditContextParameters(content, HostContentServices));
+
+                if ((spritePickContext.GetImageDataCommand != null) && (spritePickContext.GetImageDataCommand.CanExecute(null)))
                 {
-                    await content.ExtractImageDataAsync();
-                }*/
+                    await spritePickContext.GetImageDataCommand.ExecuteAsync(null);
+                }
 
                 return content;
             }

@@ -79,6 +79,19 @@ namespace Gorgon.Editor.UI.Controls
             get => base.Text;
             set => base.Text = LabelCaption.Text = value ?? string.Empty;
         }
+
+        /// <summary>
+        /// Property to set or return whether the panel is modal.
+        /// </summary>
+        /// <remarks>
+        /// A modal panel (<b>true</b>) will disable all functionality until it is dismissed, a non-modal panel will allow the application to continue functioning as normal while the panel is open.
+        /// </remarks>
+        [Browsable(true), Category("Behavior"), Description("Sets whether the panel is meant to be modal or nor"), DefaultValue(true), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public bool IsModal
+        {
+            get => PanelConfirmCancel.Visible;
+            set => PanelConfirmCancel.Visible = value;
+        }
         #endregion
 
         #region Methods.

@@ -25,12 +25,10 @@
 #endregion
 
 using System;
-using System.IO;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.ViewModels;
+using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.Renderers;
 
@@ -58,19 +56,10 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-
         /// <summary>
-        /// Property to return the undo service for the editor.
+        /// Property to return the services used for handling sprite data.
         /// </summary>
-        public IUndoService UndoService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the texture service used to read sprite texture data.
-        /// </summary>
-        public SpriteTextureService TextureService
+        public SpriteContentServices ContentServices
         {
             get;
         }
@@ -83,26 +72,34 @@ namespace Gorgon.Editor.SpriteEditor
             get;
         }
 
-        /*/// <summary>
-        /// Property to return the manual rectangle editor view model.
+        /// <summary>
+        /// Property to return the context for sprite clipping.
         /// </summary>
-        public IManualRectangleEditor ManualRectangleEditor
+        public ISpriteClipContext SpriteClipContext
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the manual vertex editor view model.
+        /// Property to return the context for sprite vertex editing.
         /// </summary>
-        public IManualVertexEditor ManualVertexEditor
+        public ISpriteVertexEditContext SpriteVertexEditContext
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the sprite picker mask color editor.
+        /// Property to return the context for sprite picking.
         /// </summary>
-        public ISpritePickMaskEditor SpritePickMaskEditor
+        public ISpritePickContext SpritePickContext
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the view model for the anchor editor.
+        /// </summary>
+        public ISpriteAnchorEdit AnchorEditor
         {
             get;
         }
@@ -110,28 +107,19 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the sprite texture wrapping state editor.
         /// </summary>
-        public ISpriteWrappingEditor SpriteWrappingEditor
+        public ISpriteTextureWrapEdit TextureWrappingEditor
         {
             get;
-        }*/
+        }
 
         /// <summary>
         /// Property to return the settings view model.
         /// </summary>
-        public IImportSettings Settings
+        public ISettings Settings
         {
             get;
         }
 
-        /// <summary>
-        /// Property to return the factory used to build sprite content data.
-        /// </summary>
-        public ISpriteContentFactory Factory
-        {
-            get;
-        }
-
-        /*
         /// <summary>
         /// Property to return the view model for the sprite color editor.
         /// </summary>
@@ -141,26 +129,24 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the view model for the sprite anchor editor.
+        /// Property to return the sampler builder service.
         /// </summary>
-        public ISpriteAnchorEdit AnchorEditor
+        public GorgonSamplerStateBuilder SamplerBuilder
         {
             get;
         }
 
-        /// <summary>
-        /// Property to return the sampler builder service.
-        /// </summary>
-        public ISamplerBuildService SamplerBuilder
-        {
-            get;
-        }*/
-
         /// <summary>Initializes a new instance of the <see cref="SpriteContentParameters"/> class.</summary>
         /// <param name="sprite">The sprite data.</param>
         /// <param name="textureFile">The texture file linked to the sprite.</param>
-        /// <param name="textureService">The service used to handle textures for the sprite.</param>
-        /// <param name="undoService">The undo service.</param>
+        /// <param name="settings">The settings for the plug in.</param>
+        /// <param name="spriteClipContext">The context for sprite clipping.</param>
+        /// <param name="spritePickContext">The context for sprite picking.</param>
+        /// <param name="spriteVertexEditContext">The context for sprite vertex editing.</param>
+        /// <param name="colorEditor">The editor used to modify the sprite color.</param>
+        /// <param name="anchorEditor">The editor used to modify the anchor.</param>
+        /// <param name="textureWrapEditor">The editor used to modify texture wrapping.</param>
+        /// <param name="contentServices">The services for handling sprite data.</param>
         /// <param name="codec">The sprite codec for the sprite file.</param>
         /// <param name="fileManager">The file manager for content files.</param>
         /// <param name="file">The file that contains the content.</param>
@@ -168,8 +154,14 @@ namespace Gorgon.Editor.SpriteEditor
         /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
         public SpriteContentParameters(GorgonSprite sprite,
                                        IContentFile textureFile,
-                                       SpriteTextureService textureService,
-                                       IUndoService undoService,
+                                       ISettings settings,
+                                       ISpriteClipContext spriteClipContext,
+                                       ISpritePickContext spritePickContext,
+                                       ISpriteVertexEditContext spriteVertexEditContext,
+                                       ISpriteColorEdit colorEditor,
+                                       ISpriteAnchorEdit anchorEditor,
+                                       ISpriteTextureWrapEdit textureWrapEditor,
+                                       SpriteContentServices contentServices,
                                        IGorgonSpriteCodec codec,
                                        IContentFileManager fileManager, 
                                        IContentFile file,
@@ -178,9 +170,15 @@ namespace Gorgon.Editor.SpriteEditor
         {
             Sprite = sprite ?? throw new ArgumentNullException(nameof(sprite));
             SpriteCodec = codec ?? throw new ArgumentNullException(nameof(codec));
+            SpriteClipContext = spriteClipContext ?? throw new ArgumentNullException(nameof(spriteClipContext));
+            SpritePickContext = spritePickContext ?? throw new ArgumentNullException(nameof(spritePickContext));
+            SpriteVertexEditContext = spriteVertexEditContext ?? throw new ArgumentNullException(nameof(spriteVertexEditContext));
+            ColorEditor = colorEditor ?? throw new ArgumentNullException(nameof(colorEditor));
+            AnchorEditor = anchorEditor ?? throw new ArgumentNullException(nameof(anchorEditor));
+            TextureWrappingEditor = textureWrapEditor ?? throw new ArgumentNullException(nameof(textureWrapEditor));
             SpriteTextureFile = textureFile;
-            TextureService = textureService ?? throw new ArgumentNullException(nameof(textureService));
-            UndoService = undoService ?? throw new ArgumentNullException(nameof(undoService));
+            ContentServices = contentServices ?? throw new ArgumentNullException(nameof(contentServices));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
             /*
