@@ -93,5 +93,12 @@ namespace Gorgon.Editor.PlugIns
             get;
             set;
         }
+
+        /// <summary>Property to set or return the service used to pick colors.</summary>
+        public IColorPickerService ColorPicker
+        {
+            get;
+            set;
+        }
     }
 }

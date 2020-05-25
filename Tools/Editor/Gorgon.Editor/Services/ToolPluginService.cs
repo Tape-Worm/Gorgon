@@ -66,6 +66,11 @@ namespace Gorgon.Editor.Services
 
         /// <summary>Property to return the list of disabled plug ins.</summary>
         public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
+
+        /// <summary>
+        /// Property to return the UI buttons for the tool plug in.
+        /// </summary>
+        public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons => _ribbonButtons;
         #endregion
 
         #region Methods.
@@ -80,6 +85,48 @@ namespace Gorgon.Editor.Services
 #else
             new FileInfo(Path.Combine(_settingsDir, Path.ChangeExtension(name.FormatFileName(), "json")));
 #endif
+        /// <summary>
+        /// Function to clear the UI buttons for the plug ins.
+        /// </summary>
+        private void ClearToolButtons()
+        {
+            foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> buttonGroup in _ribbonButtons)
+            {
+                foreach (IDisposable button in buttonGroup.Value.OfType<IDisposable>())
+                {
+                    button.Dispose();
+                }
+            }
+
+            _ribbonButtons.Clear();
+        }
+
+        /// <summary>
+        /// Function to rebuild the list of sorted ribbon buttons.
+        /// </summary>
+        private void GetToolButtons()
+        {
+            ClearToolButtons();
+
+            foreach (KeyValuePair<string, ToolPlugIn> plugin in PlugIns)
+            {
+                IToolPlugInRibbonButton button = plugin.Value.GetToolButton();
+                button.ValidateButton();
+
+                List<IToolPlugInRibbonButton> buttons;
+                if (_ribbonButtons.TryGetValue(button.GroupName, out IReadOnlyList<IToolPlugInRibbonButton> roButtons))
+                {
+                    // This is safe because this is the implementation.
+                    buttons = (List<IToolPlugInRibbonButton>)roButtons;
+                }
+                else
+                {
+                    _ribbonButtons[button.GroupName] = buttons = new List<IToolPlugInRibbonButton>();
+                }
+
+                buttons.Add(button);
+            }
+        }
 
         /// <summary>Function to add a tool plugin to the service.</summary>
         /// <param name="plugin">The plugin to add.</param>
@@ -187,6 +234,7 @@ namespace Gorgon.Editor.Services
             }
         }
 
+
         /// <summary>Function to remove a tool plugin from the service.</summary>
         /// <param name="plugin">The plugin to remove.</param>
         public void RemoveToolPlugIn(ToolPlugIn plugin)
@@ -285,6 +333,8 @@ namespace Gorgon.Editor.Services
             {
                 plugIn.ProjectOpened(fileManager, temporaryFileSystem);
             }
+
+            GetToolButtons();
         }
 
         /// <summary>
@@ -296,6 +346,8 @@ namespace Gorgon.Editor.Services
             {
                 plugIn.ProjectClosed();
             }
+
+            ClearToolButtons();
         }
         #endregion
 

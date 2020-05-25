@@ -109,25 +109,6 @@ namespace Gorgon.Editor.PlugIns
 
         #region Methods.
         /// <summary>
-        /// Function to return the file system used for writing out temporary data.
-        /// </summary>
-        /// <param name="tempDirectory">The physical directory to store the temporary data into.</param>
-        /// <returns>A new writable file system for writing temporary data into.</returns>
-        private IGorgonFileSystemWriter<Stream> GetScratchArea(DirectoryInfo tempDirectory)
-        {
-            string scratchPath = Path.Combine(tempDirectory.FullName, "Tools", GetType().FullName).FormatDirectory(Path.DirectorySeparatorChar);
-
-            if (!Directory.Exists(scratchPath))
-            {
-                Directory.CreateDirectory(scratchPath);
-            }
-
-            var scratchArea = new GorgonFileSystem(HostServices.Log);
-            scratchArea.Mount(scratchPath);
-            return new GorgonFileSystemWriter(scratchArea, scratchArea, scratchPath);
-        }
-
-        /// <summary>
         /// Function to allow custom plug ins to implement custom actions when a project is created/opened.
         /// </summary>
         protected virtual void OnProjectOpened()
@@ -165,8 +146,6 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Function to retrieve the ribbon button for the tool.
         /// </summary>
-        /// <param name="fileManager">The project file manager.</param>
-        /// <param name="scratchArea">The scratch area for writing temporary data.</param>
         /// <returns>A new tool ribbon button instance.</returns>
         /// <remarks>
         /// <para>
@@ -176,16 +155,8 @@ namespace Gorgon.Editor.PlugIns
         /// <para>
         /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug in.
         /// </para>
-        /// <para>
-        /// The <paramref name="fileManager"/> will allow plug ins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plug in a means 
-        /// to persist any data generated.
-        /// </para>
-        /// <para>
-        /// The <paramref name="scratchArea"/> is used to write temporary data to the project temporary area, which is useful for handling transitory states. Because this is <b>temporary</b>, any data 
-        /// written to this area will be deleted on application shut down. So do not rely on this data being there on the next start up.
-        /// </para>
         /// </remarks>
-        protected abstract IToolPlugInRibbonButton OnGetToolButton(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea);
+        protected abstract IToolPlugInRibbonButton OnGetToolButton();
 
         /// <summary>
         /// Function called when a project is loaded/created.
@@ -212,31 +183,13 @@ namespace Gorgon.Editor.PlugIns
         /// <summary>
         /// Function to retrieve the ribbon button for the tool.
         /// </summary>
-        /// <param name="project">The project data.</param>
-        /// <param name="fileManager">The project file manager.</param>
         /// <returns>A new tool ribbon button instance.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, or the <paramref name="fileManager"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This will return data to describe a new button for the tool in the plug in. If the return value is <b>null</b>, then the tool will not be available on the ribbon.
         /// </para>
         /// </remarks>
-        public IToolPlugInRibbonButton GetToolButton(IProject project, IContentFileManager fileManager)
-        {
-            if (project == null)
-            {
-                throw new ArgumentNullException(nameof(project));
-            }
-
-            if (fileManager == null)
-            {
-                throw new ArgumentNullException(nameof(fileManager));
-            }
-
-            IGorgonFileSystemWriter<Stream> scratchWriter = GetScratchArea(project.TempDirectory);
-
-            return OnGetToolButton(fileManager, scratchWriter);
-        }
+        public IToolPlugInRibbonButton GetToolButton() => OnGetToolButton();
 
         /// <summary>
         /// Function to perform any required clean up for the plugin.

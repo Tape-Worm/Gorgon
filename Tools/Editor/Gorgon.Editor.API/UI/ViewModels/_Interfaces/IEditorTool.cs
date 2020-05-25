@@ -20,49 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 22, 2020 10:34:16 PM
+// Created: May 25, 2020 2:53:02 PM
 // 
 #endregion
 
-using Gorgon.Editor.Rendering;
-using Gorgon.Editor.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.PlugIns
+namespace Gorgon.Editor.Tools
 {
     /// <summary>
-    /// A list of services passed from the host application to tool plug ins.
+    /// The base view model for a tool plug in UI.
     /// </summary>
-    public interface IHostToolServices
-        : IHostServices
+    public interface IEditorTool
+        : IViewModel
     {
         /// <summary>
-        /// Property to return the graphics and the 2D renderer used by the host application.
+        /// Property to return the command used when the tool UI is about to be closed.
         /// </summary>
-        IGraphicsContext GraphicsContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service that allows a conetnt plug in to access tool content plug ins.
-        /// </summary>
-        IToolPlugInService ToolPlugInService
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service used to browse through directories on the file system.
-        /// </summary>
-        IFileSystemFolderBrowseService FolderBrowser
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the service used to pick colors.
-        /// </summary>
-        IColorPickerService ColorPicker
+        /// <remarks>
+        /// This command will be executed when the user shuts down the tool via some UI element (e.g. the 'X' in a window). 
+        /// </remarks>
+        IEditorAsyncCommand<CloseToolArgs> CloseToolCommand
         {
             get;
         }

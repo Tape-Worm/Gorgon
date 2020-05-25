@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,25 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 24, 2019 11:05:37 PM
+// Created: May 25, 2020 8:54:53 PM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.ViewModels;
+using Gorgon.Graphics.Core;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
     /// <summary>
-    /// Parameters to pass to the <see cref="IExtract"/> view model.
+    /// Parameters for the <see cref="IExtract"/> view model.
     /// </summary>
     internal class ExtractParameters
-        : ViewModelInjection
+        : EditorToolViewModelInjection
     {
         /// <summary>
-        /// Property to return the plug in settings.
+        /// Property to return the data used for extraction.
+        /// </summary>
+        public SpriteExtractionData ExtractionData
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the settings for the plug in.
         /// </summary>
         public ExtractSpriteToolSettings Settings
         {
@@ -46,69 +60,36 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
-        /// Property to return the data structure that will hold the information used to extract sprites.
+        /// Property to return the sprite extractor service used to create the sprites.
         /// </summary>
-        public SpriteExtractionData Data
+        public ISpriteExtractorService Extractor
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the file containing the texture data.
+        /// Property to return the file that contains the texture to extract from.
         /// </summary>
-        public OLDE_IContentFile TextureFile
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the extractor used to build the sprites.
-        /// </summary>
-        public IExtractorService Extractor
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the color picker service.
-        /// </summary>
-        public IColorPickerService ColorPicker
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the project file system folder browser.
-        /// </summary>
-        public IFileSystemFolderBrowseService FolderBrowser
+        public IContentFile TextureFile
         {
             get;
         }
 
         /// <summary>Initializes a new instance of the <see cref="ExtractParameters"/> class.</summary>
         /// <param name="settings">The plug in settings.</param>
-        /// <param name="data">The data structure that will hold the information used to extract sprites.</param>
-        /// <param name="textureFile">The file used as the texture.</param>
-        /// <param name="extractor">The extractor used to build the sprites.</param>
-        /// <param name="colorPicker">The color picker service.</param>
-        /// <param name="folderBrowser">The project file system folder browser service.</param>
-        /// <param name="commonServices">The common services.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the any parameters are <b>null</b>.</exception>
-        /// <exception cref="ArgumentMissingException">Thrown when the <see cref="SpriteExtractionData.Texture"/> property of the <paramref name="data"/> parameter is <b>null</b>.</exception>
-        public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData data, OLDE_IContentFile textureFile, IExtractorService extractor, IColorPickerService colorPicker, IFileSystemFolderBrowseService folderBrowser, IViewModelInjection commonServices)
-            : base(commonServices)
+        /// <param name="extractData">The data used for extraction.</param>
+        /// <param name="extractor">The sprite extractor service used to create the sprites.</param>
+        /// <param name="textureFile">The file that contains the texture to extract from.</param>
+        /// <param name="fileManager">The file manager for the project file system.</param>
+        /// <param name="toolServices">The common tool services from the host application.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+        public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData extractData, ISpriteExtractorService extractor, IContentFile textureFile, IContentFileManager fileManager, IHostToolServices toolServices)
+            : base(fileManager, toolServices)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            Data = data ?? throw new ArgumentNullException(nameof(data));
+            ExtractionData = extractData ?? throw new ArgumentNullException(nameof(extractData));
             Extractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
-            ColorPicker = colorPicker ?? throw new ArgumentNullException(nameof(colorPicker));
-            FolderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
             TextureFile = textureFile ?? throw new ArgumentNullException(nameof(textureFile));
-
-            if (data.Texture == null)
-            {
-                throw new ArgumentMissingException(nameof(data.Texture), nameof(data));
-            }
         }
     }
 }

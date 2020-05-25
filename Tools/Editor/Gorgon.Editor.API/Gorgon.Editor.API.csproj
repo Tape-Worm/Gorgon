@@ -78,18 +78,26 @@
     <Compile Include="ProjectData\RecentItem.cs" />
     <Compile Include="ProjectData\_Interfaces\IProjectMetadata.cs" />
     <Compile Include="PropertyMonitor.cs" />
+    <Compile Include="Rendering\DefaultToolRenderer.cs" />
     <Compile Include="Rendering\DefaultContentRenderer.cs" />
     <Compile Include="Rendering\MouseArgs.cs" />
     <Compile Include="Rendering\OffsetEventArgs.cs" />
     <Compile Include="Rendering\ZoomScaleEventArgs.cs" />
+    <Compile Include="Rendering\_Interfaces\IToolRenderer.cs" />
     <Compile Include="Rendering\_Interfaces\IContentRenderer.cs" />
     <Compile Include="Rendering\_Interfaces\IMarchingAnts.cs" />
     <Compile Include="Rendering\MarchingAnts.cs" />
     <Compile Include="Rendering\_Internal\CameraAnimationController.cs" />
+    <Compile Include="Services\ColorPickerService.cs" />
     <Compile Include="Services\FileSaveDialogService.cs" />
     <Compile Include="Services\EditorContentSearchService.cs" />
+    <Compile Include="Services\ProgressData.cs" />
+    <Compile Include="Services\SpriteExtractionData.cs" />
+    <Compile Include="Services\SpriteExtractorService.cs" />
+    <Compile Include="Services\_Interfaces\IColorPickerService.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemFolderBrowseService.cs" />
     <Compile Include="Plugins\_Interfaces\IHostContentServices.cs" />
+    <Compile Include="Services\_Interfaces\ISpriteExtractorService.cs" />
     <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
     <Compile Include="Services\RectClipperService.cs" />
     <Compile Include="Services\RectHandle.cs" />
@@ -122,7 +130,15 @@
     </Compile>
     <Compile Include="UI\Controls\_Interfaces\IContentFileExplorerSearchEntry.cs" />
     <Compile Include="UI\DarkFormsRenderer.cs" />
+    <Compile Include="UI\_Internal\FormColorPicker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Internal\FormColorPicker.Designer.cs">
+      <DependentUpon>FormColorPicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ProgressPanelDisplay.cs" />
+    <Compile Include="UI\ViewModels\CloseToolArgs.cs" />
+    <Compile Include="UI\ViewModels\EditorToolViewModelBase.cs" />
     <Compile Include="UI\ViewModels\EditorContext.cs" />
     <Compile Include="UI\ViewModels\EditorViewModelBase.cs" />
     <Compile Include="UI\ViewModels\ContentViewModelInjection.cs" />
@@ -133,8 +149,11 @@
     <Compile Include="UI\ViewModels\HostedPanelViewModelParameters.cs" />
     <Compile Include="UI\ViewModels\SettingsCategoryViewModelParameters.cs" />
     <Compile Include="UI\ViewModels\PlugInsCategoryViewModelParameters.cs" />
+    <Compile Include="UI\ViewModels\EditorToolViewModelInjection.cs" />
+    <Compile Include="UI\ViewModels\_Interfaces\IEditorToolViewModelInjection.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IContentViewModelInjection.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IEditorContext.cs" />
+    <Compile Include="UI\ViewModels\_Interfaces\IEditorTool.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IVisualEditorContent.cs" />
     <Compile Include="UI\Views\ContentBaseControl.cs">
       <SubType>UserControl</SubType>
@@ -277,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Controls\EditorSubPanelCommon.resx">
       <DependentUpon>EditorSubPanelCommon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Internal\FormColorPicker.resx">
+      <DependentUpon>FormColorPicker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Forms\FormName.resx">
       <DependentUpon>FormName.cs</DependentUpon>

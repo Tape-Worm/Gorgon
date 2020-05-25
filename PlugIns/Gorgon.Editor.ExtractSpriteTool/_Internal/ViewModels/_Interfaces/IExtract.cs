@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 24, 2019 10:54:18 PM
+// Created: May 24, 2020 11:25:55 PM
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Editor.UI;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
 using DX = SharpDX;
+using Gorgon.Editor.Tools;
+using Gorgon.Editor.UI;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics;
+using Gorgon.Editor.Services;
+using Gorgon.Renderers;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
@@ -38,7 +43,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
     /// The view model for the main UI.
     /// </summary>
     internal interface IExtract
-        : IViewModel
+        : IEditorTool
     {
         /// <summary>
         /// Property to return the progress status of the extraction operation.
@@ -49,42 +54,34 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
-        /// Property to set or return whether we are in sprite preview mode.
+        /// Property to return the texture used to extract the sprites.
         /// </summary>
-        bool InSpritePreview
+        GorgonTexture2DView Texture
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the flag to indicate that sprite generation is executing.
+        /// </summary>
+        bool IsGenerating
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to set or return the number of columns/rows in the grid.
+        /// </summary>
+        DX.Size2 GridSize
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to return the number of sprites for previewing.
+        /// Property to return the maximum columns and rows allowed in the grid.
         /// </summary>
-        int SpritePreviewCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the current preview sprite index.
-        /// </summary>
-        int CurrentPreviewSprite
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the list of sprites retrieved from extraction.
-        /// </summary>
-        IReadOnlyList<GorgonSprite> Sprites
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the texture that is to be rendered.
-        /// </summary>
-        GorgonTexture2DView Texture
+        DX.Size2 MaxGridSize
         {
             get;
         }
@@ -108,53 +105,23 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
-        /// Property to set or return the number of columns/rows in the grid.
+        /// Property to set or return whether the extractor should skip empty regions based on a color value.
         /// </summary>
-        DX.Size2 GridSize
+        bool SkipEmpty
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to return the maximum columns and rows allowed in the grid.
+        /// Property to return the mask color to use when skipping empty regions.
         /// </summary>
-        DX.Size2 MaxGridSize
+        /// <remarks>
+        /// This value is only used when the <see cref="SkipEmpty"/> property is set to <b>true</b>.
+        /// </remarks>
+        GorgonColor SkipMaskColor
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to return the maximum array indices in the texture for previewing.
-        /// </summary>
-        int PreviewArrayCount
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the current array index being previewed.
-        /// </summary>
-        int CurrentPreviewArrayIndex
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return whether or not the texture is an array.
-        /// </summary>
-        bool HasArray
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the number of array indices used.
-        /// </summary>
-        int ArrayCount
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -174,6 +141,15 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
+        /// Property to set or return the number of array indices to use.
+        /// </summary>
+        int ArrayCount
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the starting array index to use.
         /// </summary>
         int StartArrayIndex
@@ -183,70 +159,46 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
-        /// Property to set or return whether the UI is in a maximized state or not.
+        /// Property to set or return whether sprite preview mode is active or not.
         /// </summary>
-        bool IsMaximized
+        bool IsInSpritePreview
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Property to set or return the color used when determining which sprites are considered empty.
+        /// Property to return the list of sprites retrieved from extraction.
         /// </summary>
-        GorgonColor SkipMaskColor
+        IReadOnlyList<GorgonSprite> Sprites
         {
             get;
         }
 
         /// <summary>
-        /// Property to set or return whether to allow skipping empty sprites.
+        /// Property to return the number of sprites for previewing.
         /// </summary>
-        bool AllowSkipEmpty
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the task used to generate the sprite data.
-        /// </summary>
-        Task SpriteGenerationTask
+        int SpritePreviewCount
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the command used to assign the masking color used for skipping empty sprites.
+        /// Property to return the current preview sprite index.
+        /// </summary>
+        int CurrentPreviewSprite
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to assign the color used to skip empty regions.
         /// </summary>
         IEditorCommand<object> SetEmptySpriteMaskColorCommand
         {
             get;
         }
 
-        /// <summary>
-        /// Property to return the command that will generate the sprite data.
-        /// </summary>
-        IEditorCommand<object> GenerateSpritesCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to shut down any running operations.
-        /// </summary>
-        IEditorAsyncCommand<object> ShutdownCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to save the sprite data.
-        /// </summary>
-        IEditorCommand<SaveSpritesArgs> SaveSpritesCommand
-        {
-            get;
-        }
 
         /// <summary>
         /// Property to return the command used to go to the next preview sprite.
@@ -265,25 +217,25 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
-        /// Property to return the command used to go to the next preview array index.
+        /// Property to return the command that will generate the sprite data.
         /// </summary>
-        IEditorCommand<object> NextPreviewArrayCommand
+        IEditorAsyncCommand<object> GenerateSpritesCommand
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the command used to go to the previous preview array index.
+        /// Property to return the command used to cancel sprite generation.
         /// </summary>
-        IEditorCommand<object> PrevPreviewArrayCommand
+        IEditorCommand<object> CancelSpriteGenerationCommand
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the command used to copy the current array preview index into the array range start value.
+        /// Property to return the command used to save the sprite data.
         /// </summary>
-        IEditorCommand<object> SendPreviewArrayToStartCommand
+        IEditorCommand<SaveSpritesArgs> SaveSpritesCommand
         {
             get;
         }

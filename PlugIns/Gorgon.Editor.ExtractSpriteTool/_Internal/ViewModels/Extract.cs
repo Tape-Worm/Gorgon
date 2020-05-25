@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,69 +20,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 24, 2019 11:10:56 PM
+// Created: May 25, 2020 9:52:13 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Diagnostics;
-using Gorgon.Editor.Content;
-using Gorgon.Editor.ExtractSpriteTool.Properties;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.UI;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Math;
-using Gorgon.Renderers;
 using DX = SharpDX;
+using Gorgon.Editor.UI;
+using Gorgon.Graphics.Core;
+using Gorgon.Math;
+using Gorgon.Graphics;
+using Gorgon.Editor.ExtractSpriteTool.Properties;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Services;
+using Gorgon.Renderers;
+using Gorgon.Graphics.Imaging;
+using System.Threading;
+using System.IO;
+using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
     /// <summary>
-    /// The view model for the main UI.
+    /// The extraction UI view model.
     /// </summary>
     internal class Extract
-        : ViewModelBase<ExtractParameters>, IExtract
+        : EditorToolViewModelBase<ExtractParameters>, IExtract
     {
         #region Variables.
-        // The data used to extract sprites.
+        // The data used for extraction.
         private SpriteExtractionData _extractData;
-        // The plug in settings.
+        // The settings for the plug in.
         private ExtractSpriteToolSettings _settings;
-        // The currently active task.
-        private Task _currentTask;
-        // The task for generating sprites.
-        private Task _spriteGenTask;
-        // The message display service.
-        private IMessageDisplayService _messageDisplay;
+        // The service used to create the sprites.
+        private ISpriteExtractorService _extractor;
         // The progress data for the extraction task.
         private ProgressData _extractProgressData;
-        // The list of extracted sprites.
-        private IReadOnlyList<GorgonSprite> _extractedSprites;
-        // The service used to build the sprites.
-        private IExtractorService _extractor;
         // The cancellation token source for cancelling tasks.
         private CancellationTokenSource _cancelSource;
-        // The busy state service.
-        private IBusyStateService _busyService;
-        // Color picker service.
-        private IColorPickerService _colorPicker;
-        // The project file system folder browser.
-        private IFileSystemFolderBrowseService _folderBrowser;
-        // The file for the sprite texture.
-        private OLDE_IContentFile _textureFile;
-        // Flag to indicate that we are in sprite preview.
-        private bool _inSpritePreview;
-        // The current sprite index for the sprite preview.
-        private int _spriteIndex;
-        // The current preview array index.
-        private int _arrayIndex;
+        // The list of extracted sprites.
+        private IReadOnlyList<GorgonSprite> _extractedSprites;
+        // The currently executing task.
+        private Task _currentTask;
+        // Flag to indicate that sprite generation is occuring.
+        private bool _isGenerating;
+        // Flag to indicate that sprite preview mode is active.
+        private bool _isInSpritePreview;
+        // Current sprite being previewed.
+        private int _currentPreviewSprite;
+        // The file that contains the texture to extract from.
+        private IContentFile _textureFile;
         #endregion
 
         #region Properties.
@@ -92,45 +83,48 @@ namespace Gorgon.Editor.ExtractSpriteTool
         public ref readonly ProgressData ExtractTaskProgress => ref _extractProgressData;
 
         /// <summary>
-        /// Property to set or return whether we are in sprite preview mode.
+        /// Property to return the texture used to extract the sprites.
         /// </summary>
-        public bool InSpritePreview
+        public GorgonTexture2DView Texture => _extractData.Texture;
+
+        /// <summary>
+        /// Property to return the flag to indicate that sprite generation is executing.
+        /// </summary>
+        public bool IsGenerating
         {
-            get => _inSpritePreview;
-            set
+            get => _isGenerating;
+            private set
             {
-                if (_inSpritePreview == value)
+                if (_isGenerating == value)
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _inSpritePreview = value;
+                _isGenerating = value;
                 OnPropertyChanged();
-
-                NotifyPropertyChanged(nameof(SpritePreviewCount));
-                NotifyPropertyChanged(nameof(CurrentPreviewSprite));
             }
         }
 
         /// <summary>
-        /// Property to return the current preview sprite index.
+        /// Property to set or return whether sprite preview mode is active or not.
         /// </summary>
-        public int CurrentPreviewSprite
+        public bool IsInSpritePreview
         {
-            get => _spriteIndex;
-            private set
+            get => _isInSpritePreview;
+            set
             {
-                if (_spriteIndex == value)
+                if (value == _isInSpritePreview)
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _spriteIndex = value.Min(_extractedSprites?.Count ?? 0).Max(0);
+                _isInSpritePreview = value;
                 OnPropertyChanged();
             }
         }
+
 
         /// <summary>
         /// Property to return the number of sprites for previewing.
@@ -138,42 +132,20 @@ namespace Gorgon.Editor.ExtractSpriteTool
         public int SpritePreviewCount => _extractedSprites?.Count ?? 0;
 
         /// <summary>
-        /// Property to return the list of sprites retrieved from extraction.
+        /// Property to return the current preview sprite index.
         /// </summary>
-        public IReadOnlyList<GorgonSprite> Sprites
+        public int CurrentPreviewSprite
         {
-            get => _extractedSprites;
+            get => _currentPreviewSprite;
             private set
             {
-                if (_extractedSprites == value)
+                if (value == _currentPreviewSprite)
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _extractedSprites = value;
-                OnPropertyChanged();
-
-                NotifyPropertyChanged(nameof(SpritePreviewCount));
-                NotifyPropertyChanged(nameof(CurrentPreviewSprite));
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the task used to generate the sprite data.
-        /// </summary>
-        public Task SpriteGenerationTask
-        {
-            get => _spriteGenTask;
-            private set
-            {
-                if (_spriteGenTask == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _currentTask = _spriteGenTask = value;
+                _currentPreviewSprite = value;
                 OnPropertyChanged();
             }
         }
@@ -191,7 +163,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                     return;
                 }
 
-                OnPropertyChanging();
+                OnPropertyChanging();                
                 _extractData.GridSize = value;
                 OnPropertyChanged();
             }
@@ -238,7 +210,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 }
 
                 OnPropertyChanging();
-                _extractData.CellSize = value;
+                _settings.GridCellSize = _extractData.CellSize = value;
                 OnPropertyChanged();
 
                 NotifyPropertyChanged(nameof(MaxGridSize));
@@ -246,31 +218,40 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
-        /// Property to return whether or not the texture is an array.
+        /// Property to set or return whether the extractor should skip empty regions based on a color value.
         /// </summary>
-        public bool HasArray => _extractData.Texture.Texture.ArrayCount > 1;
-
-
-        /// <summary>
-        /// Property to return the maximum array indices in the texture for previewing.
-        /// </summary>
-        public int PreviewArrayCount => _extractData.Texture.Texture.ArrayCount;
-
-        /// <summary>
-        /// Property to return the current array index being previewed.
-        /// </summary>
-        public int CurrentPreviewArrayIndex
+        public bool SkipEmpty
         {
-            get => _arrayIndex;
-            private set
+            get => _extractData.SkipEmpty;
+            set
             {
-                if (_arrayIndex == value)
+                if (_extractData.SkipEmpty == value)
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _arrayIndex = value;
+                _settings.AllowEmptySpriteSkip = _extractData.SkipEmpty = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to return the mask color to use when skipping empty regions.
+        /// </summary>
+        public GorgonColor SkipMaskColor
+        {
+            get => _extractData.SkipColor;
+            private set
+            {
+                if (_extractData.SkipColor == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _extractData.SkipColor = value;
+                _settings.SkipColor = value.ToARGB();
                 OnPropertyChanged();
             }
         }
@@ -312,6 +293,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             get => _extractData.StartArrayIndex;
             set
             {
+                value = value.Min(MaxArrayIndex).Max(0);
                 if (_extractData.StartArrayIndex == value)
                 {
                     return;
@@ -325,114 +307,35 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
         }
 
-        /// <summary>Property to return the texture that is to be rendered.</summary>
-        public GorgonTexture2DView Texture
+        /// <summary>
+        /// Property to return the list of sprites retrieved from extraction.
+        /// </summary>
+        public IReadOnlyList<GorgonSprite> Sprites
         {
-            get => _extractData.Texture;
+            get => _extractedSprites;
             private set
             {
-                if (_extractData.Texture == value)
+                if (_extractedSprites == value)
                 {
                     return;
                 }
 
+                NotifyPropertyChanging(nameof(CurrentPreviewSprite));
+                NotifyPropertyChanging(nameof(SpritePreviewCount));
+
                 OnPropertyChanging();
-                _extractData.Texture = value;
+                _extractedSprites = value;
                 OnPropertyChanged();
 
-                NotifyPropertyChanged(nameof(CellSize));
-                NotifyPropertyChanged(nameof(MaxGridSize));
-                NotifyPropertyChanged(nameof(MaxArrayIndex));
-                NotifyPropertyChanged(nameof(MaxArrayCount));
-                NotifyPropertyChanged(nameof(HasArray));
+                NotifyPropertyChanged(nameof(SpritePreviewCount));
+                NotifyPropertyChanged(nameof(CurrentPreviewSprite));
             }
         }
 
         /// <summary>
-        /// Property to set or return whether the UI is in a maximized state or not.
-        /// </summary>
-        public bool IsMaximized
-        {
-            get => _settings.IsMaximized;
-            set
-            {
-                if (_settings.IsMaximized == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.IsMaximized = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the color used when determining which sprites are considered empty.
-        /// </summary>
-        public GorgonColor SkipMaskColor
-        {
-            get => _extractData.SkipColor;
-            private set
-            {
-                if (_extractData.SkipColor == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _extractData.SkipColor = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether to allow skipping empty sprites.
-        /// </summary>
-        public bool AllowSkipEmpty
-        {
-            get => _extractData.SkipEmpty;
-            set
-            {
-                if (_extractData.SkipEmpty == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.AllowEmptySpriteSkip = _extractData.SkipEmpty = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to return the command that will generate the sprite data.
-        /// </summary>
-        public IEditorCommand<object> GenerateSpritesCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to shut down any running operations.
-        /// </summary>
-        public IEditorAsyncCommand<object> ShutdownCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to assign the masking color used for skipping empty sprites.
+        /// Property to return the command used to assign the color used to skip empty regions.
         /// </summary>
         public IEditorCommand<object> SetEmptySpriteMaskColorCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to save the sprite data.
-        /// </summary>
-        public IEditorCommand<SaveSpritesArgs> SaveSpritesCommand
         {
             get;
         }
@@ -454,25 +357,25 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
-        /// Property to return the command used to go to the next preview array index.
+        /// Property to return the command that will generate the sprite data.
         /// </summary>
-        public IEditorCommand<object> NextPreviewArrayCommand
+        public IEditorAsyncCommand<object> GenerateSpritesCommand
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the command used to go to the previous preview array index.
+        /// Property to return the command used to cancel sprite generation.
         /// </summary>
-        public IEditorCommand<object> PrevPreviewArrayCommand
+        public IEditorCommand<object> CancelSpriteGenerationCommand
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the command used to copy the current array preview index into the array range start value.
+        /// Property to return the command used to save the sprite data.
         /// </summary>
-        public IEditorCommand<object> SendPreviewArrayToStartCommand
+        public IEditorCommand<SaveSpritesArgs> SaveSpritesCommand
         {
             get;
         }
@@ -480,42 +383,87 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
         #region Methods.
         /// <summary>
-        /// Function to shut down any running operations.
+        /// Function to assign the color used to mask out empty regions.
         /// </summary>
-        /// <returns>A task for asynchronous operation.</returns>
-        private async Task DoShutdownAsync()
+        private void DoSetMaskColor()
         {
             try
             {
-                if ((_currentTask == null) || (_cancelSource == null))
+                GorgonColor? newColor = HostServices.ColorPicker.GetColor(_extractData.SkipColor);
+
+                if (newColor == null)
                 {
                     return;
                 }
 
-                _cancelSource.Cancel();
-
-                await _currentTask;
+                SkipMaskColor = newColor.Value;
             }
             catch (Exception ex)
             {
-                Log.LogException(ex);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_PICKING_COLOR);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the sprite index can be decremented to the previous sprite index.
+        /// </summary>
+        /// <returns><b>true</b> if the index can be decremented, <b>false</b> if not.</returns>
+        private bool CanPrevSprite() => (_extractedSprites != null) && (_extractedSprites.Count > 0) && (IsInSpritePreview) && (_currentPreviewSprite > 0);
+
+        /// <summary>
+        /// Function to decrement the current preview sprite index.
+        /// </summary>
+        private void DoPrevSprite()
+        {
+            try
+            {
+                --CurrentPreviewSprite;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_PREVIEW_SPRITE);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the sprite index can be incremented to the next sprite index.
+        /// </summary>
+        /// <returns><b>true</b> if the index can be incremented, <b>false</b> if not.</returns>
+        private bool CanNextSprite() => (_extractedSprites != null) && (_extractedSprites.Count > 0) && (IsInSpritePreview) && (_currentPreviewSprite + 1 < _extractedSprites.Count);
+
+        /// <summary>
+        /// Function to increment the current preview sprite index.
+        /// </summary>
+        private void DoNextSprite()
+        {
+            try
+            {
+                ++CurrentPreviewSprite;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_PREVIEW_SPRITE);
             }
         }
 
         /// <summary>
         /// Function to perform the generation of the sprites from the grid data.
         /// </summary>
-        private async void DoGenerateSpritesAsync()
+        private async Task DoGenerateSpritesAsync()
         {
             void UpdateProgress(ProgressData progress) => _extractProgressData = progress;
 
             IGorgonImage imageData = null;
             Task<IReadOnlyList<GorgonSprite>> spriteGenTask;
             Task<IGorgonImage> getImageTask;
+            bool inSpritePreview = IsInSpritePreview;
 
             try
             {
                 _cancelSource = new CancellationTokenSource();
+
+                IsInSpritePreview = false;
+                IsGenerating = true;
 
                 _currentTask = getImageTask = _extractor.GetSpriteTextureImageDataAsync(_extractData);
                 imageData = await getImageTask;
@@ -525,8 +473,8 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 {
                     return;
                 }
-
-                SpriteGenerationTask = spriteGenTask = Task.Run(() => _extractor.ExtractSprites(_extractData, imageData, UpdateProgress, _cancelSource.Token), _cancelSource.Token);
+                
+                _currentTask = spriteGenTask = Task.Run(() => _extractor.ExtractSprites(_extractData, imageData, UpdateProgress, _cancelSource.Token), _cancelSource.Token);
                 IReadOnlyList<GorgonSprite> sprites = await spriteGenTask;
 
                 // The user cancelled if we have no sprites.
@@ -540,7 +488,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                     CurrentPreviewSprite = sprites.Count - 1;
                 }
 
-                Sprites = sprites;
+                Sprites = sprites;                
             }
             catch (OperationCanceledException)
             {
@@ -548,51 +496,47 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GOREST_ERR_GEN_SPRITES);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_GEN_SPRITES);
             }
             finally
             {
-                _busyService.SetIdle();
+                IsInSpritePreview = inSpritePreview;
+                HostServices.BusyService.SetIdle();
                 imageData?.Dispose();
-                SpriteGenerationTask = null;
+                _currentTask = null;
+                IsGenerating = false;
             }
         }
 
         /// <summary>
-        /// Function to determine if the skip masking color can be set.
+        /// Function to determine if the sprite generation can be canceled or not.
         /// </summary>
-        /// <returns><b>true</b> if the masking color can be set, <b>false</b> if not.</returns>
-        private bool CanSetEmptyMaskColor() => AllowSkipEmpty;
+        /// <returns><b>true</b> if it can be canceled, <b>false</b> if not.</returns>
+        private bool CanCancelSpriteGeneration() => (_cancelSource != null) && (!_cancelSource.IsCancellationRequested) && (_currentTask != null) && (IsGenerating);
 
         /// <summary>
-        /// Function to set the masking color used to determine empty sprite space.
+        /// Function to cancel an active sprite generation process.
         /// </summary>
-        private void DoSetEmptyMaskColor()
+        private void DoCancelSpriteGeneration()
         {
             try
             {
-                GorgonColor? newColor = _colorPicker.GetColor(_extractData.SkipColor);
-
-                if (newColor == null)
-                {
-                    return;
-                }
-
-                SkipMaskColor = newColor.Value;
-                _settings.SkipColor = newColor.Value.ToARGB();
+                _cancelSource.Cancel();
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GOREST_ERR_PICKING_COLOR);
+                HostServices.Log.Print("[ERROR] Error cancelling sprite generation.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
             }
         }
+
 
         /// <summary>
         /// Function to determine if the sprites can be saved at this time.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the sprites can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveSprites(SaveSpritesArgs args) => (Sprites != null) && (Sprites.Count > 0);
+        private bool CanSaveSprites(SaveSpritesArgs args) => (Sprites != null) && (Sprites.Count > 0) && (!IsGenerating);
 
         /// <summary>
         /// Function to save the sprites to the file system.
@@ -609,14 +553,14 @@ namespace Gorgon.Editor.ExtractSpriteTool
                     lastUsedPath = "/";
                 }
 
-                string newPath = _folderBrowser.GetFolderPath(lastUsedPath, Resources.GOREST_CAPTION_FOLDER_SELECT, Resources.GOREST_DESC_FOLDER_SELECT);
+                string newPath = HostServices.FolderBrowser.GetFolderPath(lastUsedPath, Resources.GOREST_CAPTION_FOLDER_SELECT, Resources.GOREST_DESC_FOLDER_SELECT);
 
                 if (string.IsNullOrWhiteSpace(newPath))
                 {
                     args.Cancel = true;
                     return;
                 }
-                _busyService.SetBusy();
+                HostServices.BusyService.SetBusy();
 
                 string baseFileName = $"{Path.GetFileNameWithoutExtension(_textureFile.Name)} Sprite";
 
@@ -627,135 +571,76 @@ namespace Gorgon.Editor.ExtractSpriteTool
             catch (Exception ex)
             {
                 args.Cancel = true;
-                _messageDisplay.ShowError(ex, Resources.GOREST_ERR_SAVE);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_SAVE);
             }
             finally
             {
-                _busyService.SetIdle();
+                HostServices.BusyService.SetIdle();
             }
         }
 
-        /// <summary>
-        /// Function to determine if the sprite index can be decremented to the previous sprite index.
-        /// </summary>
-        /// <returns><b>true</b> if the index can be decremented, <b>false</b> if not.</returns>
-        private bool CanPrevSprite() => (_extractedSprites != null) && (_extractedSprites.Count > 0) && (InSpritePreview) && (_spriteIndex > 0);
-
-        /// <summary>
-        /// Function to decrement the current preview sprite index.
-        /// </summary>
-        private void DoPrevSprite()
-        {
-            try
-            {
-                --CurrentPreviewSprite;
-            }
-            catch (Exception ex)
-            {
-                _messageDisplay.ShowError(ex, Resources.GOREST_ERR_PREVIEW_SPRITE);
-            }
-        }
-
-        /// <summary>
-        /// Function to determine if the sprite index can be incremented to the next sprite index.
-        /// </summary>
-        /// <returns><b>true</b> if the index can be incremented, <b>false</b> if not.</returns>
-        private bool CanNextSprite() => (_extractedSprites != null) && (_extractedSprites.Count > 0) && (InSpritePreview) && (_spriteIndex + 1 < _extractedSprites.Count);
-
-        /// <summary>
-        /// Function to increment the current preview sprite index.
-        /// </summary>
-        private void DoNextSprite()
-        {
-            try
-            {
-                ++CurrentPreviewSprite;
-            }
-            catch (Exception ex)
-            {
-                _messageDisplay.ShowError(ex, Resources.GOREST_ERR_PREVIEW_SPRITE);
-            }
-        }
-
-        /// <summary>
-        /// Function to determine if the sprite index can be decremented to the previous array index.
-        /// </summary>
-        /// <returns><b>true</b> if the index can be decremented, <b>false</b> if not.</returns>
-        private bool CanPrevArray() => (HasArray) && (_arrayIndex > 0);
-
-        /// <summary>
-        /// Function to decrement the current preview sprite index.
-        /// </summary>
-        private void DoPrevArray()
-        {
-            try
-            {
-                --CurrentPreviewArrayIndex;
-            }
-            catch (Exception ex)
-            {
-                _messageDisplay.ShowError(ex, Resources.GOREST_ERR_PREVIEW_ARRAY);
-            }
-        }
-
-        /// <summary>
-        /// Function to determine if the sprite index can be incremented to the next array index.
-        /// </summary>
-        /// <returns><b>true</b> if the index can be incremented, <b>false</b> if not.</returns>
-        private bool CanNextArray() => (HasArray) && (_arrayIndex + 1 < PreviewArrayCount);
-
-        /// <summary>
-        /// Function to increment the current preview sprite index.
-        /// </summary>
-        private void DoNextArray()
-        {
-            try
-            {
-                ++CurrentPreviewArrayIndex;
-            }
-            catch (Exception ex)
-            {
-                _messageDisplay.ShowError(ex, Resources.GOREST_ERR_PREVIEW_ARRAY);
-            }
-        }
-
-        /// <summary>
-        /// Function to determine if the preview array index can be sent to the array start.
-        /// </summary>
-        /// <returns><b>true</b> if the value can be copied, <b>false</b> if not.</returns>
-        private bool CanSendToArrayStart() => HasArray;
-
-        /// <summary>
-        /// Function to send the current preview array index value into the starting array range index.
-        /// </summary>
-        private void DoSendToArrayStart()
-        {
-            try
-            {
-                StartArrayIndex = _arrayIndex;
-            }
-            catch (Exception ex)
-            {
-                Log.Print("[ERROR] Unable to write the array index. This shouldn't happen.", LoggingLevel.Simple);
-                Log.LogException(ex);
-            }
-        }
-
-        /// <summary>Function to inject dependencies for the view model.</summary>
-        /// <param name="injectionParameters">The parameters to inject.</param>
+        /// <summary>Function to determine the action to take when this tool is closing.</summary>
+        /// <returns>
+        ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
         /// <remarks>
-        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+        ///   <para>
+        /// Tool plug in developers can override this method to verify changes, or perform last minute updates as needed.
+        /// </para>
+        ///   <para>
+        /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.
+        /// </para>
+        /// </remarks>
+        protected async override Task<bool> OnCloseToolTaskAsync() 
+        {
+            // If we're executing a task, wait for it to finish.
+            if (_currentTask == null)
+            {
+                return true;
+            }
+
+            
+            if (HostServices.MessageDisplay.ShowConfirmation(Resources.GOREST_CONFIRM_EXTRACT_IN_PROGRESS) == MessageResponse.No)
+            {
+                return false;
+            }
+
+            try
+            {
+                // Force a cancellation of the running task.
+                _cancelSource?.Cancel();
+
+                await _currentTask;
+            }
+            catch (Exception ex)
+            {
+                HostServices.Log.Print("[ERROR] Error stopping the extraction process.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
+            }
+            return true;
+        }
+
+        /// <summary>Function to initialize the tool.</summary>
+        /// <param name="injectionParameters">Common view model dependency injection parameters from the application.</param>
+        /// <remarks>
+        ///   <para>
+        /// This is required in order to inject initialization data for the view model from an external source (i.e. the editor host application). Developers will use this area to perform setup of
+        /// the editor view model, and validate any information being injected.
+        /// </para>
+        ///   <para>
+        /// Ideally this can be used to create resources, child view models, and other objects that need to be initialized when the view model is created.
+        /// </para>
+        ///   <para>
+        /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
+        /// </para>
         /// </remarks>
         protected override void OnInitialize(ExtractParameters injectionParameters)
         {
-            _extractData = injectionParameters.Data ?? throw new ArgumentMissingException(nameof(injectionParameters.Data), nameof(injectionParameters));
-            _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(injectionParameters.Settings), nameof(injectionParameters));
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            _extractor = injectionParameters.Extractor ?? throw new ArgumentMissingException(nameof(injectionParameters.Extractor), nameof(injectionParameters));
-            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(injectionParameters.BusyService), nameof(injectionParameters));
-            _colorPicker = injectionParameters.ColorPicker ?? throw new ArgumentMissingException(nameof(injectionParameters.ColorPicker), nameof(injectionParameters));
-            _folderBrowser = injectionParameters.FolderBrowser ?? throw new ArgumentMissingException(nameof(injectionParameters.FolderBrowser), nameof(injectionParameters));
-            _textureFile = injectionParameters.TextureFile ?? throw new ArgumentMissingException(nameof(injectionParameters.TextureFile), nameof(injectionParameters));
+            base.OnInitialize(injectionParameters);
+
+            _settings = injectionParameters.Settings;
+            _extractData = injectionParameters.ExtractionData;
+            _extractor = injectionParameters.Extractor;
+            _textureFile = injectionParameters.TextureFile;
 
             if (_extractData.GridOffset.X > _extractData.Texture.Width - _extractData.CellSize.Width)
             {
@@ -781,26 +666,24 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
+        /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
         public override void OnUnload()
         {
-            _extractData.Texture = null;
+            _cancelSource?.Dispose();
             base.OnUnload();
         }
         #endregion
 
-        #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ExtractSpriteTool.Extract"/> class.</summary>
+        #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="Extract"/> class.</summary>
         public Extract()
         {
-            GenerateSpritesCommand = new EditorCommand<object>(DoGenerateSpritesAsync);
-            ShutdownCommand = new EditorAsyncCommand<object>(DoShutdownAsync);
-            SetEmptySpriteMaskColorCommand = new EditorCommand<object>(DoSetEmptyMaskColor, CanSetEmptyMaskColor);
-            SaveSpritesCommand = new EditorCommand<SaveSpritesArgs>(DoSaveSprites, CanSaveSprites);
+            SetEmptySpriteMaskColorCommand = new EditorCommand<object>(DoSetMaskColor);
             NextPreviewSpriteCommand = new EditorCommand<object>(DoNextSprite, CanNextSprite);
             PrevPreviewSpriteCommand = new EditorCommand<object>(DoPrevSprite, CanPrevSprite);
-            NextPreviewArrayCommand = new EditorCommand<object>(DoNextArray, CanNextArray);
-            PrevPreviewArrayCommand = new EditorCommand<object>(DoPrevArray, CanPrevArray);
-            SendPreviewArrayToStartCommand = new EditorCommand<object>(DoSendToArrayStart, CanSendToArrayStart);
+            GenerateSpritesCommand = new EditorAsyncCommand<object>(DoGenerateSpritesAsync);
+            CancelSpriteGenerationCommand = new EditorCommand<object>(DoCancelSpriteGeneration, CanCancelSpriteGeneration);
+            SaveSpritesCommand = new EditorCommand<SaveSpritesArgs>(DoSaveSprites, CanSaveSprites);
         }
         #endregion
     }

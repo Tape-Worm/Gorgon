@@ -90,6 +90,17 @@ namespace Gorgon.Editor.ExtractSpriteTool.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sprites are currently being extracted. If the extractor is closed, then all progress will be lost.
+        ///
+        ///Are you sure you wish to close the extractor?.
+        /// </summary>
+        internal static string GOREST_CONFIRM_EXTRACT_IN_PROGRESS {
+            get {
+                return ResourceManager.GetString("GOREST_CONFIRM_EXTRACT_IN_PROGRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A tool for extracting sprites from a texture atlas by using a customizable grid.
         ///
         ///To use this tool, select an image file from the file explorer and click this button..
@@ -228,6 +239,15 @@ namespace Gorgon.Editor.ExtractSpriteTool.Properties {
         internal static string GOREST_TEXT_BUTTON {
             get {
                 return ResourceManager.GetString("GOREST_TEXT_BUTTON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press Escape to cancel..
+        /// </summary>
+        internal static string GOREST_TEXT_GEN_CANCEL_MSG {
+            get {
+                return ResourceManager.GetString("GOREST_TEXT_GEN_CANCEL_MSG", resourceCulture);
             }
         }
         

@@ -27,6 +27,7 @@
 using System.Linq;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -35,245 +36,191 @@ using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {
-    /// <summary>
-    /// The renderer used to draw the texture and sprites.
-    /// </summary>
-    internal class Renderer
-        : IRenderer
-    {
-        #region Variables.
-        // The graphics interface for the application.
-        private readonly GorgonGraphics _graphics;
-        // The 2D renderer for the application.
-        private readonly Gorgon2D _renderer;
-        // The swap chain used to render onto the window.
-        private readonly GorgonSwapChain _swapChain;
-        // Background texture.
-        private GorgonTexture2DView _bgTexture;
-        // The camera for viewing the scene.
-        private IGorgon2DCamera _camera;
-        // The sprite used to display the texture.
-        private GorgonSprite _textureSprite;
-        // Inverted rendering.
-        private Gorgon2DBatchState _inverted;
-        // The sprite to display for preview.
-        private readonly GorgonSprite _previewSprite = new GorgonSprite();
-        #endregion
+	/// <summary>
+	/// The renderer used to draw the texture and sprites.
+	/// </summary>
+	internal class Renderer
+		: DefaultToolRenderer<IExtract>
+	{
+		#region Variables.
+		// The camera for viewing the scene.
+		private IGorgon2DCamera _camera;
+		// The sprite used to display the texture.
+		private GorgonSprite _textureSprite;
+		// Inverted rendering.
+		private Gorgon2DBatchState _inverted;
+		// The sprite to display for preview.
+		private readonly GorgonSprite _previewSprite = new GorgonSprite();
+		#endregion
 
-        #region Properties.
-        /// <summary>Property to return the data context assigned to this view.</summary>
-        public IExtract DataContext
-        {
-            get;
-            private set;
-        }
-        #endregion
+		#region Methods.
+		/// <summary>
+		/// Function to update the preview sprite.
+		/// </summary>
+		/// <param name="scale">The current scale factor.</param>
+		private void UpdatePreviewSprite(float scale)
+		{
+			GorgonSprite currentSprite = DataContext.Sprites[DataContext.CurrentPreviewSprite];
+			_previewSprite.Size = new DX.Size2F(currentSprite.Size.Width * scale, currentSprite.Size.Height * scale);			
+			_previewSprite.TextureRegion = currentSprite.TextureRegion;
+			_previewSprite.TextureArrayIndex = currentSprite.TextureArrayIndex;
+		}
 
-        #region Methods.
-        /// <summary>
-        /// Function to initialize the render data from the data context.
-        /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void InitializeFromDataContext(IExtract dataContext)
-        {
-            if (dataContext == null)
-            {
-                _previewSprite.Texture = null;
-                _textureSprite = new GorgonSprite();
-                return;
-            }
+		/// <summary>
+		/// Function to calculate scaling to the specified size, bounded by the client area of the rendering control.
+		/// </summary>
+		/// <param name="size">The size of the area to zoom into.</param>
+		/// <param name="windowSize">The size of the window.</param>
+		/// <returns>The scaling factor to apply.</returns>
+		private float CalcZoomToSize(DX.Size2F size, DX.Size2F windowSize)
+		{
+			var scaling = new DX.Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
 
-            _previewSprite.Texture = dataContext.Texture;
-            _textureSprite = new GorgonSprite
-            {
-                Texture = dataContext.Texture,
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                Size = new DX.Size2F(dataContext.Texture.Width, dataContext.Texture.Height),
-                TextureSampler = GorgonSamplerState.PointFiltering
-            };
-        }
+			return scaling.X.Min(scaling.Y);
+		}
 
-        /// <summary>
-        /// Function to update the preview sprite.
-        /// </summary>
-        /// <param name="scale">The current scale factor.</param>
-        private void UpdatePreviewSprite(float scale)
-        {
-            GorgonSprite currentSprite = DataContext.Sprites[DataContext.CurrentPreviewSprite];
-            _previewSprite.Size = new DX.Size2F(currentSprite.Size.Width * scale, currentSprite.Size.Height * scale);
-            _previewSprite.TextureRegion = currentSprite.TextureRegion;
-            _previewSprite.TextureArrayIndex = currentSprite.TextureArrayIndex;
-        }
+		/// <summary>
+		/// Function to render the sprite preview.
+		/// </summary>
+		private void DrawPreview()
+		{
+			GorgonSprite sprite = DataContext.Sprites[DataContext.CurrentPreviewSprite];
+			float scale = CalcZoomToSize(new DX.Size2F(sprite.Size.Width + 8, sprite.Size.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
+			UpdatePreviewSprite(scale);
 
-        /// <summary>
-        /// Function to calculate scaling to the specified size, bounded by the client area of the rendering control.
-        /// </summary>
-        /// <param name="size">The size of the area to zoom into.</param>
-        /// <param name="windowSize">The size of the window.</param>
-        /// <returns>The scaling factor to apply.</returns>
-        private float CalcZoomToSize(DX.Size2F size, DX.Size2F windowSize)
-        {
-            var scaling = new DX.Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
+			Renderer.Begin(camera: _camera);
+			Renderer.DrawSprite(_previewSprite);
+			Renderer.End();
+		}
 
-            return scaling.X.Min(scaling.Y);
-        }
+		/// <summary>
+		/// Function to draw the wait panel for generating sprites.
+		/// </summary>
+		private void DrawWaitingPanel()
+		{
+			ref readonly ProgressData prog = ref DataContext.ExtractTaskProgress;
+			string text = string.Format(Resources.GOREST_PROGRESS_SPR_GEN, prog.Current, prog.Total);
 
-        /// <summary>
-        /// Function to render the sprite preview.
-        /// </summary>
-        private void DrawPreview()
-        {
-            GorgonSprite sprite = DataContext.Sprites[DataContext.CurrentPreviewSprite];
-            float scale = CalcZoomToSize(new DX.Size2F(sprite.Size.Width + 8, sprite.Size.Height + 8), new DX.Size2F(_swapChain.Width, _swapChain.Height));
-            UpdatePreviewSprite(scale);
+			DX.Size2F textSize = Renderer.DefaultFont.MeasureText(text, false);
+			var pos = new DX.Vector2(MainRenderTarget.Width * 0.5f - textSize.Width * 0.5f, MainRenderTarget.Height * 0.5f - textSize.Height * 0.5f);
 
-            _renderer.Begin(camera: _camera);
-            _renderer.DrawFilledRectangle(new DX.RectangleF(-_swapChain.Width * 0.5f, -_swapChain.Height * 0.5f, _swapChain.Width, _swapChain.Height),
-                GorgonColor.White,
-                _bgTexture,
-                new DX.RectangleF(0, 0, (float)_swapChain.Width / _bgTexture.Width, (float)_swapChain.Height / _bgTexture.Height));
-            _renderer.DrawSprite(_previewSprite);
-            _renderer.End();
-        }
+			float percent = (float)prog.Current / prog.Total;
+			var barOutline = new DX.RectangleF(pos.X, MainRenderTarget.Height * 0.5f - (textSize.Height + 4) * 0.5f,
+											textSize.Width + 4, textSize.Height + 8);
+			var bar = new DX.RectangleF(barOutline.X + 1, barOutline.Y + 1, ((barOutline.Width - 2) * percent), barOutline.Height - 2);
 
-        /// <summary>
-        /// Function to draw the wait panel for generating sprites.
-        /// </summary>
-        private void DrawWaitingPanel()
-        {
-            ref readonly ProgressData prog = ref DataContext.ExtractTaskProgress;
-            string text = string.Format(Resources.GOREST_PROGRESS_SPR_GEN, prog.Current, prog.Total);
+			Renderer.Begin();
+			Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, MainRenderTarget.Width, MainRenderTarget.Height),
+										new GorgonColor(GorgonColor.White, 0.80f));
+			Renderer.DrawString(text, pos, color: GorgonColor.Black);
+			Renderer.DrawString(Resources.GOREST_TEXT_GEN_CANCEL_MSG, new DX.Vector2(pos.X, bar.Bottom + 4), color: GorgonColor.Black);
+			Renderer.DrawRectangle(barOutline, GorgonColor.Black, 2);
+			Renderer.End();
 
-            DX.Size2F textSize = _renderer.DefaultFont.MeasureText(text, false);
-            var pos = new DX.Vector2(_swapChain.Width * 0.5f - textSize.Width * 0.5f, _swapChain.Height * 0.5f - textSize.Height * 0.5f);
+			Renderer.Begin(_inverted);
+			Renderer.DrawFilledRectangle(bar, GorgonColor.White);
+			Renderer.End();
+		}
 
-            float percent = (float)prog.Current / prog.Total;
-            var barOutline = new DX.RectangleF(pos.X, _swapChain.Height * 0.5f - (textSize.Height + 4) * 0.5f,
-                                            textSize.Width + 4, textSize.Height + 8);
-            var bar = new DX.RectangleF(barOutline.X + 1, barOutline.Y + 1, ((barOutline.Width - 2) * percent), barOutline.Height - 2);
+		/// <summary>Function to render the content.</summary>
+		/// <remarks>This is the method that developers should override in order to draw their content to the view.</remarks>
+		protected override void OnRenderContent()
+		{            
+			Graphics.SetRenderTarget(MainRenderTarget);
 
-            _renderer.Begin();
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _swapChain.Width, _swapChain.Height),
-                                        new GorgonColor(GorgonColor.White, 0.80f));
-            _renderer.DrawString(text, pos, color: GorgonColor.Black);
-            _renderer.DrawRectangle(barOutline, GorgonColor.Black, 2);
-            _renderer.End();
+			OnRenderBackground();
 
-            _renderer.Begin(_inverted);
-            _renderer.DrawFilledRectangle(bar, GorgonColor.White);
-            _renderer.End();
-        }
+			if (DataContext.IsInSpritePreview)
+			{
+				DrawPreview();
+				return;
+			}
 
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose() => _bgTexture?.Dispose();
+			float scale = CalcZoomToSize(new DX.Size2F(DataContext.Texture.Width + 8, DataContext.Texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
+			_textureSprite.Size = new DX.Size2F(scale * DataContext.Texture.Width, scale * DataContext.Texture.Height).Truncate();
+			_textureSprite.Position = new DX.Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
+			
+			Renderer.Begin(camera: _camera);
 
-        /// <summary>Function to perform the rendering.</summary>
-        public void Render()
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
+			_textureSprite.TextureArrayIndex = DataContext.StartArrayIndex;
+			Renderer.DrawSprite(_textureSprite);
 
-            _graphics.SetRenderTarget(_swapChain.RenderTargetView);
+			Renderer.End();
+			
+			Renderer.Begin(_inverted, _camera);
+			var pos = new DX.Vector2(_textureSprite.Position.X + (DataContext.GridOffset.X * scale), _textureSprite.Position.Y + (DataContext.GridOffset.Y * scale));
 
-            if (DataContext.InSpritePreview)
-            {
-                DrawPreview();
-                return;
-            }
+			int maxWidth = (int)((DataContext.CellSize.Width * DataContext.GridSize.Width) * scale);
+			int maxHeight = (int)((DataContext.CellSize.Height * DataContext.GridSize.Height) * scale);
 
-            float scale = CalcZoomToSize(new DX.Size2F(DataContext.Texture.Width + 8, DataContext.Texture.Height + 8), new DX.Size2F(_swapChain.Width, _swapChain.Height));
-            _textureSprite.Size = new DX.Size2F(scale * DataContext.Texture.Width, scale * DataContext.Texture.Height).Truncate();
-            _textureSprite.Position = new DX.Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
+			Renderer.DrawRectangle(new DX.RectangleF(pos.X - 1, pos.Y - 1, maxWidth + 2, maxHeight + 2),
+									GorgonColor.DeepPink);
 
-            _renderer.Begin(camera: _camera);
-            _renderer.DrawFilledRectangle(new DX.RectangleF(-_swapChain.Width * 0.5f, -_swapChain.Height * 0.5f, _swapChain.Width, _swapChain.Height),
-                GorgonColor.White,
-                _bgTexture,
-                new DX.RectangleF(0, 0, (float)_swapChain.Width / _bgTexture.Width, (float)_swapChain.Height / _bgTexture.Height));
+			for (int x = 1; x < DataContext.GridSize.Width; ++x)
+			{
+				var start = new DX.Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y);
+				var end = new DX.Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y + maxHeight);
 
-            _textureSprite.TextureArrayIndex = DataContext.CurrentPreviewArrayIndex;
-            _renderer.DrawSprite(_textureSprite);
+				Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
+			}
 
-            _renderer.End();
+			for (int y = 1; y < DataContext.GridSize.Height; ++y)
+			{
+				var start = new DX.Vector2(pos.X, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
+				var end = new DX.Vector2(pos.X + maxWidth, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
 
-            _renderer.Begin(_inverted, _camera);
-            var pos = new DX.Vector2(_textureSprite.Position.X + (DataContext.GridOffset.X * scale), _textureSprite.Position.Y + (DataContext.GridOffset.Y * scale));
+				Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
+			}
 
-            int maxWidth = (int)((DataContext.CellSize.Width * DataContext.GridSize.Width) * scale);
-            int maxHeight = (int)((DataContext.CellSize.Height * DataContext.GridSize.Height) * scale);
+			Renderer.End();
+			
+			if (DataContext.IsGenerating)
+			{
+				DrawWaitingPanel();
+			}             
+		}
 
-            _renderer.DrawRectangle(new DX.RectangleF(pos.X - 1, pos.Y - 1, maxWidth + 2, maxHeight + 2),
-                                    GorgonColor.DeepPink);
+		/// <summary>Function called when the renderer needs to load any resource data.</summary>
+		/// <remarks>
+		/// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
+		/// <see cref="DefaultToolRenderer{T}.OnUnload"/> method.
+		/// </remarks>
+		protected override void OnLoad() 
+		{
+			base.OnLoad();
 
-            for (int x = 1; x < DataContext.GridSize.Width; ++x)
-            {
-                var start = new DX.Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y);
-                var end = new DX.Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y + maxHeight);
+			_camera = new Gorgon2DOrthoCamera(Renderer, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
+			{
+				Anchor = new DX.Vector2(0.5f, 0.5f)
+			};
 
-                _renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
-            }
+			var builder = new Gorgon2DBatchStateBuilder();
+			_inverted = builder.BlendState(GorgonBlendState.Inverted)
+								.Build();
 
-            for (int y = 1; y < DataContext.GridSize.Height; ++y)
-            {
-                var start = new DX.Vector2(pos.X, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
-                var end = new DX.Vector2(pos.X + maxWidth, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
+			_textureSprite = new GorgonSprite
+			{
+				Texture = DataContext.Texture,
+				TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+				Size = new DX.Size2F(DataContext.Texture.Width, DataContext.Texture.Height),
+				TextureSampler = GorgonSamplerState.PointFiltering
+			};
 
-                _renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
-            }
+			_previewSprite.Texture = DataContext.Texture;
+		}
+		#endregion
 
-            _renderer.End();
-
-            if (DataContext.SpriteGenerationTask != null)
-            {
-                DrawWaitingPanel();
-            }
-        }
-
-        /// <summary>Function to perform setup on the renderer.</summary>
-        public void Setup()
-        {
-            _bgTexture = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo("Extract BG Texture")
-            {
-                Binding = TextureBinding.ShaderResource,
-                Usage = ResourceUsage.Immutable,
-                Width = CommonEditorResources.CheckerBoardPatternImage.Width,
-                Height = CommonEditorResources.CheckerBoardPatternImage.Height
-            }, CommonEditorResources.CheckerBoardPatternImage);
-
-            _camera = new Gorgon2DOrthoCamera(_renderer, new DX.Size2F(_swapChain.Width, _swapChain.Height))
-            {
-                Anchor = new DX.Vector2(0.5f, 0.5f)
-            };
-
-            var builder = new Gorgon2DBatchStateBuilder();
-            _inverted = builder.BlendState(GorgonBlendState.Inverted)
-                                .Build();
-        }
-
-        /// <summary>Function to assign a data context to the view as a view model.</summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(IExtract dataContext)
-        {
-            InitializeFromDataContext(dataContext);
-            DataContext = dataContext;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Renderer"/> class.</summary>
-        /// <param name="context">The application graphics context.</param>
-        /// <param name="swapChain">The swap chain bound to the window.</param>
-        public Renderer(IGraphicsContext context, GorgonSwapChain swapChain)
-        {
-            _graphics = context.Graphics;
-            _renderer = context.Renderer2D;
-            _swapChain = swapChain;
-            _previewSprite.Anchor = new DX.Vector2(0.5f, 0.5f);
-            _previewSprite.TextureSampler = GorgonSamplerState.PointFiltering;
-        }
-        #endregion
-    }
+		#region Constructor/Finalizer.
+		/// <summary>Initializes a new instance of the <see cref="Renderer"/> class.</summary>
+		/// <param name="renderer">The 2D renderer for the application.</param>
+		/// <param name="swapChain">The swap chain bound to the window.</param>
+		/// <param name="dataContext">The data context for the renderer.</param>
+		public Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IExtract dataContext)
+			: base("Extract Renderer", renderer, swapChain, dataContext)
+		{
+			_previewSprite.Anchor = new DX.Vector2(0.5f, 0.5f);
+			_previewSprite.TextureSampler = GorgonSamplerState.PointFiltering;
+		}
+		#endregion
+	}
 }

@@ -43,13 +43,9 @@ namespace Gorgon.Editor.Services
     internal class FileSystemFolderBrowseService
         : IFileSystemFolderBrowseService
     {
-        #region Properties.
-        /// <summary>Property to set or return the file system root for the currently loaded project.</summary>
-        public IFileExplorer FileSystem
-        {
-            get;
-            set;
-        }
+        #region Variables.
+        // The main view model for the application.
+        private readonly IMain _mainViewModel;
         #endregion
 
         #region Methods.
@@ -79,18 +75,18 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(initialPath));
             }
 
-            if (FileSystem == null)
+            if (_mainViewModel.CurrentProject?.FileExplorer == null)
             {
                 throw new IOException(Resources.GOREDIT_ERR_NO_ROOT);
             }
 
-            IDirectory initialDirectory = initialPath == "/" ? FileSystem.Root 
-                                                             : FileSystem.Root.Directories.Traverse(d => d.Directories)
+            IDirectory initialDirectory = initialPath == "/" ? _mainViewModel.CurrentProject?.FileExplorer.Root 
+                                                             : _mainViewModel.CurrentProject?.FileExplorer.Root.Directories.Traverse(d => d.Directories)
                                                                     .FirstOrDefault(d => string.Equals(d.FullPath, initialPath, StringComparison.OrdinalIgnoreCase));
 
             if (initialDirectory == null)
             {
-                initialDirectory = FileSystem.Root;
+                initialDirectory = _mainViewModel.CurrentProject?.FileExplorer.Root;
             }
 
             using (var browser = new FormFileSystemFolderBrowser()
@@ -99,11 +95,17 @@ namespace Gorgon.Editor.Services
                 Description = description
             })
             {
-                browser.SetDataContext(FileSystem);
+                browser.SetDataContext(_mainViewModel.CurrentProject?.FileExplorer);
                 browser.SetInitialPath(initialDirectory);
                 return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
             }
         }
+        #endregion
+
+        #region Constructor.
+        /// <summary>Initializes a new instance of the <see cref="FileSystemFolderBrowseService"/> class.</summary>
+        /// <param name="mainViewModel">The main view model for the application.</param>
+        public FileSystemFolderBrowseService(IMain mainViewModel) => _mainViewModel = mainViewModel ?? throw new ArgumentNullException(nameof(mainViewModel));
         #endregion
     }
 }

@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 24, 2019 10:13:26 PM
+// Created: May 27, 2020 3:36:45 PM
 // 
 #endregion
 
-using System;
-using Gorgon.Editor.UI;
-
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// The renderer used to draw the texture and sprites.
+    /// Value type used to relay progress back to a subscriber.
     /// </summary>
-    internal interface IRenderer
-        : IDisposable, IDataContext<IExtract>
+    public readonly struct ProgressData
     {
         /// <summary>
-        /// Function to perform setup on the renderer.
+        /// The current value being processed.
         /// </summary>
-        void Setup();
-
+        public readonly int Current;
         /// <summary>
-        /// Function to perform the rendering.
+        /// The total number of items to process.
         /// </summary>
-        void Render();
+        public readonly int Total;
+
+        /// <summary>Initializes a new instance of the <see cref="ProgressData"/> struct.</summary>
+        /// <param name="current">The current item.</param>
+        /// <param name="total">The total number of items.</param>
+        public ProgressData(int current, int total)
+        {
+            Current = current;
+            Total = total;
+        }
     }
 }

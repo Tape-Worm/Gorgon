@@ -290,6 +290,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error closing the tool.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CLOSE_TOOL {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CLOSE_TOOL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is already a content file or a directory with the name &apos;{0}&apos;.
         ///
         ///Please try again..
@@ -432,6 +443,24 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_STREAM_READ_ONLY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_STREAM_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tool renderer &apos;{0}&apos; already exists..
+        /// </summary>
+        internal static string GOREDIT_ERR_TOOL_RENDERER_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_TOOL_RENDERER_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no tool renderer with the name &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_TOOL_RENDERER_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_TOOL_RENDERER_NOT_FOUND", resourceCulture);
             }
         }
         

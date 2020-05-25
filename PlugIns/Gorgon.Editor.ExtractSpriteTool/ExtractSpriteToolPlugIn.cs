@@ -25,12 +25,15 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -44,17 +47,15 @@ namespace Gorgon.Editor.ExtractSpriteTool
     /// A plug in used to extract sprites from a texture atlas by using an adjustable grid.
     /// </summary>
     internal class ExtractSpriteToolPlugIn
-        : OLDE_ToolPlugIn
+        : ToolPlugIn
     {
         #region Variables.
         // The cached button definition.
         private ToolPlugInRibbonButton _button;
-        // The project file manager.
-        private OLDE_IContentFileManager _fileManager;
         // The default image codec to use.
         private IGorgonImageCodec _defaultImageCodec;
         // Data used for extracting sprites.
-        private readonly Lazy<SpriteExtractionData> _extractData;
+        private readonly SpriteExtractionData _extractData = new SpriteExtractionData();
         #endregion
 
         #region Methods.		
@@ -64,14 +65,23 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <returns><b>true</b> if the form can be shown, <b>false</b> if not.</returns>
         private bool CanShowForm()
         {
-            if ((string.IsNullOrWhiteSpace(_fileManager?.CurrentDirectory))
-                || (_fileManager.SelectedFile == null))
+            if (string.IsNullOrWhiteSpace(ContentFileManager.CurrentDirectory))
             {
                 return false;
             }
 
-            if ((_fileManager.SelectedFile.Metadata == null)
-                || (!_fileManager.SelectedFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
+            IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
+
+            if ((selectedFiles.Count != 1)
+                || (!ContentFileManager.FileExists(selectedFiles[0])))
+            {
+                return false;
+            }
+
+            IContentFile file = ContentFileManager.GetFile(selectedFiles[0]);
+
+            if ((file?.Metadata == null)
+                || (!file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 || (!string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
             {
                 return false;
@@ -80,7 +90,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             Stream fileStream = null;
             try
             {
-                fileStream = _fileManager.SelectedFile.OpenRead();
+                fileStream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
                 if (!_defaultImageCodec.IsReadable(fileStream))
                 {
                     return false;
@@ -95,8 +105,8 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
             catch (Exception ex)
             {
-                CommonServices.Log.Print($"[ERROR] Cannot open the selected file {_fileManager.SelectedFile.Name}.", LoggingLevel.Simple);
-                CommonServices.Log.LogException(ex);
+                HostToolServices.Log.Print($"[ERROR] Cannot open the selected file {file?.Name ?? string.Empty}.", LoggingLevel.Simple);
+                HostToolServices.Log.LogException(ex);
             }
             finally
             {
@@ -111,28 +121,40 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// </summary>
         private void ShowForm()
         {
-            FormExtract _form = null;
+            ExtractSpriteToolSettings settings;
+            FormExtract form = null;
+            string textureFile;
             GorgonTexture2DView texture = null;
             Stream fileStream = null;
-            ExtractSpriteToolSettings settings;
-            IGorgonImage image = null;
-            OLDE_IContentFile textureFile;
 
-            CommonServices.BusyService.SetBusy();
+            HostToolServices.BusyService.SetBusy();
 
             try
             {
-                settings = ToolPlugInService.ReadContentSettings<ExtractSpriteToolSettings>(typeof(ExtractSpriteToolPlugIn).FullName);
+                settings = HostToolServices.ToolPlugInService.ReadContentSettings<ExtractSpriteToolSettings>(typeof(ExtractSpriteToolPlugIn).FullName);
 
                 if (settings == null)
                 {
                     settings = new ExtractSpriteToolSettings();
                 }
 
-                textureFile = _fileManager.SelectedFile;
-                fileStream = textureFile.OpenRead();
+                textureFile = ContentFileManager.GetSelectedFiles()[0];
 
-                texture = GorgonTexture2DView.FromStream(GraphicsContext.Graphics, fileStream, _defaultImageCodec, options: new GorgonTexture2DLoadOptions
+                if (string.IsNullOrWhiteSpace(settings.LastOutputDir))
+                {
+                    settings.LastOutputDir = Path.GetDirectoryName(textureFile).FormatDirectory('/');
+                }
+                else
+                {
+                    if (!ContentFileManager.DirectoryExists(settings.LastOutputDir.FormatDirectory('/')))
+                    {
+                        settings.LastOutputDir = Path.GetDirectoryName(textureFile).FormatDirectory('/');
+                    }
+                }
+
+                fileStream = ContentFileManager.OpenStream(textureFile, FileMode.Open);
+
+                texture = GorgonTexture2DView.FromStream(HostToolServices.GraphicsContext.Graphics, fileStream, _defaultImageCodec, options: new GorgonTexture2DLoadOptions
                 {
                     Name = "Extractor Texture Atlas",
                     Binding = TextureBinding.ShaderResource,
@@ -140,60 +162,51 @@ namespace Gorgon.Editor.ExtractSpriteTool
                     IsTextureCube = false
                 });
 
-                image = texture.Texture.ToImage();
-
                 fileStream.Dispose();
 
-                if (string.IsNullOrWhiteSpace(settings.LastOutputDir))
-                {
-                    settings.LastOutputDir = Path.GetDirectoryName(textureFile.Path).FormatDirectory('/');
-                }
-                else
-                {
-                    if (!_fileManager.DirectoryExists(settings.LastOutputDir.FormatDirectory('/')))
-                    {
-                        settings.LastOutputDir = Path.GetDirectoryName(textureFile.Path).FormatDirectory('/');
-                    }
-                }
-
-                _extractData.Value.Texture = texture;
-                _extractData.Value.SkipEmpty = settings.AllowEmptySpriteSkip;
-                _extractData.Value.SkipColor = new GorgonColor(settings.SkipColor);
+                _extractData.Texture = texture;
+                _extractData.SkipEmpty = settings.AllowEmptySpriteSkip;
+                _extractData.SkipColor = new GorgonColor(settings.SkipColor);
+                _extractData.CellSize = settings.GridCellSize;
 
                 var extractViewModel = new Extract();
-                extractViewModel.Initialize(new ExtractParameters(settings,
-                                                                _extractData.Value,
-                                                                textureFile,
-                                                                new ExtractorService(GraphicsContext.Renderer2D, _fileManager,
-                                                                    new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D)),
-                                                                new ColorPickerService(),
-                                                                FolderBrowser,
-                                                                CommonServices));
+                extractViewModel.Initialize(new ExtractParameters(settings, 
+                                                                  _extractData, 
+                                                                  new SpriteExtractorService(HostToolServices.GraphicsContext.Renderer2D,
+                                                                                             ContentFileManager,
+                                                                                             new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D)),
+                                                                  ContentFileManager.GetFile(textureFile),
+                                                                  ContentFileManager, 
+                                                                  HostToolServices));
 
-                _form = new FormExtract();
-                _form.SetupGraphics(GraphicsContext);
-                _form.SetDataContext(extractViewModel);
-                _form.ShowDialog(GorgonApplication.MainForm);
+                form = new FormExtract(settings);
+                form.SetDataContext(extractViewModel);
+                form.SetupGraphics(HostToolServices.GraphicsContext);
 
-                ToolPlugInService.WriteContentSettings(typeof(ExtractSpriteToolPlugIn).FullName, settings);
+                HostToolServices.BusyService.SetIdle();
+
+                form.ShowDialog(GorgonApplication.MainForm);
+
+                HostToolServices.BusyService.SetBusy();
+                HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ExtractSpriteToolPlugIn).FullName, settings);
             }
             catch (Exception ex)
-            {
-                CommonServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_LAUNCH);
+            {                
+                HostServices.MessageDisplay.ShowError(ex, Resources.GOREST_ERR_LAUNCH);
             }
             finally
             {
-                _form?.Dispose();
+                _extractData.Texture = null;
+
+                form?.Dispose();
                 fileStream?.Dispose();
-                image?.Dispose();
                 texture?.Dispose();
-                CommonServices.BusyService.SetIdle();
+                HostToolServices.BusyService.SetIdle();
             }
         }
 
         /// <summary>Function to retrieve the ribbon button for the tool.</summary>
         /// <param name="fileManager">The project file manager.</param>
-        /// <param name="scratchArea">The scratch area for writing temporary data.</param>
         /// <returns>A new tool ribbon button instance.</returns>
         /// <remarks>
         ///   <para>
@@ -207,20 +220,14 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// The <paramref name="fileManager" /> will allow plug ins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plug in a means
         /// to persist any data generated.
         /// </para>
-        ///   <para>
-        /// The <paramref name="scratchArea" /> is used to write temporary data to the project temporary area, which is useful for handling transitory states. Because this is <b>temporary</b>, any data
-        /// written to this area will be deleted on application shut down. So do not rely on this data being there on the next start up.
-        /// </para>
         /// </remarks>
-        protected override IToolPlugInRibbonButton OnGetToolButton(OLDE_IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea)
+        protected override IToolPlugInRibbonButton OnGetToolButton()
         {
-            _fileManager = fileManager;
-
             if (_button.ClickCallback == null)
             {
                 _button.ClickCallback = ShowForm;
             }
-
+            
             if (_button.CanExecute == null)
             {
                 _button.CanExecute = CanShowForm;
@@ -234,7 +241,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         protected override void OnInitialize()
         {
             _defaultImageCodec = new GorgonCodecDds();
-
+            
             _button = new ToolPlugInRibbonButton(Resources.GOREST_TEXT_BUTTON, Resources.extract_grid_48x48, Resources.extract_grid_16x16, Resources.GOREST_GROUP_BUTTON)
             {
                 Description = Resources.GOREST_DESC_BUTTON
@@ -245,8 +252,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <summary>Function to provide clean up for the plugin.</summary>
         protected override void OnShutdown()
         {
-            _fileManager = null;
-
             // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
             if (_button != null)
             {
@@ -260,9 +265,11 @@ namespace Gorgon.Editor.ExtractSpriteTool
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="DummySpriteCodecPlugIn"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ExtractSpriteToolPlugIn"/> class.</summary>
         public ExtractSpriteToolPlugIn()
-            : base(Resources.GOREST_PLUGIN_DESC) => _extractData = new Lazy<SpriteExtractionData>(() => new SpriteExtractionData(), LazyThreadSafetyMode.ExecutionAndPublication);
+            : base(Resources.GOREST_PLUGIN_DESC) 
+        {        
+        }
         #endregion
     }
 }

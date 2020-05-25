@@ -49,11 +49,11 @@
             this.colorSlider = new Fetze.WinFormsColor.ColorSlider();
             this.colorPanel = new Fetze.WinFormsColor.ColorPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.colorShowBox = new Fetze.WinFormsColor.ColorShowBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.colorShowBox = new Fetze.WinFormsColor.ColorShowBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.numHue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSaturation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numValue)).BeginInit();
@@ -62,8 +62,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numBlue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numAlpha)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // radioHue
@@ -250,15 +250,13 @@
             this.tableLayoutPanel1.Controls.Add(this.alphaSlider, 3, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             // 
-            // label2
+            // tableLayoutPanel3
             // 
-            resources.ApplyResources(this.label2, "label2");
-            this.label2.Name = "label2";
-            // 
-            // label1
-            // 
-            resources.ApplyResources(this.label1, "label1");
-            this.label1.Name = "label1";
+            resources.ApplyResources(this.tableLayoutPanel3, "tableLayoutPanel3");
+            this.tableLayoutPanel3.Controls.Add(this.colorShowBox, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             // 
             // colorShowBox
             // 
@@ -269,6 +267,16 @@
             this.colorShowBox.Name = "colorShowBox";
             this.colorShowBox.UpperColor = System.Drawing.Color.DarkRed;
             this.colorShowBox.UpperClick += new System.EventHandler(this.colorShowBox_UpperClick);
+            // 
+            // label2
+            // 
+            resources.ApplyResources(this.label2, "label2");
+            this.label2.Name = "label2";
+            // 
+            // label1
+            // 
+            resources.ApplyResources(this.label1, "label1");
+            this.label1.Name = "label1";
             // 
             // tableLayoutPanel2
             // 
@@ -291,14 +299,6 @@
             this.tableLayoutPanel2.Controls.Add(this.numHue, 2, 0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             // 
-            // tableLayoutPanel3
-            // 
-            resources.ApplyResources(this.tableLayoutPanel3, "tableLayoutPanel3");
-            this.tableLayoutPanel3.Controls.Add(this.colorShowBox, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            // 
             // ColorPickerPanel
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -315,10 +315,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.numAlpha)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -129,24 +129,6 @@ which array indices are used in the capture of the sprites.
 
 Note that the settings for the grid are the same across all array indices.</value>
   </data>
-  <data name="LabelArray.ToolTip" xml:space="preserve">
-    <value>For array textures, this will allow cycling through and previewing each array index.
-
-Please note that this is not the same as the Start of the Array Range section. Please use 
-the double arrow button to copy the current index value into the Array Range Start.</value>
-  </data>
-  <data name="ButtonPrevArray.ToolTip" xml:space="preserve">
-    <value>For array textures, this will allow cycling through and previewing each array index.
-
-Please note that this is not the same as the Start of the Array Range section. Please use 
-the double arrow button to copy the current index value into the Array Range Start.</value>
-  </data>
-  <data name="ButtonNextArray.ToolTip" xml:space="preserve">
-    <value>For array textures, this will allow cycling through and previewing each array index.
-
-Please note that this is not the same as the Start of the Array Range section. Please use 
-the double arrow button to copy the current index value into the Array Range Start.</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

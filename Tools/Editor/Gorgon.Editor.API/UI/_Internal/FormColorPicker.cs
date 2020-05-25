@@ -26,17 +26,17 @@
 
 using System;
 using System.ComponentModel;
-using ComponentFactory.Krypton.Toolkit;
+using System.Windows.Forms;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// A color picker dialog.
     /// </summary>
     internal partial class FormColorPicker
-        : KryptonForm
+        : Form
     {
         #region Properties.
         /// <summary>

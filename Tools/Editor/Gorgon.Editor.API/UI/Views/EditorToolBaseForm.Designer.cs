@@ -17,6 +17,12 @@
             {
                 components.Dispose();
             }
+
+            if (disposing)
+            {
+                ShutdownGraphics();
+            }
+
             base.Dispose(disposing);
         }
 

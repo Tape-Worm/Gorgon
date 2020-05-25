@@ -25,7 +25,10 @@
 #endregion
 
 using System.Collections.Generic;
+using System.IO;
+using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
+using Gorgon.IO;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Services
@@ -44,9 +47,29 @@ namespace Gorgon.Editor.Services
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the UI buttons for the tool plug in.
+        /// </summary>
+        IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function called when a project is loaded/created.
+        /// </summary>
+        /// <param name="fileManager">The content file manager for the project.</param>
+        /// <param name="temporaryFileSystem">The file system used to hold temporary working data.</param>
+        void ProjectActivated(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> temporaryFileSystem);
+
+        /// <summary>
+        /// Function called when a project is unloaded.
+        /// </summary>        
+        void ProjectDeactivated();
+
         /// <summary>
         /// Funcion to read the settings for a content plug in from a JSON file.
         /// </summary>

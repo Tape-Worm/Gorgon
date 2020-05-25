@@ -20,43 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 27, 2019 6:56:00 PM
+// Created: April 27, 2019 6:54:48 PM
 // 
 #endregion
 
-using System.Windows.Forms;
 using Gorgon.Graphics;
-using Gorgon.UI;
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// The service used to allow picking of colors.
     /// </summary>
-    internal class ColorPickerService
-        : IColorPickerService
+    public interface IColorPickerService
     {
-        /// <summary>Function to retrieve a color.</summary>
+        /// <summary>
+        /// Function to retrieve a color.
+        /// </summary>
         /// <param name="originalColor">The original color being changed.</param>
         /// <returns>The new color, or <b>null</b> if cancelled.</returns>
-        public GorgonColor? GetColor(GorgonColor originalColor)
-        {
-            FormColorPicker picker = null;
-
-            try
-            {
-                picker = new FormColorPicker
-                {
-                    OriginalColor = originalColor,
-                    Color = originalColor
-                };
-
-                return picker.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : (GorgonColor?)picker.Color;
-            }
-            finally
-            {
-                picker?.Dispose();
-            }
-        }
+        GorgonColor? GetColor(GorgonColor originalColor);
     }
 }

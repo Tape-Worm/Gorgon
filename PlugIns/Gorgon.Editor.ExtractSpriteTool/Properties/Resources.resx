@@ -197,4 +197,12 @@ Please try again.</value>
   <data name="send_to_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\send_to_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREST_CONFIRM_EXTRACT_IN_PROGRESS" xml:space="preserve">
+    <value>Sprites are currently being extracted. If the extractor is closed, then all progress will be lost.
+
+Are you sure you wish to close the extractor?</value>
+  </data>
+  <data name="GOREST_TEXT_GEN_CANCEL_MSG" xml:space="preserve">
+    <value>Press Escape to cancel.</value>
+  </data>
 </root>

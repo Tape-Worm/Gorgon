@@ -26,11 +26,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -38,13 +38,18 @@ using Gorgon.IO;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// The service used to retrieve sprite data from a texture atlas.
     /// </summary>
-    internal class ExtractorService
-        : IExtractorService
+    /// <remarks>
+    /// <para>
+    /// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service.
+    /// </para>
+    /// </remarks>
+    public class SpriteExtractorService
+        : ISpriteExtractorService
     {
         #region Variables.
         // The renderer for preparing a compatible texture.
@@ -52,13 +57,9 @@ namespace Gorgon.Editor.ExtractSpriteTool
         // The graphics interface.
         private readonly GorgonGraphics _graphics;
         // The file manager used to write the content files.
-        private readonly OLDE_IContentFileManager _fileManager;
+        private readonly IContentFileManager _fileManager;
         // The default sprite codec.
         private readonly IGorgonSpriteCodec _defaultCodec;
-        #endregion
-
-        #region Properties.
-
         #endregion
 
         #region Methods.
@@ -93,7 +94,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <summary>
         /// Function to extract the rectangle that defines the sprite on the texture, in pixels.
         /// </summary>
-        /// <param name="texture">The texture to evaluate.</param>
         /// <param name="column">The current column.</param>
         /// <param name="row">The current row.</param>
         /// <param name="offset">The offset of the grid from the upper left corner of the texture.</param>
@@ -209,18 +209,23 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
             for (int array = 0; array < data.ArrayCount; ++array)
             {
+                if (cancelToken.IsCancellationRequested)
+                {
+                    return Array.Empty<GorgonSprite>();
+                }
+
                 for (int y = 0; y < data.GridSize.Height; ++y)
                 {
                     if (cancelToken.IsCancellationRequested)
                     {
-                        return result;
+                        return Array.Empty<GorgonSprite>();
                     }
 
                     for (int x = 0; x < data.GridSize.Width; ++x)
                     {
                         if (cancelToken.IsCancellationRequested)
                         {
-                            return result;
+                            return Array.Empty<GorgonSprite>();
                         }
 
                         DX.Rectangle spriteRect = GetSpriteRect(x, y, data.GridOffset, data.CellSize);
@@ -256,53 +261,47 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="sprites">The sprites to save.</param>
         /// <param name="textureFile">The texture file associated with the sprites.</param>
         /// <exception cref="IOException">Thrown when the file system is locked by another thread (after 10 seconds).</exception>
-        public void SaveSprites(string path, string baseFileName, IEnumerable<GorgonSprite> sprites, OLDE_IContentFile textureFile)
+        public void SaveSprites(string path, string baseFileName, IEnumerable<GorgonSprite> sprites, IContentFile textureFile)
         {
             int spriteIndex = 1;
-            try
+
+            string fileName = Path.GetFileNameWithoutExtension(baseFileName);
+            string extension = Path.GetExtension(baseFileName);
+
+            if ((!string.IsNullOrWhiteSpace(extension)) && (extension[0] != '.'))
             {
-                string fileName = Path.GetFileNameWithoutExtension(baseFileName);
-                string extension = Path.GetExtension(baseFileName);
-
-                if ((!string.IsNullOrWhiteSpace(extension)) && (extension[0] != '.'))
-                {
-                    extension = "." + extension;
-                }
-
-                if (!_fileManager.BeginBatch())
-                {
-                    throw new IOException(Resources.GOREST_ERR_CANNOT_ACCESS_FILESYSTEM_LOCK);
-                }
-
-                foreach (GorgonSprite sprite in sprites)
-                {
-                    string filePath = $"{path}{fileName} ({spriteIndex++}){(string.IsNullOrWhiteSpace(extension) ? string.Empty : extension)}";
-
-                    while (_fileManager.GetFile(filePath) != null)
-                    {
-                        filePath = $"{path}{fileName} ({spriteIndex++}){(string.IsNullOrWhiteSpace(extension) ? string.Empty : extension)}";
-                    }
-
-                    OLDE_IContentFile outputFile = _fileManager.WriteFile(filePath, stream =>
-                    {
-                        _defaultCodec.Save(sprite, stream);
-                    });
-                    textureFile.LinkContent(outputFile);
-                }
+                extension = "." + extension;
             }
-            finally
+
+            foreach (GorgonSprite sprite in sprites)
             {
-                _fileManager.EndBatch();
+                string filePath = $"{path}{fileName} ({spriteIndex++}){(string.IsNullOrWhiteSpace(extension) ? string.Empty : extension)}";
+
+                while (_fileManager.FileExists(filePath))
+                {
+                    filePath = $"{path}{fileName} ({spriteIndex++}){(string.IsNullOrWhiteSpace(extension) ? string.Empty : extension)}";
+                }
+
+                using (Stream stream = _fileManager.OpenStream(filePath, FileMode.Create))
+                {
+                    _defaultCodec.Save(sprite, stream);
+                }
+
+                IContentFile file = _fileManager.GetFile(filePath);
+
+                Debug.Assert(file != null, $"Sprite file '{filePath}' was not created!");
+
+                file.LinkContent(textureFile);
             }
         }
         #endregion
 
         #region Constructor
-        /// <summary>Initializes a new instance of the <see cref="ExtractorService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SpriteExtractorService"/> class.</summary>
         /// <param name="renderer">The application 2D renderer.</param>
         /// <param name="fileManager">The file manager for the project files.</param>
         /// <param name="defaultCodec">The default sprite codec.</param>
-        public ExtractorService(Gorgon2D renderer, OLDE_IContentFileManager fileManager, IGorgonSpriteCodec defaultCodec)
+        public SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileManager, IGorgonSpriteCodec defaultCodec)
         {
             _renderer = renderer;
             _graphics = renderer.Graphics;

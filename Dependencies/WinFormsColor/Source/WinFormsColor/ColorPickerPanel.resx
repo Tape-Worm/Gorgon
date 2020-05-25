@@ -460,7 +460,7 @@
     <value>Left</value>
   </data>
   <data name="numGreen.Location" type="System.Drawing.Point, System.Drawing">
-    <value>169, 51</value>
+    <value>169, 27</value>
   </data>
   <data name="numGreen.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 1</value>
@@ -469,7 +469,7 @@
     <value>65, 20</value>
   </data>
   <data name="numGreen.TabIndex" type="System.Int32, mscorlib">
-    <value>11</value>
+    <value>9</value>
   </data>
   <data name="numGreen.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -490,7 +490,7 @@
     <value>Left, Right</value>
   </data>
   <data name="numBlue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>169, 27</value>
+    <value>169, 51</value>
   </data>
   <data name="numBlue.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 1</value>
@@ -499,7 +499,7 @@
     <value>65, 20</value>
   </data>
   <data name="numBlue.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
+    <value>11</value>
   </data>
   <data name="numBlue.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
     <value>Right</value>
@@ -664,7 +664,7 @@
     <value>alphaSlider</value>
   </data>
   <data name="&gt;&gt;alphaSlider.Type" xml:space="preserve">
-    <value>Fetze.WinFormsColor.ColorSlider, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Fetze.WinFormsColor.ColorSlider, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145</value>
   </data>
   <data name="&gt;&gt;alphaSlider.Parent" xml:space="preserve">
     <value>tableLayoutPanel1</value>
@@ -688,7 +688,7 @@
     <value>colorSlider</value>
   </data>
   <data name="&gt;&gt;colorSlider.Type" xml:space="preserve">
-    <value>Fetze.WinFormsColor.ColorSlider, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Fetze.WinFormsColor.ColorSlider, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145</value>
   </data>
   <data name="&gt;&gt;colorSlider.Parent" xml:space="preserve">
     <value>tableLayoutPanel1</value>
@@ -719,7 +719,7 @@
     <value>colorPanel</value>
   </data>
   <data name="&gt;&gt;colorPanel.Type" xml:space="preserve">
-    <value>Fetze.WinFormsColor.ColorPanel, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Fetze.WinFormsColor.ColorPanel, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145</value>
   </data>
   <data name="&gt;&gt;colorPanel.Parent" xml:space="preserve">
     <value>tableLayoutPanel1</value>
@@ -770,7 +770,7 @@
     <value>colorShowBox</value>
   </data>
   <data name="&gt;&gt;colorShowBox.Type" xml:space="preserve">
-    <value>Fetze.WinFormsColor.ColorShowBox, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Fetze.WinFormsColor.ColorShowBox, WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145</value>
   </data>
   <data name="&gt;&gt;colorShowBox.Parent" xml:space="preserve">
     <value>tableLayoutPanel3</value>
@@ -947,7 +947,7 @@
     <value>0</value>
   </data>
   <data name="tableLayoutPanel2.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="textBoxHex" Row="2" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelHex" Row="2" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="numAlpha" Row="0" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="numGreen" Row="2" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelAlpha" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="radioBlue" Row="2" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numBlue" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="radioGreen" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numRed" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="radioRed" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numValue" Row="2" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="radioValue" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="numSaturation" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="radioSaturation" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="radioHue" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="numHue" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,50,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Percent,50" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,Absolute,4" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="textBoxHex" Row="2" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelHex" Row="2" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="numAlpha" Row="0" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="numGreen" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelAlpha" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="radioBlue" Row="2" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numBlue" Row="2" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="radioGreen" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numRed" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="radioRed" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="numValue" Row="2" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="radioValue" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="numSaturation" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="radioSaturation" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="radioHue" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="numHue" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,50,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Percent,50" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,Absolute,4" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

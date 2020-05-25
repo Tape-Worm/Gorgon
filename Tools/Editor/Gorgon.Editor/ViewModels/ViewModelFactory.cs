@@ -533,6 +533,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(projectData));
             }
 
+            _hostContentServices.ToolPlugInService.ProjectDeactivated();
             _hostContentServices.ContentPlugInService.ProjectDeactivated();
 
             FileExplorer fileExplorer = null;
@@ -580,6 +581,7 @@ namespace Gorgon.Editor.ViewModels
                 ContentCreators = _contentCreators
             });
 
+            _hostContentServices.ToolPlugInService.ProjectActivated(fileExplorer, tempWriter);
             _hostContentServices.ContentPlugInService.ProjectActivated(fileSystem, fileExplorer, tempWriter);
 
             // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.

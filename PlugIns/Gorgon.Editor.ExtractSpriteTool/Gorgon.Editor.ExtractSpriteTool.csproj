@@ -67,25 +67,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="_Internal\Services\ColorPickerService.cs" />
-    <Compile Include="_Internal\Services\ProgressData.cs" />
-    <Compile Include="_Internal\Services\ExtractorService.cs" />
-    <Compile Include="_Internal\Services\_Interfaces\IColorPickerService.cs" />
-    <Compile Include="_Internal\Services\_Interfaces\IExtractorService.cs" />
-    <Compile Include="_Internal\SpriteExtractionData.cs" />
     <Compile Include="_Internal\ExtractSpriteToolSettings.cs" />
     <Compile Include="_Internal\Renderers\Renderer.cs" />
-    <Compile Include="_Internal\Renderers\_Interfaces\IRenderer.cs" />
     <Compile Include="_Internal\ViewModels\Extract.cs" />
     <Compile Include="_Internal\ViewModels\ExtractParameters.cs" />
     <Compile Include="_Internal\ViewModels\SaveSpritesArgs.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\IExtract.cs" />
-    <Compile Include="_Internal\Views\FormColorPicker.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\FormColorPicker.Designer.cs">
-      <DependentUpon>FormColorPicker.cs</DependentUpon>
-    </Compile>
     <Compile Include="_Internal\Views\FormExtract.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,19 +96,16 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\FormColorPicker.resx">
-      <DependentUpon>FormColorPicker.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="_Internal\Views\FormExtract.resx">
       <DependentUpon>FormExtract.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KryptonToolkitSuite5472">
-      <Version>5.472.2098</Version>
+    <PackageReference Include="Krypton.Toolkit.Lite">
+      <Version>5.500.2005</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.8</Version>
+      <Version>3.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -182,7 +166,9 @@
       <Name>Gorgon.Editor.API</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="_Internal\Renderers\_Interfaces\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Tools"

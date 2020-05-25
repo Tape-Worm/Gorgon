@@ -424,10 +424,10 @@ namespace Gorgon.Editor
                 EditorSettings settings = LoadSettings();
 
                 // Set up the host services that we will pass to our plug ins.
-                hostServices.FolderBrowser = new FileSystemFolderBrowseService();
                 hostServices.BusyService = new WaitCursorBusyState();
                 hostServices.MessageDisplay = new MessageBoxService();
                 hostServices.ClipboardService = new ClipboardService();
+                hostServices.ColorPicker = new ColorPickerService();
                 hostServices.GraphicsContext = _graphicsContext;
 
                 var plugInLocation = new DirectoryInfo(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));
@@ -452,7 +452,10 @@ namespace Gorgon.Editor
 
                 // Setup the factory used to build view models for the application.
                 var factory = new ViewModelFactory(settings, projectManager, fileSystemProviders, hostServices);
-                
+
+                IMain mainViewModel = factory.CreateMainViewModel(_graphicsContext.Graphics.VideoAdapter.Name);
+                hostServices.FolderBrowser = new FileSystemFolderBrowseService(mainViewModel);
+
                 // Show our main interface.
                 _mainForm = new FormMain
                 {
@@ -475,7 +478,7 @@ namespace Gorgon.Editor
                     windowState = (FormWindowState)settings.WindowState;
                 }
 
-                _mainForm.SetDataContext(factory.CreateMainViewModel(_graphicsContext.Graphics.VideoAdapter.Name));
+                _mainForm.SetDataContext(mainViewModel);
 
                 HideSplash();
 

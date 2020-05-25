@@ -27,14 +27,21 @@
 using System;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// Data used to extract sprites from a texture.
+    /// Data used to extract sprites from a texture using a grid.
     /// </summary>
-    internal class SpriteExtractionData
+    /// <remarks>
+    /// <para>
+    /// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="ISpriteExtractorService"/>
+    public class SpriteExtractionData
     {
         #region Variables.
         // A weak reference to the texture so we don't hang onto it for eternity.
@@ -134,7 +141,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <summary>
         /// Property to return the number of sprites that will be extracted.
         /// </summary>
-        public int SpriteCount => _textureRef == null ? 0 : (MaxGridSize.Width * MaxGridSize.Height) * ArrayCount;
+        public int SpriteCount => _textureRef == null ? 0 : (GridSize.Width.Min(MaxGridSize.Width).Max(1) * GridSize.Height.Min(MaxGridSize.Height).Max(1)) * ArrayCount;
         #endregion
     }
 }

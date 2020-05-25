@@ -26,12 +26,15 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
 
@@ -43,16 +46,20 @@ namespace Gorgon.Editor.ExtractSpriteTool
     internal partial class FormExtract
         : EditorToolBaseForm, IDataContext<IExtract>
     {
-        #region Variables.
-        // The renderer for this window.
-        private IRenderer _renderer;
-        // State flag for the closing operations.
-        private int _closeState;
-        #endregion
-
         #region Properties.
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         /// <summary>Property to return the data context assigned to this view.</summary>
         public IExtract DataContext
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the settings for the plug in.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public ExtractSpriteToolSettings Settings
         {
             get;
             private set;
@@ -74,17 +81,14 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 return;
             }
 
-            LabelArrayRange.Visible = LabelArrayCount.Visible = LabelArrayStart.Visible = NumericArrayIndex.Visible = NumericArrayCount.Visible = DataContext.HasArray;
-            CheckPreviewSprites.Enabled = DataContext.Sprites != null;
-            TableSkipMaskColor.Enabled = DataContext.SetEmptySpriteMaskColorCommand?.CanExecute(null) ?? false;
-            ButtonOk.Enabled = DataContext.SaveSpritesCommand?.CanExecute(null) ?? false;
-            TableSpritePreview.Visible = DataContext.InSpritePreview;
+            TableSpritePreview.Visible = DataContext.IsInSpritePreview;
             ButtonNextSprite.Enabled = DataContext.NextPreviewSpriteCommand?.CanExecute(null) ?? false;
             ButtonPrevSprite.Enabled = DataContext.PrevPreviewSpriteCommand?.CanExecute(null) ?? false;
-            LabelArray.Visible = ButtonSendToArrayStart.Visible = ButtonNextArray.Visible = ButtonPrevArray.Visible = DataContext.HasArray;
-            ButtonNextArray.Enabled = DataContext.NextPreviewArrayCommand?.CanExecute(null) ?? false;
-            ButtonPrevArray.Enabled = DataContext.PrevPreviewArrayCommand?.CanExecute(null) ?? false;
-            ButtonSendToArrayStart.Enabled = DataContext.SendPreviewArrayToStartCommand?.CanExecute(null) ?? false;
+            CheckPreviewSprites.Enabled = (DataContext.Sprites != null) && (DataContext.Sprites.Count > 0);
+            TableSkipMaskColor.Enabled = (!DataContext.IsGenerating) && (DataContext.SetEmptySpriteMaskColorCommand?.CanExecute(null) ?? false);
+
+            ButtonOk.Enabled = DataContext.SaveSpritesCommand?.CanExecute(null) ?? false;
+            LabelArrayRange.Visible = LabelArrayCount.Visible = LabelArrayStart.Visible = NumericArrayIndex.Visible = NumericArrayCount.Visible = DataContext.Texture?.Texture.ArrayCount > 1;
         }
 
         /// <summary>Handles the Click event of the SkipColor control.</summary>
@@ -207,14 +211,27 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <summary>Handles the Click event of the ButtonGenerate control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonGenerate_Click(object sender, EventArgs e)
+        private async void ButtonGenerate_Click(object sender, EventArgs e)
         {
             if ((DataContext?.GenerateSpritesCommand == null) || (!DataContext.GenerateSpritesCommand.CanExecute(null)))
             {
                 return;
             }
 
-            DataContext.GenerateSpritesCommand.Execute(null);
+            // Turn off all controls so we don't get any interference.
+            PanelSkip.Enabled = TableExtractParams.Enabled = TableSpritePreview.Enabled = TableSkipMaskColor.Enabled =
+            ButtonOk.Enabled = ButtonGenerate.Enabled = false;
+            try
+            {
+                await DataContext.GenerateSpritesCommand.ExecuteAsync(null);
+            }
+            finally
+            {
+                // Turn on all controls.
+                PanelSkip.Enabled = TableExtractParams.Enabled = TableSpritePreview.Enabled = TableSkipMaskColor.Enabled =
+                ButtonOk.Enabled = ButtonGenerate.Enabled = true;
+                ValidateControls();
+            }
         }
 
         /// <summary>Handles the Click event of the ButtonOk control.</summary>
@@ -278,50 +295,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 return;
             }
 
-            DataContext.InSpritePreview = CheckPreviewSprites.Checked;
-            ValidateControls();
-        }
-
-        /// <summary>Handles the Click event of the ButtonPrevArray control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonPrevArray_Click(object sender, EventArgs e)
-        {
-            if ((DataContext?.PrevPreviewArrayCommand == null) || (!DataContext.PrevPreviewArrayCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.PrevPreviewArrayCommand.Execute(null);
-            ValidateControls();
-        }
-
-        /// <summary>Handles the Click event of the ButtonNextArray control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonNextArray_Click(object sender, EventArgs e)
-        {
-            if ((DataContext?.NextPreviewArrayCommand == null) || (!DataContext.NextPreviewArrayCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.NextPreviewArrayCommand.Execute(null);
-            ValidateControls();
-        }
-
-
-        /// <summary>Handles the Click event of the ButtonSendToArrayStart control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonSendToArrayStart_Click(object sender, EventArgs e)
-        {
-            if ((DataContext?.SendPreviewArrayToStartCommand == null) || (!DataContext.SendPreviewArrayToStartCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.SendPreviewArrayToStartCommand.Execute(null);
+            DataContext.IsInSpritePreview = CheckPreviewSprites.Checked;
             ValidateControls();
         }
 
@@ -335,7 +309,82 @@ namespace Gorgon.Editor.ExtractSpriteTool
                 return;
             }
 
-            DataContext.AllowSkipEmpty = CheckSkipEmpty.Checked;
+            DataContext.SkipEmpty = CheckSkipEmpty.Checked;
+            ValidateControls();
+        }
+
+        /// <summary>Processes a command key.</summary>
+        /// <param name="msg">A <see cref="T:System.Windows.Forms.Message"/>, passed by reference, that represents the Win32 message to process.</param>
+        /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys"/> values that represents the key to process.</param>
+        /// <returns>
+        ///   <span class="keyword">
+        ///     <span class="languageSpecificText">
+        ///       <span class="cs">true</span>
+        ///       <span class="vb">True</span>
+        ///       <span class="cpp">true</span>
+        ///     </span>
+        ///   </span>
+        ///   <span class="nu">
+        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the keystroke was processed and consumed by the control; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span> to allow further processing.
+        /// </returns>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) 
+        {
+            if ((keyData == Keys.Escape) && (DataContext?.CancelSpriteGenerationCommand != null) && (DataContext.CancelSpriteGenerationCommand.CanExecute(null)))
+            {
+                DataContext.CancelSpriteGenerationCommand.Execute(null);
+                ValidateControls();
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        /// <summary>Handles the PreviewKeyDown event of the PanelRender control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+        private void PanelRender_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            switch (e.KeyCode)
+            {
+                case Keys.S:
+                    if (CheckPreviewSprites.Enabled)
+                    {
+                        CheckPreviewSprites.Checked = !CheckPreviewSprites.Checked;
+                    }
+                    break;
+                case Keys.G:
+                    ButtonGenerate.PerformClick();
+                    break;
+                case Keys.Left:
+                case Keys.Oemcomma:
+                    if (DataContext.IsInSpritePreview)
+                    {
+                        ButtonPrevSprite.PerformClick();
+                    }
+                    else
+                    {
+                        DataContext.StartArrayIndex--;
+                    }
+                    e.IsInputKey = true;
+                    break;
+                case Keys.Right:
+                case Keys.OemPeriod:
+                    if (DataContext.IsInSpritePreview)
+                    {
+                        ButtonNextSprite.PerformClick();
+                    }
+                    else
+                    {
+                        DataContext.StartArrayIndex++;
+                    }
+                    e.IsInputKey = true;
+                    break;
+            }
             ValidateControls();
         }
 
@@ -344,12 +393,12 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private void PanelRender_MouseWheel(object sender, MouseEventArgs e)
         {
-            if ((DataContext == null) || (DataContext.SpriteGenerationTask != null))
+            if ((DataContext == null) || (DataContext.IsGenerating))
             {
                 return;
             }
 
-            if (DataContext.InSpritePreview)
+            if (DataContext.IsInSpritePreview)
             {
                 if (e.Delta < 0)
                 {
@@ -364,11 +413,11 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
             if (e.Delta < 0)
             {
-                ButtonPrevArray.PerformClick();
+                NumericArrayIndex.Value--;
             }
             else if (e.Delta > 0)
             {
-                ButtonNextArray.PerformClick();
+                NumericArrayIndex.Value++;
             }
         }
 
@@ -387,27 +436,12 @@ namespace Gorgon.Editor.ExtractSpriteTool
             LabelSprite.Text = string.Format(Resources.GOREST_TEXT_SPRITE_PREVIEW, dataContext.CurrentPreviewSprite + 1, dataContext.SpritePreviewCount);
         }
 
-        /// <summary>
-        /// Function to update the array label.
-        /// </summary>
-        /// <param name="dataContext">The current data context.</param>
-        private void UpdateArrayLabel(IExtract dataContext)
+        /// <summary>Function called when a property was changed on the data context.</summary>
+        /// <param name="propertyName">The name of the property that was changed.</param>
+        /// <remarks>Developers should override this method when detecting property changes on the data context instead of assigning their own event handlers.</remarks>
+        protected override void OnPropertyChanged(string propertyName)
         {
-            if (dataContext == null)
-            {
-                LabelArray.Text = string.Format(Resources.GOREST_TEXT_ARRAY, 0, 0);
-                return;
-            }
-
-            LabelArray.Text = string.Format(Resources.GOREST_TEXT_ARRAY, dataContext.CurrentPreviewArrayIndex + 1, dataContext.PreviewArrayCount);
-        }
-
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
+            switch (propertyName)
             {
                 case nameof(IExtract.StartArrayIndex):
                     int currentIndex = (int)NumericArrayIndex.Value;
@@ -416,15 +450,12 @@ namespace Gorgon.Editor.ExtractSpriteTool
                         NumericArrayIndex.Value = DataContext.StartArrayIndex;
                     }
                     break;
-                case nameof(IExtract.CurrentPreviewArrayIndex):
-                    UpdateArrayLabel(DataContext);
-                    break;
                 case nameof(IExtract.SpritePreviewCount):
                 case nameof(IExtract.CurrentPreviewSprite):
                     UpdateSpritePreviewLabel(DataContext);
                     break;
-                case nameof(IExtract.SpriteGenerationTask):
-                    TableExtractControls.Enabled = DataContext.SpriteGenerationTask == null;
+                case nameof(IExtract.IsInSpritePreview):
+                    CheckPreviewSprites.Checked = DataContext.IsInSpritePreview;
                     break;
                 case nameof(IExtract.GridOffset):
                     NumericCellWidth.Maximum = DataContext.Texture.Width - DataContext.GridOffset.X;
@@ -453,19 +484,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>
-        /// Function to unassign events from the data context.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        }
-
-        /// <summary>
         /// Function to initialize the form based on its data context.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
@@ -478,8 +496,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
 
             SkipColor.Color = dataContext.SkipMaskColor;
-            CheckSkipEmpty.Checked = dataContext.AllowSkipEmpty;
-
+            CheckSkipEmpty.Checked = dataContext.SkipEmpty;
             NumericOffsetX.Maximum = (dataContext.Texture.Width - dataContext.CellSize.Width).Max(0);
             NumericOffsetY.Maximum = (dataContext.Texture.Height - dataContext.CellSize.Height).Max(0);
             NumericCellWidth.Maximum = (dataContext.Texture.Width - dataContext.GridOffset.X).Max(1);
@@ -496,82 +513,23 @@ namespace Gorgon.Editor.ExtractSpriteTool
             NumericOffsetX.Value = dataContext.GridOffset.X.Min((int)NumericOffsetX.Maximum).Max(0);
             NumericOffsetY.Value = dataContext.GridOffset.Y.Min((int)NumericOffsetY.Maximum).Max(0);
             NumericArrayCount.Value = dataContext.ArrayCount.Min((int)NumericArrayCount.Maximum).Max(1);
-            NumericArrayIndex.Value = dataContext.StartArrayIndex.Min((int)NumericArrayIndex.Maximum).Max(0);
+            NumericArrayIndex.Value = dataContext.StartArrayIndex.Min((int)NumericArrayIndex.Maximum).Max(0);            
 
             UpdateSpritePreviewLabel(dataContext);
-            UpdateArrayLabel(dataContext);
         }
 
-        /// <summary>Function to perform clean up when graphics operations are shutting down.</summary>
-        /// <remarks>Any resources created in the <see cref="EditorToolBaseForm.OnSetupGraphics"/> method must be disposed of here.</remarks>
-        protected override void OnShutdownGraphics()
+        /// <summary>Raises the <see cref="Form.Resize"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
+        protected override void OnResize(EventArgs e) 
         {
-            IRenderer renderer = Interlocked.Exchange(ref _renderer, null);
-            renderer?.SetDataContext(null);
-            renderer?.Dispose();
-        }
+            base.OnResize(e);
 
-        /// <summary>Function to perform custom rendering using the graphics functionality.</summary>
-        /// <remarks>
-        ///   <para>
-        /// This method is called once per frame to allow for custom graphics drawing on the <see cref="EditorToolBaseForm.RenderControl"/>.
-        /// </para>
-        ///   <para>
-        /// Tool plug in implementors need to override this in order to perform custom rendering with the <see cref="EditorToolBaseForm.GraphicsContext"/>.
-        /// </para>
-        /// </remarks>
-        protected override void OnRender() => _renderer.Render();
-
-        /// <summary>Function to perform custom graphics set up.</summary>
-        /// <remarks>
-        ///   <para>
-        /// This method allows tool plug in implementors to setup additional functionality for custom graphics rendering.
-        /// </para>
-        ///   <para>
-        /// Resources created by this method should be cleaned up in the <see cref="EditorToolBaseForm.OnShutdownGraphics"/> method.
-        /// </para>
-        ///   <para>
-        /// Implementors do not need to set up a <see cref="EditorToolBaseForm.SwapChain"/> since one is already provided.
-        /// </para>
-        /// </remarks>
-        protected override void OnSetupGraphics()
-        {
-            _renderer = new Renderer(GraphicsContext, SwapChain);
-            _renderer.Setup();
-        }
-
-        /// <summary>Raises the <see cref="Form.FormClosing"/> event.</summary>
-        /// <param name="e">A <see cref="FormClosingEventArgs"/> that contains the event data.</param>
-        protected override async void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-
-            if (_closeState > 0)
+            if (Settings == null)
             {
-                e.Cancel = _closeState == 1;
                 return;
             }
 
-            // First state keeps us from causing chaos by hitting the close button when we're waiting for the view model task to complete.
-            Interlocked.Increment(ref _closeState);
-
-            e.Cancel = true;
-
-            if (DataContext != null)
-            {
-                DataContext.IsMaximized = WindowState == FormWindowState.Maximized;
-
-                if ((DataContext.ShutdownCommand != null) && (DataContext.ShutdownCommand.CanExecute(null)))
-                {
-                    await DataContext.ShutdownCommand.ExecuteAsync(null);
-                }
-            }
-
-            await Task.Yield();
-
-            Interlocked.Increment(ref _closeState);
-
-            Close();
+            Settings.IsMaximized = WindowState == FormWindowState.Maximized;
         }
 
         /// <summary>Raises the Shown event.</summary>
@@ -580,10 +538,31 @@ namespace Gorgon.Editor.ExtractSpriteTool
         {
             base.OnShown(e);
 
-            if ((DataContext != null) && (DataContext.IsMaximized))
+            if ((Settings != null) && (Settings.IsMaximized))
             {
                 WindowState = FormWindowState.Maximized;
             }
+        }
+
+        /// <summary>Function to perform custom graphics set up.</summary>
+        /// <param name="graphicsContext">The graphics context for the application.</param>
+        /// <param name="swapChain">The swap chain used to render into the UI.</param>
+        /// <remarks>
+        ///   <para>
+        /// This method allows tool plug in implementors to setup additional functionality for custom graphics rendering.
+        /// </para>
+        ///   <para>
+        /// Resources created by this method should be cleaned up in the <see cref="EditorToolBaseForm.OnShutdownGraphics"/> method.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="M:Gorgon.Editor.UI.Views.EditorToolBaseForm.OnShutdownGraphics" />
+        protected override void OnSetupGraphics(IGraphicsContext graphicsContext, GorgonSwapChain swapChain) 
+        {
+            base.OnSetupGraphics(graphicsContext, swapChain);
+
+            var extractRenderer = new Renderer(graphicsContext.Renderer2D, swapChain, DataContext);
+            AddRenderer(extractRenderer.Name, extractRenderer);
+            SwitchRenderer(extractRenderer.Name);
         }
 
         /// <summary>Raises the Load event.</summary>
@@ -592,15 +571,12 @@ namespace Gorgon.Editor.ExtractSpriteTool
         {
             base.OnLoad(e);
 
-            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            if (IsDesignTime)
             {
                 return;
             }
 
-            DataContext?.OnLoad();
             ValidateControls();
-
-            PanelRender.Select();
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -608,29 +584,26 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
         public void SetDataContext(IExtract dataContext)
         {
-            UnassignEvents();
+            OnSetDataContext(dataContext);
 
             InitializeFromDataContext(dataContext);
-            _renderer?.SetDataContext(dataContext);
 
             DataContext = dataContext;
-
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
         }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
-        public FormExtract()
+        /// <param name="settings">The settings.</param>
+        public FormExtract(ExtractSpriteToolSettings settings)
+            : this() 
         {
-            InitializeComponent();
+            Settings = settings;
             PanelRender.MouseWheel += PanelRender_MouseWheel;
         }
+
+        /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
+        public FormExtract() => InitializeComponent();
         #endregion
     }
 }

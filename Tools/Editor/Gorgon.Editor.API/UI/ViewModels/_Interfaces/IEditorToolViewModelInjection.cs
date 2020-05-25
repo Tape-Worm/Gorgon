@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,24 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 27, 2019 6:54:48 PM
+// Created: September 17, 2018 7:58:15 AM
 // 
 #endregion
 
-using Gorgon.Graphics;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.PlugIns;
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// The service used to allow picking of colors.
+    /// Defines values to inject into tool plug in view models.
     /// </summary>
-    internal interface IColorPickerService
+    public interface IEditorToolViewModelInjection
+        : IViewModelInjection<IHostToolServices>
     {
         /// <summary>
-        /// Function to retrieve a color.
+        /// Property to return the file manager for content files.
         /// </summary>
-        /// <param name="originalColor">The original color being changed.</param>
-        /// <returns>The new color, or <b>null</b> if cancelled.</returns>
-        GorgonColor? GetColor(GorgonColor originalColor);
+        IContentFileManager ContentFileManager
+        {
+            get;
+        }
     }
 }

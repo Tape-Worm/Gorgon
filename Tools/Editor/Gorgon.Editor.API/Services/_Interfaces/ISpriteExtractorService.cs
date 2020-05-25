@@ -32,12 +32,17 @@ using Gorgon.Editor.Content;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 
-namespace Gorgon.Editor.ExtractSpriteTool
+namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// The service used to retrieve sprite data from a texture atlas.
     /// </summary>
-    internal interface IExtractorService
+    /// <remarks>
+    /// <para>
+    /// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service.
+    /// </para>
+    /// </remarks>
+    public interface ISpriteExtractorService
     {
         /// <summary>
         /// Function to retrieve the sprites from the texture atlas.
@@ -63,6 +68,6 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="baseFileName">The base file name.</param>
         /// <param name="sprites">The sprites to save.</param>
         /// <param name="textureFile">The texture file associated with the sprites.</param>
-        void SaveSprites(string path, string baseFileName, IEnumerable<GorgonSprite> sprites, OLDE_IContentFile textureFile);
+        void SaveSprites(string path, string baseFileName, IEnumerable<GorgonSprite> sprites, IContentFile textureFile);
     }
 }

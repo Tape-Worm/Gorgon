@@ -75,8 +75,6 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Variables.
-        // The factory used to create view models.
-        private ViewModelFactory _viewModelFactory;
         // The project data for the view model.
         private IProject _projectData;
         // The file explorer view model.
@@ -90,7 +88,7 @@ namespace Gorgon.Editor.ViewModels
         // The file manager used to manage content through content plug ins.
         private IContentFileManager _contentFileManager;
         // The list of tool buttons.
-        private Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+        private IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
         // The settings for the application.
         private Editor.EditorSettings _settings;
         // The project save dialog service.
@@ -105,7 +103,21 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the available tool plug in button definitions for the application.
         /// </summary>
-        public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons => _toolButtons;
+        public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons 
+        {
+            get => _toolButtons;
+            private set
+            {
+                if (_toolButtons == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _toolButtons = value ?? new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Property to set or return the current clipboard context depending on content.
@@ -469,41 +481,9 @@ namespace Gorgon.Editor.ViewModels
         private void ResetContent()
         {
             SaveProjectMetadata();
+            ToolButtons = null;
             CurrentContent?.OnUnload();
             CurrentContent = null;
-        }
-
-        /// <summary>
-        /// Function to rebuild the list of sorted ribbon buttons.
-        /// </summary>
-        private void GetTools()
-        {
-            NotifyPropertyChanging(nameof(ToolButtons));
-
-            var result = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
-
-            foreach (KeyValuePair<string, ToolPlugIn> plugin in HostServices.ToolPlugInService.PlugIns)
-            {
-                IToolPlugInRibbonButton button = plugin.Value.GetToolButton(_projectData, _contentFileManager);
-                button.ValidateButton();
-
-                List<IToolPlugInRibbonButton> buttons;
-                if (result.TryGetValue(button.GroupName, out IReadOnlyList<IToolPlugInRibbonButton> roButtons))
-                {
-                    // This is safe because this is the implementation.
-                    buttons = (List<IToolPlugInRibbonButton>)roButtons;
-                }
-                else
-                {
-                    result[button.GroupName] = buttons = new List<IToolPlugInRibbonButton>();
-                }
-
-                buttons.Add(button);
-            }
-
-            _toolButtons = result;
-
-            NotifyPropertyChanged(nameof(ToolButtons));
         }
 
         /// <summary>
@@ -1097,7 +1077,6 @@ namespace Gorgon.Editor.ViewModels
         protected override void OnInitialize(ProjectEditorParameters injectionParameters)
         {
             _settings = injectionParameters.EditorSettings;
-            _viewModelFactory = injectionParameters.ViewModelFactory;
             _projectManager = injectionParameters.ProjectManager;
             _projectData = injectionParameters.Project;
             _fileExplorer = injectionParameters.FileExplorer;
@@ -1112,7 +1091,7 @@ namespace Gorgon.Editor.ViewModels
 
             FileExplorer.OpenContentFileCommand = new EditorAsyncCommand<object>(DoOpenContentAsync, CanOpenContent);
 
-            GetTools();
+            ToolButtons = HostServices.ToolPlugInService.RibbonButtons;
         }
 
         /// <summary>
