@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -164,18 +166,29 @@ namespace Gorgon.Editor.Views
             {
                 return;
             }
+            
+            IEnumerable<RecentItemButton> buttons = PanelRecentItems.Controls.OfType<RecentItemButton>();
+            RecentItemButton button = buttons.FirstOrDefault(btn => string.Equals(btn.Name, item.FilePath, StringComparison.OrdinalIgnoreCase));
 
-            var button = new RecentItemButton
+            if (button == null)
             {
-                Name = item.FilePath
-            };
+                button = new RecentItemButton
+                {
+                    Name = item.FilePath
+                };
 
-            button.SuspendLayout();
+                button.SuspendLayout();
 
-            button.AutoSize = false;
+                button.AutoSize = false;
+                button.Click += Button_Click;
+                button.DeleteItem += Button_DeleteItem;
+            }
+            else
+            {
+                button.SuspendLayout();
+            }
+
             button.RecentItem = item;
-            button.Click += Button_Click;
-            button.DeleteItem += Button_DeleteItem;
 
             int index = 0;
 
@@ -187,7 +200,10 @@ namespace Gorgon.Editor.Views
                 }
             }
 
-            PanelRecentItems.Controls.Add(button);
+            if (!PanelRecentItems.Controls.Contains(button))
+            {
+                PanelRecentItems.Controls.Add(button);
+            }
             PanelRecentItems.Controls.SetChildIndex(button, index);
 
             button.ResumeLayout(true);

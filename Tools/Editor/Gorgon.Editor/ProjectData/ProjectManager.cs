@@ -349,6 +349,14 @@ namespace Gorgon.Editor.ProjectData
                 string readJsonData = reader.ReadToEnd();
 
                 result = JsonConvert.DeserializeObject<Project>(readJsonData);
+
+                // Handle previous version of the project file database.
+                if (string.Equals(result.Version, "GOREDIT30", StringComparison.OrdinalIgnoreCase))
+                {
+                    Project30 project30 = JsonConvert.DeserializeObject<Project30>(readJsonData);
+                    result = new Project(project30);
+                }
+
                 result.ProjectWorkSpace = new DirectoryInfo(Path.GetDirectoryName(metaDataFile));
                 result.FileSystemDirectory = new DirectoryInfo(Path.Combine(result.ProjectWorkSpace.FullName, FileSystemDirectoryName));
                 result.TempDirectory = new DirectoryInfo(Path.Combine(result.ProjectWorkSpace.FullName, TemporaryDirectoryName));

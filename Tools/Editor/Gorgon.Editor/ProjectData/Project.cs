@@ -128,6 +128,39 @@ namespace Gorgon.Editor.ProjectData
             // Used by JSON.Net for deserialization.
         }
 
+        /// <summary>Initializes a new instance of the <see cref="Project"/> class.</summary>
+        /// <param name="project">The project to upgrade.</param>        
+        public Project(Project30 project)
+        {
+            foreach (KeyValuePair<string, Project30ItemMetadata> item in project.ProjectItems)
+            {
+                var newItem = new ProjectItemMetadata
+                {
+                    PlugInName = item.Value.PlugInName
+                };
+
+                foreach (KeyValuePair<string, string> attr in item.Value.Attributes)
+                {
+                    newItem.Attributes[attr.Key] = attr.Value;
+                }
+
+                foreach (KeyValuePair<string, string> dependency in item.Value.DependsOn)
+                {
+                    if (!newItem.DependsOn.TryGetValue(dependency.Key, out List<string> items))
+                    {
+                        newItem.DependsOn[dependency.Key] = items = new List<string>();
+                    }
+
+                    if (!items.Contains(dependency.Value))
+                    {
+                        items.Add(dependency.Value);
+                    }
+                }
+
+                ProjectItems[item.Key] = newItem;
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Project"/> class.
         /// </summary>

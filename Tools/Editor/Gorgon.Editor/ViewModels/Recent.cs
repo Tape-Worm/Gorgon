@@ -118,11 +118,6 @@ namespace Gorgon.Editor.ViewModels
 
                     if (listItem != null)
                     {
-                        int index = _recentItems.IndexOf(listItem);
-                        if (index != -1)
-                        {
-                            _recentItems[index] = recentItem;
-                        }
                         return;
                     }
 

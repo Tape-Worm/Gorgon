@@ -20,35 +20,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 4, 2018 9:45:38 AM
+// Created: August 29, 2018 8:19:12 PM
 // 
 #endregion
 
-namespace Gorgon.Editor
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Gorgon.Editor.Metadata;
+using Newtonsoft.Json;
+
+namespace Gorgon.Editor.ProjectData
 {
     /// <summary>
-    /// Contains commonly used constants for the editor.
+    /// The project data.
     /// </summary>
-    public static class CommonEditorConstants
+    internal class Project30
     {
+        #region Properties.
         /// <summary>
-        /// The attribute name for the content type attribute.
+        /// Property to return the version for the project file.
         /// </summary>
-        public const string ContentTypeAttr = "Type";
+        [JsonProperty]
+        public string Version
+        {
+            get;
+            private set;
+        } = CommonEditorConstants.EditorCurrentProjectVersion;
 
         /// <summary>
-        /// The current version for an editor project.
+        /// Property to return the list of project items.
         /// </summary>
-        public const string EditorCurrentProjectVersion = "GOREDIT31";
+        [JsonProperty]
+        public Dictionary<string, Project30ItemMetadata> ProjectItems
+        {
+            get;
+            private set;
+        } = new Dictionary<string, Project30ItemMetadata>(StringComparer.OrdinalIgnoreCase);
+        #endregion
 
-        /// <summary>
-        /// The name of the file that holds the metadata for the project.
-        /// </summary>
-        public const string EditorMetadataFileName = "_$GEMD$_.db";
-
-        /// <summary>
-        /// The name of the attribute for the is new flag.
-        /// </summary>
-        public const string IsNewAttr = "IsNew";
+        #region Constructor/Finalizer.        
+        /// <summary>Initializes a new instance of the Project class.</summary>
+        [JsonConstructor]
+        public Project30()
+        {
+            // Used by JSON.Net for deserialization.
+        }
+        #endregion
     }
 }

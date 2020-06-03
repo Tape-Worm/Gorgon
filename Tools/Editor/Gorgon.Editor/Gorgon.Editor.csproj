@@ -133,6 +133,8 @@
     <Compile Include="Plugins\DisabledPlugin.cs" />
     <Compile Include="Plugins\HostContentServices.cs" />
     <Compile Include="ProjectData\FileCopyJob.cs" />
+    <Compile Include="ProjectData\Import\Project30.cs" />
+    <Compile Include="ProjectData\Import\Project30ItemMetadata.cs" />
     <Compile Include="ProjectData\V2MetadataImporter.cs" />
     <Compile Include="RibbonMerger.cs" />
     <Compile Include="Services\ToolPluginService.cs" />
