@@ -114,8 +114,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KryptonToolkitSuite5472">
-      <Version>5.472.2098</Version>
+    <PackageReference Include="Krypton.Ribbon.Lite">
+      <Version>5.500.2006</Version>
+    </PackageReference>
+    <PackageReference Include="Krypton.Toolkit.Lite">
+      <Version>5.500.2006</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>3.0.0</Version>

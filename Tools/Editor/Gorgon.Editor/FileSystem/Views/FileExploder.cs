@@ -1099,6 +1099,7 @@ namespace Gorgon.Editor.Views
                         fileIcon = TreeNodeIcons.Images[file.ImageName];
                     }
 
+                    row.Cells[ColumnID.Index].Value = file.ID;
                     row.Cells[ColumnIcon.Index].Value = fileIcon;
                     row.Cells[ColumnType.Index].Value = file.Type;
                     row.Cells[ColumnSize.Index].Value = file.SizeInBytes;

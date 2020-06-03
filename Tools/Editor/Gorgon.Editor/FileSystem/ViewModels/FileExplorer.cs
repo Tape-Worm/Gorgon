@@ -31,7 +31,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
@@ -1081,8 +1080,8 @@ namespace Gorgon.Editor.ViewModels
                     continue;
                 }
 
-                // If we've got the same file name in here, then we'll need to refresh the file instead of adding it.
-                IFile existingFile = parentDir.Files.FirstOrDefault(item => string.Equals(item.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase));
+                // If we've got the same file name in here, then we'll need to remove it prior to adding.
+                IFile existingFile = parentDir.Files.FirstOrDefault(item => string.Equals(item.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase));                
 
                 if (existingFile == null)
                 {
@@ -1091,7 +1090,10 @@ namespace Gorgon.Editor.ViewModels
                 }
                 else
                 {
+                    // Update the cache with the new ID.                    
+                    _files.Remove(existingFile.ID);
                     existingFile.Metadata = newFile.Metadata;
+                    _files.Add(existingFile.ID, existingFile);
                 }
 
                 if ((updateSelections) || (sourceFile.Parent != existingFile.Parent))
@@ -1568,6 +1570,9 @@ namespace Gorgon.Editor.ViewModels
                 {
                     if (!_files.TryGetValue(id, out IFile file))
                     {
+#if DEBUG
+                        HostServices.MessageDisplay.ShowError($"The file ID {id} is not cached within the file cache list.");
+#endif
                         continue;
                     }
 

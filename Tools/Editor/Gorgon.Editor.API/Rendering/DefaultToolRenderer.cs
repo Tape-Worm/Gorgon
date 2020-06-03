@@ -32,10 +32,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using Gorgon.Core;
-using System.Windows.Forms;
 using Gorgon.Math;
-using Gorgon.Animation;
-using Gorgon.Editor.UI;
 using System.ComponentModel;
 using Gorgon.Editor.Tools;
 

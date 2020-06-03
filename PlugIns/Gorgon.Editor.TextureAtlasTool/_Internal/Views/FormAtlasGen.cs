@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.TextureAtlasTool.Properties;

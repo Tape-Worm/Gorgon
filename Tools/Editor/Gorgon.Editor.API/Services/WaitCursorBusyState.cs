@@ -51,7 +51,7 @@ namespace Gorgon.Editor.Services
 
         #region Events.
         // Event triggered when the busy state changes.
-        private event EventHandler _busyStateChanged;
+        private event EventHandler BusyStateChangedEvent;
 
         /// <summary>
         /// Event triggered when the busy state changes.
@@ -64,11 +64,11 @@ namespace Gorgon.Editor.Services
                 {
                     if (value == null)
                     {
-                        _busyStateChanged = null;
+                        BusyStateChangedEvent = null;
                         return;
                     }
 
-                    _busyStateChanged += value;
+                    BusyStateChangedEvent += value;
                 }
             }
             remove
@@ -80,7 +80,7 @@ namespace Gorgon.Editor.Services
                         return;
                     }
 
-                    _busyStateChanged -= value;
+                    BusyStateChangedEvent -= value;
                 }
             }
         }
@@ -107,7 +107,7 @@ namespace Gorgon.Editor.Services
 
             lock (_eventLock)
             {
-                handler = _busyStateChanged;
+                handler = BusyStateChangedEvent;
             }
 
             handler?.Invoke(this, EventArgs.Empty);

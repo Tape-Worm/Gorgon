@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;

@@ -453,9 +453,6 @@ namespace Gorgon.Editor
                 // Setup the factory used to build view models for the application.
                 var factory = new ViewModelFactory(settings, projectManager, fileSystemProviders, hostServices);
 
-                IMain mainViewModel = factory.CreateMainViewModel(_graphicsContext.Graphics.VideoAdapter.Name);
-                hostServices.FolderBrowser = new FileSystemFolderBrowseService(mainViewModel);
-
                 // Show our main interface.
                 _mainForm = new FormMain
                 {
@@ -464,6 +461,9 @@ namespace Gorgon.Editor
                     WindowState = FormWindowState.Normal,
                     GraphicsContext = _graphicsContext
                 };
+
+                IMain mainViewModel = factory.CreateMainViewModel(_graphicsContext.Graphics.VideoAdapter.Name);
+                hostServices.FolderBrowser = new FileSystemFolderBrowseService(mainViewModel);
 
                 MainForm = _mainForm;
 

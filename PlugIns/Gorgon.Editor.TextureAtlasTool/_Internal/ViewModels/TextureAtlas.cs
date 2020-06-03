@@ -34,21 +34,19 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
-using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Services;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
-	/// <summary>
-	/// The view model for the main UI.
-	/// </summary>
-	internal class TextureAtlas
+    /// <summary>
+    /// The view model for the main UI.
+    /// </summary>
+    internal class TextureAtlas
 		: EditorToolViewModelBase<TextureAtlasParameters>, ITextureAtlas
 	{
 		#region Variables.
@@ -310,6 +308,9 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			try
 			{
+				// Unload any current atlas.
+				Atlas = null;
+
 				_spriteFiles = SpriteFiles.SelectedFiles.Select(item => item.File).ToArray();
 
 				NotifyPropertyChanged(nameof(LoadedSpriteCount));
@@ -418,6 +419,37 @@ namespace Gorgon.Editor.TextureAtlasTool
 		private bool CanGenerate() => (LoadedSpriteCount > 1) && (!string.IsNullOrWhiteSpace(OutputPath)) && (!string.IsNullOrWhiteSpace(BaseTextureName));
 
 		/// <summary>
+        /// Function to perform the atlas generation.
+        /// </summary>
+		private GorgonTextureAtlas GenerateAtlas()
+		{
+			GorgonTextureAtlas atlas;
+
+			_atlasService.Padding = _settings.Padding;
+			_atlasService.ArrayCount = _settings.MaxArrayCount;
+			_atlasService.TextureSize = _settings.MaxTextureSize;
+			_atlasService.BaseTextureName = $"{_settings.LastOutputDir}{_baseTextureName.FormatFileName()}";
+
+			IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions = _atlasService.GetSpriteRegions(_sprites.Values);
+
+			if ((regions == null) || (regions.Count == 0))
+			{
+				HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_NO_ROOM);
+				return null;
+			}
+
+			atlas = _atlasService.GenerateAtlas(regions, BufferFormat.R8G8B8A8_UNorm);
+
+			if ((atlas == null) || (atlas.Textures == null) || (atlas.Sprites == null) || (atlas.Textures.Count == 0))
+			{
+				HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_GEN_ATLAS);
+				return null;
+			}
+
+			return atlas;
+		}
+
+		/// <summary>
 		/// Function to perform the atlas generation.
 		/// </summary>
 		private void DoGenerate()
@@ -468,28 +500,9 @@ namespace Gorgon.Editor.TextureAtlasTool
 					HostServices.MessageDisplay.ShowInfo(Resources.GORTAG_INF_ALREADY_ATLASED);
 					return;
 				}
-				
-				_atlasService.Padding = _settings.Padding;
-				_atlasService.ArrayCount = _settings.MaxArrayCount;
-				_atlasService.TextureSize = _settings.MaxTextureSize;
-				_atlasService.BaseTextureName = $"{_settings.LastOutputDir}{_baseTextureName.FormatFileName()}";
 
-				IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions = _atlasService.GetSpriteRegions(_sprites.Values);
-
-				if ((regions == null) || (regions.Count == 0))
-				{
-					HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_NO_ROOM);
-					return;
-				}
-
-				atlas = _atlasService.GenerateAtlas(regions, BufferFormat.R8G8B8A8_UNorm);
-
-				if ((atlas == null) || (atlas.Textures == null) || (atlas.Sprites == null) || (atlas.Textures.Count == 0))
-				{
-					HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_GEN_ATLAS);
-					return;
-				}
-
+				atlas = GenerateAtlas();
+				// Keep this separate so that we can dispose the textures from the new atlas should something go wrong.
 				Atlas = atlas;
 			}
 			catch (Exception ex)
@@ -599,22 +612,57 @@ namespace Gorgon.Editor.TextureAtlasTool
 		/// <param name="args">The arguments to pass to the command.</param>
 		private void DoCommitAtlas(CancelEventArgs args)
 		{
-			try
+			GorgonTextureAtlas atlas = null;
+
+			// Function to unload the textures from the atlas.
+			void UnloadTextures()
 			{
-				if (_fileIO.HasExistingFiles(Atlas))
+				if ((atlas == null) || (atlas == Atlas))
+				{
+					return;
+				}
+
+				foreach (GorgonTexture2DView texture in atlas.Textures)
+				{
+					texture?.Dispose();
+				}
+			}
+
+			try
+			{				
+				// If we've changed the base name, regenerate the texture.
+				string nameCheck = $"{_settings.LastOutputDir}{_baseTextureName.FormatFileName()}";
+
+				if (!string.Equals(nameCheck, _atlasService.BaseTextureName, StringComparison.OrdinalIgnoreCase))
+				{
+					_sprites = _fileIO.LoadSprites(_spriteFiles);
+					atlas = GenerateAtlas();
+				}
+				else
+				{
+					atlas = Atlas;
+				}
+
+				if (_fileIO.HasExistingFiles(atlas))
 				{
 					if (HostServices.MessageDisplay.ShowConfirmation(Resources.GORTAG_CONFIRM_OVERWRITE) == MessageResponse.No)
 					{
+						UnloadTextures();
 						args.Cancel = true;
 						return;
 					}
 				}
-
+				
 				HostServices.BusyService.SetBusy();
-				_fileIO.SaveAtlas(_sprites, Atlas);
+				_fileIO.SaveAtlas(_sprites, atlas);
+
+				Atlas = atlas;
 			}
 			catch (Exception ex)
 			{
+				// Take out any allocated textures.
+				UnloadTextures();
+
 				HostServices.MessageDisplay.ShowError(ex, Resources.GORTAG_ERR_SAVE);
 				args.Cancel = true;
 			}

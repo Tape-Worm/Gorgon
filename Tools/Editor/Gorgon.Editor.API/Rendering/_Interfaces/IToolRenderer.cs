@@ -28,7 +28,6 @@ using System;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.Rendering
 {

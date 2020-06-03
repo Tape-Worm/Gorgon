@@ -24,23 +24,19 @@
 // 
 #endregion
 
-using System.Linq;
 using Gorgon.Editor.Rendering;
-using Gorgon.Editor.Services;
-using Gorgon.Editor.TextureAtlasTool;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Math;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
-	/// <summary>
-	/// The renderer used to draw the texture and sprites.
-	/// </summary>
-	internal class Renderer
+    /// <summary>
+    /// The renderer used to draw the texture and sprites.
+    /// </summary>
+    internal class Renderer
 		: DefaultToolRenderer<ITextureAtlas>
 	{
 		#region Variables.
