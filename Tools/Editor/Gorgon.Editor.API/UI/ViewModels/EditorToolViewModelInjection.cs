@@ -44,7 +44,7 @@ namespace Gorgon.Editor.UI.ViewModels
     /// </remarks>
     /// <seealso cref="EditorToolViewModelBase{T}"/>
     public class EditorToolViewModelInjection
-        : ViewModelInjection<IHostToolServices>, IEditorToolViewModelInjection
+        : ViewModelInjection<IHostContentServices>, IEditorToolViewModelInjection
     {
         /// <summary>Property to return the file manager for content files.</summary>
         public IContentFileManager ContentFileManager
@@ -56,7 +56,7 @@ namespace Gorgon.Editor.UI.ViewModels
         /// <param name="contentFileManager">The content file manager.</param>
         /// <param name="hostServices">The host services.</param>
         /// <exception cref="ArgumentNullException">Thown when the <paramref name="contentFileManager"/>, or the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
-        public EditorToolViewModelInjection(IContentFileManager contentFileManager, IHostToolServices hostServices)
+        public EditorToolViewModelInjection(IContentFileManager contentFileManager, IHostContentServices hostServices)
             : base(hostServices) => ContentFileManager = contentFileManager ?? throw new ArgumentNullException(nameof(contentFileManager));
     }
 }

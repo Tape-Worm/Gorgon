@@ -323,20 +323,11 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No atlas generated.  Click the &quot;Generate Atlas&quot; button to create an atlas..
+        ///   Looks up a localized string similar to Click the &quot;Generate Atlas&quot; button to create an atlas..
         /// </summary>
         internal static string GORTAG_TEXT_NO_ATLAS {
             get {
                 return ResourceManager.GetString("GORTAG_TEXT_NO_ATLAS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Click &apos;generate&apos; to create a texture atlas from the loaded sprites..
-        /// </summary>
-        internal static string GORTAG_TEXT_NO_ATLAS_MESSAGE {
-            get {
-                return ResourceManager.GetString("GORTAG_TEXT_NO_ATLAS_MESSAGE", resourceCulture);
             }
         }
         
@@ -346,6 +337,15 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         internal static string GORTAG_TEXT_NO_SPRITES {
             get {
                 return ResourceManager.GetString("GORTAG_TEXT_NO_SPRITES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a sprite..
+        /// </summary>
+        internal static string GORTAG_TEXT_SELECT_SPRITE {
+            get {
+                return ResourceManager.GetString("GORTAG_TEXT_SELECT_SPRITE", resourceCulture);
             }
         }
         
@@ -394,6 +394,26 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         internal static System.Drawing.Bitmap left_16x16 {
             get {
                 object obj = ResourceManager.GetObject("left_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap load_sprites_20x20 {
+            get {
+                object obj = ResourceManager.GetObject("load_sprites_20x20", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap load_sprites_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("load_sprites_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

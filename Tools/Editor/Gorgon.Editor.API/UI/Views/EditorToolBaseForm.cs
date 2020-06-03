@@ -59,7 +59,7 @@ namespace Gorgon.Editor.UI.Views
         // The control that will receive rendering output.
         private Control _renderControl;
         // Previous idle method.
-        private WeakReference<Func<bool>> _oldIdle;
+        private Func<bool> _oldIdle;
         // The previous flag for background operation.
         private bool _oldBackgroundState;
         // The swap chain for the render control.
@@ -161,18 +161,16 @@ namespace Gorgon.Editor.UI.Views
         /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
         private bool Idle()
         {
-            Func<bool> oldIdle = null;
-
             OnBeforeRender();
             Renderer?.Render();
             OnAfterRender();
 
             // Render on other controls as well.
-            if (GorgonApplication.AllowBackground)
+            if ((GorgonApplication.AllowBackground) && (_oldIdle != null))
             {
-                if (_oldIdle?.TryGetTarget(out oldIdle) ?? false)
+                if (!_oldIdle())
                 {
-                    oldIdle.Invoke();
+                    return false;
                 }
             }
 
@@ -189,6 +187,8 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
+            GorgonApplication.IdleMethod = Interlocked.Exchange(ref _oldIdle, null);
+
             OnShutdownGraphics();
 
             foreach (IToolRenderer renderer in _renderers.Values)
@@ -199,12 +199,8 @@ namespace Gorgon.Editor.UI.Views
             _renderers.Clear();
 
             GorgonSwapChain swapChain = Interlocked.Exchange(ref _swapChain, null);
-            IGraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
+            IGraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);            
 
-            Func<bool> oldIdle = null;
-
-            _oldIdle?.TryGetTarget(out oldIdle);
-            GorgonApplication.IdleMethod = oldIdle;
             GorgonApplication.AllowBackground = _oldBackgroundState;
 
             if (swapChain != null)
@@ -670,14 +666,7 @@ namespace Gorgon.Editor.UI.Views
                 _renderers["null"].IsEnabled = false;
             }
 
-            if (GorgonApplication.IdleMethod != null)
-            {
-                _oldIdle = new WeakReference<Func<bool>>(GorgonApplication.IdleMethod);
-            }
-            else
-            {
-                _oldIdle = null;
-            }
+            _oldIdle = GorgonApplication.IdleMethod;
 
             _oldBackgroundState = GorgonApplication.AllowBackground;
 

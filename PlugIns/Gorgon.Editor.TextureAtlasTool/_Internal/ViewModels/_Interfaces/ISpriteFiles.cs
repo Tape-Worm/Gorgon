@@ -27,6 +27,8 @@
 using System.Collections.Generic;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
@@ -37,12 +39,11 @@ namespace Gorgon.Editor.TextureAtlasTool
         : IViewModel
     {
         /// <summary>
-        /// Property to set or return whether the sprite loader is active or not.
+        /// Property to return the image used for previewing.
         /// </summary>
-        bool IsActive
+        IGorgonImage PreviewImage
         {
             get;
-            set;
         }
 
         /// <summary>
@@ -62,6 +63,14 @@ namespace Gorgon.Editor.TextureAtlasTool
         }
 
         /// <summary>
+        /// Property to return the command that will refresh the sprite preview data.
+        /// </summary>
+        IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshSpritePreviewCommand
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command used to search through the file list.
         /// </summary>
         IEditorCommand<string> SearchCommand
@@ -76,14 +85,6 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// Property to return the command used to cancel loading of the sprite files.
-        /// </summary>
-        IEditorCommand<object> CancelCommand
-        {
-            get;
         }
     }
 }

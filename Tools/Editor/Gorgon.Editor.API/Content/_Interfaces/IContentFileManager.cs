@@ -56,10 +56,9 @@ namespace Gorgon.Editor.Content
         /// <summary>
         /// Function to create a new directory
         /// </summary>
-        /// <param name="parentDirectory">The parent of the new directory.</param>
-        /// <param name="name">The name for the new directory.</param>        
+        /// <param name="directory">The path to the new directory.</param>
         /// <returns><b>true</b> if the directory was created, <b>false</b> if it already existed.</returns>
-        bool CreateDirectory(string parentDirectory, string name);
+        bool CreateDirectory(string directory);
 
         /// <summary>
         /// Function to delete a directory.

@@ -481,7 +481,6 @@ namespace Gorgon.Editor.ViewModels
         private void ResetContent()
         {
             SaveProjectMetadata();
-            ToolButtons = null;
             CurrentContent?.OnUnload();
             CurrentContent = null;
         }
@@ -1138,6 +1137,7 @@ namespace Gorgon.Editor.ViewModels
                 FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
             }
 
+            ToolButtons = null;
             ContentPreviewer?.OnUnload();
             FileExplorer?.OnUnload();
 

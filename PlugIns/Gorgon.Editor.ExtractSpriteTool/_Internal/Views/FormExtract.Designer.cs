@@ -21,7 +21,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
 
             if (disposing)
-            {
+            {                
                 PanelRender.MouseWheel -= PanelRender_MouseWheel;
             }
 
@@ -727,7 +727,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             this.ButtonOk.Name = "ButtonOk";
             this.ButtonOk.Size = new System.Drawing.Size(91, 32);
             this.ButtonOk.TabIndex = 0;
-            this.ButtonOk.Text = "&OK";
+            this.ButtonOk.Text = "&Save";
             this.ButtonOk.UseVisualStyleBackColor = false;
             this.ButtonOk.Click += new System.EventHandler(this.ButtonOk_Click);
             // 

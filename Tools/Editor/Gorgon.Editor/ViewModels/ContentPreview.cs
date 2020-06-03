@@ -354,7 +354,6 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 IContentFile file = _contentFileManager.GetFile(filePath);
-
                 IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(_thumbnailPath);
 
                 if (thumbDirectory == null)
@@ -373,7 +372,7 @@ namespace Gorgon.Editor.ViewModels
                         _tempFileSystem.DeleteFile(thumbnailFile.FullPath);
                     }
 
-                    file.Metadata.Attributes.Remove(thumbnailName);
+                    file.Metadata.Thumbnail = null;
                 }
 
                 // If our currently selected file is not the one being dispayed at this moment, then do not update the render window.

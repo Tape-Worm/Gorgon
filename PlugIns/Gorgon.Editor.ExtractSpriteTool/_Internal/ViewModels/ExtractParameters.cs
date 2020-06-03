@@ -83,7 +83,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="fileManager">The file manager for the project file system.</param>
         /// <param name="toolServices">The common tool services from the host application.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData extractData, ISpriteExtractorService extractor, IContentFile textureFile, IContentFileManager fileManager, IHostToolServices toolServices)
+        public ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtractionData extractData, ISpriteExtractorService extractor, IContentFile textureFile, IContentFileManager fileManager, IHostContentServices toolServices)
             : base(fileManager, toolServices)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));

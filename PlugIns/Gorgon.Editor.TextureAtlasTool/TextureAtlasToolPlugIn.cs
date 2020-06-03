@@ -44,13 +44,11 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// A plug in used to extract sprites from a texture atlas by using an adjustable grid.
     /// </summary>
     internal class TextureAtlasToolPlugIn
-        : OLDE_ToolPlugIn
+        : ToolPlugIn
     {
         #region Variables.
         // The cached button definition.
         private ToolPlugInRibbonButton _button;
-        // The project file manager.
-        private OLDE_IContentFileManager _fileManager;
         // The default image codec to use.
         private IGorgonImageCodec _defaultImageCodec;
         // The default sprite codec to use.
@@ -68,15 +66,16 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="searchEntries">The flattened list of entries used for searching.</param>
         /// <param name="fileSystemEntries">The file system entry hierarchy.</param>
         private (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> fileSystemEntries) GetFileEntries()
-        {
+        {            
             var searchEntries = new List<IContentFileExplorerSearchEntry>();
             var fileSystemEntries = new List<ContentFileExplorerDirectoryEntry>();
             ContentFileExplorerDirectoryEntry dirEntry = null;
             var fileEntries = new List<ContentFileExplorerFileEntry>();
-            IEnumerable<string> dirs = _fileManager.EnumerateDirectories("/", "*", true);
-            IEnumerable<OLDE_IContentFile> spriteFiles = _fileManager.EnumerateContentFiles("/", "*")
+            IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
+            IEnumerable<IContentFile> spriteFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
                                                 && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
+            IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
             if (spriteFiles.Any())
             {
@@ -84,9 +83,13 @@ namespace Gorgon.Editor.TextureAtlasTool
                 fileSystemEntries.Add(dirEntry);
                 searchEntries.Add(dirEntry);
 
-                foreach (OLDE_IContentFile file in spriteFiles)
+                foreach (IContentFile file in spriteFiles)
                 {
                     var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
+                    if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        fileEntry.IsSelected = true;
+                    }
                     fileEntries.Add(fileEntry);
                     searchEntries.Add(fileEntry);
                 }
@@ -94,9 +97,9 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             foreach (string subDir in dirs)
             {
-                spriteFiles = _fileManager.EnumerateContentFiles(subDir, "*")
+                spriteFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
+                                                            && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
                 if (!spriteFiles.Any())
                 {
                     continue;
@@ -108,9 +111,13 @@ namespace Gorgon.Editor.TextureAtlasTool
                 fileSystemEntries.Add(dirEntry);
                 searchEntries.Add(dirEntry);
 
-                foreach (OLDE_IContentFile file in spriteFiles)
+                foreach (IContentFile file in spriteFiles)
                 {
                     var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
+                    if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        fileEntry.IsSelected = true;
+                    }
                     fileEntries.Add(fileEntry);
                     searchEntries.Add(fileEntry);
                 }
@@ -127,11 +134,11 @@ namespace Gorgon.Editor.TextureAtlasTool
             TextureAtlasSettings settings;
             FormAtlasGen form = null;
 
-            CommonServices.BusyService.SetBusy();
+            HostToolServices.BusyService.SetBusy();
 
             try
             {
-                settings = ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(TextureAtlasToolPlugIn).FullName);
+                settings = HostToolServices.ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(TextureAtlasToolPlugIn).FullName);
 
                 if (settings == null)
                 {
@@ -150,39 +157,35 @@ namespace Gorgon.Editor.TextureAtlasTool
                     _textureAtlas = new TextureAtlas();
                 }
 
-                var fileIO = new FileIOService(_fileManager, _defaultImageCodec, _defaultSpriteCodec);
+                _fileVm.Initialize(new SpriteFilesParameters(entries, TemporaryFileSystem, new EditorContentSearchService(searchEntries), HostToolServices));
+                _textureAtlas.Initialize(new TextureAtlasParameters(_fileVm, 
+                                                                    settings,
+                                                                    new GorgonTextureAtlasService(HostToolServices.GraphicsContext.Renderer2D),
+                                                                    new FileIOService(ContentFileManager, _defaultImageCodec, _defaultSpriteCodec),
+                                                                    ContentFileManager, 
+                                                                    HostToolServices));
 
-                _fileVm.Initialize(new SpriteFilesParameters(entries, new EditorContentSearchService(searchEntries), CommonServices));
-                _textureAtlas.Initialize(new TextureAtlasParameters(settings,
-                                        _fileVm,
-                                        new GorgonTextureAtlasService(GraphicsContext.Renderer2D),
-                                        fileIO,
-                                        FolderBrowser,
-                                        CommonServices));
-
-                form = new FormAtlasGen();
-                form.SetupGraphics(GraphicsContext);
+                form = new FormAtlasGen(settings);
                 form.SetDataContext(_textureAtlas);
+                form.SetupGraphics(HostToolServices.GraphicsContext, true);
 
-                CommonServices.BusyService.SetIdle();
+                HostToolServices.BusyService.SetIdle();
                 form.ShowDialog(GorgonApplication.MainForm);
 
-                ToolPlugInService.WriteContentSettings(typeof(TextureAtlasToolPlugIn).FullName, settings);
+                HostToolServices.ToolPlugInService.WriteContentSettings(typeof(TextureAtlasToolPlugIn).FullName, settings);
             }
             catch (Exception ex)
             {
-                CommonServices.MessageDisplay.ShowError(ex, Resources.GORTAG_ERR_LAUNCH);
+                HostToolServices.MessageDisplay.ShowError(ex, Resources.GORTAG_ERR_LAUNCH);
             }
             finally
             {
-                CommonServices.BusyService.SetIdle();
+                HostToolServices.BusyService.SetIdle();
                 form?.Dispose();
             }
         }
 
         /// <summary>Function to retrieve the ribbon button for the tool.</summary>
-        /// <param name="fileManager">The project file manager.</param>
-        /// <param name="scratchArea">The scratch area for writing temporary data.</param>
         /// <returns>A new tool ribbon button instance.</returns>
         /// <remarks>
         ///   <para>
@@ -192,19 +195,9 @@ namespace Gorgon.Editor.TextureAtlasTool
         ///   <para>
         /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug in.
         /// </para>
-        ///   <para>
-        /// The <paramref name="fileManager" /> will allow plug ins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plug in a means
-        /// to persist any data generated.
-        /// </para>
-        ///   <para>
-        /// The <paramref name="scratchArea" /> is used to write temporary data to the project temporary area, which is useful for handling transitory states. Because this is <b>temporary</b>, any data
-        /// written to this area will be deleted on application shut down. So do not rely on this data being there on the next start up.
-        /// </para>
         /// </remarks>
-        protected override IToolPlugInRibbonButton OnGetToolButton(OLDE_IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea)
+        protected override IToolPlugInRibbonButton OnGetToolButton()
         {
-            _fileManager = fileManager;
-
             if (_button.ClickCallback == null)
             {
                 _button.ClickCallback = ShowForm;
@@ -218,7 +211,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         protected override void OnInitialize()
         {
             _defaultImageCodec = new GorgonCodecDds();
-            _defaultSpriteCodec = new GorgonV3SpriteBinaryCodec(GraphicsContext.Renderer2D);
+            _defaultSpriteCodec = new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D);
 
             _button = new ToolPlugInRibbonButton(Resources.GORTAG_TEXT_BUTTON, Resources.texture_atlas_48x48, Resources.texture_atlas_16x16, Resources.GORTAG_GROUP_BUTTON)
             {
@@ -230,12 +223,9 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <summary>Function to provide clean up for the plugin.</summary>
         protected override void OnShutdown()
         {
-            _fileManager = null;
-
             // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
             if (_button != null)
             {
-                _button.CanExecute = null;
                 _button.ClickCallback = null;
                 _button.Dispose();
             }

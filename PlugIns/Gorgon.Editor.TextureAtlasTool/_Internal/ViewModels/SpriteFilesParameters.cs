@@ -26,17 +26,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI.ViewModels;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
     /// <summary>
-    /// The parameters for the <see cref="ITextureAtlas"/> view model.
+    /// The parameters for the <see cref="ISpriteFiles"/> view model.
     /// </summary>
     internal class SpriteFilesParameters
-        : ViewModelInjection
+        : ViewModelInjection<IHostContentServices>
     {
         /// <summary>
         /// Property to reeturn the service to search through the content files.
@@ -54,16 +57,26 @@ namespace Gorgon.Editor.TextureAtlasTool
             get;
         }
 
+        /// <summary>
+        /// Property to return the temporary file system used to write data.
+        /// </summary>
+        public IGorgonFileSystemWriter<Stream> TempFileSystem
+        {
+            get;
+        }
+
         /// <summary>Initializes a new instance of the <see cref="SpriteFilesParameters"/> class.</summary>
         /// <param name="entries">The file system sprite entries.</param>
-        /// <param name="searchService">The search service used to search through the sprite entries.</param>
-        /// <param name="commonServices">The common services for the application.</param>
+        /// <param name="tempFileSystem">The temporary file system used to write temporary data.</param>
+        /// <param name="searchService">The search service used to search through the sprite entries.</param>        
+        /// <param name="hostServices">The services from the host application.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SpriteFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, ISearchService<IContentFileExplorerSearchEntry> searchService, IViewModelInjection commonServices)
-            : base(commonServices)
+        public SpriteFilesParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> entries, IGorgonFileSystemWriter<Stream> tempFileSystem, ISearchService<IContentFileExplorerSearchEntry> searchService, IHostContentServices hostServices)
+            : base(hostServices)
         {
             Entries = entries ?? throw new ArgumentNullException(nameof(entries));
             SearchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
+            TempFileSystem = tempFileSystem ?? throw new ArgumentNullException(nameof(tempFileSystem));
         }
     }
 }

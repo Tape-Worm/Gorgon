@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 27, 2019 12:02:30 PM
+// Created: June 1, 2020 12:09:23 AM
 // 
 #endregion
 
-namespace Gorgon.Editor.ExtractSpriteTool
-{
-	/// <summary>
-    /// Value type used to relay progress back to a subscriber.
-    /// </summary>
-    internal readonly struct ProgressData
-    {
-		/// <summary>
-        /// The current value being processed.
-        /// </summary>
-        public readonly int Current;
-		/// <summary>
-        /// The total number of items to process.
-        /// </summary>
-        public readonly int Total;
+using System;
+using System.Collections.Generic;
 
-        /// <summary>Initializes a new instance of the <see cref="ProgressData"/> struct.</summary>
-        /// <param name="current">The current item.</param>
-        /// <param name="total">The total number of items.</param>
-        public ProgressData(int current, int total)
+namespace Gorgon.Editor.UI.Controls
+{
+    /// <summary>
+    /// Event arguments for the <see cref="ContentFileExplorer.FileEntriesFocused"/> event.
+    /// </summary>
+    public class ContentFileEntriesFocusedArgs
+        : EventArgs
+    {
+        /// <summary>
+        /// Property to return the files that were focused in the file selector.
+        /// </summary>
+        public IReadOnlyList<ContentFileExplorerFileEntry> FocusedFiles
         {
-            Current = current;
-            Total = total;
+            get;
         }
+
+        /// <summary>Initializes a new instance of the <see cref="ContentFileEntriesFocusedArgs"/> class.</summary>
+        /// <param name="focusedFiles">The focused files.</param>
+        public ContentFileEntriesFocusedArgs(IReadOnlyList<ContentFileExplorerFileEntry> focusedFiles) => FocusedFiles = focusedFiles ?? Array.Empty<ContentFileExplorerFileEntry>();
     }
 }

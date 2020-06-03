@@ -61,7 +61,7 @@ namespace Gorgon.Editor.UI
     /// <seealso cref="ViewFactory"/>
     /// <seealso cref="EditorToolBaseForm"/>
     public abstract class EditorToolViewModelBase<T>
-        : ViewModelBase<T, IHostToolServices>, IEditorTool
+        : ViewModelBase<T, IHostContentServices>, IEditorTool
         where T : class, IEditorToolViewModelInjection
     {
         #region Variables.

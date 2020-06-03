@@ -29,7 +29,6 @@ using System.IO;
 using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.ProjectData;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.PlugIns
@@ -57,7 +56,7 @@ namespace Gorgon.Editor.PlugIns
         // Flag to indicate that the plugin is initialized.
         private int _initialized;
         // Tool services passed in from the host application.
-        private IHostToolServices _hostToolServices;
+        private IHostContentServices _hostToolServices;
         #endregion
 
         #region Properties.
@@ -73,7 +72,7 @@ namespace Gorgon.Editor.PlugIns
         /// </para>
         /// </remarks>
         /// <seealso cref="IHostServices"/>
-        protected IHostToolServices HostToolServices
+        protected IHostContentServices HostToolServices
         {
             get => _hostToolServices;
             private set => HostServices = _hostToolServices = value;
@@ -218,7 +217,7 @@ namespace Gorgon.Editor.PlugIns
         /// This method is only called when the plugin is loaded at startup.
         /// </para>
         /// </remarks>
-        public void Initialize(IHostToolServices hostServices)
+        public void Initialize(IHostContentServices hostServices)
         {
             if (Interlocked.Exchange(ref _initialized, 1) == 1)
             {

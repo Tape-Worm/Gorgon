@@ -26,10 +26,18 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
+using Gorgon.Editor.Rendering;
+using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Math;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
@@ -37,8 +45,21 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// A dialog used for sprite selection.
     /// </summary>
     internal partial class FormSpriteSelector
-        : KryptonForm, IDataContext<ISpriteFiles>
+        : Form, IDataContext<ISpriteFiles>
     {
+        #region Variables.
+        // Flag to indicate that the form is being designed in the IDE.
+        private readonly bool _isDesignTime;
+        // The graphics context for the application.
+        private IGraphicsContext _graphicsContext;
+        // The swap chain for rendering the preview.
+        private GorgonSwapChain _swapChain;
+        // The image used for the preview.
+        private GorgonTexture2DView _previewImage;
+        // The previous idle function.
+        private Func<bool> _oldIdle;
+        #endregion
+
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -73,18 +94,25 @@ namespace Gorgon.Editor.TextureAtlasTool
             ValidateControls();
         }
 
-        /// <summary>Handles the Click event of the ButtonCancel control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonCancel_Click(object sender, EventArgs e)
+
+        /// <summary>Contents the file explorer file entries focused.</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
+        private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
         {
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.RefreshSpritePreviewCommand == null) || (!DataContext.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
             {
                 return;
             }
 
-            DataContext.CancelCommand.Execute(null);
+            await DataContext.RefreshSpritePreviewCommand.ExecuteAsync(e.FocusedFiles);
+            ValidateControls();
         }
+
+        /// <summary>Handles the Click event of the ButtonCancel control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonCancel_Click(object sender, EventArgs e) => Close();
 
         /// <summary>Handles the Click event of the ButtonLoad control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -102,7 +130,136 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e) => ValidateControls();
+        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ISpriteFiles.PreviewImage):
+                    UpdateRenderImage(DataContext.PreviewImage);
+                    break;
+            }
+
+            ValidateControls();
+        }
+
+        /// <summary>
+        /// Function to update the image to render for previewing.
+        /// </summary>
+        /// <param name="image">The image to update with.</param>
+        private void UpdateRenderImage(IGorgonImage image)
+        {
+            _previewImage?.Dispose();
+
+            if (image == null)
+            {
+                _previewImage = null;
+                return;
+            }
+
+            _previewImage = GorgonTexture2DView.CreateTexture(_graphicsContext.Graphics, new GorgonTexture2DInfo("Atlas_Sprite_Preview")
+            {
+                ArrayCount = 1,
+                Binding = TextureBinding.ShaderResource,
+                Format = image.Format,
+                Height = image.Height,
+                Width = image.Width,
+                Usage = ResourceUsage.Immutable,
+                IsCubeMap = false,
+                MipLevels = 1
+            }, image);
+        }
+
+        /// <summary>
+        /// Function to retrieve the rectangular region for rendering.
+        /// </summary>
+        /// <returns>The render area.</returns>
+        private DX.Rectangle GetRenderRegion()
+        {
+            int size;
+
+            if (_swapChain.Width < _swapChain.Height)
+            {
+                size = _swapChain.Width;
+            }
+            else
+            {
+                size = _swapChain.Height;
+            }
+
+            int top = (_swapChain.Height / 2) - (size / 2);
+            int left = (_swapChain.Width / 2) - (size / 2);
+
+            return new DX.Rectangle(left, top, size, size);
+        }
+
+        /// <summary>
+        /// Function to update the preview during idle time.
+        /// </summary>
+        /// <returns><b>true</b> to continue processing, <b>false</b> if not.</returns>
+        private bool Idle()
+        {
+            _graphicsContext.Graphics.SetRenderTarget(_swapChain.RenderTargetView);
+            _swapChain.RenderTargetView.Clear(PanelPreviewRender.BackColor);
+
+            var renderRegion = GetRenderRegion().ToRectangleF();
+            var halfClient = new DX.Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
+
+            _graphicsContext.Renderer2D.Begin();
+            _graphicsContext.Renderer2D.DrawFilledRectangle(renderRegion, DarkFormsRenderer.DarkBackground);
+
+            // Render the sprite image.
+            if (_previewImage != null)
+            {                
+                float scale = (renderRegion.Width / _previewImage.Width).Min(renderRegion.Height / _previewImage.Height);
+                float width = _previewImage.Width * scale;
+                float height = _previewImage.Height * scale;
+                float x = renderRegion.X + halfClient.X - (width * 0.5f);
+                float y = renderRegion.Y + halfClient.Y - (height * 0.5f);
+
+                _graphicsContext.Renderer2D.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColor.White, _previewImage, new DX.RectangleF(0, 0, 1, 1));
+            }
+            else
+            {
+                DX.Size2F size = _graphicsContext.Renderer2D.DefaultFont.MeasureText(Resources.GORTAG_TEXT_SELECT_SPRITE, false);
+                _graphicsContext.Renderer2D.DrawString(Resources.GORTAG_TEXT_SELECT_SPRITE, 
+                                                        new DX.Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
+                                                        color: GorgonColor.White);
+            }
+            _graphicsContext.Renderer2D.End();
+
+            _swapChain.Present(1);
+
+            if ((GorgonApplication.AllowBackground) && (_oldIdle != null))
+            {
+                if (!_oldIdle())
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Function to shut down the graphics context.
+        /// </summary>
+        private void ShutdownGraphics()
+        {
+            Func<bool> oldIdle = Interlocked.Exchange(ref _oldIdle, null);
+            if (oldIdle != null)
+            {
+                GorgonApplication.IdleMethod = oldIdle;
+            }
+            GorgonTexture2DView preview = Interlocked.Exchange(ref _previewImage, null);
+            GorgonSwapChain swap = Interlocked.Exchange(ref _swapChain, null);
+
+            preview?.Dispose();
+            if (swap != null)
+            {
+                _graphicsContext.ReturnSwapPresenter(ref swap);
+            }
+            _graphicsContext = null;
+        }
 
         /// <summary>
         /// Function to unassign events from the data context.
@@ -143,6 +300,11 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnFormClosing(e);
 
+            if (_isDesignTime)
+            {
+                return;
+            }
+
             DataContext?.OnUnload();
         }
 
@@ -152,9 +314,34 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnLoad(e);
 
+            if (_isDesignTime)
+            {
+                return;
+            }
+
             DataContext?.OnLoad();
 
             ValidateControls();
+        }
+
+        /// <summary>
+        /// Function to assign the graphics context for the preview.
+        /// </summary>
+        /// <param name="context">The graphics context for the application.</param>
+        public void SetGraphicsContext(IGraphicsContext context)
+        {
+            ShutdownGraphics();
+
+            _graphicsContext = context;
+
+            if (context == null)
+            {
+                return;
+            }
+
+            _swapChain = context.LeaseSwapPresenter(PanelPreviewRender);
+            _oldIdle = GorgonApplication.IdleMethod;
+            GorgonApplication.IdleMethod = Idle;            
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>
@@ -171,14 +358,18 @@ namespace Gorgon.Editor.TextureAtlasTool
             {
                 return;
             }
-
+            
             DataContext.PropertyChanged += DataContext_PropertyChanged;
         }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="FormSpriteSelector"/> class.</summary>
-        public FormSpriteSelector() => InitializeComponent();
+        public FormSpriteSelector()
+        {
+            _isDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+            InitializeComponent();
+        }
         #endregion
     }
 }

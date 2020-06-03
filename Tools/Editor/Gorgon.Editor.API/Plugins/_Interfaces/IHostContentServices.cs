@@ -24,20 +24,53 @@
 // 
 #endregion
 
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.PlugIns
 {
     /// <summary>
-    /// A list of services passed from the host application to content plug ins.
+    /// A list of services passed from the host application to tool plug ins.
     /// </summary>
     public interface IHostContentServices
-        : IHostToolServices
+        : IHostServices
     {
+        /// <summary>
+        /// Property to return the graphics and the 2D renderer used by the host application.
+        /// </summary>
+        IGraphicsContext GraphicsContext
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the service that allows a conetnt plug in to access tool content plug ins.
+        /// </summary>
+        IToolPlugInService ToolPlugInService
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the service that allows a content plug in to access other content plug ins.
         /// </summary>
         IContentPlugInService ContentPlugInService
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the service used to browse through directories on the file system.
+        /// </summary>
+        IFileSystemFolderBrowseService FolderBrowser
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the service used to pick colors.
+        /// </summary>
+        IColorPickerService ColorPicker
         {
             get;
         }

@@ -69,7 +69,7 @@
     <Compile Include="Plugins\ContentImportPlugin.cs" />
     <Compile Include="Plugins\ContentPlugin.cs" />
     <Compile Include="Plugins\ToolPlugin.cs" />
-    <Compile Include="Plugins\_Interfaces\IHostToolServices.cs" />
+    <Compile Include="Plugins\_Interfaces\IHostContentServices.cs" />
     <Compile Include="Plugins\_Interfaces\IHostServices.cs" />
     <Compile Include="Plugins\FileWriterPlugIn.cs" />
     <Compile Include="Plugins\PlugInAssemblyState.cs" />
@@ -96,7 +96,6 @@
     <Compile Include="Services\SpriteExtractorService.cs" />
     <Compile Include="Services\_Interfaces\IColorPickerService.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemFolderBrowseService.cs" />
-    <Compile Include="Plugins\_Interfaces\IHostContentServices.cs" />
     <Compile Include="Services\_Interfaces\ISpriteExtractorService.cs" />
     <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
     <Compile Include="Services\RectClipperService.cs" />
@@ -113,6 +112,7 @@
     <Compile Include="UI\Controls\ColorPicker.Designer.cs">
       <DependentUpon>ColorPicker.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\ContentFileEntriesFocusedArgs.cs" />
     <Compile Include="UI\Controls\ContentFileEntrySelectedEventArgs.cs" />
     <Compile Include="UI\Controls\ContentFileExplorer.cs">
       <SubType>UserControl</SubType>

@@ -56,7 +56,7 @@ namespace Gorgon.Editor.Services
         // The directory that contains the settings for the plug ins.
         private readonly string _settingsDir;
         // The host application services to pass to the plug ins.
-        private readonly IHostToolServices _hostServices;
+        private readonly IHostContentServices _hostServices;
         #endregion
 
         #region Properties.
@@ -355,7 +355,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Initializes a new instance of the ToolPlugInService class.</summary>
         /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
         /// <param name="hostServices">The host appplication services to pass to the plug ins.</param>
-        public ToolPlugInService(string settingsDirectory, IHostToolServices hostServices)
+        public ToolPlugInService(string settingsDirectory, IHostContentServices hostServices)
         {
             _settingsDir = settingsDirectory;
             _hostServices = hostServices;

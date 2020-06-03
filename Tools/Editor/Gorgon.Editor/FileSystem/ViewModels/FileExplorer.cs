@@ -31,6 +31,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Collections;
@@ -130,8 +131,6 @@ namespace Gorgon.Editor.ViewModels
         // The synchronization locks for the file system events.
         private readonly object _fsUpdatedEventLock = new object();
         private readonly object _selectedChangedEventLock = new object();
-        // A list of illegal characters for file names/directory names.
-        private readonly char[] _illegalFileNameChars = Path.GetInvalidFileNameChars();
         // Flag to indicate that the view model is loaded.
         private int _isLoaded;
         // The project file system and writer.
@@ -2337,9 +2336,10 @@ namespace Gorgon.Editor.ViewModels
         /// Function to determine if the selected files can be exported.
         /// </summary>
         /// <returns><b>true</b> if the selected files can be exported, <b>false</b> if not.</returns>
-        private bool CanExportFiles() => ((SelectedDirectory == null) || (!_directories.ContainsKey(SelectedDirectory.ID)) || (SelectedFiles.Count == 0))
-                ? false
-                : SelectedFiles.All(item => _files.ContainsKey(item.ID));
+        private bool CanExportFiles() => (SelectedDirectory != null) 
+                                        && (_directories.ContainsKey(SelectedDirectory.ID)) 
+                                        && (SelectedFiles.Count != 0)
+                                        && (SelectedFiles.All(item => _files.ContainsKey(item.ID)));
 
         /// <summary>
         /// Function to export the selected files to the physical file system.
@@ -2857,63 +2857,57 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Function to create a new directory</summary>
-        /// <param name="parentDirectory">The parent of the new directory.</param>
-        /// <param name="name">The name for the new directory.</param>
+        /// <param name="directory">The path to the new directory.</param>
         /// <returns><b>true</b> if the directory was created, <b>false</b> if it already existed.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="parentDirectory"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/>, or the <paramref name="parentDirectory"/> parameter is empty.</exception>
-        /// <exception cref="ArgumentException">Thrown if the <paramref name="name"/> contains illegal filename characters.</exception>
-        /// <exception cref="DirectoryNotFoundException">Thrown if the directory specified by <paramref name="parentDirectory"/> was not found in the file system.</exception>
-        /// <exception cref="IOException">Thrown if the path and <paramref name="name"/> point to an existing file on the file system.</exception>
-        bool IContentFileManager.CreateDirectory(string parentDirectory, string name)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directory"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directory"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="directory"/> contains illegal characters.</exception>
+        /// <exception cref="IOException">Thrown if the <paramref name="directory"/> points to an existing file on the file system.</exception>
+        bool IContentFileManager.CreateDirectory(string directory)
         {
-            if (name == null)
+            if (directory == null)
             {
-                throw new ArgumentNullException(nameof(name));
+                throw new ArgumentNullException(nameof(directory));
             }
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(directory))
             {
-                throw new ArgumentEmptyException(nameof(name));
+                throw new ArgumentEmptyException(nameof(directory));
             }
 
-            if (parentDirectory == null)
+            if (!directory.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentNullException(nameof(parentDirectory));
+                directory = "/" + directory;
             }
 
-            if (string.IsNullOrWhiteSpace(parentDirectory))
-            {
-                throw new ArgumentEmptyException(nameof(parentDirectory));
-            }
+            directory = directory.FormatDirectory('/');
 
-            if (name.Any(item => _illegalFileNameChars.Contains(item)))
-            {
-                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILENAME_ILLEGAL_CHARS, name, string.Join(", ", _illegalFileNameChars)), nameof(name));
-            }
-
-            IDirectory parentDir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, parentDirectory, StringComparison.OrdinalIgnoreCase));
-
-            if (parentDir == null)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, parentDirectory));
-            }
-
-            if (parentDir.Directories.Any(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)))
+            if (directory == "/")
             {
                 return false;
             }
 
-            if (parentDir.Files.Any(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)))
+            string filePath = directory.Substring(0, directory.Length - 1);
+            if (_fileSystemWriter.FileSystem.GetFile(filePath) != null)
             {
-                throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_FILE, name));
+                throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_FILE, filePath));
             }
 
-            IGorgonVirtualDirectory virtualDir = _fileSystemWriter.CreateDirectory(parentDir.FullPath + name);
+            IGorgonVirtualDirectory virtDirectory = _fileSystemWriter.FileSystem.GetDirectory(directory);
+
+            if (virtDirectory != null)
+            {
+                return true;
+            }
+                
+            virtDirectory = _fileSystemWriter.CreateDirectory(directory);
 
             // Function to update the UI.
             void UpdateUI(object context)
             {
+                var newDir = (IGorgonVirtualDirectory)context;
+
+                IDirectory parentDir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, newDir.Parent.FullPath, StringComparison.OrdinalIgnoreCase));
                 _factory.CreateDirectory((IGorgonVirtualDirectory)context, parentDir);
                 OnFileSystemUpdated();
             }
@@ -2921,11 +2915,11 @@ namespace Gorgon.Editor.ViewModels
             // We need to invoke this back on the main thread.
             if (_syncContext != SynchronizationContext.Current)
             {
-                _syncContext.Send(UpdateUI, virtualDir);
+                _syncContext.Send(UpdateUI, directory);
             }
             else
             {
-                UpdateUI(virtualDir);
+                UpdateUI(directory);
             }
             
             return true;

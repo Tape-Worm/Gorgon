@@ -25,7 +25,10 @@
 #endregion
 
 using System;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Renderers.Services;
 
@@ -35,26 +38,10 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// The parameters for the <see cref="ITextureAtlas"/> view model.
     /// </summary>
     internal class TextureAtlasParameters
-        : ViewModelInjection
+        : EditorToolViewModelInjection
     {
         /// <summary>
-        /// Property to return the project file system folder browser.
-        /// </summary>
-        public IFileSystemFolderBrowseService FolderBrowser
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the atlas generation service.
-        /// </summary>
-        public IGorgonTextureAtlasService AtlasGenerator
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the sprite file manager.
+        /// Property to return the view model for the sprite loader UI.
         /// </summary>
         public ISpriteFiles SpriteFiles
         {
@@ -70,29 +57,41 @@ namespace Gorgon.Editor.TextureAtlasTool
         }
 
         /// <summary>
-        /// Property to return the file I/O service.
+        /// Property to return the atlas generation service.
         /// </summary>
-        public IFileIOService FileManager
+        public IGorgonTextureAtlasService AtlasGenerator
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the service used to manage atlas files.
+        /// </summary>
+        public FileIOService FileIO
         {
             get;
         }
 
         /// <summary>Initializes a new instance of the <see cref="TextureAtlasParameters"/> class.</summary>
-        /// <param name="settings">The settings for the plug in.</param>
-        /// <param name="spriteFiles">The sprite file manager.</param>
-        /// <param name="atlasGen">The atlas generation service.</param>
-        /// <param name="fileService">The service used for file I/O operations.</param>
-        /// <param name="folderBrowser">The folder browser.</param>
-        /// <param name="commonServices">The common services for the application.</param>
+        /// <param name="spriteFiles">The view model for the sprite loader UI.</param>
+        /// <param name="settings">The settings for the texture atlas plug in.</param>
+        /// <param name="atlasGenerator">The service used to generate texture atlases.</param>
+        /// <param name="fileIO">The service used to manage the atlas files.</param>
+        /// <param name="fileManager">The file manager for the project file system.</param>
+        /// <param name="toolServices">The common tool services from the host application.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public TextureAtlasParameters(TextureAtlasSettings settings, ISpriteFiles spriteFiles, IGorgonTextureAtlasService atlasGen, IFileIOService fileService, IFileSystemFolderBrowseService folderBrowser, IViewModelInjection commonServices)
-            : base(commonServices)
+        public TextureAtlasParameters(ISpriteFiles spriteFiles, 
+                                      TextureAtlasSettings settings, 
+                                      IGorgonTextureAtlasService atlasGenerator, 
+                                      FileIOService fileIO,
+                                      IContentFileManager fileManager, 
+                                      IHostContentServices toolServices)
+            : base(fileManager, toolServices)
         {
-            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             SpriteFiles = spriteFiles ?? throw new ArgumentNullException(nameof(spriteFiles));
-            AtlasGenerator = atlasGen ?? throw new ArgumentNullException(nameof(atlasGen));
-            FolderBrowser = folderBrowser ?? throw new ArgumentNullException(nameof(folderBrowser));
-            FileManager = fileService ?? throw new ArgumentNullException(nameof(fileService));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            AtlasGenerator = atlasGenerator ?? throw new ArgumentNullException(nameof(atlasGenerator));
+            FileIO = fileIO ?? throw new ArgumentNullException(nameof(fileIO));
         }
     }
 }

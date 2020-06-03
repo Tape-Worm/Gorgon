@@ -67,25 +67,12 @@ namespace Gorgon.Editor.ExtractSpriteTool
 		}
 
 		/// <summary>
-		/// Function to calculate scaling to the specified size, bounded by the client area of the rendering control.
-		/// </summary>
-		/// <param name="size">The size of the area to zoom into.</param>
-		/// <param name="windowSize">The size of the window.</param>
-		/// <returns>The scaling factor to apply.</returns>
-		private float CalcZoomToSize(DX.Size2F size, DX.Size2F windowSize)
-		{
-			var scaling = new DX.Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
-
-			return scaling.X.Min(scaling.Y);
-		}
-
-		/// <summary>
 		/// Function to render the sprite preview.
 		/// </summary>
 		private void DrawPreview()
 		{
 			GorgonSprite sprite = DataContext.Sprites[DataContext.CurrentPreviewSprite];
-			float scale = CalcZoomToSize(new DX.Size2F(sprite.Size.Width + 8, sprite.Size.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
+			float scale = CalculateScaling(new DX.Size2F(sprite.Size.Width + 8, sprite.Size.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
 			UpdatePreviewSprite(scale);
 
 			Renderer.Begin(camera: _camera);
@@ -136,7 +123,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 				return;
 			}
 
-			float scale = CalcZoomToSize(new DX.Size2F(DataContext.Texture.Width + 8, DataContext.Texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
+			float scale = CalculateScaling(new DX.Size2F(DataContext.Texture.Width + 8, DataContext.Texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
 			_textureSprite.Size = new DX.Size2F(scale * DataContext.Texture.Width, scale * DataContext.Texture.Height).Truncate();
 			_textureSprite.Position = new DX.Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
 			

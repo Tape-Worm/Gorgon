@@ -33,7 +33,7 @@ namespace Gorgon.Editor.UI
     /// Defines values to inject into tool plug in view models.
     /// </summary>
     public interface IEditorToolViewModelInjection
-        : IViewModelInjection<IHostToolServices>
+        : IViewModelInjection<IHostContentServices>
     {
         /// <summary>
         /// Property to return the file manager for content files.

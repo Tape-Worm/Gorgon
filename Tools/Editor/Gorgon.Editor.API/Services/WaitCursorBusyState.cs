@@ -123,6 +123,7 @@ namespace Gorgon.Editor.Services
                 return;
             }
 
+            Application.UseWaitCursor = false;
             Cursor.Current = Cursors.Default;
             IsBusy = false;
 
@@ -139,6 +140,7 @@ namespace Gorgon.Editor.Services
                 return;
             }
 
+            Application.UseWaitCursor = true;
             Cursor.Current = Cursors.WaitCursor;
             IsBusy = true;
 
@@ -158,6 +160,7 @@ namespace Gorgon.Editor.Services
             // Ensure that we don't get a negative count.
             _busyStateCounter = _busyStateCounter.Max(0);
 
+            Application.UseWaitCursor = false;
             Cursor.Current = Cursors.Default;
             IsBusy = false;
 

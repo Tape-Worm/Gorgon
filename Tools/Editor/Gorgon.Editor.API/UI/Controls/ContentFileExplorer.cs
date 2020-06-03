@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -139,6 +140,12 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         [Category("Behavior"), Description("Triggered when a file entry is selected.")]
         public event EventHandler<ContentFileEntrySelectedEventArgs> FileEntrySelected;
+
+        /// <summary>
+        /// Event triggered when the files are focused/highlighted on the file list.
+        /// </summary>
+        [Category("Behavior"), Description("Triggered when file entries are focused on the file list.")]
+        public event EventHandler<ContentFileEntriesFocusedArgs> FileEntriesFocused;
 
         /// <summary>
         /// Event tiggered when a file entry is unselected.
@@ -345,7 +352,7 @@ namespace Gorgon.Editor.UI.Controls
             }
 
             GridFiles.Rows.AddRange(rows.ToArray());
-
+            GridFiles.ClearSelection();
             foreach (DataGridViewRow row in selected)
             {
                 row.Selected = true;
@@ -515,6 +522,32 @@ namespace Gorgon.Editor.UI.Controls
                     file.IsSelected = checkBox.Checked;
                 }
             }
+        }
+
+        /// <summary>Handles the SelectionChanged event of the GridFiles control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void GridFiles_SelectionChanged(object sender, EventArgs e)
+        {
+            if (GridFiles.SelectedRows.Count == 0)
+            {
+                FileEntriesFocused?.Invoke(this, new ContentFileEntriesFocusedArgs(null));
+                return;
+            }            
+
+            var fileList = new List<ContentFileExplorerFileEntry>();
+            var args = new ContentFileEntriesFocusedArgs(fileList);
+
+            foreach(DataGridViewRow row in GridFiles.SelectedRows.OfType<DataGridViewRow>().Reverse())
+            {
+                if (_rowFilesXref.TryGetValue(row, out ContentFileExplorerFileEntry fileEntry))
+                {
+                    fileList.Add(fileEntry);
+                }
+                
+            }
+
+            FileEntriesFocused?.Invoke(this, args);
         }
 
         /// <summary>Handles the ColumnHeaderMouseClick event of the GridFiles control.</summary>

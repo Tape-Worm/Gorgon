@@ -26,9 +26,11 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -45,15 +47,26 @@ namespace Gorgon.Editor.TextureAtlasTool
         : EditorToolBaseForm, IDataContext<ITextureAtlas>
     {
         #region Variables.
-        // The renderer for the viewer.
-        private IRenderer _renderer;
         // The file selector for sprites.
         private FormSpriteSelector _spriteSelector;
+        // Flag to indicate that the dialog should close when the file selector closes.
+        private bool _closeOnFileSelectionClose = true;
         #endregion
 
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ITextureAtlas DataContext
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to set or return the settings for the plug in.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public TextureAtlasSettings Settings
         {
             get;
             private set;
@@ -68,8 +81,8 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             ButtonGenerate.Enabled = DataContext?.GenerateCommand?.CanExecute(null) ?? false;
             ButtonCalculateSize.Enabled = DataContext?.CalculateSizesCommand?.CanExecute(null) ?? false;
-            ButtonPrevArray.Visible = DataContext.Atlas?.Textures != null;
-            ButtonNextArray.Visible = DataContext.Atlas?.Textures != null;
+            ButtonPrevArray.Visible = DataContext.Atlas != null;
+            ButtonNextArray.Visible = DataContext.Atlas != null;
             ButtonPrevArray.Enabled = DataContext?.PrevPreviewCommand?.CanExecute(null) ?? false;
             ButtonNextArray.Enabled = DataContext?.NextPreviewCommand?.CanExecute(null) ?? false;
             ButtonOk.Enabled = DataContext?.CommitAtlasCommand?.CanExecute(null) ?? false;
@@ -89,24 +102,6 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             GorgonTexture2D texture = dataContext.Atlas.Textures[dataContext.PreviewTextureIndex].Texture;
 
-            if ((dataContext.Atlas.Textures.Count == 1) && (texture.ArrayCount == 1))
-            {
-                LabelArray.Text = string.Empty;
-                return;
-            }
-
-            if (dataContext.Atlas.Textures.Count == 1)
-            {
-                LabelArray.Text = string.Format(Resources.GORTAG_TEXT_ARRAY_COUNT, dataContext.PreviewArrayIndex + 1, texture.ArrayCount);
-                return;
-            }
-
-            if (texture.ArrayCount == 1)
-            {
-                LabelArray.Text = string.Format(Resources.GORTAG_TEXT_TEXTURE_COUNT, dataContext.PreviewTextureIndex + 1, dataContext.Atlas.Textures.Count);
-                return;
-            }
-
             LabelArray.Text = string.Format(Resources.GORTAG_TEXT_ARRAY_TEXTURE_COUNT,
                                             dataContext.PreviewArrayIndex + 1,
                                             texture.ArrayCount,
@@ -124,16 +119,20 @@ namespace Gorgon.Editor.TextureAtlasTool
                 return;
             }
 
-            _spriteSelector = new FormSpriteSelector();
-            _spriteSelector.SetDataContext(DataContext.SpriteFiles);
-            if (_spriteSelector.ShowDialog(this) == DialogResult.Cancel)
-            {
-                if (DataContext.CloseOnFileSelectorCancel)
+            using (_spriteSelector = new FormSpriteSelector())
+            {                
+                _spriteSelector.SetDataContext(DataContext.SpriteFiles);
+                _spriteSelector.SetGraphicsContext(GraphicsContext);
+                if (_spriteSelector.ShowDialog(this) == DialogResult.Cancel)
                 {
-                    Close();
+                    if (_closeOnFileSelectionClose)
+                    {
+                        Close();
+                    }
                 }
             }
 
+            _closeOnFileSelectionClose = false;
             _spriteSelector = null;
         }
 
@@ -179,15 +178,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <summary>Handles the Click event of the ButtonLoadSprites control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonLoadSprites_Click(object sender, EventArgs e)
-        {
-            if ((DataContext?.LoadSpritesCommand == null) || (!DataContext.LoadSpritesCommand.CanExecute(null)))
-            {
-                return;
-            }
-
-            DataContext.LoadSpritesCommand.Execute(null);
-        }
+        private void ButtonLoadSprites_Click(object sender, EventArgs e) => ShowFileSelector();
 
         /// <summary>Handles the ValueChanged event of the NumericTextureWidth control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -225,7 +216,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 return;
             }
 
-            DataContext.MaxArrayCount = (int)NumericArrayIndex.Value;
+            DataContext.MaxArrayCount = (int)NumericArrayIndex.Value;            
         }
 
         /// <summary>Handles the ValueChanged event of the NumericPadding control.</summary>
@@ -300,12 +291,12 @@ namespace Gorgon.Editor.TextureAtlasTool
             DataContext.BaseTextureName = TextBaseTextureName.Text;
         }
 
-        /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void DataContext_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        /// <summary>Function called when a property was changed on the data context.</summary>
+        /// <param name="propertyName">The name of the property that was changed.</param>
+        /// <remarks>Developers should override this method when detecting property changes on the data context instead of assigning their own event handlers.</remarks>
+        protected override void OnPropertyChanged(string propertyName) 
         {
-            switch (e.PropertyName)
+            switch (propertyName)
             {
                 case nameof(ITextureAtlas.PreviewTextureIndex):
                 case nameof(ITextureAtlas.PreviewArrayIndex):
@@ -362,39 +353,6 @@ namespace Gorgon.Editor.TextureAtlasTool
             ValidateControls();
         }
 
-        /// <summary>Handles the PropertyChanged event of the SpriteFiles control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void SpriteFiles_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(ISpriteFiles.IsActive):
-                    ShowFileSelector();
-                    break;
-            }
-
-            ValidateControls();
-        }
-
-        /// <summary>
-        /// Function to unassign the events from the data context.
-        /// </summary>
-        private void UnassignEvents()
-        {
-            if (DataContext?.SpriteFiles != null)
-            {
-                DataContext.SpriteFiles.PropertyChanged -= SpriteFiles_PropertyChanged;
-            }
-
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        }
-
         /// <summary>
         /// Function to reset the control back to its default state.
         /// </summary>
@@ -422,13 +380,13 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
 
             LabelSpriteCount.Text = string.Format(dataContext.LoadedSpriteCount == 0 ? Resources.GORTAG_TEXT_NO_SPRITES : Resources.GORTAG_TEXT_SPRITE_COUNT, dataContext.LoadedSpriteCount);
-            UpdateLabelArrayText(dataContext);
             TextOutputFolder.Text = dataContext.OutputPath;
-            TextBaseTextureName.Text = dataContext.BaseTextureName;
+            NumericPadding.Value = dataContext.Padding.Min((int)NumericPadding.Maximum).Max((int)NumericPadding.Minimum);
             NumericTextureWidth.Value = dataContext.MaxTextureSize.Width.Min((int)NumericTextureWidth.Maximum).Max((int)NumericTextureWidth.Minimum);
             NumericTextureHeight.Value = dataContext.MaxTextureSize.Height.Min((int)NumericTextureHeight.Maximum).Max((int)NumericTextureHeight.Minimum);
             NumericArrayIndex.Value = dataContext.MaxArrayCount.Min((int)NumericArrayIndex.Maximum).Max((int)NumericArrayIndex.Minimum);
-            NumericPadding.Value = dataContext.Padding.Min((int)NumericPadding.Maximum).Max((int)NumericPadding.Minimum);
+            TextBaseTextureName.Text = dataContext.BaseTextureName;
+            UpdateLabelArrayText(dataContext);
         }
 
         /// <summary>Raises the <see cref="Form.FormClosing"/> event.</summary>
@@ -437,33 +395,21 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnFormClosing(e);
 
-            if (DataContext != null)
-            {
-                DataContext.IsMaximized = WindowState == FormWindowState.Maximized;
-            }
-
             DataContext?.OnUnload();
         }
 
-        /// <summary>Function to perform custom rendering using the graphics functionality.</summary>
-        /// <remarks>
-        ///   <para>
-        /// This method is called once per frame to allow for custom graphics drawing on the <see cref="EditorToolBaseForm.RenderControl"/>.
-        /// </para>
-        ///   <para>
-        /// Tool plug in implementors need to override this in order to perform custom rendering with the <see cref="EditorToolBaseForm.GraphicsContext"/>.
-        /// </para>
-        /// </remarks>
-        protected override void OnRender() => _renderer.Render();
-
-        /// <summary>Function to perform clean up when graphics operations are shutting down.</summary>
-        /// <remarks>Any resources created in the <see cref="EditorToolBaseForm.OnSetupGraphics"/> method must be disposed of here.</remarks>
-        protected override void OnShutdownGraphics()
+        /// <summary>Raises the <see cref="Control.Resize"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
+        protected override void OnResize(EventArgs e) 
         {
-            IRenderer renderer = Interlocked.Exchange(ref _renderer, null);
+            base.OnResize(e);
 
-            renderer?.SetDataContext(null);
-            renderer?.Dispose();
+            if (Settings == null)
+            {
+                return;
+            }
+
+            Settings.IsMaximized = WindowState == FormWindowState.Maximized;
         }
 
         /// <summary>Raises the Shown event.</summary>
@@ -472,11 +418,12 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnShown(e);
 
-            if ((DataContext != null) && (DataContext.IsMaximized))
+            if (IsDesignTime)
             {
-                WindowState = FormWindowState.Maximized;
+                return;
             }
 
+            WindowState = Settings.IsMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
             ShowFileSelector();
         }
 
@@ -485,6 +432,11 @@ namespace Gorgon.Editor.TextureAtlasTool
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            if (IsDesignTime)
+            {
+                return;
+            }
 
             DataContext?.OnLoad();
 
@@ -496,27 +448,16 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
         public void SetDataContext(ITextureAtlas dataContext)
         {
-            UnassignEvents();
+            OnSetDataContext(dataContext);
 
             InitializeFromDataContext(dataContext);
 
             DataContext = dataContext;
-            _renderer.SetDataContext(dataContext);
-
-            if (DataContext == null)
-            {
-                return;
-            }
-
-            if (DataContext.SpriteFiles != null)
-            {
-                DataContext.SpriteFiles.PropertyChanged += SpriteFiles_PropertyChanged;
-            }
-
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
         }
 
         /// <summary>Function to perform custom graphics set up.</summary>
+        /// <param name="graphicsContext">The graphics context for the application.</param>
+        /// <param name="swapChain">The swap chain used to render into the UI.</param>
         /// <remarks>
         ///   <para>
         /// This method allows tool plug in implementors to setup additional functionality for custom graphics rendering.
@@ -524,24 +465,32 @@ namespace Gorgon.Editor.TextureAtlasTool
         ///   <para>
         /// Resources created by this method should be cleaned up in the <see cref="EditorToolBaseForm.OnShutdownGraphics"/> method.
         /// </para>
-        ///   <para>
-        /// Implementors do not need to set up a <see cref="EditorToolBaseForm.SwapChain"/> since one is already provided.
-        /// </para>
         /// </remarks>
-        protected override void OnSetupGraphics()
+        /// <seealso cref="EditorToolBaseForm.OnShutdownGraphics" />
+        protected override void OnSetupGraphics(IGraphicsContext graphicsContext, GorgonSwapChain swapChain)
         {
-            NumericTextureWidth.Maximum = GraphicsContext.VideoAdapter.MaxTextureWidth;
-            NumericTextureHeight.Maximum = GraphicsContext.VideoAdapter.MaxTextureHeight;
-            NumericArrayIndex.Maximum = GraphicsContext.VideoAdapter.MaxTextureArrayCount;
+            base.OnSetupGraphics(graphicsContext, swapChain);
 
-            _renderer = new Renderer(GraphicsContext, SwapChain);
-            _renderer.Setup();
+            Debug.Assert(DataContext != null, "No datacontext");
+
+            NumericTextureWidth.Maximum = graphicsContext.VideoAdapter.MaxTextureWidth;
+            NumericTextureHeight.Maximum = graphicsContext.VideoAdapter.MaxTextureHeight;
+            NumericArrayIndex.Maximum = graphicsContext.VideoAdapter.MaxTextureArrayCount;
+
+            var atlasRenderer = new Renderer(graphicsContext.Renderer2D, swapChain, DataContext);
+            AddRenderer(atlasRenderer.Name, atlasRenderer);
+            SwitchRenderer(atlasRenderer.Name);
         }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="FormAtlasGen"/> class.</summary>
         public FormAtlasGen() => InitializeComponent();
+
+        /// <summary>Initializes a new instance of the <see cref="FormAtlasGen"/> class.</summary>
+        /// <param name="settings">The settings for the plug in.</param>
+        public FormAtlasGen(TextureAtlasSettings settings)
+            : this() => Settings = settings;
         #endregion
     }
 }

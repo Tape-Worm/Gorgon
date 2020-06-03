@@ -27,11 +27,19 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Content;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics.Imaging;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.TextureAtlasTool
 {
@@ -39,39 +47,29 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// The sprite file list view model.
     /// </summary>
     internal class SpriteFiles
-        : ViewModelBase<SpriteFilesParameters>, ISpriteFiles
+        : ViewModelBase<SpriteFilesParameters, IHostContentServices>, ISpriteFiles
     {
+        #region Constants.
+        // The directory path for thumbnails this session.
+        private const string ThumbnailPath = "/Thumbnails/";
+        #endregion
+
         #region Variables.
-        // The busy state service.
-        private IBusyStateService _busyService;
-        // The messaging display service.
-        private IMessageDisplayService _messageDisplay;
         // The service used to search through the files.
         private ISearchService<IContentFileExplorerSearchEntry> _searchService;
         // The list of selected files.
         private readonly List<ContentFileExplorerFileEntry> _selected = new List<ContentFileExplorerFileEntry>();
-        // Flag to indicate that the file selector is active.
-        private bool _isActive = true;
+        // The task used to load the preview.
+        private Task<IGorgonImage> _loadPreviewTask;
+        // The cancellation source.
+        private CancellationTokenSource _cancelSource;
+        // The image used for preview.
+        private IGorgonImage _previewImage;
+        // The file system used for writing temporary data.
+        private IGorgonFileSystemWriter<Stream> _tempFileSystem;
         #endregion
 
         #region Properties.
-        /// <summary>Property to set or return whether the sprite loader is active or not.</summary>
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                if (_isActive == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _isActive = value;
-                OnPropertyChanged();
-            }
-        }
-
         /// <summary>
         /// Property to return the sprite file entries.
         /// </summary>
@@ -104,6 +102,15 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
         }
 
+        /// <summary>
+        /// Property to return the command that will refresh the sprite preview data.
+        /// </summary>
+        public IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshSpritePreviewCommand
+        {
+            get;
+        }
+
+
         /// <summary>Property to return the command used to search through the file list.</summary>
         public IEditorCommand<string> SearchCommand
         {
@@ -117,10 +124,21 @@ namespace Gorgon.Editor.TextureAtlasTool
             set;
         }
 
-        /// <summary>Property to return the command used to cancel loading of the sprite files.</summary>
-        public IEditorCommand<object> CancelCommand
+        /// <summary>Property to return the image used for previewing.</summary>
+        public IGorgonImage PreviewImage
         {
-            get;
+            get => _previewImage;
+            private set
+            {
+                if (_previewImage == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _previewImage = value;
+                OnPropertyChanged();
+            }
         }
         #endregion
 
@@ -155,6 +173,82 @@ namespace Gorgon.Editor.TextureAtlasTool
         }
 
         /// <summary>
+        /// Function called to refresh the sprite file preview data.
+        /// </summary>
+        /// <param name="files">The files that are focused in the UI.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoRefreshPreviewAsync(IReadOnlyList<ContentFileExplorerFileEntry> files)
+        {
+            try
+            {
+                IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(ThumbnailPath);
+
+                if (thumbDirectory == null)
+                {
+                    thumbDirectory = _tempFileSystem.CreateDirectory(ThumbnailPath);
+                }
+
+                if (_loadPreviewTask != null)
+                {
+                    if (_loadPreviewTask.Status == TaskStatus.Faulted)
+                    {
+                        PreviewImage?.Dispose();
+                        PreviewImage = null;
+                        _loadPreviewTask = null;
+                        return;
+                    }
+
+                    _cancelSource?.Cancel();
+                    (await _loadPreviewTask)?.Dispose();
+                    _loadPreviewTask = null;                    
+                }
+
+                PreviewImage?.Dispose();                
+
+                if ((files == null) || (files.Count == 0))
+                {
+                    PreviewImage = null;
+                    return;
+                }
+
+                IContentFile previewFile = files[files.Count - 1]?.File;
+
+                if (previewFile == null)
+                {
+                    PreviewImage = null;
+                    return;
+                }
+
+                // If the file already has a link to a thumbnail, remove it.
+                string thumbnailName = previewFile.Metadata.Thumbnail;
+                if (string.IsNullOrWhiteSpace(thumbnailName))
+                {
+                    thumbnailName = Guid.NewGuid().ToString("N");
+                }
+
+                string filePath = thumbDirectory.FullPath + thumbnailName;
+                _cancelSource = new CancellationTokenSource();
+                _loadPreviewTask = previewFile.Metadata.ContentMetadata.GetThumbnailAsync(previewFile, filePath, _cancelSource.Token);
+                IGorgonImage image = await _loadPreviewTask;
+
+                if (_cancelSource.IsCancellationRequested)
+                {
+                    image?.Dispose();
+                    _loadPreviewTask = null;
+                    PreviewImage = null;
+                    return;
+                }
+
+                PreviewImage = image;
+            }
+            catch (Exception ex)
+            {
+                HostServices.Log.Print("[ERROR] There was an error generating the sprite preview data.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
+            }
+        }
+
+        /// <summary>
         /// Function to determine if search is available or not.
         /// </summary>
         /// <param name="text">The search text, not used.</param>
@@ -167,8 +261,8 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="text">The search term.</param>
         private void DoSearch(string text)
         {
-            _busyService.SetBusy();
-
+            HostServices.BusyService.SetBusy();
+            
             try
             {
                 IEnumerable<IContentFileExplorerSearchEntry> results = _searchService.Search(text);
@@ -206,27 +300,11 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
             catch (Exception ex)
             {
-                _messageDisplay.ShowError(ex, Resources.GORTAG_ERR_SEARCH);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORTAG_ERR_SEARCH);
             }
             finally
             {
-                _busyService.SetIdle();
-            }
-        }
-
-        /// <summary>
-        /// Function to cancel the file selector.
-        /// </summary>
-        private void DoCancel()
-        {
-            try
-            {
-                IsActive = false;
-            }
-            catch (Exception ex)
-            {
-                Log.Print("Error closing file browser.", Diagnostics.LoggingLevel.Simple);
-                Log.LogException(ex);
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -237,10 +315,9 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// </remarks>
         protected override void OnInitialize(SpriteFilesParameters injectionParameters)
         {
-            _busyService = injectionParameters.BusyService ?? throw new ArgumentMissingException(nameof(injectionParameters.BusyService), nameof(injectionParameters));
-            _messageDisplay = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(injectionParameters.MessageDisplay), nameof(injectionParameters));
-            _searchService = injectionParameters.SearchService ?? throw new ArgumentMissingException(nameof(injectionParameters.SearchService), nameof(injectionParameters));
-            SpriteFileEntries = injectionParameters.Entries ?? throw new ArgumentMissingException(nameof(injectionParameters.Entries), nameof(injectionParameters));
+            _tempFileSystem = injectionParameters.TempFileSystem;
+            _searchService = injectionParameters.SearchService;
+            SpriteFileEntries = injectionParameters.Entries;
 
             _selected.Clear();
             _selected.AddRange(injectionParameters.Entries.SelectMany(item => item.Files).Where(item => item.IsSelected));
@@ -250,7 +327,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         public override void OnLoad()
         {
             base.OnLoad();
-
+            
             foreach (ContentFileExplorerFileEntry file in SpriteFileEntries.SelectMany(item => item.Files))
             {
                 file.PropertyChanged += File_PropertyChanged;
@@ -265,6 +342,10 @@ namespace Gorgon.Editor.TextureAtlasTool
                 file.PropertyChanged -= File_PropertyChanged;
             }
 
+            CancellationTokenSource cancelSource = Interlocked.Exchange(ref _cancelSource, null);
+            Interlocked.Exchange(ref _loadPreviewTask, null);
+            cancelSource?.Dispose();
+            
             base.OnUnload();
         }
         #endregion
@@ -274,7 +355,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         public SpriteFiles()
         {
             SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
-            CancelCommand = new EditorCommand<object>(DoCancel);
+            RefreshSpritePreviewCommand = new EditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>>(DoRefreshPreviewAsync);
         }
         #endregion
     }

@@ -212,6 +212,20 @@ namespace Gorgon.Editor.Rendering
         /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs"/> instance containing the event data.</param>
         private void SwapChain_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e) => OnResizeBegin();
 
+
+        /// <summary>
+        /// Function to calculate scaling to the specified size, bounded by the client area of the rendering control.
+        /// </summary>
+        /// <param name="size">The size of the area to zoom into.</param>
+        /// <param name="windowSize">The size of the window.</param>
+        /// <returns>The scaling factor to apply.</returns>
+        protected float CalculateScaling(DX.Size2F size, DX.Size2F windowSize)
+        {
+            var scaling = new DX.Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
+
+            return scaling.X.Min(scaling.Y);
+        }
+
         /// <summary>
         /// Function called when a property on the <see cref="DataContext"/> is changing.
         /// </summary>

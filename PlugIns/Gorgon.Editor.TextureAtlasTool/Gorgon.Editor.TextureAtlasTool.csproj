@@ -64,12 +64,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="_Internal\Renderers\Renderer.cs" />
-    <Compile Include="_Internal\Renderers\_Interfaces\IRenderer.cs" />
     <Compile Include="_Internal\Services\FileIOService.cs" />
-    <Compile Include="_Internal\Services\_Interfaces\IFileIOService.cs" />
     <Compile Include="_Internal\TextureAtlasSettings.cs" />
-    <Compile Include="_Internal\ViewModels\SpriteFilesParameters.cs" />
     <Compile Include="_Internal\ViewModels\SpriteFiles.cs" />
+    <Compile Include="_Internal\ViewModels\SpriteFilesParameters.cs" />
     <Compile Include="_Internal\ViewModels\TextureAtlas.cs" />
     <Compile Include="_Internal\ViewModels\TextureAtlasParameters.cs" />
     <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteFiles.cs" />
@@ -89,6 +87,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\load_sprites_48x48.png" />
+    <None Include="Resources\load_sprites_20x20.png" />
     <None Include="Resources\White_2x2.png" />
     <None Include="Resources\info_16x16.png" />
     <None Include="Resources\calculate_22x22.png" />
@@ -118,7 +118,7 @@
       <Version>5.472.2098</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>2.9.8</Version>
+      <Version>3.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

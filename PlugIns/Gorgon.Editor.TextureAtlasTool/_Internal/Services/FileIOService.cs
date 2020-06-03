@@ -43,11 +43,10 @@ namespace Gorgon.Editor.TextureAtlasTool
     /// The service used for file operations.
     /// </summary>
     internal class FileIOService
-        : IFileIOService
     {
         #region Variables.
         // The file system for content files.
-        private readonly OLDE_IContentFileManager _fileSystem;
+        private readonly IContentFileManager _fileSystem;
         // The default image codec.
         private readonly IGorgonImageCodec _defaultImageCodec;
         // The default sprite codec.
@@ -60,14 +59,14 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// </summary>
         /// <param name="textureFile">The file for the texture.</param>
         /// <returns>The sprite texture.</returns>
-        private GorgonTexture2DView LoadSpriteTexture(OLDE_IContentFile textureFile)
+        private GorgonTexture2DView LoadSpriteTexture(IContentFile textureFile)
         {
             if (textureFile == null)
             {
                 return null;
             }
 
-            using (Stream stream = textureFile.OpenRead())
+            using (Stream stream = _fileSystem.OpenStream(textureFile.Path, FileMode.Open))
             {
                 return GorgonTexture2DView.FromStream(_defaultSpriteCodec.Renderer.Graphics, stream, _defaultImageCodec, options: new GorgonTexture2DLoadOptions
                 {
@@ -82,28 +81,33 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <summary>Function to load the sprites used to generate the atlas texture(s).</summary>
         /// <param name="files">The sprite files to load.</param>
         /// <returns>A list of sprites and their associated files.</returns>
-        public IReadOnlyDictionary<OLDE_IContentFile, GorgonSprite> LoadSprites(IEnumerable<OLDE_IContentFile> files)
+        public IReadOnlyDictionary<IContentFile, GorgonSprite> LoadSprites(IEnumerable<IContentFile> files)
         {
-            var result = new Dictionary<OLDE_IContentFile, GorgonSprite>();
+            var result = new Dictionary<IContentFile, GorgonSprite>();
             Stream stream = null;
             var textures = new Dictionary<string, GorgonTexture2DView>(StringComparer.OrdinalIgnoreCase);
 
             try
             {
-                foreach (OLDE_IContentFile file in files)
+                foreach (IContentFile file in files)
                 {
                     GorgonTexture2DView texture = null;
 
-                    if (file.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string texturePath))
+                    if (file.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> texturePaths))
                     {
-                        if (!textures.TryGetValue(texturePath, out texture))
+                        if (texturePaths.Count == 0)
                         {
-                            texture = LoadSpriteTexture(_fileSystem.GetFile(texturePath));
-                            textures[texturePath] = texture;
+                            continue;
+                        }
+
+                        if (!textures.TryGetValue(texturePaths[0], out texture))
+                        {
+                            texture = LoadSpriteTexture(_fileSystem.GetFile(texturePaths[0]));
+                            textures[texturePaths[0]] = texture;
                         }
                     }
 
-                    stream = file.OpenRead();
+                    stream = _fileSystem.OpenStream(file.Path, FileMode.Open);
                     result[file] = _defaultSpriteCodec.FromStream(stream, texture);
                     stream.Dispose();
                 }
@@ -111,7 +115,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             catch
             {
                 // If we loaded in a bunch of textures already, then dump them since we can't do it outside of here.
-                foreach (KeyValuePair<OLDE_IContentFile, GorgonSprite> sprite in result)
+                foreach (KeyValuePair<IContentFile, GorgonSprite> sprite in result)
                 {
                     sprite.Value.Texture?.Dispose();
                 }
@@ -168,7 +172,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
         /// <summary>Function to save the atlas data.</summary>
         /// <param name="atlas">The atlas data to save.</param>
-        public void SaveAtlas(IReadOnlyDictionary<OLDE_IContentFile, GorgonSprite> spriteFiles, GorgonTextureAtlas atlas)
+        public void SaveAtlas(IReadOnlyDictionary<IContentFile, GorgonSprite> spriteFiles, GorgonTextureAtlas atlas)
         {
             IGorgonImage image = null;
             string directory = Path.GetDirectoryName(atlas.Textures[0].Texture.Name).FormatDirectory('/');
@@ -176,19 +180,15 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             try
             {
-                _fileSystem.BeginBatch();
-
                 if (!_fileSystem.DirectoryExists(directory))
                 {
                     _fileSystem.CreateDirectory(directory);
                 }
 
-                void WriteImageFile(Stream stream) => _defaultImageCodec.SaveToStream(image, stream);
-
                 // Check the files to ensure they're not open for editing.
                 foreach (GorgonTexture2DView texture in atlas.Textures)
                 {
-                    OLDE_IContentFile textureFile = _fileSystem.GetFile(texture.Texture.Name);
+                    IContentFile textureFile = _fileSystem.GetFile(texture.Texture.Name);
 
                     if ((textureFile != null) && (textureFile.IsOpen))
                     {
@@ -198,7 +198,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                 foreach ((GorgonSprite original, GorgonSprite sprite) in atlas.Sprites)
                 {
-                    OLDE_IContentFile oldFile = spriteFiles.FirstOrDefault(item => item.Value == original).Key;
+                    IContentFile oldFile = spriteFiles.FirstOrDefault(item => item.Value == original).Key;
 
                     if ((oldFile != null) && (oldFile.IsOpen))
                     {
@@ -210,38 +210,40 @@ namespace Gorgon.Editor.TextureAtlasTool
                 foreach (GorgonTexture2DView texture in atlas.Textures)
                 {
                     image = texture.Texture.ToImage();
-                    _fileSystem.WriteFile(texture.Texture.Name, WriteImageFile);
+                    outStream = _fileSystem.OpenStream(texture.Texture.Name, FileMode.Create);
+                    _defaultImageCodec.SaveToStream(image, outStream);
+                    outStream.Dispose();
                     image.Dispose();
                 }
 
                 // Write out the updated sprites.
                 foreach ((GorgonSprite original, GorgonSprite sprite) in atlas.Sprites)
                 {
-                    OLDE_IContentFile oldTextureFile = null;
-                    OLDE_IContentFile textureFile = _fileSystem.GetFile(sprite.Texture.Texture.Name);
-                    OLDE_IContentFile oldFile = spriteFiles.FirstOrDefault(item => item.Value == original).Key;
+                    IContentFile textureFile = _fileSystem.GetFile(sprite.Texture.Texture.Name);
+                    IContentFile spriteFile = spriteFiles.FirstOrDefault(item => item.Value == original).Key;
 
-                    if (oldFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out string oldTexturePath))
+                    if ((spriteFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> oldTexturePaths))
+                        && (oldTexturePaths.Count > 0) 
+                        && (_fileSystem.FileExists(oldTexturePaths[0])))
                     {
-                        oldTextureFile = _fileSystem.GetFile(oldTexturePath);
-                    }
-
-                    outStream = oldFile.OpenWrite();
+                        IContentFile oldTextureFile = _fileSystem.GetFile(oldTexturePaths[0]);
+                        spriteFile.UnlinkContent(oldTextureFile);
+                    }                                       
+                    
+                    outStream = _fileSystem.OpenStream(spriteFile.Path, FileMode.Create);
                     _defaultSpriteCodec.Save(sprite, outStream);
-
-                    textureFile.LinkContent(oldFile);
-                    oldTextureFile?.UnlinkContent(oldFile);
-
-                    oldFile.RefreshMetadata();
-                    oldFile.Refresh();
                     outStream.Dispose();
+
+                    spriteFile.LinkContent(textureFile);
+
+                    textureFile.Refresh();                    
+                    spriteFile.Refresh();
                 }
             }
             finally
             {
                 outStream?.Dispose();
-                image?.Dispose();
-                _fileSystem.EndBatch();
+                image?.Dispose();                
             }
         }
         #endregion
@@ -251,7 +253,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="fileSystem">The file system.</param>
         /// <param name="imageCodec">The default image codec to use.</param>
         /// <param name="spriteCodec">The default sprite codec to use.</param>
-        public FileIOService(OLDE_IContentFileManager fileSystem, IGorgonImageCodec imageCodec, IGorgonSpriteCodec spriteCodec)
+        public FileIOService(IContentFileManager fileSystem, IGorgonImageCodec imageCodec, IGorgonSpriteCodec spriteCodec)
         {
             _fileSystem = fileSystem;
             _defaultImageCodec = imageCodec;

@@ -467,7 +467,7 @@ namespace Gorgon.Renderers.Services
             GorgonRenderTargetView original = _graphics.RenderTargets[0];
             var sprites = new List<(GorgonSprite, GorgonSprite)>(regions.Count);
             var rtvs = new HashSet<GorgonRenderTargetView>();
-            string textureName = $"{(string.IsNullOrWhiteSpace(BaseTextureName) ? "texture_atlas" : BaseTextureName)}_{{0}}";
+            string textureName = $"{(string.IsNullOrWhiteSpace(BaseTextureName) ? "texture_atlas" : BaseTextureName)}_{{0}}.dds";
 
             try
             {

@@ -305,7 +305,7 @@ namespace Gorgon.Editor
         /// <summary>Handles the Click event of the ToolButton control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ToolButton_Click(object sender, EventArgs e)
+        private async void ToolButton_Click(object sender, EventArgs e)
         {
             if (DataContext?.CurrentProject == null)
             {
@@ -329,6 +329,36 @@ namespace Gorgon.Editor
             IToolPlugInRibbonButton toolButton = buttons.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
 
             toolButton?.ClickCallback();
+
+            IFile selectedFile = null;
+            if (DataContext.CurrentProject.FileExplorer == null)
+            {
+                return;
+            }
+
+            if (DataContext.CurrentProject.FileExplorer.SelectedFiles.Count > 0)
+            {
+                selectedFile = DataContext.CurrentProject.FileExplorer.SelectedFiles[0];
+            }
+
+            if ((DataContext.CurrentProject.ContentPreviewer?.ResetPreviewCommand != null)
+                && (DataContext.CurrentProject.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
+            {
+                await DataContext.CurrentProject.ContentPreviewer.ResetPreviewCommand.ExecuteAsync(null);
+            }
+
+            if (selectedFile == null)
+            {
+                return;
+            }
+
+            if ((DataContext.CurrentProject.ContentPreviewer?.RefreshPreviewCommand == null)
+                || (!DataContext.CurrentProject.ContentPreviewer.RefreshPreviewCommand.CanExecute(selectedFile.FullPath)))                
+            {
+                return;
+            }
+
+            await DataContext.CurrentProject.ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(selectedFile.FullPath);
         }
 
         /// <summary>Handles the Click event of the ButtonOpenContent control.</summary>
