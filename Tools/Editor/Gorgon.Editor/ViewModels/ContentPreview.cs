@@ -199,7 +199,7 @@ namespace Gorgon.Editor.ViewModels
                     }
 
                     // Cancel the previous loading job.
-                    _cancelSource.Cancel();
+                    _cancelSource?.Cancel();
 
                     // Discard this image since we'll be replacing it.
                     (await _loadPreviewTask)?.Dispose();
@@ -487,11 +487,12 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
+            _cancelSource?.Cancel();
+
             UnhookFileEvents();            
             _fileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
             _fileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
             _fileExplorer.PropertyChanging -= FileExplorer_PropertyChanging;
-            _cancelSource?.Dispose();
         }
         #endregion
 

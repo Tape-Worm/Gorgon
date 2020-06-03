@@ -454,8 +454,7 @@ namespace Gorgon.Editor.ViewModels
             SaveProjectMetaData(projectEditor);
             CurrentProject = projectEditor;
 
-            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(Settings.LastProjectWorkingDirectory,
-                                                                        item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
+            RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(path, item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
                                                                         StringComparison.OrdinalIgnoreCase));
 
             if (dupe != null)
