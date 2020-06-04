@@ -450,7 +450,7 @@ namespace Gorgon.Editor.Views
 
             Image nodeIcon = null;
 
-            foreColor = e.Node.ForeColor;
+            foreColor = (e.Node is DirectoryTreeNode dirNode) ? dirNode.ForeColor : e.Node.ForeColor;
 
             if ((ImageList != null) && (ImageList.Images.Count > 0) 
                 && ((ImageIndex > -1) || (e.Node.ImageIndex > -1)))
@@ -506,7 +506,19 @@ namespace Gorgon.Editor.Views
                         e.Graphics.DrawRectangle(pen, r);
                     }
                 }
-                foreColor = SelectedNodeForeColor;
+
+                cr = (SelectedNodeForeColor.R / 255.0f);
+                cg = (SelectedNodeForeColor.G / 255.0f);
+                cb = (SelectedNodeForeColor.B / 255.0f);
+
+                if (foreColor != Color.Empty)
+                {
+                    cr = cr * 0.5f + (foreColor.R / 255.0f) * 0.5f;
+                    cg = cg * 0.5f + (foreColor.G / 255.0f) * 0.5f;
+                    cb = cb * 0.5f + (foreColor.B / 255.0f) * 0.5f;
+                }
+
+                foreColor = Color.FromArgb((int)(cr * 255), (int)(cg * 255), (int)(cb * 255));
             }
             else
             {

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Gorgon.Editor.UI;
@@ -44,6 +45,23 @@ namespace Gorgon.Editor.Views
         {
             get;
             private set;
+        }
+
+        /// <summary>Gets or sets the foreground color of the tree node.</summary>
+        public new Color ForeColor
+        {
+            get
+            {
+                if ((DataContext is IExcludable excluded)
+                    && (!DataContext.IsCut)
+                    && (excluded.IsExcluded))
+                {
+                    return DarkFormsRenderer.ExcludedColor;
+                }
+
+                return base.ForeColor;
+            }
+            set => base.ForeColor = value;
         }
         #endregion
 
@@ -72,6 +90,9 @@ namespace Gorgon.Editor.Views
                     {
                         ImageKey = DataContext.ImageName;
                     }
+                    break;
+                case nameof(IExcludable.IsExcluded):
+                    TreeView.Invalidate();
                     break;
             }
         }
@@ -119,7 +140,7 @@ namespace Gorgon.Editor.Views
 
             ImageKey = string.Empty;
             Name = string.Empty;
-            Text = string.Empty;                        
+            Text = string.Empty;
         }
 
         /// <summary>

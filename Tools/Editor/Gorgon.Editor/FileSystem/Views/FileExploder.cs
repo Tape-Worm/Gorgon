@@ -328,6 +328,21 @@ namespace Gorgon.Editor.Views
                 MenuSepDirEdit.Available = MenuItemExportDirectoryTo.Available;
                 MenuSepDirOrganize.Available = (MenuItemCutDirectory.Available) || (MenuItemCopyDirectory.Available) || (MenuItemPasteDirectory.Available);
                 MenuSepDirNew.Available = (MenuItemCreateDirectory.Available) && ((MenuItemRenameDirectory.Available) || (MenuItemDeleteDirectory.Available));
+
+                if ((dataContext.SelectedDirectory != null)
+                    && ((dataContext.SelectedDirectory.AvailableActions & DirectoryActions.ExcludeFromPackedFile) == DirectoryActions.ExcludeFromPackedFile))
+                {
+                    var excludable = (IExcludable)DataContext.SelectedDirectory;
+                    MenuSepExclude.Available = 
+                    MenuItemExcludeFromPackfile.Available = true;
+                    MenuItemExcludeFromPackfile.Checked = excludable.IsExcluded;
+                }
+                else
+                {
+                    MenuItemExcludeFromPackfile.Checked = false;
+                    MenuSepExclude.Available =
+                    MenuItemExcludeFromPackfile.Available = false;                    
+                }
             }
 
             void ValidateFileItems()
@@ -656,6 +671,21 @@ namespace Gorgon.Editor.Views
             }
 
             DataContext.OpenContentFileCommand.ExecuteAsync(null);
+            ValidateMenuItems(DataContext);
+        }
+
+        /// <summary>Handles the Click event of the MenuItemExcludeFromPackfile control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MenuItemExcludeFromPackfile_Click(object sender, EventArgs e)
+        {
+            if (DataContext?.SelectedDirectory == null)
+            {
+                return;
+            }
+
+            var exclude = (IExcludable)DataContext.SelectedDirectory;
+            exclude.IsExcluded = MenuItemExcludeFromPackfile.Checked;
             ValidateMenuItems(DataContext);
         }
 
@@ -1057,7 +1087,7 @@ namespace Gorgon.Editor.Views
                     }
                     else
                     {
-                        treeNode.ForeColor = TreeDirectories.ForeColor;
+                        treeNode.ForeColor = Color.Empty;
                     }
                     break;
             }

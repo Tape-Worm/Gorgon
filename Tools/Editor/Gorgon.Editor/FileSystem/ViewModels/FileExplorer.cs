@@ -1880,16 +1880,16 @@ namespace Gorgon.Editor.ViewModels
                     file.Parent.Files.Remove(file);
                 }
 
-                foreach (IGorgonVirtualDirectory movedDir in movedDirs.Select(item => item.src).OrderByDescending(item => item.FullPath.Length))
+                foreach (IGorgonVirtualDirectory srcDir in movedDirs.Select(item => item.src).OrderByDescending(item => item.FullPath.Length))
                 {
-                    IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, movedDir.FullPath, StringComparison.OrdinalIgnoreCase));
+                    IDirectory src = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, srcDir.FullPath, StringComparison.OrdinalIgnoreCase));
 
-                    if (dir == null)
+                    if (src == null)
                     {
                         continue;
                     }
 
-                    dir.Parent.Directories.Remove(dir);
+                    src.Parent.Directories.Remove(src);
                 }
             }
             catch (OperationCanceledException)

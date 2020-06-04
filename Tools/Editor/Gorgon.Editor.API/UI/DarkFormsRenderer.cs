@@ -51,7 +51,7 @@ namespace Gorgon.Editor.UI
 		/// <summary>
         /// Focused/mouse over background color.
         /// </summary>
-		public static readonly Color FocusedBackground = Color.Orange;
+		public static readonly Color FocusedBackground = Color.DarkOrange;
         /// <summary>
         /// Normal window background.
         /// </summary>
@@ -76,6 +76,10 @@ namespace Gorgon.Editor.UI
         /// Disabled color.
         /// </summary>
 		public static readonly Color DisabledColor = Color.FromArgb(64, 64, 64);
+		/// <summary>
+        /// Excluded directory color.
+        /// </summary>
+		public static readonly Color ExcludedColor = Color.FromArgb(128, 128, 128);
         /// <summary>
         /// Foreground color.
         /// </summary>

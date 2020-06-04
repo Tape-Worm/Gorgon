@@ -87,6 +87,7 @@
     <Compile Include="FileSystem\ViewModels\_Extensions\FileSystemExtensions.cs" />
     <Compile Include="FileSystem\ViewModels\_Interfaces\IDirectory.cs" />
     <Compile Include="FileSystem\ViewModels\_Interfaces\IDirectoryCopyMoveData.cs" />
+    <Compile Include="FileSystem\ViewModels\_Interfaces\IExcludable.cs" />
     <Compile Include="FileSystem\ViewModels\_Interfaces\IImportData.cs" />
     <Compile Include="FileSystem\ViewModels\_Interfaces\IFile.cs" />
     <Compile Include="FileSystem\ViewModels\_Interfaces\IFileCopyMoveData.cs" />

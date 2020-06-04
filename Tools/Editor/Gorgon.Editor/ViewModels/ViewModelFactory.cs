@@ -219,7 +219,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 IGorgonVirtualDirectory subDir = subDirs[i];
                 IDirectory subDirParent = null;
-                IDirectory fileDir = null;
+                IDirectory fileDir = null;                
 
                 if (subDir.Parent != null)
                 {
@@ -237,6 +237,13 @@ namespace Gorgon.Editor.ViewModels
                         Project = project,
                         PhysicalPath = Path.Combine(subDirParent.PhysicalPath, subDir.Name).FormatDirectory(Path.DirectorySeparatorChar)
                     });
+
+                    if ((project.ProjectItems.TryGetValue(newDir.FullPath, out ProjectItemMetadata projectItem))
+                        && (projectItem.Attributes.TryGetValue(ProjectEditor.ExcludedAttrName, out string attrValue))
+                        && (bool.TryParse(attrValue, out bool isExcluded)))
+                    {
+                        newDir.IsExcluded = isExcluded;
+                    }
 
                     directories[subDir.FullPath] = newDir;
                     subDirParent.Directories.Add(newDir);
@@ -413,6 +420,12 @@ namespace Gorgon.Editor.ViewModels
                 Parent = parent,
                 PhysicalPath = Path.Combine(parent.PhysicalPath, directory.Name).FormatDirectory(Path.DirectorySeparatorChar)
             });
+
+            if (parent is IExcludable excludeParent)
+            {
+                newDir.IsExcluded = excludeParent.IsExcluded; 
+            }
+
             parent.Directories.Add(newDir);
             return newDir;
         }
@@ -437,6 +450,12 @@ namespace Gorgon.Editor.ViewModels
 
             var result = new List<IDirectory>();
 
+            bool isExcluded = false;
+            if (parent is IExcludable excludeParent)
+            {
+                isExcluded = excludeParent.IsExcluded;
+            }
+
             foreach (IGorgonVirtualDirectory virtDir in directories.OrderBy(item => item.FullPath.Length))
             {
                 if (!_directoryBuffer.TryGetValue(virtDir.Parent.FullPath, out IDirectory parentDirectory))
@@ -453,6 +472,7 @@ namespace Gorgon.Editor.ViewModels
                 });
 
                 _directoryBuffer[newDir.FullPath] = newDir;
+                newDir.IsExcluded = isExcluded;
                 result.Add(newDir);
             }
 

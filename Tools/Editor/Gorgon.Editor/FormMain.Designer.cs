@@ -17,6 +17,7 @@ namespace Gorgon.Editor
         {
             if (disposing)                
             {
+                RemoveNewIcons();
                 _progressForm.SetDataContext(null);
                 _progressForm.Dispose();
                 _waitForm.Dispose();

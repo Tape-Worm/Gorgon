@@ -676,8 +676,10 @@ namespace Gorgon.Editor
             ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);            
             ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);            
             ButtonOpenContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.OpenContentFileCommand?.CanExecute(null) ?? false);
+            PanelProject.FileExplorer.MenuItemDirCreateContent.Available =
+            PanelProject.FileExplorer.MenuItemFileCreateContent.Available =
             GroupCreate.Visible = SepCreate.Visible = DataContext.ContentCreators.Count > 0;
-            ButtonFileSystemRefresh.Enabled = !PanelProject.FileExplorer.IsRenaming;
+            ButtonFileSystemRefresh.Enabled = !PanelProject.FileExplorer.IsRenaming;                        
 
             foreach (ToolStripItem item in MenuCreate.Items)
             {
@@ -719,6 +721,7 @@ namespace Gorgon.Editor
                     ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteValidationArgs) ?? false);
                     ButtonFileSystemDeleteAll.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteAllValidationArgs) ?? false);
                     ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameDirectoryCommand?.CanExecute(null) ?? false);
+                    PanelProject.FileExplorer.MenuItemDirCreateContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.SelectedDirectory != null);
                     break;
                 case FileExplorerContext.FileList:
                     string[] validationFiles = fileExplorer.SelectedFiles.Select(item => item.ID).ToArray();
@@ -743,6 +746,7 @@ namespace Gorgon.Editor
                     ButtonFileSystemDeleteAll.Enabled = false;
                     ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteFileCommand?.CanExecute(_deleteValidationArgs) ?? false);
                     ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameFileCommand?.CanExecute(null) ?? false);
+                    PanelProject.FileExplorer.MenuItemFileCreateContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer?.SelectedDirectory != null);
                     break;
             }
 
@@ -995,6 +999,23 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Function to remove any icons that create content.
+        /// </summary>
+        private void RemoveNewIcons()
+        {
+            ToolStripMenuItem[] newItems = MenuCreate.Items.OfType<ToolStripMenuItem>()
+                                           .Concat(PanelProject.FileExplorer.MenuItemDirCreateContent.DropDown.Items.OfType<ToolStripMenuItem>())
+                                           .Concat(PanelProject.FileExplorer.MenuItemFileCreateContent.DropDown.Items.OfType<ToolStripMenuItem>())
+                                           .ToArray();
+
+            foreach (ToolStripItem item in newItems)
+            {
+                item.Click -= NewItem_Click;
+                item.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Function to update the icons used for the "new" buttons.
         /// </summary>
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
@@ -1023,7 +1044,23 @@ namespace Gorgon.Editor
                 };
                 menuItem.Click += NewItem_Click;
 
+                var dirCreateMenuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+                {
+                    Name = id,
+                    Tag = item.NewIconID
+                };
+                dirCreateMenuItem.Click += NewItem_Click;
+
+                var fileCreateMenuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+                {
+                    Name = id,
+                    Tag = item.NewIconID
+                };
+                fileCreateMenuItem.Click += NewItem_Click;
+
                 MenuCreate.Items.Add(menuItem);
+                PanelProject.FileExplorer.MenuItemDirCreateContent.DropDown.Items.Add(dirCreateMenuItem);
+                PanelProject.FileExplorer.MenuItemFileCreateContent.DropDown.Items.Add(fileCreateMenuItem);
             }
 
             ValidateRibbonButtons();
@@ -1056,6 +1093,7 @@ namespace Gorgon.Editor
                 _deleteAllValidationArgs = null;
                 _clipboardContext = null;
                 Text = Resources.GOREDIT_CAPTION_NO_FILE;
+                RemoveNewIcons();
                 ReleaseToolRibbonItems();
                 return;
             }

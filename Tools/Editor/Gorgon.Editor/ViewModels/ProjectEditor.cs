@@ -72,6 +72,10 @@ namespace Gorgon.Editor.ViewModels
         /// Metadata naming for the project item type attribute.
         /// </summary>
         public const string ProjectItemTypeAttrName = "ProjectItemType";
+        /// <summary>
+        /// Metadata naming for the excluded item type attribute.
+        /// </summary>
+        public const string ExcludedAttrName = "Excluded";
         #endregion
 
         #region Variables.
@@ -437,6 +441,10 @@ namespace Gorgon.Editor.ViewModels
                     // For now, we don't have any directory metadata.
                     metadata = new ProjectItemMetadata();
                     metadata.Attributes[ProjectItemTypeAttrName] = ProjectItemType.Directory.ToString();
+                    if (directory is IExcludable excludable)
+                    {
+                        metadata.Attributes[ExcludedAttrName] = excludable.IsExcluded.ToString();
+                    }
                     _projectData.ProjectItems[directory.FullPath] = metadata;
                 }
 

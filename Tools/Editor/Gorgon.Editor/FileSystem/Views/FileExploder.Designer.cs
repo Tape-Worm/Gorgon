@@ -58,6 +58,9 @@
             this.MenuItemRenameDirectory = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSepDirNew = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemCreateDirectory = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemDirCreateContent = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSepExclude = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuItemExcludeFromPackfile = new System.Windows.Forms.ToolStripMenuItem();
             this.GridFiles = new Gorgon.Editor.Views.DataGridViewEx();
             this.ColumnID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -69,6 +72,7 @@
             this.ColumnDummy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MenuFiles = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MenuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItemFileCreateContent = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSepFileExport = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemExportFiles = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSepFileEdit = new System.Windows.Forms.ToolStripSeparator();
@@ -114,12 +118,10 @@
             // SplitFileSystem.Panel1
             // 
             this.SplitFileSystem.Panel1.Controls.Add(this.TreeDirectories);
-            this.SplitFileSystem.Panel1.TabIndex = 2;
             // 
             // SplitFileSystem.Panel2
             // 
             this.SplitFileSystem.Panel2.Controls.Add(this.GridFiles);
-            this.SplitFileSystem.Panel2.TabIndex = 0;
             this.SplitFileSystem.Size = new System.Drawing.Size(600, 441);
             this.SplitFileSystem.SplitterDistance = 145;
             this.SplitFileSystem.TabIndex = 0;
@@ -164,28 +166,31 @@
             this.MenuItemDeleteDirectory,
             this.MenuItemRenameDirectory,
             this.MenuSepDirNew,
-            this.MenuItemCreateDirectory});
+            this.MenuItemCreateDirectory,
+            this.MenuItemDirCreateContent,
+            this.MenuSepExclude,
+            this.MenuItemExcludeFromPackfile});
             this.MenuDirectory.Name = "MenuFileExplorer";
-            this.MenuDirectory.Size = new System.Drawing.Size(168, 176);
+            this.MenuDirectory.Size = new System.Drawing.Size(212, 226);
             this.MenuDirectory.Opening += new System.ComponentModel.CancelEventHandler(this.MenuDirectory_Opening);
             // 
             // MenuItemExportDirectoryTo
             // 
             this.MenuItemExportDirectoryTo.Name = "MenuItemExportDirectoryTo";
-            this.MenuItemExportDirectoryTo.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemExportDirectoryTo.Size = new System.Drawing.Size(211, 22);
             this.MenuItemExportDirectoryTo.Text = "E&xport to...";
             this.MenuItemExportDirectoryTo.Click += new System.EventHandler(this.MenuItemExportDirectoryTo_Click);
             // 
             // MenuSepDirEdit
             // 
             this.MenuSepDirEdit.Name = "MenuSepDirEdit";
-            this.MenuSepDirEdit.Size = new System.Drawing.Size(164, 6);
+            this.MenuSepDirEdit.Size = new System.Drawing.Size(208, 6);
             // 
             // MenuItemCutDirectory
             // 
             this.MenuItemCutDirectory.Name = "MenuItemCutDirectory";
             this.MenuItemCutDirectory.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.MenuItemCutDirectory.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemCutDirectory.Size = new System.Drawing.Size(211, 22);
             this.MenuItemCutDirectory.Text = "Cu&t";
             this.MenuItemCutDirectory.Click += new System.EventHandler(this.MenuItemCutDirectory_Click);
             // 
@@ -193,7 +198,7 @@
             // 
             this.MenuItemCopyDirectory.Name = "MenuItemCopyDirectory";
             this.MenuItemCopyDirectory.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.MenuItemCopyDirectory.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemCopyDirectory.Size = new System.Drawing.Size(211, 22);
             this.MenuItemCopyDirectory.Text = "C&opy";
             this.MenuItemCopyDirectory.Click += new System.EventHandler(this.MenuItemCopyDirectory_Click);
             // 
@@ -201,21 +206,21 @@
             // 
             this.MenuItemPasteDirectory.Name = "MenuItemPasteDirectory";
             this.MenuItemPasteDirectory.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.MenuItemPasteDirectory.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemPasteDirectory.Size = new System.Drawing.Size(211, 22);
             this.MenuItemPasteDirectory.Text = "&Paste";
             this.MenuItemPasteDirectory.Click += new System.EventHandler(this.MenuItemPasteDirectory_Click);
             // 
             // MenuSepDirOrganize
             // 
             this.MenuSepDirOrganize.Name = "MenuSepDirOrganize";
-            this.MenuSepDirOrganize.Size = new System.Drawing.Size(164, 6);
+            this.MenuSepDirOrganize.Size = new System.Drawing.Size(208, 6);
             // 
             // MenuItemDeleteDirectory
             // 
             this.MenuItemDeleteDirectory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuItemDeleteDirectory.Name = "MenuItemDeleteDirectory";
             this.MenuItemDeleteDirectory.ShortcutKeyDisplayString = "Del";
-            this.MenuItemDeleteDirectory.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemDeleteDirectory.Size = new System.Drawing.Size(211, 22);
             this.MenuItemDeleteDirectory.Text = "&Delete...";
             this.MenuItemDeleteDirectory.Click += new System.EventHandler(this.MenuItemDeleteDirectory_Click);
             // 
@@ -223,21 +228,40 @@
             // 
             this.MenuItemRenameDirectory.Name = "MenuItemRenameDirectory";
             this.MenuItemRenameDirectory.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.MenuItemRenameDirectory.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemRenameDirectory.Size = new System.Drawing.Size(211, 22);
             this.MenuItemRenameDirectory.Text = "&Rename...";
             this.MenuItemRenameDirectory.Click += new System.EventHandler(this.MenuItemRenameDirectory_Click);
             // 
             // MenuSepDirNew
             // 
             this.MenuSepDirNew.Name = "MenuSepDirNew";
-            this.MenuSepDirNew.Size = new System.Drawing.Size(164, 6);
+            this.MenuSepDirNew.Size = new System.Drawing.Size(208, 6);
             // 
             // MenuItemCreateDirectory
             // 
             this.MenuItemCreateDirectory.Name = "MenuItemCreateDirectory";
-            this.MenuItemCreateDirectory.Size = new System.Drawing.Size(167, 22);
+            this.MenuItemCreateDirectory.Size = new System.Drawing.Size(211, 22);
             this.MenuItemCreateDirectory.Text = "&Create directory...";
             this.MenuItemCreateDirectory.Click += new System.EventHandler(this.MenuItemCreateDirectory_Click);
+            // 
+            // MenuItemDirCreateContent
+            // 
+            this.MenuItemDirCreateContent.Name = "MenuItemDirCreateContent";
+            this.MenuItemDirCreateContent.Size = new System.Drawing.Size(211, 22);
+            this.MenuItemDirCreateContent.Text = "Create...";
+            // 
+            // MenuSepExclude
+            // 
+            this.MenuSepExclude.Name = "MenuSepExclude";
+            this.MenuSepExclude.Size = new System.Drawing.Size(208, 6);
+            // 
+            // MenuItemExcludeFromPackfile
+            // 
+            this.MenuItemExcludeFromPackfile.CheckOnClick = true;
+            this.MenuItemExcludeFromPackfile.Name = "MenuItemExcludeFromPackfile";
+            this.MenuItemExcludeFromPackfile.Size = new System.Drawing.Size(211, 22);
+            this.MenuItemExcludeFromPackfile.Text = "Excluded from packed file";
+            this.MenuItemExcludeFromPackfile.Click += new System.EventHandler(this.MenuItemExcludeFromPackfile_Click);
             // 
             // GridFiles
             // 
@@ -403,6 +427,7 @@
             this.MenuFiles.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.MenuFiles.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItemOpen,
+            this.MenuItemFileCreateContent,
             this.MenuSepFileExport,
             this.MenuItemExportFiles,
             this.MenuSepFileEdit,
@@ -413,39 +438,45 @@
             this.MenuItemDeleteFiles,
             this.MenuItemRenameFile});
             this.MenuFiles.Name = "MenuFileExplorer";
-            this.MenuFiles.Size = new System.Drawing.Size(147, 176);
+            this.MenuFiles.Size = new System.Drawing.Size(181, 220);
             this.MenuFiles.Opening += new System.ComponentModel.CancelEventHandler(this.MenuFiles_Opening);
             // 
             // MenuItemOpen
             // 
             this.MenuItemOpen.Name = "MenuItemOpen";
             this.MenuItemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.MenuItemOpen.Size = new System.Drawing.Size(146, 22);
+            this.MenuItemOpen.Size = new System.Drawing.Size(180, 22);
             this.MenuItemOpen.Text = "Open";
             this.MenuItemOpen.Click += new System.EventHandler(this.MenuItemOpen_Click);
+            // 
+            // MenuItemFileCreateContent
+            // 
+            this.MenuItemFileCreateContent.Name = "MenuItemFileCreateContent";
+            this.MenuItemFileCreateContent.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemFileCreateContent.Text = "Create...";
             // 
             // MenuSepFileExport
             // 
             this.MenuSepFileExport.Name = "MenuSepFileExport";
-            this.MenuSepFileExport.Size = new System.Drawing.Size(143, 6);
+            this.MenuSepFileExport.Size = new System.Drawing.Size(177, 6);
             // 
             // MenuItemExportFiles
             // 
             this.MenuItemExportFiles.Name = "MenuItemExportFiles";
-            this.MenuItemExportFiles.Size = new System.Drawing.Size(146, 22);
+            this.MenuItemExportFiles.Size = new System.Drawing.Size(180, 22);
             this.MenuItemExportFiles.Text = "E&xport to...";
             this.MenuItemExportFiles.Click += new System.EventHandler(this.MenuItemExportFiles_Click);
             // 
             // MenuSepFileEdit
             // 
             this.MenuSepFileEdit.Name = "MenuSepFileEdit";
-            this.MenuSepFileEdit.Size = new System.Drawing.Size(143, 6);
+            this.MenuSepFileEdit.Size = new System.Drawing.Size(177, 6);
             // 
             // MenuItemCutFiles
             // 
             this.MenuItemCutFiles.Name = "MenuItemCutFiles";
             this.MenuItemCutFiles.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.MenuItemCutFiles.Size = new System.Drawing.Size(146, 22);
+            this.MenuItemCutFiles.Size = new System.Drawing.Size(180, 22);
             this.MenuItemCutFiles.Text = "Cu&t";
             this.MenuItemCutFiles.Click += new System.EventHandler(this.MenuItemCutFiles_Click);
             // 
@@ -453,7 +484,7 @@
             // 
             this.MenuItemCopyFiles.Name = "MenuItemCopyFiles";
             this.MenuItemCopyFiles.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.MenuItemCopyFiles.Size = new System.Drawing.Size(146, 22);
+            this.MenuItemCopyFiles.Size = new System.Drawing.Size(180, 22);
             this.MenuItemCopyFiles.Text = "C&opy";
             this.MenuItemCopyFiles.Click += new System.EventHandler(this.MenuItemCopyFiles_Click);
             // 
@@ -461,21 +492,21 @@
             // 
             this.MenuItemPasteFiles.Name = "MenuItemPasteFiles";
             this.MenuItemPasteFiles.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.MenuItemPasteFiles.Size = new System.Drawing.Size(146, 22);
+            this.MenuItemPasteFiles.Size = new System.Drawing.Size(180, 22);
             this.MenuItemPasteFiles.Text = "&Paste";
             this.MenuItemPasteFiles.Click += new System.EventHandler(this.MenuItemPasteFiles_Click);
             // 
             // MenuSepFileOrganize
             // 
             this.MenuSepFileOrganize.Name = "MenuSepFileOrganize";
-            this.MenuSepFileOrganize.Size = new System.Drawing.Size(143, 6);
+            this.MenuSepFileOrganize.Size = new System.Drawing.Size(177, 6);
             // 
             // MenuItemDeleteFiles
             // 
             this.MenuItemDeleteFiles.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MenuItemDeleteFiles.Name = "MenuItemDeleteFiles";
             this.MenuItemDeleteFiles.ShortcutKeyDisplayString = "Del";
-            this.MenuItemDeleteFiles.Size = new System.Drawing.Size(146, 22);
+            this.MenuItemDeleteFiles.Size = new System.Drawing.Size(180, 22);
             this.MenuItemDeleteFiles.Text = "&Delete...";
             this.MenuItemDeleteFiles.Click += new System.EventHandler(this.MenuItemDeleteFiles_Click);
             // 
@@ -483,7 +514,7 @@
             // 
             this.MenuItemRenameFile.Name = "MenuItemRenameFile";
             this.MenuItemRenameFile.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.MenuItemRenameFile.Size = new System.Drawing.Size(146, 22);
+            this.MenuItemRenameFile.Size = new System.Drawing.Size(180, 22);
             this.MenuItemRenameFile.Text = "&Rename...";
             this.MenuItemRenameFile.Click += new System.EventHandler(this.MenuItemRenameFile_Click);
             // 
@@ -588,7 +619,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItemMoveTo;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem MenuItemCancel;
-        private System.Windows.Forms.ContextMenuStrip MenuFiles;
         private System.Windows.Forms.ToolStripMenuItem MenuItemOpen;
         private System.Windows.Forms.ToolStripSeparator MenuSepFileExport;
         private System.Windows.Forms.ToolStripMenuItem MenuItemExportFiles;
@@ -598,7 +628,6 @@
         private System.Windows.Forms.ToolStripSeparator MenuSepFileOrganize;
         private System.Windows.Forms.ToolStripMenuItem MenuItemDeleteFiles;
         private System.Windows.Forms.ToolStripMenuItem MenuItemRenameFile;
-        private System.Windows.Forms.ContextMenuStrip MenuDirectory;
         private System.Windows.Forms.ToolStripMenuItem MenuItemExportDirectoryTo;
         private System.Windows.Forms.ToolStripSeparator MenuSepDirEdit;
         private System.Windows.Forms.ToolStripMenuItem MenuItemCutDirectory;
@@ -608,7 +637,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItemDeleteDirectory;
         private System.Windows.Forms.ToolStripMenuItem MenuItemRenameDirectory;
         private System.Windows.Forms.ToolStripSeparator MenuSepDirNew;
-        private System.Windows.Forms.ToolStripMenuItem MenuItemCreateDirectory;
         private System.Windows.Forms.ToolStripMenuItem MenuItemPasteFiles;
         private System.Windows.Forms.Panel panel1;
         private Gorgon.UI.GorgonSearchBox TextSearch;
@@ -620,5 +648,12 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnSize;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnPath;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnDummy;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemExcludeFromPackfile;
+        private System.Windows.Forms.ToolStripSeparator MenuSepExclude;
+        internal System.Windows.Forms.ContextMenuStrip MenuFiles;
+        private System.Windows.Forms.ContextMenuStrip MenuDirectory;
+        private System.Windows.Forms.ToolStripMenuItem MenuItemCreateDirectory;
+        internal System.Windows.Forms.ToolStripMenuItem MenuItemDirCreateContent;
+        internal System.Windows.Forms.ToolStripMenuItem MenuItemFileCreateContent;
     }
 }

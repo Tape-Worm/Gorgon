@@ -36,6 +36,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Native;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -569,6 +570,30 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
+        /// Function to exclude the directories that won't be used in the packed file.
+        /// </summary>
+        /// <param name="excludedDirs">The list of excluded directories.</param>
+        /// <param name="exclude"><b>true</b> to exclude the directories, <b>false</b> to restore.</param>
+        private void ExcludeDirs(IReadOnlyList<(string virtDir, string physDir)> excludedDirs, bool exclude)
+        {
+            foreach ((_, string physDir) in excludedDirs)
+            {
+                FileAttributes curAttr = File.GetAttributes(physDir);
+
+                if (exclude)
+                {
+                    curAttr |= FileAttributes.Hidden;
+                }
+                else
+                {
+                    curAttr &= ~FileAttributes.Hidden;
+                }
+
+                File.SetAttributes(physDir, curAttr);
+            }
+        }
+
+        /// <summary>
         /// Function to save a project to a packed file on the disk.
         /// </summary>
         /// <param name="project">The project to save.</param>
@@ -610,7 +635,22 @@ namespace Gorgon.Editor.ProjectData
 
             try
             {
+                var excludedPaths = new List<(string virtDir, string physDir)>();
+
+                foreach (KeyValuePair<string, ProjectItemMetadata> metaData in project.ProjectItems)
+                {
+                    if ((metaData.Value.Attributes.TryGetValue(ViewModels.ProjectEditor.ExcludedAttrName, out string excluded))
+                        && (string.Equals(excluded, bool.TrueString, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        excludedPaths.Add((metaData.Key, project.FileSystemDirectory.FullName + metaData.Key.FormatDirectory(Path.DirectorySeparatorChar)));
+                    }
+                }
+
+                await Task.Run(() => ExcludeDirs(excludedPaths, true));
+
                 await writer.WriteAsync(path, project.FileSystemDirectory, progressCallback, cancelToken);
+
+                await Task.Run(() => ExcludeDirs(excludedPaths, false));
             }
             finally
             {

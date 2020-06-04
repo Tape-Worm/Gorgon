@@ -56,7 +56,11 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// The directory can be deleted.
         /// </summary>
-        Delete = 8
+        Delete = 8,
+        /// <summary>
+        /// The directory can be excluded from a packed file.
+        /// </summary>
+        ExcludeFromPackedFile = 16
     }
 
     /// <summary>

@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -37,7 +39,7 @@ namespace Gorgon.Editor.ViewModels
     /// A node for a file system directory.
     /// </summary>
     internal class Directory
-        : ViewModelBase<DirectoryParameters, IHostServices>, IDirectory
+        : ViewModelBase<DirectoryParameters, IHostServices>, IDirectory, IExcludable
     {
         #region Variables.
         // The directory wrapped by the view model.
@@ -46,10 +48,10 @@ namespace Gorgon.Editor.ViewModels
         private string _physicalPath;
         // The parent directory for this directory.
         private IDirectory _parent;
-        // The metadata for the directory.
-        private ProjectItemMetadata _metadata;
         // Flag to indicate whether the directory is marked for a cut operation.
         private bool _isCut;
+        // Flag to indicate that the directory is excluded from a packed file system.
+        private bool _isExcluded;
         #endregion
 
         #region Properties.
@@ -68,23 +70,6 @@ namespace Gorgon.Editor.ViewModels
 
                 OnPropertyChanging();
                 _isCut = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>Property to return the metadata associated with the file.</summary>
-        public ProjectItemMetadata Metadata
-        {
-            get => _metadata;
-            private set
-            {
-                if (_metadata == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _metadata = value;
                 OnPropertyChanged();
             }
         }
@@ -123,7 +108,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Property to return the actions that can be performed on this directory.</summary>
-        public DirectoryActions AvailableActions => DirectoryActions.Copy | DirectoryActions.Move | DirectoryActions.Rename | DirectoryActions.Delete;
+        public DirectoryActions AvailableActions => DirectoryActions.Copy | DirectoryActions.Move | DirectoryActions.Rename | DirectoryActions.Delete | DirectoryActions.ExcludeFromPackedFile;
 
         /// <summary>Property to return the directories that exist under the root directory.</summary>
         public ObservableCollection<IDirectory> Directories
@@ -177,6 +162,28 @@ namespace Gorgon.Editor.ViewModels
         public IEditorCommand<RenameArgs> RenameCommand
         {
             get;
+        }
+
+        /// <summary>Property to set or return a flag to indicate that the directory can be excluded from a packed file system.</summary>
+        public bool IsExcluded
+        {
+            get => ((Parent is IExcludable parent) && (parent.IsExcluded)) || _isExcluded;
+            set
+            {
+                if (_isExcluded == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _isExcluded = value;
+                OnPropertyChanged();
+
+                foreach (IExcludable child in Directories.Traverse(d => d.Directories).OfType<IExcludable>())
+                {
+                    child.IsExcluded = value;
+                }
+            }
         }
         #endregion
 
