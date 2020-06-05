@@ -14,7 +14,7 @@
             <listItem>Visual Studio 2017 15.8 or better.</listItem>
             <listItem>.NET 4.7.2 or better.</listItem>
             <listItem>Ideally, C# (language specification v7.3 or better). However, it should work with Visual Basic.NET as well as any other .NET enabled language as long as .NET 4.7.2 is supported.</listItem>
-            <listItem>Direct 3D 11.4 or better (for graphics functionality).</listItem>
+            <listItem>Direct 3D 11.2 or better (for graphics functionality).</listItem>
             <listItem>Windows 10 v1703 Build 15603 (Creators Update) or better.</listItem>
           </list>	      
         </content>

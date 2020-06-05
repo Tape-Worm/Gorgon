@@ -240,7 +240,7 @@ using Gorgon.UI;
 
 			// Normally, you should filter the list for the best device available (has the highest 
 			// feature level). But for brevity, we'll just go with device #1 and assume everything's
-			// fine. Because it is .. right?  Your card DOES support D3D 11.4 right?
+			// fine. Because it is .. right?  Your card DOES support D3D 11.2 right?
 			_graphics = new GorgonGraphics(videoDevices[0]);
 
 			// Now we'll create a swap chain to act as our screen. The swap chain is a series of 
@@ -278,8 +278,7 @@ using Gorgon.UI;
 					<alert class="cs">
 						<para>
 							The <codeEntityReference qualifyHint="false" autoUpgrade="true">M:Gorgon.Graphics.Core.GorgonGraphics.EnumerateAdapters(System.Boolean,Gorgon.Diagnostics.IGorgonLog)</codeEntityReference> 
-							method will only return GPUs capable of supporting Direct 3D 11.4 or better. This means that your GPU should be able support, at a minimum, version 12 of Direct 3D. 
-							Confused? Yeah, me too. Basically if your GPU supports Direct 3D 11.4, it means it supports Direct 3D 12.
+							method will only return GPUs capable of supporting Direct 3D 11.2 or better. 
 						</para>
 					</alert>
 					<para>

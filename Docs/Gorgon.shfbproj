@@ -149,7 +149,7 @@ The types in here are inherently dangerous to use because they offer little in t
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
     <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
     <BinaryTOC>True</BinaryTOC>
-    <HelpFileVersion>3.0.0.0</HelpFileVersion>
+    <HelpFileVersion>3.1.0.0</HelpFileVersion>
     <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
     <HeaderText>
     </HeaderText>

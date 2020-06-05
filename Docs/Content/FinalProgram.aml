@@ -487,7 +487,7 @@ namespace GorgonGettingStarted
 
 			// Normally, you should filter the list for the best device available (has the highest 
 			// feature level). But for brevity, we'll just go with device #1 and assume everything's
-			// fine. Because it is .. right?  Your card DOES support D3D 11.4 right?
+			// fine. Because it is .. right?  Your card DOES support D3D 11.2 right?
 			_graphics = new GorgonGraphics(videoDevices[0]);
 
 			// Now we'll create a swap chain to act as our screen. The swap chain is a series of 

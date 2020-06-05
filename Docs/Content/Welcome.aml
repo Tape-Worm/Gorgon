@@ -5,8 +5,8 @@
       <para>
 			Thanks for downloading and installing Gorgon.			
 			</para>
-      <para>Gorgon is a modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.4 (via <externalLink><linkText>SharpDX</linkText><linkUri>http://sharpdx.org/</linkUri></externalLink>) to provide high performance graphics for your applications.</para>
-      <para>The current version is <legacyBold>3.0</legacyBold>.</para>
+      <para>Gorgon is a modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.2 (via <externalLink><linkText>SharpDX</linkText><linkUri>http://sharpdx.org/</linkUri></externalLink>) to provide high performance graphics for your applications.</para>
+      <para>The current version is <legacyBold>3.1</legacyBold>.</para>
       <para>Gorgon provides a set of libraries that are capable of handling pretty much any task thrown at it.  It includes:</para>
       <list class="bullet">
         <listItem>
@@ -55,7 +55,7 @@
           <para>
             <legacyBold>Gorgon.Graphics.Core</legacyBold>
           </para>
-          <para>A "low-level" graphics API that sits on top of Direct 3D 11.4. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.</para>
+          <para>A "low-level" graphics API that sits on top of Direct 3D 11.2. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.</para>
         </listItem>
         <listItem>
           <para>
@@ -212,10 +212,10 @@
                 </para>
               </listItem>
               <listItem>
-                <para>Microsoft Windows 10 (build 15063 or later).</para>
+                <para>Microsoft Windows 10 (build 15063 - Creators Update or later).</para>
               </listItem>
               <listItem>
-                <para>Microsoft DirectX 11.4</para>
+                <para>A video card that supports Microsoft DirectX 11.2 or better.</para>
               </listItem>
             </list>
           </content>
