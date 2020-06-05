@@ -37,9 +37,19 @@ namespace Gorgon.Editor
         public const string ContentTypeAttr = "Type";
 
         /// <summary>
+        /// The header value for a project. 
+        /// </summary>
+        public const string EditorProjectHeader = "GOREDIT";
+
+        /// <summary>
         /// The current version for an editor project.
         /// </summary>
-        public const string EditorCurrentProjectVersion = "GOREDIT31";
+        public const string EditorCurrentProjectVersion = EditorProjectHeader + "31";
+
+        /// <summary>
+        /// The version for a 3.0 editor project.
+        /// </summary>
+        public const string Editor30ProjectVersion = EditorProjectHeader + "30";
 
         /// <summary>
         /// The name of the file that holds the metadata for the project.

@@ -65,6 +65,7 @@
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
     <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Metadata\_Internal\ProjectItemMetadata30.cs" />
     <Compile Include="Plugins\EditorPlugin.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />
     <Compile Include="Plugins\ContentPlugin.cs" />
@@ -251,6 +252,7 @@
     </Compile>
     <Compile Include="_Extensions\Gorgon2DEditorExtensions.cs" />
     <Compile Include="_Extensions\IOExtensions.cs" />
+    <Compile Include="_Extensions\Support\_Internal\EditorProjectMetadata31.cs" />
     <Compile Include="_Extensions\Support\_Internal\EditorProjectMetadata30.cs" />
   </ItemGroup>
   <ItemGroup>

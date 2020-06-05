@@ -425,7 +425,7 @@ namespace Gorgon.Editor
 
                 // Set up the host services that we will pass to our plug ins.
                 hostServices.BusyService = new WaitCursorBusyState();
-                hostServices.MessageDisplay = new MessageBoxService();
+                hostServices.MessageDisplay = new MessageBoxService(Program.Log);
                 hostServices.ClipboardService = new ClipboardService();
                 hostServices.ColorPicker = new ColorPickerService();
                 hostServices.GraphicsContext = _graphicsContext;
@@ -434,7 +434,7 @@ namespace Gorgon.Editor
 
                 if (!plugInLocation.Exists)
                 {
-                    Program.Log.Print($"[ERROR] Plug in path '{plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
+                    Program.Log.Print($"ERROR: Plug in path '{plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
                     GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_LOADING_PLUGINS);
                 }
 

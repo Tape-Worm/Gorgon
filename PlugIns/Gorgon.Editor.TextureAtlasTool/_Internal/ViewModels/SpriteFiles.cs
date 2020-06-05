@@ -243,7 +243,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[ERROR] There was an error generating the sprite preview data.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: There was an error generating the sprite preview data.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }

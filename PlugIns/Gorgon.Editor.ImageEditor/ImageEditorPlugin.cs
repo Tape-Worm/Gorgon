@@ -206,7 +206,7 @@ namespace Gorgon.Editor.ImageEditor
             }
             catch (Exception ex)
             {
-                HostContentServices.Log.Print($"[ERROR] Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
+                HostContentServices.Log.Print($"ERROR: Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
                 HostContentServices.Log.LogException(ex);
                 return (null, false);
             }
@@ -532,7 +532,7 @@ namespace Gorgon.Editor.ImageEditor
             }
             catch (Exception ex)
             {
-                HostContentServices.Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+                HostContentServices.Log.Print($"ERROR: Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
                 HostContentServices.Log.LogException(ex);
                 return null;
             }

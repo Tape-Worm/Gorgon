@@ -37,7 +37,7 @@ using System.Runtime.InteropServices;
 #else
 [assembly: AssemblyTitle("Gorgon Graphics Core")]
 #endif
-[assembly: AssemblyDescription("Provides access to low level graphics functionality utilizing hardware accelerated rendering through Direct3D 11.4.")]
+[assembly: AssemblyDescription("Provides access to low level graphics functionality utilizing hardware accelerated rendering through Direct3D 11.2.")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("9d22d0f6-16d2-4b80-83b4-d50e2e5be84d")]

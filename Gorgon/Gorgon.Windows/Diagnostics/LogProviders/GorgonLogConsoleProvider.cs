@@ -241,6 +241,7 @@ namespace Gorgon.Diagnostics.LogProviders
 
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write(dateTime);
+                    Console.ResetColor();
                 }
             }
 

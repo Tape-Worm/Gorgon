@@ -664,4 +664,16 @@ This is most likely a memory leak.  Please ensure that each rented temporary tar
 
 This application will now exit.</value>
   </data>
+  <data name="GORGFX_TEXT_FEATURE_SET_112" xml:space="preserve">
+    <value>Feature set 11.2</value>
+  </data>
+  <data name="GORGFX_TEXT_FEATURE_SET_120" xml:space="preserve">
+    <value>Feature set 12.0</value>
+  </data>
+  <data name="GORGFX_TEXT_FEATURE_SET_121" xml:space="preserve">
+    <value>Feature set 12.1</value>
+  </data>
+  <data name="GORGFX_TEXT_FEATURE_SET_UNKNOWN" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
 </root>

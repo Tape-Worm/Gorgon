@@ -1572,6 +1572,42 @@ namespace Gorgon.Graphics.Core.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GORGFX_TEXT_FEATURE_SET_112 {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXT_FEATURE_SET_112", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GORGFX_TEXT_FEATURE_SET_120 {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXT_FEATURE_SET_120", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GORGFX_TEXT_FEATURE_SET_121 {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXT_FEATURE_SET_121", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GORGFX_TEXT_FEATURE_SET_UNKNOWN {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXT_FEATURE_SET_UNKNOWN", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GORGFX_TOSTR_DEVICE {
             get {
                 return ResourceManager.GetString("GORGFX_TOSTR_DEVICE", resourceCulture);

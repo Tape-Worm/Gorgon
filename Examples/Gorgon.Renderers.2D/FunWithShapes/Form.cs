@@ -201,7 +201,7 @@ namespace Gorgon.Examples
                 if (adapters.Count == 0)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
-                                              "No suitable video adapter found in the system.\nGorgon requires a minimum of a Direct3D 11.4 capable video device.");
+                                              "No suitable video adapter found in the system.\nGorgon requires a minimum of a Direct3D 11.2 capable video device.");
                 }
 
                 _graphics = new GorgonGraphics(adapters[0]);

@@ -26,6 +26,7 @@
 
 using System;
 using System.Windows.Forms;
+using Gorgon.Diagnostics;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.Services
@@ -36,6 +37,9 @@ namespace Gorgon.Editor.Services
     public class MessageBoxService
         : IMessageDisplayService
     {
+        // The log for the application.
+        private readonly IGorgonLog _log;
+
         /// <summary>
         /// Function to retrieve the parent form for the message box.
         /// </summary>
@@ -98,6 +102,9 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentNullException(nameof(ex));
             }
 
+            _log.Print($"ERROR: {(string.IsNullOrWhiteSpace(message) ? ex.Message : message)}", LoggingLevel.Verbose);
+            _log.LogException(ex);
+
             GorgonDialogs.ErrorBox(GetParentForm(), string.IsNullOrWhiteSpace(message) ? ex.Message : message, caption, ex);
         }
 
@@ -107,7 +114,15 @@ namespace Gorgon.Editor.Services
         /// <param name="message">The message to display.</param>
         /// <param name="caption">[Optional] A caption for the message.</param>
         /// <param name="details">[Optional] Additional information for the error.</param>
-        public void ShowError(string message, string caption = null, string details = null) => GorgonDialogs.ErrorBox(GetParentForm(), message, caption, details);
+        public void ShowError(string message, string caption = null, string details = null)
+        {
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _log.Print($"ERROR: {message}", LoggingLevel.Intermediate);
+            }
+
+            GorgonDialogs.ErrorBox(GetParentForm(), message, caption, details);
+        }
 
         /// <summary>
         /// Function to show an informational message.
@@ -122,6 +137,20 @@ namespace Gorgon.Editor.Services
         /// <param name="message">The message to display.</param>
         /// <param name="caption">[Optional] A caption for the message.</param>
         /// <param name="details">[Optional] Additional information for the error.</param>
-        public void ShowWarning(string message, string caption = null, string details = null) => GorgonDialogs.WarningBox(GetParentForm(), message, caption, details);
+        public void ShowWarning(string message, string caption = null, string details = null)
+        {
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _log.Print($"WARNING: {message}", LoggingLevel.Simple);
+            }
+
+            GorgonDialogs.WarningBox(GetParentForm(), message, caption, details);
+        }
+
+
+        /// <summary>Initializes a new instance of the <see cref="MessageBoxService"/> class.</summary>
+        /// <param name="log">The log.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="log"/> parameter is <b>null</b>.</exception>
+        public MessageBoxService(IGorgonLog log) => _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 }

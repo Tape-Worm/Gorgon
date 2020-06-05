@@ -29,6 +29,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -335,6 +336,40 @@ namespace Gorgon.Editor.ProjectData
         }
 
         /// <summary>
+        /// Function to retrieve the version from the database file.
+        /// </summary>
+        /// <param name="metaDataFile">The path to the metadata file.</param>
+        /// <param name="location">The directory containing the metadata file.</param>
+        /// <returns>The version of the project.</returns>
+        /// <exception cref="GorgonException">Thrown if the project was not a valid editor project.</exception>
+        private string GetVersion(string metaDataFile, string location)
+        {
+            using (var reader = new StreamReader(metaDataFile, Encoding.UTF8))
+            using (var jsonReader = new JsonTextReader(reader))
+            {
+                // First property must be the version #.
+                if ((!jsonReader.Read()) || (!jsonReader.Read()))
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
+                }
+
+                if ((jsonReader.TokenType != JsonToken.PropertyName)
+                    || (!string.Equals(jsonReader.Value.ToString(), nameof(IProjectMetadata.Version), StringComparison.Ordinal)))
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
+                }
+
+                string version = jsonReader.ReadAsString();
+                if (!version.StartsWith(CommonEditorConstants.EditorProjectHeader, StringComparison.Ordinal))
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
+                }
+
+                return version;
+            }
+        }
+
+        /// <summary>
         /// Function to build the project information from the metadata.
         /// </summary>
         /// <param name="metaDataFile">The metadata file to use.</param>
@@ -342,20 +377,27 @@ namespace Gorgon.Editor.ProjectData
         private IProject CreateFromMetadata(string metaDataFile)
         {
             Project result = null;
+            string location = Path.GetDirectoryName(metaDataFile).FormatDirectory(Path.DirectorySeparatorChar);
 
             _log.Print("Loading project metadata.", LoggingLevel.Verbose);
 
+            string projectVersion = GetVersion(metaDataFile, location);
+
             using (var reader = new StreamReader(metaDataFile, Encoding.UTF8))
             {
-                string readJsonData = reader.ReadToEnd();
+                string readJsonData = reader.ReadToEnd();                
 
-                result = JsonConvert.DeserializeObject<Project>(readJsonData);
-
-                // Handle previous version of the project file database.
-                if (string.Equals(result.Version, "GOREDIT30", StringComparison.OrdinalIgnoreCase))
+                switch (projectVersion)
                 {
-                    Project30 project30 = JsonConvert.DeserializeObject<Project30>(readJsonData);
-                    result = new Project(project30);
+                    case CommonEditorConstants.Editor30ProjectVersion:
+                        Project30 project30 = JsonConvert.DeserializeObject<Project30>(readJsonData);
+                        result = new Project(project30);
+                        break;
+                    case CommonEditorConstants.EditorCurrentProjectVersion:
+                        result = JsonConvert.DeserializeObject<Project>(readJsonData);
+                        break;
+                    default:
+                        throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
                 }
 
                 result.ProjectWorkSpace = new DirectoryInfo(Path.GetDirectoryName(metaDataFile));
@@ -365,14 +407,14 @@ namespace Gorgon.Editor.ProjectData
 
                 if (!result.FileSystemDirectory.Exists)
                 {
-                    _log.Print("[WARNING] The file system directory was not found.", LoggingLevel.Verbose);
+                    _log.Print("WARNING: The file system directory was not found.", LoggingLevel.Verbose);
                     result.FileSystemDirectory.Create();
                     result.FileSystemDirectory.Refresh();
                 }
 
                 if (!result.TempDirectory.Exists)
                 {
-                    _log.Print("[WARNING] The temporary directory was not found.", LoggingLevel.Verbose);
+                    _log.Print("WARNING: The temporary directory was not found.", LoggingLevel.Verbose);
                     result.TempDirectory.Create();
                     result.TempDirectory.Refresh();
                 }
@@ -410,7 +452,7 @@ namespace Gorgon.Editor.ProjectData
             {
                 directory = Path.GetFullPath(directory).FormatDirectory(Path.DirectorySeparatorChar);
 
-                return !Directory.Exists(directory) ? false : File.Exists(Path.Combine(directory, CommonEditorConstants.EditorMetadataFileName));
+                return Directory.Exists(directory) && File.Exists(Path.Combine(directory, CommonEditorConstants.EditorMetadataFileName));
             }
             catch
             {

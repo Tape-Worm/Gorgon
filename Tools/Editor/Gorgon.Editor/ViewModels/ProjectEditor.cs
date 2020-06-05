@@ -703,7 +703,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[ERROR] Could not save the project metadata due to an exception!!", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Could not save the project metadata due to an exception!!", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
             finally

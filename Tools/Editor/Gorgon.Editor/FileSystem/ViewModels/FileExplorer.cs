@@ -1801,7 +1801,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (string.IsNullOrWhiteSpace(virtualPath))
                 {
-                    HostServices.Log.Print($"[ERROR] The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                    HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
                     return;
                 }
 
@@ -1966,7 +1966,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (string.IsNullOrWhiteSpace(virtualPath))
                 {
-                    HostServices.Log.Print($"[ERROR] The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                    HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
                     return;
                 }
 
@@ -2098,7 +2098,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (string.IsNullOrWhiteSpace(virtualPath))
                 {
-                    HostServices.Log.Print($"[ERROR] The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                    HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
                     return;
                 }
 
@@ -2229,7 +2229,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (string.IsNullOrWhiteSpace(virtualPath))
                 {
-                    HostServices.Log.Print($"[ERROR] The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                    HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
                     return;
                 }
 
@@ -2370,7 +2370,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (string.IsNullOrWhiteSpace(virtualPath))
                 {
-                    HostServices.Log.Print($"[ERROR] The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                    HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
                     return;
                 }
 
@@ -2463,7 +2463,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (string.IsNullOrWhiteSpace(virtualPath))
                 {
-                    HostServices.Log.Print($"[ERROR] The current path is empty/null. Cannot export.", LoggingLevel.All);
+                    HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot export.", LoggingLevel.All);
                     return;
                 }
 
@@ -2777,7 +2777,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[ERROR] Failed to refresh the file system.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Failed to refresh the file system.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
             finally

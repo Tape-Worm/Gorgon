@@ -358,7 +358,7 @@ namespace Gorgon.Editor.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        HostServices.Log.Print("[ERROR] Cannot delete import working directory.", LoggingLevel.Simple);
+                        HostServices.Log.Print("ERROR: Cannot delete import working directory.", LoggingLevel.Simple);
                         HostServices.Log.LogException(ex);
                     }
                 }
@@ -417,7 +417,7 @@ namespace Gorgon.Editor.ViewModels
 
             if (project == null)
             {
-                HostServices.Log.Print("[ERROR] No project was returned from the project manager.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
                 return;
             }
 
@@ -553,7 +553,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (!System.IO.Directory.Exists(target))
                 {
-                    HostServices.Log.Print("[ERROR] No project was returned from the project manager.", LoggingLevel.Simple);
+                    HostServices.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
                     return;
                 }
 
@@ -757,7 +757,7 @@ namespace Gorgon.Editor.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    HostServices.Log.Print("[ERROR] Failed to unload main view model!", LoggingLevel.Simple);
+                    HostServices.Log.Print("ERROR: Failed to unload main view model!", LoggingLevel.Simple);
                     HostServices.Log.LogException(ex);
                 }
 

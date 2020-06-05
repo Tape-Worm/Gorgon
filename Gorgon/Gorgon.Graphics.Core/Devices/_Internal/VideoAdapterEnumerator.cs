@@ -159,7 +159,7 @@ namespace Gorgon.Graphics.Core
             D3D.FeatureLevel result = device.FeatureLevel;
 
             return ((Enum.IsDefined(typeof(D3D.FeatureLevel), (int)result))
-                && (result >= D3D.FeatureLevel.Level_12_0))
+                && (result >= D3D.FeatureLevel.Level_11_1))
                 ? (FeatureSet?)result
                 : null;
         }
@@ -258,17 +258,26 @@ namespace Gorgon.Graphics.Core
                         }
 
                         // We create a D3D device here to filter out unsupported video modes from the format list.
-                        using (var D3DDevice = new D3D11.Device(adapter, flags, D3D.FeatureLevel.Level_12_1, D3D.FeatureLevel.Level_12_0))
+                        using (var D3DDevice = new D3D11.Device(adapter, flags, D3D.FeatureLevel.Level_12_1, 
+                                                                                D3D.FeatureLevel.Level_12_0, 
+                                                                                D3D.FeatureLevel.Level_11_1, 
+                                                                                D3D.FeatureLevel.Level_11_0, 
+                                                                                D3D.FeatureLevel.Level_10_1,
+                                                                                D3D.FeatureLevel.Level_10_0,
+                                                                                D3D.FeatureLevel.Level_9_3,
+                                                                                D3D.FeatureLevel.Level_9_2,
+                                                                                D3D.FeatureLevel.Level_9_1))
                         using (D3D11.Device5 D3DDevice5 = D3DDevice.QueryInterface<D3D11.Device5>())
                         {
+                            string adapterName = adapter.Description.Description.Replace("\0", string.Empty);
                             D3DDevice5.DebugName = "Output enumerator device.";
 
-                            FeatureSet? featureSet = GetFeatureLevel(D3DDevice5);
+                            FeatureSet? featureSet = GetFeatureLevel(D3DDevice5);                            
 
                             // Do not enumerate this device if its feature set is not supported.
                             if (featureSet == null)
                             {
-                                log.Print("This video adapter is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
+                                log.Print($"WARNING: The video adapter '{adapterName}' (max. feature level [{D3DDevice5.FeatureLevel}]) is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
                                 continue;
                             }
 
@@ -276,8 +285,7 @@ namespace Gorgon.Graphics.Core
 
                             if (outputs.Count <= 0)
                             {
-                                log.Print($"WARNING: Video adapter {adapter.Description1.Description.Replace("\0", string.Empty)} has no outputs. Full screen mode will not be possible.",
-                                            LoggingLevel.Verbose);
+                                log.Print($"WARNING:  Video adapter '{adapterName}' has no outputs. Full screen mode will not be possible.", LoggingLevel.Verbose);
                             }
 
                             var videoAdapter = new VideoAdapterInfo(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);

@@ -128,7 +128,7 @@ What's required?
 
   * [.NET 4.7.2](https://www.microsoft.com/net/download/dotnet-framework-runtime)
   * Windows 10 (Build 15063 or later).
-  * Microsoft DirectX 11.4
+  * A video card that supports Microsoft DirectX 11.2 or better
 
 To compile the library
 ----------------------

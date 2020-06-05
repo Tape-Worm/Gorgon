@@ -176,10 +176,10 @@ namespace Gorgon.Graphics.Core
         // Empty sampler states.
         private static readonly D3D11.SamplerState[] _emptySamplers = new D3D11.SamplerState[GorgonSamplerStates.MaximumSamplerStateCount];
 
-        // The D3D 11.4 device context.
+        // The D3D 11.x device context.
         private D3D11.DeviceContext4 _d3DDeviceContext;
 
-        // The D3D 11.4 device.
+        // The D3D 11.x device.
         private D3D11.Device5 _d3DDevice;
 
         // The DXGI adapter.
@@ -278,12 +278,12 @@ namespace Gorgon.Graphics.Core
 
         #region Properties.
         /// <summary>
-        /// Property to return the Direct 3D 11.4 device context for this graphics instance.
+        /// Property to return the Direct 3D 11.x device context for this graphics instance.
         /// </summary>
         internal D3D11.DeviceContext4 D3DDeviceContext => _d3DDeviceContext;
 
         /// <summary>
-        /// Property to return the Direct 3D 11.4 device for this graphics instance.
+        /// Property to return the Direct 3D 11.x device for this graphics instance.
         /// </summary>
         internal D3D11.Device5 D3DDevice => _d3DDevice;
 
@@ -1812,7 +1812,7 @@ namespace Gorgon.Graphics.Core
             }
             catch (DX.SharpDXException sdEx)
             {
-                Log.Print($"[ERROR] Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
+                Log.Print($"ERROR: Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
             }
 
             return GorgonMultisampleInfo.NoMultiSampling;
@@ -1843,13 +1843,12 @@ namespace Gorgon.Graphics.Core
 
                     using (var device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
                     {
-                        DebugName =
-                                                         $"'{adapterInfo.Name}' D3D11.4 {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
+                        DebugName = $"'{adapterInfo.Name}' D3D {requestedFeatureLevel.D3DVersion()} {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
                     })
                     {
                         resultDevice = device.QueryInterface<D3D11.Device5>();
 
-                        Log.Print($"Direct 3D 11.4 device created for video adapter '{adapterInfo.Name}' at feature set [{(FeatureSet)resultDevice.FeatureLevel}]",
+                        Log.Print($"Direct 3D {requestedFeatureLevel.D3DVersion()} device created for video adapter '{adapterInfo.Name}' at feature set [{(FeatureSet)resultDevice.FeatureLevel}]",
                                   LoggingLevel.Simple);
                     }
                 }
@@ -3261,7 +3260,7 @@ namespace Gorgon.Graphics.Core
             FeatureSet = featureSet.Value;
 
             Log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
-            Log.Print($"Using video adapter '{videoAdapterInfo.Name}' at feature set [{featureSet.Value}] for Direct 3D 11.4.", LoggingLevel.Simple);
+            Log.Print($"Using video adapter '{videoAdapterInfo.Name}' at {featureSet.Value.Description()} for Direct 3D {featureSet.Value.D3DVersion()}.", LoggingLevel.Simple);
 
             // Build up the required device objects to pass in to the constructor.
             (D3D11.Device5 device, Factory5 factory, Adapter4 adapter) = CreateDevice(videoAdapterInfo, (D3D.FeatureLevel)featureSet.Value);
@@ -3295,7 +3294,7 @@ namespace Gorgon.Graphics.Core
 
             DX.Configuration.ThrowOnShaderCompileError = false;
 
-#if DEBUG
+#if DEBUG   
             IsDebugEnabled = true;
 #endif
         }

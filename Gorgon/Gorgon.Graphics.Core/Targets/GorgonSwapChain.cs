@@ -1208,12 +1208,12 @@ namespace Gorgon.Graphics.Core
                 // Check for temporary render target memory leaks.
                 if (Graphics.TemporaryTargets.RentedCount > 4)
                 {
-                    Graphics.Log.Print($"[WARNING] There are still {Graphics.TemporaryTargets.RentedCount} render targets in flight at the end of this frame. This may indicate a memory leak. Please ensure to call the Return method to release the rented targets.", LoggingLevel.Simple);
+                    Graphics.Log.Print($"WARNING: There are still {Graphics.TemporaryTargets.RentedCount} render targets in flight at the end of this frame. This may indicate a memory leak. Please ensure to call the Return method to release the rented targets.", LoggingLevel.Simple);
                 }
 
                 if (Graphics.TemporaryTargets.RentedCount > 100)
                 {
-                    Graphics.Log.Print($"[ERROR] There are over 100 render targets in flight at the end of this frame. This is almost certainly a memory leak. The application has been stopped in order to keep from running out of memory.", LoggingLevel.Simple);
+                    Graphics.Log.Print($"ERROR: There are over 100 render targets in flight at the end of this frame. This is almost certainly a memory leak. The application has been stopped in order to keep from running out of memory.", LoggingLevel.Simple);
                     throw new GorgonException(GorgonResult.OutOfMemory, Resources.GORGFX_ERR_RENTED_TARGETS_IN_FLIGHT);
                 }
             }

@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Example
 	/// 2D rendering.  Then we call the 2D functions to render a little window, and some text. And finally, we call _2D.End() and
 	/// that renders the batched 2D commands.
 	/// 
-	/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11.4 is recommended.
+	/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11.2 is recommended.
 	/// It's also very "low level", in that there's not a whole lot that's done for you by the API.  It's a very manual process to 
 	/// get everything initialized and thus there's a lot of set up code.  This is unlike the 2D renderer, which takes very little
 	/// effort to get up and running (technically, you barely have to touch the base graphics library to get the 2D renderer doing

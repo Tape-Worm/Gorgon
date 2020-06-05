@@ -256,7 +256,7 @@ ESC - Quit.";
 
                 if (adapters.Count == 0)
                 {
-                    throw new GorgonException(GorgonResult.CannotCreate, "This example requires a Direct3D 11.4 capable video card.\nThe application will now close.");
+                    throw new GorgonException(GorgonResult.CannotCreate, "This example requires a Direct3D 11.2 capable video card.\nThe application will now close.");
                 }
 
                 _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);

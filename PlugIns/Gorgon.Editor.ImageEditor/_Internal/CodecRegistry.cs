@@ -83,7 +83,7 @@ namespace Gorgon.Editor.ImageEditor
 
                     if (Codecs.Any(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase)))
                     {
-                        _log.Print($"[WARNING] The image codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
+                        _log.Print($"WARNING: The image codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
                         continue;
                     }
 
@@ -91,7 +91,7 @@ namespace Gorgon.Editor.ImageEditor
 
                     if (codec == null)
                     {
-                        _log.Print($"[ERROR] The image codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
+                        _log.Print($"ERROR: The image codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                         continue;
                     }
 
@@ -187,7 +187,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 if (CodecPlugIns.Any(item => string.Equals(plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _log.Print($"[WARNING] Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
+                    _log.Print($"WARNING: Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
                     localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
                     continue;
                 }
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     if (Codecs.Any(item => string.Equals(desc.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                     {
-                        _log.Print($"[WARNING] Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
+                        _log.Print($"WARNING: Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
                         localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_ALREADY_LOADED, desc.Name));
                         --count;
                         continue;
@@ -209,7 +209,7 @@ namespace Gorgon.Editor.ImageEditor
 
                     if (imageCodec == null)
                     {
-                        _log.Print($"[ERROR] Could not create image codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
+                        _log.Print($"ERROR: Could not create image codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                         localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_LOAD_FAIL, desc.Name));
                         --count;
                         continue;
@@ -223,7 +223,7 @@ namespace Gorgon.Editor.ImageEditor
 
                         if (CodecFileTypes.Any(item => item.extension.Equals(codecExtension.fileExtension)))
                         {
-                            _log.Print($"[WARNING] Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{imageCodec.Name}' codec.", LoggingLevel.Verbose);
+                            _log.Print($"WARNING: Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{imageCodec.Name}' codec.", LoggingLevel.Verbose);
                             continue;
                         }
 
@@ -266,7 +266,7 @@ namespace Gorgon.Editor.ImageEditor
 
                     if (CodecFileTypes.Any(item => item.extension.Equals(codecExtension.fileExtension)))
                     {
-                        _log.Print($"[WARNING] Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{codec.Name}' codec.", LoggingLevel.Verbose);
+                        _log.Print($"WARNING: Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{codec.Name}' codec.", LoggingLevel.Verbose);
                         continue;
                     }
 

@@ -103,7 +103,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
             catch (Exception ex)
             {
-                HostToolServices.Log.Print($"[ERROR] Cannot open the selected file {file?.Name ?? string.Empty}.", LoggingLevel.Simple);
+                HostToolServices.Log.Print($"ERROR: Cannot open the selected file {file?.Name ?? string.Empty}.", LoggingLevel.Simple);
                 HostToolServices.Log.LogException(ex);
             }
             finally

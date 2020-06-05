@@ -103,7 +103,7 @@ namespace Gorgon.UI
             Progress.Focus();
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Forms.FormProgress"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="FormProgress"/> class.</summary>
         public FormProgress() => InitializeComponent();
     }
 }

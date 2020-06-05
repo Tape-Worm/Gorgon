@@ -86,6 +86,18 @@
               <para>Finally, we need to add references to the Gorgon assemblies. To do so, right click on the <codeInline>References</codeInline> and select <codeInline>Add Reference...</codeInline></para>
               <para>When the references window appears, click on the <codeInline>Browse</codeInline> button and locate the Gorgon assemblies that you unpacked after downloading from <externalLink><linkText>Github.</linkText><linkUri>https://github.com/Tape-Worm/Gorgon/releases</linkUri></externalLink></para>
               <para>To determine which assemblies you should use, go to this <link xlink:href="6DFFD6AF-951B-44FC-B9D0-A222D7CBF359">section</link>.</para>
+		      <alert class="important">
+		      <para>
+		      <legacyBold>Debugging</legacyBold>
+		      </para>
+		      <para>
+		      Gorgon has a separate DEBUG version available for download. This is useful to help diagnose issues within Gorgon itself, and to turn on debug messaging from Direct 3D.
+		      </para>
+		      <para>
+				Before using the debug version, or any applications compiled against the debug version, you will need to have the <legacyBold>Direct3D SDK Layers</legacyBold> installed. To install the SDK layers, go to <legacyItalic>System Settings -> Add or Remove Programs -> Apps and Features -> Manage Optional Features</legacyItalic> in Windows, and add the <legacyBold>Graphics Tools</legacyBold> option. 
+				If this is not installed, the application will fail (the error message will indicate that the Direct3D SDK Layers aren't installed).
+		      </para>
+		      </alert>
             </content>
           </section>
         </sections>

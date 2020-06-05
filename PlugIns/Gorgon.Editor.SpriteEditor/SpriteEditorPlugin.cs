@@ -209,7 +209,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (textureFile == null)
             {
-                HostContentServices.Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePaths[0]}', but the file was not found on the file system.", LoggingLevel.Verbose);
+                HostContentServices.Log.Print($"ERROR: Sprite '{spriteFile.Path}' has texture '{texturePaths[0]}', but the file was not found on the file system.", LoggingLevel.Verbose);
                 return null;
             }
 
@@ -217,14 +217,14 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (string.IsNullOrWhiteSpace(textureFileContentType))
             {
-                HostContentServices.Log.Print($"[ERROR] Sprite texture '{texturePaths[0]}' was found but has no content type ID.", LoggingLevel.Verbose);
+                HostContentServices.Log.Print($"ERROR: Sprite texture '{texturePaths[0]}' was found but has no content type ID.", LoggingLevel.Verbose);
                 return null;
             }
 
             if ((!textureFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string imageType))
                 || (!string.Equals(imageType, textureFileContentType, StringComparison.OrdinalIgnoreCase)))
             {
-                HostContentServices.Log.Print($"[ERROR] Sprite '{spriteFile.Path}' has texture '{texturePaths[0]}', but the texture has a content type ID of '{textureFileContentType}', and the sprite requires a content type ID of '{imageType}'.", LoggingLevel.Verbose);
+                HostContentServices.Log.Print($"ERROR: Sprite '{spriteFile.Path}' has texture '{texturePaths[0]}', but the texture has a content type ID of '{textureFileContentType}', and the sprite requires a content type ID of '{imageType}'.", LoggingLevel.Verbose);
                 return null;
             }
 
@@ -381,7 +381,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             catch (Exception ex)
             {
-                HostContentServices.Log.Print($"[ERROR] Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
+                HostContentServices.Log.Print($"ERROR: Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
                 HostContentServices.Log.LogException(ex);
                 return (null, null, null);
             }
@@ -778,7 +778,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             catch (Exception ex)
             {
-                HostContentServices.Log.Print($"[ERROR] Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+                HostContentServices.Log.Print($"ERROR: Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
                 HostContentServices.Log.LogException(ex);
                 return null;
             }

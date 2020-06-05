@@ -205,6 +205,7 @@
     <Compile Include="Textures\_Internal\TextureBlitter.cs" />
     <Compile Include="Textures\_Internal\TextureViewKey.cs" />
     <Compile Include="_Extensions\GorgonCollectionExtensions.cs" />
+    <Compile Include="_Extensions\GorgonFeatureSetExtensions.cs" />
     <Compile Include="_Interfaces\IGorgonGraphicsObject.cs" />
     <Compile Include="_Internal\FormatSupportInfo.cs" />
     <Compile Include="GorgonGraphics.cs" />

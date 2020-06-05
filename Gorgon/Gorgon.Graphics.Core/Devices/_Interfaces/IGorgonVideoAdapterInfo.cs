@@ -49,6 +49,10 @@ namespace Gorgon.Graphics.Core
     public enum FeatureSet
     {
         /// <summary>
+        /// Device supports the equivalent of Direct 3D 11.2 functionality.
+        /// </summary>
+        Level_11_2 = D3D.FeatureLevel.Level_11_1,
+        /// <summary>
         /// Device supports the equivalent of Direct 3D 12.0 functionality.
         /// </summary>
         Level_12_0 = D3D.FeatureLevel.Level_12_0,

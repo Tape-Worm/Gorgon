@@ -114,7 +114,10 @@ namespace Gorgon.IO
                 switch (fileVersion)
                 {
                     case 30:
-                        return JsonConvert.DeserializeObject<EditorProjectMetadata30>(jsonString);
+                        EditorProjectMetadata30 oldProjectData = JsonConvert.DeserializeObject<EditorProjectMetadata30>(jsonString);
+                        return new EditorProjectMetadata31(oldProjectData);
+                    case 31:
+                        return JsonConvert.DeserializeObject<EditorProjectMetadata31>(jsonString);
                     default:
                         throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
                 }

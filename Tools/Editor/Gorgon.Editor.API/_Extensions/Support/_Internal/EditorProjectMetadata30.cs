@@ -36,7 +36,6 @@ namespace Gorgon.Editor.Support
     /// The project data for an editor project.
     /// </summary>        
     internal class EditorProjectMetadata30
-        : IProjectMetadata
     {
         /// <summary>Property to return the version for the project file.</summary>                
         [JsonProperty]
@@ -48,9 +47,9 @@ namespace Gorgon.Editor.Support
 
         /// <summary>Property to return the list of project items.</summary>        
         [JsonProperty]
-        public Dictionary<string, ProjectItemMetadata> ProjectItems
+        public Dictionary<string, ProjectItemMetadata30> ProjectItems
         {
             get;
-        } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
+        } = new Dictionary<string, ProjectItemMetadata30>(StringComparer.OrdinalIgnoreCase);
     }
 }

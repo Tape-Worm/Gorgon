@@ -165,9 +165,6 @@ The types in here are inherently dangerous to use because they offer little in t
     <Folder Include="icons\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Redistribution.htm">
-      <ExcludeFromToc>True</ExcludeFromToc>
-    </Content>
     <Content Include="Content\GorgonLogo3.jpg" />
   </ItemGroup>
   <ItemGroup>

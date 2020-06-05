@@ -31,7 +31,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Gorgon.Renderers.Graphics2D")]
-[assembly: AssemblyDescription("A renderer used to draw two dimensional graphics using Direct 3D 11.4 for hardware accelation.")]
+[assembly: AssemblyDescription("A renderer used to draw two dimensional graphics using Direct 3D 11.2 for hardware accelation.")]
 [assembly: AssemblyCulture("")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM

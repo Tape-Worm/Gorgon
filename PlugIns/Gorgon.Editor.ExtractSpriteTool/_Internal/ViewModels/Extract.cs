@@ -524,7 +524,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[ERROR] Error cancelling sprite generation.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Error cancelling sprite generation.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }
@@ -612,7 +612,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[ERROR] Error stopping the extraction process.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Error stopping the extraction process.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
             return true;

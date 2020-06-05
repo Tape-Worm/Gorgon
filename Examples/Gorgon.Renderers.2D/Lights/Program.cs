@@ -178,7 +178,7 @@ namespace Gorgon.Examples
                 if (videoDevices.Count == 0)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
-                                              "Gorgon requires at least a Direct3D 11.4 capable video device.\nThere is no suitable device installed on the system.");
+                                              "Gorgon requires at least a Direct3D 11.2 capable video device.\nThere is no suitable device installed on the system.");
                 }
 
                 // Find the best video device.

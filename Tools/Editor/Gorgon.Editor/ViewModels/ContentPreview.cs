@@ -249,7 +249,7 @@ namespace Gorgon.Editor.ViewModels
             catch (Exception ex)
             {
                 Title = Resources.GOREDIT_ERR_ERROR;
-                HostServices.Log.Print($"[ERROR] Error loading thumbnail for '{file.Path}'.", LoggingLevel.Simple);
+                HostServices.Log.Print($"ERROR: Error loading thumbnail for '{file.Path}'.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
             finally

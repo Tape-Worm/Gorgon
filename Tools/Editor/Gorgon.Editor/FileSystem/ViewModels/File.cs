@@ -308,7 +308,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[ERROR] Error updating paths.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Error updating paths.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }
@@ -324,7 +324,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[ERROR] Error refreshing file data.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Error refreshing file data.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }
@@ -343,7 +343,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[ERROR] Error renaming file.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Error renaming file.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
 

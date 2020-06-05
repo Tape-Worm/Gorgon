@@ -226,7 +226,7 @@ namespace Gorgon.Editor.Services
                     // Attempt to gracefully shut the plug in down if we error out.
                     plugin.Shutdown();
 
-                    Program.Log.Print($"[ERROR] Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                    Program.Log.Print($"ERROR: Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
                     Program.Log.LogException(ex);
 
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);

@@ -273,7 +273,7 @@ namespace Gorgon.Editor.Services
                 }
                 catch (Exception ex)
                 {
-                    _hostServices.Log.Print($"[ERROR] Cannot create file system reader plug in '{reader.Name}'.", LoggingLevel.Simple);
+                    _hostServices.Log.Print($"ERROR: Cannot create file system reader plug in '{reader.Name}'.", LoggingLevel.Simple);
                     _hostServices.Log.LogException(ex);
 
                     _disabled[reader.Name] = new DisabledPlugIn(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), reader.ProviderPath);
@@ -306,7 +306,7 @@ namespace Gorgon.Editor.Services
                 }
                 catch (Exception ex)
                 {                    
-                    _hostServices.Log.Print($"[ERROR] Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
+                    _hostServices.Log.Print($"ERROR: Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
                     _hostServices.Log.LogException(ex);
 
                     _disabled[writer.Name] = new DisabledPlugIn(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), writer.PlugInPath);

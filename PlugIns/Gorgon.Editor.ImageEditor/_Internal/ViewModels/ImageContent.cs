@@ -1184,7 +1184,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print($"[ERROR] Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
+                HostServices.Log.Print($"ERROR: Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }
@@ -2521,13 +2521,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             if (image == null)
             {
-                HostServices.Log.Print("[WARNING] No image was found.", LoggingLevel.Simple);
+                HostServices.Log.Print("WARNING: No image was found.", LoggingLevel.Simple);
                 return;
             }
 
             if (_imageIO.InstalledCodecs.Codecs.Count == 0)
             {
-                HostServices.Log.Print("[WARNING] No image codecs were found.  This should not happen.", LoggingLevel.Simple);
+                HostServices.Log.Print("WARNING: No image codecs were found.  This should not happen.", LoggingLevel.Simple);
                 return;
             }
 

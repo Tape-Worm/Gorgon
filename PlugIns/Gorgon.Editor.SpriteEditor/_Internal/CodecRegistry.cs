@@ -110,7 +110,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     if (Codecs.Any(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase)))
                     {
-                        _log.Print($"[WARNING] The sprite codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
+                        _log.Print($"WARNING: The sprite codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
                         continue;
                     }
 
@@ -118,7 +118,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     if (codec == null)
                     {
-                        _log.Print($"[ERROR] The sprite codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
+                        _log.Print($"ERROR: The sprite codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                         continue;
                     }
 
@@ -214,7 +214,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 if (CodecPlugIns.Any(item => string.Equals(plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _log.Print($"[WARNING] Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
+                    _log.Print($"WARNING: Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
                     localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
                     continue;
                 }
@@ -226,7 +226,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     if (Codecs.Any(item => string.Equals(desc.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                     {
-                        _log.Print($"[WARNING] Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
+                        _log.Print($"WARNING: Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
                         localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_ALREADY_LOADED, desc.Name));
                         --count;
                         continue;
@@ -236,7 +236,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     if (spriteCodec == null)
                     {
-                        _log.Print($"[ERROR] Could not create sprite codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
+                        _log.Print($"ERROR: Could not create sprite codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                         localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_LOAD_FAIL, desc.Name));
                         --count;
                         continue;

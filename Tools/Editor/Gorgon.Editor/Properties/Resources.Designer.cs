@@ -1115,7 +1115,7 @@ namespace Gorgon.Editor.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to There is no video adapter on this machine that can be used by Gorgon.
-        ///Gorgon requires a video adapter that is compatible with Direct 3D 11.4 or better..
+        ///Gorgon requires a video adapter that is compatible with Direct 3D 11.2 or better..
         /// </summary>
         internal static string GOREDIT_ERR_NO_SUITABLE_ADAPTER {
             get {
@@ -1262,6 +1262,15 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_PROJECT_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_PROJECT_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The location &apos;{0}&apos; does not contain an Editor project..
+        /// </summary>
+        internal static string GOREDIT_ERR_PROJECT_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PROJECT_NOT_VALID", resourceCulture);
             }
         }
         

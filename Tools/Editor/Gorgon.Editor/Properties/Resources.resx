@@ -214,7 +214,7 @@ Please try again.</value>
   </data>
   <data name="GOREDIT_ERR_NO_SUITABLE_ADAPTER" xml:space="preserve">
     <value>There is no video adapter on this machine that can be used by Gorgon.
-Gorgon requires a video adapter that is compatible with Direct 3D 11.4 or better.</value>
+Gorgon requires a video adapter that is compatible with Direct 3D 11.2 or better.</value>
   </data>
   <data name="GOREDIT_ERR_SELECTING_PLUGIN" xml:space="preserve">
     <value>There was an error selecting the plug in.
@@ -920,5 +920,8 @@ Do you wish to continue?</value>
   </data>
   <data name="GOREDIT_ERR_CANNOT_RENAME_FILE_OPEN_FILE" xml:space="preserve">
     <value>Cannot rename the file '{0}' because it is open in the editor.</value>
+  </data>
+  <data name="GOREDIT_ERR_PROJECT_NOT_VALID" xml:space="preserve">
+    <value>The location '{0}' does not contain an Editor project.</value>
   </data>
 </root>

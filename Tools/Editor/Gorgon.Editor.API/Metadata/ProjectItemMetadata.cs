@@ -115,6 +115,26 @@ namespace Gorgon.Editor.Metadata
         #endregion
 
         #region Constructor.
+        /// <summary>Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.</summary>
+        /// <param name="oldVersion">The old version of project metadata.</param>
+        internal ProjectItemMetadata(ProjectItemMetadata30 oldVersion)
+        {
+            PlugInName = oldVersion.PlugInName;
+
+            foreach (KeyValuePair<string, string> attr in oldVersion.Attributes)
+            {
+                Attributes[attr.Key] = attr.Value;
+            }
+
+            foreach (KeyValuePair<string, string> dependency in oldVersion.DependsOn)
+            {
+                DependsOn[dependency.Key] = new List<string>
+                {
+                    dependency.Value
+                };
+            }
+        }
+
         /// <summary>Initializes a new instance of the ProjectItemMetadata class.</summary>
         /// <param name="metadata">The metadata to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>

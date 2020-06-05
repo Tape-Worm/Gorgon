@@ -50,17 +50,11 @@ namespace Gorgon.Editor.Views
         /// <summary>Gets or sets the foreground color of the tree node.</summary>
         public new Color ForeColor
         {
-            get
-            {
-                if ((DataContext is IExcludable excluded)
+            get => (DataContext is IExcludable excluded)
                     && (!DataContext.IsCut)
-                    && (excluded.IsExcluded))
-                {
-                    return DarkFormsRenderer.ExcludedColor;
-                }
-
-                return base.ForeColor;
-            }
+                    && (excluded.IsExcluded)
+                    ? DarkFormsRenderer.ExcludedColor
+                    : base.ForeColor;
             set => base.ForeColor = value;
         }
         #endregion

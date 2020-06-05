@@ -69,6 +69,7 @@ namespace Gorgon.Editor.UI
     ///     }
     /// }
     /// ]]>
+    /// </code>
     /// This setup notifies the view that the property has been updated, and that any associated visual should probably update as well. This is the most common pattern to use, however there will 
     /// be times when a property notification is required from a method. If that is the case, the <see cref="PropertyMonitor.NotifyPropertyChanged(string)"/>, and 
     /// <see cref="PropertyMonitor.NotifyPropertyChanging(string)"/> methods should be used like this:
@@ -82,7 +83,6 @@ namespace Gorgon.Editor.UI
     /// }
     /// ]]>
     /// The difference being that for properties, you do not need to specify the name of the property being updated, and in methods you do. 
-    /// </code>
     /// </code>
     /// </para>
     /// <para>
