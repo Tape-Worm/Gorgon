@@ -32,6 +32,7 @@ namespace Gorgon.Renderers
     /// <summary>
     /// An allocator used to retrieve 2D shader states from a pool.
     /// </summary>    
+    /// <typeparam name="T">The type of shader. Must inherit from <see cref="GorgonShader"/>.</typeparam>
     public class Gorgon2DShaderStatePoolAllocator<T>
         : GorgonRingPool<Gorgon2DShaderState<T>>
         where T : GorgonShader

@@ -424,6 +424,7 @@ namespace Gorgon.Renderers
         /// <param name="index">The index of the pass.</param>
         /// <param name="output">The render target that will receive the rendering.</param>
         /// <param name="camera">[Optional] The camera to use while rendering.</param>
+        /// <returns>A <see cref="PassContinuationState"/> value describing how to continue on to the next pass (if applicable).</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or not less than <see cref="PassCount"/>.</exception>
         /// <exception cref="GorgonException">Thrown if this method is has been called once before and called again without calling <see cref="EndPass"/>.

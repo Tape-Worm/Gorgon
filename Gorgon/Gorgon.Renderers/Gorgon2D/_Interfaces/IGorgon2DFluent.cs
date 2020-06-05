@@ -147,6 +147,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to execute a callback method for each item in an enumerable list of items.
         /// </summary>
+        /// <typeparam name="T">The type of item to draw.</typeparam>
         /// <param name="items">The list of items to enumerate through.</param>
         /// <param name="drawCommands">The callback method containing the drawing commands.</param>
         /// <returns>The fluent interface for drawing.</returns>

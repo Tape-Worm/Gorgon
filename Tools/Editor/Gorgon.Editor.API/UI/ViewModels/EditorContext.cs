@@ -31,6 +31,7 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// A view model for setting the context for an editor operation.
     /// </summary>
+    /// <typeparam name="T">The type of parameters to inject into the view model. Must implement <see cref="IViewModelInjection{T}"/></typeparam>
     public abstract class EditorContext<T>
         : ViewModelBase<T, IHostContentServices>, IEditorContext
         where T : class, IViewModelInjection<IHostContentServices>

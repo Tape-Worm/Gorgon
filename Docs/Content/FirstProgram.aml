@@ -2,17 +2,17 @@
 <topic id="6F8A9863-C003-4503-9310-70E75D7E5C81" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <alert type="cs">This is the first tutorial in a short series that will ultimately culminate in having an application that will draw an animated sprite on the screen.</alert>
+      <alert class="cs"><para>This is the first tutorial in a short series that will ultimately culminate in having an application that will draw an animated sprite on the screen.</para></alert>
       <para>So you went through the process of setting up your project. Now what?</para>        
       <para>In this section we will start a an application that will utilize Gorgon to update a window during idle time.</para>
     </introduction>    
     
-    <sections>
+    <!--<sections>-->
       <section>      
         <title>Prerequisites</title>      
         <content>
           <para>Please see the <link xlink:href="564985CC-F18F-4711-A2BC-0796D266E54D">Getting Started</link> and <link xlink:href="6DFFD6AF-951B-44FC-B9D0-A222D7CBF359">Which assemblies</link> topics to ensure your project is set up correctly.</para>
-          <alert class="note">Note that this application will be using C# (language specification v7.3).</alert>
+          <alert class="note"><para>Note that this application will be using C# (language specification v7.3).</para></alert>
         </content>
       </section>
       <section>
@@ -140,7 +140,7 @@ namespace GorgonGettingStarted
           </section>
         </sections>
       </section>      
-    </sections>
+    <!--</sections>-->
     <relatedTopics>
       <link topicType_id="1FE70836-AA7D-4515-B54B-E10C4B516E50" xlink:href="564985CC-F18F-4711-A2BC-0796D266E54D" />            
       <link topicType_id="1FE70836-AA7D-4515-B54B-E10C4B516E50" xlink:href="6DFFD6AF-951B-44FC-B9D0-A222D7CBF359" />           
