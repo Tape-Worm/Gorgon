@@ -707,6 +707,8 @@ namespace Gorgon.Renderers
             _lastBatchState.DepthStencilState = null;
             _lastBatchState.PixelShaderState = null;
             _lastBatchState.VertexShaderState = null;
+
+            CurrentCamera = null;
         }
 
         /// <summary>
@@ -1040,6 +1042,34 @@ namespace Gorgon.Renderers
             }
 
             _batchRenderer.QueueRenderable(renderable);
+        }
+
+        /// <summary>
+        /// Function to retrieve the read only vertex values for a sprite.
+        /// </summary>
+        /// <param name="sprite">The sprite to evaluate.</param>
+        /// <returns>A read only list of vertices from the sprite.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+        public ref readonly Gorgon2DVertex[] GetVertices(GorgonSprite sprite)
+        {
+            if (sprite == null)
+            {
+                throw new ArgumentNullException(nameof(sprite));
+            }
+
+            if (_initialized == Uninitialized)
+            {
+                Initialize();
+            }
+
+            BatchRenderable renderable = sprite.Renderable;
+
+            if (sprite.IsUpdated)
+            {
+                _batchRenderer.SpriteTransformer.Transform(renderable);
+            }
+
+            return ref renderable.Vertices;
         }
 
         /// <summary>
@@ -1878,17 +1908,6 @@ namespace Gorgon.Renderers
             }
 #endif
 
-            // Ensure we don't get overdraw by limiting the angle sizes.
-            while (startAngle > 360.0f)
-            {
-                startAngle -= 360.0f;
-            }
-
-            while (endAngle > 360.0f)
-            {
-                endAngle -= 360.0f;
-            }
-
             float wedgeAngle = (endAngle - startAngle).Abs();
             float wedgeRatio = wedgeAngle / 360.0f;
             int quality = (int)((smoothness * 64.0f) * wedgeRatio).FastCeiling().Max(0).Min(2048);
@@ -1919,7 +1938,7 @@ namespace Gorgon.Renderers
             int vertexIndex = 0;
             for (int i = 0; i <= quality; ++i)
             {
-                float angle = ((float)i / quality * wedgeRatio * 2.0f * (float)System.Math.PI) + startAngle.ToRadians();
+                float angle = ((float)i / quality * wedgeRatio * 2.0f * (float)System.Math.PI);
                 float sin = angle.FastSin();
                 float cos = angle.FastCos();
 
@@ -2003,17 +2022,6 @@ namespace Gorgon.Renderers
             }
 #endif
 
-            // Ensure we don't get overdraw by limiting the angle sizes.
-            while (startAngle > 360.0f)
-            {
-                startAngle -= 360.0f;
-            }
-
-            while (endAngle > 360.0f)
-            {
-                endAngle -= 360.0f;
-            }
-
             float wedgeAngle = (endAngle - startAngle).Abs();
             float wedgeRatio = wedgeAngle / 360.0f;
             int quality = (int)((smoothness * 64.0f) * wedgeRatio).FastCeiling().Max(0).Min(2048);
@@ -2054,7 +2062,7 @@ namespace Gorgon.Renderers
             int vertexIndex = 0;
             for (int i = 0; i <= quality; ++i)
             {
-                float angle = ((float)i / quality * wedgeRatio * 2.0f * (float)System.Math.PI) + startAngle.ToRadians();
+                float angle = ((float)i / quality * wedgeRatio * 2.0f * (float)System.Math.PI);
                 float sin = angle.FastSin();
                 float cos = angle.FastCos();
 

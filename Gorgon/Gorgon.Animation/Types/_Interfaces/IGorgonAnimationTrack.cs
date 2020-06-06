@@ -130,7 +130,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to retrieve the value at the specified time index.
         /// </summary>
-        /// <param name="timeIndex">The time index within the track to retrieve the value from.</param>
+        /// <param name="timeIndex">The time index, in seconds, within the track to retrieve the value from.</param>
         /// <returns>The value at the specified time index.</returns>
         /// <remarks>
         /// <para>

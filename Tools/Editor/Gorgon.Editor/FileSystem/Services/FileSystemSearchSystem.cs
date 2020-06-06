@@ -151,9 +151,8 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 #pragma warning restore IDE0046 // Convert to conditional expression
-            return !file.Metadata.Attributes.TryGetValue(attributeName, out string value)
-                ? false
-                : string.Equals(value, attributeValue, StringComparison.CurrentCultureIgnoreCase);
+            return file.Metadata.Attributes.TryGetValue(attributeName, out string value)
+&& string.Equals(value, attributeValue, StringComparison.CurrentCultureIgnoreCase);
         }
 
         /// <summary>

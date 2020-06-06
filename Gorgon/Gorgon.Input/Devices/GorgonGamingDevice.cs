@@ -75,7 +75,7 @@ namespace Gorgon.Input
         /// Property to return the current direction for the point-of-view hat.
         /// </summary>
         /// <remarks>
-        /// If the gaming device does not support a point-of-view axis, then this value will always return <see cref="Input.POVDirection.Center"/>.
+        /// If the gaming device does not support a point-of-view axis, then this value will always return <see cref="POVDirection.Center"/>.
         /// </remarks>
         public IReadOnlyList<POVDirection> POVDirection => _povDirections;
 

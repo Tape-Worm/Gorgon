@@ -32,7 +32,7 @@ namespace Gorgon.Collections
     /// <summary>
     /// LINQ extension methods for tree structures.
     /// </summary>
-    public static class TreeLinqExtensions
+    public static class GorgonTreeLinqExtensions
     {
         /// <summary>
         /// Function to flatten a tree of objects into a flat traversable list.

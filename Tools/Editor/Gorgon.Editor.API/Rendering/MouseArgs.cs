@@ -47,30 +47,6 @@ namespace Gorgon.Editor.Rendering
         }
 
         /// <summary>
-        /// Property to return the mouse position in world space.
-        /// </summary>
-        /// <remarks>
-        /// This returns the location of the mouse in relation to the transformed <see cref="DefaultContentRenderer{T}.RenderRegion"/>, where 0x0 is the center of the content.
-        /// </remarks>
-        public DX.Vector2 WorldSpacePosition
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the mouse position in content space.
-        /// </summary>
-        /// <remarks>
-        /// This returns the location of the mouse in relation to the <see cref="DefaultContentRenderer{T}.RenderRegion"/>, where 0x0 is the upper left of the content.
-        /// </remarks>
-        public DX.Vector2 ContentSpacePosition
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
         /// Property to return the mouse position in camera space.
         /// </summary>
         /// <remarks>
@@ -107,6 +83,15 @@ namespace Gorgon.Editor.Rendering
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the number of times a button has been clicked.
+        /// </summary>
+        public int ButtonClickCount
+        {
+            get;
+            internal set;
         }
 
         /// <summary>

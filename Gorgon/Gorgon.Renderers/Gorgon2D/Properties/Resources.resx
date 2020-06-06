@@ -211,6 +211,12 @@
   <data name="GOR2D_EFFECT_SHARPEMBOSS_DESC" xml:space="preserve">
     <value>Sharpens or embosses an image.</value>
   </data>
+  <data name="GOR2D_EFFECT_SILHOUETTE" xml:space="preserve">
+    <value>Silhouette Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_SILHOUETTE_DESC" xml:space="preserve">
+    <value>Draws an image as a silohuette.</value>
+  </data>
   <data name="GOR2D_EFFECT_SOBEL" xml:space="preserve">
     <value>Sobel Edge Detection Effect</value>
   </data>

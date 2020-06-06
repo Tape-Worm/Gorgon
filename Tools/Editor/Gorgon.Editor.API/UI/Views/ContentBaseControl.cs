@@ -258,10 +258,16 @@ namespace Gorgon.Editor.UI.Views
         public Panel PresentationPanel => PanelPresenter;
 
         /// <summary>
+        /// Property to return the panel that hosts the <see cref="HostPanelControls"/>.
+        /// </summary>
+        [Browsable(false)]
+        public Panel HostPanel => PanelHost;
+
+        /// <summary>
         /// Property to return the panel that will be used for hosting panels for settings, parameters, etc...
         /// </summary>
         [Browsable(false)]
-        public Panel HostPanel => PanelHostControls;
+        public Panel HostPanelControls => PanelHostControls;
 
         /// <summary>Property to return the graphics context.</summary>
         [Browsable(false)]

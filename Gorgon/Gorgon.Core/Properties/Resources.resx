@@ -360,4 +360,7 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_ARGUMENT_MISSING" xml:space="preserve">
     <value>The parameter {0} is not initialized or missing on the parameter {1}.</value>
   </data>
+  <data name="GOR_ERR_ARRAY_TOO_SMALL" xml:space="preserve">
+    <value>The array length {0} is too small to accept {1} elements from the list.</value>
+  </data>
 </root>

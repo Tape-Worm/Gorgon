@@ -161,6 +161,11 @@ namespace Gorgon.Editor.Content
         /// </summary>
         /// <returns>The list of selected file paths.</returns>
         IReadOnlyList<string> GetSelectedFiles();
+
+        /// <summary>
+        /// Function to notify the application that the metadata for the file system should be flushed back to the disk.
+        /// </summary>
+        void FlushMetadata();
         #endregion
     }
 }

@@ -137,24 +137,6 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanged();
             }
         }
-
-        /*
-
-        /// <summary>Property to return whether the panel is modal.</summary>
-        bool IHostedPanelViewModel.IsModal => true;
-
-        /// <summary>Property to return the command used to cancel the operation.</summary>
-        IEditorCommand<object> IHostedPanelViewModel.CancelCommand => null;
-
-        /// <summary>Property to set or return the command used to apply the operation.</summary>
-        IEditorCommand<object> IHostedPanelViewModel.OkCommand
-        {
-            get => null;
-            set
-            {
-                // Empty on purpose.
-            }
-        }*/
         #endregion
 
         #region Methods.

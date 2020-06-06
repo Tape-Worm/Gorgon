@@ -109,7 +109,7 @@ namespace Gorgon.Graphics.Core
                 disposables.RemoveAll(weakRef =>
                                       {
                                           // Remove any dead references.
-                                          return !weakRef.TryGetTarget(out IDisposable disposeRef) ? true : disposeRef == disposable;
+                                          return !weakRef.TryGetTarget(out IDisposable disposeRef) || disposeRef == disposable;
                                       });
             }
         }

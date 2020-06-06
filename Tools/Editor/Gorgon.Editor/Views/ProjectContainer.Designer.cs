@@ -80,7 +80,6 @@
             // 
             this.SplitMain.Panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.SplitMain.Panel1.Controls.Add(this.PanelContent);
-            this.SplitMain.Panel1.TabIndex = 2;
             this.SplitMain.Panel1MinSize = 320;
             // 
             // SplitMain.Panel2
@@ -88,14 +87,15 @@
             this.SplitMain.Panel2.Controls.Add(this.SplitFileSystem);
             this.SplitMain.Size = new System.Drawing.Size(1033, 658);
             this.SplitMain.SplitterDistance = 524;
-            this.SplitMain.Panel2.TabIndex = 0;
             this.SplitMain.TabIndex = 0;
+            this.SplitMain.TabStop = false;
             this.SplitMain.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitMain_SplitterMoved);
             // 
             // SplitFileSystem
             // 
             this.SplitFileSystem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
             this.SplitFileSystem.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SplitFileSystem.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.SplitFileSystem.Location = new System.Drawing.Point(0, 0);
             this.SplitFileSystem.Name = "SplitFileSystem";
             this.SplitFileSystem.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -107,8 +107,9 @@
             // SplitFileSystem.Panel2
             // 
             this.SplitFileSystem.Panel2.Controls.Add(this.Preview);
+            this.SplitFileSystem.Panel2MinSize = 256;
             this.SplitFileSystem.Size = new System.Drawing.Size(505, 658);
-            this.SplitFileSystem.SplitterDistance = 618;
+            this.SplitFileSystem.SplitterDistance = 384;
             this.SplitFileSystem.TabIndex = 0;
             this.SplitFileSystem.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitFileSystem_SplitterMoved);
             // 
@@ -120,7 +121,7 @@
             this.FileExplorer.ForeColor = System.Drawing.Color.White;
             this.FileExplorer.Location = new System.Drawing.Point(0, 0);
             this.FileExplorer.Name = "FileExplorer";
-            this.FileExplorer.Size = new System.Drawing.Size(505, 618);
+            this.FileExplorer.Size = new System.Drawing.Size(505, 384);
             this.FileExplorer.TabIndex = 0;
             this.FileExplorer.ControlContextChanged += new System.EventHandler(this.FileExplorer_ControlContextChanged);
             this.FileExplorer.IsRenamingChanged += new System.EventHandler(this.FileExplorer_IsRenamingChanged);
@@ -135,7 +136,7 @@
             this.Preview.ForeColor = System.Drawing.Color.White;
             this.Preview.Location = new System.Drawing.Point(0, 0);
             this.Preview.Name = "Preview";
-            this.Preview.Size = new System.Drawing.Size(505, 36);
+            this.Preview.Size = new System.Drawing.Size(505, 270);
             this.Preview.TabIndex = 0;
             // 
             // ProjectContainer

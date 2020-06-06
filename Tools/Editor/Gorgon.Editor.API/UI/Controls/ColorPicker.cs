@@ -38,11 +38,35 @@ namespace Gorgon.Editor.UI.Controls
         : UserControl
     {
         #region Events.
+        // Event triggered when the color is changed on the control.
+        private event EventHandler<ColorChangedEventArgs> ColorChangedEvent;
+
         /// <summary>
         /// Event triggered when the color is changed on the control.
         /// </summary>
         [Browsable(true), Category("Behavior"), Description("Triggered with the color was changed on the control.")]
-        public event EventHandler<ColorChangedEventArgs> ColorChanged;
+        public event EventHandler<ColorChangedEventArgs> ColorChanged
+        {
+            add
+            {
+                if (value == null)
+                {
+                    ColorChangedEvent = null;
+                    return;
+                }
+
+                ColorChangedEvent += value;
+            }
+            remove
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                ColorChangedEvent -= value;
+            }
+        }
         #endregion
 
         #region Properties.
@@ -73,7 +97,7 @@ namespace Gorgon.Editor.UI.Controls
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Picker_ColorChanged(object sender, EventArgs e)
         {
-            EventHandler<ColorChangedEventArgs> handler = ColorChanged;
+            EventHandler<ColorChangedEventArgs> handler = ColorChangedEvent;
             handler?.Invoke(this, new ColorChangedEventArgs(SelectedColor, OriginalColor));
         }
         #endregion

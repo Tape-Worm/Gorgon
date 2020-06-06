@@ -65,7 +65,7 @@
             this.Fx1BitSettings = new Gorgon.Editor.ImageEditor.Fx1BitSettings();
             this.FxPosterizeSettings = new Gorgon.Editor.ImageEditor.FxPosterizeSettings();
             this.StatusPanel.SuspendLayout();
-            this.HostPanel.SuspendLayout();
+            this.HostPanelControls.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -83,18 +83,18 @@
             // 
             // HostPanel
             // 
-            this.HostPanel.Controls.Add(this.Fx1BitSettings);
-            this.HostPanel.Controls.Add(this.FxPosterizeSettings);
-            this.HostPanel.Controls.Add(this.FxEmbossSettings);
-            this.HostPanel.Controls.Add(this.FxSharpenSettings);
-            this.HostPanel.Controls.Add(this.FxBlurSettings);
-            this.HostPanel.Controls.Add(this.FxEdgeSettings);
-            this.HostPanel.Controls.Add(this.CropResizeSettings);
-            this.HostPanel.Controls.Add(this.DimensionSettings);
-            this.HostPanel.Controls.Add(this.SetAlpha);
-            this.HostPanel.Controls.Add(this.GenMipMapSettings);
-            this.HostPanel.MinimumSize = new System.Drawing.Size(300, 0);
-            this.HostPanel.Size = new System.Drawing.Size(303, 775);
+            this.HostPanelControls.Controls.Add(this.Fx1BitSettings);
+            this.HostPanelControls.Controls.Add(this.FxPosterizeSettings);
+            this.HostPanelControls.Controls.Add(this.FxEmbossSettings);
+            this.HostPanelControls.Controls.Add(this.FxSharpenSettings);
+            this.HostPanelControls.Controls.Add(this.FxBlurSettings);
+            this.HostPanelControls.Controls.Add(this.FxEdgeSettings);
+            this.HostPanelControls.Controls.Add(this.CropResizeSettings);
+            this.HostPanelControls.Controls.Add(this.DimensionSettings);
+            this.HostPanelControls.Controls.Add(this.SetAlpha);
+            this.HostPanelControls.Controls.Add(this.GenMipMapSettings);
+            this.HostPanelControls.MinimumSize = new System.Drawing.Size(300, 0);
+            this.HostPanelControls.Size = new System.Drawing.Size(303, 775);
             // 
             // PanelImageViewControls
             // 
@@ -490,8 +490,8 @@
             this.Size = new System.Drawing.Size(1211, 797);
             this.StatusPanel.ResumeLayout(false);
             this.StatusPanel.PerformLayout();
-            this.HostPanel.ResumeLayout(false);
-            this.HostPanel.PerformLayout();
+            this.HostPanelControls.ResumeLayout(false);
+            this.HostPanelControls.PerformLayout();
             this.PanelImageViewControls.ResumeLayout(false);
             this.PanelImageViewControls.PerformLayout();
             this.ResumeLayout(false);

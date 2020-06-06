@@ -121,6 +121,7 @@ namespace Gorgon.Examples
 
             float time = 0;
             int frameCount = 0;
+            float frameTime = 1 / 30f;
             for (int y = 0; y < _torusTexture.Height && frameCount < 60; y += 64)
             {
                 for (int x = 0; x < _torusTexture.Width && frameCount < 60; x += 64, frameCount++)
@@ -130,13 +131,13 @@ namespace Gorgon.Examples
                     track.SetKey(new GorgonKeyTexture2D(time, _torusTexture, texCoords, 0));
 
                     // 30 FPS.
-                    time += 1 / 30.0f;
+                    time += frameTime;
                 }
             }
 
             track.EndEdit();
 
-            _torusAnim = builder.Build("Torus Animation");
+            _torusAnim = builder.Build("Torus Animation", 30);
             _torusAnim.IsLooped = true;
 
             _controllerLeft = new GorgonSpriteAnimationController();
@@ -279,7 +280,7 @@ namespace Gorgon.Examples
             _leftPanel.Present(1);
             _rightPanel.Present(1);
 
-            _torusAnim.Speed = 1.0f;
+            _torusAnim.Speed = -1.0f;
             _controllerLeft.Update();
 
             if (_controllerRight.State != AnimationState.Playing)

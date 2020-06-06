@@ -88,11 +88,47 @@ namespace Gorgon.Animation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Linear.
+        /// </summary>
+        internal static string GORANM_DESC_INTERP_LINEAR {
+            get {
+                return ResourceManager.GetString("GORANM_DESC_INTERP_LINEAR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string GORANM_DESC_INTERP_NONE {
+            get {
+                return ResourceManager.GetString("GORANM_DESC_INTERP_NONE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spline.
+        /// </summary>
+        internal static string GORANM_DESC_INTERP_SPLINE {
+            get {
+                return ResourceManager.GetString("GORANM_DESC_INTERP_SPLINE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The animation &apos;{0}&apos; already belongs to another controller..
         /// </summary>
         internal static string GORANM_ERR_ANIMATION_HAS_CONTROLLER {
             get {
                 return ResourceManager.GetString("GORANM_ERR_ANIMATION_HAS_CONTROLLER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The track &apos;{0}&apos; is registered with interpolation support for [{1}], but the actual track in the animation supports [{2}]..
+        /// </summary>
+        internal static string GORANM_ERR_INTERPOLATION_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORANM_ERR_INTERPOLATION_MISMATCH", resourceCulture);
             }
         }
         

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Animation;
@@ -161,6 +162,65 @@ namespace Gorgon.IO
                 reader.CloseChunk();
 
                 return Version.Equals(fileVersion);
+            }
+        }
+
+        /// <summary>Function to retrieve the names of the associated textures.</summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
+        protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
+        {
+            GorgonChunkFileReader reader = null;
+            GorgonBinaryReader binReader = null;
+
+            try
+            {
+                reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+                reader.Open();
+                if (!IsReadableChunkFile(reader))
+                {
+                    return Array.Empty<string>();
+                }
+
+                // No texture data in this file.
+                if (!reader.Chunks.Contains(TextureData))
+                {
+                    return Array.Empty<string>();
+                }
+
+                binReader = reader.OpenChunk(TextureData);
+                int keyCount = binReader.ReadInt32();
+                var result = new List<string>();
+                
+                for (int i = 0; i < keyCount; ++i)
+                {
+                    binReader.ReadSingle();
+                    byte hasTexture = binReader.ReadByte();
+
+                    if (hasTexture == 0)
+                    {
+                        continue;
+                    }
+
+                    string textureName = binReader.ReadString();
+
+                    if ((string.IsNullOrWhiteSpace(textureName))
+                        || (result.Contains(textureName)))
+                    {
+                        continue;
+                    }
+
+                    result.Add(textureName);
+                }
+
+                reader.CloseChunk();
+
+                return result;
+            }
+            finally
+            {
+                binReader?.Dispose();
+                reader?.Close();
             }
         }
 

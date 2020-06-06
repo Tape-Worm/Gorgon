@@ -42,7 +42,6 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
-using Gorgon.Math;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -279,130 +278,12 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Property to set or return whether the file explorer is shown or not.
-        /// </summary>
-        public bool ShowFileExplorer
-        {
-            get => _settings.ShowFileExplorer;
-            set
-            {
-                if (_settings.ShowFileExplorer == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.ShowFileExplorer = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether the content preview is shown or not.
-        /// </summary>
-        public bool ShowContentPreview
-        {
-            get => _settings.ShowContentPreview;
-            set
-            {
-                if (_settings.ShowContentPreview == value)
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.ShowContentPreview = value;
-
-                if (ContentPreviewer != null)
-                {
-                    ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
-                }
-                OnPropertyChanged();
-
-                if (ContentPreviewer == null)
-                {
-                    return;
-                }
-
-                void ResetContentPreviewer()
-                {
-                    if ((ContentPreviewer.ResetPreviewCommand != null) && (ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
-                    {
-                        ContentPreviewer.ResetPreviewCommand.Execute(null);
-                    }
-                }
-
-                try
-                {
-                    if ((FileExplorer == null) || (FileExplorer.SelectedFiles.Count == 0))
-                    {
-                        ResetContentPreviewer();
-                        return;
-                    }
-
-                    if (value)
-                    {
-                        RefreshFilePreview(FileExplorer.SelectedFiles[0]?.FullPath);
-                    }
-                    else
-                    {                            
-                        ResetContentPreviewer();
-                    }
-                }
-                catch(Exception ex)
-                {
-                    HostServices.Log.Print("Error loading preview", LoggingLevel.Simple);
-                    HostServices.Log.LogException(ex);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return distance for the file explorer and main area.
-        /// </summary>
-        public double FileExplorerDistance
-        {
-            get => _settings.SplitMainDistance.Min(0.90).Max(0.05);
-            set
-            {
-                if (_settings.SplitMainDistance.EqualsEpsilon(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.SplitMainDistance = value.Min(0.90).Max(0.05);
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the distance for the preview and the file explorer.
-        /// </summary>
-        public double PreviewDistance
-        {
-            get => _settings.SplitPreviewDistance.Min(0.90).Max(0.05);
-            set
-            {
-                if (_settings.SplitPreviewDistance.EqualsEpsilon(value))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _settings.SplitPreviewDistance = value.Min(0.90).Max(0.05);
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         /// Property to return the command used to save the project to a packed file.
         /// </summary>
         public IEditorAsyncCommand<CancelEventArgs> SaveProjectToPackFileCommand
         {
             get;            
         }
-
 
         /// <summary>
         /// Property to return the command used to create content.
@@ -454,19 +335,6 @@ namespace Gorgon.Editor.ViewModels
                     metadata = new ProjectItemMetadata(file.Metadata);
                     metadata.Attributes[ProjectItemTypeAttrName] = ProjectItemType.File.ToString();
                     _projectData.ProjectItems[file.FullPath] = metadata;
-
-                    // Copy the dependency data for each file.
-                    foreach (KeyValuePair<string, List<string>> dependency in file.Metadata.DependsOn)
-                    {
-                        foreach (string path in dependency.Value)
-                        {
-                            // Ensure that the file we are dependent upon is still available, if it's not, then there's no need to record it.
-                            if ((!string.IsNullOrWhiteSpace(path)) && (ContentFileManager.FileExists(path)))
-                            {
-                                metadata.DependsOn[dependency.Key] = dependency.Value;
-                            }
-                        }
-                    }
                 }
             }
 
@@ -634,7 +502,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="filePath">The path to the file to refresh.</param>
         private void RefreshFilePreview(string filePath)
         {
-            if (!ShowContentPreview)
+            if (!_settings.ShowContentPreview)
             {
                 return;
             }

@@ -3,7 +3,7 @@
 What is Gorgon?
 ===================
 
-A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.4 (via [SharpDX](http://sharpdx.org)) to provide high performance graphics for your applications.
+A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.2 (via [SharpDX](http://sharpdx.org)) to provide high performance graphics for your applications.
 
 What is not Gorgon?
 ===================
@@ -16,7 +16,7 @@ Building applications with Gorgon requires that you write code. There's no nodes
 
 Gorgon is meant for people that want to write their own functionality, get down into the guts of their applications and not have to deal with a black boxed scripting system, or editor. In short, it's more work, but more customizable.
 
-For those that want a more complete (and polished) package to build their applications there's [Unity](https://unity.com/), [Unreal](https://www.unrealengine.com/en-US/) or [Godot](https://godotengine.org/).
+For those that want a more complete (and polished) package to build their applications there's [Unity](https://unity.com/), [Unreal](https://www.unrealengine.com/en-US/), [Godot](https://godotengine.org/) or [Stride (formally Xenko)](https://github.com/stride3d/stride).
 
 Documentation
 =============
@@ -32,7 +32,7 @@ Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 How far along are you?  Is it done yet?  How about now?
 -------------------------------------------------------
 
-Gorgon 3.0 is now available.
+Gorgon 3.1 is now available.
 
 What can it do?
 ---------------
@@ -66,13 +66,13 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
       
   - [x] __[Gorgon.Graphics.Core](Gorgon/Gorgon.Graphics.Core)__ 
   
-  A "low-level" graphics API that sits on top of Direct 3D 11.4. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.
+  A "low-level" graphics API that sits on top of Direct 3D 11.2. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.
   
   - [x] __[Gorgon.Graphics.Imaging](Gorgon/Gorgon.Graphics.Imaging)__ 
   
   Functionality to read and write image formats. This also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc... 
   
-  Gorgon uses [codecs](https://github.com/Tape-Worm/Gorgon/blob/3.0/Gorgon/Gorgon.Graphics.Imaging/Codecs) to read/write images and includes codecs for the following formats:
+  Gorgon uses [codecs](Gorgon/Gorgon.Graphics.Imaging/Codecs) to read/write images and includes codecs for the following formats:
    * __DDS__ - Direct Draw Surface
    * __TGA__ - Truevision Targa
    * __PNG__ - Portable Network Graphics
@@ -143,7 +143,7 @@ To use the library
 Source code
 -----------
 
-The master branch contains the current release version of Gorgon 3.0.  
+The master branch contains the current release version of Gorgon 3.1.  
 
 Acknowledgements
 ================

@@ -81,8 +81,10 @@
     <Compile Include="PropertyMonitor.cs" />
     <Compile Include="Rendering\DefaultToolRenderer.cs" />
     <Compile Include="Rendering\DefaultContentRenderer.cs" />
+    <Compile Include="Rendering\_Interfaces\ITextureCache.cs" />
     <Compile Include="Rendering\MouseArgs.cs" />
     <Compile Include="Rendering\OffsetEventArgs.cs" />
+    <Compile Include="Rendering\TextureCache.cs" />
     <Compile Include="Rendering\ZoomScaleEventArgs.cs" />
     <Compile Include="Rendering\_Interfaces\IToolRenderer.cs" />
     <Compile Include="Rendering\_Interfaces\IContentRenderer.cs" />
@@ -92,7 +94,9 @@
     <Compile Include="Services\ColorPickerService.cs" />
     <Compile Include="Services\FileSaveDialogService.cs" />
     <Compile Include="Services\EditorContentSearchService.cs" />
+    <Compile Include="Services\_Interfaces\IAnchorEditService.cs" />
     <Compile Include="Services\ProgressData.cs" />
+    <Compile Include="Services\AnchorEditService.cs" />
     <Compile Include="Services\SpriteExtractionData.cs" />
     <Compile Include="Services\SpriteExtractorService.cs" />
     <Compile Include="Services\_Interfaces\IColorPickerService.cs" />
@@ -106,6 +110,12 @@
     <Compile Include="Services\_Interfaces\IUndoService.cs" />
     <Compile Include="Services\_Interfaces\IContentPluginService.cs" />
     <Compile Include="Services\_Interfaces\IEditorContentImporter.cs" />
+    <Compile Include="UI\Controls\AlphaPicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\AlphaPicker.Designer.cs">
+      <DependentUpon>AlphaPicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\ColorChangedEventArgs.cs" />
     <Compile Include="UI\Controls\ColorPicker.cs">
       <SubType>UserControl</SubType>
@@ -257,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Transparency_Pattern.png" />
     <None Include="Resources\center_16x16.png" />
     <None Include="Resources\error_16x16.png" />
     <None Include="Resources\generic_file_20x20.png" />
@@ -289,6 +300,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Controls\AlphaPicker.resx">
+      <DependentUpon>AlphaPicker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Controls\ColorPicker.resx">
       <DependentUpon>ColorPicker.cs</DependentUpon>

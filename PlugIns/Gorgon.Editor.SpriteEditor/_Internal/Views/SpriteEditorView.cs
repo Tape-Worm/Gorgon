@@ -59,7 +59,7 @@ namespace Gorgon.Editor.SpriteEditor
         // The picking service used to capture sprite data.
         private PickClipperService _pickService;        
         // The anchor editing service.
-        private SpriteAnchorEditService _anchorService;
+        private IAnchorEditService _anchorService;
         // Marching ants renderer.
         private IMarchingAnts _marchAnts;        
         // Manual input for the sprite clipping rectangle.
@@ -78,6 +78,7 @@ namespace Gorgon.Editor.SpriteEditor
 
         #region Properties.
         /// <summary>Property to return the data context assigned to this view.</summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ISpriteContent DataContext
         {
             get;
@@ -695,7 +696,7 @@ namespace Gorgon.Editor.SpriteEditor
             _clipperService = new RectClipperService(context.Renderer2D, _marchAnts);
             _pickService = new PickClipperService();
             _vertexEditService = new SpriteVertexEditService(context.Renderer2D);
-            _anchorService = new SpriteAnchorEditService(context.Renderer2D, new GorgonSprite
+            _anchorService = new AnchorEditService(context.Renderer2D, new GorgonSprite
             {
                 Texture = _anchorTexture,
                 Size = new DX.Size2F(_anchorTexture.Width, _anchorTexture.Height),

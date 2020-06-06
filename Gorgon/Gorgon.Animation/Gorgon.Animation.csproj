@@ -66,6 +66,7 @@
     <Compile Include="Types\_Internal\Texture2DViewTrack.cs" />
     <Compile Include="Types\_Internal\RectBoundsTrack.cs" />
     <Compile Include="Types\_Internal\ColorTrack.cs" />
+    <Compile Include="_Extensions\TrackInterpolationModeExtensions.cs" />
     <Compile Include="_Internal\TrackKeyBuilder.cs" />
     <Compile Include="Types\_Internal\SingleTrack.cs" />
     <Compile Include="Types\_Internal\Vector2Track.cs" />

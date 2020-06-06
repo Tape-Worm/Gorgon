@@ -32,7 +32,7 @@ namespace Gorgon.Animation
     /// <summary>
     /// A builder for building keys on a <see cref="IGorgonAnimationTrack{T}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of keyframe, must implement <see cref="IGorgonKeyFrame"/> and be a reference type.</typeparam>
+    /// <typeparam name="T">The type of key frame, must implement <see cref="IGorgonKeyFrame"/> and be a reference type.</typeparam>
     /// <seealso cref="IGorgonKeyFrame"/>
     public interface IGorgonTrackKeyBuilder<in T>
         where T : class, IGorgonKeyFrame

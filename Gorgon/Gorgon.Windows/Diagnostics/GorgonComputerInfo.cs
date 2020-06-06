@@ -63,7 +63,7 @@ namespace Gorgon.Diagnostics
         /// </summary>
         /// <remarks>
         /// When the application that uses this class is run on a 64 bit version of windows, on a 64 bit machine, and the application is running as 64 bit, then this value will return 
-        /// <see cref="Diagnostics.PlatformArchitecture.x64"/>, otherwise it will return <see cref="Diagnostics.PlatformArchitecture.x86"/>.
+        /// <see cref="PlatformArchitecture.x64"/>, otherwise it will return <see cref="PlatformArchitecture.x86"/>.
         /// </remarks>
         public PlatformArchitecture PlatformArchitecture => Environment.Is64BitProcess ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 
@@ -71,8 +71,8 @@ namespace Gorgon.Diagnostics
         /// Property to return the architecture of the Operating System that Gorgon is running on.
         /// </summary>
         /// <remarks>
-        /// When the application that uses this class is run on a 64 bit version of windows, and on a 64 bit machine then this value will return <see cref="Diagnostics.PlatformArchitecture.x64"/>, 
-        /// otherwise it will return <see cref="Diagnostics.PlatformArchitecture.x86"/>.
+        /// When the application that uses this class is run on a 64 bit version of windows, and on a 64 bit machine then this value will return <see cref="PlatformArchitecture.x64"/>, 
+        /// otherwise it will return <see cref="PlatformArchitecture.x86"/>.
         /// </remarks>
         public PlatformArchitecture OperatingSystemArchitecture => Environment.Is64BitOperatingSystem ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 

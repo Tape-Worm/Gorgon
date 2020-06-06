@@ -36,17 +36,14 @@ namespace Fetze.WinFormsColor
 			}
 			public InternalColor(Color c)
 			{
-				this.h = c.GetHSVHue();
-				this.s = c.GetHSVSaturation();
-				this.v = c.GetHSVBrightness();
-				this.a = c.A / 255.0f;
+				h = c.GetHSVHue();
+				s = c.GetHSVSaturation();
+				v = c.GetHSVBrightness();
+				a = c.A / 255.0f;
 			}
 
-			public Color ToColor()
-			{
-				return Color.FromArgb((int)Math.Round(this.a * 255.0f), ExtMethodsSystemDrawingColor.ColorFromHSV(this.h, this.s, this.v));
-			}
-		}
+            public Color ToColor() => Color.FromArgb((int)Math.Round(a * 255.0f), ExtMethodsSystemDrawingColor.ColorFromHSV(h, s, v));
+        }
 
 		private	bool			alphaEnabled		= true;
 		private	InternalColor	oldColor			= new InternalColor(Color.Red);
@@ -55,118 +52,127 @@ namespace Fetze.WinFormsColor
 		private	bool			suspendTextEvents	= false;
 
 		public bool AlphaEnabled
-		{
-			get { return this.alphaEnabled; }
-			set 
-			{ 
-				this.alphaEnabled = value; 
-				this.alphaSlider.Enabled = this.alphaEnabled;
-				this.numAlpha.Enabled = this.alphaEnabled;
-			}
-		}
-		public Color OldColor
-		{
-			get { return this.oldColor.ToColor(); }
-			set { this.oldColor = new InternalColor(value); this.UpdateColorShowBox(); }
-		}
-		public Color SelectedColor
-		{
-			get { return this.selColor.ToColor(); }
-			set { this.selColor = new InternalColor(value); this.UpdateColorControls(); }
-		}
-		public PrimaryAttrib PrimaryAttribute
-		{
-			get { return this.primAttrib; }
-			set { this.primAttrib = value; this.UpdateColorControls(); }
-		}
+        {
+            get => alphaEnabled;
+            set
+            {
+                alphaEnabled = value;
+                alphaSlider.Enabled = alphaEnabled;
+                numAlpha.Enabled = alphaEnabled;
+            }
+        }
+        public Color OldColor
+        {
+            get => oldColor.ToColor();
+            set
+            {
+                oldColor = new InternalColor(value);
+                UpdateColorShowBox();
+            }
+        }
+        public Color SelectedColor
+        {
+            get => selColor.ToColor();
+            set
+            {
+                selColor = new InternalColor(value);
+                UpdateColorControls();
+            }
+        }
+        public PrimaryAttrib PrimaryAttribute
+        {
+            get => primAttrib;
+            set
+            {
+                primAttrib = value;
+                UpdateColorControls();
+            }
+        }
 
-		public ColorPickerDialog()
-		{
-			this.InitializeComponent();
-		}
+        public ColorPickerDialog() => InitializeComponent();
 
-		private void UpdateColorControls()
+        private void UpdateColorControls()
 		{
-			this.UpdatePrimaryAttributeRadioBox();
-			this.UpdateText();
-			this.UpdateColorShowBox();
-			this.UpdateColorPanelGradient();
-			this.UpdateColorSliderGradient();
-			this.UpdateAlphaSliderGradient();
-			this.UpdateColorPanelValue();
-			this.UpdateColorSliderValue();
-			this.UpdateAlphaSliderValue();
+			UpdatePrimaryAttributeRadioBox();
+			UpdateText();
+			UpdateColorShowBox();
+			UpdateColorPanelGradient();
+			UpdateColorSliderGradient();
+			UpdateAlphaSliderGradient();
+			UpdateColorPanelValue();
+			UpdateColorSliderValue();
+			UpdateAlphaSliderValue();
 		}
 		private void UpdatePrimaryAttributeRadioBox()
 		{
-			switch (this.primAttrib)
+			switch (primAttrib)
 			{
 				default:
 				case PrimaryAttrib.Hue:
-					this.radioHue.Checked = true;
+					radioHue.Checked = true;
 					break;
 				case PrimaryAttrib.Saturation:
-					this.radioSaturation.Checked = true;
+					radioSaturation.Checked = true;
 					break;
 				case PrimaryAttrib.Brightness:
-					this.radioValue.Checked = true;
+					radioValue.Checked = true;
 					break;
 				case PrimaryAttrib.Red:
-					this.radioRed.Checked = true;
+					radioRed.Checked = true;
 					break;
 				case PrimaryAttrib.Green:
-					this.radioGreen.Checked = true;
+					radioGreen.Checked = true;
 					break;
 				case PrimaryAttrib.Blue:
-					this.radioBlue.Checked = true;
+					radioBlue.Checked = true;
 					break;
 			}
 		}
 		private void UpdateText()
 		{
-			Color tmp = this.selColor.ToColor();
-			this.suspendTextEvents = true;
+			var tmp = selColor.ToColor();
+			suspendTextEvents = true;
 
-			this.textBoxHex.Text = String.Format("{0:X}", tmp.ToArgb());
+			textBoxHex.Text = string.Format("{0:X}", tmp.ToArgb());
 
-			this.numRed.Value = tmp.R;
-			this.numGreen.Value = tmp.G;
-			this.numBlue.Value = tmp.B;
-			this.numAlpha.Value = tmp.A;
+			numRed.Value = tmp.R;
+			numGreen.Value = tmp.G;
+			numBlue.Value = tmp.B;
+			numAlpha.Value = tmp.A;
 
-			this.numHue.Value = (decimal)(this.selColor.h * 360.0f);
-			this.numSaturation.Value = (decimal)(this.selColor.s * 100.0f);
-			this.numValue.Value = (decimal)(this.selColor.v * 100.0f);
+			numHue.Value = (decimal)(selColor.h * 360.0f);
+			numSaturation.Value = (decimal)(selColor.s * 100.0f);
+			numValue.Value = (decimal)(selColor.v * 100.0f);
 
-			this.suspendTextEvents = false;
+			suspendTextEvents = false;
 		}
 		private void UpdateColorShowBox()
 		{
-			this.colorShowBox.UpperColor = this.alphaEnabled ? this.oldColor.ToColor() : Color.FromArgb(255, this.oldColor.ToColor());
-			this.colorShowBox.LowerColor = this.alphaEnabled ? this.selColor.ToColor() : Color.FromArgb(255, this.selColor.ToColor());
+			colorShowBox.UpperColor = alphaEnabled ? oldColor.ToColor() : Color.FromArgb(255, oldColor.ToColor());
+			colorShowBox.LowerColor = alphaEnabled ? selColor.ToColor() : Color.FromArgb(255, selColor.ToColor());
 		}
 		private void UpdateColorPanelGradient()
 		{
 			Color tmp;
-			switch (this.primAttrib)
+			switch (primAttrib)
 			{
 				default:
 				case PrimaryAttrib.Hue:
-					this.colorPanel.SetupXYGradient(
+					colorPanel.SetupXYGradient(
 						Color.White,
-						ExtMethodsSystemDrawingColor.ColorFromHSV(this.selColor.h, 1.0f, 1.0f),
+						ExtMethodsSystemDrawingColor.ColorFromHSV(selColor.h, 1.0f, 1.0f),
 						Color.Black,
 						Color.Transparent);
 					break;
 				case PrimaryAttrib.Saturation:
-					this.colorPanel.SetupHueBrightnessGradient(this.selColor.s);
+					colorPanel.SetupHueBrightnessGradient(selColor.s);
 					break;
 				case PrimaryAttrib.Brightness:
-					this.colorPanel.SetupHueSaturationGradient(this.selColor.v);
+					colorPanel.SetupHueSaturationGradient(selColor.v);
 					break;
 				case PrimaryAttrib.Red:
-					tmp = this.selColor.ToColor();
-					this.colorPanel.SetupGradient(
+					tmp = selColor.ToColor();
+					colorPanel.SetupGradient(
 						Color.FromArgb(255, tmp.R, 255, 0),
 						Color.FromArgb(255, tmp.R, 255, 255),
 						Color.FromArgb(255, tmp.R, 0, 0),
@@ -174,8 +180,8 @@ namespace Fetze.WinFormsColor
 						32);
 					break;
 				case PrimaryAttrib.Green:
-					tmp = this.selColor.ToColor();
-					this.colorPanel.SetupGradient(
+					tmp = selColor.ToColor();
+					colorPanel.SetupGradient(
 						Color.FromArgb(255, 255, tmp.G, 0),
 						Color.FromArgb(255, 255, tmp.G, 255),
 						Color.FromArgb(255, 0, tmp.G, 0),
@@ -183,8 +189,8 @@ namespace Fetze.WinFormsColor
 						32);
 					break;
 				case PrimaryAttrib.Blue:
-					tmp = this.selColor.ToColor();
-					this.colorPanel.SetupGradient(
+					tmp = selColor.ToColor();
+					colorPanel.SetupGradient(
 						Color.FromArgb(255, 255, 0, tmp.B),
 						Color.FromArgb(255, 255, 255, tmp.B),
 						Color.FromArgb(255, 0, 0, tmp.B),
@@ -196,39 +202,39 @@ namespace Fetze.WinFormsColor
 		private void UpdateColorPanelValue()
 		{
 			Color tmp;
-			switch (this.primAttrib)
+			switch (primAttrib)
 			{
 				default:
 				case PrimaryAttrib.Hue:
-					this.colorPanel.ValuePercentual = new PointF(
-						this.selColor.s,
-						this.selColor.v);
+					colorPanel.ValuePercentual = new PointF(
+						selColor.s,
+						selColor.v);
 					break;
 				case PrimaryAttrib.Saturation:
-					this.colorPanel.ValuePercentual = new PointF(
-						this.selColor.h,
-						this.selColor.v);
+					colorPanel.ValuePercentual = new PointF(
+						selColor.h,
+						selColor.v);
 					break;
 				case PrimaryAttrib.Brightness:
-					this.colorPanel.ValuePercentual = new PointF(
-						this.selColor.h,
-						this.selColor.s);
+					colorPanel.ValuePercentual = new PointF(
+						selColor.h,
+						selColor.s);
 					break;
 				case PrimaryAttrib.Red:
-					tmp = this.selColor.ToColor();
-					this.colorPanel.ValuePercentual = new PointF(
+					tmp = selColor.ToColor();
+					colorPanel.ValuePercentual = new PointF(
 						tmp.B / 255.0f,
 						tmp.G / 255.0f);
 					break;
 				case PrimaryAttrib.Green:
-					tmp = this.selColor.ToColor();
-					this.colorPanel.ValuePercentual = new PointF(
+					tmp = selColor.ToColor();
+					colorPanel.ValuePercentual = new PointF(
 						tmp.B / 255.0f,
 						tmp.R / 255.0f);
 					break;
 				case PrimaryAttrib.Blue:
-					tmp = this.selColor.ToColor();
-					this.colorPanel.ValuePercentual = new PointF(
+					tmp = selColor.ToColor();
+					colorPanel.ValuePercentual = new PointF(
 						tmp.G / 255.0f,
 						tmp.R / 255.0f);
 					break;
@@ -237,37 +243,37 @@ namespace Fetze.WinFormsColor
 		private void UpdateColorSliderGradient()
 		{
 			Color tmp;
-			switch (this.primAttrib)
+			switch (primAttrib)
 			{
 				default:
 				case PrimaryAttrib.Hue:
-					this.colorSlider.SetupHueGradient(/*this.selColor.GetHSVSaturation(), this.selColor.GetHSVBrightness()*/);
+					colorSlider.SetupHueGradient(/*this.selColor.GetHSVSaturation(), this.selColor.GetHSVBrightness()*/);
 					break;
 				case PrimaryAttrib.Saturation:
-					this.colorSlider.SetupGradient(
-						ExtMethodsSystemDrawingColor.ColorFromHSV(this.selColor.h, 0.0f, this.selColor.v),
-						ExtMethodsSystemDrawingColor.ColorFromHSV(this.selColor.h, 1.0f, this.selColor.v));
+					colorSlider.SetupGradient(
+						ExtMethodsSystemDrawingColor.ColorFromHSV(selColor.h, 0.0f, selColor.v),
+						ExtMethodsSystemDrawingColor.ColorFromHSV(selColor.h, 1.0f, selColor.v));
 					break;
 				case PrimaryAttrib.Brightness:
-					this.colorSlider.SetupGradient(
-						ExtMethodsSystemDrawingColor.ColorFromHSV(this.selColor.h, this.selColor.s, 0.0f),
-						ExtMethodsSystemDrawingColor.ColorFromHSV(this.selColor.h, this.selColor.s, 1.0f));
+					colorSlider.SetupGradient(
+						ExtMethodsSystemDrawingColor.ColorFromHSV(selColor.h, selColor.s, 0.0f),
+						ExtMethodsSystemDrawingColor.ColorFromHSV(selColor.h, selColor.s, 1.0f));
 					break;
 				case PrimaryAttrib.Red:
-					tmp = this.selColor.ToColor();
-					this.colorSlider.SetupGradient(
+					tmp = selColor.ToColor();
+					colorSlider.SetupGradient(
 						Color.FromArgb(255, 0, tmp.G, tmp.B),
 						Color.FromArgb(255, 255, tmp.G, tmp.B));
 					break;
 				case PrimaryAttrib.Green:
-					tmp = this.selColor.ToColor();
-					this.colorSlider.SetupGradient(
+					tmp = selColor.ToColor();
+					colorSlider.SetupGradient(
 						Color.FromArgb(255, tmp.R, 0, tmp.B),
 						Color.FromArgb(255, tmp.R, 255, tmp.B));
 					break;
 				case PrimaryAttrib.Blue:
-					tmp = this.selColor.ToColor();
-					this.colorSlider.SetupGradient(
+					tmp = selColor.ToColor();
+					colorSlider.SetupGradient(
 						Color.FromArgb(255, tmp.R, tmp.G, 0),
 						Color.FromArgb(255, tmp.R, tmp.G, 255));
 					break;
@@ -276,279 +282,336 @@ namespace Fetze.WinFormsColor
 		private void UpdateColorSliderValue()
 		{
 			Color tmp;
-			switch (this.primAttrib)
+			switch (primAttrib)
 			{
 				default:
 				case PrimaryAttrib.Hue:
-					this.colorSlider.ValuePercentual = this.selColor.h;
+					colorSlider.ValuePercentual = selColor.h;
 					break;
 				case PrimaryAttrib.Saturation:
-					this.colorSlider.ValuePercentual = this.selColor.s;
+					colorSlider.ValuePercentual = selColor.s;
 					break;
 				case PrimaryAttrib.Brightness:
-					this.colorSlider.ValuePercentual = this.selColor.v;
+					colorSlider.ValuePercentual = selColor.v;
 					break;
 				case PrimaryAttrib.Red:
-					tmp = this.selColor.ToColor();
-					this.colorSlider.ValuePercentual = tmp.R / 255.0f;
+					tmp = selColor.ToColor();
+					colorSlider.ValuePercentual = tmp.R / 255.0f;
 					break;
 				case PrimaryAttrib.Green:
-					tmp = this.selColor.ToColor();
-					this.colorSlider.ValuePercentual = tmp.G / 255.0f;
+					tmp = selColor.ToColor();
+					colorSlider.ValuePercentual = tmp.G / 255.0f;
 					break;
 				case PrimaryAttrib.Blue:
-					tmp = this.selColor.ToColor();
-					this.colorSlider.ValuePercentual = tmp.B / 255.0f;
+					tmp = selColor.ToColor();
+					colorSlider.ValuePercentual = tmp.B / 255.0f;
 					break;
 			}
 		}
-		private void UpdateAlphaSliderGradient()
-		{
-			this.alphaSlider.SetupGradient(Color.Transparent, Color.FromArgb(255, this.selColor.ToColor()));
-		}
-		private void UpdateAlphaSliderValue()
-		{
-			this.alphaSlider.ValuePercentual = this.selColor.a;
-		}
+        private void UpdateAlphaSliderGradient() => alphaSlider.SetupGradient(Color.Transparent, Color.FromArgb(255, selColor.ToColor()));
+        private void UpdateAlphaSliderValue() => alphaSlider.ValuePercentual = selColor.a;
 
-		private void UpdateSelectedColorFromSliderValue()
+        private void UpdateSelectedColorFromSliderValue()
 		{
 			Color tmp;
-			switch (this.primAttrib)
+			switch (primAttrib)
 			{
 				default:
 				case PrimaryAttrib.Hue:
-					this.selColor.h = this.colorSlider.ValuePercentual;
+					selColor.h = colorSlider.ValuePercentual;
 					break;
 				case PrimaryAttrib.Saturation:
-					this.selColor.s = this.colorSlider.ValuePercentual;
+					selColor.s = colorSlider.ValuePercentual;
 					break;
 				case PrimaryAttrib.Brightness:
-					this.selColor.v = this.colorSlider.ValuePercentual;
+					selColor.v = colorSlider.ValuePercentual;
 					break;
 				case PrimaryAttrib.Red:
-					tmp = this.selColor.ToColor();
-					this.selColor = new InternalColor(Color.FromArgb(
+					tmp = selColor.ToColor();
+					selColor = new InternalColor(Color.FromArgb(
 						tmp.A, 
-						(int)Math.Round(this.colorSlider.ValuePercentual * 255.0f), 
+						(int)Math.Round(colorSlider.ValuePercentual * 255.0f), 
 						tmp.G, 
 						tmp.B));
 					break;
 				case PrimaryAttrib.Green:
-					tmp = this.selColor.ToColor();
-					this.selColor = new InternalColor(Color.FromArgb(
+					tmp = selColor.ToColor();
+					selColor = new InternalColor(Color.FromArgb(
 						tmp.A, 
 						tmp.R, 
-						(int)Math.Round(this.colorSlider.ValuePercentual * 255.0f), 
+						(int)Math.Round(colorSlider.ValuePercentual * 255.0f), 
 						tmp.B));
 					break;
 				case PrimaryAttrib.Blue:
-					tmp = this.selColor.ToColor();
-					this.selColor = new InternalColor(Color.FromArgb(
+					tmp = selColor.ToColor();
+					selColor = new InternalColor(Color.FromArgb(
 						tmp.A, 
 						tmp.R, 
 						tmp.G, 
-						(int)Math.Round(this.colorSlider.ValuePercentual * 255.0f)));
+						(int)Math.Round(colorSlider.ValuePercentual * 255.0f)));
 					break;
 			}
 		}
 		private void UpdateSelectedColorFromPanelValue()
 		{
 			Color tmp;
-			switch (this.primAttrib)
+			switch (primAttrib)
 			{
 				default:
 				case PrimaryAttrib.Hue:
-					this.selColor.s = this.colorPanel.ValuePercentual.X;
-					this.selColor.v = this.colorPanel.ValuePercentual.Y;
+					selColor.s = colorPanel.ValuePercentual.X;
+					selColor.v = colorPanel.ValuePercentual.Y;
 					break;
 				case PrimaryAttrib.Saturation:
-					this.selColor.h = this.colorPanel.ValuePercentual.X;
-					this.selColor.v = this.colorPanel.ValuePercentual.Y;
+					selColor.h = colorPanel.ValuePercentual.X;
+					selColor.v = colorPanel.ValuePercentual.Y;
 					break;
 				case PrimaryAttrib.Brightness:
-					this.selColor.h = this.colorPanel.ValuePercentual.X;
-					this.selColor.s = this.colorPanel.ValuePercentual.Y;
+					selColor.h = colorPanel.ValuePercentual.X;
+					selColor.s = colorPanel.ValuePercentual.Y;
 					break;
 				case PrimaryAttrib.Red:
-					tmp = this.selColor.ToColor();
-					this.selColor = new InternalColor(Color.FromArgb(
+					tmp = selColor.ToColor();
+					selColor = new InternalColor(Color.FromArgb(
 						tmp.A, 
 						tmp.R, 
-						(int)Math.Round(this.colorPanel.ValuePercentual.Y * 255.0f), 
-						(int)Math.Round(this.colorPanel.ValuePercentual.X * 255.0f)));
+						(int)Math.Round(colorPanel.ValuePercentual.Y * 255.0f), 
+						(int)Math.Round(colorPanel.ValuePercentual.X * 255.0f)));
 					break;
 				case PrimaryAttrib.Green:
-					tmp = this.selColor.ToColor();
-					this.selColor = new InternalColor(Color.FromArgb(
+					tmp = selColor.ToColor();
+					selColor = new InternalColor(Color.FromArgb(
 						tmp.A, 
-						(int)Math.Round(this.colorPanel.ValuePercentual.Y * 255.0f), 
+						(int)Math.Round(colorPanel.ValuePercentual.Y * 255.0f), 
 						tmp.G, 
-						(int)Math.Round(this.colorPanel.ValuePercentual.X * 255.0f)));
+						(int)Math.Round(colorPanel.ValuePercentual.X * 255.0f)));
 					break;
 				case PrimaryAttrib.Blue:
-					tmp = this.selColor.ToColor();
-					this.selColor = new InternalColor(Color.FromArgb(
+					tmp = selColor.ToColor();
+					selColor = new InternalColor(Color.FromArgb(
 						tmp.A, 
-						(int)Math.Round(this.colorPanel.ValuePercentual.Y * 255.0f), 
-						(int)Math.Round(this.colorPanel.ValuePercentual.X * 255.0f),
+						(int)Math.Round(colorPanel.ValuePercentual.Y * 255.0f), 
+						(int)Math.Round(colorPanel.ValuePercentual.X * 255.0f),
 						tmp.B));
 					break;
 			}
 		}
-		private void UpdateSelectedColorFromAlphaValue()
-		{
-			this.selColor.a = this.alphaSlider.ValuePercentual;
-		}
+        private void UpdateSelectedColorFromAlphaValue() => selColor.a = alphaSlider.ValuePercentual;
 
-		protected override void OnShown(EventArgs e)
+        protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
-			this.selColor = this.oldColor;
-			this.UpdateColorControls();
+			selColor = oldColor;
+			UpdateColorControls();
 		}
 
 		private void radioHue_CheckedChanged(object sender, EventArgs e)
 		{
-			if (this.radioHue.Checked) this.PrimaryAttribute = PrimaryAttrib.Hue;
-		}
+			if (radioHue.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Hue;
+            }
+        }
 		private void radioSaturation_CheckedChanged(object sender, EventArgs e)
 		{
-			if (this.radioSaturation.Checked) this.PrimaryAttribute = PrimaryAttrib.Saturation;
-		}
+			if (radioSaturation.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Saturation;
+            }
+        }
 		private void radioValue_CheckedChanged(object sender, EventArgs e)
 		{
-			if (this.radioValue.Checked) this.PrimaryAttribute = PrimaryAttrib.Brightness;
-		}
+			if (radioValue.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Brightness;
+            }
+        }
 		private void radioRed_CheckedChanged(object sender, EventArgs e)
 		{
-			if (this.radioRed.Checked) this.PrimaryAttribute = PrimaryAttrib.Red;
-		}
+			if (radioRed.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Red;
+            }
+        }
 		private void radioGreen_CheckedChanged(object sender, EventArgs e)
 		{
-			if (this.radioGreen.Checked) this.PrimaryAttribute = PrimaryAttrib.Green;
-		}
+			if (radioGreen.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Green;
+            }
+        }
 		private void radioBlue_CheckedChanged(object sender, EventArgs e)
 		{
-			if (this.radioBlue.Checked) this.PrimaryAttribute = PrimaryAttrib.Blue;
-		}
+			if (radioBlue.Checked)
+            {
+                PrimaryAttribute = PrimaryAttrib.Blue;
+            }
+        }
 
 		private void colorPanel_PercentualValueChanged(object sender, EventArgs e)
 		{
-			if (this.ContainsFocus) this.UpdateSelectedColorFromPanelValue();
-			this.UpdateColorSliderGradient();
-			this.UpdateAlphaSliderGradient();
-			this.UpdateColorShowBox();
-			this.UpdateText();
+			if (ContainsFocus)
+            {
+                UpdateSelectedColorFromPanelValue();
+            }
+
+            UpdateColorSliderGradient();
+			UpdateAlphaSliderGradient();
+			UpdateColorShowBox();
+			UpdateText();
 		}
 		private void colorSlider_PercentualValueChanged(object sender, EventArgs e)
 		{
-			if (this.ContainsFocus) this.UpdateSelectedColorFromSliderValue();
-			this.UpdateColorPanelGradient();
-			this.UpdateAlphaSliderGradient();
-			this.UpdateColorShowBox();
-			this.UpdateText();
+			if (ContainsFocus)
+            {
+                UpdateSelectedColorFromSliderValue();
+            }
+
+            UpdateColorPanelGradient();
+			UpdateAlphaSliderGradient();
+			UpdateColorShowBox();
+			UpdateText();
 		}
 		private void alphaSlider_PercentualValueChanged(object sender, EventArgs e)
 		{
-			if (this.ContainsFocus) this.UpdateSelectedColorFromAlphaValue();
-			this.UpdateColorSliderGradient();
-			this.UpdateColorPanelGradient();
-			this.UpdateColorShowBox();
-			this.UpdateText();
+			if (ContainsFocus)
+            {
+                UpdateSelectedColorFromAlphaValue();
+            }
+
+            UpdateColorSliderGradient();
+			UpdateColorPanelGradient();
+			UpdateColorShowBox();
+			UpdateText();
 		}
 
 		private void numHue_ValueChanged(object sender, EventArgs e)
 		{
-			if (this.suspendTextEvents) return;
-			this.selColor.h = (float)this.numHue.Value / 360.0f;
-			this.UpdateColorControls();
+			if (suspendTextEvents)
+            {
+                return;
+            }
+
+            selColor.h = (float)numHue.Value / 360.0f;
+			UpdateColorControls();
 		}
 		private void numSaturation_ValueChanged(object sender, EventArgs e)
 		{
-			if (this.suspendTextEvents) return;
-			this.selColor.s = (float)this.numSaturation.Value / 100.0f;
-			this.UpdateColorControls();
+			if (suspendTextEvents)
+            {
+                return;
+            }
+
+            selColor.s = (float)numSaturation.Value / 100.0f;
+			UpdateColorControls();
 		}
 		private void numValue_ValueChanged(object sender, EventArgs e)
 		{
-			if (this.suspendTextEvents) return;
-			this.selColor.v = (float)this.numValue.Value / 100.0f;
-			this.UpdateColorControls();
+			if (suspendTextEvents)
+            {
+                return;
+            }
+
+            selColor.v = (float)numValue.Value / 100.0f;
+			UpdateColorControls();
 		}
 		private void numRed_ValueChanged(object sender, EventArgs e)
 		{
-			if (this.suspendTextEvents) return;
-			Color tmp = this.selColor.ToColor();
-			this.selColor = new InternalColor(Color.FromArgb(
+			if (suspendTextEvents)
+            {
+                return;
+            }
+
+            var tmp = selColor.ToColor();
+			selColor = new InternalColor(Color.FromArgb(
 				tmp.A,
-				(byte)this.numRed.Value,
+				(byte)numRed.Value,
 				tmp.G,
 				tmp.B));
-			this.UpdateColorControls();
+			UpdateColorControls();
 		}
 		private void numGreen_ValueChanged(object sender, EventArgs e)
 		{
-			if (this.suspendTextEvents) return;
-			Color tmp = this.selColor.ToColor();
-			this.selColor = new InternalColor(Color.FromArgb(
+			if (suspendTextEvents)
+            {
+                return;
+            }
+
+            var tmp = selColor.ToColor();
+			selColor = new InternalColor(Color.FromArgb(
 				tmp.A,
 				tmp.R,
-				(byte)this.numGreen.Value,
+				(byte)numGreen.Value,
 				tmp.B));
-			this.UpdateColorControls();
+			UpdateColorControls();
 		}
 		private void numBlue_ValueChanged(object sender, EventArgs e)
 		{
-			if (this.suspendTextEvents) return;
-			Color tmp = this.selColor.ToColor();
-			this.selColor = new InternalColor(Color.FromArgb(
+			if (suspendTextEvents)
+            {
+                return;
+            }
+
+            var tmp = selColor.ToColor();
+			selColor = new InternalColor(Color.FromArgb(
 				tmp.A,
 				tmp.R,
 				tmp.G,
-				(byte)this.numBlue.Value));
-			this.UpdateColorControls();
+				(byte)numBlue.Value));
+			UpdateColorControls();
 		}
 		private void numAlpha_ValueChanged(object sender, EventArgs e)
 		{
-			if (this.suspendTextEvents) return;
-			Color tmp = this.selColor.ToColor();
-			this.selColor = new InternalColor(Color.FromArgb(
-				(byte)this.numAlpha.Value,
+			if (suspendTextEvents)
+            {
+                return;
+            }
+
+            var tmp = selColor.ToColor();
+			selColor = new InternalColor(Color.FromArgb(
+				(byte)numAlpha.Value,
 				tmp.R,
 				tmp.G,
 				tmp.B));
-			this.UpdateColorControls();
+			UpdateColorControls();
 		}
 		private void textBoxHex_TextChanged(object sender, EventArgs e)
 		{
-			if (this.suspendTextEvents) return;
-			int argb;
-			if (int.TryParse(this.textBoxHex.Text, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.CurrentUICulture, out argb))
+			if (suspendTextEvents)
+            {
+                return;
+            }
+
+            int argb;
+			if (int.TryParse(textBoxHex.Text, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.CurrentUICulture, out argb))
 			{
-				Color tmp = Color.FromArgb(argb);
-				this.selColor = new InternalColor(tmp);
-				this.UpdateColorControls();
+				var tmp = Color.FromArgb(argb);
+				selColor = new InternalColor(tmp);
+				UpdateColorControls();
 			}
 		}
 
 		private void colorShowBox_UpperClick(object sender, EventArgs e)
 		{
-			this.selColor = this.oldColor;
-			this.UpdateColorControls();
+			selColor = oldColor;
+			UpdateColorControls();
 		}
 
 		private void buttonOk_Click(object sender, EventArgs e)
 		{
-			this.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.Hide();
+			DialogResult = DialogResult.OK;
+			Hide();
 		}
 		private void ColorPickerDialog_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			if (this.DialogResult == System.Windows.Forms.DialogResult.Cancel)
-				this.SelectedColor = this.OldColor;
-			else
-				this.OldColor = this.SelectedColor;
-		}
+			if (DialogResult == DialogResult.Cancel)
+            {
+                SelectedColor = OldColor;
+            }
+            else
+            {
+                OldColor = SelectedColor;
+            }
+        }
 	}
 }

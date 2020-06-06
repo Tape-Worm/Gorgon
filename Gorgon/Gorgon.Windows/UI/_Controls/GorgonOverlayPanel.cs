@@ -384,7 +384,7 @@ namespace Gorgon.UI
         /// <see langword="true" /> if the character was processed by the control; otherwise, <see langword="false" />.</returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
             // Attempt to mitigate Tab switching while this control is live.
-            ((keyData & Keys.Tab) == Keys.Tab) && (AllowStealFocus) ? true : base.ProcessCmdKey(ref msg, keyData);
+            ((keyData & Keys.Tab) == Keys.Tab) && (AllowStealFocus) || base.ProcessCmdKey(ref msg, keyData);
 
         /// <summary>
         /// Function called after the siblings for this control are rendered.

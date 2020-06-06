@@ -153,6 +153,12 @@ namespace Gorgon.Editor.Metadata
             {
                 Attributes[attribute.Key] = attribute.Value;
             }
+
+            // Copy the dependency data for each file.
+            foreach (KeyValuePair<string, List<string>> dependency in metadata.DependsOn)
+            {
+                DependsOn[dependency.Key] = new List<string>(dependency.Value);
+            }
         }
 
         /// <summary>

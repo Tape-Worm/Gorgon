@@ -50,11 +50,35 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Events.
+        // Event fired when rows are dragged.
+        private event EventHandler<RowsDragEventArgs> RowsDragEvent;
+
         /// <summary>
         /// Event fired when rows are dragged.
         /// </summary>
         [Category("Action"), Description("The event fired when the selected rows are dragged.")]
-        public event EventHandler<RowsDragEventArgs> RowsDrag;
+        public event EventHandler<RowsDragEventArgs> RowsDrag
+        {
+            add
+            {
+                if (value == null)
+                {
+                    RowsDragEvent = null;
+                    return;
+                }
+
+                RowsDragEvent += value;
+            }
+            remove
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                RowsDragEvent -= value;
+            }
+        }
         #endregion
 
         #region Methods.
@@ -100,7 +124,7 @@ namespace Gorgon.Editor.Views
             {
                 _dragRows.AddRange(SelectedRows.OfType<DataGridViewRow>());
 
-                EventHandler<RowsDragEventArgs> handler = RowsDrag;
+                EventHandler<RowsDragEventArgs> handler = RowsDragEvent;
                 handler?.Invoke(this, new RowsDragEventArgs(_dragRows, e.Button));
 
                 _dragRegion = Rectangle.Empty;
@@ -217,6 +241,28 @@ namespace Gorgon.Editor.Views
             e.PaintContent(e.ClipBounds);
 
             e.Handled = true;
+        }
+
+        /// <summary>Releases the unmanaged resources used by the <see cref="Control"/> and its child controls and optionally releases the managed resources.</summary>
+        /// <param name="disposing">
+        ///   <span class="keyword">
+        ///     <span class="languageSpecificText">
+        ///       <span class="cs">true</span>
+        ///       <span class="vb">True</span>
+        ///       <span class="cpp">true</span>
+        ///     </span>
+        ///   </span>
+        ///   <span class="nu">
+        ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> to release both managed and unmanaged resources; <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span> to release only unmanaged resources.
+        /// </param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                RowsDragEvent = null;
+            }
+
+            base.Dispose(disposing);
         }
         #endregion
     }

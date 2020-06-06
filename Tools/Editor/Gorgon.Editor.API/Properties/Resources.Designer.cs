@@ -834,5 +834,15 @@ namespace Gorgon.Editor.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Transparency_Pattern {
+            get {
+                object obj = ResourceManager.GetObject("Transparency_Pattern", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

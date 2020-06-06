@@ -303,7 +303,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to read the keyframe data for floating point value information in the track.
+        /// Function to read the key frame data for floating point value information in the track.
         /// </summary>
         /// <param name="reader">The reader containing the track data.</param>
         /// <param name="keyCount">The number of keys to read.</param>
@@ -324,7 +324,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to read the keyframe data for int32 data in the track.
+        /// Function to read the key frame data for int32 data in the track.
         /// </summary>
         /// <param name="reader">The reader containing the track data.</param>
         /// <param name="keyCount">The number of keys to read.</param>
@@ -345,7 +345,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to read the keyframe data for rectangle information in the track.
+        /// Function to read the key frame data for rectangle information in the track.
         /// </summary>
         /// <param name="reader">The reader containing the track data.</param>
         /// <param name="keyCount">The number of keys to read.</param>
@@ -367,14 +367,13 @@ namespace Gorgon.IO
                 GorgonTexture2D texture = Graphics.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault();
                 GorgonTexture2DView view = texture?.GetShaderResourceView();
 
-                if ((view == null) && (!string.IsNullOrWhiteSpace(name)))
+                if ((view == null) && (string.IsNullOrWhiteSpace(name)))
                 {
                     Graphics.Log.Print("The animation has texture keys, but no applicable textures were found, and no name for the texture was given.", LoggingLevel.Verbose);
                     continue;
                 }
 
                 DX.RectangleF uv;
-
 
                 if (view != null)
                 {
@@ -753,34 +752,33 @@ namespace Gorgon.IO
                     reader.ReadInt32(); // We don't use interpolation on texture tracks.
 
                     string imageName = reader.ReadString();
+                    GorgonTexture2DView view = null;
+                    DX.Vector2 imageOffset = DX.Vector2.Zero;
+                    DX.Vector2 imageSize = DX.Vector2.One;
+                    var texCoords = new DX.RectangleF(imageOffset.X, imageOffset.Y, imageSize.X, imageSize.Y);
 
-                    if (string.IsNullOrWhiteSpace(imageName))
+                    if (!string.IsNullOrWhiteSpace(imageName))
                     {
-                        continue;
+                        imageOffset = reader.ReadValue<DX.Vector2>();
+                        imageSize = reader.ReadValue<DX.Vector2>();
+
+                        // Attempt to locate the image.
+                        GorgonTexture2D texture = Renderer.Graphics.LocateResourcesByName<GorgonTexture2D>(imageName).FirstOrDefault();
+                        view = texture?.GetShaderResourceView();
                     }
-
-                    DX.Vector2 imageOffset = reader.ReadValue<DX.Vector2>();
-                    DX.Vector2 imageSize = reader.ReadValue<DX.Vector2>();
-
-                    // Attempt to locate the image.
-                    GorgonTexture2D texture = Renderer.Graphics.LocateResourcesByName<GorgonTexture2D>(imageName).FirstOrDefault();
-                    GorgonTexture2DView view = texture?.GetShaderResourceView();
 
                     // We cannot locate the texture, so do not add the key.
                     if (view == null)
                     {
-                        Graphics.Log.Print($"The animation has texture keys and the texture '{imageName}' is required, but was not found in the loaded resources.", LoggingLevel.Verbose);
-                        continue;
+                        Graphics.Log.Print($"The animation has texture keys and the texture '{imageName}' is required, but was not found in the loaded resources. The texture coordinates will most likely be incorrect for this frame.", LoggingLevel.Verbose);
+                    }
+                    else
+                    {
+                        texCoords = new DX.RectangleF(imageOffset.X / view.Width, imageOffset.Y / view.Height, imageSize.X / view.Width, imageSize.Y / view.Height);
                     }
 
                     builder.Edit2DTexture("Texture")
-                           .SetKey(new GorgonKeyTexture2D(time,
-                                                          view,
-                                                          new DX.RectangleF(imageOffset.X / texture.Width,
-                                                                            imageOffset.Y / texture.Height,
-                                                                            imageSize.X / texture.Width,
-                                                                            imageSize.Y / texture.Height),
-                                                          0))
+                           .SetKey((view == null) && (!string.IsNullOrWhiteSpace(imageName)) ? new GorgonKeyTexture2D(time, imageName, texCoords, 0) : new GorgonKeyTexture2D(time, view, texCoords, 0))
                            .EndEdit();
                 }
 
@@ -798,6 +796,13 @@ namespace Gorgon.IO
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
         protected override IGorgonAnimation OnReadFromStream(Stream stream, int byteCount) => OnReadMultipleFromStream(stream, true)[0];
+
+
+        /// <summary>Function to retrieve the names of the associated textures.</summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
+        /// <remarks>This implementation does not do anything.</remarks>
+        protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream) => Array.Empty<string>();
 
         /// <summary>
         /// Function to determine the number of animations in the sprite.
@@ -1011,7 +1016,5 @@ namespace Gorgon.IO
                                  new GorgonFileExtension(".gorSprite", Resources.GOR2DIO_SPRITE_FILE_EXTENSION_DESC),
                              };
         #endregion
-
-
     }
 }

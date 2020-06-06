@@ -52,11 +52,11 @@ namespace Gorgon.Editor.SpriteEditor
 
         // The plug in cache for image codecs.
         private GorgonMefPlugInCache _pluginCache;
-
         /// <summary>
         /// The file name for the file that stores the settings.
         /// </summary>
         public readonly static string SettingsFilename = typeof(SpriteImporterPlugIn).FullName;
+
         #endregion
 
         #region Methods.

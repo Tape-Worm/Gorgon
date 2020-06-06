@@ -32,7 +32,7 @@ using Gorgon.Core;
 namespace Gorgon.Animation
 {
     /// <summary>
-    /// The type of keyframe data for a track.
+    /// The type of key frame data for a track.
     /// </summary>
     public enum AnimationTrackKeyType
     {
@@ -69,43 +69,69 @@ namespace Gorgon.Animation
     /// <summary>
     /// Defines a registration for a track in the controller.
     /// </summary>
-    public struct GorgonTrackRegistration
+    /// <remarks>
+    /// <para>
+    /// This provides metadata for an animation track and indicates which properties on an object can be manipulated while rendering the animation. 
+    /// </para>
+    /// <para>
+    /// Applications defining their own animation controllers should define which tracks correspond to which properties by declaring a static field and registering that with the 
+    /// <see cref="GorgonAnimationController{T}.RegisterTrack(GorgonTrackRegistration)"/> method in the static constructor of the custom controller.
+    /// </para>
+    /// </remarks>
+    public class GorgonTrackRegistration
         : IEquatable<GorgonTrackRegistration>
     {
         #region Variables.
         // The counter for generating IDs.
         private static int _idCount;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the ID of the track.
+        /// </summary>
+        public int ID
+        {
+            get;
+        }
 
         /// <summary>
-        /// The ID of the track.
+        /// Property to return the name of the track.
         /// </summary>
-        public readonly int ID;
+        public string TrackName
+        {
+            get;
+        }
 
         /// <summary>
-        /// The name of the track.
+        /// Property to return the friendly description for the track.
         /// </summary>
-        public readonly string TrackName;
+        public string Description
+        {
+            get;
+        }
 
         /// <summary>
-        /// The type of key frame data in the track.
+        /// Property to return the type of key frame data in the track.
         /// </summary>
-        public readonly AnimationTrackKeyType KeyType;
+        public AnimationTrackKeyType KeyType
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the type of interpolation supported by the track.
+        /// </summary>
+        public TrackInterpolationMode SupportedInterpolation
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
         /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
         /// <returns>A <see cref="string"/> that represents this instance.</returns>
         public override string ToString() => string.Format(Resources.GORANM_TOSTR_TRACKREG, TrackName, KeyType.ToString());
-
-        /// <summary>Determines whether the specified <see cref="object"/> is equal to this instance.</summary>
-        /// <param name="obj">The object to compare with the current instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="object"/> is equal to this instance; otherwise, <c>false</c>.</returns>
-        public override bool Equals(object obj) => obj is GorgonTrackRegistration ? ((GorgonTrackRegistration)obj).Equals(this) : base.Equals(obj);
-
-        /// <summary>Returns a hash code for this instance.</summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => (TrackName == null) ? 0 : 281.GenerateHash(TrackName).GenerateHash(KeyType);
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -123,31 +149,15 @@ namespace Gorgon.Animation
         public bool Equals(GorgonTrackRegistration other) => (string.Equals(TrackName, other.TrackName, StringComparison.OrdinalIgnoreCase)) && (KeyType == other.KeyType);
         #endregion
 
-        #region Operators.
-        /// <summary>
-        /// Operator to determine if two instances are equal.
-        /// </summary>
-        /// <param name="left">The left instance to compare.</param>
-        /// <param name="right">The right instance to compare.</param>
-        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonTrackRegistration left, GorgonTrackRegistration right) => left.Equals(right);
-
-        /// <summary>
-        /// Operator to determine if two instances are not equal.
-        /// </summary>
-        /// <param name="left">The left instance to compare.</param>
-        /// <param name="right">The right instance to compare.</param>
-        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-        public static bool operator !=(GorgonTrackRegistration left, GorgonTrackRegistration right) => !left.Equals(right);
-        #endregion
-
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="GorgonTrackRegistration"/> struct.</summary>
         /// <param name="trackName">The name of the track.</param>
+        /// <param name="description">The friendly description of the track.</param>
         /// <param name="keyType">The type of key frame data stored in the track.</param>
+        /// <param name="interpolationSupport">[Optional] The type of interpolation supported by the track.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="trackName"/>, or the <paramref name="keyType"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="trackName"/> parameter is empty.</exception>
-        public GorgonTrackRegistration(string trackName, AnimationTrackKeyType keyType)
+        public GorgonTrackRegistration(string trackName, string description, AnimationTrackKeyType keyType, TrackInterpolationMode interpolationSupport = TrackInterpolationMode.Spline | TrackInterpolationMode.Linear)
         {
             if (trackName == null)
             {
@@ -160,7 +170,9 @@ namespace Gorgon.Animation
             }
 
             TrackName = trackName;
+            Description = string.IsNullOrWhiteSpace(description) ? trackName : description;
             KeyType = keyType;
+            SupportedInterpolation = interpolationSupport;
             ID = Interlocked.Increment(ref _idCount);
         }
         #endregion

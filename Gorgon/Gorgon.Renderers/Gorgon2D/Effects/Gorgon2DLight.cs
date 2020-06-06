@@ -72,7 +72,7 @@ namespace Gorgon.Renderers
         /// Property to set or return the direction of the light for directional lighting.
         /// </summary>
         /// <remarks>
-        /// This property is ignored when the <see cref="LightType"/> property is set to <see cref="Renderers.LightType.Point"/>.
+        /// This property is ignored when the <see cref="LightType"/> property is set to <see cref="LightType.Point"/>.
         /// </remarks>
         public DX.Vector3 LightDirection
         {

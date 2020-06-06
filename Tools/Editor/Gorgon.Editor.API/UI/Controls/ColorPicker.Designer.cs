@@ -20,7 +20,7 @@
 
             if (disposing)
             {
-
+                ColorChangedEvent = null;
             }
 
             base.Dispose(disposing);

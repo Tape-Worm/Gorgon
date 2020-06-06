@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Animation.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -57,120 +58,163 @@ namespace Gorgon.Animation
     public class GorgonSpriteAnimationController
         : GorgonAnimationController<GorgonSprite>
     {
+        #region Constants.
+        /// <summary>
+        /// The name of the opacity track.
+        /// </summary>
+        public const string OpacityTrackName = "Opacity";
+        /// <summary>
+        /// The name of the upper left color track.
+        /// </summary>
+        public const string UpperLeftColorTrackName = "UpperLeftColor";
+        /// <summary>
+        /// The name of the upper right color track.
+        /// </summary>
+        public const string UpperRightColorTrackName = "UpperRightColor";
+        /// <summary>
+        /// The name of the lower left color track.
+        /// </summary>
+        public const string LowerLeftColorTrackName = "LowerLeftColor";
+        /// <summary>
+        /// The name of the lower right color track.
+        /// </summary>
+        public const string LowerRightColorTrackName = "LowerRightColor";
+        /// <summary>
+        /// The name of the 3D position track.
+        /// </summary>
+        public const string Position3DTrackName = nameof(GorgonSprite.Position) + "3D";
+        /// <summary>
+        /// The name of the upper left 3D position track.
+        /// </summary>
+        public const string UpperLeft3DTrackName = nameof(GorgonSprite.CornerOffsets.UpperLeft) + "3D";
+        /// <summary>
+        /// The name of the lower left 3D position track.
+        /// </summary>
+        public const string LowerLeft3DTrackName = nameof(GorgonSprite.CornerOffsets.LowerLeft) + "3D";
+        /// <summary>
+        /// The name of the upper right 3D position track.
+        /// </summary>
+        public const string UpperRight3DTrackName = nameof(GorgonSprite.CornerOffsets.UpperRight) + "3D";
+        /// <summary>
+        /// The name of the lower right 3D position track.
+        /// </summary>
+        public const string LowerRight3DTrackName = nameof(GorgonSprite.CornerOffsets.LowerRight) + "3D";
+        #endregion
+
         #region Variables.
         /// <summary>
         /// The track registration for the angle of rotation for the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration AngleTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Angle), AnimationTrackKeyType.Single);
+        public static readonly GorgonTrackRegistration AngleTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Angle), Resources.GORANM_TEXT_ANGLE, AnimationTrackKeyType.Single);
         /// <summary>
         /// The track registration for the depth value of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration DepthTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Depth), AnimationTrackKeyType.Single);
+        public static readonly GorgonTrackRegistration DepthTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Depth), Resources.GORANM_TEXT_DEPTH, AnimationTrackKeyType.Single);
         /// <summary>
         /// The track registration for the texture array index for the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration TextureArrayIndexTrack = new GorgonTrackRegistration(nameof(GorgonSprite.TextureArrayIndex), AnimationTrackKeyType.Single);
+        public static readonly GorgonTrackRegistration TextureArrayIndexTrack = new GorgonTrackRegistration(nameof(GorgonSprite.TextureArrayIndex), Resources.GORANM_TEXT_TEXTURE_ARRAY_INDEX ,AnimationTrackKeyType.Single, TrackInterpolationMode.None);
         /// <summary>
         /// The track registration for the opacity of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration OpacityTrack = new GorgonTrackRegistration("Opacity", AnimationTrackKeyType.Single);
+        public static readonly GorgonTrackRegistration OpacityTrack = new GorgonTrackRegistration(OpacityTrackName, Resources.GORANM_TEXT_OPACITY, AnimationTrackKeyType.Single);
 
         /// <summary>
         /// The track registration for the position of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration PositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Position), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration PositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Position), Resources.GORANM_TEXT_POSITION, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the anchor point, in relative coordinates, of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration AnchorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Anchor), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration AnchorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Anchor), Resources.GORANM_TEXT_ANCHOR, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the anchor point, in absolute coordinates, of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration AbsoluteAnchorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.AbsoluteAnchor), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration AbsoluteAnchorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.AbsoluteAnchor), Resources.GORANM_TEXT_ABSOLUTE_ANCHOR, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the size of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration SizeTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Size), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration SizeTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Size), Resources.GORANM_TEXT_SIZE, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the scale, using relative values, of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration ScaleTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Scale), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration ScaleTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Scale), Resources.GORANM_TEXT_SCALE, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the scale, using absolute values, of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration ScaledSizeTrack = new GorgonTrackRegistration(nameof(GorgonSprite.ScaledSize), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration ScaledSizeTrack = new GorgonTrackRegistration(nameof(GorgonSprite.ScaledSize), Resources.GORANM_TEXT_SCALED_SIZE, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the position of the upper left corner of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration UpperLeftPositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.UpperLeft), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration UpperLeftPositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.UpperLeft), Resources.GORANM_TEXT_UPPER_LEFT_OFFSET, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the position of the upper right corner of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration UpperRightPositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.UpperRight), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration UpperRightPositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.UpperRight), Resources.GORANM_TEXT_UPPER_RIGHT_OFFSET, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the position of the lower left corner of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration LowerLeftPositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.LowerLeft), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration LowerLeftPositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.LowerLeft), Resources.GORANM_TEXT_LOWER_LEFT_OFFSET, AnimationTrackKeyType.Vector2);
         /// <summary>
         /// The track registration for the position of the lower right corner of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration LowerRightPositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.LowerRight), AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration LowerRightPositionTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.LowerRight), Resources.GORANM_TEXT_LOWER_RIGHT_OFFSET, AnimationTrackKeyType.Vector2);
 
         /// <summary>
         /// The track registration for the position, and depth of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration Position3DTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Position), AnimationTrackKeyType.Vector3);
+        public static readonly GorgonTrackRegistration Position3DTrack = new GorgonTrackRegistration(Position3DTrackName, Resources.GORANM_TEXT_POSITION_3D, AnimationTrackKeyType.Vector3);
         /// <summary>
         /// The track registration for the position, and depth of the upper left corner of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration UpperLeftPosition3DTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.UpperLeft), AnimationTrackKeyType.Vector3);
+        public static readonly GorgonTrackRegistration UpperLeftPosition3DTrack = new GorgonTrackRegistration(UpperLeft3DTrackName, Resources.GORANM_TEXT_UPPER_LEFT_OFFSET_3D, AnimationTrackKeyType.Vector3);
         /// <summary>
         /// The track registration for the position, and depth of the upper right corner of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration UpperRightPosition3DTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.UpperRight), AnimationTrackKeyType.Vector3);
+        public static readonly GorgonTrackRegistration UpperRightPosition3DTrack = new GorgonTrackRegistration(UpperRight3DTrackName, Resources.GORANM_TEXT_UPPER_RIGHT_OFFSET_3D, AnimationTrackKeyType.Vector3);
         /// <summary>
         /// The track registration for the position, and depth of the lower left corner of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration LowerLeftPosition3DTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.LowerLeft), AnimationTrackKeyType.Vector3);
+        public static readonly GorgonTrackRegistration LowerLeftPosition3DTrack = new GorgonTrackRegistration(LowerLeft3DTrackName, Resources.GORANM_TEXT_LOWER_LEFT_OFFSET_3D, AnimationTrackKeyType.Vector3);
         /// <summary>
         /// The track registration for the position, and depth of the lower right corner of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration LowerRightPosition3DTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerOffsets.LowerRight), AnimationTrackKeyType.Vector3);
+        public static readonly GorgonTrackRegistration LowerRightPosition3DTrack = new GorgonTrackRegistration(LowerRight3DTrackName, Resources.GORANM_TEXT_LOWER_RIGHT_OFFSET_3D, AnimationTrackKeyType.Vector3);
 
         /// <summary>
         /// The track registration for the bounds of the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration BoundsTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Bounds), AnimationTrackKeyType.Rectangle);
+        public static readonly GorgonTrackRegistration BoundsTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Bounds), Resources.GORANM_TEXT_BOUNDS, AnimationTrackKeyType.Rectangle);
         /// <summary>
         /// The track registration for the texture coordinates for the sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration TextureCoordinatesTrack = new GorgonTrackRegistration(nameof(GorgonSprite.TextureRegion), AnimationTrackKeyType.Rectangle);
+        public static readonly GorgonTrackRegistration TextureCoordinatesTrack = new GorgonTrackRegistration(nameof(GorgonSprite.TextureRegion), Resources.GORANM_TEXT_TEXTURE_REGION, AnimationTrackKeyType.Rectangle, TrackInterpolationMode.None);
 
         /// <summary>
         /// The track registration for the color on a sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration ColorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Color), AnimationTrackKeyType.Color);
+        public static readonly GorgonTrackRegistration ColorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Color), Resources.GORANM_TEXT_COLOR, AnimationTrackKeyType.Color);
         /// <summary>
         /// The track registration for the upper left corner color on a sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration UpperLeftColorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerColors.UpperLeft), AnimationTrackKeyType.Color);
+        public static readonly GorgonTrackRegistration UpperLeftColorTrack = new GorgonTrackRegistration(UpperLeftColorTrackName, Resources.GORANM_TEXT_UPPER_LEFT_COLOR, AnimationTrackKeyType.Color);
         /// <summary>
         /// The track registration for the upper right corner color on a sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration UpperRightColorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerColors.UpperRight), AnimationTrackKeyType.Color);
+        public static readonly GorgonTrackRegistration UpperRightColorTrack = new GorgonTrackRegistration(UpperRightColorTrackName, Resources.GORANM_TEXT_UPPER_RIGHT_COLOR, AnimationTrackKeyType.Color);
         /// <summary>
         /// The track registration for the lower left corner color on a sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration LowerLeftColorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerColors.LowerLeft), AnimationTrackKeyType.Color);
+        public static readonly GorgonTrackRegistration LowerLeftColorTrack = new GorgonTrackRegistration(LowerLeftColorTrackName, Resources.GORANM_TEXT_LOWER_LEFT_COLOR, AnimationTrackKeyType.Color);
         /// <summary>
         /// The track registration for the lower right corner color on a sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration LowerRightColorTrack = new GorgonTrackRegistration(nameof(GorgonSprite.CornerColors.LowerRight), AnimationTrackKeyType.Color);
+        public static readonly GorgonTrackRegistration LowerRightColorTrack = new GorgonTrackRegistration(LowerRightColorTrackName, Resources.GORANM_TEXT_LOWER_RIGHT_COLOR, AnimationTrackKeyType.Color);
 
         /// <summary>
         /// The track registration for the texture, texture coordinates, and texture array index on a sprite.
         /// </summary>
-        public static readonly GorgonTrackRegistration TextureTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Texture), AnimationTrackKeyType.Texture2D);
+        public static readonly GorgonTrackRegistration TextureTrack = new GorgonTrackRegistration(nameof(GorgonSprite.Texture), Resources.GORANM_TEXT_TEXTURE, AnimationTrackKeyType.Texture2D, TrackInterpolationMode.None);
         #endregion
 
         #region Methods.

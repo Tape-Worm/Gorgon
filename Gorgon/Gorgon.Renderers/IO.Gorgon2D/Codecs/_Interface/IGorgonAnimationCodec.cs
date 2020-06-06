@@ -100,6 +100,13 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
+        /// Function to retrieve the names of the textures associated with the animation.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
+        IReadOnlyList<string> GetAssociatedTextureNames(Stream stream);
+
+        /// <summary>
         /// Function to read the sprite data from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>

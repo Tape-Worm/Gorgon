@@ -30,6 +30,7 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.PlugIns;
+using Gorgon.Renderers;
 
 namespace Gorgon.IO
 {
@@ -46,7 +47,7 @@ namespace Gorgon.IO
         /// <remarks>
         /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug in as its key, and an optional friendly description as its value.
         /// </remarks>
-        public abstract IReadOnlyList<GorgonSpriteCodecDescription> Codecs
+        public abstract IReadOnlyList<GorgonAnimationCodecDescription> Codecs
         {
             get;
         }
@@ -57,20 +58,22 @@ namespace Gorgon.IO
         /// Function to create a new <see cref="IGorgonAnimationCodec"/>.
         /// </summary>
         /// <param name="codec">The codec to retrieve from the plug in.</param>
+        /// <param name="renderer">The renderer used to retrieve textures.</param>
         /// <returns>A new <see cref="IGorgonAnimationCodec"/> object.</returns>
         /// <remarks>
         /// <para>
         /// Implementors must implement this method to return the codec from the plug in assembly.
         /// </para>
         /// </remarks>
-        protected abstract IGorgonAnimationCodec OnCreateCodec(string codec);
+        protected abstract IGorgonAnimationCodec OnCreateCodec(string codec, Gorgon2D renderer);
 
         /// <summary>
         /// Function to create a new image codec object.
         /// </summary>
         /// <param name="codec">The name of the codec to look up within the plug in.</param>
+        /// <param name="renderer">The renderer used to retrieve textures.</param>
         /// <returns>A new instance of a <see cref="IGorgonAnimationCodec"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/>, or the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
         /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
         /// <remarks>
@@ -79,7 +82,7 @@ namespace Gorgon.IO
         /// <see cref="Codecs"/> property on the plug in to locate the plug in name.
         /// </para>
         /// </remarks>
-        public IGorgonAnimationCodec CreateCodec(string codec)
+        public IGorgonAnimationCodec CreateCodec(string codec, Gorgon2D renderer)
         {
             if (codec == null)
             {
@@ -96,7 +99,7 @@ namespace Gorgon.IO
                 throw new KeyNotFoundException(string.Format(Resources.GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN, codec));
             }
 
-            IGorgonAnimationCodec result = OnCreateCodec(codec);
+            IGorgonAnimationCodec result = OnCreateCodec(codec, renderer);
 
             if (result == null)
             {

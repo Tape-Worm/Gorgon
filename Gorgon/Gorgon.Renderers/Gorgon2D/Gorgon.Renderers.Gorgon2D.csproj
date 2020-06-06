@@ -63,6 +63,7 @@
     <Compile Include="Cameras\Gorgon2DOrthoCamera.cs" />
     <Compile Include="Cameras\Gorgon2DPerspectiveCamera.cs" />
     <Compile Include="Cameras\_Internal\CameraController.cs" />
+    <Compile Include="Effects\Gorgon2DSilhouetteEffect.cs" />
     <Compile Include="Effects\Gorgon2DGBuffer.cs" />
     <Compile Include="Effects\Gorgon2D1BitEffect.cs" />
     <Compile Include="Effects\Gorgon2DBloomEffect.cs" />

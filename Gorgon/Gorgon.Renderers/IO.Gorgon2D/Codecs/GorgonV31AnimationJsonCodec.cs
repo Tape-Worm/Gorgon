@@ -112,9 +112,8 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                return !reader.Read()
-                    ? false
-                    : (Version.TryParse(reader.Value.ToString(), out Version version))
+                return reader.Read()
+&& (Version.TryParse(reader.Value.ToString(), out Version version))
                        && (version.Equals(Version));
             }
 
@@ -126,9 +125,9 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="reader">The JSON reader.</param>
         /// <param name="converter">The converter used to convert the data from JSON.</param>
-        /// <param name="interpolation">The interpolation mode for the track.</param>
+        /// <param name="trackProps">The rest of the track properties.</param>
         /// <returns>A list of 3D vector key frames.</returns>
-        private static List<Tk> ReadKeyData<Tk, Tc>(JsonReader reader, Tc converter, out TrackInterpolationMode interpolation)
+        private static List<Tk> ReadKeyData<Tk, Tc>(JsonReader reader, Tc converter, out (TrackInterpolationMode interpolation, bool enabled, string trackName) trackProps)
                where Tk : class, IGorgonKeyFrame
                where Tc : JsonConverter<Tk>
         {
@@ -151,7 +150,9 @@ namespace Gorgon.IO
             }
 
             List<Tk> positions = null;
-            interpolation = TrackInterpolationMode.None;
+            TrackInterpolationMode interpolation = TrackInterpolationMode.None;
+            string trackName = string.Empty;
+            bool isEnabled = true;
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
             {
@@ -170,8 +171,16 @@ namespace Gorgon.IO
                     case "KEYFRAMES":
                         positions = ReadKeys();
                         break;
+                    case "ISENABLED":
+                        isEnabled = reader.ReadAsBoolean() ?? true;
+                        break;
+                    case "NAME":
+                        trackName = reader.ReadAsString();
+                        break;
                 }
             }
+
+            trackProps = (interpolation, isEnabled, trackName);
 
             return positions;
         }
@@ -192,12 +201,123 @@ namespace Gorgon.IO
             }
 
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
-            {
-                string trackName = reader.Value.ToString();
-                List<Tk> keys = ReadKeyData<Tk, Tc>(reader, converter, out TrackInterpolationMode interpolation);
-                bool isEnabled = reader.ReadAsBoolean() ?? true;
-                track[trackName] = (keys, interpolation, isEnabled);
+            {                
+                List<Tk> keys = ReadKeyData<Tk, Tc>(reader, converter, out (TrackInterpolationMode interpolation, bool enabled, string trackName) trackProps);
+                track[trackProps.trackName] = (keys, trackProps.interpolation, trackProps.enabled);
             }
+        }
+
+        /// <summary>Function to retrieve the names of the associated textures.</summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
+        protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
+        {
+            string jsonString = null;
+
+            var result = new List<string>();
+
+            // Loads the texture names.
+            void LoadNames(JsonReader reader)
+            {
+                while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+                {
+                    if (reader.TokenType != JsonToken.PropertyName)
+                    {
+                        continue;
+                    }
+
+                    string propName = reader.Value.ToString().ToUpperInvariant();
+
+                    switch (propName)
+                    {
+                        case "KEYFRAMES":
+                            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+                            {
+                                if (reader.TokenType != JsonToken.PropertyName)
+                                {
+                                    continue;
+                                }
+
+                                propName = reader.Value.ToString().ToUpperInvariant();
+
+                                switch (propName)
+                                {
+                                    case "UV":
+                                        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+                                        {
+                                            // Skip or we'll exit prematurely.
+                                        }
+                                        reader.Read();
+                                        break;
+                                    case "TEXTURE":
+                                        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+                                        {
+                                            if (reader.TokenType != JsonToken.PropertyName)
+                                            {
+                                                continue;
+                                            }
+
+                                            switch (reader.Value.ToString())
+                                            {
+                                                case "name":
+                                                    string textureName = reader.ReadAsString();
+
+                                                    if ((!string.IsNullOrWhiteSpace(textureName)) && (!result.Contains(textureName)))
+                                                    {
+                                                        result.Add(textureName);
+                                                    }                                                    
+                                                    break;
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+
+            using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, stream.Length - stream.Position, false))
+            using (var streamReader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
+            {
+                jsonString = streamReader.ReadToEnd();
+            }
+
+            using (var baseReader = new StringReader(jsonString))
+            using (var reader = new JsonTextReader(baseReader))
+            {
+                if (!IsReadableJObject(reader))
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_ANIM);
+                }
+
+                while (reader.Read())
+                {
+                    if (reader.TokenType != JsonToken.PropertyName)
+                    {
+                        continue;
+                    }
+
+                    string propName = reader.Value.ToString().ToUpperInvariant();
+
+                    switch (propName)
+                    {
+                        case "TEXTURES":
+                            if ((!reader.Read()) || (reader.TokenType != JsonToken.StartObject))
+                            {
+                                return Array.Empty<string>();
+                            }
+
+                            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+                            {
+                                LoadNames(reader);
+                            }
+                            break;
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -228,6 +348,7 @@ namespace Gorgon.IO
 
             string animName = string.Empty;
             float animLength = 0;
+            float animFps = 0;
             int loopCount = 0;
             bool isLooped = false;
 
@@ -292,6 +413,9 @@ namespace Gorgon.IO
                             break;
                         case "LENGTH":
                             animLength = (float)(reader.ReadAsDecimal() ?? 0);
+                            break;
+                        case "FPS":
+                            animFps = (float)(reader.ReadAsDecimal() ?? 60);
                             break;
                         case "ISLOOPED":
                             isLooped = (reader.ReadAsBoolean() ?? false);
@@ -395,7 +519,7 @@ namespace Gorgon.IO
                 }
             }
 
-            IGorgonAnimation result = builder.Build(animName, animLength);
+            IGorgonAnimation result = builder.Build(animName, animFps, animLength);
 
             result.LoopCount = loopCount;
             result.IsLooped = isLooped;

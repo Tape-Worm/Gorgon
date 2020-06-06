@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Gorgon.Properties;
 
 namespace Gorgon.Collections
 {
@@ -8,6 +9,89 @@ namespace Gorgon.Collections
     /// </summary>
     public static class GorgonIReadOnlyListExtensions
     {
+        /// <summary>
+        /// Function to find the last index of an item using a predicate to filter through the list.
+        /// </summary>
+        /// <typeparam name="T">The type of values in the list.</typeparam>
+        /// <param name="list">The list to evaluate.</param>
+        /// <param name="predicate">The predicate function used to evaluate the list items.</param>
+        /// <returns>The index of the filtered item, or -1 if not found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/>, or the <paramref name="predicate"/> parameter is <b>null</b>.</exception>
+        public static int LastIndexOf<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            switch (list)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(list));
+                case List<T> concreteList:
+                    return concreteList.FindLastIndex(predicate);
+            }
+
+            for (int i = list.Count - 1; i >= 0; --i)
+            {
+                if (predicate(list[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Function to find the first index of an item using a predicate to filter through the list.
+        /// </summary>
+        /// <typeparam name="T">The type of values in the list.</typeparam>
+        /// <param name="list">The list to evaluate.</param>
+        /// <param name="predicate">The predicate function used to evaluate the list items.</param>
+        /// <returns>The index of the filtered item, or -1 if not found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/>, or the <paramref name="predicate"/> parameter is <b>null</b>.</exception>
+        public static int FirstIndexOf<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            switch (list)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(list));
+                case List<T> concreteList:
+                    return concreteList.FindIndex(predicate);
+            }
+
+            for (int i = 0; i < list.Count; ++i)
+            {
+                if (predicate(list[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// Function to determine if an item of type <typeparamref name="T"/> exists within the list.
         /// </summary>
@@ -162,6 +246,49 @@ namespace Gorgon.Collections
             }
 
             return -1;
+        }
+
+        /// <summary>
+        /// Function to copy the contents of this read only list into an array.
+        /// </summary>
+        /// <typeparam name="T">The type of data to copy.</typeparam>
+        /// <param name="list">The list to evaluate.</param>
+        /// <param name="array">The array that will receive the data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/>, or the <paramref name="array"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="array"/> isn't large enough to support the entire list.</exception>
+        public static void CopyTo<T>(this IReadOnlyList<T> list, T[] array)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (array.Length < list.Count)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_ARRAY_TOO_SMALL, array.Length, list.Count), nameof(array));
+            }
+
+            if (list is List<T> concreteList)
+            {
+                concreteList.CopyTo(array);
+                return;
+            }
+
+            if (list is Array arrayList)
+            {
+                Array.Copy(arrayList, array, list.Count);
+                return;
+            }
+
+            for (int i = 0; i < list.Count; ++i)
+            {
+                array[i] = list[i];
+            }
         }
     }
 }

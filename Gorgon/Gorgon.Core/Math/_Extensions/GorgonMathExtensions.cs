@@ -86,7 +86,7 @@ namespace Gorgon.Math
         public static float FastSin(this float rads)
         {
             int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
-            rads = (rads - ((i32I) * 3.1415926535897932384626433832795f));
+            rads -= ((i32I) * 3.1415926535897932384626433832795f);
 
             float fX2 = rads * rads;
 
@@ -130,7 +130,7 @@ namespace Gorgon.Math
         public static float FastCos(this float rads)
         {
             int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
-            rads = (rads - ((i32I) * 3.1415926535897932384626433832795f));
+            rads -= ((i32I) * 3.1415926535897932384626433832795f);
 
             float fX2 = rads * rads;
 
@@ -1054,6 +1054,246 @@ namespace Gorgon.Math
             value = value.Min(maxValue);
             return value.Max(minValue);
         }
+
+        /// <summary>
+        /// Function to limit an angle to the specified minimum and maximum.
+        /// </summary>
+        /// <param name="angle">The angle to limit.</param>
+        /// <param name="min">[Optional] The minimum value for the angle.</param>
+        /// <param name="max">[Optional] The maxmum value for the angle.</param>
+        /// <returns>The limited angle value.</returns>
+        public static float LimitAngle(this float angle, float min = 0, float max = 360)
+        {
+            if (min.EqualsEpsilon(max))
+            {
+                return angle.Max(min).Min(max);
+            }
+
+            if (min > max)
+            {
+                float temp = max;
+                max = min;
+                min = temp;
+            }
+
+            while (angle > max)
+            {
+                angle -= 360.0f;
+            }
+
+            while (angle < min)
+            {
+
+                angle += 360.0f;
+            }
+
+            return angle;
+        }
+
+        /// <summary>
+        /// Function to limit an angle to the specified minimum and maximum.
+        /// </summary>
+        /// <param name="angle">The angle to limit.</param>
+        /// <param name="min">[Optional] The minimum value for the angle.</param>
+        /// <param name="max">[Optional] The maxmum value for the angle.</param>
+        /// <returns>The limited angle value.</returns>
+        public static double LimitAngle(this double angle, double min = 0, double max = 360)
+        {
+            if (min.EqualsEpsilon(max))
+            {
+                return angle.Max(min).Min(max);
+            }
+
+            if (min > max)
+            {
+                double temp = max;
+                max = min;
+                min = temp;
+            }
+
+            while (angle > max)
+            {
+                angle -= 360;
+            }
+
+            while (angle < min)
+            {
+
+                angle += 360;
+            }
+
+            return angle;
+        }
+
+        /// <summary>
+        /// Function to limit an angle to the specified minimum and maximum.
+        /// </summary>
+        /// <param name="angle">The angle to limit.</param>
+        /// <param name="min">[Optional] The minimum value for the angle.</param>
+        /// <param name="max">[Optional] The maxmum value for the angle.</param>
+        /// <returns>The limited angle value.</returns>
+        public static decimal LimitAngle(this decimal angle, decimal min = 0, decimal max = 360)
+        {
+            if (min == max)
+            {
+                return angle.Max(min).Min(max);
+            }
+
+            if (min > max)
+            {
+                decimal temp = max;
+                max = min;
+                min = temp;
+            }
+
+            while (angle > max)
+            {
+                angle -= 360.0M;
+            }
+
+            while (angle < min)
+            {
+
+                angle += 360.0M;
+            }
+
+            return angle;
+        }
+
+        /// <summary>
+        /// Function to limit an angle to the specified minimum and maximum.
+        /// </summary>
+        /// <param name="angle">The angle to limit.</param>
+        /// <param name="min">[Optional] The minimum value for the angle.</param>
+        /// <param name="max">[Optional] The maxmum value for the angle.</param>
+        /// <returns>The limited angle value.</returns>
+        public static short LimitAngle(this short angle, short min = 0, short max = 360)
+        {
+            if (min == max)
+            {
+                return angle.Max(min).Min(max);
+            }
+
+            if (min > max)
+            {
+                short temp = max;
+                max = min;
+                min = temp;
+            }
+
+            while (angle > max)
+            {
+                angle -= 360;
+            }
+
+            while (angle < min)
+            {
+
+                angle += 360;
+            }
+
+            return angle;
+        }
+
+        /// <summary>
+        /// Function to limit an angle to the specified minimum and maximum.
+        /// </summary>
+        /// <param name="angle">The angle to limit.</param>
+        /// <param name="min">[Optional] The minimum value for the angle.</param>
+        /// <param name="max">[Optional] The maxmum value for the angle.</param>
+        /// <returns>The limited angle value.</returns>
+        public static int LimitAngle(this int angle, int min = 0, int max = 360)
+        {
+            if (min == max)
+            {
+                return angle.Max(min).Min(max);
+            }
+
+            if (min > max)
+            {
+                int temp = max;
+                max = min;
+                min = temp;
+            }
+
+            while (angle > max)
+            {
+                angle -= 360;
+            }
+
+            while (angle < min)
+            {
+
+                angle += 360;
+            }
+
+            return angle;
+        }
+
+        /// <summary>
+        /// Function to limit an angle to the specified minimum and maximum.
+        /// </summary>
+        /// <param name="angle">The angle to limit.</param>
+        /// <param name="min">[Optional] The minimum value for the angle.</param>
+        /// <param name="max">[Optional] The maxmum value for the angle.</param>
+        /// <returns>The limited angle value.</returns>
+        public static long LimitAngle(this long angle, long min = 0, long max = 360)
+        {
+            if (min == max)
+            {
+                return angle.Max(min).Min(max);
+            }
+
+            if (min > max)
+            {
+                long temp = max;
+                max = min;
+                min = temp;
+            }
+
+            while (angle > max)
+            {
+                angle -= 360;
+            }
+
+            while (angle < min)
+            {
+
+                angle += 360;
+            }
+
+            return angle;
+        }
+
+        /// <summary>
+        /// Function to linearly interpolate between two values given a weight amount.
+        /// </summary>
+        /// <param name="from">The value to start from.</param>
+        /// <param name="to">The ending value.</param>
+        /// <param name="amount">The weighting amount.</param>
+        /// <returns>The linearly interpolated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Lerp(this float from, float to, float amount) => ((1.0f - amount) * from) + (amount * to);
+
+        /// <summary>
+        /// Function to linearly interpolate between two values given a weight amount.
+        /// </summary>
+        /// <param name="from">The value to start from.</param>
+        /// <param name="to">The ending value.</param>
+        /// <param name="amount">The weighting amount.</param>
+        /// <returns>The linearly interpolated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double Lerp(this double from, double to, double amount) => ((1.0 - amount) * from) + (amount * to);
+
+        /// <summary>
+        /// Function to linearly interpolate between two values given a weight amount.
+        /// </summary>
+        /// <param name="from">The value to start from.</param>
+        /// <param name="to">The ending value.</param>
+        /// <param name="amount">The weighting amount.</param>
+        /// <returns>The linearly interpolated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static decimal Lerp(this decimal from, decimal to, decimal amount) => ((1.0M - amount) * from) + (amount * to);
         #endregion
     }
 }

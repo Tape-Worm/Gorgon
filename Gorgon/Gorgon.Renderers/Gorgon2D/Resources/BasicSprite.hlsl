@@ -566,3 +566,16 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 #endif
+
+#ifdef SILHOUETTE_EFFECT
+// Function to draw the sprite as a colored silhouette.
+float4 GorgonPixelShaderSilhouettePixelShader(GorgonSpriteVertex vertex) : SV_Target
+{
+	float3 color = vertex.color.rgb;
+	float alpha = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy / vertex.uv.w, vertex.uv.z)).a * vertex.color.a;
+		
+	REJECT_ALPHA(alpha);
+	
+	return float4(color, alpha);
+}
+#endif

@@ -137,7 +137,7 @@ namespace Gorgon.Math
                 return Points[startPointIndex + 1];
             }
 
-            var deltaCubeSquare = new DX.Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
+            var deltaCubeSquare = new DX.Vector4(delta * delta * delta, delta * delta, delta, 1.0f);
 
             DX.Vector4 startPoint = Points[startPointIndex];
             DX.Vector4 startPointNext = Points[startPointIndex + 1];
@@ -211,13 +211,13 @@ namespace Gorgon.Math
             // Calculate...
             for (int i = 0; i < Points.Count; i++)
             {
-                DX.Vector4 prev;
                 DX.Vector4 next;
+                DX.Vector4 prev;
 
                 if (i == 0)
                 {
-                    prev = Points[1];
-                    next = closed ? Points[Points.Count - 2] : Points[0];
+                    next = Points[1];
+                    prev = closed ? Points[Points.Count - 2] : Points[0];
                 }
                 else
                 {
@@ -230,17 +230,17 @@ namespace Gorgon.Math
                             continue;
                         }
 
-                        prev = Points[i];
-                        next = Points[i - 1];
+                        next = Points[i];
+                        prev = Points[i - 1];
                     }
                     else
                     {
-                        prev = Points[i + 1];
-                        next = Points[i - 1];
+                        next = Points[i + 1];
+                        prev = Points[i - 1];
                     }
                 }
 
-                DX.Vector4.Subtract(ref prev, ref next, out DX.Vector4 diff);
+                DX.Vector4.Subtract(ref next, ref prev, out DX.Vector4 diff);
                 DX.Vector4.Multiply(ref diff, 0.5f, out diff);
                 _tangents[i] = diff;
             }

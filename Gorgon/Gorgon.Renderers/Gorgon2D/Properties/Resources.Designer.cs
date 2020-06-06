@@ -402,6 +402,24 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GOR2D_EFFECT_SILHOUETTE {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_SILHOUETTE", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_EFFECT_SILHOUETTE_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_SILHOUETTE_DESC", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GOR2D_EFFECT_SOBEL {
             get {
                 return ResourceManager.GetString("GOR2D_EFFECT_SOBEL", resourceCulture);

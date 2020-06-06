@@ -38,9 +38,9 @@ namespace Gorgon.Editor.SpriteEditor
         : GorgonAnimationController<ISpriteViewer>
     {
         // The track used to animate opacity for the texture.
-        private static readonly GorgonTrackRegistration _textureOpacityTrack = new GorgonTrackRegistration(nameof(ISpriteViewer.TextureOpacity), AnimationTrackKeyType.Single);
+        private static readonly GorgonTrackRegistration _textureOpacityTrack = new GorgonTrackRegistration(nameof(ISpriteViewer.TextureOpacity), null, AnimationTrackKeyType.Single);
         // The track used to animate opacity for the sprite.
-        private static readonly GorgonTrackRegistration _spriteOpacityTrack = new GorgonTrackRegistration(nameof(ISpriteViewer.SpriteOpacity), AnimationTrackKeyType.Single);
+        private static readonly GorgonTrackRegistration _spriteOpacityTrack = new GorgonTrackRegistration(nameof(ISpriteViewer.SpriteOpacity), null, AnimationTrackKeyType.Single);
 
         /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
         /// <param name="track">The track currently being processed.</param>

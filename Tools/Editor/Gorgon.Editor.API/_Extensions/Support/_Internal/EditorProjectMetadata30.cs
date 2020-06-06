@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.ProjectData;
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Support

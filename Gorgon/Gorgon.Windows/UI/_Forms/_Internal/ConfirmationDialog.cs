@@ -110,7 +110,7 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void buttonCancel_Click(object sender, EventArgs e)
+        private void ButtonCancel_Click(object sender, EventArgs e)
         {
             ConfirmationResult = ConfirmationResult.Cancel;
             Close();
@@ -121,7 +121,7 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void buttonNo_Click(object sender, EventArgs e)
+        private void ButtonNo_Click(object sender, EventArgs e)
         {
             ConfirmationResult = ConfirmationResult.No;
             Close();

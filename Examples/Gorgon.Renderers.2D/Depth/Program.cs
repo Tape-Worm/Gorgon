@@ -247,8 +247,6 @@ namespace Gorgon.Examples
 
             // Extract the sprites that have the animation frames.
             // We'll use the name of the sprite to determine the type of animation and ordering.
-            // If we had an animation editor in the editor application, this would be a lot easier, but for now we'll have to do this.
-            // If I create an editor, I'll try to replace this code with the animations in the editor file system.
             GorgonSprite[] upFrames = sprites.OrderBy(item => item.Key)
                                               .Where(item => item.Key.StartsWith("Guy_Up_", StringComparison.OrdinalIgnoreCase))
                                               .Select(item => item.Value)
@@ -258,10 +256,15 @@ namespace Gorgon.Examples
                                                            .Where(item => item.Key.StartsWith("Guy_Turn_", StringComparison.OrdinalIgnoreCase))
                                                            .Select(item => item.Value);
 
-            GorgonSprite[] walkLeftFrames = sprites.OrderBy(item => item.Key)
-                                                    .Where(item => item.Key.StartsWith("Guy_Left_", StringComparison.OrdinalIgnoreCase))
-                                                    .Select(item => item.Value)
-                                                    .ToArray();
+            List<GorgonSprite> walkLeftFrames = sprites.OrderBy(item => item.Key)
+                                                                .Where(item => item.Key.StartsWith("Guy_Left_", StringComparison.OrdinalIgnoreCase))
+                                                                .Select(item => item.Value)
+                                                                .ToList();
+            // The walk left animation is... well, it's messed up (my bad - but it's a good exercise so we'll leave it as is), so let's reorganize the sprites to display in the correct order.
+            walkLeftFrames.RemoveAt(5); // This frame is broken.
+            walkLeftFrames.Add(walkLeftFrames[3]); // We need to repeat these frames to get fluid motion.
+            walkLeftFrames.Insert(3, walkLeftFrames[0]);
+            walkLeftFrames.Insert(3, walkLeftFrames[1]);            
 
             float time = 0;
 
@@ -289,7 +292,7 @@ namespace Gorgon.Examples
                 time += 0.15f;
             }
 
-            _animations[AnimationName.WalkUp] = animBuilder.Build("Walk Up");
+            _animations[AnimationName.WalkUp] = animBuilder.Build("Walk Up", 6.666667f);
             _animations[AnimationName.WalkUp].IsLooped = true;
 
 
@@ -304,14 +307,13 @@ namespace Gorgon.Examples
 
                 time += 0.20f;
             }
-            _animations[AnimationName.Turn] = animBuilder.Build("Turn Left");
+            _animations[AnimationName.Turn] = animBuilder.Build("Turn Left", 5);
 
             // Build animation for walking left.
             time = 0;
             animBuilder.Clear();
-            for (int i = 0; i < walkLeftFrames.Length; ++i)
-            {
-                GorgonSprite sprite = walkLeftFrames[i];
+            foreach (GorgonSprite sprite in walkLeftFrames)
+            {                
                 animBuilder.Edit2DTexture("Texture")
                             .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
                             .EndEdit();
@@ -319,7 +321,7 @@ namespace Gorgon.Examples
                 time += 0.15f;
             }
 
-            _animations[AnimationName.WalkLeft] = animBuilder.Build("Walk Left");
+            _animations[AnimationName.WalkLeft] = animBuilder.Build("Walk Left", 6.666667f);
             _animations[AnimationName.WalkLeft].IsLooped = true;
 
             // Finally, we'll need a controller to play and update the animations over time.

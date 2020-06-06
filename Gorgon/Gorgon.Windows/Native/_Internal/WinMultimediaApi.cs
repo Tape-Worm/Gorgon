@@ -36,6 +36,7 @@ namespace Gorgon.Native
     internal static class WinMultimediaApi
     {
         #region Methods.
+#pragma warning disable IDE1006 // Naming Styles
         /// <summary>
         /// Function to return time from a medium precision timer.
         /// </summary>
@@ -74,6 +75,7 @@ namespace Gorgon.Native
         /// <returns>0 if successful, non-0 if not.</returns>
         [DllImport("winmm.dll", CharSet = CharSet.Auto)]
         public static extern int timeGetDevCaps(ref TIMECAPS timeCaps, int size);
+#pragma warning restore IDE1006 // Naming Styles
         #endregion
 
         #region Constructor.

@@ -490,14 +490,21 @@ namespace Gorgon.Animation
         /// Function to return the newly built animation.
         /// </summary>
         /// <param name="name">The name of the animation.</param>
-        /// <param name="length">[Optional] The maximum length of the animation, in seconds.</param>
+        /// <param name="fps">[Optional] The frames per second for the animation.</param>
+        /// <param name="length">[Optional] The length of the animation, in seconds.</param>
         /// <returns>The object created or updated by this builder.</returns>
         /// <remarks>
         /// <para>
-        /// When the <paramref name="length"/> parameter is omitted, the length will be determined by evaluating all key frames in the animation and determining the highest time index. 
+        /// When the <paramref name="fps"/> parameter is omitted, it will default to 60 frames per second. This parameter is used to adjust the key frame times to fit within the specified frame delays 
+        /// for the frames per second.
+        /// </para>
+        /// <para>
+        /// When the <paramref name="length"/> parameter is omitted, the length of the animation will be calculated based on the key frame times present in the tracks. This may not be ideal for certain 
+        /// cases, so supplying this value will force the animation length to be as long as the user requires. If 0, or less is supplied to this parameter the length will be reset to exactly 1 frame of 
+        /// animation (one frame = 1 / <paramref name="fps"/>).
         /// </para>
         /// </remarks>
-        public IGorgonAnimation Build(string name, float? length = null)
+        public IGorgonAnimation Build(string name, float fps = 60, float? length = null)
         {
             if (name == null)
             {
@@ -509,16 +516,14 @@ namespace Gorgon.Animation
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (length == null)
+            fps = fps.Max(1);
+
+            // Function to adjust the key time to fit within the frames per second provided.
+            float AdjustKeyTime(float keyTime)
             {
-                length = _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>())
-                                    .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys))
-                                    .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys))
-                                    .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys))
-                                    .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys))
-                                    .Concat(_colorTracks.SelectMany(item => item.Value.Keys))
-                                    .Concat(_textureTracks.SelectMany(item => item.Value.Keys))
-                                    .Max(item => item.Time);
+                float newTime = ((keyTime * fps).Round()) / fps;
+
+                return keyTime.EqualsEpsilon(newTime) ? keyTime : newTime;
             }
 
             var singles = new Dictionary<string, IGorgonAnimationTrack<GorgonKeySingle>>(StringComparer.OrdinalIgnoreCase);
@@ -531,7 +536,12 @@ namespace Gorgon.Animation
 
             foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeySingle>> builder in _singleTracks)
             {
-                singles[builder.Key] = new SingleTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                foreach (GorgonKeySingle keyValue in builder.Value.Keys)
+                {
+                    keyValue.Time = AdjustKeyTime(keyValue.Time);
+                }
+
+                singles[builder.Key] = new SingleTrack(builder.Value.GetSortedKeys(), builder.Key)
                 {
                     IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
@@ -540,7 +550,12 @@ namespace Gorgon.Animation
 
             foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyVector2>> builder in _vector2Tracks)
             {
-                vec2[builder.Key] = new Vector2Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                foreach (GorgonKeyVector2 keyValue in builder.Value.Keys)
+                {
+                    keyValue.Time = AdjustKeyTime(keyValue.Time);
+                }
+
+                vec2[builder.Key] = new Vector2Track(builder.Value.GetSortedKeys(), builder.Key)
                 {
                     IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
@@ -549,7 +564,12 @@ namespace Gorgon.Animation
 
             foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyVector3>> builder in _vector3Tracks)
             {
-                vec3[builder.Key] = new Vector3Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                foreach (GorgonKeyVector3 keyValue in builder.Value.Keys)
+                {
+                    keyValue.Time = AdjustKeyTime(keyValue.Time);
+                }
+
+                vec3[builder.Key] = new Vector3Track(builder.Value.GetSortedKeys(), builder.Key)
                 {
                     IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
@@ -558,7 +578,12 @@ namespace Gorgon.Animation
 
             foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyVector4>> builder in _vector4Tracks)
             {
-                vec4[builder.Key] = new Vector4Track(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                foreach (GorgonKeyVector4 keyValue in builder.Value.Keys)
+                {
+                    keyValue.Time = AdjustKeyTime(keyValue.Time);
+                }
+
+                vec4[builder.Key] = new Vector4Track(builder.Value.GetSortedKeys(), builder.Key)
                 {
                     IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
@@ -567,7 +592,12 @@ namespace Gorgon.Animation
 
             foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyRectangle>> builder in _rectangleTracks)
             {
-                rect[builder.Key] = new RectBoundsTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                foreach (GorgonKeyRectangle keyValue in builder.Value.Keys)
+                {
+                    keyValue.Time = AdjustKeyTime(keyValue.Time);
+                }
+
+                rect[builder.Key] = new RectBoundsTrack(builder.Value.GetSortedKeys(), builder.Key)
                 {
                     IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
@@ -576,7 +606,12 @@ namespace Gorgon.Animation
 
             foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyGorgonColor>> builder in _colorTracks)
             {
-                color[builder.Key] = new ColorTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                foreach (GorgonKeyGorgonColor keyValue in builder.Value.Keys)
+                {
+                    keyValue.Time = AdjustKeyTime(keyValue.Time);
+                }
+
+                color[builder.Key] = new ColorTrack(builder.Value.GetSortedKeys(), builder.Key)
                 {
                     IsEnabled = builder.Value.IsEnabled,
                     InterpolationMode = builder.Value.InterpolationMode
@@ -585,7 +620,12 @@ namespace Gorgon.Animation
 
             foreach (KeyValuePair<string, TrackKeyBuilder<GorgonKeyTexture2D>> builder in _textureTracks)
             {
-                texture[builder.Key] = new Texture2DViewTrack(builder.Value.GetSortedKeys(length.Value), builder.Key)
+                foreach (GorgonKeyTexture2D keyValue in builder.Value.Keys)
+                {
+                    keyValue.Time = AdjustKeyTime(keyValue.Time);
+                }
+
+                texture[builder.Key] = new Texture2DViewTrack(builder.Value.GetSortedKeys(), builder.Key)
                 {
                     IsEnabled = builder.Value.IsEnabled,
                     // Textures don't use interpolation.
@@ -593,7 +633,19 @@ namespace Gorgon.Animation
                 };
             }
 
-            return new AnimationData(name, length.Value)
+            if (length == null)
+            {
+                length = _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>()).DefaultIfEmpty()
+                                      .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                      .Concat(_vector3Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                      .Concat(_vector4Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                      .Concat(_rectangleTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                      .Concat(_colorTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                      .Concat(_textureTracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
+                                      .Max(item => item?.Time ?? 0);
+            }
+
+            return new AnimationData(name, fps, length.Value.Max(1 / fps))
             {
                 SingleTracks = singles,
                 ColorTracks = color,
@@ -713,10 +765,10 @@ namespace Gorgon.Animation
         /// <returns>The object created or updated by this builder.</returns>
         /// <remarks>
         /// <para>
-        /// This overload of the build method will assign an arbitrary name, and determine the length of time based on the highest time for a keyframe in the animation.
+        /// This overload of the build method will assign an arbitrary name, and use a default of 60 frames per second.
         /// </para>
         /// <para>
-        /// It is recommended that you use the <see cref="Build(string, float?)"/> method instead.
+        /// It is recommended that you use the <see cref="Build(string, float, float?)"/> method instead.
         /// </para>
         /// </remarks>
         IGorgonAnimation IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>.Build()

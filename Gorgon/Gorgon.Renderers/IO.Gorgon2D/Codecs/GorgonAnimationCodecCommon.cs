@@ -146,6 +146,58 @@ namespace Gorgon.IO
         /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
         protected abstract bool OnIsReadable(Stream stream);
 
+
+        /// <summary>
+        /// Function to retrieve the names of the associated textures.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
+        protected abstract IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream);
+
+        /// <summary>
+        /// Function to retrieve the names of the associated textures.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
+        /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
+        public IReadOnlyList<string> GetAssociatedTextureNames(Stream stream)
+        {
+            if (!CanDecode)
+            {
+                throw new NotSupportedException();
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
+            }
+
+            if (!stream.CanSeek)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_UNSEEKABLE);
+            }
+
+            long pos = stream.Position;
+
+            try
+            {
+                IReadOnlyList<string> result = OnGetAssociatedTextureNames(stream);
+
+                return result ?? Array.Empty<string>();
+            }
+            finally
+            {
+                stream.Position = pos;
+            }
+        }
+
         /// <summary>
         /// Function to read the animation data from a stream.
         /// </summary>

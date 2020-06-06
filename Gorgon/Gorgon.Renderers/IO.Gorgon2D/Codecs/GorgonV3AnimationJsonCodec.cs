@@ -122,9 +122,8 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                return !reader.Read()
-                    ? false
-                    : (Version.TryParse(reader.Value.ToString(), out Version version))
+                return reader.Read()
+&& (Version.TryParse(reader.Value.ToString(), out Version version))
                        && (version.Equals(Version));
             }
 
@@ -394,6 +393,105 @@ namespace Gorgon.IO
             }
 
             return positions;
+        }
+
+
+        /// <summary>Function to retrieve the names of the associated textures.</summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
+        protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
+        {
+            IReadOnlyList<string> ReadTextureNames(JsonReader reader)
+            {
+                var names = new List<string>();
+
+                while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
+                {
+                    if (reader.TokenType != JsonToken.StartObject)
+                    {
+                        continue;
+                    }
+
+                    while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+                    {
+                        if (reader.TokenType != JsonToken.PropertyName)
+                        {
+                            continue;
+                        }
+
+                        string propName = reader.Value.ToString().ToUpperInvariant();
+
+                        switch (propName)
+                        {
+                            case "TEXTURE":
+                                reader.Read();
+
+                                while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+                                {
+                                    if (reader.TokenType != JsonToken.PropertyName)
+                                    {
+                                        continue;
+                                    }
+
+                                    switch (reader.Value.ToString())
+                                    {
+                                        case "name":
+                                            string textureName = reader.ReadAsString();
+
+                                            if ((!string.IsNullOrWhiteSpace(textureName)) && (!names.Contains(textureName)))
+                                            {
+                                                names.Add(string.IsNullOrEmpty(textureName) ? null : textureName);
+                                            }
+                                            break;
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
+
+                return names;
+            }
+
+            using (JsonReader reader = GetJsonReader(stream))
+            {
+                if (!IsReadableJObject(reader))
+                {
+                    return Array.Empty<string>();
+                }
+
+                while (reader.Read())
+                {
+                    if (reader.TokenType != JsonToken.PropertyName)
+                    {
+                        continue;
+                    }
+
+                    string propName = reader.Value.ToString().ToUpperInvariant();
+
+                    switch (propName)
+                    {
+                        case "TEXTURES":
+                            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+                            {
+                                if (reader.TokenType != JsonToken.PropertyName)
+                                {
+                                    continue;
+                                }
+
+                                propName = reader.Value.ToString();
+
+                                if (string.Equals(propName, "KEYFRAMES", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    return ReadTextureNames(reader);
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+
+            return Array.Empty<string>();
         }
 
         /// <summary>

@@ -186,7 +186,7 @@
 
         #endregion
 
-        [System.Runtime.CompilerServices.AccessedThroughProperty("PresentationPanel")]
+        [System.Runtime.CompilerServices.AccessedThroughProperty(nameof(PresentationPanel))]
         private System.Windows.Forms.Panel PanelPresenter;
         private System.Windows.Forms.Panel PanelContentName;
         private System.Windows.Forms.Panel panel4;
@@ -194,8 +194,9 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button ButtonClose;
         private System.Windows.Forms.ToolTip TipButton;
+        [System.Runtime.CompilerServices.AccessedThroughProperty(nameof(HostPanel))]
         private System.Windows.Forms.Panel PanelHost;
-        [System.Runtime.CompilerServices.AccessedThroughProperty("HostPanel")]
+        [System.Runtime.CompilerServices.AccessedThroughProperty(nameof(HostPanelControls))]
         private System.Windows.Forms.Panel PanelHostControls;
     }
 }

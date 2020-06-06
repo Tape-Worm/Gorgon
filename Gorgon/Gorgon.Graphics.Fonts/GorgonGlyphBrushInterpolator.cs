@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>
         /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
         /// </returns>
-        public bool Equals(GorgonGlyphBrushInterpolator other) => other == null ? false : other.Weight.EqualsEpsilon(Weight) && Color.Equals(other.Color);
+        public bool Equals(GorgonGlyphBrushInterpolator other) => other != null && other.Weight.EqualsEpsilon(Weight) && Color.Equals(other.Color);
 
         /// <summary>
         /// Compares the current object with another object of the same type.

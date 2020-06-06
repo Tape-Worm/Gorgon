@@ -366,11 +366,6 @@ Content IDs should be GUID values.</value>
 
 Please try again.</value>
   </data>
-  <data name="GOREDIT_CONFIRM_DELETE_NODE_DEPENDANT_OPEN" xml:space="preserve">
-    <value>'{0}' is linked to another file or files. One of linked files is open in the editor and has unsaved changes. Deleting '{0}' will result in the editor closing and losing any changes.
-
-Do you wish to continue?</value>
-  </data>
   <data name="save_as_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\save_as_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -882,11 +877,6 @@ Please try again.</value>
 
 Would you like to create a new project there?</value>
   </data>
-  <data name="GOREDIT_CONFIRM_DELETE_NODE_DEPENDANTS" xml:space="preserve">
-    <value>'{0}' is linked to another file.  Deleting this file will break the link between the two items, and may result in undesirable changes.
-
-Do you wish to continue?</value>
-  </data>
   <data name="GOREDIT_CONFIRM_DELETE_NO_CHILDREN" xml:space="preserve">
     <value>Are you sure you wish to delete '{0}'?
 </value>
@@ -923,5 +913,10 @@ Do you wish to continue?</value>
   </data>
   <data name="GOREDIT_ERR_PROJECT_NOT_VALID" xml:space="preserve">
     <value>The location '{0}' does not contain an Editor project.</value>
+  </data>
+  <data name="GOREDIT_CONFIRM_FILE_LINKED" xml:space="preserve">
+    <value>There are files present that are linked to other content files.  Deleting these files will break the linkage between the content files, causing undesirable results. 
+
+Are you sure you wish to continue?</value>
   </data>
 </root>

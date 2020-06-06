@@ -39,6 +39,7 @@ using Gorgon.Core;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
+using Gorgon.Math;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.Views
@@ -179,6 +180,16 @@ namespace Gorgon.Editor.Views
 
         #region Properties.
         /// <summary>
+        /// Property to set or return the application settings.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public EditorSettings Settings
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the data context assigned to this view.
         /// </summary>
         [Browsable(false)]
@@ -228,6 +239,36 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to set the distance for the splitter panels.
+        /// </summary>
+        /// <param name="distance">The distance percentage.</param>
+        private void SetSplitterDistance(int distance)
+        {
+            SplitFileSystem.SplitterMoved -= SplitFileSystem_SplitterMoved;
+            try
+            {
+                SplitFileSystem.SplitterDistance = (int)(((distance.Max(1).Min(99)) / 100.0M) * SplitFileSystem.Height);
+            }
+            finally
+            {
+                SplitFileSystem.SplitterMoved += SplitFileSystem_SplitterMoved;
+            }
+        }
+
+        /// <summary>Handles the SplitterMoved event of the SplitFileSystem control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
+        private void SplitFileSystem_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            Settings.SplitDirFileDistance = ((int)((SplitFileSystem.SplitterDistance / (decimal)SplitFileSystem.Height) * 100.0M).Round()).Max(1).Min(99);
+        }
+
         /// <summary>
         /// Function to fire the <see cref="ControlContextChanged"/> event.
         /// </summary>
@@ -1668,7 +1709,7 @@ namespace Gorgon.Editor.Views
             var dragData = new GridRowsDragData(e.DraggedRows, ColumnFile.Index, e.MouseButtons == MouseButtons.Right ? (CopyMoveOperation.Copy | CopyMoveOperation.Move) : CopyMoveOperation.Move);
             var data = new DataObject();            
             data.SetData(dragData);
-            data.SetData(typeof(IContentFileDragData).FullName, true, dragData as IContentFileDragData);
+            data.SetData(typeof(IContentFileDragData).FullName, true, dragData);
 
             GridFiles.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
 
@@ -2774,6 +2815,8 @@ namespace Gorgon.Editor.Views
                 _rootNode.SetDataContext(dataContext.Root);
                 _rootNode.DataContext.OnLoad();
                 _directoryNodes[dataContext.Root.ID] = _rootNode;
+
+                SetSplitterDistance(Settings.SplitDirFileDistance);
 
                 LoadTreeNodeIcons(dataContext.PlugInMetadata.ToDictionary(k => k.SmallIconID, v => v.GetSmallIcon()));
                 RefreshNodes(dataContext.Root);

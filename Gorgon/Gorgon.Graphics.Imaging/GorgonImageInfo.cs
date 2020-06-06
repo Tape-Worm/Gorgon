@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Imaging
         /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
         /// </para>
         /// <para>
-        /// If the <see cref="IGorgonImageInfo.ImageType"/> is <see cref="Imaging.ImageType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
+        /// If the <see cref="IGorgonImageInfo.ImageType"/> is <see cref="ImageType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
         /// 6 if this image is to be used as a cube map.
         /// </para>
         /// <para>

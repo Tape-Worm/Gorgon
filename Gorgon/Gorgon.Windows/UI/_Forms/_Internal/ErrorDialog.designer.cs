@@ -93,7 +93,7 @@ namespace Gorgon.UI
             this.checkDetail.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.checkDetail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.checkDetail.Name = "checkDetail";
-            this.checkDetail.Click += new System.EventHandler(this.detailsButton_Click);
+            this.checkDetail.Click += new System.EventHandler(this.DetailsButton_Click);
             // 
             // ErrorDialog
             // 

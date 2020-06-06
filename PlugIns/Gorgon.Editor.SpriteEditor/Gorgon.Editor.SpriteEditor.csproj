@@ -104,7 +104,6 @@
     <Compile Include="_Internal\Renderers\TextureWrapViewer.cs" />
     <Compile Include="_Internal\Renderers\VertexEditViewer.cs" />
     <Compile Include="_Internal\Renderers\_Interfaces\ISpriteViewer.cs" />
-    <Compile Include="_Internal\Services\SpriteAnchorEditService.cs" />
     <Compile Include="_Internal\Services\GorgonSpriteImporter.cs" />
     <Compile Include="_Internal\Services\NewSpriteService.cs" />
     <Compile Include="_Internal\Services\PickClipperService.cs" />

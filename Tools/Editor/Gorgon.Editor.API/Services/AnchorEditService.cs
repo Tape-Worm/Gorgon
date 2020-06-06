@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: May 19, 2020 12:48:27 PM
+// Created: July 11, 2020 9:51:23 PM
 // 
 #endregion
 
@@ -33,12 +33,12 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
-namespace Gorgon.Editor.SpriteEditor
+namespace Gorgon.Editor.Services
 {
     /// <summary>
     /// A service used to edit an anchor point on a sprite.
     /// </summary>
-    internal class SpriteAnchorEditService
+    public class AnchorEditService : IAnchorEditService
     {
         #region Variables.
         // The icon for the anchor.
@@ -59,6 +59,8 @@ namespace Gorgon.Editor.SpriteEditor
         private DX.Vector2 _mousePosition;
         // The boundaries for the anchor point.
         private DX.Rectangle _bounds;
+        // Flag to indicate that the mouse cursor is hidden.
+        private bool _cursorHidden;
         #endregion
 
         #region Events.
@@ -99,6 +101,13 @@ namespace Gorgon.Editor.SpriteEditor
                 SetAnchorPosition(value);
             }
         }
+
+        /// <summary>Property to set or return the center position of the sprite.</summary>
+        public DX.Vector2 CenterPosition
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -117,21 +126,54 @@ namespace Gorgon.Editor.SpriteEditor
             handler?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Function to update the mouse cursor when over the anchor icon.
+        /// </summary>
+        private void UpdateCursor()
+        {
+            if (IsDragging) 
+            {
+                return;
+            }
+
+            DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
+            Cursor cursor = Cursors.Default;
+
+            if (iconBounds.Contains(_mousePosition))
+            {
+                cursor = Cursors.Hand;
+            }
+
+            if (Cursor.Current != cursor)
+            {
+                Cursor.Current = cursor;
+            }
+        }
+
         /// <summary>Function called when the mouse button is pressed.</summary>
         /// <param name="args">The mouse event arguments.</param>
         /// <returns>
         ///   <b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
         public bool MouseDown(MouseArgs args)
         {
+            // Just in case we lose the mouse cursor for some reason.
+            if ((IsDragging) && (_cursorHidden))
+            {
+                Cursor.Show();
+                _cursorHidden = false;
+            }
+
             _mousePosition = args.ClientPosition;
             DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
 
             if (!iconBounds.Contains(_mousePosition))
             {
+                UpdateCursor();
                 return false;
             }
 
             Cursor.Hide();
+            _cursorHidden = true;
             _dragStartPosition = AnchorPosition;
             _dragStart = args.CameraSpacePosition;
             IsDragging = true;
@@ -148,28 +190,18 @@ namespace Gorgon.Editor.SpriteEditor
             _mousePosition = args.ClientPosition;
             if (args.MouseButtons != MouseButtons.Left)
             {
+                if (_cursorHidden)
+                {
+                    Cursor.Show();
+                    _cursorHidden = false;
+                }
                 IsDragging = false;
             }
 
-            DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
+            UpdateCursor();
 
             if (!IsDragging)
             {
-                if (!iconBounds.Contains(_mousePosition))
-                {
-                    if (Cursor.Current != Cursors.Default)
-                    {
-                        Cursor.Current = Cursors.Default;
-                    }
-                }
-                else
-                {
-                    if (Cursor.Current != Cursors.Hand)
-                    {
-                        Cursor.Current = Cursors.Hand;
-                    }
-                }
-
                 return false;
             }
 
@@ -186,9 +218,16 @@ namespace Gorgon.Editor.SpriteEditor
         ///   <b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
         public bool MouseUp(MouseArgs _)
         {
-            if (IsDragging)
+            if (_cursorHidden)
             {
                 Cursor.Show();
+                _cursorHidden = false;
+            }
+
+            UpdateCursor();
+
+            if (IsDragging)
+            {                
                 IsDragging = false;
                 return true;
             }
@@ -250,7 +289,12 @@ namespace Gorgon.Editor.SpriteEditor
             return false;
         }
 
-        /// <summary>Function to render the anchor region.</summary>
+        /// <summary>
+        /// Function to reset the anchor value.
+        /// </summary>
+        public void Reset() => _anchorPosition = DX.Vector2.Zero;
+
+        /// <summary>Function to render the anchor UI.</summary>
         public void Render()
         {
             if (_animController.State != AnimationState.Playing)
@@ -258,29 +302,29 @@ namespace Gorgon.Editor.SpriteEditor
                 _animController.Play(_anchorIcon, _animation);
             }
 
-            var position = (DX.Vector3)AnchorPosition;
+            UpdateCursor();
+
+            var position = (DX.Vector3)(AnchorPosition - CenterPosition);
             DX.Vector3 screenAnchor = DX.Vector3.Zero;
-            Camera?.Unproject(ref position, out screenAnchor);            
+            Camera?.Unproject(ref position, out screenAnchor);
             _anchorIcon.Position = ((DX.Vector2)screenAnchor).Truncate();
 
-            _renderer.Begin();
             _renderer.DrawSprite(_anchorIcon);
             _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColor.Black);
             _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 1, _anchorIcon.Position.Y - 4, 3, 9), GorgonColor.Black);
             _renderer.DrawLine(_anchorIcon.Position.X - 3, _anchorIcon.Position.Y, _anchorIcon.Position.X + 4, _anchorIcon.Position.Y, GorgonColor.White);
             _renderer.DrawLine(_anchorIcon.Position.X, _anchorIcon.Position.Y - 3, _anchorIcon.Position.X, _anchorIcon.Position.Y + 4, GorgonColor.White);
-            _renderer.End();
 
             _animController.Update();
         }
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="SpriteAnchorEditService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="AnchorEditService"/> class.</summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
         /// <param name="anchorSprite">The sprite representing the anchor icon.</param>
         /// <param name="bounds">The boundaries for the anchor point.</param>
-        public SpriteAnchorEditService(Gorgon2D renderer, GorgonSprite anchorSprite, DX.Rectangle bounds)
+        public AnchorEditService(Gorgon2D renderer, GorgonSprite anchorSprite, DX.Rectangle bounds)
         {
             _renderer = renderer;
             _anchorIcon = anchorSprite;

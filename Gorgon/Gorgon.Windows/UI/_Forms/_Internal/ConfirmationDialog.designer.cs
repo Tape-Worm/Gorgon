@@ -82,7 +82,7 @@ namespace Gorgon.UI
             this.buttonNo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             resources.ApplyResources(this.buttonNo, "buttonNo");
             this.buttonNo.Name = "buttonNo";
-            this.buttonNo.Click += new System.EventHandler(this.buttonNo_Click);
+            this.buttonNo.Click += new System.EventHandler(this.ButtonNo_Click);
             // 
             // buttonCancel
             // 
@@ -91,7 +91,7 @@ namespace Gorgon.UI
             this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             resources.ApplyResources(this.buttonCancel, "buttonCancel");
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
+            this.buttonCancel.Click += new System.EventHandler(this.ButtonCancel_Click);
             // 
             // ConfirmationDialog
             // 

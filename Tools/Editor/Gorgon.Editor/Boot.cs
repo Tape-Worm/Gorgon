@@ -47,7 +47,6 @@ using Gorgon.PlugIns;
 using Gorgon.UI;
 using Newtonsoft.Json;
 using DX = SharpDX;
-using Exception = System.Exception;
 
 namespace Gorgon.Editor
 {
@@ -224,8 +223,22 @@ namespace Gorgon.Editor
                 {
                     Program.Log.Print($"Loading application settings from '{settingsFile.FullName}'", LoggingLevel.Intermediate);
                     reader = new StreamReader(settingsFile.FullName, Encoding.UTF8, true);
-                    result = JsonConvert.DeserializeObject<EditorSettings>(reader.ReadToEnd(), new JsonSharpDxRectConverter());
+                    var settings = new JsonSerializerSettings();
+                    settings.Converters.Add(new JsonSharpDxRectConverter());
+                    settings.Error = (o, e) =>
+                    {
+                        Program.Log.Print("ERROR: Could not read the settings data.", LoggingLevel.Simple);
+                        Program.Log.LogException(e.ErrorContext.Error);
+                        e.ErrorContext.Handled = true;
+                    };
+                    result = JsonConvert.DeserializeObject<EditorSettings>(reader.ReadToEnd(), settings);
                     Program.Log.Print("Application settings loaded.", LoggingLevel.Intermediate);
+                }
+                catch (JsonException jEx)
+                {
+                    Program.Log.Print($"Failed to load settings from '{settingsFile.FullName}'. Using fresh settings.", LoggingLevel.Intermediate);
+                    Program.Log.LogException(jEx);
+                    result = CreateEditorSettings();
                 }
                 catch (IOException ioex)
                 {
@@ -407,6 +420,7 @@ namespace Gorgon.Editor
                 Program.Log.Print("Booting application...", LoggingLevel.All);
 
                 ShowSplash();
+
                 Cursor.Current = Cursors.WaitCursor;
 
                 // Initalize the common resources.
@@ -454,13 +468,7 @@ namespace Gorgon.Editor
                 var factory = new ViewModelFactory(settings, projectManager, fileSystemProviders, hostServices);
 
                 // Show our main interface.
-                _mainForm = new FormMain
-                {
-                    Location = new Point(settings.WindowBounds.Value.X, settings.WindowBounds.Value.Y),
-                    Size = new Size(settings.WindowBounds.Value.Width, settings.WindowBounds.Value.Height),
-                    WindowState = FormWindowState.Normal,
-                    GraphicsContext = _graphicsContext
-                };
+                _mainForm = new FormMain(settings);
 
                 IMain mainViewModel = factory.CreateMainViewModel(_graphicsContext.Graphics.VideoAdapter.Name);
                 hostServices.FolderBrowser = new FileSystemFolderBrowseService(mainViewModel);
@@ -476,9 +484,14 @@ namespace Gorgon.Editor
                 else
                 {
                     windowState = (FormWindowState)settings.WindowState;
-                }
+                }                
 
                 _mainForm.SetDataContext(mainViewModel);
+
+                _mainForm.Location = new Point(settings.WindowBounds.Value.X, settings.WindowBounds.Value.Y);
+                _mainForm.Size = new Size(settings.WindowBounds.Value.Width, settings.WindowBounds.Value.Height);
+                _mainForm.WindowState = FormWindowState.Normal;
+                _mainForm.GraphicsContext = _graphicsContext;
 
                 HideSplash();
 

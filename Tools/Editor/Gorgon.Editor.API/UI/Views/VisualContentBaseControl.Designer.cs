@@ -46,7 +46,7 @@
             // 
             // HostPanel
             // 
-            this.HostPanel.Size = new System.Drawing.Size(159, 707);
+            this.HostPanelControls.Size = new System.Drawing.Size(159, 707);
             // 
             // TableViewControls
             // 

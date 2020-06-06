@@ -151,19 +151,19 @@ namespace Gorgon.Animation
             get => _time;
             set
             {
-                if (_time.EqualsEpsilon(value))
-                {
-                    return;
-                }
-
-                _time = value;
-
                 if (CurrentAnimation == null)
                 {
                     return;
                 }
 
-                if ((CurrentAnimation.IsLooped) && (_time > CurrentAnimation.Length))
+                if (_time.EqualsEpsilon(value))
+                {
+                    // Force a refresh.
+                    NotifyAnimation();
+                    return;
+                }
+
+                if ((CurrentAnimation.IsLooped) && (value > CurrentAnimation.Length))
                 {
                     // Loop the animation.
                     if ((CurrentAnimation.LoopCount != 0) && (_loopCount == CurrentAnimation.LoopCount))
@@ -172,16 +172,19 @@ namespace Gorgon.Animation
                     }
 
                     _loopCount++;
-                    _time %= CurrentAnimation.Length;
+
+                    _time = 0;
 
                     if (CurrentAnimation.Speed < 0)
                     {
-                        _time += CurrentAnimation.Length;
+                        _time = CurrentAnimation.Length;
                     }
 
                     NotifyAnimation();
                     return;
                 }
+
+                _time = value;
 
                 if (_time < 0)
                 {
@@ -193,12 +196,6 @@ namespace Gorgon.Animation
                 {
                     _time = CurrentAnimation.Length;
                     State = AnimationState.Stopped;
-                }
-
-                // Do not update the animation when we're in a paused state.
-                if (State == AnimationState.Paused)
-                {
-                    return;
                 }
 
                 NotifyAnimation();
@@ -222,44 +219,72 @@ namespace Gorgon.Animation
                 switch (registration.KeyType)
                 {
                     case AnimationTrackKeyType.Single:
-                        if (animation.SingleTracks.ContainsKey(registration.TrackName))
+                        if (animation.SingleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeySingle> trackSingle))
                         {
+                            if (trackSingle.SupportsInterpolation != registration.SupportedInterpolation)
+                            {
+                                throw new NotSupportedException(string.Format(Resources.GORANM_ERR_INTERPOLATION_MISMATCH, registration.TrackName, registration.SupportedInterpolation, trackSingle.SupportsInterpolation));
+                            }
                             _playableTracks.Add(registration);
                         }
                         break;
                     case AnimationTrackKeyType.Vector2:
-                        if (animation.Vector2Tracks.ContainsKey(registration.TrackName))
+                        if (animation.Vector2Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector2> trackVec2))
                         {
+                            if (trackVec2.SupportsInterpolation != registration.SupportedInterpolation)
+                            {
+                                throw new NotSupportedException(string.Format(Resources.GORANM_ERR_INTERPOLATION_MISMATCH, registration.TrackName, registration.SupportedInterpolation, trackVec2.SupportsInterpolation));
+                            }
                             _playableTracks.Add(registration);
                         }
                         break;
                     case AnimationTrackKeyType.Vector3:
-                        if (animation.Vector3Tracks.ContainsKey(registration.TrackName))
+                        if (animation.Vector3Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector3> trackVec3))
                         {
+                            if (trackVec3.SupportsInterpolation != registration.SupportedInterpolation)
+                            {
+                                throw new NotSupportedException(string.Format(Resources.GORANM_ERR_INTERPOLATION_MISMATCH, registration.TrackName, registration.SupportedInterpolation, trackVec3.SupportsInterpolation));
+                            }
                             _playableTracks.Add(registration);
                         }
                         break;
                     case AnimationTrackKeyType.Vector4:
-                        if (animation.Vector4Tracks.ContainsKey(registration.TrackName))
+                        if (animation.Vector4Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector4> trackVec4))
                         {
+                            if (trackVec4.SupportsInterpolation != registration.SupportedInterpolation)
+                            {
+                                throw new NotSupportedException(string.Format(Resources.GORANM_ERR_INTERPOLATION_MISMATCH, registration.TrackName, registration.SupportedInterpolation, trackVec4.SupportsInterpolation));
+                            }
                             _playableTracks.Add(registration);
                         }
                         break;
                     case AnimationTrackKeyType.Rectangle:
-                        if (animation.RectangleTracks.ContainsKey(registration.TrackName))
+                        if (animation.RectangleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyRectangle> trackRect))
                         {
+                            if (trackRect.SupportsInterpolation != registration.SupportedInterpolation)
+                            {
+                                throw new NotSupportedException(string.Format(Resources.GORANM_ERR_INTERPOLATION_MISMATCH, registration.TrackName, registration.SupportedInterpolation, trackRect.SupportsInterpolation));
+                            }
                             _playableTracks.Add(registration);
                         }
                         break;
                     case AnimationTrackKeyType.Color:
-                        if (animation.ColorTracks.ContainsKey(registration.TrackName))
+                        if (animation.ColorTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyGorgonColor> trackColor))
                         {
+                            if (trackColor.SupportsInterpolation != registration.SupportedInterpolation)
+                            {
+                                throw new NotSupportedException(string.Format(Resources.GORANM_ERR_INTERPOLATION_MISMATCH, registration.TrackName, registration.SupportedInterpolation, trackColor.SupportsInterpolation));
+                            }
                             _playableTracks.Add(registration);
                         }
                         break;
                     case AnimationTrackKeyType.Texture2D:
-                        if (animation.Texture2DTracks.ContainsKey(registration.TrackName))
+                        if (animation.Texture2DTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyTexture2D> trackTexture))
                         {
+                            if (trackTexture.SupportsInterpolation != registration.SupportedInterpolation)
+                            {
+                                throw new NotSupportedException(string.Format(Resources.GORANM_ERR_INTERPOLATION_MISMATCH, registration.TrackName, registration.SupportedInterpolation, trackTexture.SupportsInterpolation));
+                            }
                             _playableTracks.Add(registration);
                         }
                         break;
@@ -275,62 +300,68 @@ namespace Gorgon.Animation
             for (int i = 0; i < _playableTracks.Count; ++i)
             {
                 GorgonTrackRegistration registration = _playableTracks[i];
-                
 
                 switch (registration.KeyType)
                 {
                     case AnimationTrackKeyType.Single:
                         if ((CurrentAnimation.SingleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeySingle> singleTrack))
-                            && (TrackKeyProcessor.TryUpdateSingle(CurrentAnimation.Length, singleTrack, _time, out float singleValue))
-                            && (singleTrack.IsEnabled))
+                            && (singleTrack.IsEnabled)
+                            && (singleTrack.KeyFrames.Count > 0)
+                            && (TrackKeyProcessor.TryUpdateSingle(singleTrack, _time, out float singleValue)))
                         {
                             OnSingleValueUpdate(registration, _animatedObject, singleValue);
                         }
                         break;
                     case AnimationTrackKeyType.Vector2:
                         if ((CurrentAnimation.Vector2Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector2> vec2DTrack))
-                            && (TrackKeyProcessor.TryUpdateVector2(CurrentAnimation.Length, vec2DTrack, _time, out DX.Vector2 vec2DValue))
-                            && (vec2DTrack.IsEnabled))
+                            && (vec2DTrack.IsEnabled)
+                            && (vec2DTrack.KeyFrames.Count > 0)
+                            && (TrackKeyProcessor.TryUpdateVector2(vec2DTrack, _time, out DX.Vector2 vec2DValue)))
                         {
                             OnVector2ValueUpdate(registration, _animatedObject, vec2DValue);
                         }
                         break;
                     case AnimationTrackKeyType.Vector3:
                         if ((CurrentAnimation.Vector3Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector3> vec3DTrack))
-                            && (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation.Length, vec3DTrack, _time, out DX.Vector3 vec3DValue))
-                            && (vec3DTrack.IsEnabled))
+                            && (vec3DTrack.IsEnabled)
+                            && (vec3DTrack.KeyFrames.Count > 0)
+                            && (TrackKeyProcessor.TryUpdateVector3(vec3DTrack, _time, out DX.Vector3 vec3DValue)))
                         {
                             OnVector3ValueUpdate(registration, _animatedObject, vec3DValue);
                         }
                         break;
                     case AnimationTrackKeyType.Vector4:
                         if ((CurrentAnimation.Vector4Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector4> vec4DTrack))
-                            && (TrackKeyProcessor.TryUpdateVector4(CurrentAnimation.Length, vec4DTrack, _time, out DX.Vector4 vec4DValue))
-                            && (vec4DTrack.IsEnabled))
+                            && (vec4DTrack.IsEnabled)
+                            && (vec4DTrack.KeyFrames.Count > 0)
+                            && (TrackKeyProcessor.TryUpdateVector4(vec4DTrack, _time, out DX.Vector4 vec4DValue)))
                         {
                             OnVector4ValueUpdate(registration, _animatedObject, vec4DValue);
                         }
                         break;
                     case AnimationTrackKeyType.Rectangle:
                         if ((CurrentAnimation.RectangleTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyRectangle> rectTrack))
-                            && (TrackKeyProcessor.TryUpdateRectBounds(CurrentAnimation.Length, rectTrack, _time, out DX.RectangleF rectValue))
-                            && (rectTrack.IsEnabled))
+                            && (rectTrack.IsEnabled)
+                            && (rectTrack.KeyFrames.Count > 0)
+                            && (TrackKeyProcessor.TryUpdateRectBounds(rectTrack, _time, out DX.RectangleF rectValue)))
                         {
                             OnRectangleUpdate(registration, _animatedObject, rectValue);
                         }
                         break;
                     case AnimationTrackKeyType.Color:
                         if ((CurrentAnimation.ColorTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyGorgonColor> colorTrack))
-                            && (TrackKeyProcessor.TryUpdateColor(CurrentAnimation.Length, colorTrack, _time, out GorgonColor colorValue))
-                            && (colorTrack.IsEnabled))
+                            && (colorTrack.IsEnabled)
+                            && (colorTrack.KeyFrames.Count > 0)
+                            && (TrackKeyProcessor.TryUpdateColor(colorTrack, _time, out GorgonColor colorValue)))
                         {
                             OnColorUpdate(registration, _animatedObject, colorValue);
                         }
                         break;
                     case AnimationTrackKeyType.Texture2D:
                         if ((CurrentAnimation.Texture2DTracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyTexture2D> textureTrack))
-                            && (TrackKeyProcessor.TryUpdateTexture2D(CurrentAnimation.Length, textureTrack, _time, out GorgonTexture2DView texture, out DX.RectangleF texCoords, out int texArray))
-                            && (textureTrack.IsEnabled))
+                            && (textureTrack.IsEnabled)
+                            && (textureTrack.KeyFrames.Count > 0)
+                            && (TrackKeyProcessor.TryUpdateTexture2D(textureTrack, _time, out GorgonTexture2DView texture, out DX.RectangleF texCoords, out int texArray)))
                         {
                             OnTexture2DUpdate(registration, _animatedObject, texture, texCoords, texArray);
                         }
@@ -440,6 +471,11 @@ namespace Gorgon.Animation
 
             float increment = (CurrentAnimation.Speed * (timingDelta ?? GorgonTiming.Delta));
 
+            if ((_time + increment < 0) && (CurrentAnimation.Speed < 0))
+            {
+                _time = CurrentAnimation.Length + (_time + increment);
+            }
+
             // Push the animation time forward (or backward, depending on the Speed modifier).
             Time += increment;
 
@@ -451,6 +487,19 @@ namespace Gorgon.Animation
                 CurrentAnimation = null;
                 Time = 0;
             }
+        }
+
+        /// <summary>
+        /// Function to refresh the state of the object that is being animated with the current <see cref="Time"/>.
+        /// </summary>
+        public void Refresh()
+        {
+            if (CurrentAnimation == null)
+            {
+                return;
+            }
+
+            NotifyAnimation();
         }
 
         /// <summary>
@@ -481,11 +530,13 @@ namespace Gorgon.Animation
         /// <param name="animation">The <see cref="IGorgonAnimation"/> to play.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are <b>null</b>.</exception>
         /// <exception cref="KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
+        /// <exception cref="NotSupportedException">Thrown if a track in the animation has a mismatch for the <see cref="GorgonTrackRegistration.SupportedInterpolation"/> in the track registration.</exception>
         /// <remarks>
         /// <para>
         /// Applications should call this method to start an animation for an object. Otherwise, no animation will play when <see cref="Update"/> is called.
         /// </para>
         /// </remarks>
+        /// <seealso cref="GorgonTrackRegistration"/>
         public void Play(T animatedObject, IGorgonAnimation animation)
         {
             if (animation == null)
@@ -493,28 +544,30 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(animation));
             }
 
-            // This animation is already playing.
-            if (animation == CurrentAnimation)
+            if ((animatedObject == _animatedObject) && (animation == CurrentAnimation) && (State == AnimationState.Paused))
             {
+                Resume();
                 return;
             }
 
             // Stop the current animation.
             if (CurrentAnimation != null)
             {
-                Stop();
+                _playableTracks.Clear();
+                State = AnimationState.Stopped;
+                _loopCount = 0;
+                _animatedObject = null;
+                CurrentAnimation = null;
             }
 
             BuildPlayableTracks(animation);
 
-            if (Time > animation.Length)
-            {
-                Time = animation.Length;
-            }
+            // Reset time since we're switching animations.
+            _time = 0;
 
             if (animation.Speed < 0)
             {
-                Time = animation.Length - Time;
+                _time = animation.Length;
             }
 
             _animatedObject = animatedObject ?? throw new ArgumentNullException(nameof(animatedObject));

@@ -74,6 +74,8 @@ namespace Gorgon.Editor.Services
         private DX.RectangleF _screenRect;
         // The camera for rendering.
         private IGorgon2DCamera _camera;
+        // Flag to indicate that the rectangle should be clipped against the boundaries.
+        private bool _clipBounds = true;
         #endregion
 
         #region Events.
@@ -206,6 +208,19 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Property to set or return whether to clip the rectangle against the boundaries provided by <see cref="Bounds"/>.
+        /// </summary>
+        public bool ClipAgainstBoundaries
+        {
+            get => _clipBounds;
+            set
+            {
+                _clipBounds = value;
+                SetupHandles();
+            }
+        }
+
+        /// <summary>
         /// Property to return the rectangular region marked for clipping.
         /// </summary>
         public DX.RectangleF Rectangle
@@ -235,7 +250,7 @@ namespace Gorgon.Editor.Services
                     value.Top = temp;
                 }
 
-                if (!Bounds.IsEmpty)
+                if ((_clipBounds) && (!Bounds.IsEmpty))
                 {
                     Bounds.Contains(ref value, out bool contains);
 
@@ -259,7 +274,16 @@ namespace Gorgon.Editor.Services
                 SetupHandles();
                 OnRectChanged();
             }
-        }        
+        }
+
+        /// <summary>
+        /// Property to set or return whether manual input is allowed or not.
+        /// </summary>
+        public bool AllowManualInput
+        {
+            get;
+            set;
+        } = true;
         #endregion
 
         #region Methods.
@@ -423,7 +447,7 @@ namespace Gorgon.Editor.Services
                         Bottom = _dragRect.Bottom + dragDelta.Y
                     };
 
-                    if (!Bounds.IsEmpty)
+                    if ((_clipBounds) && (!Bounds.IsEmpty))
                     {                        
                         if (moveRect.Left < Bounds.Left)
                         {
@@ -566,7 +590,7 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 
-            if ((_activeHandleIndex == 9) && (!IsDragging))
+            if ((AllowManualInput) && (_activeHandleIndex == 9) && (!IsDragging))
             {
                 EventHandler handler = KeyboardIconClickedEvent;
                 handler?.Invoke(this, EventArgs.Empty);
@@ -702,7 +726,7 @@ namespace Gorgon.Editor.Services
                     _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
                     _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);
                 }
-                else
+                else if (AllowManualInput)
                 {
                     _renderer.DrawFilledRectangle(handleBounds, GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
                 }

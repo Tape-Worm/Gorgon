@@ -186,4 +186,16 @@
   <data name="GORANM_TOSTR_TRACKREG" xml:space="preserve">
     <value>Track '{0}', Type: {1}</value>
   </data>
+  <data name="GORANM_ERR_INTERPOLATION_MISMATCH" xml:space="preserve">
+    <value>The track '{0}' is registered with interpolation support for [{1}], but the actual track in the animation supports [{2}].</value>
+  </data>
+  <data name="GORANM_DESC_INTERP_LINEAR" xml:space="preserve">
+    <value>Linear</value>
+  </data>
+  <data name="GORANM_DESC_INTERP_NONE" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="GORANM_DESC_INTERP_SPLINE" xml:space="preserve">
+    <value>Spline</value>
+  </data>
 </root>

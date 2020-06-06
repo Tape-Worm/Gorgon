@@ -1009,6 +1009,49 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to determine if a file is linked to another file.
+        /// </summary>
+        /// <param name="file">The file to evaluate.</param>
+        /// <returns><b>true</b> if linked, <b>false</b> if not.</returns>
+        private bool IsFileLinked(IFile file)
+        {
+            foreach (string filePath in _files.Values.Where(item => item != file)
+                                                     .SelectMany(item => item.Metadata.DependsOn)
+                                                     .SelectMany(item => item.Value))
+            {
+                if (string.Equals(file.FullPath, filePath, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Function to repair file dependency metadata when a file is renamed, or moved (or its parent directory is renamed or moved).
+        /// </summary>
+        /// <param name="originalPath">The original path to the file.</param>
+        /// <param name="newPath">The new path to the file.</param>
+        private void RepairFileLinkage(string originalPath, string newPath)
+        {
+            foreach (List<string> dependencies in _files.Where(item => (!string.Equals(item.Value.FullPath, originalPath, StringComparison.OrdinalIgnoreCase)
+                                                                    && (!string.Equals(item.Value.FullPath, newPath, StringComparison.OrdinalIgnoreCase))))
+                                                        .Select(item => item.Value.Metadata.DependsOn)
+                                                        .Where(item => item.Count > 0)
+                                                        .SelectMany(item => item.Values))
+            {
+                for (int i = 0; i < dependencies.Count; ++i)
+                {
+                    if (string.Equals(originalPath, dependencies[i], StringComparison.OrdinalIgnoreCase))
+                    {
+                        dependencies[i] = newPath;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to enumerate the child directories/files for the file system.
         /// </summary>
         /// <param name="directory">The parent directory that is being enumerated.</param>
@@ -1278,6 +1321,25 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
+                // Ensure file linkages are noticed.
+                foreach (IFile selectedFile in directory.Files.Concat(directory.Directories.Traverse(d => d.Directories)
+                                                              .SelectMany(item => item.Files)))
+                {
+                    if (!IsFileLinked(selectedFile))
+                    {
+                        continue;
+                    }
+
+                    if (HostServices.MessageDisplay.ShowConfirmation(Resources.GOREDIT_CONFIRM_FILE_LINKED) == MessageResponse.No)
+                    {                        
+                        return;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
                 if (directory == Root)
                 {
                     // If there's nothing to delete, then just get out. No sense in wasting effort.
@@ -1404,8 +1466,26 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
+                // Ensure file linkages are noticed.
+                foreach (IFile selectedFile in SelectedFiles)
+                {
+                    if (!IsFileLinked(selectedFile))
+                    {
+                        continue;
+                    }
 
-                MessageResponse response;
+                    if (HostServices.MessageDisplay.ShowConfirmation(Resources.GOREDIT_CONFIRM_FILE_LINKED) == MessageResponse.No)
+                    {
+                        args.ItemsDeleted = false;
+                        return;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                MessageResponse response = MessageResponse.None;
                 if (SelectedFiles.Count == 1)
                 {
                     response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SINGLE_FILE_DELETE, SelectedFiles[0].FullPath));
@@ -1635,9 +1715,12 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Update the directory in our file system.
-                _fileSystemWriter.RenameFile(selected.FullPath, args.NewName);                
+                string originalName = selected.FullPath;
+                _fileSystemWriter.RenameFile(originalName, args.NewName);                
 
                 selected.RenameCommand.Execute(args);
+
+                RepairFileLinkage(originalName, selected.FullPath);
 
                 OnFileSystemUpdated();
             }
@@ -1708,9 +1791,18 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Update the directory in our file system.
+                (string originalPath, IFile file)[] originalPaths = selected.Files.Concat(selected.Directories.Traverse(d => d.Directories)
+                                                                                                              .SelectMany(d => d.Files))
+                                                                                                              .Select(item => (item.FullPath, item))
+                                                                                  .ToArray();
                 _fileSystemWriter.RenameDirectory(selected.FullPath, args.NewName);
                 
                 selected.RenameCommand.Execute(args);
+
+                foreach ((string originalPath, IFile file) in originalPaths)
+                {
+                    RepairFileLinkage(originalPath, file.FullPath);
+                }
 
                 OnFileSystemUpdated();
             }
@@ -1867,7 +1959,7 @@ namespace Gorgon.Editor.ViewModels
                 UpdateFileViewModels(movedFiles, destDirectory, false);
                 
                 // Remove the source files/directories from the view if it's subscribed.
-                foreach (IGorgonVirtualFile movedFile in movedFiles.Select(item => item.src))
+                foreach ((IGorgonVirtualFile movedFile, IGorgonVirtualFile newFile) in movedFiles)
                 {
                     // Since the file system service uses absolute physical paths, we'll have to associate by physical path names.
                     IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, movedFile.FullPath, StringComparison.OrdinalIgnoreCase));
@@ -1876,8 +1968,9 @@ namespace Gorgon.Editor.ViewModels
                     {
                         continue;
                     }
-
+                                        
                     file.Parent.Files.Remove(file);
+                    RepairFileLinkage(file.FullPath, newFile.FullPath);
                 }
 
                 foreach (IGorgonVirtualDirectory srcDir in movedDirs.Select(item => item.src).OrderByDescending(item => item.FullPath.Length))
@@ -1912,7 +2005,7 @@ namespace Gorgon.Editor.ViewModels
                 HideProgress();
                 cancelSource?.Dispose();
             }
-        }
+        }        
 
         /// <summary>
         /// Function to determine if the file(s) can be copied or moved.
@@ -1997,7 +2090,7 @@ namespace Gorgon.Editor.ViewModels
                     if (!_files.TryGetValue(id, out IFile file))
                     {
                         continue;
-                    }
+                    }                    
 
                     srcFiles.Add(file);
                 }
@@ -2006,7 +2099,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (openFile != null)
                 {
-                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_FILE_OPEN_FILE, openFile.Name));
+                    HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_FILE_OPEN_FILE, openFile.Name));                    
                     return;
                 }
 
@@ -2037,17 +2130,18 @@ namespace Gorgon.Editor.ViewModels
                 UpdateFileViewModels(movedFiles, destDirectory, true);
 
                 // Remove the source files/directories from the view if it's subscribed.
-                foreach (IGorgonVirtualFile movedFile in movedFiles.Select(item => item.src))
+                foreach ((IGorgonVirtualFile movedFile, IGorgonVirtualFile newFile) in movedFiles)
                 {
                     // Since the file system service uses absolute physical paths, we'll have to associate by physical path names.
-                    IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, movedFile.FullPath, StringComparison.OrdinalIgnoreCase));
+                    IFile sourceFile = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, movedFile.FullPath, StringComparison.OrdinalIgnoreCase));
 
-                    if (file == null)
+                    if (sourceFile == null) 
                     {
                         continue;
-                    }
+                    }                   
 
-                    file.Parent.Files.Remove(file);
+                    RepairFileLinkage(movedFile.FullPath, newFile.FullPath);
+                    sourceFile.Parent.Files.Remove(sourceFile);
                 }
             }
             catch (OperationCanceledException)
@@ -3341,6 +3435,11 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <returns>The list of selected file paths.</returns>
         IReadOnlyList<string> IContentFileManager.GetSelectedFiles() => SelectedFiles?.Select(item => item.FullPath).ToArray() ?? Array.Empty<string>();
+
+        /// <summary>
+        /// Function to notify the application that the metadata for the file system should be flushed back to the disk.
+        /// </summary>
+        void IContentFileManager.FlushMetadata() => OnFileSystemUpdated();
         #endregion
 
         #region Constructor/Finalizer.

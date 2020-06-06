@@ -73,42 +73,42 @@
             this.radioHue.Name = "radioHue";
             this.radioHue.TabStop = true;
             this.radioHue.UseVisualStyleBackColor = true;
-            this.radioHue.CheckedChanged += new System.EventHandler(this.radioHue_CheckedChanged);
+            this.radioHue.CheckedChanged += new System.EventHandler(this.RadioHue_CheckedChanged);
             // 
             // radioSaturation
             // 
             resources.ApplyResources(this.radioSaturation, "radioSaturation");
             this.radioSaturation.Name = "radioSaturation";
             this.radioSaturation.UseVisualStyleBackColor = true;
-            this.radioSaturation.CheckedChanged += new System.EventHandler(this.radioSaturation_CheckedChanged);
+            this.radioSaturation.CheckedChanged += new System.EventHandler(this.RadioSaturation_CheckedChanged);
             // 
             // radioValue
             // 
             resources.ApplyResources(this.radioValue, "radioValue");
             this.radioValue.Name = "radioValue";
             this.radioValue.UseVisualStyleBackColor = true;
-            this.radioValue.CheckedChanged += new System.EventHandler(this.radioValue_CheckedChanged);
+            this.radioValue.CheckedChanged += new System.EventHandler(this.RadioValue_CheckedChanged);
             // 
             // radioRed
             // 
             resources.ApplyResources(this.radioRed, "radioRed");
             this.radioRed.Name = "radioRed";
             this.radioRed.UseVisualStyleBackColor = true;
-            this.radioRed.CheckedChanged += new System.EventHandler(this.radioRed_CheckedChanged);
+            this.radioRed.CheckedChanged += new System.EventHandler(this.RadioRed_CheckedChanged);
             // 
             // radioBlue
             // 
             resources.ApplyResources(this.radioBlue, "radioBlue");
             this.radioBlue.Name = "radioBlue";
             this.radioBlue.UseVisualStyleBackColor = true;
-            this.radioBlue.CheckedChanged += new System.EventHandler(this.radioBlue_CheckedChanged);
+            this.radioBlue.CheckedChanged += new System.EventHandler(this.RadioBlue_CheckedChanged);
             // 
             // radioGreen
             // 
             resources.ApplyResources(this.radioGreen, "radioGreen");
             this.radioGreen.Name = "radioGreen";
             this.radioGreen.UseVisualStyleBackColor = true;
-            this.radioGreen.CheckedChanged += new System.EventHandler(this.radioGreen_CheckedChanged);
+            this.radioGreen.CheckedChanged += new System.EventHandler(this.RadioGreen_CheckedChanged);
             // 
             // numHue
             // 
@@ -125,7 +125,7 @@
             0,
             0});
             this.numHue.Name = "numHue";
-            this.numHue.ValueChanged += new System.EventHandler(this.numHue_ValueChanged);
+            this.numHue.ValueChanged += new System.EventHandler(this.NumHue_ValueChanged);
             // 
             // numSaturation
             // 
@@ -137,7 +137,7 @@
             0,
             0});
             this.numSaturation.Name = "numSaturation";
-            this.numSaturation.ValueChanged += new System.EventHandler(this.numSaturation_ValueChanged);
+            this.numSaturation.ValueChanged += new System.EventHandler(this.NumSaturation_ValueChanged);
             // 
             // numValue
             // 
@@ -149,7 +149,7 @@
             0,
             0});
             this.numValue.Name = "numValue";
-            this.numValue.ValueChanged += new System.EventHandler(this.numValue_ValueChanged);
+            this.numValue.ValueChanged += new System.EventHandler(this.NumValue_ValueChanged);
             // 
             // numRed
             // 
@@ -161,7 +161,7 @@
             0,
             0});
             this.numRed.Name = "numRed";
-            this.numRed.ValueChanged += new System.EventHandler(this.numRed_ValueChanged);
+            this.numRed.ValueChanged += new System.EventHandler(this.NumRed_ValueChanged);
             // 
             // numGreen
             // 
@@ -173,7 +173,7 @@
             0,
             0});
             this.numGreen.Name = "numGreen";
-            this.numGreen.ValueChanged += new System.EventHandler(this.numGreen_ValueChanged);
+            this.numGreen.ValueChanged += new System.EventHandler(this.NumGreen_ValueChanged);
             // 
             // numBlue
             // 
@@ -185,14 +185,14 @@
             0,
             0});
             this.numBlue.Name = "numBlue";
-            this.numBlue.ValueChanged += new System.EventHandler(this.numBlue_ValueChanged);
+            this.numBlue.ValueChanged += new System.EventHandler(this.NumBlue_ValueChanged);
             // 
             // textBoxHex
             // 
             resources.ApplyResources(this.textBoxHex, "textBoxHex");
             this.textBoxHex.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBoxHex.Name = "textBoxHex";
-            this.textBoxHex.TextChanged += new System.EventHandler(this.textBoxHex_TextChanged);
+            this.textBoxHex.TextChanged += new System.EventHandler(this.TextBoxHex_TextChanged);
             // 
             // labelHex
             // 
@@ -209,7 +209,7 @@
             0,
             0});
             this.numAlpha.Name = "numAlpha";
-            this.numAlpha.ValueChanged += new System.EventHandler(this.numAlpha_ValueChanged);
+            this.numAlpha.ValueChanged += new System.EventHandler(this.NumAlpha_ValueChanged);
             // 
             // labelAlpha
             // 
@@ -222,13 +222,13 @@
             this.alphaSlider.Maximum = System.Drawing.Color.White;
             this.alphaSlider.Minimum = System.Drawing.Color.Transparent;
             this.alphaSlider.Name = "alphaSlider";
-            this.alphaSlider.PercentualValueChanged += new System.EventHandler(this.alphaSlider_PercentualValueChanged);
+            this.alphaSlider.PercentualValueChanged += new System.EventHandler(this.AlphaSlider_PercentualValueChanged);
             // 
             // colorSlider
             // 
             resources.ApplyResources(this.colorSlider, "colorSlider");
             this.colorSlider.Name = "colorSlider";
-            this.colorSlider.PercentualValueChanged += new System.EventHandler(this.colorSlider_PercentualValueChanged);
+            this.colorSlider.PercentualValueChanged += new System.EventHandler(this.ColorSlider_PercentualValueChanged);
             // 
             // colorPanel
             // 
@@ -239,7 +239,7 @@
             this.colorPanel.TopLeftColor = System.Drawing.Color.White;
             this.colorPanel.TopRightColor = System.Drawing.Color.Red;
             this.colorPanel.ValuePercentual = ((System.Drawing.PointF)(resources.GetObject("colorPanel.ValuePercentual")));
-            this.colorPanel.PercentualValueChanged += new System.EventHandler(this.colorPanel_PercentualValueChanged);
+            this.colorPanel.PercentualValueChanged += new System.EventHandler(this.ColorPanel_PercentualValueChanged);
             // 
             // tableLayoutPanel1
             // 
@@ -266,7 +266,7 @@
             this.colorShowBox.LowerColor = System.Drawing.Color.Maroon;
             this.colorShowBox.Name = "colorShowBox";
             this.colorShowBox.UpperColor = System.Drawing.Color.DarkRed;
-            this.colorShowBox.UpperClick += new System.EventHandler(this.colorShowBox_UpperClick);
+            this.colorShowBox.UpperClick += new System.EventHandler(this.ColorShowBox_UpperClick);
             // 
             // label2
             // 

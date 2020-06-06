@@ -376,7 +376,7 @@ namespace Gorgon.UI
         /// This property can be used to retrieve the <see cref="Form"/> that is the primary form for the application. When this form closes, the application will shut down.
         /// </para>
         /// <para>
-        /// This value is set when the <see cref="Run(Form,Func{bool})"/> is used to run the application, or a form has been assigned to the <see cref="System.Windows.Forms.ApplicationContext.MainForm"/> 
+        /// This value is set when the <see cref="Run(Form,Func{bool})"/> is used to run the application, or a form has been assigned to the <see cref="ApplicationContext.MainForm"/> 
         /// property.
         /// </para>
         /// </remarks>

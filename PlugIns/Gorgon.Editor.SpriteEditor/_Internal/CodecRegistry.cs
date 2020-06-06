@@ -98,7 +98,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (assemblies.Count == 0)
             {
-                _log.Print("Image codec plug in assemblies were not loaded. There may not have been any plug assemblies, or they may already be referenced.", LoggingLevel.Verbose);
+                _log.Print("Sprite codec plug in assemblies were not loaded. There may not have been any plug assemblies, or they may already be referenced.", LoggingLevel.Verbose);
             }
 
             // Load all the codecs contained within the plug in (a plug in can have multiple codecs).

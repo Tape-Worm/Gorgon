@@ -56,6 +56,7 @@ namespace Gorgon.Animation
     public interface IGorgonAnimation
         : IGorgonNamedObject
     {
+        #region Properties.
         /// <summary>
         /// Property to set or return the number of times to loop an animation.
         /// </summary>
@@ -91,6 +92,15 @@ namespace Gorgon.Animation
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the frames per second for this animation.
+        /// </summary>
+        [JsonProperty("FPS")]
+        float Fps
+        {
+            get;
         }
 
         /// <summary>
@@ -155,5 +165,14 @@ namespace Gorgon.Animation
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the maximum number of key frames across all tracks.
+        /// </summary>
+        /// <returns>The maximum number of key frames across all tracks.</returns>
+        int GetMaxKeyFrameCount();
+        #endregion
     }
 }

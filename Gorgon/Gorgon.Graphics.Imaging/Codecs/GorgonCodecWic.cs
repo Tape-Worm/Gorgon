@@ -417,7 +417,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             {
                 GorgonImageInfo info = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, null);
 
-                return info == null ? false : info.Format != BufferFormat.Unknown;
+                return info != null && info.Format != BufferFormat.Unknown;
             }
             catch (DX.SharpDXException)
             {

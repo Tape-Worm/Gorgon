@@ -61,7 +61,7 @@ namespace Gorgon.Graphics.Fonts
         /// This will affect the <see cref="Size"/> value in that it will alter the meaning of the units.
         /// </para>
         /// <para>
-        /// The default value is <see cref="Fonts.FontHeightMode.Pixels"/>.
+        /// The default value is <see cref="FontHeightMode.Pixels"/>.
         /// </para>
         /// </remarks>
         public FontHeightMode FontHeightMode
@@ -85,8 +85,8 @@ namespace Gorgon.Graphics.Fonts
         /// This is the height of the font, including ascent and descent.
         /// </para>
         /// <para>
-        /// This is affected by the <see cref="Fonts.FontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="Fonts.FontHeightMode.Points"/>, then this unit is the height 
-        /// size height for the font. Otherwise, this represents the font height in <see cref="Fonts.FontHeightMode.Pixels"/>.
+        /// This is affected by the <see cref="Fonts.FontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="FontHeightMode.Points"/>, then this unit is the height 
+        /// size height for the font. Otherwise, this represents the font height in <see cref="FontHeightMode.Pixels"/>.
         /// </para>
         /// </remarks>
         public float Size
@@ -328,7 +328,7 @@ namespace Gorgon.Graphics.Fonts
         /// Property to set or return the style for the font.
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="Fonts.FontStyle.Normal"/>.
+        /// The default value is <see cref="FontStyle.Normal"/>.
         /// </remarks>
         public FontStyle FontStyle
         {

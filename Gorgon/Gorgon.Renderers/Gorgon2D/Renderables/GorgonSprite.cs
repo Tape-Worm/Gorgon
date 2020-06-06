@@ -462,6 +462,56 @@ namespace Gorgon.Renderers
         }
         #endregion
 
+        #region Method.
+        /// <summary>
+        /// Function to copy the sprite data into the specified sprite.
+        /// </summary>
+        /// <param name="sprite">The sprite that will receive the data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+        public void CopyTo(GorgonSprite sprite)
+        {
+            if (sprite == null)
+            {
+                throw new ArgumentNullException(nameof(sprite));
+            }
+            
+            sprite.Bounds = Bounds;
+            sprite.Anchor = Anchor;
+            sprite._absoluteAnchor = _absoluteAnchor;
+            sprite.AlphaTest = AlphaTest;
+            sprite._angle = _angle;
+            sprite.Color = Color;
+            sprite.Depth = Depth;
+            sprite.HorizontalFlip = HorizontalFlip;
+            sprite.Scale = Scale;
+            sprite.Texture = Texture;
+            sprite.TextureArrayIndex = TextureArrayIndex;
+            sprite.TextureRegion = TextureRegion;
+            sprite.TextureSampler = TextureSampler;
+            sprite.VerticalFlip = VerticalFlip;
+
+            sprite.CornerOffsets.UpperLeft = CornerOffsets.UpperLeft;
+            sprite.CornerOffsets.UpperRight = CornerOffsets.UpperRight;
+            sprite.CornerOffsets.LowerRight = CornerOffsets.LowerRight;
+            sprite.CornerOffsets.LowerLeft = CornerOffsets.LowerLeft;
+
+            sprite.CornerColors.UpperLeft = CornerColors.UpperLeft;
+            sprite.CornerColors.UpperRight = CornerColors.UpperRight;
+            sprite.CornerColors.LowerRight = CornerColors.LowerRight;
+            sprite.CornerColors.LowerLeft = CornerColors.LowerLeft;
+
+            // Mark the sprite as having changes on all parts.
+            sprite.Renderable.AngleRads = Renderable.AngleRads;
+            sprite.Renderable.AngleSin = Renderable.AngleSin;
+            sprite.Renderable.AngleCos = Renderable.AngleCos;
+
+            sprite.Renderable.HasTextureChanges = true;
+            sprite.Renderable.HasTransformChanges = true;
+            sprite.Renderable.HasVertexChanges = true;
+            sprite.Renderable.HasVertexColorChanges = true;
+        }
+        #endregion
+
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Renderers.GorgonSprite"/> class.</summary>
         /// <param name="clone">The clone.</param>
@@ -474,29 +524,7 @@ namespace Gorgon.Renderers
                 throw new ArgumentNullException(nameof(clone));
             }
 
-            AlphaTest = clone.AlphaTest;
-            Anchor = clone.Anchor;
-            Angle = clone.Angle;
-            Bounds = clone.Bounds;
-            Color = clone.Color;
-            Depth = clone.Depth;
-            HorizontalFlip = clone.HorizontalFlip;
-            Scale = clone.Scale;
-            Texture = clone.Texture;
-            TextureArrayIndex = clone.TextureArrayIndex;
-            TextureRegion = clone.TextureRegion;
-            TextureSampler = clone.TextureSampler;
-            VerticalFlip = clone.VerticalFlip;
-
-            CornerOffsets.UpperLeft = clone.CornerOffsets.UpperLeft;
-            CornerOffsets.UpperRight = clone.CornerOffsets.UpperRight;
-            CornerOffsets.LowerRight = clone.CornerOffsets.LowerRight;
-            CornerOffsets.LowerLeft = clone.CornerOffsets.LowerLeft;
-
-            CornerColors.UpperLeft = clone.CornerColors.UpperLeft;
-            CornerColors.UpperRight = clone.CornerColors.UpperRight;
-            CornerColors.LowerRight = clone.CornerColors.LowerRight;
-            CornerColors.LowerLeft = clone.CornerColors.LowerLeft;
+            clone.CopyTo(this);
         }
 
         /// <summary>

@@ -88,7 +88,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to retrieve the value at the specified time index.
         /// </summary>
-        /// <param name="timeIndex">The time index within the track to retrieve the value from.</param>
+        /// <param name="timeIndex">The time, in seconds, within the animation.</param>
         /// <returns>The value at the specified time index.</returns>
         /// <remarks>
         /// <para>
@@ -114,9 +114,7 @@ namespace Gorgon.Animation
                 return result;
             }
 
-            float highestTime = KeyFrames.Max(item => item.Time);
-
-            TrackKeyProcessor.TryUpdateTexture2D(highestTime, this, timeIndex, out GorgonTexture2DView view, out DX.RectangleF texCoords, out int arrayIndex);
+            TrackKeyProcessor.TryUpdateTexture2D(this, timeIndex, out GorgonTexture2DView view, out DX.RectangleF texCoords, out int arrayIndex);
 
             return new GorgonKeyTexture2D(timeIndex, view, texCoords, arrayIndex);
         }

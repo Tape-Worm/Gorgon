@@ -444,10 +444,10 @@ namespace Gorgon.Graphics
         /// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
         /// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
         /// </remarks>
-        public static void Lerp(in GorgonColor start, in GorgonColor end, float weight, out GorgonColor outColor) => outColor = new GorgonColor(start.Red + ((end.Red - start.Red) * weight),
-                start.Green + ((end.Green - start.Green) * weight),
-                start.Blue + ((end.Blue - start.Blue) * weight),
-                start.Alpha + ((end.Alpha - start.Alpha) * weight));
+        public static void Lerp(in GorgonColor start, in GorgonColor end, float weight, out GorgonColor outColor) => outColor = new GorgonColor(start.Red.Lerp(end.Red, weight),
+                start.Green.Lerp(end.Green, weight),
+                start.Blue.Lerp(end.Blue, weight),
+                start.Alpha.Lerp(end.Alpha, weight));
 
         /// <summary>
         /// Function to add two <see cref="GorgonColor"/> values together.

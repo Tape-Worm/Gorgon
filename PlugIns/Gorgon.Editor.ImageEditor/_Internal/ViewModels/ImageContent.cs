@@ -1737,7 +1737,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if mip maps can be generated.
         /// </summary>
         /// <returns><b>true</b> if the image can be cropped or resized, <b>false</b> if not.</returns>
-        private bool CanGenMips() => ImageData == null ? false : MipSupport;
+        private bool CanGenMips() => ImageData != null && MipSupport;
 
         /// <summary>
         /// Function to generate mip maps for the current image.

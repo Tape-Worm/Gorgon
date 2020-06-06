@@ -99,7 +99,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to retrieve the value at the specified time index.
         /// </summary>
-        /// <param name="timeIndex">The time index within the track to retrieve the value from.</param>
+        /// <param name="timeIndex">The time index, in seconds, within the track to retrieve the value from.</param>
         /// <returns>The value at the specified time index.</returns>
         /// <remarks>
         /// <para>
@@ -125,9 +125,7 @@ namespace Gorgon.Animation
                 return result;
             }
 
-            float highestTime = KeyFrames.Max(item => item.Time);
-
-            TrackKeyProcessor.TryUpdateColor(highestTime, this, timeIndex, out GorgonColor color);
+            TrackKeyProcessor.TryUpdateColor(this, timeIndex, out GorgonColor color);
 
             return new GorgonKeyGorgonColor(timeIndex, color);
         }

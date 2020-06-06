@@ -37,6 +37,7 @@ using Gorgon.Math;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
 using System.ComponentModel;
+using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Editor.Rendering
 {
@@ -105,7 +106,9 @@ namespace Gorgon.Editor.Rendering
         private bool _panVertEnabled = true;
         // The starting point for the pan drag.
         private DX.Vector2? _panDragStart;
-        private DX.Vector3 _camDragStart;        
+        private DX.Vector3 _camDragStart;
+        // Font factory a font factory for generating fonts to use with the renderer.
+        private GorgonFontFactory _fontFactory;
         #endregion
 
         #region Events.
@@ -219,6 +222,11 @@ namespace Gorgon.Editor.Rendering
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to return the font factory used to generate fonts for the renderer.
+        /// </summary>
+        protected GorgonFontFactory Fonts => _fontFactory;
 
         /// <summary>
         /// Property to return the graphics interface used to create graphics objects.
@@ -392,14 +400,6 @@ namespace Gorgon.Editor.Rendering
         /// <param name="e">The mouse event parameters.</param>
         private void GetMouseArgs(MouseEventArgs e)
         {
-            // Transform the mouse coordinate into world space.
-            var halfClient = new DX.Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f);
-            var halfRenderRegion = new DX.Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
-            int wx = (int)(((e.X - halfClient.X) / ClientSize.Width) * halfRenderRegion.X);
-            int wy = (int)(((e.Y - halfClient.Y) / ClientSize.Height) * halfRenderRegion.Y);
-            int cx = (int)(wx + halfRenderRegion.X);
-            int cy = (int)(wy + halfRenderRegion.Y);
-
             var cameraMousePos = new DX.Vector3(e.X, e.Y, 0);
 
             if (_camera != null)
@@ -407,19 +407,13 @@ namespace Gorgon.Editor.Rendering
                 // The camera space mouse position.
                 cameraMousePos = _camera.Project(cameraMousePos);
             }
-            else
-            {
-                cameraMousePos.X = cx;
-                cameraMousePos.Y = cy;
-            }
 
             _mouseArgs.CameraSpacePosition = (DX.Vector2)cameraMousePos;
             _mouseArgs.ClientPosition = new DX.Point(e.X, e.Y);
             _mouseArgs.MouseButtons = e.Button;
             _mouseArgs.MouseWheelDelta = e.Delta;
-            _mouseArgs.WorldSpacePosition = new DX.Vector2(wx, wy);
-            _mouseArgs.ContentSpacePosition = new DX.Vector2(cx, cy);
             _mouseArgs.Handled = false;
+            _mouseArgs.ButtonClickCount = e.Clicks;
         }
 
         /// <summary>Handles the MouseUp event of the Window control.</summary>
@@ -452,7 +446,7 @@ namespace Gorgon.Editor.Rendering
             {
                 return;
             }
-
+            
             _panDragStart = new DX.Vector2(_mouseArgs.ClientPosition.X, _mouseArgs.ClientPosition.Y) / _camera.Zoom.X;
             _camDragStart = _camera.Position;
         }
@@ -602,7 +596,14 @@ namespace Gorgon.Editor.Rendering
                 Graphics.SetRenderTarget(_swapChain.RenderTargetView);
             }
 
-            _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
+            if (RenderRegion.IsEmpty)
+            {
+                _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
+            }
+            else
+            {
+                _camera.ViewDimensions = new DX.Size2F(RenderRegion.Width, RenderRegion.Height);
+            }
 
             ClientSize = e.Size;
             OnResizeEnd();
@@ -624,6 +625,114 @@ namespace Gorgon.Editor.Rendering
             var scaling = new DX.Vector2(ClientSize.Width / RenderRegion.Width, ClientSize.Height / RenderRegion.Height);
 
             return scaling.X.Min(scaling.Y);
+        }
+
+        /// <summary>
+        /// Function to convert a rectangle into camera space from client space.
+        /// </summary>
+        /// <param name="rect">The client space rectangle</param>
+        /// <param name="targetSize">The size of the render target.</param>
+        /// <returns>The camera space rectangle.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
+        /// </para>
+        /// </remarks>
+        protected DX.RectangleF ToCamera(DX.RectangleF rect, DX.Size2? targetSize = null)
+        {
+            DX.Vector3 topLeft = targetSize == null ? Camera.Project(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0)) : Camera.Project(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0), targetSize.Value);
+            DX.Vector3 bottomRight = targetSize == null ? Camera.Project(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0)) : Camera.Project(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0), targetSize.Value);
+            return new DX.RectangleF
+            {
+                Left = topLeft.X,
+                Top = topLeft.Y,
+                Right = bottomRight.X,
+                Bottom = bottomRight.Y
+            };
+        }
+
+        /// <summary>
+        /// Function to convert a vector into camera space from client space.
+        /// </summary>
+        /// <param name="vector">The client space vector.</param>
+        /// <param name="targetSize">[Optional] The size of the render target.</param>
+        /// <returns>The camera space vector.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
+        /// </para>
+        /// </remarks>
+        protected DX.Vector2 ToCamera(DX.Vector2 vector, DX.Size2? targetSize = null) => targetSize == null ? (DX.Vector2)Camera.Project((DX.Vector3)vector) : (DX.Vector2)Camera.Project((DX.Vector3)vector, targetSize.Value);
+
+        /// <summary>
+        /// Function to convert a size into camera space from client space.
+        /// </summary>
+        /// <param name="size">The client space size.</param>
+        /// <param name="targetSize">The size of the render target.</param>
+        /// <returns>The camera space size.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
+        /// </para>
+        /// </remarks>
+        protected DX.Size2F ToCamera(DX.Size2F size, DX.Size2? targetSize = null)
+        {
+            DX.Vector3 result = targetSize == null ? Camera.Project(new DX.Vector3(size.Width, size.Height, 0)) : Camera.Project(new DX.Vector3(size.Width, size.Height, 0), targetSize.Value);
+            return new DX.Size2F(result.X, result.Y);
+        }
+
+        /// <summary>
+        /// Function to convert a rectangle into client space from camera space.
+        /// </summary>
+        /// <param name="rect">The camera space rectangle</param>
+        /// <param name="targetSize">The size of the render target.</param>
+        /// <returns>The client space rectangle.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
+        /// </para>
+        /// </remarks>
+        protected DX.RectangleF ToClient(DX.RectangleF rect, DX.Size2? targetSize = null)
+        {
+            DX.Vector3 topLeft = targetSize == null ? Camera.Unproject(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0)) : Camera.Unproject(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0), targetSize.Value);
+            DX.Vector3 bottomRight = targetSize == null ? Camera.Unproject(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0)) : Camera.Unproject(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0), targetSize.Value);
+            return new DX.RectangleF
+            {
+                Left = topLeft.X,
+                Top = topLeft.Y,
+                Right = bottomRight.X,
+                Bottom = bottomRight.Y
+            };
+        }
+
+        /// <summary>
+        /// Function to convert a vector into client space from camera space.
+        /// </summary>
+        /// <param name="vector">The camera space vector.</param>
+        /// <param name="targetSize">The size of the render target.</param>
+        /// <returns>The client space vector.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
+        /// </para>
+        /// </remarks>
+        protected DX.Vector2 ToClient(DX.Vector2 vector, DX.Size2? targetSize = null) => targetSize == null ? (DX.Vector2)Camera.Unproject((DX.Vector3)vector) : (DX.Vector2)Camera.Unproject((DX.Vector3)vector, targetSize.Value);
+
+        /// <summary>
+        /// Function to convert a size into client space from camera space.
+        /// </summary>
+        /// <param name="size">The camera space size.</param>
+        /// <param name="targetSize">The size of the render target.</param>
+        /// <returns>The client space size.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
+        /// </para>
+        /// </remarks>
+        protected DX.Size2F ToClient(DX.Size2F size, DX.Size2? targetSize = null)
+        {
+            DX.Vector3 result = targetSize == null ? Camera.Unproject(new DX.Vector3(size.Width, size.Height, 0)) : Camera.Unproject(new DX.Vector3(size.Width, size.Height, 0), targetSize.Value);
+            return new DX.Size2F(result.X, result.Y);
         }
 
         /// <summary>
@@ -826,12 +935,15 @@ namespace Gorgon.Editor.Rendering
                 return;
             }
 
+            GorgonFontFactory factory = Interlocked.Exchange(ref _fontFactory, null);
+
             UnloadResources();
 
             if (DataContext != null)
             {
                 SetDataContext(null);
             }
+            factory?.Dispose();
         }
 
         /// <summary>
@@ -1181,6 +1293,7 @@ namespace Gorgon.Editor.Rendering
             Renderer = renderer;
             _swapChain = swapChain;
             ClientSize = new DX.Size2(swapChain.Width, swapChain.Height);
+            _fontFactory = new GorgonFontFactory(renderer.Graphics);
 
             SetDataContext(dataContext);
         }

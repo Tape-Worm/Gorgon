@@ -309,7 +309,11 @@ namespace Gorgon.Editor.UI
         /// <summary>Handles the SelectedFilesChanged event of the ContentFileManager control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ContentFileManager_SelectedFilesChanged(object sender, EventArgs e) => FilesAreSelected = ContentFileManager.GetSelectedFiles().Count > 0;
+        private void ContentFileManager_SelectedFilesChanged(object sender, EventArgs e)
+        {
+            FilesAreSelected = false;
+            FilesAreSelected = ContentFileManager.GetSelectedFiles().Count > 0;
+        }
 
         /// <summary>
         /// Function called to close the content.

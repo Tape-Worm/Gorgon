@@ -78,7 +78,7 @@ namespace Gorgon.UI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void detailsButton_Click(object sender, EventArgs e)
+        private void DetailsButton_Click(object sender, EventArgs e)
         {
             if (checkDetail.Checked)
             {
@@ -131,7 +131,7 @@ namespace Gorgon.UI
             }
 
             checkDetail.Checked = ShowDetailPanel;
-            detailsButton_Click(this, EventArgs.Empty);
+            DetailsButton_Click(this, EventArgs.Empty);
         }
 
         /// <summary>

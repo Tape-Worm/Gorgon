@@ -106,7 +106,7 @@ namespace Gorgon.Animation
         /// <typeparam name="T">The type of key in the track. Must implement <see cref="IGorgonKeyFrame"/> and be a reference type.</typeparam>
         /// <param name="track">The track to evaluate.</param>
         /// <param name="requestedTime">Track time requested.</param>
-        /// <param name="animationLength">The total animation time.</param>
+        /// <param name="animationLength">The total animation time for the track that the keys belong to.</param>
         /// <returns>A tuple containing the previous and next key that falls on or outside of the requested time, the index of the first key and the delta time between the start frame and the requested time.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="track"/> parameter is <b>null</b>.</exception>
         public static (T previous, T next, int prevKeyIndex, float timeDelta) GetNearestKeys<T>(
@@ -120,11 +120,8 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(track));
             }
 
-            // Wrap around for time so that we don't overextend.
-            while (requestedTime > animationLength)
-            {
-                requestedTime -= animationLength;
-            }
+            // Don't extend beyond the maximum amount of time for the track.
+            requestedTime = requestedTime.Min(animationLength);
 
             (T prevKey, T nextKey, int prevKeyIndex) = PrevNextSearch(requestedTime, track, 0, track.KeyFrames.Count - 1);
 

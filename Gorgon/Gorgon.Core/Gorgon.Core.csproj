@@ -90,7 +90,7 @@
     <Compile Include="Collections\GorgonArray.cs" />
     <Compile Include="Collections\GorgonEpsilonFloatComparer.cs" />
     <Compile Include="Collections\_Extensions\GorgonIReadOnlyListExtensions.cs" />
-    <Compile Include="Collections\_Extensions\TreeLinqExtensions.cs" />
+    <Compile Include="Collections\_Extensions\GorgonTreeLinqExtensions.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonReadOnlyArray.cs" />
     <Compile Include="Configuration\GorgonOption.cs" />
     <Compile Include="Configuration\GorgonOptionBag.cs" />

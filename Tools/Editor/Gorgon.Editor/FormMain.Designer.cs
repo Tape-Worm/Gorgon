@@ -499,7 +499,6 @@ namespace Gorgon.Editor
             // PanelProject
             // 
             this.PanelProject.AllowDrop = true;
-            this.PanelProject.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.PanelProject.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelProject.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.PanelProject.ForeColor = System.Drawing.Color.White;

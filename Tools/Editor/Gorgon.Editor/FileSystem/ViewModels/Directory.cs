@@ -28,7 +28,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Gorgon.Collections;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.IO;

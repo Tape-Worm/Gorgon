@@ -111,19 +111,34 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to set or return the distance between the main content panel, and the file explorer.
         /// </summary>
-        public double SplitMainDistance
+        /// <remarks>
+        /// This value is a percentage value between 1 - 99.
+        /// </remarks>
+        public int SplitMainDistance
         {
             get;
             set;
-        } = 0.815;
+        } = 80;
 
         /// <summary>
         /// Property to set or return the distance between the file explorer and the preview panel.
         /// </summary>
-        public double SplitPreviewDistance
+        /// <remarks>
+        /// This value is a percentage value between 1 - 99.
+        /// </remarks>
+        public int SplitPreviewDistance
         {
             get;
             set;
-        } = 0.678;
+        } = 60;
+
+        /// <summary>
+        /// Property to set or return the distance between the directory listing and the file listing in the file explorer panel.
+        /// </summary>
+        public int SplitDirFileDistance
+        {
+            get;
+            set;
+        } = 40;
     }
 }

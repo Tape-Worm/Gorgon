@@ -981,9 +981,19 @@ namespace Gorgon.Editor.UI.Controls
         {
             base.OnLoad(e);
 
+            if ((LicenseManager.UsageMode == LicenseUsageMode.Designtime) || (IsDesignTime))
+            {
+                return;
+            }
+
             GetCheckboxHeader();
 
             FillGrid();
+
+            if (GridFiles.Rows.Count == 0)
+            {
+                return;
+            }
 
             // Set the default sorting.
             ColumnLocation.HeaderCell.SortGlyphDirection = SortOrder.Ascending;

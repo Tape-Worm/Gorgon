@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -44,107 +45,6 @@ namespace Gorgon.Animation
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the editable track used to update positioning of an object.
-        /// </summary>
-        protected internal IGorgonAnimationTrack<GorgonKeyVector3> PositionTrack
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the editable track used to update the rotation of an object.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
-        /// </para>
-        /// <para>
-        /// The rotation track is made up of <see cref="GorgonKeyVector3"/> key frame types where the X, Y and Z values represent the x axis, y axis and z axis of rotation. All values are in degrees.
-        /// </para>
-        /// <para>
-        /// Note that not all controller types will use every axis when rotating. 
-        /// </para>
-        /// <para>
-        /// </para>
-        /// </remarks>
-        protected internal IGorgonAnimationTrack<GorgonKeyVector3> RotationTrack
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the editable track used to update the scale of an object.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
-        /// </para>
-        /// </remarks>
-        protected internal IGorgonAnimationTrack<GorgonKeyVector3> ScaleTrack
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the editable track used to update the color of an object.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
-        /// </para>
-        /// </remarks>
-        protected internal IGorgonAnimationTrack<GorgonKeyGorgonColor> ColorTrack
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the editable track used for rectangular boundaries of an object.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
-        /// </para>
-        /// </remarks>
-        protected internal IGorgonAnimationTrack<GorgonKeyRectangle> RectBoundsTrack
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the editable track used for the size of an object.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
-        /// </para>
-        /// </remarks>
-        protected internal IGorgonAnimationTrack<GorgonKeyVector3> SizeTrack
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the editable track used for updating a 2D texture on an object.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
-        /// </para>
-        /// </remarks>
-        protected internal IGorgonAnimationTrack<GorgonKeyTexture2D> Texture2DTrack
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// Property to set or return the number of times to loop an animation.
         /// </summary>
@@ -229,6 +129,31 @@ namespace Gorgon.Animation
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return the frames per second for this animation.
+        /// </summary>
+        public float Fps
+        {
+            get;
+        } = 60.0f;
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the maximum number of key frames across all tracks.
+        /// </summary>
+        /// <returns>The maximum number of key frames across all tracks.</returns>
+        public int GetMaxKeyFrameCount()
+        {
+            int result = SingleTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0);
+            result = result.Max(Vector2Tracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
+            result = result.Max(Vector3Tracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
+            result = result.Max(Vector4Tracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
+            result = result.Max(ColorTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
+            result = result.Max(RectangleTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
+            return result.Max(Texture2DTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -236,11 +161,16 @@ namespace Gorgon.Animation
         /// Initializes a new instance of the <see cref="AnimationData" /> class.
         /// </summary>
         /// <param name="name">The name of the track.</param>
+        /// <param name="fps">The frames per second for the animation.</param>
         /// <param name="length">The length of the animation, in seconds.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        public AnimationData(string name, float length)
-            : base(name) => Length = length.Max(0);
+        public AnimationData(string name, float fps, float length)
+            : base(name)
+        {
+            Length = length.Max(0);
+            Fps = fps.Max(1);
+        }
         #endregion
     }
 }

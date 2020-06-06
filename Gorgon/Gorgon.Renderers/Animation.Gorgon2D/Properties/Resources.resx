@@ -117,4 +117,91 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GORANM_TEXT_ABSOLUTE_ANCHOR" xml:space="preserve">
+    <value>Anchor (absolute)</value>
+  </data>
+  <data name="GORANM_TEXT_ANCHOR" xml:space="preserve">
+    <value>Anchor (relative)</value>
+  </data>
+  <data name="GORANM_TEXT_ANGLE" xml:space="preserve">
+    <value>Angle (°)</value>
+  </data>
+  <data name="GORANM_TEXT_BOUNDS" xml:space="preserve">
+    <value>Boundaries</value>
+  </data>
+  <data name="GORANM_TEXT_COLOR" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="GORANM_TEXT_DEPTH" xml:space="preserve">
+    <value>Depth</value>
+  </data>
+  <data name="GORANM_TEXT_LOWER_LEFT_COLOR" xml:space="preserve">
+    <value>Lower left color</value>
+  </data>
+  <data name="GORANM_TEXT_LOWER_LEFT_OFFSET" xml:space="preserve">
+    <value>2D Lower left offset</value>
+  </data>
+  <data name="GORANM_TEXT_LOWER_LEFT_OFFSET_3D" xml:space="preserve">
+    <value>3D Lower left offset</value>
+  </data>
+  <data name="GORANM_TEXT_LOWER_RIGHT_COLOR" xml:space="preserve">
+    <value>Lower right color</value>
+  </data>
+  <data name="GORANM_TEXT_LOWER_RIGHT_OFFSET" xml:space="preserve">
+    <value>2D Lower right offset</value>
+  </data>
+  <data name="GORANM_TEXT_LOWER_RIGHT_OFFSET_3D" xml:space="preserve">
+    <value>3D Lower right offset</value>
+  </data>
+  <data name="GORANM_TEXT_OPACITY" xml:space="preserve">
+    <value>Opacity</value>
+  </data>
+  <data name="GORANM_TEXT_POSITION" xml:space="preserve">
+    <value>2D Position</value>
+  </data>
+  <data name="GORANM_TEXT_POSITION_3D" xml:space="preserve">
+    <value>3D Position</value>
+  </data>
+  <data name="GORANM_TEXT_SCALE" xml:space="preserve">
+    <value>Scale (relative)</value>
+  </data>
+  <data name="GORANM_TEXT_SCALED_SIZE" xml:space="preserve">
+    <value>Scale (absolute)</value>
+  </data>
+  <data name="GORANM_TEXT_SIZE" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="GORANM_TEXT_TEXTURE" xml:space="preserve">
+    <value>Texture</value>
+  </data>
+  <data name="GORANM_TEXT_TEXTURE_ARRAY_INDEX" xml:space="preserve">
+    <value>Texture array index</value>
+  </data>
+  <data name="GORANM_TEXT_TEXTURE_OFFSET" xml:space="preserve">
+    <value>Texture offset</value>
+  </data>
+  <data name="GORANM_TEXT_TEXTURE_REGION" xml:space="preserve">
+    <value>Texture region</value>
+  </data>
+  <data name="GORANM_TEXT_TEXTURE_SCALE" xml:space="preserve">
+    <value>Texture scale</value>
+  </data>
+  <data name="GORANM_TEXT_UPPER_LEFT_COLOR" xml:space="preserve">
+    <value>Upper left color</value>
+  </data>
+  <data name="GORANM_TEXT_UPPER_LEFT_OFFSET" xml:space="preserve">
+    <value>2D Upper left offset</value>
+  </data>
+  <data name="GORANM_TEXT_UPPER_LEFT_OFFSET_3D" xml:space="preserve">
+    <value>3D Upper left offset</value>
+  </data>
+  <data name="GORANM_TEXT_UPPER_RIGHT_COLOR" xml:space="preserve">
+    <value>Upper right color</value>
+  </data>
+  <data name="GORANM_TEXT_UPPER_RIGHT_OFFSET" xml:space="preserve">
+    <value>2D Upper right offset</value>
+  </data>
+  <data name="GORANM_TEXT_UPPER_RIGHT_OFFSET_3D" xml:space="preserve">
+    <value>3D Upper right offset</value>
+  </data>
 </root>

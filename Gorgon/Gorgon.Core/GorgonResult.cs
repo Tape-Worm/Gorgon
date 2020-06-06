@@ -170,7 +170,7 @@ namespace Gorgon.Core
         /// <returns>
         /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
         /// </returns>
-        public override bool Equals(object obj) => obj is GorgonResult result ? result.Equals(this) : false;
+        public override bool Equals(object obj) => obj is GorgonResult result && result.Equals(this);
 
         /// <summary>
         /// Returns the fully qualified type name of this instance.

@@ -567,7 +567,7 @@ namespace Gorgon.Native
         /// </list>
         /// </para>
         /// </remarks>
-        public bool Equals(GorgonNativeBuffer<T> other) => other == this ? true : (other != null) && (other._memoryBlock == _memoryBlock) && (SizeInBytes == other.SizeInBytes);
+        public bool Equals(GorgonNativeBuffer<T> other) => other == this || (other != null) && (other._memoryBlock == _memoryBlock) && (SizeInBytes == other.SizeInBytes);
 
         /// <summary>
         /// Function to determine if this buffer is equal to another.

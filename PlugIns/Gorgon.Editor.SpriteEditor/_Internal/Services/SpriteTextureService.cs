@@ -228,7 +228,8 @@ namespace Gorgon.Editor.SpriteEditor
                     Binding = TextureBinding.ShaderResource,
                     Usage = ResourceUsage.Default,
                     Width = imageData.Width,
-                    Height = imageData.Height
+                    Height = imageData.Height,
+                    IsCubeMap = false
                 }, imageData), file);
             }
             finally

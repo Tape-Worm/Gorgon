@@ -79,12 +79,10 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to return the final list of keys as a list, sorted by time index.
         /// </summary>
-        /// <param name="maxAnimLength">The maximum animation length.</param>
         /// <returns>The sorted list as a read only collection.</returns>
-        public IReadOnlyList<T> GetSortedKeys(float maxAnimLength)
+        internal IReadOnlyList<T> GetSortedKeys()
         {
             T[] list = Keys
-                       .Where(item => item.Time <= maxAnimLength)
                        .Select(item => (T)item.Clone())
                        .ToArray();
 

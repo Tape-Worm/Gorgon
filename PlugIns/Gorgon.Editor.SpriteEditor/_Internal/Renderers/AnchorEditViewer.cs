@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -45,7 +46,7 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The service used for modifying the anchor.
-        private readonly SpriteAnchorEditService _anchorService;
+        private readonly IAnchorEditService _anchorService;
         // The controller for our animations.
         private readonly GorgonSpriteAnimationController _controller;
         // The scaling/rotation animation.
@@ -195,7 +196,9 @@ namespace Gorgon.Editor.SpriteEditor
 
             base.DrawSprite();
 
+            Renderer.Begin();
             _anchorService.Render();
+            Renderer.End();
 
             _controller.Update();
         }
@@ -265,7 +268,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="swapChain">The swap chain for the render area.</param>
         /// <param name="renderer">The 2D renderer for the application.</param>
         /// <param name="anchorService">The service used to modify the anchor.</param>
-        public AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, SpriteAnchorEditService anchorService)
+        public AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IAnchorEditService anchorService)
             : base(typeof(SpriteAnchorEdit).FullName, renderer, swapChain, dataContext)
         {            
             _anchorService = anchorService;

@@ -105,6 +105,14 @@ namespace Gorgon.Editor.UI.Controls
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonCancel_Click(object sender, EventArgs e) => OnCancel();
 
+        /// <summary>Raises the <see cref="Control.VisibleChanged"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> object that contains the event data.</param>
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            ValidateOk();
+        }
+
         /// <summary>
         /// Function to submit the change.
         /// </summary>
@@ -153,6 +161,5 @@ namespace Gorgon.Editor.UI.Controls
         /// <summary>Initializes a new instance of the <see cref="EditorSubPanelCommon"/> class.</summary>
         public EditorSubPanelCommon() => InitializeComponent();
         #endregion
-
     }
 }

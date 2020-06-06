@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -121,6 +122,12 @@ namespace Gorgon.IO
             reader.ReadValue(out int textureArrayCount);
             reader.ReadValue(out int textureMipCount);
 
+            reader.ReadValue(out int viewArrayIndex);
+            reader.ReadValue(out int viewArrayCount);
+            reader.ReadValue(out int viewMipSlice);
+            reader.ReadValue(out int viewMipCount);
+            reader.ReadValue(out BufferFormat viewFormat);
+
             // Locate the texture resource.
             GorgonTexture2D texture = Renderer.Graphics.LocateResourcesByName<GorgonTexture2D>(textureName)
                                               .FirstOrDefault(item => item.Width == textureWidth
@@ -129,18 +136,7 @@ namespace Gorgon.IO
                                                                       && item.ArrayCount == textureArrayCount
                                                                       && item.MipLevels == textureMipCount);
 
-            if (texture == null)
-            {
-                return null;
-            }
-
-            reader.ReadValue(out int viewArrayIndex);
-            reader.ReadValue(out int viewArrayCount);
-            reader.ReadValue(out int viewMipSlice);
-            reader.ReadValue(out int viewMipCount);
-            reader.ReadValue(out BufferFormat viewFormat);
-
-            return texture.GetShaderResourceView(viewFormat, viewMipSlice, viewMipCount, viewArrayIndex, viewArrayCount);
+            return texture?.GetShaderResourceView(viewFormat, viewMipSlice, viewMipCount, viewArrayIndex, viewArrayCount);
         }
 
         /// <summary>
@@ -193,24 +189,43 @@ namespace Gorgon.IO
 
                     binWriter.Write(key.Time);
 
-                    if (key.Value == null)
+                    if ((key.Value == null) && (string.IsNullOrWhiteSpace(key.TextureName)))
                     {
                         binWriter.WriteValue<byte>(0);
                     }
                     else
                     {
-                        binWriter.WriteValue<byte>(1);
-                        binWriter.Write(key.Value.Texture.Name);
-                        binWriter.Write(key.Value.Texture.Width);
-                        binWriter.Write(key.Value.Texture.Height);
-                        binWriter.WriteValue(key.Value.Texture.Format);
-                        binWriter.Write(key.Value.Texture.ArrayCount);
-                        binWriter.Write(key.Value.Texture.MipLevels);
-                        binWriter.Write(key.Value.ArrayIndex);
-                        binWriter.Write(key.Value.ArrayCount);
-                        binWriter.Write(key.Value.MipSlice);
-                        binWriter.Write(key.Value.MipCount);
-                        binWriter.WriteValue(key.Value.Format);
+                        binWriter.WriteValue<byte>(1);                        
+
+                        if (key.Value != null)
+                        {
+                            binWriter.Write(key.Value.Texture.Name);
+                            binWriter.Write(key.Value.Texture.Width);
+                            binWriter.Write(key.Value.Texture.Height);
+                            binWriter.WriteValue(key.Value.Texture.Format);
+                            binWriter.Write(key.Value.Texture.ArrayCount);
+                            binWriter.Write(key.Value.Texture.MipLevels);
+                            binWriter.Write(key.Value.ArrayIndex);
+                            binWriter.Write(key.Value.ArrayCount);
+                            binWriter.Write(key.Value.MipSlice);
+                            binWriter.Write(key.Value.MipCount);
+                            binWriter.WriteValue(key.Value.Format);
+                        }
+                        else
+                        {
+                            binWriter.Write(key.TextureName);
+                            // If we don't have any texture reference, write out default values.
+                            binWriter.Write(0);
+                            binWriter.Write(0);
+                            binWriter.WriteValue(BufferFormat.R8G8B8A8_UNorm);
+                            binWriter.Write(1);
+                            binWriter.Write(1);
+                            binWriter.Write(0);
+                            binWriter.Write(1);
+                            binWriter.Write(0);
+                            binWriter.Write(1);
+                            binWriter.WriteValue(BufferFormat.R8G8B8A8_UNorm);
+                        }
                     }
 
                     binWriter.WriteValue(ref key.TextureCoordinates);
@@ -300,7 +315,6 @@ namespace Gorgon.IO
                         {
                             Renderer.Log.Print("Attempted to load a texture from the data, but the texture was not in memory and the name is unknown.",
                                                  LoggingLevel.Verbose);
-                            continue;
                         }
                     }
 
@@ -384,6 +398,7 @@ namespace Gorgon.IO
                 binWriter = writer.OpenChunk(AnimationData);
                 binWriter.Write(animation.Name);
                 binWriter.Write(animation.Length);
+                binWriter.Write(animation.Fps);
                 binWriter.Write(animation.IsLooped);
                 binWriter.Write(animation.LoopCount);
                 writer.CloseChunk();
@@ -403,6 +418,70 @@ namespace Gorgon.IO
             {
                 binWriter?.Dispose();
                 writer.Close();
+            }
+        }
+
+        /// <summary>Function to retrieve the names of the associated textures.</summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
+        protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
+        {
+            var result = new List<string>();
+            GorgonBinaryReader binReader = null;
+            var reader = new GorgonChunkFileReader(stream,
+                                                   new[]
+                                                   {
+                                                       CurrentFileHeader
+                                                   });
+            try
+            {
+                reader.Open();
+
+                if (!reader.Chunks.Contains(TextureData))
+                {
+                    return Array.Empty<string>();
+                }
+
+                binReader = reader.OpenChunk(TextureData);
+                int trackCount = binReader.ReadInt32();
+
+                for (int i = 0; i < trackCount; ++i)
+                {
+                    binReader.ReadString();
+                    binReader.ReadBoolean();
+                    int keyCount = binReader.ReadInt32();
+
+                    for (int j = 0; j < keyCount; ++j)
+                    {
+                        binReader.ReadSingle();
+                        byte hasTexture = binReader.ReadByte();
+                        string textureName = string.Empty;
+
+                        if (hasTexture != 0)
+                        {
+                            textureName = binReader.ReadString();
+
+                            if ((!string.IsNullOrWhiteSpace(textureName))
+                                && (!result.Contains(textureName)))
+                            {
+                                result.Add(textureName);
+                            }                            
+
+                            binReader.BaseStream.Position += (sizeof(int) * 8) + (sizeof(BufferFormat) * 2);
+                        }
+
+                        binReader.BaseStream.Position += Unsafe.SizeOf<DX.RectangleF>() + sizeof(int);
+                    }
+                }
+                
+
+                return result;
+            }
+            finally
+            {
+                reader?.CloseChunk();
+                binReader?.Dispose();
+                reader?.Close();
             }
         }
 
@@ -429,6 +508,7 @@ namespace Gorgon.IO
                 binReader = reader.OpenChunk(AnimationData);
                 string name = binReader.ReadString();
                 float length = binReader.ReadSingle();
+                float fps = binReader.ReadSingle();
                 bool isLooped = binReader.ReadBoolean();
                 int loopCount = binReader.ReadInt32();
                 reader.CloseChunk();
@@ -442,7 +522,7 @@ namespace Gorgon.IO
                 ReadTextureTrackValues(reader, TextureData, builder);
                 
                 IGorgonAnimation result;
-                result = builder.Build(name, length);
+                result = builder.Build(name, fps, length);
                 result.IsLooped = isLooped;
                 result.LoopCount = loopCount;
                 return result;

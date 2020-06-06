@@ -103,6 +103,24 @@ namespace Gorgon.Editor.Services
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return whether manual input is allowed or not.
+        /// </summary>
+        bool AllowManualInput
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to clip the rectangle against the boundaries provided by <see cref="Bounds"/>.
+        /// </summary>
+        bool ClipAgainstBoundaries
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.

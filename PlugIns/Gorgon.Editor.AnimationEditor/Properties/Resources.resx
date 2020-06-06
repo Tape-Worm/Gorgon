@@ -1,0 +1,663 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GORANM_TEXT_ZOOM_BUTTON" xml:space="preserve">
+    <value>Zoom: {0}</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="clear_image_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\clear_image_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="save_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_PRIMARY_SPRITE_LOAD" xml:space="preserve">
+    <value>There was an error using '{0}' as the primary sprite.</value>
+  </data>
+  <data name="clear_fs_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\clear_fs_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TEXT_W" xml:space="preserve">
+    <value>W:</value>
+  </data>
+  <data name="GORANM_IMPORT_DESC" xml:space="preserve">
+    <value>Gorgon Animation Importer</value>
+  </data>
+  <data name="GORANM_TEXT_TOP" xml:space="preserve">
+    <value>Top:</value>
+  </data>
+  <data name="GORANM_TEXT_HEIGHT" xml:space="preserve">
+    <value>Height:</value>
+  </data>
+  <data name="GORANM_WRN_UNSUPPORTED_TRACKS" xml:space="preserve">
+    <value>This animation contains tracks that are not supported by the editor at this time. 
+
+Tracks that are supported by sprite animations will be kept intact, but cannot be edited. Tracks that are not supported by sprite animations will be removed.
+
+Click the Details button or view the application log to see which tracks have been affected.</value>
+  </data>
+  <data name="key_with_data_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\key_with_data_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="remove_plugins_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\remove_plugins_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="zoom_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zoom_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_ASSIGN_KEYFRAMES" xml:space="preserve">
+    <value>There was an error assigning the key frames to the track '{0}'.
+
+Please try again.</value>
+  </data>
+  <data name="anim_stop_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_stop_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_stop_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_stop_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_CONFIRM_DELETE_TRACKS" xml:space="preserve">
+    <value>This will remove all the selected tracks and their key frames.
+
+Are you sure you want to do this?</value>
+  </data>
+  <data name="GORANM_TEXT_LOADING" xml:space="preserve">
+    <value>Loading '{0}'...</value>
+  </data>
+  <data name="sprite_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sprite_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_CANNOT_DISPLAY_EDITOR" xml:space="preserve">
+    <value>There was an error opening the keyframe value editor.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_NO_CODEC" xml:space="preserve">
+    <value>There is no codec loaded that can read the file '{0}'.</value>
+  </data>
+  <data name="GORANM_DESC_UNDO_ANIMATION_RESIZE" xml:space="preserve">
+    <value>Resize animation.</value>
+  </data>
+  <data name="sprite_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sprite_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_NOT_SPRITE" xml:space="preserve">
+    <value>The file '{0}' is not a sprite file.
+
+Please select a sprite file and try again.</value>
+  </data>
+  <data name="anim_thumbnail_256x256" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_thumbnail_256x256.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="anim_play_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_play_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="undo_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\undo_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_first_key_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_first_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_CODEC_LOAD_ERRORS_PRESENT" xml:space="preserve">
+    <value>There were errors while trying to load the codec plug in.
+
+Please check the Details pane for more information.</value>
+  </data>
+  <data name="GORANM_CAPTION_SELECT_CODEC_DLL" xml:space="preserve">
+    <value>Select a codec plug in DLL</value>
+  </data>
+  <data name="GORANM_ERR_SHOW_PROPERTIES" xml:space="preserve">
+    <value>There was an error displaying the animation properties panel.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_FILTER_SELECT_CODEC" xml:space="preserve">
+    <value>Codec plug in file (*.dll)|*.dll</value>
+  </data>
+  <data name="new_content_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\new_content_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="length_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\length_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_CODEC_LOAD_FAIL" xml:space="preserve">
+    <value>There was an error loading the '{0}' codec.</value>
+  </data>
+  <data name="GORANM_TEXT_SETTING_KEY" xml:space="preserve">
+    <value>Setting key...</value>
+  </data>
+  <data name="GORANM_ERR_LOAD_BG_IMAGE" xml:space="preserve">
+    <value>There was an error loading the background image.
+
+Please try again.</value>
+  </data>
+  <data name="sprite2_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sprite2_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_next_key_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_next_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="add_key_frame_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_key_frame_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TEXT_ALPHA" xml:space="preserve">
+    <value>Alpha:</value>
+  </data>
+  <data name="GORANM_TEXT_SECONDS" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="filmstripbg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\filmstripbg.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="GORANM_CONFIRM_REMOVE_CODECS" xml:space="preserve">
+    <value>This will remove all codecs associated with the '{0}' plug in.
+
+Are you sure you want to do this?</value>
+  </data>
+  <data name="GORANM_TEXT_LEFT" xml:space="preserve">
+    <value>Left:</value>
+  </data>
+  <data name="auto_key_frame_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\auto_key_frame_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_loop_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_loop_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_loop_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_loop_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="remove_key_frame_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\remove_key_frame_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_DESC_UNDO_REMOVETRACKS" xml:space="preserve">
+    <value>Remove tracks</value>
+  </data>
+  <data name="GORANM_ERR_CANNOT_LOAD_CODEC" xml:space="preserve">
+    <value>There was an error loading the codec plug in.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_CANNOT_STOP_ANIMATION" xml:space="preserve">
+    <value>There was an error while stopping the animation.</value>
+  </data>
+  <data name="GORANM_DESC_UNDO_SET_KEY" xml:space="preserve">
+    <value>Keyframe assignment</value>
+  </data>
+  <data name="GORANM_ERR_CANNOT_UNLOAD_CODECS" xml:space="preserve">
+    <value>There was an error while trying to remove the selected codec(s).
+
+Please try again.</value>
+  </data>
+  <data name="redo_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\redo_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_CODEC_ALREADY_LOADED" xml:space="preserve">
+    <value>The codec '{0}' was already loaded.</value>
+  </data>
+  <data name="GORANM_ERR_SELECTING_TRACK" xml:space="preserve">
+    <value>There was an error selecting a track or tracks.
+
+Please try again.</value>
+  </data>
+  <data name="length_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\length_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="auto_key_frame_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\auto_key_frame_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="key_with_data_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\key_with_data_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_prev_key_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_prev_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TEXT_PLEASE_WAIT" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
+  <data name="remove_key_frame_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\remove_key_frame_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TOSTR_TEXTURE_KEYFRAME" xml:space="preserve">
+    <value>Texture key frame.</value>
+  </data>
+  <data name="GORANM_ERR_SETTING_KEY" xml:space="preserve">
+    <value>There was an error assigning value(s) to the selected key(s).
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_DESC_UNDO_TRACK_INTERPOLATION" xml:space="preserve">
+    <value>Track {0} interpolation.</value>
+  </data>
+  <data name="GORANM_TEXT_WIDTH" xml:space="preserve">
+    <value>Width:</value>
+  </data>
+  <data name="GORANM_DESC" xml:space="preserve">
+    <value>Gorgon Animation Editor</value>
+  </data>
+  <data name="anim_properties_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_properties_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TEXT_Z" xml:space="preserve">
+    <value>Z:</value>
+  </data>
+  <data name="GORANM_CONTENT_TYPE" xml:space="preserve">
+    <value>Animation</value>
+  </data>
+  <data name="GORANM_ERR_CODEC_PLUGIN_ALREADY_LOADED" xml:space="preserve">
+    <value>The codec plug in '{0}' was already loaded.</value>
+  </data>
+  <data name="paste_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\paste_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anchor_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anchor_24x24.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="GORANM_ERR_REDO" xml:space="preserve">
+    <value>There was an error performing the redo action.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_APPLY_PROPERTIES" xml:space="preserve">
+    <value>There was an error while applying the properties to the animation.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_UNDO" xml:space="preserve">
+    <value>There was an error performing the undo action.
+
+Please try again.</value>
+  </data>
+  <data name="save_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="add_key_frame_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_key_frame_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cut_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cut_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_properties_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_properties_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_last_key_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_last_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_last_key_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_last_key_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_DESC_UNDO_ADDTRACKS" xml:space="preserve">
+    <value>Add tracks</value>
+  </data>
+  <data name="GORANM_ERR_CLEAR_BG_IMAGE" xml:space="preserve">
+    <value>There was an error clearing the background image.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_TEXT_FRAME_COUNT" xml:space="preserve">
+    <value>Frame count: {0}</value>
+  </data>
+  <data name="new_content_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\new_content_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_NO_CODECS" xml:space="preserve">
+    <value>The DLL '{0}' does not contain any animation codecs.
+
+Choose another DLL and try again.</value>
+  </data>
+  <data name="GORANM_ERR_TRACK_INTERPOLATION" xml:space="preserve">
+    <value>There was an error assigning the track interpolation to the '{0}' track.
+
+Please try again.</value>
+  </data>
+  <data name="animation_editor_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\animation_editor_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="redo_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\redo_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="zoom_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zoom_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TEXT_INTERPOLATION" xml:space="preserve">
+    <value>Interpolation</value>
+  </data>
+  <data name="add_track_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_track_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="copy_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\copy_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_CONFIRM_TRUNCATE" xml:space="preserve">
+    <value>The new animation length is shorter than the original length.  Some key frames may be lost.
+
+Are you sure you wish to continue?</value>
+  </data>
+  <data name="clear_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\clear_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="paste_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\paste_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TEXT_X" xml:space="preserve">
+    <value>X:</value>
+  </data>
+  <data name="load_image_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\load_image_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="clear_fs_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\clear_fs_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_ACTIVATE_KEY_EDITOR" xml:space="preserve">
+    <value>There was an error activating the key editor.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_SHOW_ADD_TRACK" xml:space="preserve">
+    <value>There was an error displaying the add track panel.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_DELETE_TRACKS" xml:space="preserve">
+    <value>There was an error deleting the selected tracks.
+
+Please try again.</value>
+  </data>
+  <data name="add_plugin_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_plugin_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cut_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cut_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TEXT_Y" xml:space="preserve">
+    <value>Y:</value>
+  </data>
+  <data name="edit_track_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edit_track_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_ADD_TRACK" xml:space="preserve">
+    <value>There was an error adding the selected track(s).
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_CONFIRM_CLEAR_ANIM" xml:space="preserve">
+    <value>This will clear the animation tracks and key frames.
+
+Are you sure you wish to do this?</value>
+  </data>
+  <data name="GORANM_TEXT_NO_SPRITE" xml:space="preserve">
+    <value>Please drag a sprite here to begin.</value>
+  </data>
+  <data name="GORANM_DEFAULT_TITLE" xml:space="preserve">
+    <value>Editor</value>
+  </data>
+  <data name="anim_prev_key_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_prev_key_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="add_track_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_track_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_TEXT_DEFAULT_VALUE_NAME" xml:space="preserve">
+    <value>Value {0}</value>
+  </data>
+  <data name="animation_editor_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\animation_editor_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="remove_track_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\remove_track_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_CANNOT_PLAY_ANIMATION" xml:space="preserve">
+    <value>There was an error while playing the animation.</value>
+  </data>
+  <data name="anim_next_key_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_next_key_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_first_key_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_first_key_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="undo_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\undo_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="remove_track_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\remove_track_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_play_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_play_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="copy_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\copy_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="load_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\load_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="edit_track_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edit_track_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="animation_editor_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\animation_editor_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_CLEAR_ANIMATION" xml:space="preserve">
+    <value>There was an error clearing the animation tracks/keys.
+
+Please try again.</value>
+  </data>
+  <data name="go_back_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\go_back_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="go_back_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\go_back_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_ERR_REMOVE_KEYFRAMES" xml:space="preserve">
+    <value>There was an error removing the selected keyframes.</value>
+  </data>
+  <data name="GORANM_CONFIRM_REMOVE_KEYFRAMES" xml:space="preserve">
+    <value>This will remove all selected keyframes from the animation.
+
+Are you sure you wish to continue?</value>
+  </data>
+  <data name="GORANM_DESC_UNDO_REMOVE_KEYFRAMES" xml:space="preserve">
+    <value>Remove keyframes.</value>
+  </data>
+  <data name="GORANM_CONFIRM_CLEAR_KEYFRAMES" xml:space="preserve">
+    <value>This will remove all keyframes from the animation.
+
+Are you sure you want to do this?</value>
+  </data>
+  <data name="GORANM_ERR_CLEAR_KEYFRAMES" xml:space="preserve">
+    <value>There was an error trying to clear the keyframes.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_SAVE" xml:space="preserve">
+    <value>There was an error saving the animation.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_TEXT_SAVING" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+  <data name="GORANM_CONFIRM_CLOSE" xml:space="preserve">
+    <value>The animation '{0}' has unsaved changes. 
+
+Would you like to save these changes now?</value>
+  </data>
+  <data name="Transparency_Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Transparency_Pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="no_thumb_sprite_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\no_thumb_sprite_64x64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORANM_CAPTION_ANIMATION_NAME" xml:space="preserve">
+    <value>New Animation</value>
+  </data>
+  <data name="GORANM_TEXT_CUE_ANIMATION_NAME" xml:space="preserve">
+    <value>Enter a name for the animation...</value>
+  </data>
+  <data name="GORANM_CONFIRM_SPRITE_EXISTS" xml:space="preserve">
+    <value>The animation '{0}' already exists.
+
+Would you like to overwrite it?</value>
+  </data>
+  <data name="GORANM_ERR_FILESYSTEM_ITEM_EXISTS" xml:space="preserve">
+    <value>There is already file or directory on the file system with the name '{0}'.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_ANIMATION_NOT_FOUND" xml:space="preserve">
+    <value>The animation '{0}' was not found in the file system.</value>
+  </data>
+  <data name="GORANM_ERR_CREATE_ANIMATION" xml:space="preserve">
+    <value>There was an error creating the new animation and the editor must now close.
+
+Please open the sprite editor and try again.</value>
+  </data>
+  <data name="GORANM_TEXT_TEXTURE_KEY_ASSIGN" xml:space="preserve">
+    <value>Select a sprite from the file selector on the right panel, and either drag it here to set the key, or click Set Keyframe on the ribbon.</value>
+  </data>
+  <data name="GORANM_ERR_COPY_KEYFRAMES" xml:space="preserve">
+    <value>There was an error copying the keyframes.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_CUT_KEYFRAMES" xml:space="preserve">
+    <value>There was an error cutting the keyframes.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_PASTE_KEYFRAMES" xml:space="preserve">
+    <value>There was an error pasting the keyframes.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_DESC_UNDO_COPYKEYS" xml:space="preserve">
+    <value>Copy keyframes.</value>
+  </data>
+  <data name="GORANM_DESC_UNDO_MOVEKEYS" xml:space="preserve">
+    <value>Move keyframes.</value>
+  </data>
+  <data name="GORANM_ERR_COPYING_KEYFRAMES" xml:space="preserve">
+    <value>There was an error copying the keyframes.
+
+Please try again.</value>
+  </data>
+  <data name="GORANM_ERR_MOVING_KEYFRAMES" xml:space="preserve">
+    <value>There was an error moving the keyframes.
+
+Please try again.</value>
+  </data>
+</root>

@@ -100,6 +100,8 @@ namespace Gorgon.Editor
         private readonly WaitPanelDisplay _waitForm;
         // The progress panel form.
         private readonly ProgressPanelDisplay _progressForm;
+        // The application settings.
+        private readonly EditorSettings _settings;
         #endregion
 
         #region Properties.
@@ -581,8 +583,8 @@ namespace Gorgon.Editor
             {
                 return;
             }
-            
-            DataContext.CurrentProject.ShowFileExplorer = ButtonFileSystemPanel.Checked;
+
+            PanelProject.SetFileExplorerVisibility(ButtonFileSystemPanel.Checked);
             ValidateRibbonButtons();
         }
 
@@ -596,7 +598,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            DataContext.CurrentProject.ShowContentPreview = ButtonFileSystemPreview.Checked;
+            PanelProject.SetPreviewVisibility(ButtonFileSystemPreview.Checked);
             ValidateRibbonButtons();
         }
 
@@ -672,7 +674,7 @@ namespace Gorgon.Editor
             _defaultImportData.Destination = fileExplorer.SelectedDirectory;
 
             ButtonFileSystemPanel.Enabled = project != null;
-            ButtonFileSystemPreview.Enabled = (ButtonFileSystemPanel.Enabled) && (project.ShowFileExplorer);
+            ButtonFileSystemPreview.Enabled = (ButtonFileSystemPanel.Enabled) && (_settings.ShowFileExplorer);
             ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);            
             ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);            
             ButtonOpenContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.OpenContentFileCommand?.CanExecute(null) ?? false);
@@ -990,8 +992,8 @@ namespace Gorgon.Editor
                     UpdateToolsTab(DataContext.CurrentProject.ToolButtons);
 
                     _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
-                    ButtonFileSystemPanel.Checked = DataContext.CurrentProject.ShowFileExplorer;
-                    ButtonFileSystemPreview.Checked = DataContext.CurrentProject.ShowContentPreview;
+                    ButtonFileSystemPanel.Checked = _settings.ShowFileExplorer;
+                    ButtonFileSystemPreview.Checked = _settings.ShowContentPreview;
                     break;                
             }
 
@@ -1026,7 +1028,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            foreach (IContentPlugInMetadata item in metadata)
+            foreach (IContentPlugInMetadata item in metadata.OrderBy(item => item.ContentType))
             {
                 string id = item.NewIconID.ToString("N");
                 Image icon = item.GetNewIcon();
@@ -1104,8 +1106,8 @@ namespace Gorgon.Editor
             if (dataContext.CurrentProject != null)
             {
                 RibbonMain.SelectedContext = dataContext.CurrentProject.CommandContext;
-                ButtonFileSystemPanel.Checked = dataContext.CurrentProject.ShowFileExplorer;
-                ButtonFileSystemPreview.Checked = dataContext.CurrentProject.ShowContentPreview;
+                ButtonFileSystemPanel.Checked = _settings.ShowFileExplorer;
+                ButtonFileSystemPreview.Checked = _settings.ShowContentPreview;
             }
             else
             {
@@ -1434,8 +1436,8 @@ namespace Gorgon.Editor
         /// </summary>
         public FormMain()
         {
-            InitializeComponent();
-
+            InitializeComponent();            
+            
             if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
                 _ribbonMerger = new RibbonMerger(RibbonMain);
@@ -1446,6 +1448,11 @@ namespace Gorgon.Editor
             RibbonMain.AllowFormIntegrate = false;
             PanelProject.MainRibbon = RibbonMain;
         }
+
+        /// <summary>Initializes a new instance of the <see cref="FormMain"/> class.</summary>
+        /// <param name="settings">The settings for the application.</param>
+        public FormMain(EditorSettings settings)
+            : this() =>PanelProject.Settings = _settings = settings;
         #endregion
     }
 }

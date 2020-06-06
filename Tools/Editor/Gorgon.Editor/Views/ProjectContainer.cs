@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Ribbon;
@@ -33,6 +34,7 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.Views
 {
@@ -199,6 +201,16 @@ namespace Gorgon.Editor.Views
 
         #region Properties.
         /// <summary>
+        /// Property to set or return the settings for the application.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public EditorSettings Settings
+        {
+            get => FileExplorer.Settings;
+            set => FileExplorer.Settings = value;
+        }
+
+        /// <summary>
         /// Property to set or return the application graphics context.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -231,6 +243,40 @@ namespace Gorgon.Editor.Views
 
         #region Methods.
         /// <summary>
+        /// Function to set the splitter distance.
+        /// </summary>
+        /// <param name="distance">The distance of the splitter.</param>
+        private void SetMainSplitDistance(int distance)
+        {
+            SplitMain.SplitterMoved -= SplitMain_SplitterMoved;
+            try
+            {
+                SplitMain.SplitterDistance = (int)(((distance.Max(1).Min(99)) / 100.0M) * SplitMain.Width);
+            }
+            finally
+            {
+                SplitMain.SplitterMoved += SplitMain_SplitterMoved;
+            }
+        }
+
+        /// <summary>
+        /// Function to set the splitter distance.
+        /// </summary>
+        /// <param name="distance">The distance of the splitter.</param>
+        private void SetFileSystemSplitDistance(int distance)
+        {
+            SplitFileSystem.SplitterMoved -= SplitFileSystem_SplitterMoved;
+            try
+            {
+                SplitFileSystem.SplitterDistance = (int)(((distance.Max(1).Min(99)) / 100.0M) * SplitFileSystem.Height);
+            }
+            finally
+            {
+                SplitFileSystem.SplitterMoved += SplitFileSystem_SplitterMoved;
+            }
+        }
+
+        /// <summary>
         /// Function to retrieve the content file contained in drag data.
         /// </summary>
         /// <param name="data">The drag/drop data.</param>
@@ -252,7 +298,7 @@ namespace Gorgon.Editor.Views
             var rows = (GridRowsDragData)data.GetData(dataType);
 
             return rows.SourceFiles.Count != 1 ? null : rows.SourceFiles[0];
-        }
+        }        
 
         /// <summary>Handles the IsRenamingChanged event of the FileExplorer control.</summary>
         /// <param name="sender">The source of the event.</param>
@@ -322,23 +368,11 @@ namespace Gorgon.Editor.Views
         {
             switch (e.PropertyName)
             {
-                case nameof(IProjectEditor.ShowFileExplorer):
-                    SplitMain.Panel2Collapsed = !DataContext.ShowFileExplorer;
-                    break;
-                case nameof(IProjectEditor.ShowContentPreview):
-                    SplitFileSystem.Panel2Collapsed = !DataContext.ShowContentPreview;
-                    break;
                 case nameof(IProjectEditor.FileExplorer):
                     FileExplorer.SetDataContext(DataContext.FileExplorer);
                     break;
                 case nameof(IProjectEditor.CurrentContent):
                     SetupContent(DataContext);
-                    break;
-                case nameof(IProjectEditor.FileExplorerDistance):
-                    SplitMain.SplitterDistance = (int)(DataContext.FileExplorerDistance * SplitMain.ClientSize.Width);
-                    break;
-                case nameof(IProjectEditor.PreviewDistance):
-                    SplitFileSystem.SplitterDistance = (int)(DataContext.PreviewDistance * SplitFileSystem.ClientSize.Height);
                     break;
             }
         }
@@ -370,6 +404,7 @@ namespace Gorgon.Editor.Views
         {
             FileExplorer.SetDataContext(null);
             Preview.SetDataContext(null);
+            SetupContent(null);
         }
 
         /// <summary>
@@ -470,7 +505,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.FileExplorerDistance = (double)SplitMain.SplitterDistance / SplitMain.ClientSize.Width;
+            Settings.SplitMainDistance = ((int)((SplitMain.SplitterDistance / (decimal)SplitMain.Width) * 100.0M).Round()).Max(1).Min(99);
         }
 
         /// <summary>Handles the SplitterMoved event of the SplitFileSystem control.</summary>
@@ -483,7 +518,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.PreviewDistance = (double)SplitFileSystem.SplitterDistance / SplitMain.ClientSize.Height;
+            Settings.SplitPreviewDistance = ((int)((SplitFileSystem.SplitterDistance / (decimal)SplitFileSystem.Height) * 100.0M).Round()).Max(1).Min(99);
         }
 
         /// <summary>Handles the BubbleDragDrop event of the ContentControl control.</summary>
@@ -529,11 +564,17 @@ namespace Gorgon.Editor.Views
             FileExplorer.SetDataContext(dataContext.FileExplorer);
             Preview.SetDataContext(dataContext.ContentPreviewer);
 
-            SplitMain.Panel2Collapsed = !dataContext.ShowFileExplorer;
-            SplitFileSystem.Panel2Collapsed = !dataContext.ShowContentPreview;
+            SplitMain.Panel2Collapsed = !Settings.ShowFileExplorer;
+            SplitFileSystem.Panel2Collapsed = !Settings.ShowContentPreview;
 
-            SplitMain.SplitterDistance = (int)(dataContext.FileExplorerDistance * SplitMain.ClientSize.Width);
-            SplitFileSystem.SplitterDistance = (int)(dataContext.PreviewDistance * SplitFileSystem.ClientSize.Height);
+            SplitMain.Panel1MinSize = (ClientSize.Width / 2).Max(320);
+            SplitMain.Panel2MinSize = (ClientSize.Width / 6).Max(320);
+
+            SplitFileSystem.Panel1MinSize = (ClientSize.Height / 2).Max(320);
+            SplitFileSystem.Panel2MinSize = 256;
+
+            SetMainSplitDistance(Settings.SplitMainDistance);
+            SetFileSystemSplitDistance(Settings.SplitPreviewDistance);
         }
 
         /// <summary>
@@ -610,6 +651,27 @@ namespace Gorgon.Editor.Views
             }
         }
 
+        /// <summary>Raises the <see cref="Control.Resize"/> event.</summary>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            if (!IsHandleCreated)
+            {
+                return;
+            }
+
+            SplitMain.Panel1MinSize = (ClientSize.Width / 2).Max(320);
+            SplitMain.Panel2MinSize = (ClientSize.Width / 6).Max(320);
+
+            SplitFileSystem.Panel1MinSize = (ClientSize.Height / 2).Max(320);
+            SplitFileSystem.Panel2MinSize = 256;
+
+            SplitMain.PerformLayout();
+            SplitFileSystem.PerformLayout();
+        }
+
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)
@@ -624,6 +686,67 @@ namespace Gorgon.Editor.Views
             DataContext?.OnLoad();
             ActiveControl = null;
             FileExplorer.Select();
+            ActiveControl = FileExplorer;
+        }
+
+        /// <summary>
+        /// Function to make the file explorer visible or invisible.
+        /// </summary>
+        /// <param name="visible"><b>true</b> to make visible, <b>false</b> to make invisible.</param>
+        public void SetFileExplorerVisibility(bool visible)
+        {
+            Settings.ShowFileExplorer = visible;
+            SplitMain.Panel2Collapsed = !visible;
+        }
+
+        /// <summary>
+        /// Function to make the preview visible or invisible.
+        /// </summary>
+        /// <param name="visible"><b>true</b> to make visible, <b>false</b> to make invisible.</param>
+        public void SetPreviewVisibility(bool visible)
+        {
+            void RefreshContentPreviewer()
+            {
+                string filePath = DataContext.FileExplorer.SelectedFiles[0]?.FullPath;
+
+                if ((DataContext.ContentPreviewer.RefreshPreviewCommand != null) && (DataContext.ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
+                {
+                    DataContext.ContentPreviewer.RefreshPreviewCommand.Execute(filePath);
+                }
+            }
+
+            void ResetContentPreviewer()
+            {
+                if ((DataContext.ContentPreviewer.ResetPreviewCommand != null) && (DataContext.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
+                {
+                    DataContext.ContentPreviewer.ResetPreviewCommand.Execute(null);
+                }
+            }
+
+            Settings.ShowContentPreview = visible;
+            SplitFileSystem.Panel2Collapsed = !visible;
+
+            if ((DataContext?.ContentPreviewer == null) || (DataContext?.FileExplorer == null))
+            {
+                return;
+            }
+
+            DataContext.ContentPreviewer.IsEnabled = visible;
+
+            try
+            {
+                if ((FileExplorer == null) || (DataContext.FileExplorer.SelectedFiles.Count == 0) || (!visible))
+                {
+                    ResetContentPreviewer();
+                    return;
+                }
+
+                RefreshContentPreviewer();
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"There was an error refreshing the file preview.\n\n{ex.Message}\n\n{ex.StackTrace}");
+            }
         }
 
         /// <summary>
@@ -652,9 +775,11 @@ namespace Gorgon.Editor.Views
             if (!_deferDataContextLoad)
             {
                 DataContext.OnLoad();
-                ActiveControl = null;
-                FileExplorer.Select();
             }
+
+            ActiveControl = null;
+            FileExplorer.Select();
+            ActiveControl = FileExplorer;
 
             DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.PropertyChanged += DataContext_PropertyChanged;

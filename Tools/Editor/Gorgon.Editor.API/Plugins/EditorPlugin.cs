@@ -36,7 +36,7 @@ namespace Gorgon.Editor.PlugIns
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This indicates the supported plug in types that the editor recognizes (with the exception of the <see cref="PlugInType.Unknown"/> value). Any plug in created for use with the application <b>must</b> 
+    /// This indicates the supported plug in types that the editor recognizes (with the exception of the <see cref="Unknown"/> value). Any plug in created for use with the application <b>must</b> 
     /// be one of these types, otherwise it will not be loaded by the host application.
     /// </para>
     /// </remarks>

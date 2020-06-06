@@ -54,6 +54,12 @@ namespace Gorgon.Editor.Support
         } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>Initializes a new instance of the <see cref="EditorProjectMetadata31"/> class.</summary>
+        [JsonConstructor]
+        public EditorProjectMetadata31()
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="EditorProjectMetadata31"/> class.</summary>
         /// <param name="oldVersion">The old version of the project data.</param>
         public EditorProjectMetadata31(EditorProjectMetadata30 oldVersion)
         {

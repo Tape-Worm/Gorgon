@@ -299,10 +299,10 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">The stream that contains the chunk file to read or write.</param>
         /// <remarks>
-        /// The <paramref name="stream"/> passed to this method requires that the <see cref="System.IO.Stream.CanSeek"/> property returns a value of <b>true</b>.
+        /// The <paramref name="stream"/> passed to this method requires that the <see cref="Stream.CanSeek"/> property returns a value of <b>true</b>.
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="System.IO.Stream.CanSeek"/> property set to <b>false</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="Stream.CanSeek"/> property set to <b>false</b>.</exception>
         protected GorgonChunkFile(Stream stream)
         {
             if (stream == null)

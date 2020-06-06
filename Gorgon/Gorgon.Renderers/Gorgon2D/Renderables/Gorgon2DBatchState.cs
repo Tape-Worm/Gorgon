@@ -82,7 +82,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A pre-defined batch state that enabled depth testing/writing and no blending.
+        /// A pre-defined batch state that enables depth testing/writing and no blending.
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabledNoBlend = new Gorgon2DBatchState
         {
@@ -91,7 +91,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A pre-defined batch state that enabled depth testing/writing and modulated blending.
+        /// A pre-defined batch state that enables depth testing/writing and modulated blending.
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabled = new Gorgon2DBatchState
         {
@@ -100,7 +100,7 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A pre-defined batch state that enabled depth testing/writing and additive blending.
+        /// A pre-defined batch state that enables depth testing/writing and additive blending.
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabledAdditiveBlend = new Gorgon2DBatchState
         {
@@ -109,12 +109,20 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A pre-defined batch state that enabled depth testing/writing and premultiplied blending.
+        /// A pre-defined batch state that enables depth testing/writing and premultiplied blending.
         /// </summary>
         public static readonly Gorgon2DBatchState DepthEnabledPremultipliedBlend = new Gorgon2DBatchState
         {
             BlendState = GorgonBlendState.Premultiplied,
             DepthStencilState = GorgonDepthStencilState.DepthEnabled
+        };
+
+        /// <summary>
+        /// A pre-defined batch state that sets an inverted blending mode.
+        /// </summary>
+        public static readonly Gorgon2DBatchState InvertedBlend = new Gorgon2DBatchState
+        {
+            BlendState = GorgonBlendState.Inverted
         };
 
         /// <summary>

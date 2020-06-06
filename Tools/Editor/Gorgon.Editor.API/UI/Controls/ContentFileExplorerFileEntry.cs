@@ -65,7 +65,7 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         public bool IsVisible
         {
-            get => (Parent == null) || ((Parent.IsVisible) && (Parent.IsExpanded)) ? _visible : false;
+            get => ((Parent == null) || ((Parent.IsVisible) && (Parent.IsExpanded))) && _visible;
             set
             {
                 if (_visible == value)
