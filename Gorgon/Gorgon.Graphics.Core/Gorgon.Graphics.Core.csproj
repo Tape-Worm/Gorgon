@@ -196,6 +196,8 @@
     <Compile Include="Textures\GorgonTextureLoadOptions.cs" />
     <Compile Include="Textures\GorgonTexture2DView.cs" />
     <Compile Include="Textures\GorgonTexture2DReadWriteView.cs" />
+    <Compile Include="Textures\GorgonTextureCache.cs" />
+    <Compile Include="Textures\_Interfaces\IGorgonTextureResource.cs" />
     <Compile Include="Textures\TextureWrap.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonTexture1DInfo.cs" />

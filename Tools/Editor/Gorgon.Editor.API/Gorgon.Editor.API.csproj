@@ -65,6 +65,8 @@
     <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
     <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Gorgon2D\_Interfaces\IGorgonContentLoader.cs" />
+    <Compile Include="Gorgon2D\_Internal\ContentLoader2D.cs" />
     <Compile Include="Metadata\_Internal\ProjectItemMetadata30.cs" />
     <Compile Include="Plugins\EditorPlugin.cs" />
     <Compile Include="Plugins\ContentImportPlugin.cs" />

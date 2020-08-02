@@ -56,7 +56,7 @@ namespace Gorgon.Examples
             var backgroundLayer = new BgStarLayer(renderer)
             {
                 PostProcessGroup = "Final Pass",					// These post process groups allow us to assign which sprite layers end up in post processing, and which are blitted immediately.
-                StarsTexture = resources.Textures["StarsNoAlpha"]
+                StarsTexture = resources.Textures["/images/StarsNoAlpha"].GetShaderResourceView()
             };
 
             backgroundLayer.LoadResources();
@@ -71,7 +71,7 @@ namespace Gorgon.Examples
         /// <returns>The sprite layer that will contain the sun sprite.</returns>
         public static SpritesLayer GetSunLayer(Gorgon2D renderer, ResourceManagement resources)
         {
-            GorgonSprite sunSprite = resources.Sprites["Star"];
+            GorgonSprite sunSprite = resources.Sprites["/sprites/Star"];
             var sunLayer = new SpritesLayer(renderer)
             {
                 ParallaxLevel = 2980.0f,			// The sun is pretty far away the last I checked.
@@ -168,7 +168,7 @@ namespace Gorgon.Examples
                 {
                     new SpriteEntity("BigShip")
                     {
-                        Sprite = resources.Sprites["BigShip"],
+                        Sprite = resources.Sprites["/sprites/BigShip"],
                         Color = GorgonColor.White,
                         Rotation = -95.0f,
                         IsLit = true,
@@ -176,7 +176,7 @@ namespace Gorgon.Examples
                     },
                     new SpriteEntity("BigShip_Illum")
                     {
-                        Sprite = resources.Sprites["BigShip_Illum"],
+                        Sprite = resources.Sprites["/sprites/BigShip_Illum"],
                         Color = GorgonColor.YellowPure * 0.7f,
                         Rotation = -95.0f,
                         IsLit = false,
@@ -185,7 +185,7 @@ namespace Gorgon.Examples
                     },
                     new SpriteEntity("EngineGlow")
                     {
-                        Sprite = resources.Sprites["Fighter_Engine_F0"],
+                        Sprite = resources.Sprites["/sprites/Fighter_Engine_F0"],
                         Color = new GorgonColor(GorgonColor.CyanPure, 0),
                         Rotation = -45.0f,
                         Anchor = new DX.Vector2(0.5f, -1.5f),
@@ -193,7 +193,7 @@ namespace Gorgon.Examples
                     },
                     new SpriteEntity("Fighter")
                     {
-                        Sprite = resources.Sprites["Fighter"],
+                        Sprite = resources.Sprites["/sprites/Fighter"],
                         Color = GorgonColor.White,
                         Rotation = -45.0f,
                         IsLit = true

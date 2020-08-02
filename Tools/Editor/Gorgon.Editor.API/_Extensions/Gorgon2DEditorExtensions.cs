@@ -58,6 +58,7 @@ namespace Gorgon.IO
     /// </remarks>
     public static class Gorgon2DEditorExtensions
     {
+        #region Obsolete.
         /// <summary>
         /// Function to retrieve the list of available codecs for loading sprite data.
         /// </summary>
@@ -203,6 +204,14 @@ namespace Gorgon.IO
         /// <exception cref="GorgonException">Thrown if the file system isn't a Gorgon Editor file system, or the file could not be read.</exception>
         /// <remarks>
         /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This method is obsolete and may not work correctly with the latest version of the editor file system. Please use the <see cref="CreateContentLoader"/> method to create an instance of the 
+        /// <see cref="IGorgonContentLoader"/> to read image data instead.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
         /// This method will load an image from a Gorgon Editor file system mounted as a <see cref="IGorgonFileSystem"/>.  
         /// </para>
         /// <para>
@@ -223,6 +232,7 @@ namespace Gorgon.IO
         /// </para>
         /// </para>
         /// </remarks>
+        [Obsolete("This method is no longer used. Please use the IGorgonFileSystem.CreateEditorLoader method and use the resulting object to load images.")]
         public static IGorgonImage LoadImage(this IGorgonFileSystem fileSystem, string path, IReadOnlyList<IGorgonImageCodec> imageCodecs = null)
         {
             if (fileSystem == null)
@@ -303,6 +313,14 @@ namespace Gorgon.IO
         /// <exception cref="GorgonException">Thrown if the file system isn't a Gorgon Editor file system, or the file could not be read.</exception>
         /// <remarks>
         /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This method is obsolete and may not work correctly with the latest version of the editor file system. Please use the <see cref="CreateContentLoader"/> method to create an instance of the 
+        /// <see cref="IGorgonContentLoader"/> to read sprite data instead.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
         /// This method will load a sprite from a Gorgon Editor file system mounted as a <see cref="IGorgonFileSystem"/>.  
         /// </para>
         /// <para>
@@ -344,6 +362,7 @@ namespace Gorgon.IO
         /// </note>
         /// </para>
         /// </remarks>
+        [Obsolete("This method is no longer used. Please use the IGorgonFileSystem.CreateEditorLoader method and use the resulting object to load sprites.")]
         public static (GorgonSprite sprite, GorgonTexture2D texture) LoadSprite(this IGorgonFileSystem fileSystem, Gorgon2D renderer, string path, ResourceUsage textureUsage = ResourceUsage.Default, IReadOnlyList<IGorgonSpriteCodec> spriteCodecs = null, IReadOnlyList<IGorgonImageCodec> imageCodecs = null, GorgonTexture2DView overrideTexture = null)
         {
             if (fileSystem == null)
@@ -416,6 +435,39 @@ namespace Gorgon.IO
             {
                 return (spriteCodec.FromStream(stream, overrideTexture, (int)file.Size), texture);
             }
+        }
+        #endregion
+
+        /// <summary>
+        /// Function to create a loader object for reading content from an editor file system.
+        /// </summary>
+        /// <param name="fileSystem">The file system that holds the content to load.</param>
+        /// <param name="renderer">The 2D renderer used to handle loading of additional resources.</param>
+        /// <param name="textureCache">The cache used to host any texture dependencies for the content.</param>
+        /// <returns>A new <see cref="IGorgonContentLoader"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="fileSystem"/> is not a Gorgon Editor file system, or is an unsupported version.</exception>
+        public static IGorgonContentLoader CreateContentLoader(this IGorgonFileSystem fileSystem, Gorgon2D renderer, GorgonTextureCache<GorgonTexture2D> textureCache)
+        {
+            if (fileSystem == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystem));
+            }
+
+            if (renderer == null)
+            {
+                throw new ArgumentNullException(nameof(renderer));
+
+            }
+
+            if (textureCache == null)
+            {
+                throw new ArgumentNullException(nameof(textureCache));
+            }
+
+            IProjectMetadata metadata = fileSystem.GetMetadata();
+
+            return new ContentLoader2D(fileSystem, metadata, renderer, textureCache);
         }
     }
 }

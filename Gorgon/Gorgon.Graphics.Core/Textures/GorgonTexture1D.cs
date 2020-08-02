@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Core
     /// A texture used to project an image onto a graphic primitive such as a triangle.
     /// </summary>
     public sealed class GorgonTexture1D
-        : GorgonGraphicsResource, IGorgonTexture1DInfo, IGorgonImageInfo
+        : GorgonGraphicsResource, IGorgonTexture1DInfo, IGorgonTextureResource
     {
         #region Constants.
         /// <summary>
@@ -1680,6 +1680,10 @@ namespace Gorgon.Graphics.Core
 
             base.Dispose();
         }
+
+        /// <summary>Function to retrieve a default shader resource view.</summary>
+        /// <returns>The default shader resource view for the texture.</returns>
+        GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
         #endregion
 
         #region Constructor/Finalizer.

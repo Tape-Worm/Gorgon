@@ -394,7 +394,7 @@ namespace Gorgon.Examples
 
                     for (int k = startTexture; k < startTexture + textureCount; ++k)
                     {
-                        GorgonTexture2DView texture = _resources.Textures[layer.Mesh.Material.Textures[k]];
+                        GorgonTexture2DView texture = _resources.Textures[layer.Mesh.Material.Textures[k]].GetShaderResourceView();
                         _drawCallBuilder.ShaderResource(ShaderType.Pixel, texture, k);
                         // We should have this in the material, but since we know what we've got here, this will be fine.
                         _drawCallBuilder.SamplerState(ShaderType.Pixel, GorgonSamplerState.Wrapping, k);

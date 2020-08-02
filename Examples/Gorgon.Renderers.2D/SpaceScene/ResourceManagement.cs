@@ -58,6 +58,10 @@ namespace Gorgon.Examples
         : IDisposable
     {
         #region Variables.
+        // The cache used to hold texture data.
+        private readonly GorgonTextureCache<GorgonTexture2D> _textureCache;
+        // The loader used to read content data from the file system.
+        private IGorgonContentLoader _contentLoader;
         // The graphics interface for the application.
         private readonly GorgonGraphics _graphics;
         // The 2D renderer interface for the application.
@@ -70,8 +74,6 @@ namespace Gorgon.Examples
         private readonly IGorgonImageCodec _imageCodec = new GorgonCodecDds();
         // The codec for sprites.
         private readonly IGorgonSpriteCodec _spriteCodec;
-        // The list of textures available.
-        private readonly Dictionary<string, GorgonTexture2DView> _textures = new Dictionary<string, GorgonTexture2DView>(StringComparer.OrdinalIgnoreCase);
         // The list of sprites available.
         private readonly Dictionary<string, GorgonSprite> _sprites = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
         // The list of shaders.
@@ -96,7 +98,11 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the loaded textures.
         /// </summary>
-        public IReadOnlyDictionary<string, GorgonTexture2DView> Textures => _textures;
+        public IReadOnlyDictionary<string, GorgonTexture2D> Textures
+        {
+            get;
+            private set;
+        } = new Dictionary<string, GorgonTexture2D>();
 
         /// <summary>
         /// Property to return the loaded sprites.
@@ -139,19 +145,15 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="path">The path to the textures.</param>
         /// <returns>A list of loaded images.</returns>
-        private IReadOnlyDictionary<string, IGorgonImage> LoadImageData(string path)
+        private async Task<IReadOnlyDictionary<string, GorgonTexture2D>> LoadImageData(string path)
         {
-            var result = new Dictionary<string, IGorgonImage>(StringComparer.OrdinalIgnoreCase);
+            var result = new Dictionary<string, GorgonTexture2D>(StringComparer.OrdinalIgnoreCase);
 
             IReadOnlyList<IGorgonVirtualFile> textureFiles = _fileSystem.GetContentItems(path, CommonEditorContentTypes.ImageType);
 
             foreach (IGorgonVirtualFile imagePath in textureFiles)
-            {
-                using (Stream stream = imagePath.OpenStream())
-                {
-                    IGorgonImage image = _imageCodec.LoadFromStream(stream);
-                    result[imagePath.FullPath] = image;
-                }
+            {                
+                result[imagePath.FullPath] = await _contentLoader.LoadTextureAsync(imagePath.FullPath);
             }
 
             return result;
@@ -162,7 +164,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="path">The path to the sprites.</param>
         /// <returns>A list of loaded sprites.</returns>
-        private IReadOnlyDictionary<string, GorgonSprite> LoadSpriteData(string path)
+        private async Task<IReadOnlyDictionary<string, GorgonSprite>> LoadSpriteDataAsync(string path)
         {
             var result = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
 
@@ -170,8 +172,7 @@ namespace Gorgon.Examples
 
             foreach (IGorgonVirtualFile spritePath in spriteFiles)
             {
-                (GorgonSprite sprite, _) = _fileSystem.LoadSprite(_renderer, spritePath.FullPath);
-                result[spritePath.Name] = sprite;
+                result[spritePath.FullPath] = await _contentLoader.LoadSpriteAsync(spritePath.FullPath);
             }
 
             return result;
@@ -209,7 +210,7 @@ namespace Gorgon.Examples
             cloudRotation.IsLooped = true;
             _animations[cloudRotation.Name] = cloudRotation;
 
-            GorgonSprite[] frames = Sprites.Where(item => item.Key.StartsWith("Fighter_Engine_F", StringComparison.OrdinalIgnoreCase))
+            GorgonSprite[] frames = Sprites.Where(item => item.Key.StartsWith("/sprites/Fighter_Engine_F", StringComparison.OrdinalIgnoreCase))
                                                       .OrderBy(item => item.Key)
                                                       .Select(item => item.Value)
                                                       .ToArray();
@@ -244,7 +245,7 @@ namespace Gorgon.Examples
                 Color = new GorgonColor(191 / 255.0f, 80 / 255.0f, 21 / 255.0f, 1),
                 ColorIntensity = 4,
                 Threshold = 1.02f,
-                DirtTexture = Textures["LensDirt_2"],
+                DirtTexture = Textures["/images/LensDirt_2.dds"].GetShaderResourceView(),
                 DirtIntensity = 192
             };
             bloom.Precache();
@@ -296,9 +297,9 @@ namespace Gorgon.Examples
 					VertexShader = "PlanetVS",				// fast computers, so doing a few lookups is not going to kill our performance. This allows us to weakly reference the resources 
 					Textures =								// which in turn keeps things nicely decoupled.
                     {
-                        [0] = "earthmap1k",
-                        [1] = "earthbump1k_NRM",
-                        [2] = "earthspec1k"
+                        [0] = "/images/earthmap1k",
+                        [1] = "/images/earthbump1k_NRM.dds",
+                        [2] = "/images/earthspec1k"
                     }
                 }
             };
@@ -321,7 +322,7 @@ namespace Gorgon.Examples
                     BlendState = GorgonBlendState.Additive,
                     Textures =
                     {
-                        [0] = "earthcloudmap"
+                        [0] = "/images/earthcloudmap"
                     }
                 }
             };
@@ -347,7 +348,7 @@ namespace Gorgon.Examples
                         continue;
                     }
 
-                    if (!_textures.ContainsKey(mesh.Material.Textures[i]))
+                    if (!Textures.ContainsKey(mesh.Material.Textures[i]))
                     {
                         throw new GorgonException(GorgonResult.CannotCreate, $"The texture '{mesh.Material.Textures[i]}' is missing.");
                     }
@@ -371,8 +372,9 @@ namespace Gorgon.Examples
             IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugIns, GorgonApplication.Log);
             IGorgonFileSystemProvider provider = providerFactory.CreateProvider("Gorgon.IO.GorPack.GorPackProvider");
             _fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
-
             _fileSystem.Mount(path);
+
+            _contentLoader = _fileSystem.CreateContentLoader(_renderer, _textureCache);            
         }
 
         /// <summary>
@@ -381,31 +383,15 @@ namespace Gorgon.Examples
         /// <returns>A task for asynchronous operation.</returns>
         public async Task LoadResourcesAsync()
         {
-            foreach (KeyValuePair<string, GorgonTexture2DView> texture in _textures)
+            foreach (KeyValuePair<string, GorgonTexture2D> texture in Textures)
             {
-                texture.Value.Dispose();
+                _textureCache.ReturnTexture(texture.Value);
             }
 
-            _textures.Clear();
-            IReadOnlyDictionary<string, IGorgonImage> images = await Task.Run(() => LoadImageData("/images/"));
 
-            foreach (KeyValuePair<string, IGorgonImage> image in images)
-            {
-                var texture = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(image.Key)
-                {
-                    Width = image.Value.Width,
-                    Height = image.Value.Height,
-                    Format = image.Value.Format,
-                    ArrayCount = image.Value.ArrayCount,
-                    MipLevels = image.Value.MipCount,
-                    Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Immutable
-                }, image.Value);
+            Textures = await LoadImageData("/images/");
 
-                _textures.Add(Path.GetFileNameWithoutExtension(image.Key), texture);
-            }
-
-            Sprites = await Task.Run(() => LoadSpriteData("/sprites/"));
+            Sprites = await LoadSpriteDataAsync("/sprites/");
 
             await Task.Run(() =>
             {
@@ -425,10 +411,7 @@ namespace Gorgon.Examples
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
-            foreach (KeyValuePair<string, GorgonTexture2DView> texture in _textures)
-            {
-                texture.Value.Dispose();
-            }
+            _textureCache.Dispose();
 
             foreach (KeyValuePair<string, GorgonVertexShader> shader in _vertexShaders)
             {
@@ -466,6 +449,7 @@ namespace Gorgon.Examples
             _renderer = renderer;
             _graphics = renderer.Graphics;
             _plugIns = plugIns;
+            _textureCache = new GorgonTextureCache<GorgonTexture2D>(renderer.Graphics);
 
             _spriteCodec = new GorgonV3SpriteBinaryCodec(renderer);
         }

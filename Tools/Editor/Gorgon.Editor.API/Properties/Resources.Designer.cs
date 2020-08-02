@@ -384,6 +384,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not an animation..
+        /// </summary>
+        internal static string GOREDIT_ERR_NOT_ANIMATION {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NOT_ANIMATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This file system does not contain a Gorgon Editor project..
         /// </summary>
         internal static string GOREDIT_ERR_NOT_EDITOR_PROJECT {
