@@ -78,7 +78,7 @@ namespace Gorgon.Examples
 
             Console.WriteLine("This is a small example of -some- of the functionality that's provided in the");
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("Gorgon.Common");
+            Console.Write("Gorgon.Core");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(" library:");
             Console.WriteLine();
@@ -90,7 +90,7 @@ namespace Gorgon.Examples
             Console.WriteLine();
             Console.WriteLine("Q.  Quit.");
             Console.WriteLine();
-            Console.WriteLine("The common library houses several utility functions such as:\n\u00b7 Basic dialogs.\t\t\t\u00b7 System information.\n\u00b7 Various extensions.\t\t\t\u00b7 Debugging utilities.\n\u00b7 Plug-in support.\t\t\t\u00b7 Log files.\n\u00b7 Base named object collections.\t\u00b7 And a custom data stream type.\n\nAnd a bunch of other junk that might be useful to you...");
+            Console.WriteLine("The common library houses several utility functions such as:\n\u00b7 Basic dialogs.\n\u00b7 System information.\n\u00b7 Various extensions.\n\u00b7 Debugging utilities.\n\u00b7 Plug-in support.\n\u00b7 Log files.\n\u00b7 Base named object collections.\n\u00b7 And functions to manipulate native memory.\n\nAnd a bunch of other junk that might be useful to you...");
 
             Console.CursorTop = Console.WindowHeight - 2;
             Console.Write("The ");

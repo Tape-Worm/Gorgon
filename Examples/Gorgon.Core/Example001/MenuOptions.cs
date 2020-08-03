@@ -80,16 +80,16 @@ namespace Gorgon.Examples
                 Console.CursorLeft = 0;
                 Console.CursorTop = 0;
 
-                Console.WriteLine("Gorgon architecture:\t{0}", _computerInfo.PlatformArchitecture);
+                Console.WriteLine("Gorgon architecture:  {0}", _computerInfo.PlatformArchitecture);
                 Console.WriteLine();
-                Console.WriteLine("Computer name:\t\t{0}", _computerInfo.ComputerName);
-                Console.WriteLine("# of processors:\t{0}", _computerInfo.ProcessorCount);
-                Console.WriteLine("Total RAM:\t\t{0} ({1:#,###} bytes)", _computerInfo.TotalPhysicalRAM.FormatMemory(), _computerInfo.TotalPhysicalRAM);
-                Console.WriteLine("Available RAM:\t\t{0} ({1:#,###} bytes)", _computerInfo.AvailablePhysicalRAM.FormatMemory(), _computerInfo.AvailablePhysicalRAM);
+                Console.WriteLine("Computer name:        {0}", _computerInfo.ComputerName);
+                Console.WriteLine("# of processors:      {0}", _computerInfo.ProcessorCount);
+                Console.WriteLine("Total RAM:            {0} ({1:#,###} bytes)", _computerInfo.TotalPhysicalRAM.FormatMemory(), _computerInfo.TotalPhysicalRAM);
+                Console.WriteLine("Available RAM:        {0} ({1:#,###} bytes)", _computerInfo.AvailablePhysicalRAM.FormatMemory(), _computerInfo.AvailablePhysicalRAM);
                 Console.WriteLine();
-                Console.WriteLine("Windows version:\t{0} {1}", _computerInfo.OperatingSystemVersionText, string.IsNullOrEmpty(_computerInfo.OperatingSystemServicePack) ? string.Empty : _computerInfo.OperatingSystemServicePack);
-                Console.WriteLine("Windows architecture:\t{0}", _computerInfo.OperatingSystemArchitecture);
-                Console.WriteLine("System path:\t\t{0}", _computerInfo.SystemDirectory);
+                Console.WriteLine("Windows version:      {0} {1}", _computerInfo.OperatingSystemVersionText, string.IsNullOrEmpty(_computerInfo.OperatingSystemServicePack) ? string.Empty : _computerInfo.OperatingSystemServicePack);
+                Console.WriteLine("Windows architecture: {0}", _computerInfo.OperatingSystemArchitecture);
+                Console.WriteLine("System path:          {0}", _computerInfo.SystemDirectory);
 
                 // Display exit.
                 Console.CursorLeft = 0;
