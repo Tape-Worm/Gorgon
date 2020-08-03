@@ -75,10 +75,6 @@ namespace Gorgon.Examples
         private static GorgonSpriteAnimationController _animController;
         #endregion
 
-        #region Properties.
-
-        #endregion
-
         #region Methods.
         /// <summary>
         /// Function to load the Gorgon pack file provider plugin.
@@ -174,24 +170,32 @@ namespace Gorgon.Examples
                 // When using the editor file system we will load content that typically has dependencies upon texture resources.
                 // Since these can be quite large, it is in our best interest to load them once and once only. To help manage the 
                 // lifetime of these resources, we will use a texture cache so that we can hold the textures in memory for as long 
-                // as we need them and loading textures will not introduce undue memory pressure by only loading the texture only 
-                // if it's absolutely necessary and returning the existing texture if it's already resident within the cache.
+                // as we need them and loading textures will not introduce undue memory pressure. By only loading the texture only 
+                // if it's absolutely necessary and returning the existing texture if it's already resident within the cache, we 
+                // can keep the memory usage stable.
                 //
-                // The editor content loader uses this functionality to load our content and any other texture content that it is 
-                // dependent on. 
+                // The texture cache utilizes weak references so the garbage collector can pick up the textures when they're no 
+                // longer needed, but, that may take time to do. To mitigate this, textures added to the cache are reference 
+                // counted so that anything using the texture will increment the count, and when the user of the texture is 
+                // finished with the texture resource, it can return it to the cache to decrement the reference count. When the 
+                // count hits 0, the texture resource is unloaded from memory.
+                //
+                // Our editor content loader uses this texture caching functionality to load texture content that our content is 
+                // dependent upon. 
                 _textureCache = new GorgonTextureCache<GorgonTexture2D>(_graphics);
 
-                // To create the content loader, we use an extension method on the IGorgonFileSystem object:
+                // To create the content loader, we use an extension method on the IGorgonFileSystem object.
+                // This loader will check to determine if the file system is an editor file system, and if not, it will exception.
                 _contentLoader = _fileSystem.CreateContentLoader(_renderer, _textureCache);
 
                 // Now that we have the loader, we can start bringing in the various resources for our example.
                 //
                 // Notice that our load methods are asynchronous. This is because it can take a bit of time to load large resources 
-                // from the file system. This pushes that workload to the background so the appilcation can stay responsive while 
+                // from the file system. This pushes the workload to the background so the appilcation can stay responsive while 
                 // loading its data.
                 //
-                // These content objects all use the same texture, but because we use a texture cache, the texture is only ever 
-                // loaded one time, even though they're two very different objects.
+                // Also, these content objects all use the same texture, and because we use a texture cache within the loader, the 
+                // texture is only ever loaded one time and shared amongst the objects that use it.
                 _animation = await _contentLoader.LoadAnimationAsync("/testBinAnim.gorAnim");
                 _dudeBro = await _contentLoader.LoadSpriteAsync("/dudebro.gorsprite");
 
