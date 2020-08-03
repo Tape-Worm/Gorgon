@@ -177,6 +177,8 @@ Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Gorgon", "Docs\Gorgon.shfbp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.AnimationEditor", "PlugIns\Gorgon.Editor.AnimationEditor\Gorgon.Editor.AnimationEditor.csproj", "{62AC77E7-B73D-4004-B0BB-1AB2CC263137}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.FileSystem", "Examples\Gorgon.FileSystem\Gorgon.Editor.FileSystem\Gorgon.Editor.FileSystem.csproj", "{24C30ABC-81BF-487D-98FB-8267A0411B61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -461,6 +463,10 @@ Global
 		{62AC77E7-B73D-4004-B0BB-1AB2CC263137}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62AC77E7-B73D-4004-B0BB-1AB2CC263137}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62AC77E7-B73D-4004-B0BB-1AB2CC263137}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24C30ABC-81BF-487D-98FB-8267A0411B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24C30ABC-81BF-487D-98FB-8267A0411B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24C30ABC-81BF-487D-98FB-8267A0411B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24C30ABC-81BF-487D-98FB-8267A0411B61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -530,6 +536,7 @@ Global
 		{6DF3E598-1ED7-4451-9B9F-49675B5C07C0} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 		{BCA1725B-F885-4024-90A0-46A241E31BD0} = {57E94FC6-C9AE-4C3A-BD4E-7184E359DAE0}
 		{62AC77E7-B73D-4004-B0BB-1AB2CC263137} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
+		{24C30ABC-81BF-487D-98FB-8267A0411B61} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}

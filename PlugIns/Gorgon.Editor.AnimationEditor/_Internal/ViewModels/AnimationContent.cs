@@ -2025,7 +2025,7 @@ namespace Gorgon.Editor.AnimationEditor
                     }
                 }
 
-                string animationDirectory = Path.GetDirectoryName(File.Path).FormatPath('/');
+                string animationDirectory = Path.GetDirectoryName(File.Path).FormatDirectory('/');
                 if (string.IsNullOrWhiteSpace(animationDirectory))
                 {
                     animationDirectory = "/";

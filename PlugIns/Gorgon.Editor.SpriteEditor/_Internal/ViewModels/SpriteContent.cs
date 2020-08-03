@@ -788,7 +788,7 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                string spriteDirectory = Path.GetDirectoryName(File.Path).FormatPath('/');
+                string spriteDirectory = Path.GetDirectoryName(File.Path).FormatDirectory('/');
 
                 if (string.IsNullOrWhiteSpace(spriteDirectory))
                 {
