@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F253E1C8-A8E9-4405-AC47-0E959A037AA3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
+    <AssemblyName>TextViewerExample</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>..\..\NoRules.ruleset</CodeAnalysisRuleSet>
+    <langversion>7.3</langversion>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <langversion>7.3</langversion>
+    <CodeAnalysisRuleSet>..\..\NoRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="2. Views\TextContentSettingsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="2. Views\TextContentSettingsPanel.Designer.cs">
+      <DependentUpon>TextContentSettingsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="4. Settings\SettingsParameters.cs" />
+    <Compile Include="4. Settings\TextContentSettings.cs" />
+    <Compile Include="2.1. Ribbon\FormRibbon.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="2.1. Ribbon\FormRibbon.designer.cs">
+      <DependentUpon>FormRibbon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="2. Views\FormTextEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="2. Views\FormTextEditor.Designer.cs">
+      <DependentUpon>FormTextEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="3. ViewModels\TextContentParameters.cs" />
+    <Compile Include="3.1. Services\TextEditorService.cs" />
+    <Compile Include="4. Settings\Settings.cs" />
+    <Compile Include="4. Settings\ISettings.cs" />
+    <Compile Include="3. ViewModels\ITextColor.cs" />
+    <Compile Include="3. ViewModels\TextColor.cs" />
+    <Compile Include="2. Views\TextColorView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="2. Views\TextColorView.designer.cs">
+      <DependentUpon>TextColorView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="2.2 Renderers\TextRenderer.cs" />
+    <Compile Include="3. ViewModels\TextContent.cs" />
+    <Compile Include="1. The plugin\TextViewerPlugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="2. Views\TextContentView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="2. Views\TextContentView.Designer.cs">
+      <DependentUpon>TextContentView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="3. ViewModels\ITextContent.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gorgon2.ico" />
+    <None Include="Resources\undo_48x48.png" />
+    <None Include="Resources\undo_16x16.png" />
+    <None Include="Resources\redo_48x48.png" />
+    <None Include="Resources\redo_16x16.png" />
+    <None Include="Resources\change_text_48x48.png" />
+    <None Include="Resources\change_text_16x16.png" />
+    <None Include="Resources\color_48x48.png" />
+    <None Include="Resources\color_16x16.png" />
+    <None Include="Resources\font_48x48.png" />
+    <None Include="Resources\font_16x16.png" />
+    <None Include="Resources\zoom_48x48.png" />
+    <None Include="Resources\zoom_16x16.png" />
+    <None Include="Resources\save_content_48x48.png" />
+    <None Include="Resources\save_content_16x16.png" />
+    <None Include="Resources\textviewer_example_new_24x24.png" />
+    <None Include="Resources\textviewer_no_thumb_96x96.png" />
+    <None Include="Resources\text_viewer_example_20x20.png" />
+    <None Include="..\..\NoRules.ruleset">
+      <Link>NoRules.ruleset</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="2. Views\TextContentSettingsPanel.resx">
+      <DependentUpon>TextContentSettingsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="2.1. Ribbon\FormRibbon.resx">
+      <DependentUpon>FormRibbon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="2. Views\FormTextEditor.resx">
+      <DependentUpon>FormTextEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="2. Views\TextColorView.resx">
+      <DependentUpon>TextColorView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="2. Views\TextContentView.resx">
+      <DependentUpon>TextContentView.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krypton.Ribbon.Lite">
+      <Version>5.500.2006</Version>
+    </PackageReference>
+    <PackageReference Include="Krypton.Toolkit.Lite">
+      <Version>5.500.2006</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>3.0.0</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX">
+      <Version>4.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Mathematics">
+      <Version>4.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Buffers">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime">
+      <Version>4.3.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>4.7.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Animation\Gorgon.Animation.csproj">
+      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
+      <Name>Gorgon.Animation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
+      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
+      <Name>Gorgon.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
+      <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
+      <Name>Gorgon.FileSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
+      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
+      <Name>Gorgon.Graphics.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj">
+      <Project>{1dfb5973-950a-4b6e-84af-953de57c9213}</Project>
+      <Name>Gorgon.Graphics.Fonts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
+      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
+      <Name>Gorgon.Graphics.Imaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
+      <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
+      <Name>Gorgon.Renderers.Gorgon2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj">
+      <Project>{e5506a64-62c5-4aa3-adcb-766ab0cd5528}</Project>
+      <Name>Gorgon.IO.Gorgon2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
+      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
+      <Name>Gorgon.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
+      <Project>{695a6554-789a-4d5a-9de1-21fb621f6a8f}</Project>
+      <Name>Gorgon.Editor.API</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>REM Editor copy
+copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Content"
+copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Content"
+</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\Gorgon.Editor.exe</StartProgram>
+  </PropertyGroup>
+</Project>

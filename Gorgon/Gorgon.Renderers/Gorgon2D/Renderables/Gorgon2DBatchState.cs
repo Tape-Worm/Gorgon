@@ -126,6 +126,14 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
+        /// A pre-defined batch state that sets scissor rectangle clipping.
+        /// </summary>
+        public static readonly Gorgon2DBatchState ScissorClipping = new Gorgon2DBatchState
+        {
+            RasterState = GorgonRasterState.ScissorRectanglesEnabled
+        };
+
+        /// <summary>
         /// Property to return the current blending state to apply.
         /// </summary>
         public GorgonBlendState BlendState

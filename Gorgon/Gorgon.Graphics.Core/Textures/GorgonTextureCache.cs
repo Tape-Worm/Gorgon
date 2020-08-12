@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -103,7 +104,9 @@ namespace Gorgon.Graphics.Core
         // The graphics interface used to create the textures.
         private readonly GorgonGraphics _graphics;
         // The cache that holds the textures and redirected file name.
-        private readonly Dictionary<string, TextureEntry> _cache = new Dictionary<string, TextureEntry>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, Lazy<TextureEntry>> _cache = new ConcurrentDictionary<string, Lazy<TextureEntry>>(StringComparer.OrdinalIgnoreCase);
+        // The lock for updating the cache concurrently.
+        private SemaphoreSlim _cacheLock = new SemaphoreSlim(1, 1);
         #endregion
 
         #region Properties.
@@ -135,6 +138,9 @@ namespace Gorgon.Graphics.Core
         /// This method <b>should</b> be called when the <paramref name="texture"/> is no longer required. 
         /// </para>
         /// <para>
+        /// This method is thread safe.
+        /// </para>
+        /// <para>
         /// <note type="important">
         /// <para>
         /// Do <b>not</b> dispose of the returned texture manually. Doing so will leave the reference count incorrect, and the cached value returned will be invalid.
@@ -149,35 +155,47 @@ namespace Gorgon.Graphics.Core
                 return false;
             }
 
-            TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture != null) 
-                                                                   && (item.Texture.TryGetTarget(out T itemTexture)) 
-                                                                   && (itemTexture == texture));
 
-            if (entry == null)
+            if (!_cache.TryGetValue(texture.Name, out Lazy<TextureEntry> entry))
             {
                 _graphics.Log.Print($"WARNING: Texture '{texture.Name}' not found in cache.", LoggingLevel.Verbose);
                 return false;
             }
 
             // If the texture was collected, then we can dump it now.
-            if (!entry.Texture.TryGetTarget(out T textureRef))
+            T textureRef = null;
+            if ((entry?.Value?.Texture != null) && (!entry.Value.Texture.TryGetTarget(out textureRef)))
             {
-                entry.Users = 0;
-                entry.Texture = null;
+                Interlocked.Exchange(ref entry.Value.Users, 0);
+                Interlocked.Exchange(ref entry.Value.Texture, null);
                 return true;
             }
 
-            if (Interlocked.Decrement(ref entry.Users) != 0)
+            if (entry?.Value == null)
             {
-                _graphics.Log.Print($"Texture '{texture.Name}' still has {entry.Users} user(s), texture will stay resident.", LoggingLevel.Verbose);
+                return true;
+            }
+
+            if (Interlocked.Decrement(ref entry.Value.Users) > 0)
+            {
+                _graphics.Log.Print($"Texture '{texture.Name}' still has {entry.Value.Users} user(s), texture will stay resident.", LoggingLevel.Verbose);
                 return false;
             }
 
-            entry.Users = 0;
-            textureRef?.Dispose();
-            entry.Texture = null;
+            Interlocked.Exchange(ref entry.Value.Users, 0);
+            Interlocked.Exchange(ref entry.Value.Texture, null);
 
-            _graphics.Log.Print($"Texture '{texture.Name}' has been unloaded from the cache.", LoggingLevel.Verbose);
+            try
+            {
+                _cacheLock.Wait();
+
+                textureRef?.Dispose();
+                _graphics.Log.Print($"Texture '{texture.Name}' has been unloaded from the cache.", LoggingLevel.Verbose);
+            }
+            finally
+            {
+                _cacheLock.Release();
+            }
 
             return true;
         }
@@ -204,6 +222,9 @@ namespace Gorgon.Graphics.Core
         /// Every call to this method will increment an internal reference count for a cached texture. The texture will not be disposed of until this reference count hits zero. This can only be done with a 
         /// call to <see cref="ReturnTexture"/>. However, since the texture is stored as a weak reference internally, the garbage collector can still free the texture, so calling 
         /// <see cref="ReturnTexture"/> is not mandatory. However, it is best practice to call the method when it is no longer in use.
+        /// </para>
+        /// <para>
+        /// This method is thread safe.
         /// </para>
         /// <para>
         /// <note type="important">
@@ -233,26 +254,47 @@ namespace Gorgon.Graphics.Core
 
             _graphics.Log.Print($"Retrieving texture '{textureName}'.", LoggingLevel.Verbose);
 
-            if ((_cache.TryGetValue(textureName, out TextureEntry entry)) && (entry.Texture != null) && (entry.Texture.TryGetTarget(out T textureRef)))
+            try
             {
-                Interlocked.Increment(ref entry.Users);
-                _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Users} users.", LoggingLevel.Verbose);
-                return textureRef;
-            }
+                await _cacheLock.WaitAsync();
 
-            // If we are at this point, then the reference is dead, so clear it out before loading.
-            if (entry?.Texture != null)
-            {
-                entry.Users = 0;
-                entry.Texture = null;
-            }
+                if ((_cache.TryGetValue(textureName, out Lazy<TextureEntry> entry)) && (entry?.Value?.Texture != null) && (entry.Value.Texture.TryGetTarget(out T textureRef)))
+                {
+                    entry.Value.Users++;
+                    _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
+                    return textureRef;
+                }
 
-            T texture;
+                // If we are at this point, then the reference is dead, so clear it out before loading.
+                if (entry?.Value?.Texture != null)
+                {
+                    entry.Value.Texture = null;
+                    entry.Value.Users = 0;
+                }
 
-            if (!string.IsNullOrWhiteSpace(entry?.TextureName))
-            {
-                _graphics.Log.Print($"Texture '{textureName}' not available, reloading...", LoggingLevel.Verbose);
+                T texture;
 
+                if (!string.IsNullOrWhiteSpace(entry?.Value?.TextureName))
+                {
+                    _graphics.Log.Print($"Texture '{textureName}' not available, reloading...", LoggingLevel.Verbose);
+
+                    texture = await missingTextureAction(textureName);
+
+                    if (texture == null)
+                    {
+                        _graphics.Log.Print($"WARNING: The texture '{textureName}' was not loaded and not added to cache.", LoggingLevel.Intermediate);
+                        return null;
+                    }
+
+                    entry.Value.Texture = new WeakReference<T>(texture);
+                    entry.Value.Users++;
+
+                    _graphics.Log.Print($"Texture '{entry.Value.TextureName}' loaded into cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
+
+                    return texture;
+                }
+
+                _graphics.Log.Print($"Texture '{textureName}' not found, adding to cache...", LoggingLevel.Verbose);
                 texture = await missingTextureAction(textureName);
 
                 if (texture == null)
@@ -261,38 +303,38 @@ namespace Gorgon.Graphics.Core
                     return null;
                 }
 
-                entry.Texture = new WeakReference<T>(texture);
-                Interlocked.Increment(ref entry.Users);
+                entry = new Lazy<TextureEntry>(() => new TextureEntry
+                {
+                    Texture = new WeakReference<T>(texture),
+                    TextureName = textureName,
+                    Users = 1
+                }, LazyThreadSafetyMode.ExecutionAndPublication);
 
-                _graphics.Log.Print($"Texture '{entry.TextureName}' loaded into cache with {entry.Users} users.", LoggingLevel.Verbose);
+                _cache[textureName] = entry;
+                _graphics.Log.Print($"Texture '{textureName}' added to cache with 1 user.", LoggingLevel.Verbose);
 
                 return texture;
             }
-
-            _graphics.Log.Print($"Texture '{textureName}' not found, adding to cache...", LoggingLevel.Verbose);
-            texture = await missingTextureAction(textureName);
-
-            if (texture == null)
+            finally
             {
-                _graphics.Log.Print($"WARNING: The texture '{textureName}' was not loaded and not added to cache.", LoggingLevel.Intermediate);
-                return null;
+                _cacheLock.Release();
             }
-                        
-            entry = new TextureEntry
-            {
-                Texture = new WeakReference<T>(texture),
-                TextureName = textureName,
-                Users = 1
-            };
-
-            _cache[textureName] = entry;
-            _graphics.Log.Print($"Texture '{textureName}' added to cache with 1 user.", LoggingLevel.Verbose);
-
-            return texture;
         }
 
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose() => Clear();
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method is <b>NOT</b> thread safe.
+        /// </para>
+        /// </remarks>
+        public void Dispose()
+        {
+            Clear();
+            SemaphoreSlim cacheLock = Interlocked.Exchange(ref _cacheLock, null);
+            cacheLock?.Dispose();
+        }
 
         /// <summary>
         /// Function to add a texture to the cache.
@@ -304,6 +346,9 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// <para>
         /// Use this method to assign a pre-loaded texture to the cache. If the texture is already in the cache, then its user count is incremented.
+        /// </para>
+        /// <para>
+        /// This method is thread safe.
         /// </para>
         /// <para>
         /// <note type="important">
@@ -319,32 +364,44 @@ namespace Gorgon.Graphics.Core
             {
                 throw new ArgumentNullException(nameof(texture));
             }
-            
-            if (_cache.TryGetValue(texture.Name, out TextureEntry entry))
-            {
-                Interlocked.Increment(ref entry.Users);
 
-                if ((entry.Texture != null) && (entry.Texture.TryGetTarget(out _)))
+            TextureEntry GenerateEntry()
+            {
+                _graphics.Log.Print($"Texture '{texture.Name}' adding to cache.", LoggingLevel.Verbose);
+                return new TextureEntry
                 {
-                    _graphics.Log.Print($"Texture {texture.TextureID} (name: '{texture.Name}') exists in cache with {entry.Users} users.", LoggingLevel.Verbose);
-                    return entry.Users;
-                }
-                
-                Interlocked.Exchange(ref entry.Texture, new WeakReference<T>(texture));
-                _graphics.Log.Print($"Texture {texture.TextureID} (name: '{texture.Name}') exists in cache, but has been collected. Refreshing with {entry.Users} users.", LoggingLevel.Verbose);
-                return entry.Users;
+                    Texture = new WeakReference<T>(texture),
+                    TextureName = texture.Name,
+                    Users = 0
+                };
             }
 
-            _graphics.Log.Print($"Texture {texture.TextureID} (name: '{texture.Name}') adding to cache with 1 user.", LoggingLevel.Verbose);
-            entry = new TextureEntry
-            {
-                Texture = new WeakReference<T>(texture),
-                TextureName = texture.Name,
-                Users = 1
-            };
+            Lazy<TextureEntry> entry = _cache.GetOrAdd(texture.Name, new Lazy<TextureEntry>(GenerateEntry, LazyThreadSafetyMode.ExecutionAndPublication));
 
-            _cache[texture.Name] = entry;
-            return entry.Users;
+            if (entry?.Value == null)
+            {
+                return 0;
+            }
+
+            Interlocked.Increment(ref entry.Value.Users);
+
+            if ((entry.Value.Texture != null) && (entry.Value.Texture.TryGetTarget(out _)))
+            {
+                _graphics.Log.Print($"Texture '{texture.Name}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
+                return entry.Value.Users;
+            }
+
+            try
+            {
+                _cacheLock.Wait();
+                Interlocked.Exchange(ref entry.Value.Texture, new WeakReference<T>(texture));
+                _graphics.Log.Print($"Texture '{texture.Name}' exists in cache, but has been collected. Refreshing with {entry.Value.Users} users.", LoggingLevel.Verbose);
+                return entry.Value.Users;
+            }
+            finally
+            {
+                _cacheLock.Release();
+            }
         }
 
         /// <summary>
@@ -359,24 +416,24 @@ namespace Gorgon.Graphics.Core
                 return 0;
             }
 
-            TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture != null)
-                                                                   && (item.Texture.TryGetTarget(out T itemTexture))
+            Lazy<TextureEntry> entry = _cache.Values.FirstOrDefault(item => (item?.Value?.Texture != null)
+                                                                   && (item.Value.Texture.TryGetTarget(out T itemTexture))
                                                                    && (itemTexture == texture));
 
-            if (entry == null)
+            if (entry?.Value == null)
             {
                 return 0;
             }
 
             // If the texture was collected, then we can dump it now.
-            if (!entry.Texture.TryGetTarget(out T textureRef))
+            if (!entry.Value.Texture.TryGetTarget(out T textureRef))
             {
-                entry.Users = 0;
-                entry.Texture = null;
+                entry.Value.Users = 0;
+                entry.Value.Texture = null;
                 return 0;
             }
 
-            return entry.Users;
+            return entry.Value.Users;
         }
 
         /// <summary>
@@ -389,10 +446,19 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear()
         {
-            _graphics.Log.Print("Clearing texture cache.", LoggingLevel.Verbose);
-            foreach (TextureEntry entry in _cache.Values)
+            try
             {
-                entry?.Dispose();
+                _cacheLock.Wait();
+
+                _graphics.Log.Print("Clearing texture cache.", LoggingLevel.Verbose);
+                foreach (Lazy<TextureEntry> entry in _cache.Values)
+                {
+                    entry?.Value?.Dispose();
+                }
+            }
+            finally
+            {
+                _cacheLock.Release();
             }
 
             _cache.Clear();
@@ -406,9 +472,9 @@ namespace Gorgon.Graphics.Core
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (KeyValuePair<string, TextureEntry> entry in _cache)
+            foreach (KeyValuePair<string, Lazy<TextureEntry>> entry in _cache)
             {
-                if ((entry.Value.Texture != null) && (entry.Value.Texture.TryGetTarget(out T texture)))
+                if ((entry.Value?.Value?.Texture != null) && (entry.Value.Value.Texture.TryGetTarget(out T texture)))
                 {
                     yield return texture;
                 }

@@ -177,9 +177,14 @@ Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Gorgon", "Docs\Gorgon.shfbp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.AnimationEditor", "PlugIns\Gorgon.Editor.AnimationEditor\Gorgon.Editor.AnimationEditor.csproj", "{62AC77E7-B73D-4004-B0BB-1AB2CC263137}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.FileSystem", "Examples\Gorgon.FileSystem\Gorgon.Editor.FileSystem\Gorgon.Editor.FileSystem.csproj", "{24C30ABC-81BF-487D-98FB-8267A0411B61}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Editor", "Gorgon.Editor", "{B770B900-800E-47B4-A397-65808037A296}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.FileSystem", "Examples\Gorgon.Editor\Gorgon.Editor.FileSystem\Gorgon.Editor.FileSystem.csproj", "{24C30ABC-81BF-487D-98FB-8267A0411B61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextViewerContentExample", "Examples\Gorgon.Editor\TextViewer_Content_Plugin\TextViewerContentExample.csproj", "{F253E1C8-A8E9-4405-AC47-0E959A037AA3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -469,6 +474,10 @@ Global
 		{24C30ABC-81BF-487D-98FB-8267A0411B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24C30ABC-81BF-487D-98FB-8267A0411B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24C30ABC-81BF-487D-98FB-8267A0411B61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F253E1C8-A8E9-4405-AC47-0E959A037AA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F253E1C8-A8E9-4405-AC47-0E959A037AA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F253E1C8-A8E9-4405-AC47-0E959A037AA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F253E1C8-A8E9-4405-AC47-0E959A037AA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -538,8 +547,9 @@ Global
 		{6DF3E598-1ED7-4451-9B9F-49675B5C07C0} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 		{BCA1725B-F885-4024-90A0-46A241E31BD0} = {57E94FC6-C9AE-4C3A-BD4E-7184E359DAE0}
 		{62AC77E7-B73D-4004-B0BB-1AB2CC263137} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
-		{24C30ABC-81BF-487D-98FB-8267A0411B61} = {B770B900-800E-47B4-A397-65808037A296}
 		{B770B900-800E-47B4-A397-65808037A296} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
+		{24C30ABC-81BF-487D-98FB-8267A0411B61} = {B770B900-800E-47B4-A397-65808037A296}
+		{F253E1C8-A8E9-4405-AC47-0E959A037AA3} = {B770B900-800E-47B4-A397-65808037A296}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}
