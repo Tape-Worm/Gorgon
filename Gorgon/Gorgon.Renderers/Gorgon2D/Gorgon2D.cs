@@ -379,10 +379,9 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="texture">The texture to compare for changes.</param>
         /// <param name="textureSampler">The texture sampler to compare for changes.</param>
-        private void CheckPrimitiveStateChange(GorgonTexture2DView texture, GorgonSamplerState textureSampler)
+        /// <param name="alphaTestData">The alpha testing data to compare for changes.</param>
+        private void CheckPrimitiveStateChange(GorgonTexture2DView texture, GorgonSamplerState textureSampler, in AlphaTestData alphaTestData)
         {
-            var alphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
-
             // The state has already been marked as changed, so we don't need to test further.
             if (_primitiveRenderable.StateChanged)
             {
@@ -1442,13 +1441,14 @@ namespace Gorgon.Renderers
             v2.Position = new DX.Vector4(region.BottomLeft, depth, 1.0f);
             v3.Position = new DX.Vector4(region.BottomRight, depth, 1.0f);
 
-            CheckPrimitiveStateChange(texture, textureSampler);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
             _primitiveRenderable.Bounds = region;
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
-            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            _primitiveRenderable.AlphaTestData = alphaTestData;
             _primitiveRenderable.Texture = texture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
@@ -1482,7 +1482,8 @@ namespace Gorgon.Renderers
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            CheckPrimitiveStateChange(texture, textureSampler);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
             _primitiveRenderable.ActualVertexCount = 3;
             _primitiveRenderable.IndexCount = 0;
@@ -1504,7 +1505,7 @@ namespace Gorgon.Renderers
                 Position = new DX.Vector4(point3.Position, depth, 1.0f),
                 UV = texture != null ? new DX.Vector4(point3.TextureCoordinate, point3.TextureArrayIndex, 1) : DX.Vector4.UnitW
             };
-            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            _primitiveRenderable.AlphaTestData = alphaTestData;
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
@@ -1765,12 +1766,13 @@ namespace Gorgon.Renderers
             v2.Color = color;
             v3.Color = color;
 
-            CheckPrimitiveStateChange(texture, textureSampler);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
-            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            _primitiveRenderable.AlphaTestData = alphaTestData;
             _primitiveRenderable.Texture = texture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
@@ -1874,10 +1876,11 @@ namespace Gorgon.Renderers
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            CheckPrimitiveStateChange(texture, textureSampler);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
-            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            _primitiveRenderable.AlphaTestData = alphaTestData;
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -1989,10 +1992,11 @@ namespace Gorgon.Renderers
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            CheckPrimitiveStateChange(texture, textureSampler);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
-            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            _primitiveRenderable.AlphaTestData = alphaTestData;
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -2098,10 +2102,11 @@ namespace Gorgon.Renderers
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            CheckPrimitiveStateChange(texture, textureSampler);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
-            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            _primitiveRenderable.AlphaTestData = alphaTestData;
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -2209,10 +2214,11 @@ namespace Gorgon.Renderers
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            CheckPrimitiveStateChange(texture, textureSampler);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
-            _primitiveRenderable.AlphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            _primitiveRenderable.AlphaTestData = alphaTestData;
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
