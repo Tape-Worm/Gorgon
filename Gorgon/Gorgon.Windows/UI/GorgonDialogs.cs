@@ -99,7 +99,7 @@ namespace Gorgon.UI
                 }
 
                 result.Append(lines[i]);
-                result.Append("\n");
+                result.Append('\n');
             }
 
             result.AppendFormat("<<<{0}>>>", Resources.GOR_EXCEPT_STACK_END);
@@ -163,7 +163,7 @@ namespace Gorgon.UI
                     {
                         if (customData.Length > 0)
                         {
-                            customData.Append("\n");
+                            customData.Append('\n');
                         }
 
                         if (item.Value != null)

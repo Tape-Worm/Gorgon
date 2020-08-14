@@ -132,7 +132,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             get;
             set;
-        } = 0.0f;
+        }
         #endregion
 
         #region Methods.

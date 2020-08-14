@@ -58,12 +58,9 @@ namespace Gorgon.IO
                 name = name.FormatPathPart();
 
 
-                if (!_directories.TryGetValue(name, out VirtualDirectory directory))
-                {
-                    throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, name));
-                }
-
-                return directory;
+                return !_directories.TryGetValue(name, out VirtualDirectory directory)
+                    ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, name))
+                    : directory;
             }
         }
 

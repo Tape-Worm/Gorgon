@@ -192,8 +192,8 @@ namespace Gorgon.Examples
                                                   Height = Settings.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
-                _screen.BeforeSwapChainResized += Screen_BeforeSwapChainResized;
-                _screen.AfterSwapChainResized += Screen_AfterSwapChainResized;
+                _screen.SwapChainResizing += Screen_BeforeSwapChainResized;
+                _screen.SwapChainResized += Screen_AfterSwapChainResized;
                 // Tell the graphics API that we want to render to the "screen" swap chain.
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 
@@ -314,15 +314,15 @@ namespace Gorgon.Examples
         /// Screens the after swap chain resized.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs" /> instance containing the event data.</param>
-        private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e) => UpdateRenderTarget();
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
+        private static void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e) => UpdateRenderTarget();
 
         /// <summary>
         /// Screens the before swap chain resized.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs" /> instance containing the event data.</param>
-        private static void Screen_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizingEventArgs" /> instance containing the event data.</param>
+        private static void Screen_BeforeSwapChainResized(object sender, SwapChainResizingEventArgs e)
         {
             // Need to remove these prior to resizing the back buffer, otherwise the size will be mismatched.
             _finalTexture?.Dispose();

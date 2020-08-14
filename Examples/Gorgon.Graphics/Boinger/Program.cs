@@ -428,8 +428,8 @@ namespace Gorgon.Graphics.Example
             }
 
             // Handle resizing because the projection matrix and depth buffer needs to be updated to reflect the new view size.
-            _swap.BeforeSwapChainResized += Swap_BeforeResized;
-            _swap.AfterSwapChainResized += Swap_AfterResized;
+            _swap.SwapChainResizing += Swap_BeforeResized;
+            _swap.SwapChainResized += Swap_AfterResized;
 
             // Set the current render target output so we can see something.
             _graphics.SetRenderTarget(_swap.RenderTargetView, _depthBuffer);
@@ -638,16 +638,16 @@ namespace Gorgon.Graphics.Example
         /// Handles the BeforeResize event of the swap chain.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs" /> instance containing the event data.</param>
-        private static void Swap_BeforeResized(object sender, BeforeSwapChainResizedEventArgs e) => _graphics.SetDepthStencil(null);
+        /// <param name="e">The <see cref="SwapChainResizingEventArgs" /> instance containing the event data.</param>
+        private static void Swap_BeforeResized(object sender, SwapChainResizingEventArgs e) => _graphics.SetDepthStencil(null);
 
         /// <summary>
         /// Handles the Resized event of the _swap control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private static void Swap_AfterResized(object sender, AfterSwapChainResizedEventArgs e)
+        private static void Swap_AfterResized(object sender, SwapChainResizedEventArgs e)
         {
             // This method allows us to restore projection matrix after the swap chain has been resized.  If we didn't do this, we'd have a weird looking (e.g. distorted)
             // image because the old projection matrix would be in place for the previous swap chain size.

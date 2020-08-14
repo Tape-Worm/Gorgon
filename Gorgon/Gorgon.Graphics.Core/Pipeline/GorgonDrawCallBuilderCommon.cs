@@ -727,12 +727,9 @@ namespace Gorgon.Graphics.Core
 
             OnUpdate(final);
 
-            if (final.PipelineState.VertexShader == null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER);
-            }
-
-            return final;
+            return final.PipelineState.VertexShader == null
+                ? throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER)
+                : final;
         }
 
         /// <summary>

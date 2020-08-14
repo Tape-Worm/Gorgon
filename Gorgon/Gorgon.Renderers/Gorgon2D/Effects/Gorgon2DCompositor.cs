@@ -343,18 +343,12 @@ namespace Gorgon.Renderers
         /// <returns>The fluent interface for the effects processor.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="effect"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        public Gorgon2DCompositor EffectPass(string name, IGorgon2DCompositorEffect effect)
-        {
-            if (effect == null)
-            {
-                throw new ArgumentNullException(nameof(effect));
-            }            
-
-            return Pass(new CompositionPass(name)
-            {
-                Effect = effect
-            });
-        }
+        public Gorgon2DCompositor EffectPass(string name, IGorgon2DCompositorEffect effect) => effect == null
+                ? throw new ArgumentNullException(nameof(effect))
+                : Pass(new CompositionPass(name)
+                {
+                    Effect = effect
+                });
 
         /// <summary>
         /// Function to add a pass that will render without applying any effect.
@@ -428,15 +422,9 @@ namespace Gorgon.Renderers
         /// <param name="name">The name of the pass to move.</param>
         /// <param name="newPassIndex">The new index for the pass.</param>
         /// <returns>The fluent interface for the effects processor.</returns>
-        public Gorgon2DCompositor MovePass(string name, int newPassIndex)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return this;
-            }
-
-            return !_passLookup.TryGetValue(name, out int passIndex) ? this : MovePass(passIndex, newPassIndex);
-        }
+        public Gorgon2DCompositor MovePass(string name, int newPassIndex) => string.IsNullOrWhiteSpace(name)
+                ? this
+                : !_passLookup.TryGetValue(name, out int passIndex) ? this : MovePass(passIndex, newPassIndex);
 
         /// <summary>
         /// Function to move the pass at the specified index to a new location in the list.

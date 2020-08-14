@@ -119,12 +119,9 @@ namespace Gorgon.Graphics.Core
 
             List<(FieldInfo, InputElementAttribute)> fields = GorgonInputLayout.GetFieldInfoList(typeof(T));
 
-            if (fields.Count == 0)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, typeof(T).FullName));
-            }
-
-            return new GorgonVertexBufferInfo
+            return fields.Count == 0
+                ? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, typeof(T).FullName))
+                : new GorgonVertexBufferInfo
             {
                 Usage = usage,
                 SizeInBytes = count * Unsafe.SizeOf<T>()
@@ -164,12 +161,9 @@ namespace Gorgon.Graphics.Core
 
             int sizeInBytes = layout.GetSlotSize(slot);
 
-            if (sizeInBytes < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(slot));
-            }
-
-            return new GorgonVertexBufferInfo
+            return sizeInBytes < 1
+                ? throw new ArgumentOutOfRangeException(nameof(slot))
+                : new GorgonVertexBufferInfo
             {
                 Usage = usage,
                 SizeInBytes = sizeInBytes * count

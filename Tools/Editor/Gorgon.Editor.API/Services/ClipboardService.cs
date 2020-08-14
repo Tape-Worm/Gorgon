@@ -72,17 +72,14 @@ namespace Gorgon.Editor.Services
 
             Type objectType = _data.GetType();
 
-            if ((type != objectType)
+            return (type != objectType)
                 && (!type.IsInstanceOfType(_data))
                 && (!type.IsAssignableFrom(objectType))
                 && (!objectType.IsAssignableFrom(type))
                 && (!type.IsSubclassOf(objectType))
-                && (!objectType.IsSubclassOf(type)))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName));                
-            }
-
-            return (T)_data;
+                && (!objectType.IsSubclassOf(type))
+                ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName))
+                : (T)_data;
         }
 
         /// <summary>

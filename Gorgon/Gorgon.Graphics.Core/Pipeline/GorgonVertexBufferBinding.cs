@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Empty vertex buffer binding.
         /// </summary>
-        public static readonly GorgonVertexBufferBinding Empty = new GorgonVertexBufferBinding();
+        public static readonly GorgonVertexBufferBinding Empty;
 
         /// <summary>
         /// The vertex buffer to bind.

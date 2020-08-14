@@ -42,22 +42,20 @@ namespace Gorgon.Renderers
         /// <see langword="true" /> if the specified objects are equal; otherwise, <see langword="false" />.</returns>
         public override bool Equals(BatchRenderable x, BatchRenderable y)
         {
+#pragma warning disable IDE0046 // Convert to conditional expression
+
             if ((x == null) && (y == null))
             {
                 return true;
             }
 
-            if ((x == null) || (y == null))
-            {
-                return false;
-            }
-
-            return x == y
-                ? !x.StateChanged
+            return (x != null) && (y != null) && 
+                ((x == y) ? !x.StateChanged
                 : (x.PrimitiveType == y.PrimitiveType)
                    && (x.Texture == y.Texture)
                    && (x.TextureSampler == y.TextureSampler)
-                   && (AlphaTestData.Equals(in x.AlphaTestData, in y.AlphaTestData));
+                   && (AlphaTestData.Equals(in x.AlphaTestData, in y.AlphaTestData)));
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>When overridden in a derived class, serves as a hash function for the specified object for hashing algorithms and data structures, such as a hash table.</summary>

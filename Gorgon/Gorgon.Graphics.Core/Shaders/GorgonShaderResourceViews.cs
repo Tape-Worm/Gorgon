@@ -114,17 +114,14 @@ namespace Gorgon.Graphics.Core
         {
             get
             {
+#pragma warning disable IDE0046 // Convert to conditional expression
                 if (index < _backingArray.Length)
                 {
                     return _backingArray[index];
                 }
 
-                if (index >= MaximumShaderResourceViewCount)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index));
-                }
-
-                return null;
+                return index >= MaximumShaderResourceViewCount ? throw new ArgumentOutOfRangeException(nameof(index)) : (GorgonShaderResourceView)null;
+#pragma warning restore IDE0046 // Convert to conditional expression
             }
             set
             {

@@ -143,17 +143,16 @@ namespace Gorgon.Graphics.Core
 
             string includePath = Path.GetFullPath(line.ToString(1, endQuote - 1));
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (includePath.Length == 0)
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID, includeLine));
             }
 
-            if ((checkFileExists) && (!File.Exists(includePath)))
-            {
-                throw new IOException(string.Format(Resources.GORGFX_ERR_FILE_NOT_FOUND, includeName));
-            }
-
-            return new GorgonShaderInclude(includeName, includePath);
+            return (checkFileExists) && (!File.Exists(includePath))
+                ? throw new IOException(string.Format(Resources.GORGFX_ERR_FILE_NOT_FOUND, includeName))
+                : new GorgonShaderInclude(includeName, includePath);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>

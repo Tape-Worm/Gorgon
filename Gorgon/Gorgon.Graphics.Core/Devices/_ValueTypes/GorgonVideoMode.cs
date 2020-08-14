@@ -85,7 +85,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// A representation of an invalid video mode.
         /// </summary>
-        public static readonly GorgonVideoMode InvalidMode = default;
+        public static readonly GorgonVideoMode InvalidMode;
 
         /// <summary>
         /// The width, in pixels, for the video mode.

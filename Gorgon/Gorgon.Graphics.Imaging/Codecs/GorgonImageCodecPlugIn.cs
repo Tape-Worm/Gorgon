@@ -111,17 +111,16 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentNullException(nameof(codec));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (string.IsNullOrWhiteSpace(codec))
             {
                 throw new ArgumentEmptyException(nameof(codec));
             }
 
-            if (!Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase)))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec));
-            }
-
-            return OnCreateCodecEncodingOptions(codec);
+            return !Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase))
+                ? throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec))
+                : OnCreateCodecEncodingOptions(codec);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -144,17 +143,16 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentNullException(nameof(codec));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (string.IsNullOrWhiteSpace(codec))
             {
                 throw new ArgumentEmptyException(nameof(codec));
             }
 
-            if (!Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase)))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec));
-            }
-
-            return OnCreateCodecDecodingOptions(codec);
+            return !Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase))
+                ? throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec))
+                : OnCreateCodecDecodingOptions(codec);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -190,12 +188,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             IGorgonImageCodec result = OnCreateCodec(codec);
 
-            if (result == null)
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec));
-            }
-
-            return result;
+            return result ?? throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec));
         }
         #endregion
 

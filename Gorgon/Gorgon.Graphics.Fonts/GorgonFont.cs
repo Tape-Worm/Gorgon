@@ -511,16 +511,9 @@ namespace Gorgon.Graphics.Fonts
         /// </para>
         /// </remarks>
         /// <seealso cref="IGorgonFontInfo"/>
-        public GorgonGlyph GetDefaultGlyph()
-        {
-
-            if (!TryGetDefaultGlyph(out GorgonGlyph glyph))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter));
-            }
-
-            return glyph;
-        }
+        public GorgonGlyph GetDefaultGlyph() => !TryGetDefaultGlyph(out GorgonGlyph glyph)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter))
+                : glyph;
 
         /// <summary>
         /// Function to retrieve the glyph used for the default character assigned in the font <see cref="Info"/>.

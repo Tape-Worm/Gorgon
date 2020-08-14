@@ -291,17 +291,16 @@ namespace Gorgon.IO
             ulong jsonID = jobj[GorgonSpriteExtensions.JsonHeaderProp].Value<ulong>();
             Version jsonVersion = jobj[GorgonSpriteExtensions.JsonVersionProp].ToObject<Version>(serializer);
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (jsonID != CurrentFileHeader)
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_SPRITE);
             }
 
-            if (!jsonVersion.Equals(CurrentVersion))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_SPRITE_VERSION_MISMATCH, CurrentVersion, jsonVersion));
-            }
-
-            return jobj.ToObject<GorgonSprite>(serializer);
+            return !jsonVersion.Equals(CurrentVersion)
+                ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_SPRITE_VERSION_MISMATCH, CurrentVersion, jsonVersion))
+                : jobj.ToObject<GorgonSprite>(serializer);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
         #endregion
 

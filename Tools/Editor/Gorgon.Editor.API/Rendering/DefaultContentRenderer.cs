@@ -586,8 +586,8 @@ namespace Gorgon.Editor.Rendering
 
         /// <summary>Handles the AfterSwapChainResized event of the SwapChain control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private void SwapChain_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
+        private void SwapChain_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e)
         {
             // Because we have multiple swap chains, we need to reset it back to our swap chain.
             // Otherwise the camera will use the correct swap chain.
@@ -613,8 +613,8 @@ namespace Gorgon.Editor.Rendering
 
         /// <summary>Handles the BeforeSwapChainResized event of the SwapChain control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private void SwapChain_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e) => OnResizeBegin();
+        /// <param name="e">The <see cref="SwapChainResizingEventArgs"/> instance containing the event data.</param>
+        private void SwapChain_BeforeSwapChainResized(object sender, SwapChainResizingEventArgs e) => OnResizeBegin();
 
         /// <summary>
         /// Function to set the zoom scale to fit within the content window.
@@ -1060,8 +1060,8 @@ namespace Gorgon.Editor.Rendering
 
             ClientSize = new DX.Size2(_swapChain.Width, _swapChain.Height);
 
-            _swapChain.BeforeSwapChainResized += SwapChain_BeforeSwapChainResized;
-            _swapChain.AfterSwapChainResized += SwapChain_AfterSwapChainResized;
+            _swapChain.SwapChainResizing += SwapChain_BeforeSwapChainResized;
+            _swapChain.SwapChainResized += SwapChain_AfterSwapChainResized;
             
             _swapChain.Window.MouseMove += Window_MouseMove;
             _swapChain.Window.MouseWheel += Window_MouseWheel;
@@ -1122,8 +1122,8 @@ namespace Gorgon.Editor.Rendering
             _swapChain.Window.MouseUp -= Window_MouseUp;
             _swapChain.Window.MouseWheel -= Window_MouseWheel;
             _swapChain.Window.MouseMove -= Window_MouseMove;
-            _swapChain.AfterSwapChainResized -= SwapChain_AfterSwapChainResized;
-            _swapChain.BeforeSwapChainResized -= SwapChain_BeforeSwapChainResized;
+            _swapChain.SwapChainResized -= SwapChain_AfterSwapChainResized;
+            _swapChain.SwapChainResizing -= SwapChain_BeforeSwapChainResized;
 
             BackgroundPattern?.Dispose();
             BackgroundPattern = null;

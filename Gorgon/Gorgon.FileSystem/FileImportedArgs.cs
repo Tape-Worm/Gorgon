@@ -29,9 +29,9 @@ using System;
 namespace Gorgon.IO
 {
     /// <summary>
-    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.AfterFileImport"/>.
+    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.FileImported"/>.
     /// </summary>
-    public class AfterFileImportArgs
+    public class FileImportedArgs
         : EventArgs
     {
         #region Properties.
@@ -53,10 +53,10 @@ namespace Gorgon.IO
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="AfterFileImportArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="FileImportedArgs"/> class.</summary>
         /// <param name="physicalFilePath">The physical file path to the file being imported.</param>
         /// <param name="virtualFile">The virtual file representing the physical file that was imported into the file system.</param>
-        public AfterFileImportArgs(string physicalFilePath, IGorgonVirtualFile virtualFile)
+        public FileImportedArgs(string physicalFilePath, IGorgonVirtualFile virtualFile)
         {
             PhysicalFilePath = physicalFilePath;
             VirtualFile = virtualFile;

@@ -128,11 +128,11 @@ namespace Gorgon.IO
         /// <summary>
         /// Event triggered before a phsyical file is imported into the file system.
         /// </summary>
-        event EventHandler<BeforeFileImportArgs> BeforeFileImport;
+        event EventHandler<FileImportingArgs> FileImporting;
         /// <summary>
         /// Event triggered after a physical file is imported into the file system.
         /// </summary>
-        event EventHandler<AfterFileImportArgs> AfterFileImport;
+        event EventHandler<FileImportedArgs> FileImported;
         /// <summary>
         /// Event triggered when directories, and files have been imported.
         /// </summary>

@@ -101,12 +101,7 @@ namespace Gorgon.IO
 
             IGorgonAnimationCodec result = OnCreateCodec(codec, renderer);
 
-            if (result == null)
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN, codec));
-            }
-
-            return result;
+            return result ?? throw new KeyNotFoundException(string.Format(Resources.GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN, codec));
         }
         #endregion
 

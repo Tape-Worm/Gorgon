@@ -257,17 +257,14 @@ namespace Gorgon.Editor.PlugIns
         /// <seealso cref="OnCanOpenContent(string)"/>
         public bool CanOpenContent(string filePath)
         {
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (filePath == null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
 
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new ArgumentEmptyException(nameof(filePath));
-            }
-
-            return OnCanOpenContent(filePath);
+            return string.IsNullOrWhiteSpace(filePath) ? throw new ArgumentEmptyException(nameof(filePath)) : OnCanOpenContent(filePath);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
 
@@ -289,12 +286,7 @@ namespace Gorgon.Editor.PlugIns
         {
             IEditorContentImporter result = _importerFactory.Value;
 
-            if (result == null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN, Name));
-            }
-
-            return result;
+            return result ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN, Name));
         }
 
         /// <summary>

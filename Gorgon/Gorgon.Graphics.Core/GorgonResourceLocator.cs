@@ -180,14 +180,9 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         /// <seealso cref="GorgonGraphicsResource"/>
         public static IEnumerable<T> LocateResourcesByType<T>(this GorgonGraphics graphics)
-            where T : GorgonGraphicsResource
-        {
-            if (graphics == null)
-            {
-                throw new ArgumentNullException(nameof(graphics));
-            }
-
-            return graphics.GetDisposables()
+            where T : GorgonGraphicsResource => graphics == null
+                ? throw new ArgumentNullException(nameof(graphics))
+                : graphics.GetDisposables()
                            .Select(item =>
                                    {
                                        // If the object has been collected/disposed, then do nothing.
@@ -198,7 +193,6 @@ namespace Gorgon.Graphics.Core
                                            : resource;
                                    })
                            .Where(item => item != null);
-        }
         #endregion
     }
 }

@@ -74,7 +74,7 @@ namespace Gorgon.Editor.PlugIns
         protected virtual GorgonFileExtension DefaultFileExtension
         {
             get;
-        } = default;
+        }
 
         /// <summary>
         /// Property to return the services from the host application.

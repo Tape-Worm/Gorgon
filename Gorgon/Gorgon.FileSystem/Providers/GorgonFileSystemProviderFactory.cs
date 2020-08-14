@@ -114,12 +114,7 @@ namespace Gorgon.IO.Providers
 
             GorgonFileSystemProvider plugin = _pluginService.GetPlugIn<GorgonFileSystemProvider>(providerPlugInName);
 
-            if (plugin == null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORFS_ERR_NO_PROVIDER_PLUGIN, providerPlugInName));
-            }
-
-            return plugin;
+            return plugin ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORFS_ERR_NO_PROVIDER_PLUGIN, providerPlugInName));
         }
 
         /// <summary>

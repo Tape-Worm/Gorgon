@@ -203,8 +203,8 @@ namespace Gorgon.Examples
                                                   Height = Settings.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
-                _screen.AfterSwapChainResized += Screen_AfterSwapChainResized;
-                _screen.BeforeSwapChainResized += Screen_BeforeSwapChainResized;
+                _screen.SwapChainResized += Screen_AfterSwapChainResized;
+                _screen.SwapChainResizing += Screen_BeforeSwapChainResized;
                 // Tell the graphics API that we want to render to the "screen" swap chain.
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 
@@ -243,8 +243,8 @@ namespace Gorgon.Examples
 
         /// <summary>Handles the BeforeSwapChainResized event of the Screen control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private static void Screen_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizingEventArgs"/> instance containing the event data.</param>
+        private static void Screen_BeforeSwapChainResized(object sender, SwapChainResizingEventArgs e)
         {
             _crawl?.Dispose();
             _crawlRtv?.Dispose();
@@ -256,8 +256,8 @@ namespace Gorgon.Examples
         /// Handles the AfterSwapChainResized event of the Screen control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e) => CreateTargets();
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
+        private static void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e) => CreateTargets();
 
         /// <summary>
         /// The main entry point for the application.
@@ -278,8 +278,8 @@ namespace Gorgon.Examples
             }
             finally
             {
-                _screen.AfterSwapChainResized -= Screen_AfterSwapChainResized;
-                _screen.BeforeSwapChainResized -= Screen_BeforeSwapChainResized;
+                _screen.SwapChainResized -= Screen_AfterSwapChainResized;
+                _screen.SwapChainResizing -= Screen_BeforeSwapChainResized;
 
                 GorgonExample.UnloadResources();
                 _crawl?.Dispose();

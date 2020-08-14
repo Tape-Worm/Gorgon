@@ -280,12 +280,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 // Get our WIC interface.				
                 GorgonImageInfo result = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, options);
 
-                if (result.Format == BufferFormat.Unknown)
-                {
-                    throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, result.Format));
-                }
-
-                return result;
+                return result.Format == BufferFormat.Unknown
+                    ? throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, result.Format))
+                    : result;
             }
             catch (DX.SharpDXException)
             {
@@ -364,12 +361,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
                 IReadOnlyList<DX.Point> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
 
-                if (result == null)
-                {
-                    throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
-                }
-
-                return result;
+                return result ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
             }
             catch (DX.SharpDXException)
             {

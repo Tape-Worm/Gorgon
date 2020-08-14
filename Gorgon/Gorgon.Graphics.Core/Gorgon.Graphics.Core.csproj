@@ -171,8 +171,8 @@
     <Compile Include="Shaders\GorgonShaderResources.cs" />
     <Compile Include="States\StencilOperation.cs" />
     <Compile Include="States\WriteMask.cs" />
-    <Compile Include="Targets\BeforeSwapChainResizedEventArgs.cs" />
-    <Compile Include="Targets\AfterSwapChainResizedEventArgs.cs" />
+    <Compile Include="Targets\SwapChainResizingEventArgs.cs" />
+    <Compile Include="Targets\SwapChainResizedEventArgs.cs" />
     <Compile Include="Targets\GorgonDepthStencil2DView.cs" />
     <Compile Include="Targets\GorgonRenderTarget3DView.cs" />
     <Compile Include="Targets\GorgonRenderTarget2DView.cs" />
@@ -254,7 +254,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.0.0</Version>
+      <Version>3.3.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

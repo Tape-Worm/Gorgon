@@ -2666,7 +2666,7 @@ namespace Gorgon.Editor.ViewModels
             }
                         
             // Event handler to perform a file conversion on import (if applicable).
-            void BeforeFileImport(object sender, BeforeFileImportArgs e)
+            void BeforeFileImport(object sender, FileImportingArgs e)
             {
                 if (string.IsNullOrWhiteSpace(e.PhysicalFilePath))
                 {
@@ -2747,7 +2747,7 @@ namespace Gorgon.Editor.ViewModels
                 UpdateProgress(args.PhysicalPaths[0], 0, Resources.GOREDIT_TEXT_IMPORTING, cancelSource.Cancel);
 
                 _fileSystemWriter.Imported += Imported;
-                _fileSystemWriter.BeforeFileImport += BeforeFileImport;
+                _fileSystemWriter.FileImporting += BeforeFileImport;
                 await Task.Run(() => _fileSystemWriter.Import(args.PhysicalPaths, destDirectory.FullPath,
                 new GorgonCopyCallbackOptions
                 {
@@ -2755,7 +2755,7 @@ namespace Gorgon.Editor.ViewModels
                     ProgressCallback = ProgressCallback,
                     ConflictResolutionCallback = CopyFileSystemConflictHandler
                 }));
-                _fileSystemWriter.BeforeFileImport -= BeforeFileImport;
+                _fileSystemWriter.FileImporting -= BeforeFileImport;
                 _fileSystemWriter.Imported -= Imported;
                 HideProgress();
 
@@ -2820,7 +2820,7 @@ namespace Gorgon.Editor.ViewModels
                     OnFileSystemUpdated();
                 }
 
-                _fileSystemWriter.BeforeFileImport -= BeforeFileImport;
+                _fileSystemWriter.FileImporting -= BeforeFileImport;
                 _fileSystemWriter.Imported -= Imported;
                 HideProgress();
                 cancelSource?.Dispose();
@@ -3097,17 +3097,16 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         IContentFile IContentFileManager.GetFile(string path)
         {
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
 
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentEmptyException(nameof(path));
-            }
-
-            return _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase)) as IContentFile;
+            return string.IsNullOrWhiteSpace(path)
+                ? throw new ArgumentEmptyException(nameof(path))
+                : _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase)) as IContentFile;
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -3136,12 +3135,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 IGorgonVirtualFile file = _fileSystemWriter.FileSystem.GetFile(path);
 
-                if (file == null)
-                {
-                    throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
-                }
-
-                return file.OpenStream();
+                return file == null ? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path)) : file.OpenStream();
             }
 
             // We cannot write to a file that's already open for editing.

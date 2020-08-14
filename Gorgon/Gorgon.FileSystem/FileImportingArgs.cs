@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,49 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 9, 2017 4:32:41 PM
+// Created: January 25, 2020 10:56:15 AM
 // 
 #endregion
 
 using System;
-using DX = SharpDX;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.IO
 {
     /// <summary>
-    /// Event arguments for the <see cref="GorgonSwapChain.AfterSwapChainResized"/> event.
+    /// Event arguments for the <see cref="IGorgonFileSystemWriter{T}.FileImporting"/>.
     /// </summary>
-    public class AfterSwapChainResizedEventArgs
+    public class FileImportingArgs
         : EventArgs
     {
         #region Properties.
         /// <summary>
-        /// Property to return the size of the swap chain backbuffers.
+        /// Property to set or return the physical file path of the file being imported.
         /// </summary>
-        public DX.Size2 Size
+        public string PhysicalFilePath
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to return the previous size of the swap chain backbuffers.
-        /// </summary>
-        public DX.Size2 OldSize
-        {
-            get;
-        }
-        #endregion
-
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BeforeSwapChainResizedEventArgs"/> class.
-        /// </summary>
-        /// <param name="newSize">The new size.</param>
-        /// <param name="oldSize">The old size.</param>
-        public AfterSwapChainResizedEventArgs(DX.Size2 newSize, DX.Size2 oldSize)
-        {
-            Size = newSize;
-            OldSize = oldSize;
+            set;
         }
         #endregion
     }

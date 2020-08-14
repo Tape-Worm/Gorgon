@@ -342,13 +342,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krypton.Ribbon.Lite">
-      <Version>5.500.2006</Version>
+      <Version>5.500.2008</Version>
     </PackageReference>
     <PackageReference Include="Krypton.Toolkit.Lite">
-      <Version>5.500.2006</Version>
+      <Version>5.500.2008</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.0.0</Version>
+      <Version>3.3.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

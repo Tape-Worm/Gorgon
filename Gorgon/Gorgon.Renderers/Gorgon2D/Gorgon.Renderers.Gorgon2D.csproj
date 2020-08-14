@@ -87,7 +87,6 @@
     <Compile Include="Effects\_Interfaces\IGorgon2DCompositorEffect.cs" />
     <Compile Include="Effects\_Interfaces\IGorgon2DEffectBuilders.cs" />
     <Compile Include="Effects\_Internal\EffectBuilders.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Renderables\Gorgon2DBatchStatePoolAllocator.cs" />
     <Compile Include="Renderables\GorgonPolySprite.cs" />
@@ -163,7 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.0.0</Version>
+      <Version>3.3.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -708,17 +708,16 @@ namespace Gorgon.Editor.UI.Views
         protected T GetRegisteredPanel<T>(string id)
             where T : Control
         {
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                throw new ArgumentEmptyException(nameof(id));
-            }
-
-            return !_panelViews.TryGetValue(id, out Control result) ? null : (T)result;
+            return string.IsNullOrWhiteSpace(id)
+                ? throw new ArgumentEmptyException(nameof(id))
+                : !_panelViews.TryGetValue(id, out Control result) ? null : (T)result;
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>

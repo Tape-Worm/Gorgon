@@ -333,7 +333,7 @@ namespace Gorgon.Graphics.Example
                 // Register an event to tell us when the swap chain was resized.
                 // We need to do this in order to resize our projection matrix & viewport to match our client area.
                 // Also, when a swap chain is resized, it is unbound from the pipeline, and needs to be reassigned to the draw call.
-                _swap.AfterSwapChainResized += AfterSwapChainResized;
+                _swap.SwapChainResized += AfterSwapChainResized;
 
                 // Initialize the app.
                 Initialize();

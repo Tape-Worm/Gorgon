@@ -58,15 +58,9 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to retrieve the common plug in cache.
         /// </summary>
         /// <returns>The plug in cache.</returns>
-        private static GorgonMefPlugInCache GetPlugInCache()
-        {
-            if (!_hostServices.TryGetTarget(out IHostContentServices commonServices))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate);
-            }
-
-            return new GorgonMefPlugInCache(commonServices.Log);
-        }
+        private static GorgonMefPlugInCache GetPlugInCache() => !_hostServices.TryGetTarget(out IHostContentServices commonServices)
+                ? throw new GorgonException(GorgonResult.CannotCreate)
+                : new GorgonMefPlugInCache(commonServices.Log);
 
         /// <summary>
         /// Function to load the settings for the image editor/importer.

@@ -216,7 +216,7 @@ namespace Gorgon.Examples
                                                   Height = ClientSize.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
-                _screen.AfterSwapChainResized += Screen_AfterSwapChainResized;
+                _screen.SwapChainResized += Screen_AfterSwapChainResized;
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
                 _halfSize = new DX.Size2F(_screen.Width / 2.0f, _screen.Height / 2.0f);
 
@@ -245,8 +245,8 @@ namespace Gorgon.Examples
         /// Handles the AfterSwapChainResized event of the Screen control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
+        private void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e)
         {
             _halfSize = new DX.Size2F(e.Size.Width / 2.0f, e.Size.Height / 2.0f);
 

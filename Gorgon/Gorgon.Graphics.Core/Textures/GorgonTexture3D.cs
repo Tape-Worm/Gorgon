@@ -544,19 +544,13 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">The <see cref="IGorgonTexture3DInfo"/> used to define a texture.</param>
         /// <returns>The number of bytes for the texture.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public static int CalculateSizeInBytes(IGorgonTexture3DInfo info)
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            return CalculateSizeInBytes(info.Width,
+        public static int CalculateSizeInBytes(IGorgonTexture3DInfo info) => info == null
+                ? throw new ArgumentNullException(nameof(info))
+                : CalculateSizeInBytes(info.Width,
                                         info.Height,
                                         info.Depth,
                                         info.Format,
                                         info.MipLevels);
-        }
 
         /// <summary>
         /// Function to copy this texture into a <see cref="GorgonTexture1D"/>.

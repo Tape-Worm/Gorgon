@@ -44,7 +44,7 @@ namespace Gorgon.Native
         /// <summary>
         /// A null pointer.
         /// </summary>
-        public static readonly GorgonReadOnlyPointer Null = new GorgonReadOnlyPointer();
+        public static readonly GorgonReadOnlyPointer Null;
 
         /// <summary>
         /// The amount of memory allocated.
@@ -101,17 +101,11 @@ namespace Gorgon.Native
             int typeSize = Unsafe.SizeOf<T>();
             int byteOffset = typeSize * index;
 
-            if (byteOffset < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
-            if (typeSize + byteOffset > SizeInBytes)
-            {
-                throw new IndexOutOfRangeException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
-            }
-
-            return Unsafe.Read<T>(_data + byteOffset);
+            return byteOffset < 0
+                ? throw new ArgumentOutOfRangeException(nameof(index))
+                : typeSize + byteOffset > SizeInBytes
+                ? throw new IndexOutOfRangeException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN)
+                : Unsafe.Read<T>(_data + byteOffset);
         }
 
         /// <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. </summary>

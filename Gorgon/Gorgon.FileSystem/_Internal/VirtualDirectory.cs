@@ -191,15 +191,7 @@ namespace Gorgon.IO
         /// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
         /// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
         /// </remarks>
-        public bool ContainsFile(IGorgonVirtualFile file)
-        {
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-
-            return ContainsFile(file.Name);
-        }
+        public bool ContainsFile(IGorgonVirtualFile file) => file == null ? throw new ArgumentNullException(nameof(file)) : ContainsFile(file.Name);
 
         /// <summary>
         /// Function to determine if this directory, or optionally, any of the sub directories contains a <see cref="IGorgonVirtualFile"/> with the specified file name.

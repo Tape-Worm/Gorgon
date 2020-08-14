@@ -103,7 +103,7 @@ namespace Gorgon.Editor.ImageEditor
 
                 if (fileFilter.Length > 0)
                 {
-                    fileFilter.Append("|");
+                    fileFilter.Append('|');
                 }
 
                 fileFilter.AppendFormat("{0} ({1})|{2}", codec.CodecDescription, string.Join(", ", extensions), string.Join(";", extensions));
@@ -111,7 +111,7 @@ namespace Gorgon.Editor.ImageEditor
 
             if (fileFilter.Length > 0)
             {
-                fileFilter.Append("|");
+                fileFilter.Append('|');
             }
 
             fileFilter.Append(Resources.GORIMG_FILEMASK_ALL_FILES);

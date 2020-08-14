@@ -94,7 +94,6 @@
     <Compile Include="Devices\_Interfaces\IGorgonRawInputDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\RawKeyboardInfo.cs" />
     <Compile Include="Devices\_Internal\RawMouseInfo.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonGamingDeviceDriver.cs" />
     <Compile Include="GorgonGamingDeviceFactory.cs" />
     <Compile Include="GorgonKeysEqualityComparer.cs" />
@@ -152,7 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.0.0</Version>
+      <Version>3.3.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

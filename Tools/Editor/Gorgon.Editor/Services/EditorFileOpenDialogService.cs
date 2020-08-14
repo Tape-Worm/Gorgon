@@ -126,7 +126,7 @@ namespace Gorgon.Editor.Services
 
                 if (result.Length > 0)
                 {
-                    result.Append("|");
+                    result.Append('|');
                 }
 
                 result.Append(item.desc);
@@ -135,12 +135,12 @@ namespace Gorgon.Editor.Services
                 {
                     if (allFilter.Length > 0)
                     {
-                        allFilter.Append(";");
+                        allFilter.Append(';');
                     }
 
                     if (filter.Length > 0)
                     {
-                        filter.Append(";");
+                        filter.Append(';');
                     }
 
                     filter.Append("*.");
@@ -159,7 +159,7 @@ namespace Gorgon.Editor.Services
             {
                 if (result.Length > 0)
                 {
-                    result.Append("|");
+                    result.Append('|');
                 }
 
                 result.Append(string.Format(Resources.GOREDIT_TEXT_SUPPORTED_FILES, allFilter));
@@ -167,7 +167,7 @@ namespace Gorgon.Editor.Services
 
             if (result.Length > 0)
             {
-                result.Append("|");
+                result.Append('|');
             }
 
             result.Append(Resources.GOREDIT_TEXT_ALL_FILES);
@@ -179,15 +179,7 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve the parent form for the message box.
         /// </summary>
         /// <returns>The form to use as the owner.</returns>
-        private static Form GetParentForm()
-        {
-            if (Form.ActiveForm != null)
-            {
-                return Form.ActiveForm;
-            }
-
-            return Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm;
-        }
+        private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
 
         /// <summary>
         /// Function to return the dialog.

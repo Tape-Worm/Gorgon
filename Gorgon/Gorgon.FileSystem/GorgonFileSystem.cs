@@ -448,12 +448,9 @@ namespace Gorgon.IO
             }
 
             VirtualDirectory startDirectory = GetVirtualDirectory(path);
-            if (startDirectory == null)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
-            }
-
-            return !recursive
+            return startDirectory == null
+                ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path))
+                : !recursive
                        ? (string.Equals(directoryMask, "*", StringComparison.OrdinalIgnoreCase)
                               ? startDirectory.Directories.GetVirtualDirectories()
                               : startDirectory.Directories.GetVirtualDirectories()
@@ -482,12 +479,9 @@ namespace Gorgon.IO
 
             VirtualDirectory start = GetVirtualDirectory(path);
 
-            if (start == null)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
-            }
-
-            return !recursive
+            return start == null
+                ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path))
+                : !recursive
                        ? (string.Equals(fileMask, "*", StringComparison.OrdinalIgnoreCase)
                               ? start.Files.GetVirtualFiles()
                               : start.Files.GetVirtualFiles().Where(item => IsPatternMatch(item, fileMask)))
@@ -1433,12 +1427,9 @@ namespace Gorgon.IO
 
                 // Ensure that our directory name is not empty or null.
                 // We can't mount that.
-                if (string.IsNullOrWhiteSpace(directory))
-                {
-                    throw new ArgumentException(string.Format(Resources.GORFS_ERR_ILLEGAL_PATH, physicalPath), nameof(physicalPath));
-                }
-
-                return MountDirectory(physicalPath, mountPath);
+                return string.IsNullOrWhiteSpace(directory)
+                    ? throw new ArgumentException(string.Format(Resources.GORFS_ERR_ILLEGAL_PATH, physicalPath), nameof(physicalPath))
+                    : MountDirectory(physicalPath, mountPath);
             }
         }
         #endregion

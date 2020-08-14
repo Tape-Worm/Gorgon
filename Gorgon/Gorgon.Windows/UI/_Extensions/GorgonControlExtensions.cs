@@ -107,14 +107,6 @@ namespace Gorgon.UI
         /// <returns>The <see cref="Form"/> of type <typeparamref name="T"/> if found, <b>null</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
         public static T GetForm<T>(this Control control)
-            where T : Form
-        {
-            if (control == null)
-            {
-                throw new ArgumentNullException(nameof(control));
-            }
-
-            return control.FindForm() as T;
-        }
+            where T : Form => control == null ? throw new ArgumentNullException(nameof(control)) : control.FindForm() as T;
     }
 }

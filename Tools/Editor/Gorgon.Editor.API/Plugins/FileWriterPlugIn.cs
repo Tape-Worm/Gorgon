@@ -235,17 +235,16 @@ namespace Gorgon.Editor.PlugIns
                 throw new ArgumentNullException(nameof(filePath));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (workspace == null)
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
 
-            if (!workspace.Exists)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, workspace.FullName));
-            }
-
-            return OnWriteAsync(filePath, workspace, progressCallback, cancelToken);
+            return !workspace.Exists
+                ? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, workspace.FullName))
+                : OnWriteAsync(filePath, workspace, progressCallback, cancelToken);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>

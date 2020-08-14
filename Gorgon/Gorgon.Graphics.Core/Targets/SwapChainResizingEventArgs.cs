@@ -30,9 +30,9 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Event arguments for the <see cref="GorgonSwapChain.BeforeSwapChainResized"/> event.
+    /// Event arguments for the <see cref="GorgonSwapChain.SwapChainResizing"/> event.
     /// </summary>
-    public class BeforeSwapChainResizedEventArgs
+    public class SwapChainResizingEventArgs
         : EventArgs
     {
         #region Properties.
@@ -55,11 +55,11 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="BeforeSwapChainResizedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="SwapChainResizingEventArgs"/> class.
         /// </summary>
         /// <param name="oldSize">The old size.</param>
         /// <param name="newSize">The new size.</param>
-        public BeforeSwapChainResizedEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
+        public SwapChainResizingEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
         {
             OldSize = oldSize;
             NewSize = newSize;

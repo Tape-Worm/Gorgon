@@ -50,12 +50,9 @@ namespace Gorgon.IO
                     extension = extension.Substring(1);
                 }
 
-                if (!Contains(extension))
-                {
-                    throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_NOT_FOUND, extension));
-                }
-
-                return Items[extension];
+                return !Contains(extension)
+                    ? throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_NOT_FOUND, extension))
+                    : Items[extension];
             }
             set
             {

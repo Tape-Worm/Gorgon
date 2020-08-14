@@ -58,9 +58,8 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AfterFileImportArgs.cs" />
-    <Compile Include="BeforeFileImportArgs.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="FileImportedArgs.cs" />
+    <Compile Include="FileImportingArgs.cs" />
     <Compile Include="GorgonCopyCallbackOptions.cs" />
     <Compile Include="GorgonFileSystem.cs" />
     <Compile Include="GorgonFileSystemWriter.cs" />
@@ -117,7 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.0.0</Version>
+      <Version>3.3.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

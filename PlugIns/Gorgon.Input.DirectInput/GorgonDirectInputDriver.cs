@@ -194,19 +194,13 @@ namespace Gorgon.Input.DirectInput
         /// on the object when you are done with the object so that those resources may be freed.
         /// </para>
         /// </remarks>
-        public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo)
-        {
-            if (!(gamingDeviceInfo is DirectInputDeviceInfo deviceInfo))
-            {
-                throw new ArgumentException(Resources.GORINP_ERR_DI_NOT_A_DI_DEVICE_INFO, nameof(gamingDeviceInfo));
-            }
-
-            return new DirectInputDevice(deviceInfo, _directInput.Value)
-            {
-                // Attempt to acquire the device immediately.
-                IsAcquired = true
-            };
-        }
+        public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo) => !(gamingDeviceInfo is DirectInputDeviceInfo deviceInfo)
+                ? throw new ArgumentException(Resources.GORINP_ERR_DI_NOT_A_DI_DEVICE_INFO, nameof(gamingDeviceInfo))
+                : new DirectInputDevice(deviceInfo, _directInput.Value)
+                {
+                    // Attempt to acquire the device immediately.
+                    IsAcquired = true
+                };
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

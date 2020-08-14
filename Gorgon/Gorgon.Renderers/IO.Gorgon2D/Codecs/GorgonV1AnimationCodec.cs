@@ -647,12 +647,9 @@ namespace Gorgon.IO
                     animations = ReadV10AnimationData(reader, builder, animationCount);
                 }
 
-                if ((animations == null) || (animations.Count == 0))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE);
-                }
-
-                return animations;
+                return (animations == null) || (animations.Count == 0)
+                    ? throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE)
+                    : animations;
             }
         }
 
@@ -995,12 +992,9 @@ namespace Gorgon.IO
                 byteCount = (int)stream.Length;
             }
 
-            if ((stream.Position + byteCount.Value) > stream.Length)
-            {
-                throw new EndOfStreamException();
-            }
-
-            return OnReadMultipleFromStream(stream, false);
+            return (stream.Position + byteCount.Value) > stream.Length
+                ? throw new EndOfStreamException()
+                : OnReadMultipleFromStream(stream, false);
         }
         #endregion
 

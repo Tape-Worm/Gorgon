@@ -69,12 +69,9 @@ namespace Gorgon.IO
             {
                 fileName = fileName.FormatFileName();
 
-                if (!_files.ContainsKey(fileName))
-                {
-                    throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, fileName));
-                }
-
-                return _files[fileName];
+                return !_files.ContainsKey(fileName)
+                    ? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, fileName))
+                    : _files[fileName];
             }
             set
             {

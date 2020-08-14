@@ -43,7 +43,7 @@ namespace Gorgon.Editor.UI.Controls
     {
         #region Variables.
         // The position of the cursor indicator.
-        private float _alphaValue = 0.0f;
+        private float _alphaValue;
         // The points for the cursor polygon.
         private readonly PointF[] _cursor = new PointF[3];
         // Flag to indicate that the numeric control events are enabled.

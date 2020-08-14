@@ -277,20 +277,9 @@ namespace Gorgon.IO
         /// </remarks>
         /// <seealso cref="GorgonChunkFileReader.OpenChunk(ulong)"/>
         /// <seealso cref="GorgonChunkFileWriter.OpenChunk(ulong)"/>
-        public T OpenChunk(string chunkName)
-        {
-            if (chunkName == null)
-            {
-                throw new ArgumentNullException(nameof(chunkName));
-            }
-
-            if (string.IsNullOrEmpty(chunkName))
-            {
-                throw new ArgumentEmptyException(nameof(chunkName));
-            }
-
-            return OpenChunk(chunkName.ChunkID());
-        }
+        public T OpenChunk(string chunkName) => chunkName == null
+                ? throw new ArgumentNullException(nameof(chunkName))
+                : string.IsNullOrEmpty(chunkName) ? throw new ArgumentEmptyException(nameof(chunkName)) : OpenChunk(chunkName.ChunkID());
         #endregion
 
         #region Constructor/Finalizer.

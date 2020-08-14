@@ -157,7 +157,7 @@ namespace Gorgon.Examples
                                                   Height = Settings.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
-                _screen.AfterSwapChainResized += Screen_AfterSwapChainResized;
+                _screen.SwapChainResized += Screen_AfterSwapChainResized;
                 // Tell the graphics API that we want to render to the "screen" swap chain.
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 
@@ -220,8 +220,8 @@ namespace Gorgon.Examples
         /// Handles the AfterSwapChainResized event of the Screen control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
+        private static void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e)
         {
         
         }

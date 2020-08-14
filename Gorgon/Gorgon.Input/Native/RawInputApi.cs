@@ -527,12 +527,9 @@ namespace Gorgon.Native
                     throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
                 }
 
-                if (errCode == -1)
-                {
-                    throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
-                }
-
-                return result;
+                return errCode == -1
+                    ? throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize))
+                    : result;
             }
         }
 
@@ -596,13 +593,10 @@ namespace Gorgon.Native
                 // Get actual data.
                 retVal = GetRawInputData(rawInputStructHandle, RawInputCommand.Input, &rawInput, ref dataSize, _headerSize);
 
-                if ((retVal == -1)
-                    || (retVal != dataSize))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
-                }
-
-                return rawInput;
+                return (retVal == -1)
+                    || (retVal != dataSize)
+                    ? throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA)
+                    : rawInput;
             }
         }
         #endregion

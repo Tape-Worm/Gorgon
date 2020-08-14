@@ -258,7 +258,7 @@ namespace Gorgon.Renderers
         {
             get;
             set;
-        } = 0.0f;
+        }
         #endregion
 
         #region Methods.

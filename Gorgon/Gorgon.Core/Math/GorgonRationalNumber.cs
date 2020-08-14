@@ -40,7 +40,7 @@ namespace Gorgon.Math
         /// <summary>
         /// An empty rational number.
         /// </summary>
-        public static readonly GorgonRationalNumber Empty = new GorgonRationalNumber();
+        public static readonly GorgonRationalNumber Empty;
 
         /// <summary>
         /// The numerator for the number.

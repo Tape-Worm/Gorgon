@@ -387,17 +387,14 @@ namespace Gorgon.Editor.UI.Views
         /// <returns><b>true</b> if the renderer is registered, <b>false</b> if not.</returns>
         protected bool HasRenderer(string name)
         {
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentEmptyException(nameof(name));
-            }
-
-            return _renderers.ContainsKey(name);
+            return string.IsNullOrWhiteSpace(name) ? throw new ArgumentEmptyException(nameof(name)) : _renderers.ContainsKey(name);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>

@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
     /// If the swap chain is currently assigned to the <see cref="GorgonGraphics.RenderTargets"/> property, and it is resized, it will do its best to ensure it stays bound to the active render target list 
     /// (this also includes the current <see cref="GorgonGraphics.DepthStencilView"/>. This only applies to the default <see cref="RenderTargetView"/> associated with the swap chain. If a user has created a
     /// custom <see cref="GorgonRenderTarget2DView"/> object for the swap chain, and assigned that view to the <see cref="GorgonGraphics.RenderTargets"/> list, then it is their responsibility to ensure that the
-    /// view is rebuilt and reassigned. Users may intercept a swap chain back buffer resize by hooking the <see cref="BeforeSwapChainResized"/> and the <see cref="AfterSwapChainResized"/> events.
+    /// view is rebuilt and reassigned. Users may intercept a swap chain back buffer resize by hooking the <see cref="SwapChainResizing"/> and the <see cref="SwapChainResized"/> events.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
@@ -179,14 +179,63 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Events.
+        // Event called before the swap chain has been resized.
+        private event EventHandler<SwapChainResizingEventArgs> SwapChainResizingEvent;
+        
+        // Event called after the swap chain has been resized.        
+        private event EventHandler<SwapChainResizedEventArgs> SwapChainResizedEvent;
+
         /// <summary>
         /// Event called before the swap chain has been resized.
         /// </summary>
-        public event EventHandler<BeforeSwapChainResizedEventArgs> BeforeSwapChainResized;
+        public event EventHandler<SwapChainResizingEventArgs> SwapChainResizing
+        {
+            add
+            {
+                if (value == null)
+                {
+                    SwapChainResizingEvent = null;
+                    return;
+                }
+
+                SwapChainResizingEvent += value;
+            }
+            remove
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                SwapChainResizingEvent -= value;
+            }
+        }
+
         /// <summary>
-        /// Event called after the swap chain has been resized.
+        /// Event called before the swap chain has been resized.
         /// </summary>
-        public event EventHandler<AfterSwapChainResizedEventArgs> AfterSwapChainResized;
+        public event EventHandler<SwapChainResizedEventArgs> SwapChainResized
+        {
+            add
+            {
+                if (value == null)
+                {
+                    SwapChainResizedEvent = null;
+                    return;
+                }
+
+                SwapChainResizedEvent += value;
+            }
+            remove
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                SwapChainResizedEvent -= value;
+            }
+        }
         #endregion
 
         #region Properties.
@@ -1060,7 +1109,7 @@ namespace Gorgon.Graphics.Core
             Graphics.Log.Print($"SwapChain '{Name}': Resizing back buffers.", LoggingLevel.Verbose);
 
             // Tell the application that this swap chain is going to be resized.
-            BeforeSwapChainResized?.Invoke(this, new BeforeSwapChainResizedEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
+            SwapChainResizingEvent?.Invoke(this, new SwapChainResizingEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
 
             int rtvIndex = DestroyResources(false);
 
@@ -1079,7 +1128,7 @@ namespace Gorgon.Graphics.Core
 
             CreateResources(rtvIndex);
 
-            AfterSwapChainResized?.Invoke(this, new AfterSwapChainResizedEventArgs(new DX.Size2(newWidth, newHeight), oldSize));
+            SwapChainResizedEvent?.Invoke(this, new SwapChainResizedEventArgs(new DX.Size2(newWidth, newHeight), oldSize));
 
             Graphics.Log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
         }
@@ -1248,8 +1297,8 @@ namespace Gorgon.Graphics.Core
         {
             SwapChain4 swapChain = Interlocked.Exchange(ref _swapChain, null);
 
-            BeforeSwapChainResized = null;
-            AfterSwapChainResized = null;
+            SwapChainResizedEvent = null;
+            SwapChainResizingEvent = null;
 
             if (ParentForm != null)
             {

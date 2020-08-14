@@ -304,17 +304,16 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(name));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (!_singleTracks.Remove(name))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
-            }
-
-            return this;
+            return !_singleTracks.Remove(name)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
+                : this;
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
 
@@ -333,17 +332,18 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(name));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
+
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (!_vector2Tracks.Remove(name))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
-            }
+            return !_vector2Tracks.Remove(name)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
+                : this;
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-            return this;
         }
 
         /// <summary>
@@ -361,17 +361,18 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(name));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
+
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (!_vector3Tracks.Remove(name))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
-            }
+            return !_vector3Tracks.Remove(name)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
+                : this;
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-            return this;
         }
 
         /// <summary>
@@ -389,17 +390,18 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(name));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
+
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (!_vector4Tracks.Remove(name))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
-            }
+            return !_vector4Tracks.Remove(name)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
+                : this;
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-            return this;
         }
 
         /// <summary>
@@ -417,17 +419,18 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(name));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
+
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (!_rectangleTracks.Remove(name))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
-            }
+            return !_rectangleTracks.Remove(name)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
+                : this;
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-            return this;
         }
 
         /// <summary>
@@ -445,17 +448,18 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(name));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
+
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (!_colorTracks.Remove(name))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
-            }
+            return !_colorTracks.Remove(name)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
+                : this;
+#pragma warning restore IDE0046 // Convert to conditional expression
 
-            return this;
         }
 
         /// <summary>
@@ -473,17 +477,17 @@ namespace Gorgon.Animation
                 throw new ArgumentNullException(nameof(name));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
+
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (!_textureTracks.Remove(name))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
-            }
-
-            return this;
+            return !_textureTracks.Remove(name)
+                ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
+                : this;
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>

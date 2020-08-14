@@ -121,15 +121,7 @@ namespace Gorgon.Graphics.Fonts
         /// true if <paramref name="glyph"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
-        public bool Contains(GorgonGlyph glyph)
-        {
-            if (glyph == null)
-            {
-                throw new ArgumentNullException(nameof(glyph));
-            }
-
-            return _list.ContainsValue(glyph);
-        }
+        public bool Contains(GorgonGlyph glyph) => glyph == null ? throw new ArgumentNullException(nameof(glyph)) : _list.ContainsValue(glyph);
 
         /// <summary>
         /// Function to return whether the character exists in this collection.
@@ -151,15 +143,7 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="glyph">Glyph to find.</param>
         /// <returns>The index of the glyph if found, -1 if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
-        public int IndexOf(GorgonGlyph glyph)
-        {
-            if (glyph == null)
-            {
-                throw new ArgumentNullException(nameof(glyph));
-            }
-
-            return _list.IndexOfValue(glyph);
-        }
+        public int IndexOf(GorgonGlyph glyph) => glyph == null ? throw new ArgumentNullException(nameof(glyph)) : _list.IndexOfValue(glyph);
 
         /// <summary>
         /// Function to attempt to retrieve a glyph from the list.

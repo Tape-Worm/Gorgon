@@ -178,12 +178,9 @@ namespace Gorgon.Editor.UI
 
             Type interfaceType = interfaces.FirstOrDefault(item => _viewBuilders.ContainsKey(item.AssemblyQualifiedName));
 
-            if (interfaceType == null)
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY, typeName));
-            }
-
-            return (T)_viewBuilders[interfaceType.AssemblyQualifiedName]();
+            return interfaceType == null
+                ? throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY, typeName))
+                : (T)_viewBuilders[interfaceType.AssemblyQualifiedName]();
         }
         #endregion
     }

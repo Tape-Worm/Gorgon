@@ -170,7 +170,7 @@ namespace Gorgon.IO
             }
 
             var pathBuilder = new StringBuilder();
-            pathBuilder.Append(pathSeparator.ToString());
+            pathBuilder.Append(pathSeparator);
             pathBuilder.Append(dirPath, rootDirPath.Length, dirPath.Length - rootDirPath.Length);
             if (pathSeparator != Path.DirectorySeparatorChar)
             {

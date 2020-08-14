@@ -483,14 +483,14 @@ namespace Gorgon.Examples
                 };
                 _blur.Precache();
 
-                _mainScreen.BeforeSwapChainResized += (sender, args) =>
+                _mainScreen.SwapChainResizing += (sender, args) =>
                                                       {
                                                           _ballTargetView.Dispose();
                                                           _ballTarget.Dispose();
                                                       };
 
                 // Ensure that our secondary camera gets updated.
-                _mainScreen.AfterSwapChainResized += (sender, args) =>
+                _mainScreen.SwapChainResized += (sender, args) =>
                                                      {
                                                          // Fix any objects caught outside of the main target.
                                                          for (int i = 0; i < _ballCount; i++)

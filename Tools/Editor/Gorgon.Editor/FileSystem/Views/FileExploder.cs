@@ -152,9 +152,9 @@ namespace Gorgon.Editor.Views
         // The synchronization lock for the control context changed event.
         private readonly object _eventLock = new object();
         // Flag to indicate that the events for the tree are hooked up.
-        private int _treeEventsHooked = 0;
+        private int _treeEventsHooked;
         // Flag to indicate that the events for the grid are hooked up.
-        private int _gridEventsHooked = 0;
+        private int _gridEventsHooked;
         // The nodes for a directory.
         private readonly Dictionary<string, DirectoryTreeNode> _directoryNodes = new Dictionary<string, DirectoryTreeNode>(StringComparer.OrdinalIgnoreCase);
         // The root node for the directory tree.

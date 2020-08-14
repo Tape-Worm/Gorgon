@@ -130,7 +130,7 @@ namespace Gorgon.Editor.Services
 
                 if (result.Length > 0)
                 {
-                    result.Append("|");
+                    result.Append('|');
                 }
 
                 result.Append(item.desc);
@@ -139,7 +139,7 @@ namespace Gorgon.Editor.Services
                 {
                     if (filter.Length > 0)
                     {
-                        filter.Append(";");
+                        filter.Append(';');
                     }
 
                     filter.Append("*.");
@@ -159,15 +159,7 @@ namespace Gorgon.Editor.Services
         /// Function to retrieve the parent form for the message box.
         /// </summary>
         /// <returns>The form to use as the owner.</returns>
-        private static Form GetParentForm()
-        {
-            if (Form.ActiveForm != null)
-            {
-                return Form.ActiveForm;
-            }
-
-            return Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm;
-        }
+        private static Form GetParentForm() => Form.ActiveForm ?? (Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm);
 
         /// <summary>
         /// Function to find the extension filter index for the currently selected file writer.

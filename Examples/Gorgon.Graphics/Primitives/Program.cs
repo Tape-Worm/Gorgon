@@ -651,13 +651,13 @@ namespace Gorgon.Examples
                 _window.MouseDown += Mouse_Down;
                 _window.MouseWheel += Mouse_Wheel;
 
-                _swapChain.BeforeSwapChainResized += (sender, args) =>
+                _swapChain.SwapChainResizing += (sender, args) =>
                                                      {
                                                          _graphics.SetDepthStencil(null);
                                                      };
 
                 // When we resize, update the projection and viewport to match our client size.
-                _swapChain.AfterSwapChainResized += (sender, args) =>
+                _swapChain.SwapChainResized += (sender, args) =>
                                                     {
                                                         _camera.ViewWidth = args.Size.Width;
                                                         _camera.ViewHeight = args.Size.Height;

@@ -48,11 +48,6 @@ namespace Gorgon.Examples
     internal partial class TextColorView
         : EditorSubPanelCommon, IDataContext<ITextColor>
     {
-        #region Variables.
-        // The list of vertices that were selected.
-        private readonly GorgonColor _selectedColor;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the data context for the view.

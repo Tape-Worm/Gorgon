@@ -359,12 +359,9 @@ namespace Gorgon.Editor.ProjectData
                 }
 
                 string version = jsonReader.ReadAsString();
-                if (!version.StartsWith(CommonEditorConstants.EditorProjectHeader, StringComparison.Ordinal))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
-                }
-
-                return version;
+                return !version.StartsWith(CommonEditorConstants.EditorProjectHeader, StringComparison.Ordinal)
+                    ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location))
+                    : version;
             }
         }
 
@@ -687,11 +684,11 @@ namespace Gorgon.Editor.ProjectData
                     }
                 }
 
-                await Task.Run(() => ExcludeDirs(excludedPaths, true));
+                await Task.Run(() => ExcludeDirs(excludedPaths, true), cancelToken);
 
                 await writer.WriteAsync(path, project.FileSystemDirectory, progressCallback, cancelToken);
 
-                await Task.Run(() => ExcludeDirs(excludedPaths, false));
+                await Task.Run(() => ExcludeDirs(excludedPaths, false), cancelToken);
             }
             finally
             {
@@ -746,12 +743,9 @@ namespace Gorgon.Editor.ProjectData
 
                 string metaDataFile = Path.Combine(projectWorkspace, CommonEditorConstants.EditorMetadataFileName);
 
-                if (!File.Exists(metaDataFile))
-                {
-                    throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, projectWorkspace));
-                }
-
-                return CreateFromMetadata(metaDataFile);
+                return !File.Exists(metaDataFile)
+                    ? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, projectWorkspace))
+                    : CreateFromMetadata(metaDataFile);
             }
             catch
             {

@@ -293,7 +293,7 @@ namespace Gorgon.Editor.ImageEditor
                 compressor,
                 HostContentServices.Log);
 
-            (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData = await Task.Run(() =>
+            var imageData = await Task.Run(() =>
             {                
                 using (Stream inStream = ContentFileManager.OpenStream(file.Path, FileMode.Open))
                 {

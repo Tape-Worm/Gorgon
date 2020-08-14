@@ -71,7 +71,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The text to display.
         private GorgonTextSprite _displayText;
         // The number of loops for the background animation.
-        private int _stripAnimCount = 0;
+        private int _stripAnimCount;
         #endregion
 
         #region Methods.

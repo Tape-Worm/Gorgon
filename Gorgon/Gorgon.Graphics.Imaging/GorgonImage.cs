@@ -415,16 +415,10 @@ namespace Gorgon.Graphics.Imaging
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="mipLevel"/> parameter exceeds the number of mip maps for the image or is less than 0.</exception>
-        public int GetDepthCount(int mipLevel)
-        {
-            if ((mipLevel < 0)
-                || (mipLevel >= _imageInfo.MipCount))
-            {
-                throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, _imageInfo.MipCount));
-            }
-
-            return _imageInfo.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].MipDepth;
-        }
+        public int GetDepthCount(int mipLevel) => (mipLevel < 0)
+                || (mipLevel >= _imageInfo.MipCount)
+                ? throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, _imageInfo.MipCount))
+                : _imageInfo.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].MipDepth;
 
         /// <summary>
         /// Function to determine if the pixel format for this image can be converted to another pixel format.

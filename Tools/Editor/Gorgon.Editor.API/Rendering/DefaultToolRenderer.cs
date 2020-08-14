@@ -190,8 +190,8 @@ namespace Gorgon.Editor.Rendering
 
         /// <summary>Handles the AfterSwapChainResized event of the SwapChain control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private void SwapChain_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
+        private void SwapChain_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e)
         {
             // Because we have multiple swap chains, we need to reset it back to our swap chain.
             // Otherwise the camera will use the correct swap chain.
@@ -206,8 +206,8 @@ namespace Gorgon.Editor.Rendering
 
         /// <summary>Handles the BeforeSwapChainResized event of the SwapChain control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private void SwapChain_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e) => OnResizeBegin();
+        /// <param name="e">The <see cref="SwapChainResizingEventArgs"/> instance containing the event data.</param>
+        private void SwapChain_BeforeSwapChainResized(object sender, SwapChainResizingEventArgs e) => OnResizeBegin();
 
 
         /// <summary>
@@ -378,8 +378,8 @@ namespace Gorgon.Editor.Rendering
 
             ClientSize = new DX.Size2(_swapChain.Width, _swapChain.Height);
 
-            _swapChain.BeforeSwapChainResized += SwapChain_BeforeSwapChainResized;
-            _swapChain.AfterSwapChainResized += SwapChain_AfterSwapChainResized;
+            _swapChain.SwapChainResizing += SwapChain_BeforeSwapChainResized;
+            _swapChain.SwapChainResized += SwapChain_AfterSwapChainResized;
 
             // Let the custom renderer set up its own stuff.
             OnLoad();
@@ -415,8 +415,8 @@ namespace Gorgon.Editor.Rendering
 
             OnUnload();
 
-            _swapChain.AfterSwapChainResized -= SwapChain_AfterSwapChainResized;
-            _swapChain.BeforeSwapChainResized -= SwapChain_BeforeSwapChainResized;
+            _swapChain.SwapChainResized -= SwapChain_AfterSwapChainResized;
+            _swapChain.SwapChainResizing -= SwapChain_BeforeSwapChainResized;
 
             BackgroundPattern?.Dispose();
             BackgroundPattern = null;

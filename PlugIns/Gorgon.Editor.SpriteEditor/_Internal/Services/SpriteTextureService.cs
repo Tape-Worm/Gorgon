@@ -256,12 +256,9 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
                 {
-                    if (!_imageCodec.IsReadable(stream))
-                    {
-                        throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORSPR_ERR_TEXTURE_CANNOT_READ, file.Path));
-                    }
-
-                    return _imageCodec.LoadFromStream(stream);
+                    return !_imageCodec.IsReadable(stream)
+                        ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORSPR_ERR_TEXTURE_CANNOT_READ, file.Path))
+                        : _imageCodec.LoadFromStream(stream);
                 }
             }
 

@@ -152,22 +152,14 @@ namespace Gorgon.Renderers
         ///   <span class="nu">
         ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
         /// </returns>
-        public bool Equals(Gorgon2DLight other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            return ((LightType == other.LightType)
+        public bool Equals(Gorgon2DLight other) => (other != null) && (LightType == other.LightType)
                 && (Attenuation.EqualsEpsilon(other.Attenuation))
                 && (Intensity.EqualsEpsilon(other.Intensity))
                 && (SpecularPower.EqualsEpsilon(other.SpecularPower))
                 && (SpecularEnabled == other.SpecularEnabled)
                 && (Color.Equals(other.Color))
                 && (Position.Equals(other.Position))
-                && (LightDirection.Equals(other.LightDirection)));
-        }
+                && (LightDirection.Equals(other.LightDirection));
         #endregion
 
         #region Constructor/Destructor.

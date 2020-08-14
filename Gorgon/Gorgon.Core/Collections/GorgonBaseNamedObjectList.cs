@@ -75,12 +75,7 @@ namespace Gorgon.Collections
         {
             int index = IndexOf(name);
 
-            if (index == -1)
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
-            }
-
-            return _list[index];
+            return index == -1 ? throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name)) : _list[index];
         }
 
         /// <summary>

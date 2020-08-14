@@ -133,11 +133,11 @@ namespace Gorgon.IO
         /// <summary>
         /// Event triggered before a phsyical file is imported into the file system.
         /// </summary>
-        public event EventHandler<BeforeFileImportArgs> BeforeFileImport;
+        public event EventHandler<FileImportingArgs> FileImporting;
         /// <summary>
         /// Event triggered after a physical file is imported into the file system.
         /// </summary>
-        public event EventHandler<AfterFileImportArgs> AfterFileImport;
+        public event EventHandler<FileImportedArgs> FileImported;
         /// <summary>
         /// Event triggered when directories, and files have been imported.
         /// </summary>
@@ -255,7 +255,7 @@ namespace Gorgon.IO
                 newPath.Append(file);
                 newPath.Append(" (");
                 newPath.Append(counter++);
-                newPath.Append(")");
+                newPath.Append(')');
                 if (!string.IsNullOrWhiteSpace(ext))
                 {
                     newPath.Append(ext);
@@ -291,7 +291,7 @@ namespace Gorgon.IO
                 newPath.Append(file);
                 newPath.Append(" (");
                 newPath.Append(counter++);
-                newPath.Append(")");
+                newPath.Append(')');
                 if (!string.IsNullOrWhiteSpace(ext))
                 {
                     newPath.Append(ext);
@@ -2232,7 +2232,7 @@ namespace Gorgon.IO
                 }
 
                 DirectoryInfo importParent = dirsToCopy.Count == 0 ? filesToCopy[0].Directory : dirsToCopy[0].Parent;
-                var beforeArgs = new BeforeFileImportArgs();
+                var beforeArgs = new FileImportingArgs();
 
                 // Copies the files from the import directory.
                 bool CopyFiles(DirectoryInfo parent, IReadOnlyList<FileInfo> files, IGorgonVirtualDirectory destDir)
@@ -2245,7 +2245,7 @@ namespace Gorgon.IO
                             return false;
                         }
 
-                        EventHandler<BeforeFileImportArgs> beforeHandler = BeforeFileImport;
+                        EventHandler<FileImportingArgs> beforeHandler = FileImporting;
                         beforeArgs.PhysicalFilePath = file.FullName;
 
                         if (beforeHandler != null)
@@ -2297,8 +2297,8 @@ namespace Gorgon.IO
 
                         if ((destFile != null) && (!cancelToken.IsCancellationRequested))
                         {
-                            EventHandler<AfterFileImportArgs> afterHandler = AfterFileImport;
-                            afterHandler?.Invoke(this, new AfterFileImportArgs(beforeArgs.PhysicalFilePath, destFile));
+                            EventHandler<FileImportedArgs> afterHandler = FileImported;
+                            afterHandler?.Invoke(this, new FileImportedArgs(beforeArgs.PhysicalFilePath, destFile));
                             filesCopied.Add(destFile);
                         }
                     }

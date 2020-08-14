@@ -116,7 +116,7 @@ namespace Gorgon.Memory
                 throw new GorgonException(GorgonResult.OutOfMemory, Resources.GOR_ERR_ALLOCATOR_FULL);
             }
 
-            if ((_freeList.Count == 0)
+            if ((_freeList.IsEmpty)
                 || (!_freeList.TryPop(out T item)))
             {
                 item = ItemAllocator();

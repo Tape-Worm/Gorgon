@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// An empty binding.
         /// </summary>
-        public static readonly GorgonStreamOutBinding Empty = new GorgonStreamOutBinding();
+        public static readonly GorgonStreamOutBinding Empty;
 
         /// <summary>
         /// The buffer used for the binding.

@@ -113,8 +113,8 @@ namespace Gorgon.Graphics.Example
         /// Handles the AfterSwapChainResized event of the Swap control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private static void Swap_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
+        private static void Swap_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e)
         {
             // We need to recreate the depth/stencil here to match the updated size of the render target (the depth/stencil and render targets must be the same size).
             _depthStencil = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
@@ -137,8 +137,8 @@ namespace Gorgon.Graphics.Example
         /// Handles the BeforeSwapChainResized event of the Swap control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private static void Swap_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizingEventArgs"/> instance containing the event data.</param>
+        private static void Swap_BeforeSwapChainResized(object sender, SwapChainResizingEventArgs e)
         {
             // Before we go about resizing the render target, we need to ensure the depth stencil is removed so that we don't end up with a depth/stencil still 
             // attached that's not matched to the size of the render target.
@@ -254,8 +254,8 @@ namespace Gorgon.Graphics.Example
                                             });
 
                 // Assign events so we can update our projection with our window size.
-                _swap.BeforeSwapChainResized += Swap_BeforeSwapChainResized;
-                _swap.AfterSwapChainResized += Swap_AfterSwapChainResized;
+                _swap.SwapChainResizing += Swap_BeforeSwapChainResized;
+                _swap.SwapChainResized += Swap_AfterSwapChainResized;
 
                 // We'll need a depth buffer for this example, or else our pyramid will look weird when rotating as back faces will appear through front faces.
                 // So, first we should check for support of a proper depth/stencil format.  That said, if we don't have this format, then we're likely not running hardware from the last decade or more.

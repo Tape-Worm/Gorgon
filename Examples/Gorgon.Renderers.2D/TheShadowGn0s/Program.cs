@@ -325,7 +325,7 @@ ESC - Quit.";
                 _bgSprite = _sprite2;
                 _fgSprite = _sprite1;
 
-                _screen.BeforeSwapChainResized += (sender, args) =>
+                _screen.SwapChainResizing += (sender, args) =>
                                                   {
                                                       _blurTexture?.Dispose();
                                                       _blurTarget?.Dispose();
@@ -338,7 +338,7 @@ ESC - Quit.";
                 window.MouseWheel += Window_MouseWheel;
                 window.KeyUp += Window_KeyUp;
 
-                _screen.AfterSwapChainResized += (sender, args) => BuildRenderTargets(args.Size);
+                _screen.SwapChainResized += (sender, args) => BuildRenderTargets(args.Size);
 
                 GorgonExample.LoadResources(_graphics);
 

@@ -356,8 +356,8 @@ namespace Gorgon.Input.Example
         /// Function called after a swap chain is resized.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private void AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
+        private void AfterSwapChainResized(object sender, SwapChainResizedEventArgs e)
         {
             // Restore the render target buffer and restore the contents of it.
             _backBuffer = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
@@ -377,8 +377,8 @@ namespace Gorgon.Input.Example
         /// Function called before a swap chain is resized.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private void BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e)
+        /// <param name="e">The <see cref="SwapChainResizingEventArgs"/> instance containing the event data.</param>
+        private void BeforeSwapChainResized(object sender, SwapChainResizingEventArgs e)
         {
             // Copy the render target texture to a temporary buffer and resize the main buffer.
             // The copy the temporary buffer back to the main buffer.
@@ -692,8 +692,8 @@ namespace Gorgon.Input.Example
                 }
 
                 // Set gorgon events.
-                _screen.BeforeSwapChainResized += BeforeSwapChainResized;
-                _screen.AfterSwapChainResized += AfterSwapChainResized;
+                _screen.SwapChainResizing += BeforeSwapChainResized;
+                _screen.SwapChainResized += AfterSwapChainResized;
 
                 // Enable the mouse.
                 Cursor = Cursors.Cross;
