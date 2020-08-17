@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CenterCLR.XorRandomGenerator;
+using Gorgon.Math;
 using Simplex;
 
 namespace Gorgon.Core
@@ -165,9 +166,7 @@ namespace Gorgon.Core
         /// <remarks>
         /// This overload generates a random <see cref="float"/> number between the range of <paramref name="start"/> and <paramref name="end"/>.
         /// </remarks>
-        public static float RandomSingle(float start, float end) => start < end
-                       ? ((float)_rnd.NextDouble() * (end - start)) + start
-                       : ((float)_rnd.NextDouble() * (start - end)) + end;
+        public static float RandomSingle(float start, float end) => start.EqualsEpsilon(end) ? start : ((float)_rnd.NextDouble() * (end - start)) + start;
 
         /// <summary>
         /// Function to return a random <see cref="float"/> number.

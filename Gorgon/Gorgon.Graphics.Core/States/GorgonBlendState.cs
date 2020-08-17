@@ -73,6 +73,11 @@ namespace Gorgon.Graphics.Core
         public static readonly GorgonBlendState Additive;
 
         /// <summary>
+        /// Additive blending on render target 0 with source alpha overwriting the destination alpha.
+        /// </summary>
+        public static readonly GorgonBlendState AdditiveAlphaOverwrite;
+
+        /// <summary>
         /// Soft additive blending on render target 0.
         /// </summary>
         public static readonly GorgonBlendState SoftAdditive;
@@ -342,7 +347,19 @@ namespace Gorgon.Graphics.Core
             {
                 IsBlendingEnabled = true,
                 SourceColorBlend = Blend.SourceAlpha,
-                DestinationColorBlend = Blend.One
+                DestinationColorBlend = Blend.One,
+                SourceAlphaBlend = Blend.One,
+                DestinationAlphaBlend = Blend.InverseSourceAlpha
+            };
+
+            // Additive blending with alpha add.
+            AdditiveAlphaOverwrite = new GorgonBlendState
+            {
+                IsBlendingEnabled = true,
+                SourceColorBlend = Blend.SourceAlpha,
+                DestinationColorBlend = Blend.InverseSourceAlpha,
+                SourceAlphaBlend = Blend.One,
+                DestinationAlphaBlend = Blend.Zero,
             };
 
             // Soft Additive

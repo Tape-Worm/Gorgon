@@ -58,6 +58,14 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
+        /// A pre-defined batch state that sets up additive blending for color values, and using the source alpha channel to overwrite the destination alpha channel.
+        /// </summary>
+        public static readonly Gorgon2DBatchState AdditiveAlphaOverwrite = new Gorgon2DBatchState
+        {
+            BlendState = GorgonBlendState.AdditiveAlphaOverwrite
+        };
+
+        /// <summary>
         /// A pre-defined batch state that sets up soft additive blending.
         /// </summary>
         public static readonly Gorgon2DBatchState SoftAdditiveBlend = new Gorgon2DBatchState
