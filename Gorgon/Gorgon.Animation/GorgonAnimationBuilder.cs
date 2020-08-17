@@ -40,9 +40,19 @@ namespace Gorgon.Animation
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This builder is used to create and configure an animation with key frames for the various tracks. 
+    /// This builder is used to create and configure an animation with key frames for the various animation tracks. 
+    /// </para>
+    /// <para>
+    /// Animations are composed of multiple tracks which represent the properties on the objects that are to be animated. Within these tracks, there are multiple key frames which indicate the value of 
+    /// the property at a specified time (measured in seconds). When the animation plays, the values in these key frames are interpolated between each frame to give the appearance of a smooth transition 
+    /// between the values.
+    /// </para>
+    /// <para>
+    /// When building an animation using this builder type the tracks are edited via one of the several Edit methods on the builder. Each edit method corresponds to the type of data for the track (e.g. 
+    /// Vector2, float, etc...) and takes the registration <see cref="GorgonTrackRegistration.TrackName"/> of the track to indicate which track (and object property) is being edited.
     /// </para>
     /// </remarks>
+    /// <seealso cref="GorgonTrackRegistration"/>
     public class GorgonAnimationBuilder
         : IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>
     {
@@ -67,7 +77,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to edit a track that uses single floating point values for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to edit.</param>
+        /// <param name="name">The registration name of the track to edit.</param>
         /// <returns>The builder used to update the requested animation track.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -99,7 +109,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to edit a track that uses 2D vectors for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to edit.</param>
+        /// <param name="name">The registration name of the track to edit.</param>
         /// <returns>The builder used to update the requested animation track.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -131,7 +141,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to edit a track that uses 3D vectors for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to edit.</param>
+        /// <param name="name">The registration name of the track to edit.</param>
         /// <returns>The builder used to update the requested animation track.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -163,7 +173,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to edit a track that uses 4D vectors for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to edit.</param>
+        /// <param name="name">The registration name of the track to edit.</param>
         /// <returns>The builder used to update the requested animation track.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -195,7 +205,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to edit a track that uses SharpDX <c>RectangleF</c> values for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to edit.</param>
+        /// <param name="name">The registration name of the track to edit.</param>
         /// <returns>The builder used to update the requested animation track.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -227,7 +237,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to edit a track that uses <see cref="GorgonColor"/> values for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to edit.</param>
+        /// <param name="name">The registration name of the track to edit.</param>
         /// <returns>The builder used to update the requested animation track.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -259,7 +269,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to edit a track that updates a <see cref="GorgonTexture2DView"/>, texture coordinates, and/or texture array indices for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to edit.</param>
+        /// <param name="name">The registration name of the track to edit.</param>
         /// <returns>The builder used to update the requested animation track.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -292,7 +302,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to delete a track that updates a single floating point value for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to delete.</param>
+        /// <param name="name">The registration name of the track to delete.</param>
         /// <returns>The fluent builder for the animation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -320,7 +330,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to delete a track that updates a 2D vector value for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to delete.</param>
+        /// <param name="name">The registration name of the track to delete.</param>
         /// <returns>The fluent builder for the animation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -349,7 +359,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to delete a track that updates a 3D vector value for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to delete.</param>
+        /// <param name="name">The registration name of the track to delete.</param>
         /// <returns>The fluent builder for the animation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -378,7 +388,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to delete a track that updates a 4D vector value for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to delete.</param>
+        /// <param name="name">The registration name of the track to delete.</param>
         /// <returns>The fluent builder for the animation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -407,7 +417,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to delete a track that updates a SharpDX <c>RectangleF</c> value for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to delete.</param>
+        /// <param name="name">The registration name of the track to delete.</param>
         /// <returns>The fluent builder for the animation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -436,7 +446,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to delete a track that updates a <see cref="GorgonColor"/> value for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to delete.</param>
+        /// <param name="name">The registration name of the track to delete.</param>
         /// <returns>The fluent builder for the animation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
@@ -465,7 +475,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to delete a track that updates a <see cref="GorgonTexture2DView"/>, texture coordinates, and/or texture array indices for its key frame values.
         /// </summary>
-        /// <param name="name">The name of the track to delete.</param>
+        /// <param name="name">The registration name of the track to delete.</param>
         /// <returns>The fluent builder for the animation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>

@@ -69,8 +69,27 @@ namespace Gorgon.Animation
 	/// The values from the animation will then by applied to the object properties.
 	/// </para>
 	/// <para>
-	/// Applications can force the playing animation to jump to a specific <see cref="Time"/>, or increment the time step smoothly using the <see cref="Update"/> method.
+	/// Applications can force the playing animation to jump to a specific <see cref="Time"/>, or increment the time step smoothly using the <see cref="Update"/> method. Typically, the <see cref="Update"/> 
+    /// method should be called once per frame in the idle loop of the application.
 	/// </para>
+    /// <para>
+    /// This controller type is an abstract object, so developers must implement their own implementation of a controller to define how to animate their objects. This is typically very straight forward 
+    /// since the controller uses several abstract methods that update the object properties with a value. More often than not, these methods typically contain <c>object.AnimatedProperty = value</c> and 
+    /// nothing else. 
+    /// </para>
+    /// <para>
+    /// The controller uses animation tracks to indicate which property on the object (specified by <typeparamref name="T"/>) it will update over time. These tracks are determined by a track registry 
+    /// contained within the controller. These tracks are registered via the <see cref="RegisterTrack(GorgonTrackRegistration)"/> method which should be called in the constructor of the controller when 
+    /// implementing a custom animation controller.
+    /// </para>
+    /// <para>
+    /// Registered tracks use an object called <see cref="GorgonTrackRegistration"/> to define metadata for the track such as the type of values stored within a tracks <see cref="IGorgonKeyFrame"/> 
+    /// items. The metadata also contains a <see cref="GorgonTrackRegistration.TrackName"/> property which is used for identifying a track when building an animation and determining which property to 
+    /// update on the animated object via the <c>On(Type Name)Update</c> methods.
+    /// </para>
+    /// <para>
+    /// Applications can query the tracks registered with the controller via the <see cref="RegisteredTracks"/> property.
+    /// </para>
 	/// <para>
 	/// <note type="important">
 	/// Please note that this is an abstract class. Applications will provide specific controllers for specific types.
@@ -83,19 +102,12 @@ namespace Gorgon.Animation
     /// </para>
 	/// </remarks>
 	/// <seealso cref="IGorgonAnimation"/>
+    /// <seealso cref="GorgonTrackRegistration"/>
+    /// <seealso cref="IGorgonKeyFrame"/>
+    /// <seealso cref="IGorgonAnimationTrack{T}"/>
 	public abstract class GorgonAnimationController<T>
         where T : class
     {
-        #region Constants.
-        // Animation data chunk.
-        internal const string AnimationChunk = "ANIMDATA";
-
-        /// <summary>
-        /// Version header for the animation.
-        /// </summary>
-        public const string AnimationVersion = "GORANM10";
-        #endregion
-
         #region Variables.
         // The time index.
         private float _time;

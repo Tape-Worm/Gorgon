@@ -48,8 +48,8 @@ namespace Gorgon.Animation
     /// The values from the animation will then by applied to the object properties.
     /// </para>
     /// <para>
-    /// Applications can force the playing animation to jump to a specific <see cref="GorgonAnimationController{T}.Time"/>, or increment the time step smoothly using the
-    /// <see cref="GorgonAnimationController{T}.Update"/> method.
+    /// This controller type contains registrations for the tracks corresponding the many of the properties on a <see cref="GorgonPolySprite"/>. These registrations are available to the developer as static 
+    /// values on the class, and these should be used to identify the track name (e.g. <c>Builder.EditVector2(GorgonPolySpriteAnimationController.PositionTrack.TrackName);</c>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonAnimationController{T}"/>

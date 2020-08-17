@@ -88,8 +88,11 @@ namespace Gorgon.Animation
 
         #region Properties.
         /// <summary>
-        /// Property to return the ID of the track.
+        /// Property to return the numeric ID of the track.
         /// </summary>
+        /// <remarks>
+        /// This value is not guaranteed to be the same each time the application is run, thus storing this information in a file is not recommended.
+        /// </remarks>
         public int ID
         {
             get;
@@ -98,6 +101,12 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the name of the track.
         /// </summary>
+        /// <remarks>
+        /// This value is used in the <see cref="GorgonAnimationBuilder"/> to identify which track is being edited, and also in the <see cref="GorgonAnimationController{T}"/> to indicate which track is 
+        /// playing during the animation rendering.
+        /// </remarks>
+        /// <seealso cref="GorgonAnimationBuilder"/>
+        /// <seealso cref="GorgonAnimationController{T}"/>
         public string TrackName
         {
             get;
@@ -122,6 +131,10 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the type of interpolation supported by the track.
         /// </summary>
+        /// <remarks>
+        /// This value can contain multiple <see cref="TrackInterpolationMode"/> values OR'd together to indicate the different types of interpolation supported by the track.
+        /// </remarks>
+        /// <seealso cref="TrackInterpolationMode"/>
         public TrackInterpolationMode SupportedInterpolation
         {
             get;

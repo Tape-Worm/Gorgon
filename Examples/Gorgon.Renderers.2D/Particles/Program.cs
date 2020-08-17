@@ -67,13 +67,37 @@ namespace Gorgon.Examples
         private static bool _bloomDisabled;
         // Flag to show help for the example.
         private static bool _showHelp = true;
-        #endregion
-
-        #region Properties.
-
+        // Particles emit an explosion effect.
+        private static bool _explosion = true;
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to update the emitter to change the particle effect.
+        /// </summary>
+        private static void UpdateEmitter()
+        {
+            if (_explosion)
+            {
+                _emitter.ParticleLifetimeRange = (5.0f, 5.0f);
+                _emitter.ParticleSizeRange = (1.0f, 0.01f);
+                _emitter.ParticleSpeedRange = (300, 300);
+                _emitter.RadialAccelerationRange = (0, 0);
+                _emitter.Spread = 360.0f;
+                _emitter.Relative = false;
+                _emitter.Reset();
+                return;
+            }
+
+            _emitter.Relative = true;
+            _emitter.Spread = 10.0f;
+            _emitter.ParticleLifetimeRange = (0.5f, 0.0f);
+            _emitter.ParticleSizeRange = (0.5f, 0.007f);
+            _emitter.ParticleSpeedRange = (0, 800);
+            _emitter.RadialAccelerationRange = (-1, 1);
+            _emitter.Reset();
+        }
+        
         /// <summary>
         /// Function to build the render target for blooming.
         /// </summary>
@@ -107,13 +131,14 @@ namespace Gorgon.Examples
             _renderer.End();
 
             // Draw the render target to the main swap chain.
-            _graphics.SetRenderTarget(_screen.RenderTargetView);
             if (!_bloomDisabled)
             {
                 _bloom.Render(_srv, _screen.RenderTargetView);
             }
             else
             {
+                _graphics.SetRenderTarget(_screen.RenderTargetView);
+
                 _renderer.Begin(Gorgon2DBatchState.NoBlend);
                 _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _srv.Width, _srv.Height), GorgonColor.White, _srv, new DX.RectangleF(0, 0, 1, 1));
                 _renderer.End();
@@ -122,7 +147,7 @@ namespace Gorgon.Examples
             if (_showHelp)
             {
                 _renderer.Begin();
-                _renderer.DrawString("Example help:\nF1 - Show/hide help.\nSpace - Pause/unpause.\nLeft Mouse Button - Create new emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new DX.Vector2(0, 72), color: GorgonColor.YellowPure);
+                _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new DX.Vector2(0, 72), color: GorgonColor.YellowPure);
                 _renderer.End();
             }
 
@@ -196,6 +221,7 @@ namespace Gorgon.Examples
 
                 // Create a new emitter that we can move around.
                 _emitter = new ParticleEmitter(_renderer, _particleSprite, new DX.Vector2(_screen.Width * 0.5f, _screen.Height * 0.5f));
+                UpdateEmitter();
 
                 // Create a bloom filter to intensify the glow for the particles.
                 _bloom = new Gorgon2DBloomEffect(_renderer)
@@ -233,6 +259,10 @@ namespace Gorgon.Examples
             {
                 case Keys.F1:
                     _showHelp = !_showHelp;
+                    break;
+                case Keys.F2:
+                    _explosion = !_explosion;
+                    UpdateEmitter();
                     break;
                 case Keys.Space:
                     _emitter.Paused = !_emitter.Paused;
@@ -275,7 +305,14 @@ namespace Gorgon.Examples
                 return;
             }
 
-            _emitter.Move(e.X, e.Y);
+            if (_explosion)
+            {
+                _emitter.Move(e.X, e.Y);
+            }
+            else
+            {
+                _emitter.Position = new DX.Vector2(e.X, e.Y);
+            }
         }
 
         /// <summary>
