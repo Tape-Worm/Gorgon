@@ -35,19 +35,20 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.TextureAtlasTool.Properties;
+using Gorgon.Editor.ImageSplitTool.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
+using Gorgon.Editor.Tools;
 
-namespace Gorgon.Editor.TextureAtlasTool
+namespace Gorgon.Editor.ImageSplitTool
 {
     /// <summary>
-    /// The sprite file list view model.
+    /// The image file list view model.
     /// </summary>
-    internal class SpriteFiles
-        : ViewModelBase<SpriteFilesParameters, IHostContentServices>, ISpriteFiles
+    internal class ImageSelection
+        : ViewModelBase<SplitParameters, IHostContentServices>, ISplit
     {
         #region Constants.
         // The directory path for thumbnails this session.
@@ -62,14 +63,69 @@ namespace Gorgon.Editor.TextureAtlasTool
         // The task used to load the preview.
         private Task<IGorgonImage> _loadPreviewTask;
         // The cancellation source.
-        private CancellationTokenSource _cancelSource;
+        private CancellationTokenSource _previewCancelSource;
+        // The task used for splitting the file.
+        private Task _splitTask;
+        // The cancellation token source for splitting the file.
+        private CancellationTokenSource _splitCancelSource;
         // The image used for preview.
         private IGorgonImage _previewImage;
         // The file system used for writing temporary data.
         private IGorgonFileSystemWriter<Stream> _tempFileSystem;
+        // Plug in settings.
+        private ImageSplitToolSettings _settings;
+        // The content file manager for the host application.
+        private IContentFileManager _fileManager;
+        // The service used to split up the image.
+        private TextureAtlasSplitter _splitService;
+        // The progress for the splitting operation.
+        private string _progress = string.Empty;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the progress for the splitting operation.
+        /// </summary>
+        public string Progress
+        {
+            get => _progress;
+            private set
+            {
+                if (string.Equals(_progress, value, StringComparison.CurrentCulture))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _progress = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the output directory for the resulting images/sprites.
+        /// </summary>
+        public string OutputDirectory
+        {
+            get => _settings.LastOutputDir;
+            set
+            {
+                if (value == null)
+                {
+                    value = string.Empty;
+                }
+
+                if (string.Equals(_settings.LastOutputDir, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _settings.LastOutputDir = value.FormatDirectory('/');
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Property to return the sprite file entries.
         /// </summary>
@@ -110,7 +166,6 @@ namespace Gorgon.Editor.TextureAtlasTool
             get;
         }
 
-
         /// <summary>Property to return the command used to search through the file list.</summary>
         public IEditorCommand<string> SearchCommand
         {
@@ -125,20 +180,35 @@ namespace Gorgon.Editor.TextureAtlasTool
         }
 
         /// <summary>Property to return the image used for previewing.</summary>
-        public IGorgonImage PreviewImage
-        {
-            get => _previewImage;
-            private set
-            {
-                if (_previewImage == value)
-                {
-                    return;
-                }
+        public IGorgonImage PreviewImage => _previewImage;
 
-                OnPropertyChanging();
-                _previewImage = value;
-                OnPropertyChanged();
-            }
+        /// <summary>Property to return the folder selection command.</summary>
+        public IEditorCommand<object> SelectFolderCommand
+        {
+            get;
+        }
+
+        /// <summary>Property to return the command used when the tool UI is about to be closed.</summary>
+        /// <remarks>This command will be executed when the user shuts down the tool via some UI element (e.g. the 'X' in a window).</remarks>
+        public IEditorAsyncCommand<CloseToolArgs> CloseToolCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Function to split the images and write them to the file system.
+        /// </summary>
+        public IEditorAsyncCommand<object> SplitImageCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command to cancel the operation.
+        /// </summary>
+        public IEditorAsyncCommand<CancelEventArgs> CancelCommand
+        {
+            get;
         }
         #endregion
 
@@ -181,6 +251,8 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             try
             {
+                NotifyPropertyChanging(nameof(PreviewImage));
+
                 IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(ThumbnailPath);
 
                 if (thumbDirectory == null)
@@ -192,22 +264,25 @@ namespace Gorgon.Editor.TextureAtlasTool
                 {
                     if (_loadPreviewTask.Status == TaskStatus.Faulted)
                     {
-                        PreviewImage?.Dispose();
-                        PreviewImage = null;
+                        _previewImage?.Dispose();
+                        _previewImage = null;
                         _loadPreviewTask = null;
+
+                        NotifyPropertyChanged(nameof(PreviewImage));
                         return;
                     }
 
-                    _cancelSource?.Cancel();
+                    _previewCancelSource?.Cancel();
                     (await _loadPreviewTask)?.Dispose();
                     _loadPreviewTask = null;                    
                 }
 
-                PreviewImage?.Dispose();                
+                _previewImage?.Dispose();                
 
                 if ((files == null) || (files.Count == 0))
                 {
-                    PreviewImage = null;
+                    _previewImage = null;
+                    NotifyPropertyChanged(nameof(PreviewImage));
                     return;
                 }
 
@@ -215,7 +290,8 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                 if (previewFile == null)
                 {
-                    PreviewImage = null;
+                    _previewImage = null;
+                    NotifyPropertyChanged(nameof(PreviewImage));
                     return;
                 }
 
@@ -227,23 +303,26 @@ namespace Gorgon.Editor.TextureAtlasTool
                 }
 
                 string filePath = thumbDirectory.FullPath + thumbnailName;
-                _cancelSource = new CancellationTokenSource();
-                _loadPreviewTask = previewFile.Metadata.ContentMetadata.GetThumbnailAsync(previewFile, filePath, _cancelSource.Token);
+                _previewCancelSource = new CancellationTokenSource();
+                _loadPreviewTask = previewFile.Metadata.ContentMetadata.GetThumbnailAsync(previewFile, filePath, _previewCancelSource.Token);
                 IGorgonImage image = await _loadPreviewTask;
 
-                if (_cancelSource.IsCancellationRequested)
+                if (_previewCancelSource.IsCancellationRequested)
                 {
                     image?.Dispose();
                     _loadPreviewTask = null;
-                    PreviewImage = null;
-                    return;
+                    _previewImage = null;
+                }
+                else
+                {
+                    _previewImage = image;
                 }
 
-                PreviewImage = image;
+                NotifyPropertyChanged(nameof(PreviewImage));
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("ERROR: There was an error generating the sprite preview data.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: There was an error generating the image preview data.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }
@@ -300,11 +379,105 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
             catch (Exception ex)
             {
-                HostServices.MessageDisplay.ShowError(ex, Resources.GORTAG_ERR_SEARCH);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIST_ERR_SEARCH);
             }
             finally
             {
                 HostServices.BusyService.SetIdle();
+            }
+        }
+
+        /// <summary>
+        /// Function to browse folders on the file system.
+        /// </summary>
+        private void DoBrowseFolders()
+        {
+            try
+            {
+                string outputDir = OutputDirectory;
+                
+                if (!_fileManager.DirectoryExists(outputDir))
+                {
+                    outputDir = "/";
+                }
+
+                outputDir = HostServices.FolderBrowser.GetFolderPath(outputDir, Resources.GORIST_CAPTION_FOLDER_SELECT, Resources.GORIST_DESC_FOLDER_SELECT);
+
+                if (string.IsNullOrWhiteSpace(outputDir))
+                {
+                    return;
+                }
+
+                OutputDirectory = outputDir;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIST_ERR_FOLDER_SELECT);
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the image can be split.
+        /// </summary>
+        /// <returns><b>true</b> if the image can be split, <b>false</b> if not.</returns>
+        private bool CanSplit() => (!string.IsNullOrEmpty(OutputDirectory)) && (SelectedFiles.Count > 0);
+
+        /// <summary>
+        /// Function to split the image into smaller images.
+        /// </summary>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoSplitAsync()
+        {
+            try
+            {
+                _splitCancelSource = new CancellationTokenSource();
+                _splitTask = _splitService.SplitAsync(_selected, _settings.LastOutputDir, fileName => Progress = fileName, _splitCancelSource.Token);
+                await _splitTask;
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIST_ERR_SPLIT);
+            }
+            finally
+            {
+                _splitTask = null;
+                _splitCancelSource = null;
+            }
+        }
+
+        /// <summary>
+        /// Function to cancel the operation.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoCancelAsync(CancelEventArgs args)
+        {
+            try
+            {
+                if (_splitCancelSource == null)
+                {
+                    return;
+                }
+
+                _splitCancelSource?.Cancel();
+
+                if (HostServices.MessageDisplay.ShowConfirmation(Resources.GORIST_CONFIRM_CLOSE) == MessageResponse.No)
+                {
+                    args.Cancel = true;
+                }
+
+                if (_splitTask != null)
+                {
+                    await _splitTask;
+                }
+
+                _splitCancelSource = null;
+                _splitTask = null;
+            }
+            catch (Exception ex)
+            {
+                HostServices.Log.Print("ERROR: There was an error cancelling the splitting operation.", LoggingLevel.Simple);
+                HostServices.Log.LogException(ex);
             }
         }
 
@@ -313,10 +486,14 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(SpriteFilesParameters injectionParameters)
+        protected override void OnInitialize(SplitParameters injectionParameters)
         {
+            _settings = injectionParameters.Settings;
             _tempFileSystem = injectionParameters.TempFileSystem;
+            _fileManager = injectionParameters.FileManager;
             _searchService = injectionParameters.SearchService;
+            _splitService = injectionParameters.TextureSplitService;
+            
             SpriteFileEntries = injectionParameters.Entries;
 
             _selected.Clear();
@@ -342,25 +519,35 @@ namespace Gorgon.Editor.TextureAtlasTool
                 file.PropertyChanged -= File_PropertyChanged;
             }
 
-            if (_cancelSource != null)
+            if (_splitCancelSource != null)
             {
-                _cancelSource.Cancel();
+                _splitCancelSource.Cancel();
             }
 
-            IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);            
+            if (_previewCancelSource != null)
+            {
+                _previewCancelSource.Cancel();
+            }
+
+            IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);
             Interlocked.Exchange(ref _loadPreviewTask, null);
+            Interlocked.Exchange(ref _splitTask, null);
             currentImage?.Dispose();
-            
+
             base.OnUnload();
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SpriteFiles"/> class.</summary>
-        public SpriteFiles()
+        /// <summary>Initializes a new instance of the <see cref="ImageSelection"/> class.</summary>
+        public ImageSelection()
         {
             SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
             RefreshSpritePreviewCommand = new EditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>>(DoRefreshPreviewAsync);
+            SelectFolderCommand = new EditorCommand<object>(DoBrowseFolders);
+            SplitImageCommand = new EditorAsyncCommand<object>(DoSplitAsync, CanSplit);
+            SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
+            CancelCommand = new EditorAsyncCommand<CancelEventArgs>(DoCancelAsync);
         }
         #endregion
     }

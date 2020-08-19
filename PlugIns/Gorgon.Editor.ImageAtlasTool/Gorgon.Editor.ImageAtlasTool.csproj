@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8E09187C-F82A-450B-971F-D1EF14FA10F8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Gorgon.Editor.ImageAtlasTool</RootNamespace>
+    <AssemblyName>Gorgon.Editor.ImageAtlasTool</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <langversion>7.3</langversion>
+    <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <langversion>7.3</langversion>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="ImageAtlasToolPlugIn.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Renderers\Renderer.cs" />
+    <Compile Include="_Internal\Services\FileIOService.cs" />
+    <Compile Include="_Internal\ImageAtlasSettings.cs" />
+    <Compile Include="_Internal\ViewModels\ImageFiles.cs" />
+    <Compile Include="_Internal\ViewModels\ImageFilesParameters.cs" />
+    <Compile Include="_Internal\ViewModels\ImageAtlas.cs" />
+    <Compile Include="_Internal\ViewModels\ImageAtlasParameters.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IImageFiles.cs" />
+    <Compile Include="_Internal\ViewModels\_Interfaces\IImageAtlas.cs" />
+    <Compile Include="_Internal\Views\FormAtlasGen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\FormAtlasGen.Designer.cs">
+      <DependentUpon>FormAtlasGen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="_Internal\Views\FormImageSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="_Internal\Views\FormImageSelector.Designer.cs">
+      <DependentUpon>FormImageSelector.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gorgon2.ico" />
+    <None Include="Resources\load_image_48x48.png" />
+    <None Include="Resources\imageatlas_48x48.png" />
+    <None Include="Resources\imageatlas_16x16.png" />
+    <None Include="Resources\load_sprites_48x48.png" />
+    <None Include="Resources\load_sprites_20x20.png" />
+    <None Include="Resources\White_2x2.png" />
+    <None Include="Resources\info_16x16.png" />
+    <None Include="Resources\calculate_22x22.png" />
+    <None Include="Resources\folder_20x20.png" />
+    <None Include="Resources\left_16x16.png" />
+    <None Include="Resources\right_16x16.png" />
+    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset">
+      <Link>NoLiteralBugFix.ruleset</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\FormAtlasGen.resx">
+      <DependentUpon>FormAtlasGen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="_Internal\Views\FormImageSelector.resx">
+      <DependentUpon>FormImageSelector.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krypton.Ribbon.Lite">
+      <Version>5.500.2008</Version>
+    </PackageReference>
+    <PackageReference Include="Krypton.Toolkit.Lite">
+      <Version>5.500.2008</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>3.3.0</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX">
+      <Version>4.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Mathematics">
+      <Version>4.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Buffers">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime">
+      <Version>4.3.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>4.7.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
+      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
+      <Name>Gorgon.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
+      <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
+      <Name>Gorgon.FileSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
+      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
+      <Name>Gorgon.Graphics.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj">
+      <Project>{1dfb5973-950a-4b6e-84af-953de57c9213}</Project>
+      <Name>Gorgon.Graphics.Fonts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
+      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
+      <Name>Gorgon.Graphics.Imaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
+      <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
+      <Name>Gorgon.Renderers.Gorgon2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj">
+      <Project>{e5506a64-62c5-4aa3-adcb-766ab0cd5528}</Project>
+      <Name>Gorgon.IO.Gorgon2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
+      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
+      <Name>Gorgon.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
+      <Project>{695a6554-789a-4d5a-9de1-21fb621f6a8f}</Project>
+      <Name>Gorgon.Editor.API</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Tools"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Tools"
+
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

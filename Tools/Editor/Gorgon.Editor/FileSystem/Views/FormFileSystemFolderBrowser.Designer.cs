@@ -65,7 +65,7 @@
             this.FolderBrowser.FolderDeleting += new System.EventHandler<Gorgon.UI.FolderDeleteArgs>(this.FolderBrowser_FolderDeleting);
             this.FolderBrowser.FolderAdding += new System.EventHandler<Gorgon.UI.FolderAddArgs>(this.FolderBrowser_FolderAdding);
             this.FolderBrowser.FolderRenaming += new System.EventHandler<Gorgon.UI.FolderRenameArgs>(this.FolderBrowser_FolderRenaming);
-            this.FolderBrowser.FolderSelected += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.FolderBrowser_FolderEntered);
+            this.FolderBrowser.FolderSelected += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.FolderBrowser_FolderSelected);
             this.FolderBrowser.FolderEntered += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.FolderBrowser_FolderEntered);
             // 
             // tableLayoutPanel1

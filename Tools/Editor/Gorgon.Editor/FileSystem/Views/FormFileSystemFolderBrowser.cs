@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
@@ -43,8 +42,8 @@ namespace Gorgon.Editor
         : Form, IDataContext<IFileExplorer>
     {
         #region Variables.
-        // A cache of file system directories.
-        private readonly Dictionary<string, IDirectory> _directories = new Dictionary<string, IDirectory>(StringComparer.OrdinalIgnoreCase);
+        // The currently active directory.
+        private IDirectory _currentDirectory;
         #endregion
 
         #region Properties.
@@ -86,7 +85,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.DirectoryPath, StringComparison.OrdinalIgnoreCase));
+            IDirectory dir = DataContext.GetDirectory(e.DirectoryPath);
 
             if (dir == null)
             {
@@ -101,17 +100,13 @@ namespace Gorgon.Editor
                 return;
             }
 
-            await DataContext.DeleteDirectoryCommand.ExecuteAsync(args);
+            e.DeleteTask = DataContext.DeleteDirectoryCommand.ExecuteAsync(args);
+            await e.DeleteTask;
 
             e.Cancel = !args.ItemsDeleted;
 
-            if (!e.Cancel)
-            {
-                _directories.Remove(dir.ID);
-            }
-
-            e.SuppressPrompt = true;
-            e.DeletionHandled = true;
+            // Ensure that the folder browser doesn't go any further since we've handled everything ourselves.
+            e.SuppressPrompt = e.DeletionHandled = true;
         }
 
         /// <summary>Function called when adding a folder.</summary>
@@ -125,17 +120,10 @@ namespace Gorgon.Editor
                 return;
             }
 
-            IDirectory parentDir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.ParentPath, StringComparison.OrdinalIgnoreCase));
-
-            if (parentDir == null)
-            {
-                parentDir = DataContext.Root;
-            }
-
             var args = new CreateDirectoryArgs
             {
-                Name = e.DirectoryPath,
-                ParentDirectory = parentDir
+                Name = e.DirectoryName,
+                ParentDirectory = _currentDirectory ?? DataContext.Root
             };
 
             if ((DataContext.CreateDirectoryCommand == null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
@@ -148,11 +136,8 @@ namespace Gorgon.Editor
             if (args.Directory == null)
             {
                 e.Cancel = true;
-                e.CreationHandled = true;
-                return;
             }
 
-            _directories[args.Directory.ID] = args.Directory;
             e.CreationHandled = true;
         }
 
@@ -167,7 +152,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            IDirectory prevDir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.OldDirectoryPath, StringComparison.OrdinalIgnoreCase));
+            IDirectory prevDir = DataContext.GetDirectory(e.OldDirectoryPath);
 
             if (prevDir == null)
             {
@@ -192,25 +177,23 @@ namespace Gorgon.Editor
             e.RenameHandled = true;
         }
 
+        /// <summary>Folders the browser folder selected.</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
+        private void FolderBrowser_FolderSelected(object sender, FolderSelectedArgs e) => ButtonOk.Enabled = !string.IsNullOrWhiteSpace(FolderBrowser.CurrentDirectory);
+
         /// <summary>Function called when a directory is selected or entered.</summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The e.</param>
         private void FolderBrowser_FolderEntered(object sender, FolderSelectedArgs e)
         {
-            ButtonOk.Enabled = !string.IsNullOrWhiteSpace(FolderBrowser.CurrentDirectory);
-
-            IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, FolderBrowser.CurrentDirectory, StringComparison.OrdinalIgnoreCase));
-            _directories.Clear();
-
-            if (dir == null)
+            if (DataContext == null)
             {
                 return;
             }
 
-            foreach (IDirectory subdir in dir.Directories)
-            {
-                _directories[subdir.ID] = subdir;
-            }
+            ButtonOk.Enabled = !string.IsNullOrWhiteSpace(FolderBrowser.CurrentDirectory);
+            _currentDirectory = DataContext.GetDirectory(e.FolderPath);
         }
 
         /// <summary>
@@ -229,7 +212,7 @@ namespace Gorgon.Editor
         /// </summary>
         private void ResetDataContext()
         {
-            _directories.Clear();
+            _currentDirectory = null;
             FolderBrowser.DirectorySeparator = Path.DirectorySeparatorChar;
             FolderBrowser.RootFolder = null;
             FolderBrowser.AssignInitialDirectory(null);
@@ -249,12 +232,6 @@ namespace Gorgon.Editor
 
             FolderBrowser.DirectorySeparator = '/';
             FolderBrowser.RootFolder = new DirectoryInfo(dataContext.Root.PhysicalPath);
-
-            _directories.Clear();
-            foreach (IDirectory dir in dataContext.Root.Directories)
-            {
-                _directories[dir.ID] = dir;
-            }
         }
 
         /// <summary>Raises the Load event.</summary>
@@ -272,19 +249,14 @@ namespace Gorgon.Editor
         /// <param name="directory">The node to use as the initial path.</param>
         public void SetInitialPath(IDirectory directory)
         {
-            _directories.Clear();
-
             if (directory == null)
             {
                 return;
             }
 
+            _currentDirectory = directory;
+
             FolderBrowser.AssignInitialDirectory(new DirectoryInfo(directory.PhysicalPath));
-            
-            foreach (IDirectory dir in directory.Directories)
-            {
-                _directories[dir.ID] = dir;
-            }                
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>

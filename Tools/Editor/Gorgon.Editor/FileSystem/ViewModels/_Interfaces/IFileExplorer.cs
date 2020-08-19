@@ -231,5 +231,14 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
         #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve a directory object by its path.
+        /// </summary>
+        /// <param name="path">The path to the directory to locate.</param>
+        /// <returns>The <see cref="IDirectory"/> representing the path, or <b>null</b> if not found.</returns>
+        IDirectory GetDirectory(string path);
+        #endregion
     }
 }

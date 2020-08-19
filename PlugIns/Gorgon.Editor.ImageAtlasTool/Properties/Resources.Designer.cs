@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Gorgon.Editor.TextureAtlasTool.Properties {
+namespace Gorgon.Editor.ImageAtlasTool.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Editor.TextureAtlasTool.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Editor.ImageAtlasTool.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -83,9 +83,9 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Output folder.
         /// </summary>
-        internal static string GORTAG_CAPTION_FOLDER_SELECT {
+        internal static string GORIAG_CAPTION_FOLDER_SELECT {
             get {
-                return ResourceManager.GetString("GORTAG_CAPTION_FOLDER_SELECT", resourceCulture);
+                return ResourceManager.GetString("GORIAG_CAPTION_FOLDER_SELECT", resourceCulture);
             }
         }
         
@@ -94,38 +94,29 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         ///
         ///Are you sure you want to do this?.
         /// </summary>
-        internal static string GORTAG_CONFIRM_OVERWRITE {
+        internal static string GORIAG_CONFIRM_OVERWRITE {
             get {
-                return ResourceManager.GetString("GORTAG_CONFIRM_OVERWRITE", resourceCulture);
+                return ResourceManager.GetString("GORIAG_CONFIRM_OVERWRITE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Some of the sprites selected are not bound to any texture.
+        ///   Looks up a localized string similar to A tool for generating a texture atlas from a series of individual images.
         ///
-        ///Would you like to continue?.
+        ///This tool will also, optionally, generate sprites from the resulting texture atlas..
         /// </summary>
-        internal static string GORTAG_CONFIRM_SOME_NO_TEXTURE {
+        internal static string GORIAG_DESC_BUTTON {
             get {
-                return ResourceManager.GetString("GORTAG_CONFIRM_SOME_NO_TEXTURE", resourceCulture);
+                return ResourceManager.GetString("GORIAG_DESC_BUTTON", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A tool for generating a texture atlas from a series of sprites..
+        ///   Looks up a localized string similar to Select a folder to save the atlas image(s) into..
         /// </summary>
-        internal static string GORTAG_DESC_BUTTON {
+        internal static string GORIAG_DESC_FOLDER_SELECT {
             get {
-                return ResourceManager.GetString("GORTAG_DESC_BUTTON", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select a folder to save the atlas texture(s) into..
-        /// </summary>
-        internal static string GORTAG_DESC_FOLDER_SELECT {
-            get {
-                return ResourceManager.GetString("GORTAG_DESC_FOLDER_SELECT", resourceCulture);
+                return ResourceManager.GetString("GORIAG_DESC_FOLDER_SELECT", resourceCulture);
             }
         }
         
@@ -134,18 +125,18 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         ///
         ///Please try again..
         /// </summary>
-        internal static string GORTAG_ERR_CALC {
+        internal static string GORIAG_ERR_CALC {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_CALC", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_CALC", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The calculated size would be too large for this video adapter to handle..
         /// </summary>
-        internal static string GORTAG_ERR_CALC_TOO_LARGE {
+        internal static string GORIAG_ERR_CALC_TOO_LARGE {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_CALC_TOO_LARGE", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_CALC_TOO_LARGE", resourceCulture);
             }
         }
         
@@ -154,9 +145,9 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         ///
         ///Please try again..
         /// </summary>
-        internal static string GORTAG_ERR_FOLDER_SELECT {
+        internal static string GORIAG_ERR_FOLDER_SELECT {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_FOLDER_SELECT", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_FOLDER_SELECT", resourceCulture);
             }
         }
         
@@ -165,62 +156,51 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         ///
         ///Please try again..
         /// </summary>
-        internal static string GORTAG_ERR_GEN_ATLAS {
+        internal static string GORIAG_ERR_GEN_ATLAS {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_GEN_ATLAS", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_GEN_ATLAS", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Cannot write the image file &apos;{0}&apos; because it is already open in the editor..
         /// </summary>
-        internal static string GORTAG_ERR_IMAGE_OPEN {
+        internal static string GORIAG_ERR_IMAGE_OPEN {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_IMAGE_OPEN", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_IMAGE_OPEN", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error launching the texture atlas generation tool.
+        ///   Looks up a localized string similar to There was an error launching the image atlas generation tool.
         ///
         ///Please try again..
         /// </summary>
-        internal static string GORTAG_ERR_LAUNCH {
+        internal static string GORIAG_ERR_LAUNCH {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_LAUNCH", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_LAUNCH", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error loading the selected sprites.
+        ///   Looks up a localized string similar to There was an error loading the selected images.
         ///
         ///Please try again..
         /// </summary>
-        internal static string GORTAG_ERR_LOAD_SPRITES {
+        internal static string GORIAG_ERR_LOAD_IMAGES {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_LOAD_SPRITES", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_LOAD_IMAGES", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was not enough room for one or more of the sprites.
+        ///   Looks up a localized string similar to There was not enough room for one or more of the image.
         ///
-        ///Please increase the texture size, and/or array count, or reduce the padding and try again..
+        ///Please increase the image size, and/or array count, or reduce the padding and try again..
         /// </summary>
-        internal static string GORTAG_ERR_NO_ROOM {
+        internal static string GORIAG_ERR_NO_ROOM {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_NO_ROOM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to None of the selected sprites have a texture attached.
-        ///
-        ///Sprites must have textures in order to generate an atlas..
-        /// </summary>
-        internal static string GORTAG_ERR_NO_TEXTURES {
-            get {
-                return ResourceManager.GetString("GORTAG_ERR_NO_TEXTURES", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_NO_ROOM", resourceCulture);
             }
         }
         
@@ -229,152 +209,168 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         ///
         ///Please try again..
         /// </summary>
-        internal static string GORTAG_ERR_PREVIEW_ARRAY {
+        internal static string GORIAG_ERR_PREVIEW_ARRAY {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_PREVIEW_ARRAY", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_PREVIEW_ARRAY", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while attempting to save the texture atlas.
+        ///   Looks up a localized string similar to There was an error while attempting to save the image atlas.
         ///
         ///Please try again..
         /// </summary>
-        internal static string GORTAG_ERR_SAVE {
+        internal static string GORIAG_ERR_SAVE {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_SAVE", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_SAVE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error searching through the sprites.
+        ///   Looks up a localized string similar to There was an error searching through the images.
         ///
         ///Please try again..
         /// </summary>
-        internal static string GORTAG_ERR_SEARCH {
+        internal static string GORIAG_ERR_SEARCH {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_SEARCH", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_SEARCH", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Cannot update the sprite file &apos;{0}&apos; because it is already open in the editor..
         /// </summary>
-        internal static string GORTAG_ERR_SPRITE_OPEN {
+        internal static string GORIAG_ERR_SPRITE_OPEN {
             get {
-                return ResourceManager.GetString("GORTAG_ERR_SPRITE_OPEN", resourceCulture);
+                return ResourceManager.GetString("GORIAG_ERR_SPRITE_OPEN", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sprites.
+        ///   Looks up a localized string similar to Images.
         /// </summary>
-        internal static string GORTAG_GROUP_BUTTON {
+        internal static string GORIAG_GROUP_BUTTON {
             get {
-                return ResourceManager.GetString("GORTAG_GROUP_BUTTON", resourceCulture);
+                return ResourceManager.GetString("GORIAG_GROUP_BUTTON", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The selected sprites are already on a texture atlas.
-        ///
-        ///No changes will be made..
+        ///   Looks up a localized string similar to Gorgon Image Atlas.
         /// </summary>
-        internal static string GORTAG_INF_ALREADY_ATLASED {
+        internal static string GORIAG_PLUGIN_DESC {
             get {
-                return ResourceManager.GetString("GORTAG_INF_ALREADY_ATLASED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gorgon Texture Atlas.
-        /// </summary>
-        internal static string GORTAG_PLUGIN_DESC {
-            get {
-                return ResourceManager.GetString("GORTAG_PLUGIN_DESC", resourceCulture);
+                return ResourceManager.GetString("GORIAG_PLUGIN_DESC", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Array index {0}/{1}.
         /// </summary>
-        internal static string GORTAG_TEXT_ARRAY_COUNT {
+        internal static string GORIAG_TEXT_ARRAY_COUNT {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_ARRAY_COUNT", resourceCulture);
+                return ResourceManager.GetString("GORIAG_TEXT_ARRAY_COUNT", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Array index {0}/{1}, Texture {2}/{3}.
+        ///   Looks up a localized string similar to Array index {0}/{1}, Image {2}/{3}.
         /// </summary>
-        internal static string GORTAG_TEXT_ARRAY_TEXTURE_COUNT {
+        internal static string GORIAG_TEXT_ARRAY_TEXTURE_COUNT {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_ARRAY_TEXTURE_COUNT", resourceCulture);
+                return ResourceManager.GetString("GORIAG_TEXT_ARRAY_TEXTURE_COUNT", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sprite Atlas.
+        ///   Looks up a localized string similar to Image Atlas.
         /// </summary>
-        internal static string GORTAG_TEXT_BUTTON {
+        internal static string GORIAG_TEXT_BUTTON {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_BUTTON", resourceCulture);
+                return ResourceManager.GetString("GORIAG_TEXT_BUTTON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} images loaded..
+        /// </summary>
+        internal static string GORIAG_TEXT_IMAGE_COUNT {
+            get {
+                return ResourceManager.GetString("GORIAG_TEXT_IMAGE_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        internal static string GORIAG_TEXT_LOADING {
+            get {
+                return ResourceManager.GetString("GORIAG_TEXT_LOADING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading image &apos;{0}&apos;....
+        /// </summary>
+        internal static string GORIAG_TEXT_LOADING_IMAGE {
+            get {
+                return ResourceManager.GetString("GORIAG_TEXT_LOADING_IMAGE", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Click the &quot;Generate Atlas&quot; button to create an atlas..
         /// </summary>
-        internal static string GORTAG_TEXT_NO_ATLAS {
+        internal static string GORIAG_TEXT_NO_ATLAS {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_NO_ATLAS", resourceCulture);
+                return ResourceManager.GetString("GORIAG_TEXT_NO_ATLAS", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No sprites loaded..
+        ///   Looks up a localized string similar to No images loaded..
         /// </summary>
-        internal static string GORTAG_TEXT_NO_SPRITES {
+        internal static string GORIAG_TEXT_NO_IMAGES {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_NO_SPRITES", resourceCulture);
+                return ResourceManager.GetString("GORIAG_TEXT_NO_IMAGES", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select a sprite..
+        ///   Looks up a localized string similar to Select an image..
         /// </summary>
-        internal static string GORTAG_TEXT_SELECT_SPRITE {
+        internal static string GORIAG_TEXT_SELECT_IMAGE {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_SELECT_SPRITE", resourceCulture);
+                return ResourceManager.GetString("GORIAG_TEXT_SELECT_IMAGE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error showing the sprite file manager.
-        ///
-        ///Please try again..
+        ///   Looks up a localized string similar to Image {0}/{1}.
         /// </summary>
-        internal static string GORTAG_TEXT_SHOW_LOAD_SPRITE {
+        internal static string GORIAG_TEXT_TEXTURE_COUNT {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_SHOW_LOAD_SPRITE", resourceCulture);
+                return ResourceManager.GetString("GORIAG_TEXT_TEXTURE_COUNT", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} sprites loaded..
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string GORTAG_TEXT_SPRITE_COUNT {
+        internal static System.Drawing.Bitmap imageatlas_16x16 {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_SPRITE_COUNT", resourceCulture);
+                object obj = ResourceManager.GetObject("imageatlas_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Texture {0}/{1}.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string GORTAG_TEXT_TEXTURE_COUNT {
+        internal static System.Drawing.Bitmap imageatlas_48x48 {
             get {
-                return ResourceManager.GetString("GORTAG_TEXT_TEXTURE_COUNT", resourceCulture);
+                object obj = ResourceManager.GetObject("imageatlas_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -394,6 +390,16 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         internal static System.Drawing.Bitmap left_16x16 {
             get {
                 object obj = ResourceManager.GetObject("left_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap load_image_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("load_image_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -424,26 +430,6 @@ namespace Gorgon.Editor.TextureAtlasTool.Properties {
         internal static System.Drawing.Bitmap right_16x16 {
             get {
                 object obj = ResourceManager.GetObject("right_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap texture_atlas_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("texture_atlas_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap texture_atlas_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("texture_atlas_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

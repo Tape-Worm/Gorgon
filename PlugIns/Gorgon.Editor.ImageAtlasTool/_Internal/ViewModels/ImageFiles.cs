@@ -35,19 +35,19 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.TextureAtlasTool.Properties;
+using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.TextureAtlasTool
+namespace Gorgon.Editor.ImageAtlasTool
 {
     /// <summary>
-    /// The sprite file list view model.
+    /// The image file list view model.
     /// </summary>
-    internal class SpriteFiles
-        : ViewModelBase<SpriteFilesParameters, IHostContentServices>, ISpriteFiles
+    internal class ImageFiles
+        : ViewModelBase<ImageFilesParameters, IHostContentServices>, IImageFiles
     {
         #region Constants.
         // The directory path for thumbnails this session.
@@ -67,13 +67,34 @@ namespace Gorgon.Editor.TextureAtlasTool
         private IGorgonImage _previewImage;
         // The file system used for writing temporary data.
         private IGorgonFileSystemWriter<Stream> _tempFileSystem;
+        // The name of the image that is currently loading.
+        private string _loadingImage;
         #endregion
 
         #region Properties.
         /// <summary>
-        /// Property to return the sprite file entries.
+        /// Property to set or return the name of the image that is currently loading.
         /// </summary>
-        public IReadOnlyList<ContentFileExplorerDirectoryEntry> SpriteFileEntries
+        public string LoadingImage
+        {
+            get => _loadingImage;
+            set
+            {
+                if (string.Equals(_loadingImage, value, StringComparison.CurrentCulture))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _loadingImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to return the image file entries.
+        /// </summary>
+        public IReadOnlyList<ContentFileExplorerDirectoryEntry> ImageFileEntries
         {
             get;
             private set;
@@ -103,9 +124,9 @@ namespace Gorgon.Editor.TextureAtlasTool
         }
 
         /// <summary>
-        /// Property to return the command that will refresh the sprite preview data.
+        /// Property to return the command that will refresh the image preview data.
         /// </summary>
-        public IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshSpritePreviewCommand
+        public IEditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>> RefreshImagePreviewCommand
         {
             get;
         }
@@ -117,8 +138,8 @@ namespace Gorgon.Editor.TextureAtlasTool
             get;
         }
 
-        /// <summary>Property to set or return the command used confirm loading of the sprite files.</summary>
-        public IEditorCommand<object> ConfirmLoadCommand
+        /// <summary>Property to set or return the command used confirm loading of the image files.</summary>
+        public IEditorAsyncCommand<object> ConfirmLoadCommand
         {
             get;
             set;
@@ -139,6 +160,13 @@ namespace Gorgon.Editor.TextureAtlasTool
                 _previewImage = value;
                 OnPropertyChanged();
             }
+        }
+
+        /// <summary>Property to set or return the command that is executed when selector is canceled.</summary>
+        public IEditorAsyncCommand<object> CancelCommand
+        {
+            get;
+            set;
         }
         #endregion
 
@@ -173,7 +201,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         }
 
         /// <summary>
-        /// Function called to refresh the sprite file preview data.
+        /// Function called to refresh the image file preview data.
         /// </summary>
         /// <param name="files">The files that are focused in the UI.</param>
         /// <returns>A task for asynchronous operation.</returns>
@@ -243,7 +271,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("ERROR: There was an error generating the sprite preview data.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: There was an error generating the image preview data.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }
@@ -253,10 +281,10 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// </summary>
         /// <param name="text">The search text, not used.</param>
         /// <returns><b>true</b> if the search is available, <b>false</b> if not.</returns>
-        private bool CanSearch(string text) => SpriteFileEntries.Count > 0;
+        private bool CanSearch(string text) => ImageFileEntries.Count > 0;
 
         /// <summary>
-        /// Function to search the sprite files.
+        /// Function to search the image files.
         /// </summary>
         /// <param name="text">The search term.</param>
         private void DoSearch(string text)
@@ -267,9 +295,9 @@ namespace Gorgon.Editor.TextureAtlasTool
             {
                 IEnumerable<IContentFileExplorerSearchEntry> results = _searchService.Search(text);
 
-                for (int i = 0; i < SpriteFileEntries.Count; ++i)
+                for (int i = 0; i < ImageFileEntries.Count; ++i)
                 {
-                    ContentFileExplorerDirectoryEntry entry = SpriteFileEntries[i];
+                    ContentFileExplorerDirectoryEntry entry = ImageFileEntries[i];
 
                     if (string.IsNullOrWhiteSpace(text))
                     {
@@ -300,7 +328,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
             catch (Exception ex)
             {
-                HostServices.MessageDisplay.ShowError(ex, Resources.GORTAG_ERR_SEARCH);
+                HostServices.MessageDisplay.ShowError(ex, Resources.GORIAG_ERR_SEARCH);
             }
             finally
             {
@@ -313,11 +341,11 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <remarks>
         /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
         /// </remarks>
-        protected override void OnInitialize(SpriteFilesParameters injectionParameters)
+        protected override void OnInitialize(ImageFilesParameters injectionParameters)
         {
             _tempFileSystem = injectionParameters.TempFileSystem;
             _searchService = injectionParameters.SearchService;
-            SpriteFileEntries = injectionParameters.Entries;
+            ImageFileEntries = injectionParameters.Entries;
 
             _selected.Clear();
             _selected.AddRange(injectionParameters.Entries.SelectMany(item => item.Files).Where(item => item.IsSelected));
@@ -328,7 +356,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnLoad();
             
-            foreach (ContentFileExplorerFileEntry file in SpriteFileEntries.SelectMany(item => item.Files))
+            foreach (ContentFileExplorerFileEntry file in ImageFileEntries.SelectMany(item => item.Files))
             {
                 file.PropertyChanged += File_PropertyChanged;
             }
@@ -337,7 +365,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
-            foreach (ContentFileExplorerFileEntry file in SpriteFileEntries.SelectMany(item => item.Files))
+            foreach (ContentFileExplorerFileEntry file in ImageFileEntries.SelectMany(item => item.Files))
             {
                 file.PropertyChanged -= File_PropertyChanged;
             }
@@ -348,7 +376,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
 
             IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);            
-            Interlocked.Exchange(ref _loadPreviewTask, null);
+            Interlocked.Exchange(ref _loadPreviewTask, null);            
             currentImage?.Dispose();
             
             base.OnUnload();
@@ -356,11 +384,11 @@ namespace Gorgon.Editor.TextureAtlasTool
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="SpriteFiles"/> class.</summary>
-        public SpriteFiles()
+        /// <summary>Initializes a new instance of the <see cref="ImageFiles"/> class.</summary>
+        public ImageFiles()
         {
             SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
-            RefreshSpritePreviewCommand = new EditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>>(DoRefreshPreviewAsync);
+            RefreshImagePreviewCommand = new EditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>>(DoRefreshPreviewAsync);
         }
         #endregion
     }

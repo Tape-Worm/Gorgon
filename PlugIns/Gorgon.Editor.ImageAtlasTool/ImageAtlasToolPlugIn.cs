@@ -30,24 +30,25 @@ using System.Linq;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.TextureAtlasTool.Properties;
+using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers.Services;
 using Gorgon.UI;
 
-namespace Gorgon.Editor.TextureAtlasTool
+namespace Gorgon.Editor.ImageAtlasTool
 {
     /// <summary>
-    /// A plug in used to create a texture atlas.
+    /// A plug in used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This plug in varies from the Image atlas tool in that it uses sprites that are already defined and bound to separate images.
+    /// This plug in is different from the texture atlas generator tool in that it uses individual image files to create the atlas. This is useful in the case where each separate image file is a sprite  
+    /// (like back in the olden DOS days and is not performant with GPUs). This allows content creators just to create a single image for a sprite, without having to build a sprite for each image.
     /// </para>
     /// </remarks>
-    internal class TextureAtlasToolPlugIn
+    internal class ImageAtlasToolPlugIn
         : ToolPlugIn
     {
         #region Variables.
@@ -55,17 +56,17 @@ namespace Gorgon.Editor.TextureAtlasTool
         private ToolPlugInRibbonButton _button;
         // The default image codec to use.
         private IGorgonImageCodec _defaultImageCodec;
-        // The default sprite codec to use.
+        // The default image codec to use.
         private IGorgonSpriteCodec _defaultSpriteCodec;
-        // The view model for the sprite file browser.
-        private SpriteFiles _fileVm;
+        // The view model for the image file browser.
+        private ImageFiles _fileVm;
         // The texture atlas view model.
-        private TextureAtlas _textureAtlas;
+        private ImageAtlas _textureAtlas;
         #endregion
 
         #region Methods.		
         /// <summary>
-        /// Function to retrieve the sprite file entries from the file system.
+        /// Function to retrieve the image file entries from the file system.
         /// </summary>
         /// <returns>The flattened list of entries used for searching and the file system entry hierarchy.</returns>
         private (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> fileSystemEntries) GetFileEntries()
@@ -75,18 +76,18 @@ namespace Gorgon.Editor.TextureAtlasTool
             ContentFileExplorerDirectoryEntry dirEntry = null;
             var fileEntries = new List<ContentFileExplorerFileEntry>();
             IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
-            IEnumerable<IContentFile> spriteFiles = ContentFileManager.EnumerateContentFiles("/", "*")
+            IEnumerable<IContentFile> imageFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
+                                                && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
             IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
-            if (spriteFiles.Any())
+            if (imageFiles.Any())
             {
                 dirEntry = new ContentFileExplorerDirectoryEntry("/", fileEntries);
                 fileSystemEntries.Add(dirEntry);
                 searchEntries.Add(dirEntry);
 
-                foreach (IContentFile file in spriteFiles)
+                foreach (IContentFile file in imageFiles)
                 {
                     var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
                     if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
@@ -100,10 +101,10 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             foreach (string subDir in dirs)
             {
-                spriteFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
+                imageFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                            && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
-                if (!spriteFiles.Any())
+                                                            && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
+                if (!imageFiles.Any())
                 {
                     continue;
                 }
@@ -114,7 +115,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 fileSystemEntries.Add(dirEntry);
                 searchEntries.Add(dirEntry);
 
-                foreach (IContentFile file in spriteFiles)
+                foreach (IContentFile file in imageFiles)
                 {
                     var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
                     if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
@@ -141,7 +142,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             try
             {
-                settings = HostToolServices.ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(TextureAtlasToolPlugIn).FullName);
+                settings = HostToolServices.ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(ImageAtlasToolPlugIn).FullName);
 
                 if (settings == null)
                 {
@@ -152,16 +153,16 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                 if (_fileVm == null)
                 {
-                    _fileVm = new SpriteFiles();
+                    _fileVm = new ImageFiles();
                 }
 
                 if (_textureAtlas == null)
                 {
-                    _textureAtlas = new TextureAtlas();
+                    _textureAtlas = new ImageAtlas();
                 }
 
-                _fileVm.Initialize(new SpriteFilesParameters(entries, TemporaryFileSystem, new EditorContentSearchService(searchEntries), HostToolServices));
-                _textureAtlas.Initialize(new TextureAtlasParameters(_fileVm, 
+                _fileVm.Initialize(new ImageFilesParameters(entries, TemporaryFileSystem, new EditorContentSearchService(searchEntries), HostToolServices));
+                _textureAtlas.Initialize(new ImageAtlasParameters(_fileVm, 
                                                                     settings,
                                                                     new GorgonTextureAtlasService(HostToolServices.GraphicsContext.Renderer2D),
                                                                     new FileIOService(ContentFileManager, _defaultImageCodec, _defaultSpriteCodec),
@@ -175,11 +176,11 @@ namespace Gorgon.Editor.TextureAtlasTool
                 HostToolServices.BusyService.SetIdle();
                 form.ShowDialog(GorgonApplication.MainForm);
 
-                HostToolServices.ToolPlugInService.WriteContentSettings(typeof(TextureAtlasToolPlugIn).FullName, settings);
+                HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ImageAtlasToolPlugIn).FullName, settings);
             }
             catch (Exception ex)
             {
-                HostToolServices.MessageDisplay.ShowError(ex, Resources.GORTAG_ERR_LAUNCH);
+                HostToolServices.MessageDisplay.ShowError(ex, Resources.GORIAG_ERR_LAUNCH);
             }
             finally
             {
@@ -216,9 +217,9 @@ namespace Gorgon.Editor.TextureAtlasTool
             _defaultImageCodec = new GorgonCodecDds();
             _defaultSpriteCodec = new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D);
 
-            _button = new ToolPlugInRibbonButton(Resources.GORTAG_TEXT_BUTTON, Resources.texture_atlas_48x48, Resources.texture_atlas_16x16, Resources.GORTAG_GROUP_BUTTON)
+            _button = new ToolPlugInRibbonButton(Resources.GORIAG_TEXT_BUTTON, Resources.imageatlas_48x48, Resources.imageatlas_16x16, Resources.GORIAG_GROUP_BUTTON)
             {
-                Description = Resources.GORTAG_DESC_BUTTON
+                Description = Resources.GORIAG_DESC_BUTTON
             };
             _button.ValidateButton();
         }
@@ -238,9 +239,9 @@ namespace Gorgon.Editor.TextureAtlasTool
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="TextureAtlasToolPlugIn"/> class.</summary>
-        public TextureAtlasToolPlugIn()
-            : base(Resources.GORTAG_PLUGIN_DESC)
+        /// <summary>Initializes a new instance of the <see cref="ImageAtlasToolPlugIn"/> class.</summary>
+        public ImageAtlasToolPlugIn()
+            : base(Resources.GORIAG_PLUGIN_DESC)
         {
         }
         #endregion

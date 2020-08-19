@@ -117,32 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORTAG_ERR_IMAGE_OPEN" xml:space="preserve">
-    <value>Cannot write the image file '{0}' because it is already open in the editor.</value>
+  <data name="GORIAG_TEXT_IMAGE_COUNT" xml:space="preserve">
+    <value>{0} images loaded.</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="folder_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORTAG_TEXT_ARRAY_TEXTURE_COUNT" xml:space="preserve">
-    <value>Array index {0}/{1}, Texture {2}/{3}</value>
-  </data>
-  <data name="GORTAG_TEXT_NO_SPRITES" xml:space="preserve">
-    <value>No sprites loaded.</value>
-  </data>
-  <data name="GORTAG_PLUGIN_DESC" xml:space="preserve">
-    <value>Gorgon Texture Atlas</value>
-  </data>
-  <data name="GORTAG_ERR_LOAD_SPRITES" xml:space="preserve">
-    <value>There was an error loading the selected sprites.
+  <data name="GORIAG_ERR_CALC" xml:space="preserve">
+    <value>There was an error while calculating the texture dimensions.
 
 Please try again.</value>
   </data>
-  <data name="GORTAG_TEXT_SPRITE_COUNT" xml:space="preserve">
-    <value>{0} sprites loaded.</value>
+  <data name="GORIAG_TEXT_ARRAY_TEXTURE_COUNT" xml:space="preserve">
+    <value>Array index {0}/{1}, Image {2}/{3}</value>
   </data>
-  <data name="GORTAG_DESC_FOLDER_SELECT" xml:space="preserve">
-    <value>Select a folder to save the atlas texture(s) into.</value>
+  <data name="imageatlas_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\imageatlas_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="load_sprites_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\load_sprites_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIAG_PLUGIN_DESC" xml:space="preserve">
+    <value>Gorgon Image Atlas</value>
+  </data>
+  <data name="GORIAG_ERR_SEARCH" xml:space="preserve">
+    <value>There was an error searching through the images.
+
+Please try again.</value>
+  </data>
+  <data name="GORIAG_DESC_FOLDER_SELECT" xml:space="preserve">
+    <value>Select a folder to save the atlas image(s) into.</value>
+  </data>
+  <data name="GORIAG_CAPTION_FOLDER_SELECT" xml:space="preserve">
+    <value>Output folder</value>
   </data>
   <data name="left_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\left_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -150,120 +158,103 @@ Please try again.</value>
   <data name="White_2x2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\White_2x2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="texture_atlas_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\texture_atlas_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORTAG_ERR_GEN_ATLAS" xml:space="preserve">
+  <data name="GORIAG_ERR_GEN_ATLAS" xml:space="preserve">
     <value>There was an error while generating the atlas.
 
 Please try again.</value>
   </data>
-  <data name="GORTAG_ERR_FOLDER_SELECT" xml:space="preserve">
-    <value>There was an error browsing the file system folders.
+  <data name="GORIAG_TEXT_SELECT_IMAGE" xml:space="preserve">
+    <value>Select an image.</value>
+  </data>
+  <data name="GORIAG_ERR_SAVE" xml:space="preserve">
+    <value>There was an error while attempting to save the image atlas.
 
 Please try again.</value>
   </data>
-  <data name="GORTAG_ERR_SAVE" xml:space="preserve">
-    <value>There was an error while attempting to save the texture atlas.
-
-Please try again.</value>
-  </data>
-  <data name="GORTAG_TEXT_NO_ATLAS" xml:space="preserve">
-    <value>Click the "Generate Atlas" button to create an atlas.</value>
-  </data>
-  <data name="GORTAG_ERR_PREVIEW_ARRAY" xml:space="preserve">
+  <data name="GORIAG_ERR_PREVIEW_ARRAY" xml:space="preserve">
     <value>There was an error while changing the array or texture index.
 
 Please try again.</value>
   </data>
-  <data name="GORTAG_ERR_LAUNCH" xml:space="preserve">
-    <value>There was an error launching the texture atlas generation tool.
+  <data name="GORIAG_ERR_LAUNCH" xml:space="preserve">
+    <value>There was an error launching the image atlas generation tool.
 
 Please try again.</value>
   </data>
-  <data name="GORTAG_GROUP_BUTTON" xml:space="preserve">
-    <value>Sprites</value>
+  <data name="GORIAG_GROUP_BUTTON" xml:space="preserve">
+    <value>Images</value>
   </data>
-  <data name="GORTAG_ERR_NO_TEXTURES" xml:space="preserve">
-    <value>None of the selected sprites have a texture attached.
-
-Sprites must have textures in order to generate an atlas.</value>
-  </data>
-  <data name="GORTAG_ERR_SEARCH" xml:space="preserve">
-    <value>There was an error searching through the sprites.
-
-Please try again.</value>
+  <data name="GORIAG_ERR_IMAGE_OPEN" xml:space="preserve">
+    <value>Cannot write the image file '{0}' because it is already open in the editor.</value>
   </data>
   <data name="load_sprites_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\load_sprites_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORTAG_TEXT_TEXTURE_COUNT" xml:space="preserve">
-    <value>Texture {0}/{1}</value>
+  <data name="GORIAG_TEXT_TEXTURE_COUNT" xml:space="preserve">
+    <value>Image {0}/{1}</value>
   </data>
   <data name="right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORTAG_ERR_SPRITE_OPEN" xml:space="preserve">
+  <data name="GORIAG_ERR_SPRITE_OPEN" xml:space="preserve">
     <value>Cannot update the sprite file '{0}' because it is already open in the editor.</value>
   </data>
-  <data name="GORTAG_TEXT_ARRAY_COUNT" xml:space="preserve">
+  <data name="GORIAG_TEXT_ARRAY_COUNT" xml:space="preserve">
     <value>Array index {0}/{1}</value>
   </data>
-  <data name="GORTAG_CAPTION_FOLDER_SELECT" xml:space="preserve">
-    <value>Output folder</value>
-  </data>
-  <data name="texture_atlas_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\texture_atlas_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORTAG_CONFIRM_SOME_NO_TEXTURE" xml:space="preserve">
-    <value>Some of the sprites selected are not bound to any texture.
+  <data name="GORIAG_DESC_BUTTON" xml:space="preserve">
+    <value>A tool for generating a texture atlas from a series of individual images.
 
-Would you like to continue?</value>
+This tool will also, optionally, generate sprites from the resulting texture atlas.</value>
   </data>
-  <data name="GORTAG_ERR_NO_ROOM" xml:space="preserve">
-    <value>There was not enough room for one or more of the sprites.
-
-Please increase the texture size, and/or array count, or reduce the padding and try again.</value>
-  </data>
-  <data name="GORTAG_INF_ALREADY_ATLASED" xml:space="preserve">
-    <value>The selected sprites are already on a texture atlas.
-
-No changes will be made.</value>
-  </data>
-  <data name="GORTAG_CONFIRM_OVERWRITE" xml:space="preserve">
+  <data name="GORIAG_CONFIRM_OVERWRITE" xml:space="preserve">
     <value>Generating the texture atlas will overwrite one or more textures.
 
 Are you sure you want to do this?</value>
   </data>
-  <data name="info_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\info_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GORIAG_ERR_NO_ROOM" xml:space="preserve">
+    <value>There was not enough room for one or more of the image.
+
+Please increase the image size, and/or array count, or reduce the padding and try again.</value>
   </data>
-  <data name="GORTAG_ERR_CALC_TOO_LARGE" xml:space="preserve">
-    <value>The calculated size would be too large for this video adapter to handle.</value>
-  </data>
-  <data name="GORTAG_DESC_BUTTON" xml:space="preserve">
-    <value>A tool for generating a texture atlas from a series of sprites.</value>
-  </data>
-  <data name="GORTAG_ERR_CALC" xml:space="preserve">
-    <value>There was an error while calculating the texture dimensions.
+  <data name="GORIAG_ERR_LOAD_IMAGES" xml:space="preserve">
+    <value>There was an error loading the selected images.
 
 Please try again.</value>
   </data>
-  <data name="GORTAG_TEXT_BUTTON" xml:space="preserve">
-    <value>Sprite Atlas</value>
+  <data name="imageatlas_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\imageatlas_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORTAG_TEXT_SHOW_LOAD_SPRITE" xml:space="preserve">
-    <value>There was an error showing the sprite file manager.
+  <data name="GORIAG_TEXT_BUTTON" xml:space="preserve">
+    <value>Image Atlas</value>
+  </data>
+  <data name="info_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\info_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIAG_ERR_CALC_TOO_LARGE" xml:space="preserve">
+    <value>The calculated size would be too large for this video adapter to handle.</value>
+  </data>
+  <data name="GORIAG_TEXT_NO_IMAGES" xml:space="preserve">
+    <value>No images loaded.</value>
+  </data>
+  <data name="GORIAG_TEXT_NO_ATLAS" xml:space="preserve">
+    <value>Click the "Generate Atlas" button to create an atlas.</value>
+  </data>
+  <data name="GORIAG_ERR_FOLDER_SELECT" xml:space="preserve">
+    <value>There was an error browsing the file system folders.
 
 Please try again.</value>
   </data>
   <data name="calculate_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\calculate_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="load_sprites_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\load_sprites_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="load_image_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\load_image_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORTAG_TEXT_SELECT_SPRITE" xml:space="preserve">
-    <value>Select a sprite.</value>
+  <data name="GORIAG_TEXT_LOADING" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="GORIAG_TEXT_LOADING_IMAGE" xml:space="preserve">
+    <value>Loading image '{0}'...</value>
   </data>
 </root>

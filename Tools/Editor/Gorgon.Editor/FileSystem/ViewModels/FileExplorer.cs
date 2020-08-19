@@ -1228,6 +1228,7 @@ namespace Gorgon.Editor.ViewModels
             _fileSystemWriter.DeleteDirectory(directory.FullPath, progressCallback, cancelToken);            
 
             // If we've provided a progress callback, then we don't need to to use the code below.
+            // Otherwise we'd end up with a cross thread error as the UI would be updated on a separate thread.
             if (progressCallback != null)
             {
                 return;
@@ -3434,6 +3435,28 @@ namespace Gorgon.Editor.ViewModels
         /// Function to notify the application that the metadata for the file system should be flushed back to the disk.
         /// </summary>
         void IContentFileManager.FlushMetadata() => OnFileSystemUpdated();
+
+        /// <summary>
+        /// Function to retrieve a directory object by its path.
+        /// </summary>
+        /// <param name="path">The path to the directory to locate.</param>
+        /// <returns>The <see cref="IDirectory"/> representing the path, or <b>null</b> if not found.</returns>
+        public IDirectory GetDirectory(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return null;
+            }
+
+            if (!path.StartsWith("/"))
+            {
+                path = "/" + path;
+            }
+
+            string actualPath = path.FormatDirectory('/');
+
+            return _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, actualPath, StringComparison.OrdinalIgnoreCase));
+        }
         #endregion
 
         #region Constructor/Finalizer.
