@@ -410,6 +410,12 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>Property to return the command to retrieve a directory object by path.</summary>
+        public IEditorCommand<GetDirectoryArgs> GetDirectoryCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -2882,6 +2888,38 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to determine if a directory can be retrieved.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        /// <returns><b>true</b> if the directory can be retrieved, <b>false</b> if not.</returns>
+        private bool CanGetDirectory(GetDirectoryArgs args) => (args != null) && (!string.IsNullOrWhiteSpace(args.Path));
+
+        /// <summary>
+        /// Function to retrieve a directory object by its path.
+        /// </summary>
+        /// <param name="args">The arguments for the command.</param>
+        private void DoGetDirectory(GetDirectoryArgs args)
+        {
+            try
+            {
+                string path = args.Path;
+
+                if (!path.StartsWith("/"))
+                {
+                    path = "/" + path;
+                }
+
+                string actualPath = path.FormatDirectory('/');
+
+                args.Directory = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, actualPath, StringComparison.OrdinalIgnoreCase));
+            }
+            catch (Exception ex)
+            {
+                HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, args.Path));
+            }
+        }
+
+        /// <summary>
         /// Function to inject dependencies for the view model.
         /// </summary>
         /// <param name="injectionParameters">The parameters to inject.</param>
@@ -3435,28 +3473,6 @@ namespace Gorgon.Editor.ViewModels
         /// Function to notify the application that the metadata for the file system should be flushed back to the disk.
         /// </summary>
         void IContentFileManager.FlushMetadata() => OnFileSystemUpdated();
-
-        /// <summary>
-        /// Function to retrieve a directory object by its path.
-        /// </summary>
-        /// <param name="path">The path to the directory to locate.</param>
-        /// <returns>The <see cref="IDirectory"/> representing the path, or <b>null</b> if not found.</returns>
-        public IDirectory GetDirectory(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return null;
-            }
-
-            if (!path.StartsWith("/"))
-            {
-                path = "/" + path;
-            }
-
-            string actualPath = path.FormatDirectory('/');
-
-            return _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, actualPath, StringComparison.OrdinalIgnoreCase));
-        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -3481,6 +3497,7 @@ namespace Gorgon.Editor.ViewModels
             ExportFilesCommand = new EditorAsyncCommand<object>(DoExportFilesAsync, CanExportFiles);
             ImportCommand = new EditorAsyncCommand<IImportData>(DoImportAsync, CanImport);
             RefreshCommand = new EditorAsyncCommand<object>(DoRefreshAsync);
+            GetDirectoryCommand = new EditorCommand<GetDirectoryArgs>(DoGetDirectory, CanGetDirectory);
         }
         #endregion
     }

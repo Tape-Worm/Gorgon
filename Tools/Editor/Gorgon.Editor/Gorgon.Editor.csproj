@@ -79,6 +79,7 @@
     <Compile Include="FileSystem\ViewModels\FileExplorerParameters.cs" />
     <Compile Include="FileSystem\ViewModels\FileParameters.cs" />
     <Compile Include="FileSystem\ViewModels\FileSystemClipboardHandler.cs" />
+    <Compile Include="FileSystem\ViewModels\GetDirectoryArgs.cs" />
     <Compile Include="FileSystem\ViewModels\GetSizeInBytesCommandArgs.cs" />
     <Compile Include="FileSystem\ViewModels\RenameArgs.cs" />
     <Compile Include="FileSystem\ViewModels\RootDirectory.cs" />

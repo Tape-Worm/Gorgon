@@ -73,6 +73,22 @@ namespace Gorgon.Editor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve the current directory as an <see cref="IDirectory"/> object.
+        /// </summary>
+        /// <param name="path">The path to the directory.</param>
+        /// <returns>The <see cref="IDirectory"/>, or <b>null</b> if the directory was not found.</returns>
+        private IDirectory GetDirectory(string path)
+        {
+            var args = new GetDirectoryArgs(path);
+            if ((DataContext?.GetDirectoryCommand == null) || (!DataContext.GetDirectoryCommand.CanExecute(args)))
+            {
+                return null;
+            }
+
+            DataContext.GetDirectoryCommand.Execute(args);
+            return args.Directory;
+        }
 
         /// <summary>Fnuction called when deleting a folder.</summary>
         /// <param name="sender">The sender of the event.</param>
@@ -85,7 +101,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            IDirectory dir = DataContext.GetDirectory(e.DirectoryPath);
+            IDirectory dir = GetDirectory(e.DirectoryPath);
 
             if (dir == null)
             {
@@ -152,7 +168,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            IDirectory prevDir = DataContext.GetDirectory(e.OldDirectoryPath);
+            IDirectory prevDir = GetDirectory(e.OldDirectoryPath);
 
             if (prevDir == null)
             {
@@ -193,7 +209,7 @@ namespace Gorgon.Editor
             }
 
             ButtonOk.Enabled = !string.IsNullOrWhiteSpace(FolderBrowser.CurrentDirectory);
-            _currentDirectory = DataContext.GetDirectory(e.FolderPath);
+            _currentDirectory = GetDirectory(e.FolderPath);
         }
 
         /// <summary>
