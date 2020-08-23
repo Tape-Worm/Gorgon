@@ -26,8 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -137,7 +135,7 @@ namespace Gorgon.IO
         /// </para>
         /// <para>
         /// If the image file has been marked as premultiplied in the editor, then the texture will be converted to use premultiplied alpha when loading. This is only done when the texture is read from the 
-        /// file system, cached textures will left as-is.
+        /// file system, cached textures are left as-is.
         /// </para>
         /// </para>
         /// </remarks>        
@@ -199,7 +197,7 @@ namespace Gorgon.IO
         /// </para>
         /// <para>
         /// If the image file has been marked as premultiplied in the editor, then the texture will be converted to use premultiplied alpha when loading. This is only done when the texture is read from the 
-        /// file system, cached textures will left as-is.
+        /// file system, cached textures are left as-is.
         /// </para>
         /// </para>
         /// </remarks>        
@@ -240,7 +238,7 @@ namespace Gorgon.IO
         /// </para>
         /// <para>
         /// If the associated texture file has been marked as premultiplied in the editor, then the texture will be converted to use premultiplied alpha when loading. This is only done when the texture is 
-        /// read from the file system, cached textures will left as-is.
+        /// read from the file system, cached textures are left as-is.
         /// </para>
         /// </para>
         /// <para>

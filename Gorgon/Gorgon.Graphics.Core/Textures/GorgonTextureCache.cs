@@ -34,9 +34,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Graphics.Core
 {
@@ -44,15 +41,15 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A texture cache used to keep textures resident for use over a user defined lifetime.
     /// </summary>
+    /// <typeparam name="T">The type of texture view to store. Must be a reference type, and implement <see cref="IGorgonTextureResource"/>.</typeparam>
     /// <remarks>
-    /// <typeparamref name="T">The type of texture view to store. Must inherit from <see cref="GorgonShaderResourceView"/>.</typeparamref>
     /// <para>
     /// In some cases, textures are shared amongst several components because it is inefficient to load the same texture multiple times. However, the problem of ownership arises when one or more of the 
     /// components needs to be destroyed, what to do about the texture it uses?  Simply disposing of the texture would not work since the other components need this texture to work properly. 
     /// </para>
     /// <para>
     /// This is where the texture cache can be used to solve the problem. A texture cache will keep the textures resident in memory as long as they're being used. When a texture is requested by passing in 
-    /// its <see cref="GorgonTexture2D.TextureID"/> it will load the texture if it is not previously cached, or if the actual texture object was disposed. If the texture was previously cached, then the cached texture 
+    /// its <see cref="GorgonTexture2D.Name"/> it will load the texture if it is not previously cached, or if the actual texture object was disposed. If the texture was previously cached, then the cached texture 
     /// will be returned, incrementing an internal count, which is used to determine how many items are using the texture.
     /// </para>
     /// <para>
@@ -60,6 +57,7 @@ namespace Gorgon.Graphics.Core
     /// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again.
     /// </para>
     /// </remarks>
+    /// <seealso cref="IGorgonTextureResource"/>
     public class GorgonTextureCache<T>
         : IEnumerable<T>
         where T : class, IGorgonTextureResource

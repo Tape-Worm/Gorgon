@@ -25,7 +25,6 @@
 #endregion
 
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageSplitTool
 {

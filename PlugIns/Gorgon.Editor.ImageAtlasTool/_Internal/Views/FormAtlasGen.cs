@@ -36,8 +36,6 @@ using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Gorgon.Editor.ImageAtlasTool
 {

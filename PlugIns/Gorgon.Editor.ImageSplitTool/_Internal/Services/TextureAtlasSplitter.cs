@@ -37,7 +37,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Graphics;
-using Gorgon.Editor.Services;
 using Gorgon.UI;
 using Gorgon.Editor.ImageSplitTool.Properties;
 using System;

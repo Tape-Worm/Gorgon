@@ -33,6 +33,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Function to retrieve a list of explicit values in the <see cref="TrackInterpolationMode"/> passed in.
         /// </summary>
+        /// <param name="mode">The interpolation mode(s) to evaluate.</param>
         /// <returns>The list of explicitly declared values.</returns>
         public static IEnumerable<TrackInterpolationMode> GetExplicitValues(this TrackInterpolationMode mode)
         {

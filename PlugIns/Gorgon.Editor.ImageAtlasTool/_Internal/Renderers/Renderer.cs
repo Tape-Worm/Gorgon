@@ -30,7 +30,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using DX = SharpDX;
-using System.Linq;
 
 namespace Gorgon.Editor.ImageAtlasTool
 {

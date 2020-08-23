@@ -42,12 +42,12 @@
     <BuildLogFile>
     </BuildLogFile>
     <FrameworkVersion>.NET Framework 4.7.2</FrameworkVersion>
-    <Preliminary>True</Preliminary>
+    <Preliminary>False</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>API Reference</RootNamespaceTitle>
     <HelpTitle>Gorgon</HelpTitle>
     <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
-    <CopyrightText>Copyright &amp;#169%3b 2019 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
+    <CopyrightText>Copyright &amp;#169%3b 2020 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
     <FeedbackEMailAddress>gorgon%40tape-worm.net</FeedbackEMailAddress>
     <FooterText>&amp;lt%3bdiv style=&amp;quot%3bfloat: right%3b&amp;quot%3b&amp;gt%3b&amp;lt%3ba href=&amp;quot%3bhttps://www.tape-worm.net/&amp;quot%3b&amp;gt%3bGo back to OMG NUB!!&amp;lt%3b/a&amp;gt%3b&amp;lt%3b/div&amp;gt%3b</FooterText>
     <SdkLinkTarget>Blank</SdkLinkTarget>
@@ -55,6 +55,15 @@
     <ShowFeedbackControl>True</ShowFeedbackControl>
     <IncludeFavorites>False</IncludeFavorites>
     <ComponentConfigurations>
+      <ComponentConfig id="Code Block Component" enabled="True">
+        <component id="Code Block Component">
+  <basePath value="{@HtmlEncProjectFolder}" />
+  <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
+  <allowMissingSource value="false" />
+  <removeRegionMarkers value="false" />
+  <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="3" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
+</component>
+      </ComponentConfig>
     </ComponentConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.dll" />
@@ -143,7 +152,7 @@ The types in here are inherently dangerous to use because they offer little in t
       <Argument Key="maxVersionParts" Value="2" />
       <Argument Key="defaultLanguage" Value="cs" />
       <Argument Key="includeEnumValues" Value="true" />
-      <Argument Key="baseSourceCodeUrl" Value="" />
+      <Argument Key="baseSourceCodeUrl" Value="https://github.com/Tape-Worm/Gorgon/" />
       <Argument Key="requestExampleUrl" Value="" />
     </TransformComponentArguments>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
@@ -193,7 +202,6 @@ The types in here are inherently dangerous to use because they offer little in t
     <Reference Include="SharpDX.Mathematics">
       <HintPath>..\Gorgon\Gorgon.Core\bin\Debug\SharpDX.Mathematics.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Content\WinFormsProj.png">

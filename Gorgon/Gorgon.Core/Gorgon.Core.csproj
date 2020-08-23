@@ -103,7 +103,6 @@
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyList.cs" />
     <Compile Include="Configuration\_Interfaces\IGorgonOption.cs" />
     <Compile Include="Configuration\_Interfaces\IGorgonOptionBag.cs" />
-    <Compile Include="Design\GorgonFreezable.cs" />
     <Compile Include="Design\LocalCategoryAttribute.cs" />
     <Compile Include="Design\LocalDescriptionAttribute.cs" />
     <Compile Include="Design\LocalDisplayNameAttribute.cs" />

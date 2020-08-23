@@ -26,18 +26,13 @@
 
 using System;
 using System.ComponentModel;
-using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.ImageSplitTool.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
 using Gorgon.Editor.UI.Views;
 using System.Threading.Tasks;
 
