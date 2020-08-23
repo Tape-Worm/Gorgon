@@ -143,8 +143,9 @@ jobs:
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/'
       contents: '**/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml)'
+      			'!TextViewerExample**'
       CleanTargetFolder: true
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'      				
 
   - task: PowerShell@2
     displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Examples'
