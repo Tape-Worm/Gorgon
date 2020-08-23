@@ -139,12 +139,12 @@ jobs:
       TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/PlugIns'
 
   - task: CopyFiles@2
-    displayName: 'Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'  
+    displayName: 'Copying Tools to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'  
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/'
       contents: |
+        **/!(TextViewerExample.dll)
         **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml)
-        !(TextViewerExample.*)
       CleanTargetFolder: true
       TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'      				
 
