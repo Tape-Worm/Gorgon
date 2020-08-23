@@ -142,9 +142,7 @@ jobs:
     displayName: 'Copying Tools to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'  
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/'
-      contents: |
-        **/!(TextViewerExample.dll)
-        **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml)
+      contents: '**/?(*.exe|Gorgon.Editor.*.dll|*.config|Gorgon.Editor.API.xml|WinFormsColor.dll)'
       CleanTargetFolder: true
       TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'      				
 
