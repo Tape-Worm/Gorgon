@@ -3,7 +3,7 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
-name: 3.0.$(Rev:r).$(DayOfYear)-Enhance
+name: 3.1.$(Rev:r).$(DayOfYear)-Enhance
 
 trigger:
   branches:
