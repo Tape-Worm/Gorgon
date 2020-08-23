@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -184,6 +185,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset">
+      <Link>NoLiteralBugFix.ruleset</Link>
+    </None>
     <None Include="Resources\no_thumb_sprite_64x64.png" />
     <None Include="Resources\Transparency_Pattern.png" />
     <None Include="Resources\go_back_48x48.png" />

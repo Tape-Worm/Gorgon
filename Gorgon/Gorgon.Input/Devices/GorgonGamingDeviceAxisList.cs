@@ -74,7 +74,9 @@ namespace Gorgon.Input
                     throw new ArgumentOutOfRangeException(nameof(index), Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
                 }
 #endif
+#pragma warning disable IDE0026 // Use expression body for indexers
                 return _infoList[_axisList[index]];
+#pragma warning restore IDE0026 // Use expression body for indexers
             }
         }
         #endregion
