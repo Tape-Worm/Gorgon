@@ -142,7 +142,7 @@ jobs:
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/'
           Contents: |
-            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml)
+            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
             !**/TextViewerExample.*
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'

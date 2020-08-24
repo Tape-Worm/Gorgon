@@ -74,7 +74,7 @@ $NewVersion = $VersionData[0]
 Write-Verbose "Version: $NewVersion"
 
 # Apply the version to the assembly property files
-$files = gci $Env:BUILD_SOURCESDIRECTORY -recurse -include "*Properties*","My Project","src" | 
+$files = gci $Env:BUILD_SOURCESDIRECTORY -recurse -include "*Properties*","My Project","src", "Gorgon.Core" | 
     ?{ $_.PSIsContainer } | 
     foreach { gci -Path $_.FullName -Recurse -include "*AssemblyInfo.*" }
 if($files)
@@ -82,7 +82,7 @@ if($files)
     Write-Verbose "Will apply $NewVersion to $($files.count) files."
 
     foreach ($file in $files) {
-        Write-Host "Updating version for $file.FullName to $NewVersion"
+        Write-Host "Updating version for $file to $NewVersion"
         $filecontent = Get-Content($file)
         attrib $file -r
         $filecontent -replace "(\d+.\d+.\*)|($VersionRegex)", $NewVersion | Out-File $file                

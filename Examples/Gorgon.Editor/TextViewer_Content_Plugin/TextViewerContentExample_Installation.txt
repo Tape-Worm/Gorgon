@@ -1,0 +1,5 @@
+﻿Text Viewer Content Example
+---------------------------
+
+This is a plug in for the Gorgon Editor. To use it, just copy it into the Tools\Plugins\Content directory in the location that you installed Gorgon into.  
+
