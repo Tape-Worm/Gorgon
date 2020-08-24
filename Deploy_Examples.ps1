@@ -57,7 +57,7 @@ mkdir $artifactBin
 mkdir $artifactImagesFolder
 mkdir $artifactPlugIns
 
-$gorgonExamples = (Get-ChildItem "Examples\\" -include *.dll,*.exe, *.config -Recurse | where { $_.FullName -notmatch "app.config" -and $_.FullName -notmatch ".vshost.exe" -and $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "_Test" })
+$gorgonExamples = (Get-ChildItem "Examples\\" -include *.dll,*.exe, *.config, TextViewerContentExample_Installation.txt  -Recurse | where { $_.FullName -notmatch "app.config" -and $_.FullName -notmatch ".vshost.exe" -and $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "_Test" })
 $plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | where { $_.FullName -notmatch "\\debug\\" })
 
 Write-Output "$($gorgonExamples.Length) Example files to copy."
