@@ -60,7 +60,7 @@ GorgonGBufferOutput GorgonPixelShaderGBuffer(GorgonLitVertex vertex) : SV_Target
 {	
 	GorgonGBufferOutput result;
 
-	result.Diffuse = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);    
+	result.Diffuse = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 	
 	REJECT_ALPHA(result.Diffuse.a);    	
 
