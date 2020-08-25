@@ -224,7 +224,6 @@ namespace Gorgon.IO
                 {
                     Name = path,
                     Binding = TextureBinding.ShaderResource,
-                    ConvertToPremultipliedAlpha = shouldConvertToPremultiplied,
                     IsTextureCube = image.ImageType == ImageType.ImageCube,
                     Usage = ResourceUsage.Immutable
                 });
@@ -470,15 +469,6 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, codecTypeName));
             }
 
-            bool shouldConvertToPremultiplied = false;
-
-            if (fileMetadata.Attributes.TryGetValue("PremultipliedAlpha", out string isPremultiplied))
-            {
-#pragma warning disable CA1806 // Do not ignore method results
-                bool.TryParse(isPremultiplied, out shouldConvertToPremultiplied);
-#pragma warning restore CA1806 // Do not ignore method results
-            }
-
             if (cache)
             {
                 return await TextureCache.GetTextureAsync(path, ReadTextureAsync);
@@ -492,7 +482,6 @@ namespace Gorgon.IO
                 {
                     Name = path,
                     Binding = TextureBinding.ShaderResource,
-                    ConvertToPremultipliedAlpha = shouldConvertToPremultiplied,
                     IsTextureCube = image.ImageType == ImageType.ImageCube,
                     Usage = ResourceUsage.Immutable
                 });
