@@ -237,4 +237,6 @@ The types in here are inherently dangerous to use because they offer little in t
       <AlternateText>Sprite Sheet</AlternateText>
     </Image>
   </ItemGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets"/>
 </Project>
