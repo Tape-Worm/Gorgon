@@ -165,10 +165,6 @@ The types in here are inherently dangerous to use because they offer little in t
     <HeaderText>
     </HeaderText>
   </PropertyGroup>
-  <PropertyGroup>
-      <!-- NOTE: Update the version number in the path (YYYY.M.D.R) to match the package version -->
-      <SHFBROOT Condition=" '$(SHFBROOT)' == '' ">$(MSBuildThisFileDirectory)..\packages\ewsoftware.shfb.2020.3.6\Tools\</SHFBROOT>
-  </PropertyGroup>  
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
