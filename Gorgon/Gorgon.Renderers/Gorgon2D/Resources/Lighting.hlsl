@@ -146,23 +146,27 @@ GorgonSpriteLitVertex GorgonVertexLitShader(GorgonSpriteVertex vertex)
 float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
 {
     float4 result = float4(0, 0, 0, 1);
+    float4 color = float4(0, 0, 0, 0);
 
     for (int i = 0; i < MAX_LIGHTS; ++i)
     {
         Light light = _lights[i];
         int lightType = int(light.lightPosition.w);
 
+
         switch (lightType)
         {
 			// Directional lights.
             case 1:
-                result += DirectionalLight(vertex.worldPos, vertex.uv, light);
+				color = DirectionalLight(vertex.worldPos, vertex.uv, light);
                 break;
 			// Point lights.
             default:
-                result += PointLight(vertex.worldPos, vertex.uv, light);
+                color = PointLight(vertex.worldPos, vertex.uv, light);
                 break;
         }
+        
+        result = float4(result.rgb + color.rgb, color.a);
     }
 
     return saturate(result);
