@@ -166,11 +166,11 @@ namespace Gorgon.IO
         /// <remarks>
         /// If the chunk is not found, then this property will return <b>null</b>.
         /// </remarks>
-        public GorgonChunk this[ulong ID]
+        public GorgonChunk this[ulong id]
         {
             get
             {
-                int index = IndexOf(ID);
+                int index = IndexOf(id);
 
                 return index == -1 ? default : _list[index];
             }

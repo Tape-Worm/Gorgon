@@ -113,9 +113,9 @@ namespace Gorgon.Editor.Rendering
 
         #region Events.
         // The event triggered when the camera is zoomed.
-        private EventHandler<ZoomScaleEventArgs> ZoomEvent;
+        private EventHandler<ZoomScaleEventArgs> _zoomEvent;
         // The event triggered when the camera is moved.
-        private EventHandler<OffsetEventArgs> OffsetEvent;
+        private EventHandler<OffsetEventArgs> _offsetEvent;
 
         /// <summary>
         /// Event triggered when the camera is moved.
@@ -128,11 +128,11 @@ namespace Gorgon.Editor.Rendering
                 {
                     if (value == null)
                     {
-                        OffsetEvent = null;
+                        _offsetEvent = null;
                         return;
                     }
 
-                    OffsetEvent += value;
+                    _offsetEvent += value;
                 }
             }
             remove
@@ -144,7 +144,7 @@ namespace Gorgon.Editor.Rendering
                         return;
                     }
 
-                    OffsetEvent -= value;
+                    _offsetEvent -= value;
                 }
             }
         }
@@ -160,11 +160,11 @@ namespace Gorgon.Editor.Rendering
                 {
                     if (value == null)
                     {
-                        ZoomEvent = null;
+                        _zoomEvent = null;
                         return;
                     }
 
-                    ZoomEvent += value;
+                    _zoomEvent += value;
                 }              
             }
             remove
@@ -176,7 +176,7 @@ namespace Gorgon.Editor.Rendering
                         return;
                     }
 
-                    ZoomEvent -= value;
+                    _zoomEvent -= value;
                 }
             }
         }
@@ -1001,14 +1001,14 @@ namespace Gorgon.Editor.Rendering
         }
 
         /// <summary>
-        /// Function to trigger the <see cref="ZoomEvent"/>.
+        /// Function to trigger the <see cref="_zoomEvent"/>.
         /// </summary>
         internal void OnZoom()
         {
             lock (_zoomEventLock)
             {
                 _zoomArgs.ZoomScale = _camera.Zoom.X;
-                EventHandler<ZoomScaleEventArgs> handler = ZoomEvent;
+                EventHandler<ZoomScaleEventArgs> handler = _zoomEvent;
                 handler?.Invoke(this, _zoomArgs);
             }
 
@@ -1016,14 +1016,14 @@ namespace Gorgon.Editor.Rendering
         }
 
         /// <summary>
-        /// Function to trigger the <see cref="OffsetEvent"/>.
+        /// Function to trigger the <see cref="_offsetEvent"/>.
         /// </summary>
         internal void OnOffset()
         {
             lock (_offsetEventLock)
             {
                 _offsetArgs.Offset = (DX.Vector2)_camera.Position;
-                EventHandler<OffsetEventArgs> handler = OffsetEvent;
+                EventHandler<OffsetEventArgs> handler = _offsetEvent;
                 handler?.Invoke(this, _offsetArgs);
             }
 
@@ -1112,8 +1112,8 @@ namespace Gorgon.Editor.Rendering
 
             OnUnload();
 
-            ZoomEvent = null;
-            OffsetEvent = null;
+            _zoomEvent = null;
+            _offsetEvent = null;
 
             _swapChain.Window.PreviewKeyDown -= Window_PreviewKeyDown;
             _swapChain.Window.KeyDown -= Window_KeyDown;

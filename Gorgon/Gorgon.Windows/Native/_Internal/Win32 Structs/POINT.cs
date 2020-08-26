@@ -34,8 +34,8 @@ namespace Gorgon.Native
     internal struct POINT
     {
 #pragma warning disable IDE0044 // Add readonly modifier
-        int x;
-        int y;
+        public int x;
+        public int y;
 #pragma warning restore IDE0044 // Add readonly modifier
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

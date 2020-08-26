@@ -111,7 +111,7 @@ namespace Gorgon.Editor.Native
         }
 
         [DllImport("shell32.dll", CharSet = CharSet.Auto)]
-        private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
+        private static extern int SHFileOperation(ref SHFILEOPSTRUCT fileOp);
 
         /// <summary>
         /// Send file to recycle bin

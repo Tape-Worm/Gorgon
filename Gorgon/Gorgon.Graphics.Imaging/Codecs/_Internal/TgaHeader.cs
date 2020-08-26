@@ -119,7 +119,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// First color map index.
         /// </summary>
-        private readonly ushort ColorMapFirst;
+        private readonly ushort _colorMapFirst;
         /// <summary>
         /// Length of the color map indices.
         /// </summary>
@@ -127,15 +127,15 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// Size of the color map.
         /// </summary>
-        private readonly byte ColorMapSize;
+        private readonly byte _colorMapSize;
         /// <summary>
         /// Starting horizontal position.
         /// </summary>
-        private readonly ushort XOrigin;
+        private readonly ushort _xOrigin;
         /// <summary>
         /// Starting vertical position.
         /// </summary>
-        private readonly ushort YOrigin;
+        private readonly ushort _yOrigin;
         /// <summary>
         /// Width of the image.
         /// </summary>

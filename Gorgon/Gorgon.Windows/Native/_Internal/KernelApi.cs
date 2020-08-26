@@ -215,21 +215,21 @@ namespace Gorgon.Native
         /// Function to return the frequency of the high precision timer.
         /// </summary>
         /// <remarks>See the MSDN documentation for a detailed description.</remarks>
-        /// <param name="PerformanceFrequency">Frequency of timer.</param>
+        /// <param name="performanceFrequency">Frequency of timer.</param>
         /// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
         [DllImport("kernel32", CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool QueryPerformanceFrequency(out long PerformanceFrequency);
+        public static extern bool QueryPerformanceFrequency(out long performanceFrequency);
 
         /// <summary>
         /// Function to return the time from a high resolution timer.
         /// </summary>
         /// <remarks>See the MSDN documentation for a detailed description.</remarks>
-        /// <param name="PerformanceCount">Time from the timer.</param>
+        /// <param name="performanceCount">Time from the timer.</param>
         /// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
         [DllImport("kernel32", CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool QueryPerformanceCounter(out long PerformanceCount);
+        public static extern bool QueryPerformanceCounter(out long performanceCount);
         #endregion
 
         #region Constructor.

@@ -127,13 +127,13 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to retrieve the video modes for an output.
         /// </summary>
-        /// <param name="D3DDevice">D3D device for filtering supported display modes.</param>
+        /// <param name="d3dDevice">D3D device for filtering supported display modes.</param>
         /// <param name="giOutput">Output that contains the video modes.</param>
         /// <returns>A list of display compatible full screen video modes.</returns>
-        private static IEnumerable<ModeDescription1> GetVideoModes(D3D11.Device1 D3DDevice, Output1 giOutput)
+        private static IEnumerable<ModeDescription1> GetVideoModes(D3D11.Device1 d3dDevice, Output1 giOutput)
         {
             Format[] formats = ((Format[])Enum.GetValues(typeof(Format)))
-                .Where(item => (D3DDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
+                .Where(item => (d3dDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
                 .ToArray();
 
             IEnumerable<ModeDescription1> result = Enumerable.Empty<ModeDescription1>();
@@ -146,7 +146,7 @@ namespace Gorgon.Graphics.Core
                                                                                      DisplayModeEnumerationFlags.Stereo |
                                                                                      DisplayModeEnumerationFlags.DisabledStereo |
                                                                                      DisplayModeEnumerationFlags.Interlaced)
-                                                                .Where(item => (D3DDevice.CheckFormatSupport(format) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)));
+                                                                .Where(item => (d3dDevice.CheckFormatSupport(format) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)));
         }
 
         /// <summary>

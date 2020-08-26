@@ -318,17 +318,17 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// Reserved.
         /// </summary>
-        private readonly uint Reserved1;
-        private readonly uint Reserved2;
-        private readonly uint Reserved3;
-        private readonly uint Reserved4;
-        private readonly uint Reserved5;
-        private readonly uint Reserved6;
-        private readonly uint Reserved7;
-        private readonly uint Reserved8;
-        private readonly uint Reserved9;
-        private readonly uint ReservedA;
-        private readonly uint ReservedB;
+        private readonly uint _reserved1;
+        private readonly uint _reserved2;
+        private readonly uint _reserved3;
+        private readonly uint _reserved4;
+        private readonly uint _reserved5;
+        private readonly uint _reserved6;
+        private readonly uint _reserved7;
+        private readonly uint _reserved8;
+        private readonly uint _reserved9;
+        private readonly uint _reservedA;
+        private readonly uint _reservedB;
         /// <summary>
         /// Pixel format.
         /// </summary>
@@ -344,15 +344,15 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// Capabilities #3.
         /// </summary>
-        private readonly uint ReservedC;
+        private readonly uint _reservedC;
         /// <summary>
         /// Capabilities #4.
         /// </summary>
-        private readonly uint ReservedD;
+        private readonly uint _reservedD;
         /// <summary>
         /// Reserved.
         /// </summary>
-        private readonly uint ReservedE;
+        private readonly uint _reservedE;
     }
 
     /// <summary>
@@ -380,7 +380,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// Reserved.
         /// </summary>
-        private readonly uint Reserved;
+        private readonly uint _reserved;
     }
 
     /// <summary>

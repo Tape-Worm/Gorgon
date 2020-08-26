@@ -76,33 +76,33 @@ namespace Gorgon.Native
         /// <summary>
         /// The GetCharABCWidths function retrieves the widths, in logical units, of consecutive characters in a specified range from the current TrueType font. This function succeeds only with TrueType fonts.
         /// </summary>
-        /// <param name="HDC">A handle to the device context.</param>
+        /// <param name="hdc">A handle to the device context.</param>
         /// <param name="uFirstChar">The first character in the group of consecutive characters from the current font.</param>
         /// <param name="uLastChar">The last character in the group of consecutive characters from the current font.</param>
         /// <param name="lpABC">A pointer to an array of ABC structures that receives the character widths, in logical units. This array must contain at least as many ABC structures as there are characters in the range specified by the uFirstChar and uLastChar parameters.</param>
         /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
         [DllImport("gdi32.dll", EntryPoint = "GetCharABCWidthsW", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetCharABCWidthsW(IntPtr HDC, uint uFirstChar, uint uLastChar, ABC* lpABC);
+        private static extern bool GetCharABCWidthsW(IntPtr hdc, uint uFirstChar, uint uLastChar, ABC* lpABC);
 
         /// <summary>
         /// The GetKerningPairs function retrieves the character-kerning pairs for the currently selected font for the specified device context.
         /// </summary>
-        /// <param name="HDC">A handle to the device context.</param>
+        /// <param name="hdc">A handle to the device context.</param>
         /// <param name="numberOfPairs">The number of pairs in the keyPairs array. If the font has more than nNumPairs kerning pairs, the function returns an error.</param>
         /// <param name="kernPairs">A pointer to an array of KERNINGPAIR structures that receives the kerning pairs. The array must contain at least as many structures as specified by the nNumPairs parameter. If this parameter is <b>null</b>, the function returns the total number of kerning pairs for the font.</param>
         /// <returns>If the function succeeds, the return value is the number of kerning pairs returned.  If the function fails, the return value is zero.</returns>
         [DllImport("gdi32.dll", EntryPoint = "GetKerningPairsW", CharSet = CharSet.Unicode)]
-        private static extern uint GetKerningPairsW(IntPtr HDC, uint numberOfPairs, KERNINGPAIR* kernPairs);
+        private static extern uint GetKerningPairsW(IntPtr hdc, uint numberOfPairs, KERNINGPAIR* kernPairs);
 
         /// <summary>
         /// The SetMapMode function sets the mapping mode of the specified device context. The mapping mode defines the unit of measure used to transform page-space units into device-space units, and also defines the orientation of the device's x and y axes.
         /// </summary>
-        /// <param name="HDC">A handle to the device context.</param>
+        /// <param name="hdc">A handle to the device context.</param>
         /// <param name="fnMapMode">The new mapping mode.</param>
         /// <returns>If the function succeeds, the return value identifies the previous mapping mode.  If the function fails, the return value is zero.</returns>
         [DllImport("gdi32.dll", EntryPoint = "SetMapMode", CharSet = CharSet.Auto)]
-        private static extern MapModes SetMapMode(IntPtr HDC, MapModes fnMapMode);
+        private static extern MapModes SetMapMode(IntPtr hdc, MapModes fnMapMode);
         #endregion
 
         #region Methods.

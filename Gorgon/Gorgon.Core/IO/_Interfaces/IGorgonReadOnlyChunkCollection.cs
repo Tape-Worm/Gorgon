@@ -52,7 +52,7 @@ namespace Gorgon.IO
         /// <remarks>
         /// If the chunk is not found, then this property will return <b>null</b>.
         /// </remarks>
-        GorgonChunk this[ulong ID]
+        GorgonChunk this[ulong id]
         {
             get;
         }
