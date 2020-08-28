@@ -168,6 +168,8 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImageContent.ImageType):
                     UpdateImageTypeMenu(DataContext);
                     break;
+                case nameof(IImageContent.Width):
+                case nameof(IImageContent.Height):
                 case nameof(IImageContent.PixelFormats):
                     RefreshPixelFormats(DataContext);
                     break;
@@ -627,6 +629,15 @@ namespace Gorgon.Editor.ImageEditor
 
             foreach (BufferFormat format in dataContext.PixelFormats)
             {
+                var info = new GorgonFormatInfo(format);
+
+                // Skip out on compressed formats if our image width/height isn't a multiple of 4.
+                if ((info.IsCompressed) &&
+                    (((dataContext.Width % 4) != 0) || ((dataContext.Height % 4) != 0)))
+                {
+                    continue;
+                }
+
                 var item = new ToolStripMenuItem(format.ToString())
                 {
                     Name = format.ToString(),
