@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="_Extensions\Gorgon2DFileSystemExtensions.cs" />
     <Compile Include="_Extensions\GorgonAnimationExtensions.cs" />
+    <Compile Include="_Extensions\GorgonGraphicExtensions.cs" />
     <Compile Include="_Extensions\GorgonSpriteExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

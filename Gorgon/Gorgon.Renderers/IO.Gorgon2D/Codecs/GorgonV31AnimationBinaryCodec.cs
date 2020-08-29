@@ -129,12 +129,7 @@ namespace Gorgon.IO
             reader.ReadValue(out BufferFormat viewFormat);
 
             // Locate the texture resource.
-            GorgonTexture2D texture = Renderer.Graphics.LocateResourcesByName<GorgonTexture2D>(textureName)
-                                              .FirstOrDefault(item => item.Width == textureWidth
-                                                                      && item.Height == textureHeight
-                                                                      && item.Format == textureFormat
-                                                                      && item.ArrayCount == textureArrayCount
-                                                                      && item.MipLevels == textureMipCount);
+            GorgonTexture2D texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
             return texture?.GetShaderResourceView(viewFormat, viewMipSlice, viewMipCount, viewArrayIndex, viewArrayCount);
         }

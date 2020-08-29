@@ -117,12 +117,7 @@ namespace Gorgon.IO
             // Locate the texture resource.
             if (overrideTexture == null)
             {
-                texture = Renderer.Graphics.LocateResourcesByName<GorgonTexture2D>(textureName)
-                                                  .FirstOrDefault(item => item.Width == textureWidth
-                                                                          && item.Height == textureHeight
-                                                                          && item.Format == textureFormat
-                                                                          && item.ArrayCount == textureArrayCount
-                                                                          && item.MipLevels == textureMipCount);
+                texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
                 if (texture == null)
                 {

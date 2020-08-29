@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
@@ -110,12 +112,7 @@ namespace Gorgon.IO
             // Locate the texture resource.
             if (overrideTexture == null)
             {
-                texture = Renderer.Graphics.LocateResourcesByName<GorgonTexture2D>(textureName)
-                                                  .FirstOrDefault(item => item.Width == textureWidth
-                                                                          && item.Height == textureHeight
-                                                                          && item.Format == textureFormat
-                                                                          && item.ArrayCount == textureArrayCount
-                                                                          && item.MipLevels == textureMipCount);
+                texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
                 if (texture == null)
                 {

@@ -214,12 +214,7 @@ namespace Gorgon.IO
                 return _override;
             }
 
-            GorgonTexture2D texture = _graphics?.LocateResourcesByName<GorgonTexture2D>(textureName)
-                                               .FirstOrDefault(item => (item.Width == texWidth)
-                                                                       && (item.Height == texHeight)
-                                                                       && (item.Format == texFormat)
-                                                                       && (item.MipLevels == texMipCount)
-                                                                       && (item.ArrayCount == texArrayCount));
+            GorgonTexture2D texture = _graphics?.Locate2DTextureByName(textureName, texWidth ?? 1, texHeight ?? 1, texFormat ?? BufferFormat.R8G8B8A8_UNorm, texArrayCount ?? 1, texMipCount ?? 1);
 
             return texture?.GetShaderResourceView(viewFormat.Value, viewMipStart.Value, viewMipCount.Value, viewArrayStart.Value, viewArrayCount.Value);
         }
