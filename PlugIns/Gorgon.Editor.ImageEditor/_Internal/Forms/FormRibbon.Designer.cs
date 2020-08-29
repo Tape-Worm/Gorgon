@@ -75,7 +75,7 @@
             this.Item2DImage = new System.Windows.Forms.ToolStripMenuItem();
             this.ItemCubeMap = new System.Windows.Forms.ToolStripMenuItem();
             this.Item3DImage = new System.Windows.Forms.ToolStripMenuItem();
-            this.ButtonPremultipliedAlpha = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.CheckPremultipliedAlpha = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonZoom = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -128,7 +128,6 @@
             this.RibbonImageContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage,
             this.TabEffects});
-            this.RibbonImageContent.SelectedContext = null;
             this.RibbonImageContent.SelectedTab = this.TabImage;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
@@ -344,7 +343,7 @@
             this.GroupImageFormat.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonImageFormat,
             this.ButtonImageType,
-            this.ButtonPremultipliedAlpha});
+            this.CheckPremultipliedAlpha});
             this.GroupImageFormat.MinimumSize = ComponentFactory.Krypton.Ribbon.GroupItemSize.Medium;
             // 
             // ButtonImageFormat
@@ -413,17 +412,17 @@
             this.Item3DImage.Text = "3D Image";
             this.Item3DImage.Click += new System.EventHandler(this.ItemImageType_Click);
             // 
-            // ButtonPremultipliedAlpha
+            // CheckPremultipliedAlpha
             // 
-            this.ButtonPremultipliedAlpha.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
-            this.ButtonPremultipliedAlpha.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.alpha_48x48;
-            this.ButtonPremultipliedAlpha.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.alpha_16x16;
-            this.ButtonPremultipliedAlpha.KeyTip = "P";
-            this.ButtonPremultipliedAlpha.TextLine1 = "Premultiplied";
-            this.ButtonPremultipliedAlpha.TextLine2 = "Alpha";
-            this.ButtonPremultipliedAlpha.ToolTipBody = "Indicates that this texture should use premultiplied alpha.";
-            this.ButtonPremultipliedAlpha.ToolTipTitle = "Premultiplied Alpha";
-            this.ButtonPremultipliedAlpha.Click += new System.EventHandler(this.ButtonPremultipliedAlpha_Click);
+            this.CheckPremultipliedAlpha.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.CheckPremultipliedAlpha.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.alpha_48x48;
+            this.CheckPremultipliedAlpha.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.alpha_16x16;
+            this.CheckPremultipliedAlpha.KeyTip = "P";
+            this.CheckPremultipliedAlpha.TextLine1 = "Premultiplied";
+            this.CheckPremultipliedAlpha.TextLine2 = "Alpha";
+            this.CheckPremultipliedAlpha.ToolTipBody = "Indicates that this texture should use premultiplied alpha.";
+            this.CheckPremultipliedAlpha.ToolTipTitle = "Premultiplied Alpha";
+            this.CheckPremultipliedAlpha.Click += new System.EventHandler(this.CheckPremultipliedAlpha_Click);
             // 
             // kryptonRibbonGroupLines3
             // 
@@ -821,7 +820,7 @@
         private System.Windows.Forms.ToolStripMenuItem Item3200Percent;
         private System.Windows.Forms.ToolStripMenuItem Item6400Percent;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonPremultipliedAlpha;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton CheckPremultipliedAlpha;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSetAlpha;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFx;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupImageFilters;

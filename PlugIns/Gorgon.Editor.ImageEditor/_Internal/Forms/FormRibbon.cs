@@ -173,6 +173,9 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImageContent.PixelFormats):
                     RefreshPixelFormats(DataContext);
                     break;
+                case nameof(IImageContent.IsPremultiplied):
+                    CheckPremultipliedAlpha.Checked = DataContext.IsPremultiplied;
+                    break;
                 case nameof(IImageContent.CurrentPixelFormat):
                     ButtonImageFormat.TextLine1 = $"{Resources.GORIMG_TEXT_IMAGE_FORMAT}: {DataContext.CurrentPixelFormat}";
                     UpdatePixelFormatMenuSelection(DataContext);
@@ -535,14 +538,14 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Handles the Click event of the ButtonPremultipliedAlpha control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonPremultipliedAlpha_Click(object sender, EventArgs e)
+        private async void CheckPremultipliedAlpha_Click(object sender, EventArgs e)
         {
             if ((DataContext?.PremultipliedAlphaCommand == null) || (!DataContext.PremultipliedAlphaCommand.CanExecute(true)))
             {
                 return;
             }
 
-            DataContext.PremultipliedAlphaCommand.Execute(ButtonPremultipliedAlpha.Checked);
+            await DataContext.PremultipliedAlphaCommand.ExecuteAsync(CheckPremultipliedAlpha.Checked);
             ValidateButtons();
         }
 
@@ -566,7 +569,7 @@ namespace Gorgon.Editor.ImageEditor
             ButtonImageRedo.Enabled = DataContext.RedoCommand?.CanExecute(null) ?? false;
             ButtonExport.Enabled = DataContext.ExportImageCommand?.CanExecute(null) ?? false;
             ButtonSaveImage.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
-            ButtonPremultipliedAlpha.Enabled = DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false;
+            CheckPremultipliedAlpha.Enabled = DataContext.PremultipliedAlphaCommand?.CanExecute(true) ?? false;
             ButtonSetAlpha.Enabled = DataContext.ShowSetAlphaCommand?.CanExecute(null) ?? false;
             ButtonFx.Enabled = DataContext.ShowFxCommand?.CanExecute(null) ?? false;
             ButtonGaussBlur.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowBlurCommand?.CanExecute(null) ?? false);
@@ -630,21 +633,25 @@ namespace Gorgon.Editor.ImageEditor
             foreach (BufferFormat format in dataContext.PixelFormats)
             {
                 var info = new GorgonFormatInfo(format);
-
-                // Skip out on compressed formats if our image width/height isn't a multiple of 4.
-                if ((info.IsCompressed) &&
-                    (((dataContext.Width % 4) != 0) || ((dataContext.Height % 4) != 0)))
-                {
-                    continue;
-                }
-
+                
                 var item = new ToolStripMenuItem(format.ToString())
                 {
                     Name = format.ToString(),
                     Checked = dataContext.CurrentPixelFormat == format,
                     CheckOnClick = true,
-                    Tag = format
+                    Tag = format,
+                    Enabled = ((!info.IsCompressed) ||
+                                (((dataContext.Width % 4) == 0) && ((dataContext.Height % 4) == 0)))
                 };
+
+                if (!item.Enabled)
+                {
+                    item.ToolTipText = string.Format(Resources.GORIMG_TIP_DISABLED_FORMAT, format);
+                }
+                else
+                {
+                    item.ToolTipText = string.Empty;
+                }
 
                 item.Click += PixelFormatItem_Click;
 
@@ -730,7 +737,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void ResetDataContext()
         {
-            ButtonPremultipliedAlpha.Checked = false;
+            CheckPremultipliedAlpha.Checked = false;
             RibbonImageContent.Enabled = false;
             ClearCodecs();
             UpdateZoomMenu();
@@ -844,7 +851,7 @@ namespace Gorgon.Editor.ImageEditor
             UpdateZoomMenu();
             UpdateImageTypeMenu(dataContext);
 
-            ButtonPremultipliedAlpha.Checked = dataContext.IsPremultiplied;
+            CheckPremultipliedAlpha.Checked = dataContext.IsPremultiplied;
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>

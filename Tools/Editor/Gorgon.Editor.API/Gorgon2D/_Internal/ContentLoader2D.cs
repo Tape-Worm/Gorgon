@@ -202,19 +202,11 @@ namespace Gorgon.IO
                 return null;
             }
 
-            bool shouldConvertToPremultiplied = false;
-            if (metadata.Attributes.TryGetValue("PremultipliedAlpha", out string isPremultiplied))
-            {
-#pragma warning disable CA1806 // Do not ignore method results
-                bool.TryParse(isPremultiplied, out shouldConvertToPremultiplied);
-#pragma warning restore CA1806 // Do not ignore method results
-            }
-
             IGorgonImage image = await Task.Run(() =>
             {
                 using (Stream stream = file.OpenStream())
                 {
-                    return shouldConvertToPremultiplied ? codec.LoadFromStream(stream).ConvertToPremultipliedAlpha() : codec.LoadFromStream(stream);
+                    return codec.LoadFromStream(stream);
                 }
             });
 
@@ -378,19 +370,9 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, codecTypeName));
             }
 
-            bool shouldConvertToPremultiplied = false;
-
-            if (fileMetadata.Attributes.TryGetValue("PremultipliedAlpha", out string isPremultiplied))
-            {
-#pragma warning disable CA1806 // Do not ignore method results
-                bool.TryParse(isPremultiplied, out shouldConvertToPremultiplied);
-#pragma warning restore CA1806 // Do not ignore method results
-            }
-
             using (Stream stream = file.OpenStream())
             {
-                return shouldConvertToPremultiplied ? imageCodec.LoadFromStream(stream, (int)file.Size).ConvertToPremultipliedAlpha() 
-                                                    : imageCodec.LoadFromStream(stream, (int)file.Size);
+                return imageCodec.LoadFromStream(stream, (int)file.Size);
             }
         }
 

@@ -567,6 +567,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Premultiplied alpha.
+        /// </summary>
+        internal static string GORIMG_DESC_UNDO_PREMULTIPLY {
+            get {
+                return ResourceManager.GetString("GORIMG_DESC_UNDO_PREMULTIPLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error applying effects to the image..
         /// </summary>
         internal static string GORIMG_ERR_APPLYING_EFFECTS {
@@ -1074,6 +1083,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please wait....
+        /// </summary>
+        internal static string GORIMG_TEXT_PLEASE_WAIT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_PLEASE_WAIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Redoing previous action....
         /// </summary>
         internal static string GORIMG_TEXT_REDO {
@@ -1173,6 +1191,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_ZOOM_BUTTON {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_ZOOM_BUTTON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}] is disabled because the image width or height is not a multiple of 4..
+        /// </summary>
+        internal static string GORIMG_TIP_DISABLED_FORMAT {
+            get {
+                return ResourceManager.GetString("GORIMG_TIP_DISABLED_FORMAT", resourceCulture);
             }
         }
         

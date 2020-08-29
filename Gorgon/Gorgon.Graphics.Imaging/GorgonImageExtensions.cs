@@ -687,6 +687,84 @@ namespace Gorgon.Graphics.Imaging
         }
 
         /// <summary>
+        /// Function to convert the image data from a premultiplied format.
+        /// </summary>
+        /// <param name="baseImage">The image to convert.</param>
+        /// <returns>A <see cref="IGorgonImage"/> containing the image data with the premultiplied alpha removed from the pixel data.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when image format is compressed.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this to convert an image from a premultiplied format. This takes each Red, Green and Blue element and divides them by the Alpha element.
+        /// </para>
+        /// <para>
+        /// If the image does not contain alpha then the method will return right away and no alterations to the image will be performed.
+        /// </para>
+        /// </remarks>
+        public static IGorgonImage ConvertFromPremultipedAlpha(this IGorgonImage baseImage)
+        {
+            IGorgonImage newImage = null;
+            GorgonNativeBuffer<byte> imageData = null;
+
+            if (baseImage == null)
+            {
+                throw new ArgumentNullException(nameof(baseImage));
+            }
+
+            if (!baseImage.FormatInfo.HasAlpha)
+            {
+                return baseImage;
+            }
+
+            if (baseImage.FormatInfo.IsCompressed)
+            {
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, baseImage.Format), nameof(baseImage));
+            }
+
+            try
+            {
+                var cloneImageInfo = new GorgonImageInfo(baseImage)
+                {
+                    HasPreMultipliedAlpha = false
+                };
+                imageData = new GorgonNativeBuffer<byte>(baseImage.ImageData.Length);
+                baseImage.ImageData.CopyTo(imageData);
+
+                unsafe
+                {
+                    newImage = new GorgonImage(cloneImageInfo, new GorgonReadOnlyPointer((void*)imageData, imageData.SizeInBytes));
+
+                    int arrayOrDepth = newImage.ImageType == ImageType.Image3D ? newImage.Depth : newImage.ArrayCount;
+
+                    for (int mip = 0; mip < newImage.MipCount; ++mip)
+                    {
+                        for (int i = 0; i < arrayOrDepth; ++i)
+                        {
+                            IGorgonImageBuffer buffer = newImage.Buffers[mip, i];
+                            byte* ptr = (byte*)buffer.Data;
+                            int rowPitch = buffer.PitchInformation.RowPitch;
+
+                            for (int y = 0; y < buffer.Height; ++y)
+                            {
+                                ImageUtilities.RemovePremultipliedScanline(ptr, rowPitch, ptr, rowPitch, buffer.Format);
+                                ptr += rowPitch;
+                            }
+                        }
+                    }
+                }
+
+                newImage.CopyTo(baseImage);
+
+                return baseImage;
+            }
+            finally
+            {
+                imageData?.Dispose();
+                newImage?.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Function to convert the image data into a premultiplied format.
         /// </summary>
         /// <param name="baseImage">The image to convert.</param>

@@ -294,7 +294,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Property to return the command used to set the image to use premultiplied alpha.
         /// </summary>
-        IEditorCommand<bool> PremultipliedAlphaCommand
+        IEditorAsyncCommand<bool> PremultipliedAlphaCommand
         {
             get;
         }
@@ -305,6 +305,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         IEditorAsyncCommand<CopyToImageArgs> CopyToImageCommand
         {
             get;
-        }
+        }        
     }
 }

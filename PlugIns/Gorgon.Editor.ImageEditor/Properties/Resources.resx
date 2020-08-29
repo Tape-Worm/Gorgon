@@ -678,4 +678,13 @@ Mip Count: {5}</value>
     <value>Red: {0} Green: {1} Blue: {2}
 Alpha: {3}</value>
   </data>
+  <data name="GORIMG_DESC_UNDO_PREMULTIPLY" xml:space="preserve">
+    <value>Premultiplied alpha</value>
+  </data>
+  <data name="GORIMG_TIP_DISABLED_FORMAT" xml:space="preserve">
+    <value>[{0}] is disabled because the image width or height is not a multiple of 4.</value>
+  </data>
+  <data name="GORIMG_TEXT_PLEASE_WAIT" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
 </root>

@@ -154,6 +154,17 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             /// </summary>
             public ImageType ImageType;
         }
+
+        /// <summary>
+        /// The arguments used to undo/redo the premultiplied alpha operation.
+        /// </summary>
+        private class PremultipliedUndoArgs
+        {
+            /// <summary>
+            /// Flag to indicate whether premultiplied alpha is applied or not.
+            /// </summary>
+            public bool IsPremultiplied;
+        }
         #endregion
 
         #region Constants.
@@ -162,9 +173,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         public const string CodecAttr = "ImageCodec";
         /// <summary>
+        /// The attribute key name for the premultiplied alpha flag (olde).
+        /// </summary>
+        private const string OldPremultipliedAttr = "PremultipliedAlpha";
+        /// <summary>
         /// The attribute key name for the premultiplied alpha flag.
         /// </summary>
-        public const string PremultipliedAttr = "PremultipliedAlpha";
+        public const string PremultipliedAttr = "Premultiplied";
         #endregion
 
         #region Variables.
@@ -229,7 +244,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         public bool IsPremultiplied
         {
             get => _isPremultiplied;
-            set
+            private set
             {
                 if (value == _isPremultiplied)
                 {
@@ -622,7 +637,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>Property to return the command used to set the image to use premultiplied alpha.</summary>
-        public IEditorCommand<bool> PremultipliedAlphaCommand
+        public IEditorAsyncCommand<bool> PremultipliedAlphaCommand
         {
             get;
         }
@@ -1016,6 +1031,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 await SaveContentFileAsync(workFile);
 
+                // Remove the old flag so we don't get the image picked up as premultiplied when it isn't.
+                File.Metadata.Attributes.Remove(OldPremultipliedAttr);
                 File.Metadata.Attributes[PremultipliedAttr] = IsPremultiplied.ToString(CultureInfo.InvariantCulture);
 
                 File.Refresh();
@@ -2716,17 +2733,66 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to set whether the image uses premultiplied alpha or not.
         /// </summary>
         /// <param name="value"><b>true</b> to set the flag, <b>false</b> to unset it.</param>
-        private void DoSetPremultipliedAlpha(bool value)
+        /// <returns>A task for asynchronous operation.</returns>
+        private async Task DoSetPremultipliedAlphaAsync(bool value)
         {
-            try
+            var premultipliedUndoArgs = new PremultipliedUndoArgs
             {
-                IsPremultiplied = value;
-                ContentState = ContentState.Modified;
-            }
-            catch (Exception ex)
+                IsPremultiplied = !value
+            };
+            var premultipliedRedoArgs = new PremultipliedUndoArgs
             {
-                HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                IsPremultiplied = value
+            };
+
+            async Task<bool> PremultiplyAsync(bool isPremultiplied)
+            {
+                ShowWaitPanel(Resources.GORIMG_TEXT_PLEASE_WAIT);
+
+                try
+                {
+                    await Task.Run(() =>
+                    {
+                        if (isPremultiplied)
+                        {
+                            ImageData.ConvertToPremultipliedAlpha();
+                        }
+                        else
+                        {
+                            ImageData.ConvertFromPremultipedAlpha();
+                        }
+                    });
+
+                    IsPremultiplied = isPremultiplied;
+
+                    NotifyPropertyChanging(nameof(ImageData));
+                    NotifyPropertyChanged(nameof(ImageData));
+
+                    ContentState = ContentState.Modified;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    HostServices.MessageDisplay.ShowError(ex, Resources.GORIMG_ERR_UPDATING_IMAGE);
+                    return false;
+                }
+                finally
+                {
+                    HideWaitPanel();
+                }
             }
+
+            async Task UndoRedoActionAsync(PremultipliedUndoArgs args, CancellationToken cancelToken) => await PremultiplyAsync(args.IsPremultiplied);
+
+            if (!await PremultiplyAsync(value))
+            {
+                return;
+            }
+
+            // If we had an error, do not record the undo state.
+            _undoService.Record(Resources.GORIMG_DESC_UNDO_PREMULTIPLY, UndoRedoActionAsync, UndoRedoActionAsync, premultipliedUndoArgs, premultipliedRedoArgs);
+            // Need to call this so the UI can register our updated undo stack.
+            NotifyPropertyChanged(nameof(UndoCommand));
         }
 
         /// <summary>
@@ -3032,7 +3098,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
             EditInAppCommand = new EditorCommand<object>(DoEditInApp, CanEditInApp);
-            PremultipliedAlphaCommand = new EditorCommand<bool>(DoSetPremultipliedAlpha, CanSetPremultipliedAlpha);
+            PremultipliedAlphaCommand = new EditorAsyncCommand<bool>(DoSetPremultipliedAlphaAsync, CanSetPremultipliedAlpha);
             ShowSetAlphaCommand = new EditorCommand<object>(DoShowSetAlphaValue, CanShowSetAlphaValue);
             CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);
             ShowFxCommand = new EditorCommand<object>(() => DoShowFx(), CanShowFx);            
