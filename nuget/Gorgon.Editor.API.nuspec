@@ -32,6 +32,5 @@
     <file src="..\Tools\Gorgon.Editor.API.dll" target="lib\net472\Gorgon.Editor.API.dll" />
     <file src="..\Tools\Gorgon.Editor.API.xml" target="lib\net472\Gorgon.Editor.API.xml" />
     <file src="..\Tools\WinFormsColor.dll" target="lib\net472\WinFormsColor.dll" />
-    <file src="..\Tools\WinFormsColor.xml" target="lib\net472\WinFormsColor.xml" />
   </files>
 </package>
