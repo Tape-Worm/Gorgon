@@ -92,6 +92,13 @@
               </entry>
               <entry><list class="bullet"><listItem><para>Gorgon.Core.dll</para></listItem><listItem><para>Gorgon.FileSystem.dll</para></listItem><listItem><para>Gorgon.Graphics.Core.dll</para></listItem><listItem><para>Gorgon.Graphics.Imaging.dll</para></listItem><listItem><para>Gorgon.Graphics.Fonts.dll</para></listItem><listItem><para>Gorgon.Animation.dll</para></listItem><listItem><para>Gorgon.Renderers.Gorgon2D.dll</para></listItem></list></entry>
             </row>
+            <row>
+              <entry><para>Gorgon.Editor.API.dll</para></entry>
+              <entry><para>Provides functionality for loading content data from a Gorgon Editor file system. It simplifies loading of content by loading dependencies (e.g. textures) on your behalf.</para>
+              <para>This API can also be used for building plug ins for the Editor itself.</para>
+              </entry>
+              <entry><list class="bullet"><listItem><para>Everything - All assemblies are referenced.</para></listItem></list></entry>
+            </row>
           </table>
         </content>
       </section>

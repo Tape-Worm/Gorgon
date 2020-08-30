@@ -5,8 +5,9 @@
     <!-- The configuration and platform will be used to determine which
          assemblies to include from solution and project documentation
          sources -->
-	<TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <PublishableProject>false</PublishableProject>    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <PublishableProject>false</PublishableProject>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{bca1725b-f885-4024-90a0-46a241e31bd0}</ProjectGuid>
@@ -59,12 +60,12 @@
     <ComponentConfigurations>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component">
-  <basePath value="{@HtmlEncProjectFolder}" />
-  <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
-  <allowMissingSource value="false" />
-  <removeRegionMarkers value="false" />
-  <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="3" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
-</component>
+          <basePath value="{@HtmlEncProjectFolder}" />
+          <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
+          <allowMissingSource value="false" />
+          <removeRegionMarkers value="false" />
+          <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="3" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
+        </component>
       </ComponentConfig>
     </ComponentConfigurations>
     <DocumentationSources>
@@ -176,9 +177,10 @@ The types in here are inherently dangerous to use because they offer little in t
     <PackageReference Include="EWSoftware.SHFB.NETFramework" Version="4.8.0" />
   </ItemGroup>
   <!-- Import the common build targets during NuGet restore, because $(SHFBROOT) is not set yet -->
-  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="'$(MSBuildRestoreSessionId)' != ''"/>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="'$(MSBuildRestoreSessionId)' != ''" />
   <!-- Import the SHFB build targets during build -->
-  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" Condition="'$(MSBuildRestoreSessionId)' == ''"/>  <ItemGroup>
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" Condition="'$(MSBuildRestoreSessionId)' == ''" />
+  <ItemGroup>
     <Folder Include="Content\" />
     <Folder Include="icons\" />
   </ItemGroup>
@@ -213,6 +215,18 @@ The types in here are inherently dangerous to use because they offer little in t
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Content\ManagePackages.png">
+      <ImageId>ManagePackages</ImageId>
+      <AlternateText>Manage Packages</AlternateText>
+    </Image>
+    <Image Include="Content\NuGetPackages.png">
+      <ImageId>NuGetPackages</ImageId>
+      <AlternateText>Nu Get Packages</AlternateText>
+    </Image>
+    <Image Include="Content\Package.png">
+      <ImageId>Package</ImageId>
+      <AlternateText>Package</AlternateText>
+    </Image>
     <Image Include="Content\WinFormsProj.png">
       <ImageId>WinFormsProj</ImageId>
       <AlternateText>Windows Forms Project</AlternateText>
@@ -247,5 +261,5 @@ The types in here are inherently dangerous to use because they offer little in t
     </Image>
   </ItemGroup>
   <!-- Import the SHFB build targets -->
-  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets"/>
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
 </Project>
