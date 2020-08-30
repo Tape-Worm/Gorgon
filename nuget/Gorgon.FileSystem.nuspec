@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata minClientVersion="5.3.0">
-    <id>Gorgon.FileSystem.3</id>
+    <id>GorgonFileSystem</id>
     <version>$version$</version>
     <title>Gorgon.FileSystem</title>
     <authors>Tape_Worm</authors>
@@ -24,7 +24,7 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src=".\Gorgon.FileSystem.3.targets" target="build\Gorgon.FileSystem.3.targets" />
+    <file src=".\GorgonFileSystem.targets" target="build\GorgonFileSystem.targets" />
     <file src="..\lib\Gorgon.FileSystem.dll" target="lib\net472\Gorgon.FileSystem.dll" />
     <file src="..\lib\Gorgon.FileSystem.xml" target="lib\net472\Gorgon.FileSystem.xml" />
     <file src="..\PlugIns\Gorgon.FileSystem.GorPack.dll" target="build\plugins\Gorgon.FileSystem.GorPack.dll" />
