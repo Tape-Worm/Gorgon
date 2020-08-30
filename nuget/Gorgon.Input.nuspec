@@ -26,13 +26,13 @@
   <files>
     <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src="nuget\Gorgon.Input.targets" target="build\Gorgon.Input.targets" />
-    <file src="lib\Gorgon.Input.dll" target="lib\net472\Gorgon.Input.dll" />
-    <file src="lib\Gorgon.Input.xml" target="lib\net472\Gorgon.Input.xml" />
-    <file src="PlugIns\Gorgon.Input.DirectInput.dll" target="build\plugins\Gorgon.DirectInput.dll" />
-    <file src="PlugIns\Gorgon.Input.XInput.dll" target="build\plugins\Gorgon.Input.XInput.dll" />
-    <file src="PlugIns\SharpDX.dll" target="build\plugins\SharpDX.dll" />    
-    <file src="PlugIns\SharpDX.Mathematics.dll" target="build\plugins\SharpDX.Mathematics.dll" />    
-    <file src="PlugIns\SharpDX.DirectInput.dll" target="build\plugins\SharpDX.DirectInput.dll" />    
-    <file src="PlugIns\SharpDX.XInput.dll" target="build\plugins\SharpDX.XInput.dll" />    
+    <file src="..\lib\Gorgon.Input.dll" target="lib\net472\Gorgon.Input.dll" />
+    <file src="..\lib\Gorgon.Input.xml" target="lib\net472\Gorgon.Input.xml" />
+    <file src="..\PlugIns\Gorgon.Input.DirectInput.dll" target="build\plugins\Gorgon.DirectInput.dll" />
+    <file src="..\PlugIns\Gorgon.Input.XInput.dll" target="build\plugins\Gorgon.Input.XInput.dll" />
+    <file src="..\PlugIns\SharpDX.dll" target="build\plugins\SharpDX.dll" />    
+    <file src="..\PlugIns\SharpDX.Mathematics.dll" target="build\plugins\SharpDX.Mathematics.dll" />    
+    <file src="..\PlugIns\SharpDX.DirectInput.dll" target="build\plugins\SharpDX.DirectInput.dll" />    
+    <file src="..\PlugIns\SharpDX.XInput.dll" target="build\plugins\SharpDX.XInput.dll" />    
   </files>
 </package>

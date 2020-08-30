@@ -25,10 +25,10 @@
   <files>
     <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src="nuget\Gorgon.FileSystem.targets" target="build\Gorgon.FileSystem.targets" />
-    <file src="lib\Gorgon.FileSystem.dll" target="lib\net472\Gorgon.FileSystem.dll" />
-    <file src="lib\Gorgon.FileSystem.xml" target="lib\net472\Gorgon.FileSystem.xml" />
-    <file src="PlugIns\Gorgon.FileSystem.GorPack.dll" target="build\plugins\Gorgon.FileSystem.GorPack.dll" />
-    <file src="PlugIns\Gorgon.FileSystem.Zip.dll" target="build\plugins\Gorgon.FileSystem.Zip.dll" />
-    <file src="PlugIns\ICSharpCode.SharpZipLib.dll" target="build\plugins\ICSharpCode.SharpZipLib.dll" />    
+    <file src="..\lib\Gorgon.FileSystem.dll" target="lib\net472\Gorgon.FileSystem.dll" />
+    <file src="..\lib\Gorgon.FileSystem.xml" target="lib\net472\Gorgon.FileSystem.xml" />
+    <file src="..\PlugIns\Gorgon.FileSystem.GorPack.dll" target="build\plugins\Gorgon.FileSystem.GorPack.dll" />
+    <file src="..\PlugIns\Gorgon.FileSystem.Zip.dll" target="build\plugins\Gorgon.FileSystem.Zip.dll" />
+    <file src="..\PlugIns\ICSharpCode.SharpZipLib.dll" target="build\plugins\ICSharpCode.SharpZipLib.dll" />    
   </files>
 </package>

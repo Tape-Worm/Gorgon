@@ -25,7 +25,7 @@
   </metadata>
   <files>
     <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="lib\Gorgon.Windows.dll" target="lib\net472\Gorgon.Windows.dll" />
-    <file src="lib\Gorgon.Windows.xml" target="lib\net472\Gorgon.Windows.xml" />
+    <file src="..\lib\Gorgon.Windows.dll" target="lib\net472\Gorgon.Windows.dll" />
+    <file src="..\lib\Gorgon.Windows.xml" target="lib\net472\Gorgon.Windows.xml" />
   </files>
 </package>
