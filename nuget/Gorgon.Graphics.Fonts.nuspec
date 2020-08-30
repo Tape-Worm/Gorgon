@@ -25,7 +25,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src="..\lib\Gorgon.Graphics.Fonts.dll" target="lib\net472\Gorgon.Graphics.Fonts.dll" />
     <file src="..\lib\Gorgon.Graphics.Fonts.xml" target="lib\net472\Gorgon.Graphics.Fonts.xml" />
   </files>

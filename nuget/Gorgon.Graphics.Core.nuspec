@@ -29,7 +29,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src="..\lib\Gorgon.Graphics.Core.dll" target="lib\net472\Gorgon.Graphics.Core.dll" />
     <file src="..\lib\Gorgon.Graphics.Core.xml" target="lib\net472\Gorgon.Graphics.Core.xml" />
   </files>

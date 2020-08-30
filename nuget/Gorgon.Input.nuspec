@@ -24,8 +24,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="nuget\Gorgon.Input.targets" target="build\Gorgon.Input.targets" />
+    <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src=".\Gorgon.Input.targets" target="build\Gorgon.Input.targets" />
     <file src="..\lib\Gorgon.Input.dll" target="lib\net472\Gorgon.Input.dll" />
     <file src="..\lib\Gorgon.Input.xml" target="lib\net472\Gorgon.Input.xml" />
     <file src="..\PlugIns\Gorgon.Input.DirectInput.dll" target="build\plugins\Gorgon.DirectInput.dll" />

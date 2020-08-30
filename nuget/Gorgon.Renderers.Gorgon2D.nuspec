@@ -28,7 +28,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src="..\lib\Gorgon.Renderers.Gorgon2D.dll" target="lib\net472\Gorgon.Renderers.Gorgon2D.dll" />
     <file src="..\lib\Gorgon.Renderers.Gorgon2D.xml" target="lib\net472\Gorgon.Renderers.Gorgon2D.xml" />
     <file src="..\lib\Gorgon.IO.Gorgon2D.dll" target="lib\net472\Gorgon.IO.Gorgon2D.dll" />
