@@ -157,7 +157,7 @@ jobs:
         displayName: 'Copying nuget files to artifacts'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/nuget/'
-          Contents **/*
+          Contents: '**/*'
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/NugetSupport'
 
