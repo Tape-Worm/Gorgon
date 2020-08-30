@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata minClientVersion="5.3.0">
-    <id>Tape_Worm.Gorgon.Editor.API</id>
+    <id>Gorgon.Editor.API</id>
     <version>$version$</version>
     <title>Gorgon.Editor.API</title>
     <authors>Tape_Worm</authors>
