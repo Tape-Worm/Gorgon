@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="5.3.0">
+    <id>Gorgon.Graphics.Fonts</id>
+    <version>$version$</version>
+    <title>Gorgon.Graphics.Fonts</title>
+    <authors>Tape_Worm</authors>
+    <owners>Tape_Worm</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://www.tape-worm.net</projectUrl>
+    <icon>images\Gorgon_Icon_64x64.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains functionality to create, read and store bitmap fonts for use in text rendering.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Fonts</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.7.2" >
+        <dependency id="SharpDX" version="4.2.0"/>
+        <dependency id="SharpDX.Mathematics" version="4.2.0"/>
+        <dependency id="System.Buffers" version="4.5.1"/>
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>
+        <dependency id="Gorgon.Graphics.Core" version="$version$"/>
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src="lib\Gorgon.Graphics.Fonts.dll" target="lib\net472\Gorgon.Graphics.Fonts.dll" />
+    <file src="lib\Gorgon.Graphics.Fonts.xml" target="lib\net472\Gorgon.Graphics.Fonts.xml" />
+  </files>
+</package>

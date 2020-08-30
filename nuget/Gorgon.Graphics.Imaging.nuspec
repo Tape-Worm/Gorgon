@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="5.3.0">
+    <id>Gorgon.Graphics.Imaging</id>
+    <version>$version$</version>
+    <title>Gorgon.Graphics.Imaging</title>
+    <authors>Tape_Worm</authors>
+    <owners>Tape_Worm</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://www.tape-worm.net</projectUrl>
+    <icon>images\Gorgon_Icon_64x64.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains functionality to read, write and manipulate image data using various common image formats such as DDS, TGA, PNG, etc...</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <tags>Gorgon C# .NET Direct3D SharpDX Graphics Imaging</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.7.2" >
+        <dependency id="SharpDX" version="4.2.0"/>
+        <dependency id="SharpDX.Direct2D1" version="4.2.0"/>
+        <dependency id="SharpDX.Mathematics" version="4.2.0"/>
+        <dependency id="System.Buffers" version="4.5.1"/>
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>
+        <dependency id="Gorgon.Core" version="$version$"/>
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src="lib\Gorgon.Graphics.Imaging.dll" target="lib\net472\Gorgon.Graphics.Imaging.dll" />
+    <file src="lib\Gorgon.Graphics.Imaging.xml" target="lib\net472\Gorgon.Graphics.Imaging.xml" />
+  </files>
+</package>

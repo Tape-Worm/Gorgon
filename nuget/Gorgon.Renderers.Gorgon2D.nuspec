@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="5.3.0">
+    <id>Gorgon.Renderers.Gorgon2D</id>
+    <version>$version$</version>
+    <title>Gorgon.Renderers.Gorgon2D</title>
+    <authors>Tape_Worm</authors>
+    <owners>Tape_Worm</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://www.tape-worm.net</projectUrl>
+    <icon>images\Gorgon_Icon_64x64.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains a renderer used to draw two dimensional graphics using Direct 3D 11.2 for hardware accelation.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Animation Fonts</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.7.2" >
+        <dependency id="SharpDX" version="4.2.0"/>
+        <dependency id="SharpDX.Mathematics" version="4.2.0"/>
+        <dependency id="Newtonsoft.Json" version="12.0.3"/>
+        <dependency id="System.Buffers" version="4.5.1"/>
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>        
+        <dependency id="Gorgon.Graphics.Fonts" version="$version$"/>
+        <dependency id="Gorgon.Animation" version="$version$"/>
+        <dependency id="Gorgon.FileSystem" version="$version$"/>
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="nuget\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src="lib\Gorgon.Renderers.Gorgon2D.dll" target="lib\net472\Gorgon.Renderers.Gorgon2D.dll" />
+    <file src="lib\Gorgon.Renderers.Gorgon2D.xml" target="lib\net472\Gorgon.Renderers.Gorgon2D.xml" />
+    <file src="lib\Gorgon.IO.Gorgon2D.dll" target="lib\net472\Gorgon.IO.Gorgon2D.dll" />
+    <file src="lib\Gorgon.IO.Gorgon2D.xml" target="lib\net472\Gorgon.IO.Gorgon2D.xml" />
+    <file src="lib\Gorgon.Animation.Gorgon2D.dll" target="lib\net472\Gorgon.Animation.Gorgon2D.dll" />
+    <file src="lib\Gorgon.Animation.Gorgon2D.xml" target="lib\net472\Gorgon.Animation.Gorgon2D.xml" />
+  </files>
+</package>
