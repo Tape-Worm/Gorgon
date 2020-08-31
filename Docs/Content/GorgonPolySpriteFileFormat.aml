@@ -1,0 +1,413 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="12FBEBA2-60D8-4B84-A726-F25B73F9089F" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>This page gives a detailed explanation of the binary Gorgon Polygon Sprite file format.</para>
+      <para>The binary file format for a <codeEntityReference linkText="Gorgon Polygon Sprite">T:Gorgon.Renderers.GorgonPolySprite</codeEntityReference> stores the information for defining a polygonal sprite for 2D rendering. 
+      The format uses the <link xlink:href="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunked File Format (GCFF)</link> system and as such, the explanation will be broken down by the data chunks present in the file. 
+      Please review the specifcation for the GCFF if you are not familiar with it.</para>
+    </introduction>
+    
+    <section>
+      <title>File layout</title>
+      <content>
+        <para>The following is a detailed breakdown of the binary Gorgon Polygon Sprite file format.</para>
+      </content>
+      <sections>
+      	<section>
+      		<title>File header</title>
+      		<content>      		
+			<table>				
+				<tableHeader>
+					<row>
+						<entry><para>Name</para></entry>
+						<entry><para>Data type</para></entry>
+						<entry><para>Expected value</para></entry>
+						<entry><para>Data size</para></entry>
+						<entry><para>Description</para></entry>
+					</row>
+				</tableHeader>
+				<row>
+					<entry><para>Application specific header ID</para></entry>
+					<entry><para><codeEntityReference>T:System.UInt64</codeEntityReference></para></entry>
+					<entry><para>GORPSP30 (0x474f525053503330)</para></entry>
+					<entry><para>8 bytes</para></entry>
+					<entry><para>This is an application defined file header ID for the data stored within this file.</para></entry>
+				</row>
+			</table>
+			</content>
+      	</section>
+      	<section>
+      		<title>Chunk table</title>
+      		<content>
+      			<para>
+      			The following describes the list of chunks used by the polygon sprite file format.
+      			</para>
+				<table>				
+					<title>Chunk descriptor</title>
+					<tableHeader>
+						<row>
+							<entry><para>Chunk ID</para></entry>
+							<entry><para>Hex Value</para></entry>
+							<entry><para>Description</para></entry>
+							<entry><para>Required?</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>VRSNDATA</para></entry>
+						<entry><para>0x5652534e44415441</para></entry>
+						<entry><para>Version information for the sprite file.</para></entry>
+						<entry><para>Yes</para></entry>
+					</row>
+				</table>
+				<para>The following represents the data contained within the chunk. The order of the values is the order in which they appear within the chunk.</para>
+				<table>
+					<title>VRSNDATA Chunk Data</title>
+					<tableHeader>
+						<row>
+							<entry><para>Value</para></entry>
+							<entry><para>Data Type</para></entry>							
+							<entry><para>Description</para></entry>							
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>Major Version Number</para></entry>
+						<entry><para><codeEntityReference>T:System.Byte</codeEntityReference></para></entry>
+						<entry><para>The value representing the major portion of the version number.</para></entry>
+					</row>
+					<row>
+						<entry><para>Minor Version Number</para></entry>
+						<entry><para><codeEntityReference>T:System.Byte</codeEntityReference></para></entry>
+						<entry><para>The value representing the minor portion of the version number.</para></entry>
+					</row>
+				</table>
+				<table>				
+					<title>Chunk descriptor</title>
+					<tableHeader>
+						<row>
+							<entry><para>Chunk ID</para></entry>
+							<entry><para>Hex Value</para></entry>
+							<entry><para>Description</para></entry>
+							<entry><para>Required?</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>SPRTDATA</para></entry>
+						<entry><para>0x5350525444415441</para></entry>
+						<entry><para>Data describing the settings for the polygon sprite.</para></entry>
+						<entry><para>Yes</para></entry>
+					</row>
+				</table>
+				<para>The following represents the data contained within the chunk. The order of the values is the order in which they appear within the chunk.</para>
+				<table>
+					<title>SPRTDATA Chunk Data</title>
+					<tableHeader>
+						<row>
+							<entry><para>Value</para></entry>
+							<entry><para>Data Type</para></entry>							
+							<entry><para>Description</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>Size</para></entry>
+						<entry><para>SharpDX.Size2F</para></entry>
+						<entry><para>The width, and height of the sprite, in pixels.</para></entry>
+					</row>
+					<row>
+						<entry><para>Anchor</para></entry>
+						<entry><para>SharpDX.Vector2</para></entry>
+						<entry><para>The relative (to the sprite size) location for the anchor (pivot point) for the sprite.</para></entry>
+					</row>
+					<row>
+						<entry><para>Has Alpha Test</para></entry>
+						<entry><para><codeEntityReference>T:System.Boolean</codeEntityReference></para></entry>
+						<entry><para>The value used to determine if there is alpha value testing enabled on the sprite.</para>
+						<alert class="warning">
+							<para>If this value is zero, then the next value should not be read.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Alpha Test Value</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Core.GorgonRangeF</codeEntityReference></para></entry>
+						<entry><para>The minimum and maximum alpha channel value to render, values outside of this will not be rendered.</para>
+						<alert class="warning">
+							<para>Only read this value if Has Alpha Test returns non-zero.</para>
+						</alert>
+						</entry>
+					</row>
+				</table>
+				<table>				
+					<title>Chunk descriptor</title>
+					<tableHeader>
+						<row>
+							<entry><para>Chunk ID</para></entry>
+							<entry><para>Hex Value</para></entry>
+							<entry><para>Description</para></entry>
+							<entry><para>Required?</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>HULLDATA</para></entry>
+						<entry><para>0x48554c4c44415441</para></entry>
+						<entry><para>Data describing the vertices used by the polygon sprite.</para></entry>
+						<entry><para>Yes</para></entry>
+					</row>
+				</table>
+				<para>The following represents the data contained within the chunk. The order of the values is the order in which they appear within the chunk.</para>
+				<table>
+					<title>HULLDATA Chunk Data</title>
+					<tableHeader>
+						<row>
+							<entry><para>Value</para></entry>
+							<entry><para>Data Type</para></entry>							
+							<entry><para>Description</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>Vertex Count</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The number of vertices used by the polygon sprite.</para>
+						<alert class="note">
+						<para>Applications should loop between 0 - <codeInline>Vertex Count - 1 (inclusive)</codeInline> and read the next value on each loop iteration.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Vertex Data</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Renderers.GorgonPolySpriteVertex</codeEntityReference></para></entry>
+						<entry><para>A vertex for the polygon sprite.</para></entry>
+					</row>
+				</table>
+				<table>				
+					<title>Chunk descriptor</title>
+					<tableHeader>
+						<row>
+							<entry><para>Chunk ID</para></entry>
+							<entry><para>Hex Value</para></entry>
+							<entry><para>Description</para></entry>
+							<entry><para>Required?</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>TXTRDATA</para></entry>
+						<entry><para>0x5458545244415441</para></entry>
+						<entry><para>Data describing the texture settings for the sprite.</para></entry>
+						<entry><para>No - Optional</para></entry>
+					</row>
+				</table>
+				<para>The following represents the data contained within the chunk. The order of the values is the order in which they appear within the chunk.</para>
+				<table>
+					<title>TXTRDATA Chunk Data</title>
+					<tableHeader>
+						<row>
+							<entry><para>Value</para></entry>
+							<entry><para>Data Type</para></entry>							
+							<entry><para>Description</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>Texture Name</para></entry>
+						<entry><para><codeEntityReference>T:System.String</codeEntityReference></para></entry>
+						<entry><para>The name of the texture associated with this sprite.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Region</para></entry>
+						<entry><para>SharpDX.RectangleF</para></entry>
+						<entry><para>The texture coordinates for the sprite <codeEntityReference linkText="texture">T:Gorgon.Graphics.Core.GorgonTexture2D</codeEntityReference>.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Array Index</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The index to use on a <codeEntityReference linkText="texture">T:Gorgon.Graphics.Core.GorgonTexture2D</codeEntityReference> array.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Width</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The width of the associated sprite <codeEntityReference linkText="texture">T:Gorgon.Graphics.Core.GorgonTexture2D</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Texture Height</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The height of the associated sprite <codeEntityReference linkText="texture">T:Gorgon.Graphics.Core.GorgonTexture2D</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Texture Format</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Graphics.BufferFormat</codeEntityReference></para></entry>
+						<entry><para>The pixel format for the associated sprite <codeEntityReference linkText="texture">T:Gorgon.Graphics.Core.GorgonTexture2D</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Array Count</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The number of array indices for the associated sprite <codeEntityReference linkText="texture">T:Gorgon.Graphics.Core.GorgonTexture2D</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Mip Map Level Count</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The number of mip map levels for the associated sprite <codeEntityReference linkText="texture">T:Gorgon.Graphics.Core.GorgonTexture2D</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Texture View Array Index</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The array index for the associated sprite <codeEntityReference linkText="texture view">T:Gorgon.Graphics.Core.GorgonTexture2DView</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Texture View Array Count</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The array count for the associated sprite <codeEntityReference linkText="texture view">T:Gorgon.Graphics.Core.GorgonTexture2DView</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Texture View Mip Map Slice</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The mip map slice for the associated sprite <codeEntityReference linkText="texture view">T:Gorgon.Graphics.Core.GorgonTexture2DView</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Texture View Mip Map Count</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The mip map count for the associated sprite <codeEntityReference linkText="texture view">T:Gorgon.Graphics.Core.GorgonTexture2DView</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Texture View Format</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Graphics.BufferFormat</codeEntityReference></para></entry>
+						<entry><para>The pixel format for the associated sprite <codeEntityReference linkText="texture view">T:Gorgon.Graphics.Core.GorgonTexture2DView</codeEntityReference>.</para>
+						<alert class="note">
+							<para>This value is used to match the texture with the sprite on load.</para>
+						</alert>
+						</entry>
+					</row>
+				</table>
+				<table>				
+					<title>Chunk descriptor</title>
+					<tableHeader>
+						<row>
+							<entry><para>Chunk ID</para></entry>
+							<entry><para>Hex Value</para></entry>
+							<entry><para>Description</para></entry>
+							<entry><para>Required?</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>TXTRSMPL</para></entry>
+						<entry><para>0x54585452534d504c</para></entry>
+						<entry><para>Data describing the texture sampler settings for the sprite.</para></entry>
+						<entry><para>No - Optional</para></entry>
+					</row>
+				</table>
+				<para>The following represents the data contained within the chunk. The order of the values is the order in which they appear within the chunk.</para>
+				<table>
+					<title>TXTRSMPL Chunk Data</title>
+					<tableHeader>
+						<row>
+							<entry><para>Value</para></entry>
+							<entry><para>Data Type</para></entry>							
+							<entry><para>Description</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>Texture Filter</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Graphics.Core.SampleFilter</codeEntityReference></para></entry>
+						<entry><para>The type of filtering to apply when rendering the texture.</para></entry>
+					</row>
+					<row>
+						<entry><para>Border Color</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The color of the border when the texture wrapping is set to border, encoded as ARGB.</para></entry>
+					</row>
+					<row>
+						<entry><para>Comparison Function</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Graphics.Core.Comparison</codeEntityReference></para></entry>
+						<entry><para>The texture comparison value.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Horizontal Wrapping</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Graphics.Core.TextureWrap</codeEntityReference></para></entry>
+						<entry><para>The texture wrapping setting used when the texture repeats at its edge.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Vertical Wrapping</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Graphics.Core.TextureWrap</codeEntityReference></para></entry>
+						<entry><para>The texture wrapping setting used when the texture repeats at its edge.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Depth Wrapping</para></entry>
+						<entry><para><codeEntityReference>T:Gorgon.Graphics.Core.TextureWrap</codeEntityReference></para></entry>
+						<entry><para>The texture wrapping setting used when the texture repeats at its edge.</para>
+						<alert class="note">
+							<para>This is for 3D textures only - it will have no effect on a sprite since sprites only use 2D textures. Regardless, this value must be read.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Texture Maximum Anisotropy</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The maximum value used to clamp anisotropic filtering.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Minimum Level of Detail</para></entry>
+						<entry><para><codeEntityReference>T:System.Single</codeEntityReference></para></entry>
+						<entry><para>The minimum mip map level to show.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Maximum Level of Detail</para></entry>
+						<entry><para><codeEntityReference>T:System.Single</codeEntityReference></para></entry>
+						<entry><para>The maximum mip map level to show.</para></entry>
+					</row>
+					<row>
+						<entry><para>Texture Mip Map Bias</para></entry>
+						<entry><para><codeEntityReference>T:System.Single</codeEntityReference></para></entry>
+						<entry><para>The bias value to add the mip map level when rendering.</para></entry>
+					</row>
+				</table>
+			</content>
+      	</section>      	
+      </sections>
+    </section>
+    <relatedTopics>
+      <codeEntityReference>T:Gorgon.Renderers.GorgonPolySprite</codeEntityReference>
+      <codeEntityReference>T:Gorgon.Core.GorgonRangeF</codeEntityReference>
+      <codeEntityReference>T:Gorgon.Renderers.GorgonPolySpriteVertex</codeEntityReference>
+      <codeEntityReference>T:Gorgon.Graphics.Core.GorgonTexture2D</codeEntityReference>
+      <codeEntityReference>T:Gorgon.Graphics.Core.GorgonTexture2DView</codeEntityReference>
+      <codeEntityReference>T:Gorgon.Graphics.BufferFormat</codeEntityReference>
+      <codeEntityReference>T:Gorgon.Graphics.Core.SampleFilter</codeEntityReference>
+      <codeEntityReference>T:Gorgon.Graphics.Core.TextureWrap</codeEntityReference>
+      <link xlink:href="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunked File Format (GCFF)</link>      
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

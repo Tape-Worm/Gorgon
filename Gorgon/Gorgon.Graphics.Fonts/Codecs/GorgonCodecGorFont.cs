@@ -137,7 +137,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
             try
             {
                 fontFile.Open();
-
+                
                 GorgonBinaryWriter writer = fontFile.OpenChunk(FontInfoChunk);
 
                 writer.Write(fontInfo.FontFamilyName);

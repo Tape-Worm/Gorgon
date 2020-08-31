@@ -205,6 +205,11 @@ The types in here are inherently dangerous to use because they offer little in t
     <None Include="Content\FirstProgram.aml" />
     <None Include="Content\SecondProgram.aml" />
     <None Include="Content\FinalProgram.aml" />
+    <None Include="Content\GorgonFontFileFormat.aml" />
+    <None Include="Content\GorgonSpriteFileFormat.aml" />
+    <None Include="Content\GorgonPolySpriteFileFormat.aml" />
+    <None Include="Content\GorgonAnimationFileFormat.aml" />
+    <None Include="Content\GorgonShaderFileFormat.aml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SharpDX">

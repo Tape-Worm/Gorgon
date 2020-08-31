@@ -132,7 +132,7 @@
               <para>A shader based effects system</para>
             </listItem>
           </list>
-          <para>All of these are provided using batched rendering, similar to <externalLink><linkText>MonoGame</linkText> <linkUri>http://www.monogame.net/</linkUri><linkTarget>_blank</linkTarget></externalLink> MonoGame for maximum performance.</para>
+          <para>All of these are provided using batched rendering, similar to <externalLink><linkText>MonoGame</linkText> <linkUri>http://www.monogame.net/</linkUri><linkTarget>_blank</linkTarget></externalLink> for maximum performance.</para>
         </listItem>
 
         <listItem>
@@ -180,6 +180,10 @@
 
             <listItem>
               <para>Comes with a sprite editor plug in which allows users to clip sprites from an image and store them as a file.    </para>
+            </listItem>
+
+            <listItem>
+              <para>Comes with an animation editor plug in which allows users to animate sprites and store them as a file.    </para>
             </listItem>
 
             <listItem>

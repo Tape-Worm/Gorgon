@@ -390,7 +390,7 @@ namespace Gorgon.IO
                 binWriter.Write((byte)Version.Minor);
                 writer.CloseChunk();
 
-                binWriter = writer.OpenChunk(AnimationData);
+                binWriter = writer.OpenChunk(AnimationData);                
                 binWriter.Write(animation.Name);
                 binWriter.Write(animation.Length);
                 binWriter.Write(animation.Fps);
