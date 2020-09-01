@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This will read fonts created by the BmFont application by Andreas Jönsson (<a target="_blank" href="http://www.angelcode.com/products/bmfont/">http://www.angelcode.com/products/bmfont/</a>). 
+    /// This will read fonts created by the <a href="https://www.angelcode.com/products/bmfont/" target="_blank">BmFont</a> application by Andreas Jönsson. 
     /// </para>
     /// <para>
     /// This codec is very limited in scope and as such cannot read all types of font information persisted by BmFont. Below is the list of limitations for this codec:
