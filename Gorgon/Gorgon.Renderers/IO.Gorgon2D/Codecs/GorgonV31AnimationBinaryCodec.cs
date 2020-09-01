@@ -105,7 +105,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="reader">The reader containing the texture information.</param>
         /// <param name="textureName">The name of the texture.</param>
-        /// <returns>The texture attached to the sprite.</returns>
+        /// <returns>The texture attached to the animation keyframe.</returns>
         private GorgonTexture2DView LoadTexture(GorgonBinaryReader reader, out string textureName)
         {
             // Write out as much info about the texture as we can so we can look it up based on these values when loading.
@@ -391,7 +391,7 @@ namespace Gorgon.IO
                 writer.CloseChunk();
 
                 binWriter = writer.OpenChunk(AnimationData);                
-                binWriter.Write(animation.Name);
+                binWriter.Write("NA");
                 binWriter.Write(animation.Length);
                 binWriter.Write(animation.Fps);
                 binWriter.Write(animation.IsLooped);
@@ -480,13 +480,12 @@ namespace Gorgon.IO
             }
         }
 
-        /// <summary>
-        /// Function to read the animation data from a stream.
-        /// </summary>
+        /// <summary>Function to read the animation data from a stream.</summary>
+        /// <param name="name">The name of the animation.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(Stream stream, int byteCount)
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
         {
             var builder = new GorgonAnimationBuilder();
 
@@ -501,7 +500,8 @@ namespace Gorgon.IO
             {
                 reader.Open();
                 binReader = reader.OpenChunk(AnimationData);
-                string name = binReader.ReadString();
+                // We don't use the stored name anymore.
+                binReader.ReadString();
                 float length = binReader.ReadSingle();
                 float fps = binReader.ReadSingle();
                 bool isLooped = binReader.ReadBoolean();
@@ -515,7 +515,7 @@ namespace Gorgon.IO
                 ReadTrackValues<GorgonKeyRectangle, DX.RectangleF>(reader, RectData, builder.EditRectangle, (t, v) => new GorgonKeyRectangle(t, v));
                 ReadTrackValues<GorgonKeyGorgonColor, GorgonColor>(reader, ColorData, builder.EditColor, (t, v) => new GorgonKeyGorgonColor(t, v));
                 ReadTextureTrackValues(reader, TextureData, builder);
-                
+
                 IGorgonAnimation result;
                 result = builder.Build(name, fps, length);
                 result.IsLooped = isLooped;
@@ -552,7 +552,7 @@ namespace Gorgon.IO
             {
                 reader?.Close();
             }
-        }
+        }        
         #endregion
 
         #region Constructor/Finalizer.

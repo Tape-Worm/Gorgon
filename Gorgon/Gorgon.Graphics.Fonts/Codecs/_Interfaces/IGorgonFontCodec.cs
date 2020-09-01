@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using Gorgon.Core;
 
@@ -113,12 +114,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <param name="stream">The stream containing the font data to read.</param>
         /// <param name="name">[Optional] The name of the font.</param>
         /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
-        /// </exception>
-        /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromStream instead.")]
         GorgonFont LoadFromStream(Stream stream, string name = null);
 
         /// <summary>
@@ -127,7 +123,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <param name="filePath">Path to the file to load.</param>
         /// <param name="name">[Optional] The name of the font.</param>
         /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromFile instead.")]
         GorgonFont LoadFromFile(string filePath, string name = null);
 
         /// <summary>
@@ -135,10 +131,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
         /// <param name="stream">The stream that will receive the font data.</param>
-
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="fontData"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
-        /// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save instead.")]
         void SaveToStream(GorgonFont fontData, Stream stream);
 
         /// <summary>
@@ -146,10 +139,38 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
         /// <param name="filePath">The path to the file that will hold the font data.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="fontData"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty..</exception>
-        /// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save instead.")]
         void SaveToFile(GorgonFont fontData, string filePath);
+
+        /// <summary>
+        /// Function to load an font from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the font data to read.</param>
+        /// <param name="name">The name of the font.</param>
+        /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>        
+        GorgonFont FromStream(Stream stream, string name);
+
+        /// <summary>
+        /// Function to load an font from a file on the physical file system.
+        /// </summary>
+        /// <param name="filePath">Path to the file to load.</param>
+        /// <param name="name">[Optional] The name of the font.</param>
+        /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>        
+        GorgonFont FromFile(string filePath, string name = null);
+
+        /// <summary>
+        /// Function to persist a <see cref="GorgonFont"/> to a stream.
+        /// </summary>
+        /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
+        /// <param name="stream">The stream that will receive the font data.</param>        
+        void Save(GorgonFont fontData, Stream stream);
+
+        /// <summary>
+        /// Function to persist a <see cref="GorgonFont"/> to a file on the physical file system.
+        /// </summary>
+        /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
+        /// <param name="filePath">The path to the file that will hold the font data.</param>
+        void Save(GorgonFont fontData, string filePath);
 
         /// <summary>
         /// Function to determine if this codec can read the font data within the stream or not.

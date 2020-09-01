@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
@@ -335,7 +336,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// the stream.
         /// </para>
         /// </remarks>
-        public IGorgonImage LoadFromStream(Stream stream, long? size = null)
+        public IGorgonImage FromStream(Stream stream, long? size = null)
         {
             if (stream == null)
             {
@@ -403,7 +404,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the size of the file is less than 1 byte.</exception>
         /// <exception cref="GorgonException">Thrown when the image data in the file has a pixel format that is unsupported.</exception>
-        public IGorgonImage LoadFromFile(string filePath)
+        public IGorgonImage FromFile(string filePath)
         {
             if (filePath == null)
             {
@@ -417,7 +418,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             using (Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                return LoadFromStream(stream);
+                return FromStream(stream);
             }
         }
 
@@ -435,7 +436,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// property. Applications may convert their image data a supported format before saving the data using a codec.
         /// </para>
         /// </remarks>
-        public abstract void SaveToStream(IGorgonImage imageData, Stream stream);
+        public abstract void Save(IGorgonImage imageData, Stream stream);
 
         /// <summary>
         /// Function to persist a <see cref="IGorgonImage"/> to a file on the physical file system.
@@ -451,7 +452,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// property. Applications may convert their image data a supported format before saving the data using a codec.
         /// </para>
         /// </remarks>
-        public void SaveToFile(IGorgonImage imageData, string filePath)
+        public void Save(IGorgonImage imageData, string filePath)
+
         {
             if (filePath == null)
             {
@@ -465,9 +467,75 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             using (Stream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                SaveToStream(imageData, stream);
+                Save(imageData, stream);
             }
         }
+
+        /// <summary>
+        /// Function to load an image from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the image data to read.</param>
+        /// <param name="size">[Optional] The size of the image within the stream, in bytes.</param>
+        /// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
+        /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
+        /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+        /// <remarks>
+        /// <para>
+        /// When the <paramref name="size"/> parameter is specified, the image data will be read from the stream up to the amount specified. If it is omitted, then image data will be read up to the end of 
+        /// the stream.
+        /// </para>
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromStream instead.")]
+        IGorgonImage IGorgonImageCodec.LoadFromStream(Stream stream, long? size) => FromStream(stream, size);
+
+        /// <summary>
+        /// Function to load an image from a file on the physical file system.
+        /// </summary>
+        /// <param name="filePath">Path to the file to load.</param>
+        /// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size of the file is less than 1 byte.</exception>
+        /// <exception cref="GorgonException">Thrown when the image data in the file has a pixel format that is unsupported.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromFile instead.")]
+        IGorgonImage IGorgonImageCodec.LoadFromFile(string filePath) => FromFile(filePath);
+
+        /// <summary>
+        /// Function to persist a <see cref="IGorgonImage"/> to a stream.
+        /// </summary>
+        /// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
+        /// <param name="stream">The stream that will receive the image data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
+        /// <remarks>
+        /// <para>
+        /// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="SupportedPixelFormats"/> 
+        /// property. Applications may convert their image data a supported format before saving the data using a codec.
+        /// </para>
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save instead.")]
+        void IGorgonImageCodec.SaveToStream(IGorgonImage imageData, Stream stream) => Save(imageData, stream);
+
+        /// <summary>
+        /// Function to persist a <see cref="IGorgonImage"/> to a file on the physical file system.
+        /// </summary>
+        /// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
+        /// <param name="filePath">The path to the file that will hold the image data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty..</exception>
+        /// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
+        /// <remarks>
+        /// <para>
+        /// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="SupportedPixelFormats"/> 
+        /// property. Applications may convert their image data a supported format before saving the data using a codec.
+        /// </para>
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save instead.")]
+        void IGorgonImageCodec.SaveToFile(IGorgonImage imageData, string filePath) => Save(imageData, filePath);
 
         /// <summary>
         /// Function to determine if this codec can read the image data within the stream or not.

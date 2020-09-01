@@ -2150,7 +2150,7 @@ namespace Gorgon.Graphics.Core
                 options.Name = GenerateName(NamePrefix);
             }
 
-            using (IGorgonImage image = codec.LoadFromStream(stream, size))
+            using (IGorgonImage image = codec.FromStream(stream, size))
             {
                 if (options.ConvertToPremultipliedAlpha)
                 {
@@ -2230,7 +2230,7 @@ namespace Gorgon.Graphics.Core
                 options.Name = GenerateName(NamePrefix);
             }
 
-            using (IGorgonImage image = codec.LoadFromFile(filePath))
+            using (IGorgonImage image = codec.FromFile(filePath))
             {
                 if (options.ConvertToPremultipliedAlpha)
                 {

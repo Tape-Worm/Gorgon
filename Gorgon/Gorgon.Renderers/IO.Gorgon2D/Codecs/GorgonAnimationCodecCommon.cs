@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -134,10 +135,11 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to read the animation data from a stream.
         /// </summary>
+        /// <param name="name">The name of the animation.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected abstract IGorgonAnimation OnReadFromStream(Stream stream, int byteCount);
+        protected abstract IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount);
 
         /// <summary>
         /// Function to determine if the data in a stream is readable by this codec.
@@ -200,15 +202,15 @@ namespace Gorgon.IO
 
         /// <summary>
         /// Function to read the animation data from a stream.
-        /// </summary>
+        /// </summary>        
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
+        /// <param name="name">[Optional] The name of the animation.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
         /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public IGorgonAnimation FromStream(Stream stream, int? byteCount = null)
+        public IGorgonAnimation FromStream(Stream stream, int? byteCount = null, string name = null)
         {
             if (!CanDecode)
             {
@@ -237,6 +239,11 @@ namespace Gorgon.IO
 
             Stream externalStream = stream;
 
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = $"GorgonAnimation_{Guid.NewGuid():N}";
+            }
+
             try
             {
                 if (!stream.CanSeek)
@@ -246,7 +253,7 @@ namespace Gorgon.IO
                     externalStream.Position = 0;
                 }
 
-                return OnReadFromStream(externalStream, byteCount.Value);
+                return OnReadFromStream(name, externalStream, byteCount.Value);
             }
             finally
             {
@@ -261,11 +268,12 @@ namespace Gorgon.IO
         /// Function to read the animation data from a file on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file to read.</param>
+        /// <param name="name">[Optional] The name of the animation.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public IGorgonAnimation FromFile(string filePath)
+        public IGorgonAnimation FromFile(string filePath, string name = null)
         {
             if (!CanDecode)
             {
@@ -282,9 +290,14 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = filePath.FormatPath(Path.DirectorySeparatorChar);
+            }
+
             using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                return FromStream(stream, (int)stream.Length);
+                return FromStream(stream, (int)stream.Length, name);
             }
         }
 
@@ -393,7 +406,7 @@ namespace Gorgon.IO
             {
                 stream.Position = position;
             }
-        }
+        }        
         #endregion
 
         #region Constructor/Finalizer.

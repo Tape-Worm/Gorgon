@@ -859,7 +859,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// property. Applications may convert their image data a supported format before saving the data using a codec.
         /// </para>
         /// </remarks>
-        public override void SaveToStream(IGorgonImage imageData, Stream stream)
+        public override void Save(IGorgonImage imageData, Stream stream)
         {
             // Ensure that we can actually read this format.  We do not perform total pixel conversion on behalf of the user, they are responsible for that.
             // We will, however, support swizzling and pixel compression (e.g. 32 -> 24 bit).

@@ -197,7 +197,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
 
                 fileStream = File.Open(physicalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 outStream = _tempFileSystem.OpenStream(outputFilePath, FileMode.Create);
-                IGorgonAnimation animation = sourceCodec.FromStream(fileStream);
+                IGorgonAnimation animation = sourceCodec.FromStream(fileStream, name: outputFilePath);
                 _log.Print($"Converting '{physicalFilePath}' to Gorgon Animation v3.1 file format.", LoggingLevel.Verbose);
                 animationCodec.Save(animation, outStream);
                 fileStream.Dispose();

@@ -142,7 +142,7 @@ namespace Gorgon.Graphics.Fonts
             long size = writer.BaseStream.Length;
             var codec = new GorgonCodecPng();
 
-            codec.SaveToStream(Image, writer.BaseStream);
+            codec.Save(Image, writer.BaseStream);
 
             // Calculate the number of bytes written.
             size = writer.BaseStream.Length - size;
@@ -165,7 +165,7 @@ namespace Gorgon.Graphics.Fonts
 
             Image?.Dispose();
             var codec = new GorgonCodecPng();
-            Image = codec.LoadFromStream(reader.BaseStream, imageSize);
+            Image = codec.FromStream(reader.BaseStream, imageSize);
         }
 
         /// <summary>

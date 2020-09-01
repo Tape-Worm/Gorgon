@@ -211,7 +211,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 {
                     image = texture.Texture.ToImage();
                     outStream = _fileSystem.OpenStream(texture.Texture.Name, FileMode.Create);
-                    _defaultImageCodec.SaveToStream(image, outStream);
+                    _defaultImageCodec.Save(image, outStream);
                     outStream.Dispose();
                     image.Dispose();
                 }

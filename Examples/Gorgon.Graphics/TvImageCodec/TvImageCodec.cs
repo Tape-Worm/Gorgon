@@ -255,7 +255,7 @@ namespace Gorgon.Graphics.Example
 	    /// property. Applications may convert their image data a supported format before saving the data using a codec.
 	    /// </para>
 	    /// </remarks>
-	    public override void SaveToStream(IGorgonImage imageData, Stream stream)
+	    public override void Save(IGorgonImage imageData, Stream stream)
         {
             if (imageData.Format != BufferFormat.R8G8B8A8_UNorm)
             {

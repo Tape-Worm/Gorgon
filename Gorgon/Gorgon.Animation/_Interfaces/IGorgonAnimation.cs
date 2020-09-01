@@ -55,17 +55,9 @@ namespace Gorgon.Animation
     /// <seealso cref="IGorgonKeyFrame"/>
     /// <seealso cref="GorgonAnimationBuilder"/>
     public interface IGorgonAnimation
+        : IGorgonNamedObject
     {
         #region Properties.
-        /// <summary>
-        /// Property to return the name of this object.
-        /// </summary>
-        [Obsolete("This member is going away in a future release.  Names should not be stored in the data.")]
-        string Name
-        {
-            get;
-        }
-
         /// <summary>
         /// Property to set or return the number of times to loop an animation.
         /// </summary>

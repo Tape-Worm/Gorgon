@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This will read fonts created by the BmFont application by Andreas Jönsson (<a href="http://www.angelcode.com/products/bmfont/"/>). 
+    /// This will read fonts created by the <a href="https://www.angelcode.com/products/bmfont/" target="_blank">BmFont</a> application by Andreas Jönsson. 
     /// </para>
     /// <para>
     /// This codec is very limited in scope and as such cannot read all types of font information persisted by BmFont. Below is the list of limitations for this codec:
@@ -526,7 +526,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
                 IGorgonImageCodec codec = GetImageCodec(fileInfo.Extension);
 
-                using (IGorgonImage image = codec.LoadFromFile(fileInfo.FullName))
+                using (IGorgonImage image = codec.FromFile(fileInfo.FullName))
                 {
                     image.ToTexture2D(Factory.Graphics,
                                       new GorgonTexture2DLoadOptions

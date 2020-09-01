@@ -2134,7 +2134,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 // Reload the image.
                 imageStream = workImageFile.OpenStream();
-                workImage = codec.LoadFromStream(imageStream);
+                workImage = codec.FromStream(imageStream);
                 imageStream.Dispose();
 
                 if (workImage.Format != ImageData.Format)

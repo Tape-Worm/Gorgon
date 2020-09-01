@@ -206,7 +206,7 @@ namespace Gorgon.IO
             {
                 using (Stream stream = file.OpenStream())
                 {
-                    return codec.LoadFromStream(stream);
+                    return codec.FromStream(stream);
                 }
             });
 
@@ -372,7 +372,7 @@ namespace Gorgon.IO
 
             using (Stream stream = file.OpenStream())
             {
-                return imageCodec.LoadFromStream(stream, (int)file.Size);
+                return imageCodec.FromStream(stream, (int)file.Size);
             }
         }
 

@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonChunkFile{T}"/>
         /// <seealso cref="GorgonChunkFileReader"/>
         /// <seealso cref="GorgonChunkFileWriter"/>
-        public void SaveToStream(Stream stream)
+        public void Save(Stream stream)
         {
             if (stream == null)
             {
@@ -237,7 +237,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonChunkFile{T}"/>
         /// <seealso cref="GorgonChunkFileReader"/>
         /// <seealso cref="GorgonChunkFileWriter"/>
-        public void SaveToFile(string path)
+        public void Save(string path)
         {
             if (path == null)
             {
@@ -251,7 +251,7 @@ namespace Gorgon.Graphics.Core
 
             using (FileStream stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                SaveToStream(stream);
+                Save(stream);
             }
         }
 

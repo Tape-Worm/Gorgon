@@ -163,7 +163,7 @@ namespace Gorgon.Editor.Rendering
                         _log.Print($"ERROR: Texture '{entry.TextureFile.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
                     }
 
-                    return _codec.LoadFromStream(textureStream);
+                    return _codec.FromStream(textureStream);
                 }
             });
 
@@ -238,7 +238,7 @@ namespace Gorgon.Editor.Rendering
 
                 using (Stream textureStream = _tempWriter.OpenStream(cacheFilePath, FileMode.Open))
                 {
-                    return _codec.LoadFromStream(textureStream);
+                    return _codec.FromStream(textureStream);
                 }
             });
 

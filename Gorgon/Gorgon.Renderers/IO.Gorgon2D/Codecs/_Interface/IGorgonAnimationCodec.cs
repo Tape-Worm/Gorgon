@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -66,7 +67,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Property to return whether or not the codec can decode sprite data.
+        /// Property to return whether or not the codec can decode animation data.
         /// </summary>
         bool CanDecode
         {
@@ -74,7 +75,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Property to return whether or not the codec can encode sprite data.
+        /// Property to return whether or not the codec can encode animation data.
         /// </summary>
         bool CanEncode
         {
@@ -82,7 +83,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Property to return the version of sprite data that the codec supports.
+        /// Property to return the version of animation data that the codec supports.
         /// </summary>
         Version Version
         {
@@ -107,19 +108,21 @@ namespace Gorgon.IO
         IReadOnlyList<string> GetAssociatedTextureNames(Stream stream);
 
         /// <summary>
-        /// Function to read the sprite data from a stream.
-        /// </summary>
-        /// <param name="stream">The stream containing the sprite.</param>
+        /// Function to read the animation data from a stream.
+        /// </summary>        
+        /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
+        /// <param name="name">[Optional] The name of the animation.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        IGorgonAnimation FromStream(Stream stream, int? byteCount = null);
+        IGorgonAnimation FromStream(Stream stream, int? byteCount = null, string name = null);
 
         /// <summary>
         /// Function to read the animation data from a file on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file to read.</param>
+        /// <param name="name">[Optional] The name of the animation.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        IGorgonAnimation FromFile(string filePath);
+        IGorgonAnimation FromFile(string filePath, string name = null);
 
         /// <summary>
         /// Function to save the animation data to a stream.

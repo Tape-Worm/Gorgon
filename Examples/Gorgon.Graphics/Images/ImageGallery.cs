@@ -166,7 +166,7 @@ namespace Gorgon.Graphics.Example
             {
                 ReadAllFrames = true
             });
-            _images[3] = gifCodec.LoadFromFile(path);
+            _images[3] = gifCodec.FromFile(path);
 
             // The GIF animation frames are stored in an image array, so in order to access them we need to index through 
             // the image array below.
@@ -241,11 +241,11 @@ namespace Gorgon.Graphics.Example
             // Load each image and resize to the requested width & height.
             // Here we see how to use an image codec to read image data from a file.
             IGorgonImageCodec codec = new GorgonCodecDds();
-            _images[1] = codec.LoadFromFile(ddsFileInfo.FullName)
+            _images[1] = codec.FromFile(ddsFileInfo.FullName)
                              .Resize(_imageSize.Width, _imageSize.Height, 1, ImageFilter.Fant);
 
             codec = new GorgonCodecTga();
-            _images[2] = codec.LoadFromFile(tgaFileInfo.FullName)
+            _images[2] = codec.FromFile(tgaFileInfo.FullName)
                                   .Resize(_imageSize.Width, _imageSize.Height, 1)
                                   .ConvertToFormat(BufferFormat.B8G8R8A8_UNorm);
 
@@ -253,11 +253,11 @@ namespace Gorgon.Graphics.Example
             LoadAnimatedGif(gifFileInfo.FullName);
 
             codec = new GorgonCodecPng();
-            _images[4] = codec.LoadFromFile(pngFileInfo.FullName)
+            _images[4] = codec.FromFile(pngFileInfo.FullName)
                              .Resize(_imageSize.Width, _imageSize.Height, 1);
 
             codec = new GorgonCodecBmp();
-            _images[5] = codec.LoadFromFile(bmpFileInfo.FullName)
+            _images[5] = codec.FromFile(bmpFileInfo.FullName)
                              .Resize(_imageSize.Width, _imageSize.Height, 1, ImageFilter.Linear);
 
             // This is going to be used to display the images on the screen.

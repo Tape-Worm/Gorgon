@@ -75,17 +75,17 @@ namespace Gorgon.Editor
 
             using (var stream = new MemoryStream(Resources.Bg_Pattern_256x256, false))
             {
-                CheckerBoardPatternImage = dds.LoadFromStream(stream);
+                CheckerBoardPatternImage = dds.FromStream(stream);
             }
 
             using (var stream = new MemoryStream(Resources.manual_input_24x24, false))
             {
-                KeyboardIcon = dds.LoadFromStream(stream);
+                KeyboardIcon = dds.FromStream(stream);
             }
 
             using (var stream = new MemoryStream(Resources.manual_vertex_edit_64x64, false))
             {
-                KeyboardIconLarge = dds.LoadFromStream(stream);
+                KeyboardIconLarge = dds.FromStream(stream);
             }
         }
 

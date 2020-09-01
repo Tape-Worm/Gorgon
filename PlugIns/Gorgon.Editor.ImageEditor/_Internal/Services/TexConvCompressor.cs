@@ -227,7 +227,7 @@ namespace Gorgon.Editor.ImageEditor
 
                 decodedFile = _writer.FileSystem.GetFile(imageFile.Directory.FullPath + "decoded" + imageFile.Name);
                 inStream = decodedFile.OpenStream();
-                result = _codec.LoadFromStream(inStream);
+                result = _codec.FromStream(inStream);
 
                 return result;
             }
