@@ -303,7 +303,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// the stream.
         /// </para>
         /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromStream(Stream, long?) instead.")]
+        [Obsolete("Use FromStream(Stream, long?) instead.")]
         IGorgonImage LoadFromStream(Stream stream, long? size = null);
 
         /// <summary>
@@ -315,7 +315,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the size of the file is less than 1 byte.</exception>
         /// <exception cref="GorgonException">Thrown when the image data in the file has a pixel format that is unsupported.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromFile(string) instead.")]
+        [Obsolete("Use FromFile(string) instead.")]
         IGorgonImage LoadFromFile(string filePath);
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
         /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save(IGorgonImage, string) instead.")]
+        [Obsolete("Use Save(IGorgonImage, string) instead.")]
         void SaveToStream(IGorgonImage imageData, Stream stream);
 
         /// <summary>
@@ -337,7 +337,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty..</exception>
         /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save(IGorgonImage, string) instead.")]
+        [Obsolete("Use Save(IGorgonImage, string) instead.")]
         void SaveToFile(IGorgonImage imageData, string filePath);
 
         /// <summary>

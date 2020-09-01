@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -69,10 +70,15 @@ namespace Gorgon.Examples
         private static IGorgonFileSystem _fileSystem;
         // The sprite to draw on the screen.
         private static GorgonSprite _dudeBro;
+        private static GorgonSprite _dudeBroReflect;
+        // The texture for the background.
+        private static GorgonTexture2DView _backGround;
         // The animation for the sprite.
         private static IGorgonAnimation _animation;
         // The controller used to play and update the animation.
         private static GorgonSpriteAnimationController _animController;
+        // The background scroll position.
+        private static float _pos;
         #endregion
 
         #region Methods.
@@ -102,17 +108,31 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
-            _screen.RenderTargetView.Clear(GorgonColor.SteelBlue);
+            _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
-            _dudeBro.Position = new DX.Vector2(_screen.Width / 2, _screen.Height / 2);
+            var scale = new DX.Vector2(_screen.Width / (float)Settings.Default.Resolution.Width, 
+                                       _screen.Height / (float)Settings.Default.Resolution.Height);
+
+            _dudeBro.Position = new DX.Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
+            _dudeBroReflect.Position = new DX.Vector2(_dudeBro.Position.X, _dudeBro.Position.Y + _dudeBro.ScaledSize.Height + 3);
+
+            // Copy the texture coordinates from the animated sprite, this way we can mirror the animation in our reflection without
+            // having to set up a separate controller.
+            _dudeBroReflect.TextureRegion = _dudeBro.TextureRegion;
 
             _renderer.Begin();
+            _renderer.DrawFilledRectangle(new DX.RectangleF(0, -167 * scale.Y, _backGround.Width * scale.X, _backGround.Height * scale.Y),
+                                          GorgonColor.White,
+                                          _backGround,
+                                          new DX.RectangleF(_pos / _backGround.Width, 0, 1, 1));
             _renderer.DrawSprite(_dudeBro);
+            _renderer.DrawSprite(_dudeBroReflect);
             _renderer.End();
 
             _screen.Present(1);
 
             _animController.Update();
+            _pos -= ((1288 / _dudeBro.ScaledSize.Width) * 6.5f) * GorgonTiming.Delta;
 
             return true;
         }
@@ -157,7 +177,7 @@ namespace Gorgon.Examples
                                                   Height = Settings.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
-                _screen.SwapChainResized += Screen_AfterSwapChainResized;
+                
                 // Tell the graphics API that we want to render to the "screen" swap chain.
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 
@@ -198,9 +218,12 @@ namespace Gorgon.Examples
                 // texture is only ever loaded one time and shared amongst the objects that use it.
                 _animation = await _contentLoader.LoadAnimationAsync("/testBinAnim.gorAnim");
                 _dudeBro = await _contentLoader.LoadSpriteAsync("/dudebro.gorsprite");
+                _dudeBroReflect = await _contentLoader.LoadSpriteAsync("/dudebroReflection.gorsprite");
+                _backGround = (await _contentLoader.LoadTextureAsync("/nature_settings_simple_landscape_1.dds"))?.GetShaderResourceView();
 
                 // This sprite is kinda small, so we'll need to update its scale.
-                _dudeBro.Scale = new DX.Vector2(8, 8);
+                _dudeBroReflect.Scale = _dudeBro.Scale = new DX.Vector2(8, 8);
+                _dudeBroReflect.VerticalFlip = true;
 
                 // Now that we have a sprite, and an animation to play against, we can set up the animation controller to play the 
                 // animation when we enter our idle state.
@@ -214,16 +237,6 @@ namespace Gorgon.Examples
                 Cursor.Current = Cursors.Default;
                 GorgonExample.EndInit();
             }
-        }
-
-        /// <summary>
-        /// Handles the AfterSwapChainResized event of the Screen control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private static void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e)
-        {
-        
         }
 
         /// <summary>

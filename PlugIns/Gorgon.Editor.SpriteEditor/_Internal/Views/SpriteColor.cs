@@ -120,6 +120,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     Picker.OriginalColor = DataContext.OriginalSpriteColor[firstSelected];
                     break;
+                case nameof(ISpriteColorEdit.SelectedVertices):
                 case nameof(ISpriteColorEdit.SpriteColor):
                     Picker.ColorChanged -= Picker_ColorChanged;
                     try
@@ -133,6 +134,7 @@ namespace Gorgon.Editor.SpriteEditor
                             }
                         }
                         Picker.SelectedColor = DataContext.SpriteColor[firstSelected];
+                        Picker.OriginalColor = DataContext.OriginalSpriteColor[firstSelected];
                     }
                     finally
                     {

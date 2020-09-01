@@ -114,7 +114,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <param name="stream">The stream containing the font data to read.</param>
         /// <param name="name">[Optional] The name of the font.</param>
         /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromStream instead.")]
+        [Obsolete("Use FromStream(Stream, string) instead.")]
         GorgonFont LoadFromStream(Stream stream, string name = null);
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <param name="filePath">Path to the file to load.</param>
         /// <param name="name">[Optional] The name of the font.</param>
         /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromFile instead.")]
+        [Obsolete("Use FromFile(string, string) instead.")]
         GorgonFont LoadFromFile(string filePath, string name = null);
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
         /// <param name="stream">The stream that will receive the font data.</param>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save instead.")]
+        [Obsolete("Use Save(GorgonFont, Stream) instead.")]
         void SaveToStream(GorgonFont fontData, Stream stream);
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
         /// <param name="filePath">The path to the file that will hold the font data.</param>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save instead.")]
+        [Obsolete("Use Save(GorgonFont, string) instead.")]
         void SaveToFile(GorgonFont fontData, string filePath);
 
         /// <summary>

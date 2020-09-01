@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -320,6 +321,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
         /// </exception>
         /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         GorgonFont IGorgonFontCodec.LoadFromStream(Stream stream, string name) => FromStream(stream, name);
 
         /// <summary>
@@ -330,6 +332,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="fontData"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty..</exception>
         /// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         void IGorgonFontCodec.SaveToFile(GorgonFont fontData, string filePath) => Save(fontData, filePath);
 
         /// <summary>
@@ -340,6 +343,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="fontData"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
         /// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         void IGorgonFontCodec.SaveToStream(GorgonFont fontData, Stream stream) => Save(fontData, stream);
 
         /// <summary>
@@ -349,6 +353,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <param name="name">The name of the font.</param>
         /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         GorgonFont IGorgonFontCodec.LoadFromFile(string filePath, string name) => FromFile(filePath, name);
 
         /// <summary>

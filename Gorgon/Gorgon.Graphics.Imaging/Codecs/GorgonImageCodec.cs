@@ -488,7 +488,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// the stream.
         /// </para>
         /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromStream instead.")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         IGorgonImage IGorgonImageCodec.LoadFromStream(Stream stream, long? size) => FromStream(stream, size);
 
         /// <summary>
@@ -500,7 +500,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the size of the file is less than 1 byte.</exception>
         /// <exception cref="GorgonException">Thrown when the image data in the file has a pixel format that is unsupported.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use FromFile instead.")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         IGorgonImage IGorgonImageCodec.LoadFromFile(string filePath) => FromFile(filePath);
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// property. Applications may convert their image data a supported format before saving the data using a codec.
         /// </para>
         /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save instead.")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         void IGorgonImageCodec.SaveToStream(IGorgonImage imageData, Stream stream) => Save(imageData, stream);
 
         /// <summary>
@@ -534,7 +534,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// property. Applications may convert their image data a supported format before saving the data using a codec.
         /// </para>
         /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never), Obsolete("Use Save instead.")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         void IGorgonImageCodec.SaveToFile(IGorgonImage imageData, string filePath) => Save(imageData, filePath);
 
         /// <summary>
