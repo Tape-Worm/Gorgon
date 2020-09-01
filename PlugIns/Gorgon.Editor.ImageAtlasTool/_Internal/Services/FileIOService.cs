@@ -84,7 +84,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                         progress?.Invoke(file.Name);
 
                         stream = _fileSystem.OpenStream(file.Path, FileMode.Open);
-                        result[file] = _defaultImageCodec.LoadFromStream(stream);
+                        result[file] = _defaultImageCodec.FromStream(stream);
                         stream.Dispose();
                     }
                 }
@@ -200,7 +200,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                 {
                     image = texture.Texture.ToImage();
                     outStream = _fileSystem.OpenStream(texture.Texture.Name, FileMode.Create);
-                    _defaultImageCodec.SaveToStream(image, outStream);
+                    _defaultImageCodec.Save(image, outStream);
                     outStream.Dispose();
                     image.Dispose();
                 }

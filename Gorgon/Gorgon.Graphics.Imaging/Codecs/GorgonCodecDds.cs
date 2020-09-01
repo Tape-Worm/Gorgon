@@ -1339,7 +1339,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <see cref="GorgonImageCodec{TEncOpt, TDecOpt}.SupportedPixelFormats"/> property. Applications may convert their image data a supported format before saving the data using a codec.
         /// </para>
         /// </remarks>
-        public override void SaveToStream(IGorgonImage imageData, Stream stream)
+        public override void Save(IGorgonImage imageData, Stream stream)
         {
             if (imageData == null)
             {

@@ -293,7 +293,7 @@ namespace Gorgon.IO
 
             using (Stream stream = file.OpenStream())
             {
-                return shouldConvertToPremultiplied ? imageCodec.LoadFromStream(stream, (int)file.Size).ConvertToPremultipliedAlpha() : imageCodec.LoadFromStream(stream, (int)file.Size);
+                return shouldConvertToPremultiplied ? imageCodec.FromStream(stream, (int)file.Size).ConvertToPremultipliedAlpha() : imageCodec.FromStream(stream, (int)file.Size);
             }
         }
 

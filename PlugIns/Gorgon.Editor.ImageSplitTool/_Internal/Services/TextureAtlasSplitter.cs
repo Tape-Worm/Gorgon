@@ -80,7 +80,7 @@ namespace Gorgon.Editor.ImageSplitTool
         {
             using (Stream stream = _fileManager.OpenStream(imageFile.Path, FileMode.Open))
             {
-                return _imageCodec.LoadFromStream(stream);
+                return _imageCodec.FromStream(stream);
             }
         }
 
@@ -308,7 +308,7 @@ namespace Gorgon.Editor.ImageSplitTool
                 // Write out the image data.
                 using (Stream imageStream = _fileManager.OpenStream(newImagePath, FileMode.Create))
                 {
-                    _imageCodec.SaveToStream(image, imageStream);
+                    _imageCodec.Save(image, imageStream);
                 }
 
                 using (Stream spriteStream = _fileManager.OpenStream(newSpritePath, FileMode.Create))

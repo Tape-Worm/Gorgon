@@ -110,7 +110,7 @@ namespace Gorgon.Examples
             int fontWithTexture = GorgonRandom.RandomInt32(fontWithGradient + 1, fontWithGradient + 5).Min(_fontFamilies.Count - 1);
 
             var pngCodec = new GorgonCodecPng();
-            using (IGorgonImage texture = pngCodec.LoadFromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\Fonts\").FullName, "Gradient.png")))
+            using (IGorgonImage texture = pngCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\Fonts\").FullName, "Gradient.png")))
             {
                 for (int i = 0; i < _fontFamilies.Count; ++i)
                 {

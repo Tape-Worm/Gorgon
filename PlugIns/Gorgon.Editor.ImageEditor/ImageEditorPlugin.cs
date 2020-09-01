@@ -194,13 +194,13 @@ namespace Gorgon.Editor.ImageEditor
                 if (file != null)
                 {
                     inStream = file.OpenStream();
-                    result = thumbnailCodec.LoadFromStream(inStream);
+                    result = thumbnailCodec.FromStream(inStream);
 
                     return cancelToken.IsCancellationRequested ? (null, false) : (result, false);
                 }
 
                 inStream = ContentFileManager.OpenStream(content.Path, FileMode.Open);
-                result = _ddsCodec.LoadFromStream(inStream);
+                result = _ddsCodec.FromStream(inStream);
 
                 return (result, true);
             }
@@ -518,7 +518,7 @@ namespace Gorgon.Editor.ImageEditor
                 await Task.Run(() => {
                     using (Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create))
                     {
-                        pngCodec.SaveToStream(thumbImage, stream);
+                        pngCodec.Save(thumbImage, stream);
                     }
                 }, cancelToken);
 

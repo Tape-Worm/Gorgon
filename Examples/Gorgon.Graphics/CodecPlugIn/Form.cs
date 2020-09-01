@@ -142,11 +142,11 @@ namespace CodecPlugIn
             try
             {
                 // Save the current texture using our useless new custom codec.
-                _customCodec.SaveToFile(_image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm), tempPath);
+                _customCodec.Save(_image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm), tempPath);
                 _image.Dispose();
                 _texture?.Dispose();
 
-                _image = _customCodec.LoadFromFile(tempPath);
+                _image = _customCodec.FromFile(tempPath);
 
                 _texture = _image.ToTexture2D(_graphics, new GorgonTexture2DLoadOptions
                 {
@@ -241,7 +241,7 @@ namespace CodecPlugIn
 
                 // Load the image to use as a texture.
                 IGorgonImageCodec png = new GorgonCodecPng();
-                _image = png.LoadFromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugIn\").FullName, "SourceTexture.png"));
+                _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugIn\").FullName, "SourceTexture.png"));
 
                 GorgonExample.LoadResources(_graphics);
 

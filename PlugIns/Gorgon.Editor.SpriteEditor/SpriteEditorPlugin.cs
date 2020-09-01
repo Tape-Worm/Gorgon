@@ -320,7 +320,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     inStream = file.OpenStream();
 
-                    spriteImage = thumbnailCodec.LoadFromStream(inStream);
+                    spriteImage = thumbnailCodec.FromStream(inStream);
 
                     if (cancelToken.IsCancellationRequested)
                     {
@@ -592,7 +592,7 @@ namespace Gorgon.Editor.SpriteEditor
             }, CommonEditorResources.CheckerBoardPatternImage);
             using (var noImageStream = new MemoryStream(Resources.NoImage_256x256))
             {
-                _noImage = _ddsCodec.LoadFromStream(noImageStream);
+                _noImage = _ddsCodec.FromStream(noImageStream);
             }
 
             SpriteEditorSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteEditorSettings>(SettingsFilename, new JsonSharpDxRectConverter());
@@ -764,7 +764,7 @@ namespace Gorgon.Editor.SpriteEditor
                 await Task.Run(() => {
                     using (Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create))
                     {
-                        pngCodec.SaveToStream(thumbnailImage, stream);
+                        pngCodec.Save(thumbnailImage, stream);
                     }
                 }, cancelToken);
 

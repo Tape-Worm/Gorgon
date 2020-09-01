@@ -402,7 +402,7 @@ namespace Gorgon.Examples
             var dds = new GorgonCodecDds();
 
             using (var stream = new MemoryStream(Resources.Rain_Height_NRM))
-            using (IGorgonImage image = dds.LoadFromStream(stream))
+            using (IGorgonImage image = dds.FromStream(stream))
             {
                 _renderer.TextureCache["Water_Normal"] = image.ToTexture2D(_graphics,
                                                                            new GorgonTexture2DLoadOptions
@@ -412,7 +412,7 @@ namespace Gorgon.Examples
             }
 
             using (var stream = new MemoryStream(Resources.Rain_Height_SPEC))
-            using (IGorgonImage image = dds.LoadFromStream(stream))
+            using (IGorgonImage image = dds.FromStream(stream))
             {
                 _renderer.TextureCache["Water_Specular"] = image.ToTexture2D(_graphics,
                                                                              new GorgonTexture2DLoadOptions
@@ -422,7 +422,7 @@ namespace Gorgon.Examples
             }
 
             using (var stream = new MemoryStream(Resources.earthbump1k_NRM))
-            using (IGorgonImage image = dds.LoadFromStream(stream))
+            using (IGorgonImage image = dds.FromStream(stream))
             {
                 _renderer.TextureCache["Earth_Normal"] = image.ToTexture2D(_graphics,
                                                                            new GorgonTexture2DLoadOptions

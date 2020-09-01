@@ -127,11 +127,11 @@ namespace Gorgon.Editor.ImageEditor.Services
             }
 
             using (Stream fileStream = File.Open(physicalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (IGorgonImage image = sourceCodec.LoadFromStream(fileStream))
+            using (IGorgonImage image = sourceCodec.FromStream(fileStream))
             using (Stream outStream = _tempWriter.OpenStream(outputFilePath, FileMode.Create))
             {
                 _log.Print($"Converting '{physicalFilePath}' to DDS file format. Image format [{image.Format}].", LoggingLevel.Verbose);
-                ddsCodec.SaveToStream(image, outStream);
+                ddsCodec.Save(image, outStream);
             }
 
             return _tempWriter.FileSystem.GetFile(outputFilePath);

@@ -730,7 +730,7 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            using (IGorgonImage image = codec.LoadFromStream(stream, size))
+            using (IGorgonImage image = codec.FromStream(stream, size))
             {
                 GorgonTexture2D texture = image.ToTexture2D(graphics, options);
                 GorgonTexture2DReadWriteView view = texture.GetReadWriteView();
@@ -803,7 +803,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            using (IGorgonImage image = codec.LoadFromFile(filePath))
+            using (IGorgonImage image = codec.FromFile(filePath))
             {
                 GorgonTexture2D texture = image.ToTexture2D(graphics, options);
                 GorgonTexture2DReadWriteView view = texture.GetReadWriteView();

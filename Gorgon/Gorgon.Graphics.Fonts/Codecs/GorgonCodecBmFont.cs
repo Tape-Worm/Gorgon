@@ -526,7 +526,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
                 IGorgonImageCodec codec = GetImageCodec(fileInfo.Extension);
 
-                using (IGorgonImage image = codec.LoadFromFile(fileInfo.FullName))
+                using (IGorgonImage image = codec.FromFile(fileInfo.FullName))
                 {
                     image.ToTexture2D(Factory.Graphics,
                                       new GorgonTexture2DLoadOptions

@@ -211,7 +211,7 @@ namespace Gorgon.Editor.SpriteEditor
                     else
                     {
                         _log.Print($"Texture '{dependency[0]}' found and loaded.", LoggingLevel.Verbose);
-                        return (_imageCodec.LoadFromStream(stream), imageFile);
+                        return (_imageCodec.FromStream(stream), imageFile);
                     }
                 }
             });
@@ -258,7 +258,7 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     return !_imageCodec.IsReadable(stream)
                         ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORSPR_ERR_TEXTURE_CANNOT_READ, file.Path))
-                        : _imageCodec.LoadFromStream(stream);
+                        : _imageCodec.FromStream(stream);
                 }
             }
 

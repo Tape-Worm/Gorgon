@@ -325,11 +325,12 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="renderer">The renderer for the animation.</param>
         /// <param name="json">The JSON string containing the animation data.</param>
+        /// <param name="name">[Optional] The name of the animation.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="json"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="json"/> parameter is empty.</exception>
         /// <exception cref="GorgonException">Thrown if the JSON string does not contain animation data, or there is a version mismatch.</exception>
-        public IGorgonAnimation FromJson(Gorgon2D renderer, string json)
+        public IGorgonAnimation FromJson(Gorgon2D renderer, string json, string name = null)
         {
             if (renderer == null)
             {
@@ -346,7 +347,11 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(json));
             }
 
-            string animName = string.Empty;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = $"GorgonAnimation_{Guid.NewGuid():N}";
+            }
+                        
             float animLength = 0;
             float animFps = 0;
             int loopCount = 0;
@@ -409,7 +414,7 @@ namespace Gorgon.IO
                             ReadTrack(reader, textureConvert, textures);
                             break;
                         case "NAME":
-                            animName = reader.ReadAsString();
+                            reader.ReadAsString();
                             break;
                         case "LENGTH":
                             animLength = (float)(reader.ReadAsDecimal() ?? 0);
@@ -427,12 +432,6 @@ namespace Gorgon.IO
                 }
             }
 
-            // There's no name, so it's a broken JSON.
-            if (string.IsNullOrWhiteSpace(animName))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_ANIM);
-            }
-            
             var builder = new GorgonAnimationBuilder();
 
             if (singles.Count > 0)
@@ -519,7 +518,7 @@ namespace Gorgon.IO
                 }
             }
 
-            IGorgonAnimation result = builder.Build(animName, animFps, animLength);
+            IGorgonAnimation result = builder.Build(name, animFps, animLength);
 
             result.LoopCount = loopCount;
             result.IsLooped = isLooped;
@@ -544,17 +543,18 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to read the animation data from a stream.
         /// </summary>
+        /// <param name="name">The name of the animation.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(Stream stream, int byteCount)
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
         {
             using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
             {
                 using (var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
                 {
                     string jsonString = reader.ReadToEnd();
-                    return FromJson(Renderer, jsonString);
+                    return FromJson(Renderer, name, jsonString);
                 }
             }
         }

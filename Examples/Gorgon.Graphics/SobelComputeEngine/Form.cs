@@ -99,7 +99,7 @@ namespace Gorgon.Examples
                 _sourceTexture = null;
                 _outputTexture = null;
 
-                image = png.LoadFromFile(DialogOpenPng.FileName);
+                image = png.FromFile(DialogOpenPng.FileName);
                 _sourceTexture = image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
                                       .ToTexture2D(_graphics,
                                                    new GorgonTexture2DLoadOptions
@@ -178,10 +178,6 @@ namespace Gorgon.Examples
                 {
 
                     _outputTexture.CopyTo(tempTexture);
-                    using (IGorgonImage image = tempTexture.ToImage())
-                    {
-                        png.SaveToFile(image, @"D:\unpak\uav.png");
-                    }
                 }
             }
             catch (Exception ex)

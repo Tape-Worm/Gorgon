@@ -229,10 +229,11 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to read the animation data from a stream.
         /// </summary>
+        /// <param name="name">Not used.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(Stream stream, int byteCount)
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
         {
             var builder = new GorgonAnimationBuilder();
 
@@ -247,7 +248,7 @@ namespace Gorgon.IO
             {
                 reader.Open();
                 binReader = reader.OpenChunk(AnimationData);
-                string name = binReader.ReadString();
+                name = binReader.ReadString();
                 float length = binReader.ReadSingle();
                 bool isLooped = binReader.ReadBoolean();
                 int loopCount = binReader.ReadInt32();

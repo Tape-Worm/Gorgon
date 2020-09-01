@@ -1140,7 +1140,7 @@ namespace Gorgon.Editor.AnimationEditor
                     {
                         using (var imageStream = new MemoryStream(Resources.anim_thumbnail_256x256))
                         {
-                            return _defaultImageCodec.LoadFromStream(imageStream);
+                            return _defaultImageCodec.FromStream(imageStream);
                         }
                     });
 
@@ -1193,7 +1193,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 // Load the sprite now. 
                 stream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
-                animation = _defaultCodec.FromStream(stream);
+                animation = _defaultCodec.FromStream(stream, name: file.Path);
 
                 // Validate the animation tracks to ensure they're not using tracks we cannot support.
                 ValidateAnimation(file, animation, controller);

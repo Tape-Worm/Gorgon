@@ -169,7 +169,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 using (Stream workStream = workFile.OpenStream())
                 {
-                    importImage = importCodec.LoadFromStream(workStream);
+                    importImage = importCodec.FromStream(workStream);
                 }
             }
 
@@ -222,7 +222,7 @@ namespace Gorgon.Editor.ImageEditor
 
             _log.Print($"Exporting '{file.Name}' to '{exportFilePath}' as {codec.CodecDescription}", LoggingLevel.Verbose);
 
-            codec.SaveToFile(image, result.FullName);
+            codec.Save(image, result.FullName);
 
             _busyState.SetIdle();
 
@@ -282,7 +282,7 @@ namespace Gorgon.Editor.ImageEditor
                 // Send the image data as uncompressed to our working file, so we can have something to compress.
                 using (Stream outStream = ScratchArea.OpenStream(workFile.FullPath, FileMode.Create))
                 {
-                    codec.SaveToStream(image, outStream);
+                    codec.Save(image, outStream);
                 }
 
                 _log.Print($"Saving to working file '{workFile.FullPath}'...", LoggingLevel.Simple);
@@ -346,7 +346,7 @@ namespace Gorgon.Editor.ImageEditor
                 _log.Print($"Saving to working file '{workFile.FullPath}'...", LoggingLevel.Simple);
                 using (Stream outStream = ScratchArea.OpenStream(workFile.FullPath, FileMode.Create))
                 {
-                    codec.SaveToStream(image, outStream);
+                    codec.Save(image, outStream);
                 }
 
                 ScratchArea.FileSystem.Refresh();
@@ -439,7 +439,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="file">The stream for the file to load.</param>
         /// <returns>The image data loaded from the stream.</returns>
-        public IGorgonImage LoadImageFile(Stream stream) => DefaultCodec.LoadFromStream(stream);
+        public IGorgonImage LoadImageFile(Stream stream) => DefaultCodec.FromStream(stream);
 
         /// <summary>Function to load the image file into memory.</summary>
         /// <param name="file">The stream for the file to load.</param>
@@ -498,7 +498,7 @@ namespace Gorgon.Editor.ImageEditor
                 _log.Print($"Loading image '{workFile.FullPath}'...", LoggingLevel.Simple);
                 using (Stream workingFileStream = workFile.OpenStream())
                 {
-                    result = DefaultCodec.LoadFromStream(workingFileStream);
+                    result = DefaultCodec.FromStream(workingFileStream);
                 }
             }
 

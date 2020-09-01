@@ -789,10 +789,11 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to read the animation data from a stream.
         /// </summary>
+        /// <param name="name">Not used.</param>
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(Stream stream, int byteCount) => OnReadMultipleFromStream(stream, true)[0];
+        protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount) => OnReadMultipleFromStream(stream, true)[0];
 
 
         /// <summary>Function to retrieve the names of the associated textures.</summary>
