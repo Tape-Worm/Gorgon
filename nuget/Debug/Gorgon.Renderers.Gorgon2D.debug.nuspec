@@ -3,7 +3,7 @@
   <metadata minClientVersion="5.3.0">
     <id>Gorgon.Renderers.Gorgon2D.Debug</id>
     <version>$version$-beta</version>
-    <title>Gorgon.Renderers.Gorgon2D< (DEBUG)/title>
+    <title>Gorgon.Renderers.Gorgon2D< (DEBUG)</title>
     <authors>Tape_Worm</authors>
     <owners>Tape_Worm</owners>
     <license type="expression">MIT</license>
