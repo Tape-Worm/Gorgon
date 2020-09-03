@@ -312,8 +312,8 @@ jobs:
         inputs:
           SymbolsFolder: '$(Build.SourcesDirectory)'
           SearchPattern: |              
-              **/bin/**/*.pdb
-              !Examples/**
+              **/bin/**/Gorgon*.pdb
+              !**/Examples/**
           IndexSources: true
           PublishSymbols: true
           SymbolServerType: 'teamServices'                    
