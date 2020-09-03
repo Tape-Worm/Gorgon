@@ -284,6 +284,16 @@ jobs:
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
 
       - task: CopyFiles@2
+        displayName: 'Copying Tools to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/'
+          Contents: |
+            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
+            !**/TextViewerExample.*
+          CleanTargetFolder: true
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'
+          
+      - task: CopyFiles@2
         displayName: 'Copying nuget files to artifacts'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/nuget/debug'
