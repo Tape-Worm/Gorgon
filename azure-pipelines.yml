@@ -283,6 +283,14 @@ jobs:
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
 
+      - task: CopyFiles@2
+        displayName: 'Copying nuget files to artifacts'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/nuget/debug'
+          Contents: '**/*'
+          CleanTargetFolder: true
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/NugetSupport/Debug'
+
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'

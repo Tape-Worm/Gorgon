@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="5.3.0">
+    <id>Gorgon.Input.Debug</id>
+    <version>$version$-beta</version>
+    <title>Gorgon.Input (DEBUG)</title>
+    <authors>Tape_Worm</authors>
+    <owners>Tape_Worm</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://www.tape-worm.net</projectUrl>
+    <icon>images\Gorgon_Icon_64x64.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains functionality to access the various input devices attached to the system.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <tags>Gorgon C# .NET SharpDX Graphics Windows Input XInput DirectInput RawInput WinForms</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.7.2" >
+        <dependency id="System.Buffers" version="4.5.1"/>
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>
+        <dependency id="Gorgon.Core.Debug" version="$version$-beta"/>
+        <dependency id="Gorgon.Windows.Debug" version="$version$-beta"/>
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src=".\Gorgon.Input.targets" target="build\Gorgon.Input.targets" />
+    <file src="..\lib\Gorgon.Input.dll" target="lib\net472\Gorgon.Input.dll" />
+    <file src="..\lib\Gorgon.Input.xml" target="lib\net472\Gorgon.Input.xml" />
+    <file src="..\PlugIns\Gorgon.Input.DirectInput.dll" target="build\plugins\Gorgon.DirectInput.dll" />
+    <file src="..\PlugIns\Gorgon.Input.XInput.dll" target="build\plugins\Gorgon.Input.XInput.dll" />
+    <file src="..\PlugIns\SharpDX.dll" target="build\plugins\SharpDX.dll" />    
+    <file src="..\PlugIns\SharpDX.Mathematics.dll" target="build\plugins\SharpDX.Mathematics.dll" />    
+    <file src="..\PlugIns\SharpDX.DirectInput.dll" target="build\plugins\SharpDX.DirectInput.dll" />    
+    <file src="..\PlugIns\SharpDX.XInput.dll" target="build\plugins\SharpDX.XInput.dll" />    
+  </files>
+</package>

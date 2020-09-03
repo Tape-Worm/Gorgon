@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="5.3.0">
+    <id>Gorgon.FileSystem.Debug</id>
+    <version>$version$-beta</version>
+    <title>Gorgon.FileSystem (DEBUG)</title>
+    <authors>Tape_Worm</authors>
+    <owners>Tape_Worm</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://www.tape-worm.net</projectUrl>
+    <icon>images\Gorgon_Icon_64x64.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains functionality for a unified virtual file system for Gorgon.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2020 Tape_Worm</copyright>
+    <tags>Gorgon C# .NET</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.7.2" >
+        <dependency id="System.Buffers" version="4.5.1"/>
+        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>
+        <dependency id="Gorgon.Core.Debug" version="$version$-beta"/>
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
+    <file src=".\Gorgon.FileSystem.targets" target="build\Gorgon.FileSystem.targets" />
+    <file src="..\lib\Gorgon.FileSystem.dll" target="lib\net472\Gorgon.FileSystem.dll" />
+    <file src="..\lib\Gorgon.FileSystem.xml" target="lib\net472\Gorgon.FileSystem.xml" />
+    <file src="..\PlugIns\Gorgon.FileSystem.GorPack.dll" target="build\plugins\Gorgon.FileSystem.GorPack.dll" />
+    <file src="..\PlugIns\Gorgon.FileSystem.Zip.dll" target="build\plugins\Gorgon.FileSystem.Zip.dll" />
+    <file src="..\PlugIns\ICSharpCode.SharpZipLib.dll" target="build\plugins\ICSharpCode.SharpZipLib.dll" />    
+  </files>
+</package>
