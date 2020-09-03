@@ -24,7 +24,7 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src=".\Gorgon.FileSystem.targets" target="build\Gorgon.FileSystem.targets" />
+    <file src=".\Gorgon.FileSystem.debug.targets" target="build\Gorgon.FileSystem.debug.targets" />
     <file src="..\lib\Gorgon.FileSystem.dll" target="lib\net472\Gorgon.FileSystem.dll" />
     <file src="..\lib\Gorgon.FileSystem.xml" target="lib\net472\Gorgon.FileSystem.xml" />
     <file src="..\PlugIns\Gorgon.FileSystem.GorPack.dll" target="build\plugins\Gorgon.FileSystem.GorPack.dll" />
