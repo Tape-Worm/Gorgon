@@ -305,3 +305,15 @@ jobs:
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: drop
+
+      - task: PublishSymbols@2
+        displayName: 'Publishing symbols'
+        inputs:
+          SymbolsFolder: '$(Build.SourcesDirectory)/Gorgon'
+          SearchPattern: '**/bin/$(BuildConfiguration)/Gorgon*.pdb' 
+          IndexSources: true
+          PublishSymbols: true
+          SymbolServerType: 'teamServices'                   
+          DetailedLog: true
+          TreatNotIndexedAsWarning: fals
+          SymbolsArtifactName: 'Gorgon_Symbols_$(BuildConfiguration)'
