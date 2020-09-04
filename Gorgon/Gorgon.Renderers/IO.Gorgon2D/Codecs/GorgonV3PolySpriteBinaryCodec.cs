@@ -195,6 +195,8 @@ namespace Gorgon.IO
                     {
                         indices[i] = binReader.ReadInt32();
                     }
+
+                    reader.CloseChunk();
                 }
 
                 GorgonTexture2DView texture = null;
