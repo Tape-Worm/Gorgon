@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -71,6 +72,8 @@ namespace Gorgon.Renderers
         private readonly GorgonPolySprite _workingSprite = new GorgonPolySprite();
         // The triangulator used to convert the polygon into a triangle mesh.
         private readonly Triangulator _triangulator = new Triangulator(null);
+        // Flag to indicate that the vertex data should be triangulated.
+        private bool _triangulate = true;
         #endregion
 
         #region Properties.
@@ -94,12 +97,17 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="dest">The destination sprite that will receive the sprite data.</param>
         /// <param name="src">The source sprite that will have its data copied.</param>
-        private static void CopySprite(GorgonPolySprite dest, GorgonPolySprite src)
+        /// <param name="copyVertices"><b>true</b> to copy the vertices, <b>false</b> to leave empty.</param>
+        private static void CopySprite(GorgonPolySprite dest, GorgonPolySprite src, bool copyVertices)
         {
             dest.RwVertices.Clear();
-            for (int i = 0; i < src.RwVertices.Count; ++i)
+
+            if (copyVertices)
             {
-                dest.RwVertices.Add(src.RwVertices[i]);
+                for (int i = 0; i < src.RwVertices.Count; ++i)
+                {
+                    dest.RwVertices.Add(src.RwVertices[i]);
+                }
             }
 
             dest.Position = src.Position;
@@ -481,7 +489,7 @@ namespace Gorgon.Renderers
 
             var newSprite = new GorgonPolySprite();
 
-            CopySprite(newSprite, _workingSprite);
+            CopySprite(newSprite, _workingSprite, true);
 
             newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
             if ((newSprite.Renderable.Vertices == null) || (newSprite.Renderable.Vertices.Length < newSprite.RwVertices.Count))
@@ -568,7 +576,7 @@ namespace Gorgon.Renderers
                 return this;
             }
 
-            CopySprite(_workingSprite, builderObject);
+            CopySprite(_workingSprite, builderObject, true);
             return this;
         }
 

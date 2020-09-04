@@ -32,6 +32,8 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.Renderers.Properties;
 using Newtonsoft.Json;
 using DX = SharpDX;
 
@@ -442,6 +444,130 @@ namespace Gorgon.Renderers
             PolySpriteRenderable renderable = Interlocked.Exchange(ref Renderable, null);
             renderable?.VertexBuffer.VertexBuffer?.Dispose();
             renderable?.IndexBuffer?.Dispose();
+        }
+
+        /// <summary>
+        /// Function to build a <see cref="GorgonPolySprite"/> using predefined vertices and indices to define the polygonal sprite.
+        /// </summary>
+        /// <param name="renderer">The renderer interface used to build up the vertex and index buffer for the polygonal sprite.</param>
+        /// <param name="vertices">The vertices for the polygonal sprite.</param>
+        /// <param name="indices">The indices for the polygonal sprite.</param>
+        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, <paramref name="vertices"/>, or the <paramref name="indices"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="vertices"/>, or the <paramref name="indices"/> parameter does not contain any values.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method is used to build a <see cref="GorgonPolySprite"/> using already defined set of <see cref="GorgonPolySpriteVertex"/> vertices, and a set of indices. 
+        /// </para>
+        /// </remarks>
+        public static GorgonPolySprite Create(Gorgon2D renderer, IReadOnlyList<GorgonPolySpriteVertex> vertices, IReadOnlyList<int> indices) =>
+            Create(renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer)), vertices, indices);        
+
+        /// <summary>
+        /// Function to build a <see cref="GorgonPolySprite"/> using predefined vertices and indices to define the polygonal sprite.
+        /// </summary>
+        /// <param name="graphics">The graphics interface used to build up the vertex and index buffer for the polygonal sprite.</param>
+        /// <param name="vertices">The vertices for the polygonal sprite.</param>
+        /// <param name="indices">The indices for the polygonal sprite.</param>
+        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="vertices"/>, or the <paramref name="indices"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="vertices"/>, or the <paramref name="indices"/> parameter does not contain any values.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method is used to build a <see cref="GorgonPolySprite"/> using already defined set of <see cref="GorgonPolySpriteVertex"/> vertices, and a set of indices. 
+        /// </para>
+        /// </remarks>
+        public static GorgonPolySprite Create(GorgonGraphics graphics, IReadOnlyList<GorgonPolySpriteVertex> vertices, IReadOnlyList<int> indices)
+        {
+            float minX = float.MaxValue;
+            float minY = float.MaxValue;
+            float maxX = float.MinValue;
+            float maxY = float.MinValue;
+
+            if (graphics == null)
+            {
+                throw new ArgumentNullException(nameof(graphics));
+            }
+
+            if (vertices == null)
+            {
+                throw new ArgumentNullException(nameof(vertices));
+            }
+
+            if (indices == null)
+            {
+                throw new ArgumentNullException(nameof(indices));
+            }
+
+
+            if ((vertices.Count == 0) || (indices.Count == 0))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS);
+            }
+
+            var newSprite = new GorgonPolySprite();
+
+            // Send the vertices into the sprite.
+            newSprite.RwVertices.AddRange(vertices);
+            newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
+            newSprite.Renderable.Vertices = new Gorgon2DVertex[newSprite.RwVertices.Count];
+
+            for (int i = 0; i < newSprite.RwVertices.Count; ++i)
+            {
+                Gorgon2DVertex vertex = newSprite.RwVertices[i].Vertex;
+                newSprite.Renderable.Vertices[i] = vertex;
+
+                minX = minX.Min(vertex.Position.X);
+                minY = minY.Min(vertex.Position.Y);
+                maxX = maxX.Max(vertex.Position.X);
+                maxY = maxY.Max(vertex.Position.Y);
+            }
+
+            // Split the polygon hull into triangles.            
+            GorgonNativeBuffer<Gorgon2DVertex> vertexData = newSprite.Renderable.Vertices.ToNativeBuffer();
+            var indexData = new GorgonNativeBuffer<int>(indices.Count);
+
+            try
+            {
+                // Send the index data to the local memory buffer.
+                for (int i = 0; i < indices.Count; ++i)
+                {
+                    ref int indexValue = ref indexData[i];
+                    indexValue = indices[i];
+                }
+
+                newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo
+                {
+                    Binding = VertexIndexBufferBinding.None,
+                    Use16BitIndices = false,
+                    IndexCount = indexData.Length,
+                    Usage = ResourceUsage.Immutable
+                }, indexData);
+
+                newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(graphics, new GorgonVertexBufferInfo
+                {
+                    Usage = ResourceUsage.Immutable,
+                    Binding = VertexIndexBufferBinding.None,
+                    SizeInBytes = vertexData.SizeInBytes
+                }, vertexData);
+
+                newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
+                newSprite.Renderable.IndexCount = indexData.Length;
+                newSprite.Bounds = new DX.RectangleF
+                {
+                    Left = minX,
+                    Top = minY,
+                    Right = maxX,
+                    Bottom = maxY
+                };
+            }
+            finally
+            {
+                vertexData?.Dispose();
+                indexData?.Dispose();
+            }
+
+            return newSprite;
         }
         #endregion
 
