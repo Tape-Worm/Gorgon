@@ -56,7 +56,6 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BoingerVertex.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="Sphere.cs" />
     <Compile Include="Model.cs" />

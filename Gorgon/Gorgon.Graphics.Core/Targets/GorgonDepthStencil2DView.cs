@@ -304,6 +304,7 @@ namespace Gorgon.Graphics.Core
             bool isMultisampled = Texture.MultisampleInfo != GorgonMultisampleInfo.NoMultiSampling;
 
             // Set up for arrayed and multisampled texture.
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (Texture.ArrayCount > 1)
             {
                 return new D3D11.DepthStencilViewDescription
@@ -320,6 +321,7 @@ namespace Gorgon.Graphics.Core
                     }
                 };
             }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
             return new D3D11.DepthStencilViewDescription
             {

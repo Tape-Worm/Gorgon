@@ -59,7 +59,6 @@
     </Compile>
     <Compile Include="Codecs\GorgonCodecBmFont.cs" />
     <Compile Include="Codecs\_Internal\BmFontInfo.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonFont.cs" />
     <Compile Include="Codecs\GorgonCodecGorFont.cs" />
     <Compile Include="Codecs\GorgonFontCodec.cs" />

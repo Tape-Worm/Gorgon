@@ -49,7 +49,6 @@
     <Compile Include="..\..\..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="PurplePlugIn.cs" />
     <Compile Include="GreenPlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

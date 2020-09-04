@@ -246,6 +246,7 @@ namespace Gorgon.Graphics.Core
         private D3D11.RenderTargetViewDescription1 GetDesc2D(bool isMultisampled)
         {
             // Set up for arrayed and multisampled texture.
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (Texture.ArrayCount > 1)
             {
                 return new D3D11.RenderTargetViewDescription1
@@ -264,6 +265,7 @@ namespace Gorgon.Graphics.Core
                     }
                 };
             }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
             return new D3D11.RenderTargetViewDescription1
             {

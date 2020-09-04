@@ -626,7 +626,43 @@ namespace Gorgon.Native
         public static explicit operator GorgonReadOnlyPointer(GorgonNativeBuffer<T> buffer) => buffer._memoryBlock == null ? GorgonReadOnlyPointer.Null : new GorgonReadOnlyPointer(buffer._memoryBlock, buffer.SizeInBytes);
 
         /// <summary>
+        /// Function to return a <see cref="GorgonReadOnlyPointer"/> to the underlying data in the buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
+        /// <returns>The void pointer to the underlying data in the buffer.</returns>
+        /// <remarks>
+        /// <para>
+        /// The pointer returned is read only, and has bounds checking. It should be safe for normal usage.
+        /// </para>
+        /// </remarks>
+        public static GorgonReadOnlyPointer ToGorgonReadOnlyPointer(GorgonNativeBuffer<T> buffer) => buffer._memoryBlock == null ? GorgonReadOnlyPointer.Null : new GorgonReadOnlyPointer(buffer._memoryBlock, buffer.SizeInBytes);
+
+        /// <summary>
         /// Explicit operator to return the pointer to the underlying data in the buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
+        /// <returns>The void pointer to the underlying data in the buffer.</returns>
+        /// <remarks>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This operator returns the pointer to the memory address of this buffer. Developers should only use this for interop scenarios where a native call needs a pointer. Manipulation of this pointer is 
+        /// not advisable and may cause harm. 
+        /// </para>
+        /// <para>
+        /// No safety checks are done on this pointer, and as such, memory corruption is possible if the pointer is used without due care.
+        /// </para>
+        /// <para>
+        /// <h2><font color="#FF0000">Use this at your own risk.</font></h2>
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "ToPointer is the proper naming.")]
+        public static explicit operator void*(GorgonNativeBuffer<T> buffer) => ToPointer(buffer);
+
+        /// <summary>
+        /// Function to return the pointer to the underlying data in the buffer.
         /// </summary>
         /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
         /// <returns>The void pointer to the underlying data in the buffer.</returns>
@@ -646,7 +682,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static explicit operator void*(GorgonNativeBuffer<T> buffer) => buffer == null ? null : buffer._memoryBlock;
+        public static void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer == null ? null : buffer._memoryBlock;
 
         /// <summary>
         /// Function to fill the buffer with a specific value.

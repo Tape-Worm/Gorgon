@@ -239,12 +239,9 @@ namespace Gorgon.PlugIns
                 ScanPlugIns();
             }
 
-            if (assemblyName == null)
-            {
-                return _loadedPlugIns.Keys.ToArray();
-            }
-
-            return _loadedPlugIns.Where(item =>
+            return assemblyName == null
+                ? _loadedPlugIns.Keys.ToArray()
+                : _loadedPlugIns.Where(item =>
                                         {
                                             Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
 
@@ -276,12 +273,9 @@ namespace Gorgon.PlugIns
                 ScanPlugIns();
             }
 
-            if (assemblyName == null)
-            {
-                return _loadedPlugIns.Values.Select(item => item.Value).OfType<T>().ToArray();
-            }
-
-            return _loadedPlugIns.Where(item =>
+            return assemblyName == null
+                ? _loadedPlugIns.Values.Select(item => item.Value).OfType<T>().ToArray()
+                : _loadedPlugIns.Where(item =>
                                         {
                                             Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
 

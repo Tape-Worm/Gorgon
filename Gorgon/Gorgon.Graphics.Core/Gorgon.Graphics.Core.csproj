@@ -102,7 +102,6 @@
     <Compile Include="Geometry\GorgonStreamOutElement.cs" />
     <Compile Include="Geometry\GorgonStreamOutLayout.cs" />
     <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonGraphicsResource.cs" />
     <Compile Include="GorgonResourceLocator.cs" />
     <Compile Include="GorgonResourceView.cs" />

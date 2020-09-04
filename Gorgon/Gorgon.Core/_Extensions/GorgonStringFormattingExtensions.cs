@@ -162,6 +162,7 @@ namespace Gorgon.Core
                 throw new ArgumentNullException(nameof(theString));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (theString.Length < 1)
             {
                 return -1;
@@ -170,6 +171,7 @@ namespace Gorgon.Core
             return string.IsNullOrWhiteSpace(characters)
                 ? -1
                 : characters.Length > theString.Length ? -1 : theString.ToString().IndexOf(characters, startIndex, comparison);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -217,17 +219,14 @@ namespace Gorgon.Core
                 throw new ArgumentNullException(nameof(theString));
             }
 
-            if (theString.Length < 1)
-            {
-                return -1;
-            }
-
-            if (string.IsNullOrWhiteSpace(characters))
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if ((theString.Length < 1) || (string.IsNullOrWhiteSpace(characters)))
             {
                 return -1;
             }
 
             return characters.Length > theString.Length ? -1 : theString.ToString().LastIndexOf(characters, comparison);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>

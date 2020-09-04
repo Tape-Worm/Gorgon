@@ -144,6 +144,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(graphics));
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (string.IsNullOrWhiteSpace(name))
             {
                 return Enumerable.Empty<T>();
@@ -163,6 +164,7 @@ namespace Gorgon.Graphics.Core
                                        return !NameComparison(name, resource.Name, filterType, comparisonType) ? null : resource;
                                    })
                            .Where(item => item != null);
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>

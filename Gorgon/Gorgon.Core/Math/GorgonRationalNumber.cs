@@ -118,35 +118,70 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">The value convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator decimal(GorgonRationalNumber value) => (decimal)value.Numerator / value.Denominator;
+        public static implicit operator decimal(GorgonRationalNumber value) => ToDecimal(value);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="double"/>.
         /// </summary>
         /// <param name="value">The value convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator double(GorgonRationalNumber value) => (double)value.Numerator / value.Denominator;
+        public static explicit operator double(GorgonRationalNumber value) => ToDouble(value);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="float"/>.
         /// </summary>
         /// <param name="value">The value convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator float(GorgonRationalNumber value) => (float)value.Numerator / value.Denominator;
+        public static explicit operator float(GorgonRationalNumber value) => ToSingle(value);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="int"/>.
         /// </summary>
         /// <param name="value">The value convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator int(GorgonRationalNumber value) => value.Numerator / value.Denominator;
+        public static explicit operator int(GorgonRationalNumber value) => ToInt32(value);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="int"/> to <see cref="GorgonRationalNumber"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator GorgonRationalNumber(int value) => new GorgonRationalNumber(value, 1);
+        public static implicit operator GorgonRationalNumber(int value) => ToGorgonRationalNumber(value);
+
+        /// <summary>
+        /// Function to perform an implicit conversion from <see cref="int"/> to <see cref="GorgonRationalNumber"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static GorgonRationalNumber ToGorgonRationalNumber(int value) => new GorgonRationalNumber(value, 1);
+
+        /// <summary>
+        /// Function to perform an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="int"/>.
+        /// </summary>
+        /// <param name="value">The value convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static int ToInt32(GorgonRationalNumber value) => value.Numerator / value.Denominator;
+
+        /// <summary>
+        /// Function to perform an implicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="decimal"/>.
+        /// </summary>
+        /// <param name="value">The value convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static decimal ToDecimal(GorgonRationalNumber value) => (decimal)value.Numerator / value.Denominator;
+
+        /// <summary>
+        /// Function to perform an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="double"/>.
+        /// </summary>
+        /// <param name="value">The value convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static double ToDouble(GorgonRationalNumber value) => (double)value.Numerator / value.Denominator;
+
+        /// <summary>
+        /// Function to perform an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="float"/>.
+        /// </summary>
+        /// <param name="value">The value convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static float ToSingle(GorgonRationalNumber value) => (float)value.Numerator / value.Denominator;
 
         /// <summary>
         /// Operator to compare two instances for equality.

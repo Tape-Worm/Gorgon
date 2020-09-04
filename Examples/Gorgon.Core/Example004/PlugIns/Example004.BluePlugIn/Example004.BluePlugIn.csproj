@@ -51,7 +51,6 @@
     </Compile>
     <Compile Include="BlueTextColorWriter.cs" />
     <Compile Include="BluePlugIn.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

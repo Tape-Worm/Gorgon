@@ -474,9 +474,67 @@ namespace Gorgon.Renderers
         /// <exception cref="GorgonException">Thrown if the <paramref name="vertices"/>, or the <paramref name="indices"/> parameter does not contain any values.</exception>
         /// <remarks>
         /// <para>
-        /// This method is used to build a <see cref="GorgonPolySprite"/> using already defined set of <see cref="GorgonPolySpriteVertex"/> vertices, and a set of indices. 
+        /// This method is used to build a <see cref="GorgonPolySprite"/> using already defined set of <see cref="GorgonPolySpriteVertex"/> vertices, and a set of indices. The <paramref name="vertices"/> 
+        /// must be triangulated (i.e. they must represent triangles) and not a hull. A minimum of 3 vertices and indices are required, otherwise an exception is thrown.
+        /// </para>
+        /// <para>
+        /// To define a polygon that doesn't need triangles, or indices, use the <see cref="GorgonPolySpriteBuilder"/>.
+        /// </para>
+        /// <para>
+        /// The vertices should be ordered in a clockwise orientation. This can be achieved by setting up the indices to point at each vertex in the desired order. For example:
+        /// </para>
+        /// <para>
+        /// <code lang="csharp">
+        /// <![CDATA[
+        ///     // These define the corners of a rectangle.
+        ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
+        ///     vertices[0] = new GorgonPolySpriteVertex(new Vector2(0, 0), ...);
+        ///     vertices[1] = new GorgonPolySpriteVertex(new Vector2(30, 00), ...);
+        ///     vertices[2] = new GorgonPolySpriteVertex(new Vector2(0, 30), ...);
+        ///     vertices[3] = new GorgonPolySpriteVertex(new Vector2(30, 30), ...);
+        ///     
+        ///     // To order the vertices so they'll render correctly:
+        ///     int[] indices = new indices[6]; // We define 6 indices because the rect is made of 2 triangles, with 3 vertices each (we reuse some vertices for efficiency).
+        ///     indices[0] = 0; // Use the first vertex, it is the upper left corner.
+        ///     indices[1] = 1; // Use the second vertex, it is in the upper right corner.
+        ///     indices[2] = 2; // Use the second vertex, it is in the lower left corner.
+        /// 
+        ///     // The first triangle is defined, its vertices are ordered clockwise from the upper left corner giving a shape like:
+        ///     // 0            1
+        ///     // *------------*
+        ///     // |           /
+        ///     // |         /
+        ///     // |       /
+        ///     // |     /
+        ///     // |   /
+        ///     // | /
+        ///     // * 2
+        ///     
+        ///     indices[3] = 1;
+        ///     indices[4] = 3;
+        ///     indices[5] = 2;
+        ///     
+        ///     // The second triangle is now defined, and its vertices are ordered clockwise from the upper right corner:
+        ///     //              1
+        ///     // *------------*
+        ///     // |           /|
+        ///     // |         /  |
+        ///     // |       /    |
+        ///     // |     /      |
+        ///     // |   /        |
+        ///     // | /          |
+        ///     // *------------*
+        ///     // 2            3
+        /// 
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// <para>
+        /// The resulting polygonal sprite <see cref="IDisposable"/>. Therefore, it is the user's responsibility to dispose of the object when they are done with it.
         /// </para>
         /// </remarks>
+        /// <seealso cref="GorgonPolySpriteBuilder"/>
+        /// <seealso cref="GorgonPolySpriteVertex"/>
         public static GorgonPolySprite Create(Gorgon2D renderer, IReadOnlyList<GorgonPolySpriteVertex> vertices, IReadOnlyList<int> indices) =>
             Create(renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer)), vertices, indices);
 

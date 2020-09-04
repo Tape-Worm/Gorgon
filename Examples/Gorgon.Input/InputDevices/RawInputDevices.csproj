@@ -54,7 +54,6 @@
     <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MouseCursor.cs" />
     <Compile Include="Spray.cs" />
     <Compile Include="Form.cs">

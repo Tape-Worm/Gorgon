@@ -140,6 +140,30 @@ namespace Gorgon.Native
         /// <para>
         /// <note type="warning">
         /// <para>
+        /// This operator returns the native pointer to the memory address of this pointer. Developers should only use this for interop scenarios where a native call needs a pointer. Manipulation of this 
+        /// pointer is not advisable and may cause harm. 
+        /// </para>
+        /// <para>
+        /// No safety checks are done on this pointer, and as such, memory corruption is possible if the pointer is used without due care.
+        /// </para>
+        /// <para>
+        /// <h2><font color="#FF0000">Use this at your own risk.</font></h2>
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "ToPointer is the proper naming.")]
+        public static explicit operator void*(GorgonReadOnlyPointer pointer) => ToPointer(pointer);
+
+        /// <summary>
+        /// Function to return the pointer to the underlying data pointed at by the pointer.
+        /// </summary>
+        /// <param name="pointer">The pointer to retrieve the native pointer from.</param>
+        /// <returns>A void pointer.</returns>
+        /// <remarks>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
         /// This method returns the native pointer to the memory address of this pointer. Developers should only use this for interop scenarios where a native call needs a pointer. Manipulation of this 
         /// pointer is not advisable and may cause harm. 
         /// </para>
@@ -152,7 +176,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static explicit operator void*(GorgonReadOnlyPointer pointer) => pointer._data;
+        public static void* ToPointer(GorgonReadOnlyPointer pointer) => pointer._data;
 
         /// <summary>
         /// Operator to test if two pointers are at the same address.
@@ -207,28 +231,56 @@ namespace Gorgon.Native
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The address as a <see cref="int"/> value.</returns>
-        public static implicit operator int(GorgonReadOnlyPointer pointer) => (int)pointer._data;
+        public static implicit operator int(GorgonReadOnlyPointer pointer) => ToInt32(pointer);
 
         /// <summary>
         /// Operator to convert the pointer to an int64 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The address as a <see cref="long"/> value.</returns>
-        public static implicit operator long(GorgonReadOnlyPointer pointer) => (long)pointer._data;
+        public static implicit operator long(GorgonReadOnlyPointer pointer) => ToInt64(pointer);
 
         /// <summary>
         /// Operator to convert the pointer to a uint32 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The address as a <see cref="uint"/> value.</returns>
-        public static implicit operator uint(GorgonReadOnlyPointer pointer) => (uint)pointer._data;
+        public static implicit operator uint(GorgonReadOnlyPointer pointer) => ToUInt32(pointer);
 
         /// <summary>
         /// Operator to convert the pointer to a uint64 value.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The address as a <see cref="ulong"/> value.</returns>
-        public static implicit operator ulong(GorgonReadOnlyPointer pointer) => (ulong)pointer._data;
+        public static implicit operator ulong(GorgonReadOnlyPointer pointer) => ToUInt64(pointer);
+
+        /// <summary>
+        /// Function to convert the pointer to a uint64 value.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The address as a <see cref="ulong"/> value.</returns>
+        public static ulong ToUInt64(GorgonReadOnlyPointer pointer) => (ulong)pointer._data;
+
+        /// <summary>
+        /// Function to convert the pointer to a int64 value.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The address as a <see cref="long"/> value.</returns>
+        public static long ToInt64(GorgonReadOnlyPointer pointer) => (long)pointer._data;
+
+        /// <summary>
+        /// Function to convert the pointer to a uint32 value.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The address as a <see cref="uint"/> value.</returns>
+        public static uint ToUInt32(GorgonReadOnlyPointer pointer) => (uint)pointer._data;
+
+        /// <summary>
+        /// Function to convert the pointer to a int32 value.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The address as a <see cref="int"/> value.</returns>
+        public static int ToInt32(GorgonReadOnlyPointer pointer) => (int)pointer._data;
 
         /// <summary>
         /// Function to return this pointer as a read only reference.

@@ -668,10 +668,10 @@ This application will now exit.</value>
     <value>Feature set 11.2</value>
   </data>
   <data name="GORGFX_TEXT_FEATURE_SET_120" xml:space="preserve">
-    <value>Feature set 12.0</value>
+    <value>Feature set 11.4</value>
   </data>
   <data name="GORGFX_TEXT_FEATURE_SET_121" xml:space="preserve">
-    <value>Feature set 12.1</value>
+    <value>Feature set 11.4</value>
   </data>
   <data name="GORGFX_TEXT_FEATURE_SET_UNKNOWN" xml:space="preserve">
     <value>Unknown</value>

@@ -95,15 +95,7 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>
         /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
         /// </returns>
-        public int CompareTo(GorgonGlyphBrushInterpolator other)
-        {
-            if (other == null)
-            {
-                return -1;
-            }
-
-            return Weight < other.Weight ? -1 : Weight > other.Weight ? 1 : 0;
-        }
+        public int CompareTo(GorgonGlyphBrushInterpolator other) => other == null ? -1 : Weight < other.Weight ? -1 : Weight > other.Weight ? 1 : 0;
 
 
         /// <summary>

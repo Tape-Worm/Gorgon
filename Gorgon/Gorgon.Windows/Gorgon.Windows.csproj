@@ -61,7 +61,6 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Native\_Internal\ShellApi.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\IMAGEINFO.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\IMAGELISTDRAWPARAMS.cs" />

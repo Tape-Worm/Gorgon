@@ -64,7 +64,6 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Cube.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshMaterial.cs" />
     <Compile Include="MoveableMesh.cs" />

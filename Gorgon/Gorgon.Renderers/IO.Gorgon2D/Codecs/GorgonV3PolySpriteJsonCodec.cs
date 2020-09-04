@@ -91,7 +91,7 @@ namespace Gorgon.IO
                 if ((string.Equals(reader.Path, "header", StringComparison.Ordinal))
                     && (reader.TokenType == JsonToken.PropertyName))
                 {
-                    var id = (ulong?)reader.ReadAsDecimal();
+                    ulong? id = (ulong?)reader.ReadAsDecimal();
 
                     if ((id == null) || (id != CurrentFileHeader))
                     {
@@ -111,13 +111,7 @@ namespace Gorgon.IO
                     continue;
                 }
 
-                if (!reader.Read())
-                {
-                    return false;
-                }
-
-                return (Version.TryParse(reader.Value.ToString(), out Version version))
-                       && (version.Equals(Version));
+                return (reader.Read()) && (Version.TryParse(reader.Value.ToString(), out Version version)) && (version.Equals(Version));
             }
 
             return false;

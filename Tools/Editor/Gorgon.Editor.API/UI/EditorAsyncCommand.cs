@@ -77,12 +77,14 @@ namespace Gorgon.Editor.UI
         /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
         public bool CanExecute(T args)
         {
+#pragma warning disable IDE0046 // Convert to conditional expression
             if ((_canExecute == null) && (_canExecuteNoArgs == null))
             {
                 return true;
             }
 
             return _canExecute != null ? _canExecute(args) : _canExecuteNoArgs();
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
         #endregion
 

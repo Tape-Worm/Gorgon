@@ -76,7 +76,6 @@
     <Compile Include="Codecs\_Internal\DdsHeader.cs" />
     <Compile Include="Codecs\_Internal\TgaHeader.cs" />
     <Compile Include="GdiPlus\GdiPlusExtensions.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonFormatInfo.cs" />
     <Compile Include="GorgonImage.cs" />
     <Compile Include="GorgonImageBuffer.cs" />

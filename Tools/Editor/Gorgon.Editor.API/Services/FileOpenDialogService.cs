@@ -82,10 +82,12 @@ namespace Gorgon.Editor.Services
         /// <returns>The form to use as the owner.</returns>
         private static Form GetParentForm()
         {
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (Form.ActiveForm != null)
             {
                 return Form.ActiveForm;
             }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
             return Application.OpenForms.Count > 1 ? Application.OpenForms[Application.OpenForms.Count - 1] : GorgonApplication.MainForm;
         }

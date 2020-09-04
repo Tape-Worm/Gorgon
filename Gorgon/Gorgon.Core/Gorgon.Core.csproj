@@ -35,7 +35,8 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
-    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <langversion>7.3</langversion>
   </PropertyGroup>
@@ -65,7 +66,8 @@
     <Prefer32Bit>false</Prefer32Bit>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <langversion>7.3</langversion>
-    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -112,7 +114,6 @@
     <Compile Include="Diagnostics\_Interfaces\IGorgonLog.cs" />
     <Compile Include="Diagnostics\LogProviders\_Interfaces\IGorgonLogProvider.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonHandledEventArgs.cs" />
     <Compile Include="Graphics\BufferFormat.cs" />
     <Compile Include="Graphics\GorgonBox.cs" />

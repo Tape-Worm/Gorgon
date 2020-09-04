@@ -54,12 +54,14 @@ namespace Gorgon.Animation
                 return -1;
             }
 
+#pragma warning disable IDE0046 // Convert to conditional expression
             if (x.Time.EqualsEpsilon(y.Time))
             {
                 return 0;
             }
 
             return x.Time < y.Time ? -1 : 1;
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
         #endregion
     }

@@ -93,7 +93,6 @@
     <Compile Include="Codecs\_Internal\v2\GorgonChunkedFormat.cs" />
     <Compile Include="Codecs\_Internal\v2\GorgonChunkReader.cs" />
     <Compile Include="Codecs\GorgonAnimationCodecPlugin.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Codecs\GorgonV31AnimationBinaryCodec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

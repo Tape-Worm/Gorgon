@@ -55,7 +55,6 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonAnimationBuilder.cs" />
     <Compile Include="Types\GorgonKeyRectangle.cs" />
     <Compile Include="Types\GorgonKeyGorgonColor.cs" />

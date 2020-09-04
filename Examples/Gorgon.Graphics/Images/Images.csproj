@@ -78,7 +78,6 @@
       <DependentUpon>Form.cs</DependentUpon>
     </Compile>
     <Compile Include="GifAnimator.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ImageGallery.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

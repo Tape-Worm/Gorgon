@@ -88,10 +88,12 @@ namespace Gorgon.Editor.UI.Controls
                 int direction = _columnFile.HeaderCell.SortGlyphDirection == SortOrder.Ascending ? 1 : -1;
                 int sortResult = string.Compare(dirLeft, dirRight, StringComparison.CurrentCultureIgnoreCase) * direction;
 
+#pragma warning disable IDE0046 // Convert to conditional expression
                 if (sortResult != 0)
                 {
                     return sortResult;
                 }
+#pragma warning restore IDE0046 // Convert to conditional expression
 
                 return (isDirLeft) && (!isDirRight)
                     ? -1

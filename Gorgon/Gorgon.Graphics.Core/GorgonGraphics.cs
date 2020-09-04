@@ -177,10 +177,10 @@ namespace Gorgon.Graphics.Core
         private static readonly D3D11.SamplerState[] _emptySamplers = new D3D11.SamplerState[GorgonSamplerStates.MaximumSamplerStateCount];
 
         // The D3D 11.x device context.
-        private D3D11.DeviceContext4 _d3DDeviceContext;
+        private D3D11.DeviceContext4 _deviceContext;
 
         // The D3D 11.x device.
-        private D3D11.Device5 _d3DDevice;
+        private D3D11.Device5 _device;
 
         // The DXGI adapter.
         private Adapter4 _dxgiAdapter;
@@ -280,12 +280,12 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the Direct 3D 11.x device context for this graphics instance.
         /// </summary>
-        internal D3D11.DeviceContext4 D3DDeviceContext => _d3DDeviceContext;
+        internal D3D11.DeviceContext4 D3DDeviceContext => _deviceContext;
 
         /// <summary>
         /// Property to return the Direct 3D 11.x device for this graphics instance.
         /// </summary>
-        internal D3D11.Device5 D3DDevice => _d3DDevice;
+        internal D3D11.Device5 D3DDevice => _device;
 
         /// <summary>
         /// Property to return the selected DXGI video adapter for this graphics instance.
@@ -466,11 +466,11 @@ namespace Gorgon.Graphics.Core
         {
             lock (_samplerLock)
             {
-                GorgonSamplerState.Default.BuildD3D11SamplerState(_d3DDevice);
-                GorgonSamplerState.AnisotropicFiltering.BuildD3D11SamplerState(_d3DDevice);
-                GorgonSamplerState.PointFiltering.BuildD3D11SamplerState(_d3DDevice);
-                GorgonSamplerState.Wrapping.BuildD3D11SamplerState(_d3DDevice);
-                GorgonSamplerState.PointFilteringWrapping.BuildD3D11SamplerState(_d3DDevice);
+                GorgonSamplerState.Default.BuildD3D11SamplerState(_device);
+                GorgonSamplerState.AnisotropicFiltering.BuildD3D11SamplerState(_device);
+                GorgonSamplerState.PointFiltering.BuildD3D11SamplerState(_device);
+                GorgonSamplerState.Wrapping.BuildD3D11SamplerState(_device);
+                GorgonSamplerState.PointFilteringWrapping.BuildD3D11SamplerState(_device);
 
                 _cachedSamplers.Add(GorgonSamplerState.Default);
                 _cachedSamplers.Add(GorgonSamplerState.Wrapping);
@@ -2011,12 +2011,12 @@ namespace Gorgon.Graphics.Core
 
             if ((rasterState == null) && (pipelineState.RasterState != null))
             {
-                pipelineState.D3DRasterState = pipelineState.RasterState.GetD3D11RasterState(_d3DDevice);
+                pipelineState.D3DRasterState = pipelineState.RasterState.GetD3D11RasterState(_device);
             }
 
             if ((depthStencilState == null) && (pipelineState.DepthStencilState != null))
             {
-                pipelineState.D3DDepthStencilState = pipelineState.DepthStencilState.GetD3D11DepthStencilState(_d3DDevice);
+                pipelineState.D3DDepthStencilState = pipelineState.DepthStencilState.GetD3D11DepthStencilState(_device);
             }
 
             if (blendState == null)
@@ -3144,8 +3144,8 @@ namespace Gorgon.Graphics.Core
         public void Dispose()
         {
             RenderTargetFactory rtvFactory = Interlocked.Exchange(ref _rtvFactory, null);
-            D3D11.DeviceContext4 context = Interlocked.Exchange(ref _d3DDeviceContext, null);
-            D3D11.Device5 device = Interlocked.Exchange(ref _d3DDevice, null);
+            D3D11.DeviceContext4 context = Interlocked.Exchange(ref _deviceContext, null);
+            D3D11.Device5 device = Interlocked.Exchange(ref _device, null);
             Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
             Factory5 factory = Interlocked.Exchange(ref _dxgiFactory, null);
             Lazy<TextureBlitter> blitter = Interlocked.Exchange(ref _textureBlitter, null);
@@ -3263,13 +3263,10 @@ namespace Gorgon.Graphics.Core
             Log.Print($"Using video adapter '{videoAdapterInfo.Name}' at {featureSet.Value.Description()} for Direct 3D {featureSet.Value.D3DVersion()}.", LoggingLevel.Simple);
 
             // Build up the required device objects to pass in to the constructor.
-            (D3D11.Device5 device, Factory5 factory, Adapter4 adapter) = CreateDevice(videoAdapterInfo, (D3D.FeatureLevel)featureSet.Value);
-            _dxgiFactory = factory;
-            _dxgiAdapter = adapter;
-            _d3DDevice = device;
-            _d3DDeviceContext = device.ImmediateContext.QueryInterface<D3D11.DeviceContext4>();
+            (_device, _dxgiFactory, _dxgiAdapter) = CreateDevice(videoAdapterInfo, (D3D.FeatureLevel)featureSet.Value);
+            _deviceContext = _device.ImmediateContext.QueryInterface<D3D11.DeviceContext4>();
 
-            FormatSupport = EnumerateFormatSupport(_d3DDevice);
+            FormatSupport = EnumerateFormatSupport(_device);
 
             InitializeCachedSamplers();
 
