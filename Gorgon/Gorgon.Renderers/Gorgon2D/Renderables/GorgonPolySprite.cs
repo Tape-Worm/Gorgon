@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -69,7 +70,17 @@ namespace Gorgon.Renderers
         } = new List<GorgonPolySpriteVertex>(256);
 
         /// <summary>
-        /// Property to set or return the list of vertices used by the poly sprite.
+        /// Property to set or return the read/write list of indices for the poly sprite.
+        /// </summary>
+        [JsonProperty("indices")]
+        internal int[] RwIndices
+        {
+            get;
+            set;
+        } = Array.Empty<int>();
+
+        /// <summary>
+        /// Property to return the list of vertices used by the poly sprite.
         /// </summary>
         [JsonIgnore]
         public IReadOnlyList<GorgonPolySpriteVertex> Vertices => RwVertices;
@@ -82,6 +93,12 @@ namespace Gorgon.Renderers
                                  || Renderable.HasTransformChanges
                                  || Renderable.HasVertexChanges
                                  || Renderable.HasVertexColorChanges;
+
+        /// <summary>
+        /// Property to return whether this sprite contains any index data.
+        /// </summary>
+        [JsonIgnore]
+        public IReadOnlyList<int> Indices => RwIndices ?? Array.Empty<int>();
 
         /// <summary>
         /// Property to set or return the color of the sprite.
@@ -461,7 +478,7 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         public static GorgonPolySprite Create(Gorgon2D renderer, IReadOnlyList<GorgonPolySpriteVertex> vertices, IReadOnlyList<int> indices) =>
-            Create(renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer)), vertices, indices);        
+            Create(renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer)), vertices, indices);
 
         /// <summary>
         /// Function to build a <see cref="GorgonPolySprite"/> using predefined vertices and indices to define the polygonal sprite.
@@ -471,12 +488,70 @@ namespace Gorgon.Renderers
         /// <param name="indices">The indices for the polygonal sprite.</param>
         /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="vertices"/>, or the <paramref name="indices"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <paramref name="vertices"/>, or the <paramref name="indices"/> parameter does not contain any values.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="vertices"/>, or the <paramref name="indices"/> parameter has less than 3 items.</exception>
         /// <remarks>
         /// <para>
-        /// This method is used to build a <see cref="GorgonPolySprite"/> using already defined set of <see cref="GorgonPolySpriteVertex"/> vertices, and a set of indices. 
+        /// This method is used to build a <see cref="GorgonPolySprite"/> using already defined set of <see cref="GorgonPolySpriteVertex"/> vertices, and a set of indices. The <paramref name="vertices"/> 
+        /// must be triangulated (i.e. they must represent triangles) and not a hull. A minimum of 3 vertices and indices are required, otherwise an exception is thrown.
+        /// </para>
+        /// <para>
+        /// To define a polygon that doesn't need triangles, or indices, use the <see cref="GorgonPolySpriteBuilder"/>.
+        /// </para>
+        /// <para>
+        /// The vertices should be ordered in a clockwise orientation. This can be achieved by setting up the indices to point at each vertex in the desired order. For example:
+        /// </para>
+        /// <para>
+        /// <code lang="csharp">
+        /// <![CDATA[
+        ///     // These define the corners of a rectangle.
+        ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
+        ///     vertices[0] = new GorgonPolySpriteVertex(new Vector2(0, 0), ...);
+        ///     vertices[1] = new GorgonPolySpriteVertex(new Vector2(30, 00), ...);
+        ///     vertices[2] = new GorgonPolySpriteVertex(new Vector2(0, 30), ...);
+        ///     vertices[3] = new GorgonPolySpriteVertex(new Vector2(30, 30), ...);
+        ///     
+        ///     // To order the vertices so they'll render correctly:
+        ///     int[] indices = new indices[6]; // We define 6 indices because the rect is made of 2 triangles, with 3 vertices each (we reuse some vertices for efficiency).
+        ///     indices[0] = 0; // Use the first vertex, it is the upper left corner.
+        ///     indices[1] = 1; // Use the second vertex, it is in the upper right corner.
+        ///     indices[2] = 2; // Use the second vertex, it is in the lower left corner.
+        /// 
+        ///     // The first triangle is defined, its vertices are ordered clockwise from the upper left corner giving a shape like:
+        ///     // 0            1
+        ///     // *------------*
+        ///     // |           /
+        ///     // |         /
+        ///     // |       /
+        ///     // |     /
+        ///     // |   /
+        ///     // | /
+        ///     // * 2
+        ///     
+        ///     indices[3] = 1;
+        ///     indices[4] = 3;
+        ///     indices[5] = 2;
+        ///     
+        ///     // The second triangle is now defined, and its vertices are ordered clockwise from the upper right corner:
+        ///     //              1
+        ///     // *------------*
+        ///     // |           /|
+        ///     // |         /  |
+        ///     // |       /    |
+        ///     // |     /      |
+        ///     // |   /        |
+        ///     // | /          |
+        ///     // *------------*
+        ///     // 2            3
+        /// 
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// <para>
+        /// The resulting polygonal sprite <see cref="IDisposable"/>. Therefore, it is the user's responsibility to dispose of the object when they are done with it.
         /// </para>
         /// </remarks>
+        /// <seealso cref="GorgonPolySpriteBuilder"/>
+        /// <seealso cref="GorgonPolySpriteVertex"/>
         public static GorgonPolySprite Create(GorgonGraphics graphics, IReadOnlyList<GorgonPolySpriteVertex> vertices, IReadOnlyList<int> indices)
         {
             float minX = float.MaxValue;
@@ -500,7 +575,7 @@ namespace Gorgon.Renderers
             }
 
 
-            if ((vertices.Count == 0) || (indices.Count == 0))
+            if ((vertices.Count < 3) || (indices.Count < 3))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS);
             }
@@ -509,7 +584,10 @@ namespace Gorgon.Renderers
 
             // Send the vertices into the sprite.
             newSprite.RwVertices.AddRange(vertices);
+            newSprite.RwIndices = new int[indices.Count];
+            indices.CopyTo(newSprite.RwIndices);
             newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
+            newSprite.Renderable.IndexCount = indices.Count;
             newSprite.Renderable.Vertices = new Gorgon2DVertex[newSprite.RwVertices.Count];
 
             for (int i = 0; i < newSprite.RwVertices.Count; ++i)
@@ -523,19 +601,14 @@ namespace Gorgon.Renderers
                 maxY = maxY.Max(vertex.Position.Y);
             }
 
+            newSprite.Bounds = new DX.RectangleF(0, 0, maxX - minX, maxY - minY);
+
             // Split the polygon hull into triangles.            
             GorgonNativeBuffer<Gorgon2DVertex> vertexData = newSprite.Renderable.Vertices.ToNativeBuffer();
-            var indexData = new GorgonNativeBuffer<int>(indices.Count);
+            GorgonNativeBuffer<int> indexData = newSprite.RwIndices.ToNativeBuffer();
 
             try
             {
-                // Send the index data to the local memory buffer.
-                for (int i = 0; i < indices.Count; ++i)
-                {
-                    ref int indexValue = ref indexData[i];
-                    indexValue = indices[i];
-                }
-
                 newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo
                 {
                     Binding = VertexIndexBufferBinding.None,
@@ -549,17 +622,7 @@ namespace Gorgon.Renderers
                     Usage = ResourceUsage.Immutable,
                     Binding = VertexIndexBufferBinding.None,
                     SizeInBytes = vertexData.SizeInBytes
-                }, vertexData);
-
-                newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
-                newSprite.Renderable.IndexCount = indexData.Length;
-                newSprite.Bounds = new DX.RectangleF
-                {
-                    Left = minX,
-                    Top = minY,
-                    Right = maxX,
-                    Bottom = maxY
-                };
+                }, vertexData);                
             }
             finally
             {
@@ -577,7 +640,7 @@ namespace Gorgon.Renderers
         /// </summary>
         internal GorgonPolySprite()
         {
-        }
+        }        
         #endregion
     }
 }

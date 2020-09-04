@@ -49,13 +49,17 @@ namespace Gorgon.Renderers
     /// </para>
     /// <para>
     /// The polygonal sprite created by this builder is built up by adding multiple <see cref="GorgonPolySpriteVertex"/> objects to the builder and calling the <see cref="Build"/> method. These vertices 
-    /// make up the "hull" of the polygon, which gets turned into triangles so it can be rendered by Gorgon. Vertex manipulation is not the only functionality provided by the builder, other initial values 
-    /// may also be assigned for the created sprite as well.
+    /// make up the "hull" of the polygon (basically the outer shape of the polygon), which gets turned into triangles so it can be rendered by Gorgon. Vertex manipulation is not the only functionality 
+    /// provided by the builder, other initial values may also be assigned for the created sprite as well.
     /// <para>
     /// <note type="important">
     /// A minimum of 3 vertices are required to build a polygonal sprite. Attempting to do so with less will cause an exception.
     /// </note>
     /// </para>
+    /// </para>
+    /// <para>
+    /// This builder is not the only way to create a polygonal sprite, users can define a series of triangle vertices and indices and use 
+    /// <see cref="GorgonPolySprite.Create(GorgonGraphics, IReadOnlyList{GorgonPolySpriteVertex}, IReadOnlyList{int})"/> on the <see cref="GorgonPolySprite"/>.
     /// </para>
     /// <para>
     /// The resulting polygonal sprite from this builder implements <see cref="IDisposable"/>. Therefore, it is the user's responsibility to dispose of the object when they are done with it.
@@ -72,8 +76,6 @@ namespace Gorgon.Renderers
         private readonly GorgonPolySprite _workingSprite = new GorgonPolySprite();
         // The triangulator used to convert the polygon into a triangle mesh.
         private readonly Triangulator _triangulator = new Triangulator(null);
-        // Flag to indicate that the vertex data should be triangulated.
-        private bool _triangulate = true;
         #endregion
 
         #region Properties.
@@ -97,17 +99,14 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="dest">The destination sprite that will receive the sprite data.</param>
         /// <param name="src">The source sprite that will have its data copied.</param>
-        /// <param name="copyVertices"><b>true</b> to copy the vertices, <b>false</b> to leave empty.</param>
-        private static void CopySprite(GorgonPolySprite dest, GorgonPolySprite src, bool copyVertices)
+        private static void CopySprite(GorgonPolySprite dest, GorgonPolySprite src)
         {
             dest.RwVertices.Clear();
+            dest.RwIndices = Array.Empty<int>();
 
-            if (copyVertices)
+            for (int i = 0; i < src.RwVertices.Count; ++i)
             {
-                for (int i = 0; i < src.RwVertices.Count; ++i)
-                {
-                    dest.RwVertices.Add(src.RwVertices[i]);
-                }
+                dest.RwVertices.Add(src.RwVertices[i]);
             }
 
             dest.Position = src.Position;
@@ -489,7 +488,7 @@ namespace Gorgon.Renderers
 
             var newSprite = new GorgonPolySprite();
 
-            CopySprite(newSprite, _workingSprite, true);
+            CopySprite(newSprite, _workingSprite);
 
             newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
             if ((newSprite.Renderable.Vertices == null) || (newSprite.Renderable.Vertices.Length < newSprite.RwVertices.Count))
@@ -511,6 +510,8 @@ namespace Gorgon.Renderers
 
             try
             {
+                newSprite.RwIndices = indices.ToArray();
+
                 newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(Graphics, new GorgonIndexBufferInfo
                 {
                     Binding = VertexIndexBufferBinding.None,
@@ -519,12 +520,11 @@ namespace Gorgon.Renderers
                     Usage = ResourceUsage.Immutable
                 }, indices);
 
-
                 newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(Graphics, new GorgonVertexBufferInfo
                 {
                     Usage = ResourceUsage.Immutable,
                     Binding = VertexIndexBufferBinding.None,
-                    SizeInBytes = Gorgon2DVertex.SizeInBytes * newSprite.RwVertices.Count
+                    SizeInBytes = vertexData.SizeInBytes
                 }, vertexData);
                 newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
                 newSprite.Renderable.IndexCount = indices.Length;
@@ -576,7 +576,7 @@ namespace Gorgon.Renderers
                 return this;
             }
 
-            CopySprite(_workingSprite, builderObject, true);
+            CopySprite(_workingSprite, builderObject);
             return this;
         }
 

@@ -51,6 +51,10 @@ namespace Gorgon.IO
         /// </summary>
         public static readonly ulong VertexData = "HULLDATA".ChunkID();
         /// <summary>
+        /// The sprite data chunk ID.
+        /// </summary>
+        public static readonly ulong IndexData = "INDXDATA".ChunkID();
+        /// <summary>
         /// The texture data chunk ID.
         /// </summary>
         public static readonly ulong TextureData = "TXTRDATA".ChunkID();
@@ -150,72 +154,109 @@ namespace Gorgon.IO
                                                    {
                                                        CurrentFileHeader
                                                    });
-            GorgonBinaryReader binReader = null;
-            var sprite = new GorgonPolySpriteBuilder(Renderer);
+            GorgonBinaryReader binReader = null;            
+            GorgonPolySpriteVertex[] vertices;
+            int[] indices = null;
 
             try
             {
                 reader.Open();
                 binReader = reader.OpenChunk(SpriteData);
-                sprite.Anchor(binReader.ReadValue<DX.Vector2>());
+                DX.Vector2 anchor = binReader.ReadValue<DX.Vector2>();
 
                 // If we do not have alpha test information, then skip writing its data.
+                GorgonRangeF? alphaRange = null;
                 if (binReader.ReadBoolean())
                 {
-                    sprite.AlphaTest(binReader.ReadValue<GorgonRangeF>());
+                    alphaRange = binReader.ReadValue<GorgonRangeF>();
                 }
 
                 reader.CloseChunk();
 
                 binReader = reader.OpenChunk(VertexData);
 
-                int vertexCount = binReader.ReadInt32();
+                vertices = new GorgonPolySpriteVertex[binReader.ReadInt32()];
 
-                for (int i = 0; i < vertexCount; ++i)
+                for (int i = 0; i < vertices.Length; ++i)
                 {
-                    sprite.AddVertex(new GorgonPolySpriteVertex(binReader.ReadValue<DX.Vector2>(),
+                    vertices[i] = new GorgonPolySpriteVertex(binReader.ReadValue<DX.Vector2>(),
                                                                 binReader.ReadValue<GorgonColor>(),
-                                                                binReader.ReadValue<DX.Vector2>()));
+                                                                binReader.ReadValue<DX.Vector2>());
                 }
 
                 reader.CloseChunk();
+
+                if (reader.Chunks.Contains(IndexData))
+                {
+                    binReader = reader.OpenChunk(IndexData);
+                    indices = new int[binReader.ReadInt32()];
+
+                    for (int i = 0; i < indices.Length; ++i)
+                    {
+                        indices[i] = binReader.ReadInt32();
+                    }
+                }
+
+                GorgonTexture2DView texture = null;
+                int textureArrayIndex = 0;
+                DX.Vector2 textureOffset = DX.Vector2.Zero;
+                DX.Vector2 textureScale = DX.Vector2.One;
 
                 if (reader.Chunks.Contains(TextureData))
                 {
                     binReader = reader.OpenChunk(TextureData);
-                    sprite.Texture(LoadTexture(binReader, overrideTexture, out DX.Vector2 textureOffset, out DX.Vector2 textureScale, out int textureArrayIndex));
-                    sprite.TextureArrayIndex(textureArrayIndex);
-                    sprite.TextureTransform(textureOffset, textureScale);
+                    texture = LoadTexture(binReader, overrideTexture, out textureOffset, out textureScale, out textureArrayIndex);
                     reader.CloseChunk();
-                }
+                }                
 
-                if (!reader.Chunks.Contains(TextureSamplerData))
+                GorgonSamplerState samplerState = null;
+                if (reader.Chunks.Contains(TextureSamplerData))
                 {
-                    return sprite.Build();
+                    var builder = new GorgonSamplerStateBuilder(Renderer.Graphics);
+                    binReader = reader.OpenChunk(TextureSamplerData);
+                    binReader.ReadValue(out SampleFilter filter);
+                    binReader.ReadValue(out GorgonColor borderColor);
+                    binReader.ReadValue(out Comparison compareFunc);
+                    binReader.ReadValue(out TextureWrap wrapU);
+                    binReader.ReadValue(out TextureWrap wrapV);
+                    binReader.ReadValue(out TextureWrap wrapW);
+                    binReader.ReadValue(out int maxAnisotropy);
+                    binReader.ReadValue(out float minLod);
+                    binReader.ReadValue(out float maxLod);
+                    binReader.ReadValue(out float mipLodBias);
+                    reader.CloseChunk();
+
+                    samplerState = builder.Wrapping(wrapU, wrapV, wrapW, borderColor)
+                                                   .Filter(filter)
+                                                   .ComparisonFunction(compareFunc)
+                                                   .MaxAnisotropy(maxAnisotropy)
+                                                   .MipLevelOfDetail(minLod, maxLod, mipLodBias)
+                                                   .Build();
                 }
 
-                var builder = new GorgonSamplerStateBuilder(Renderer.Graphics);
-                binReader = reader.OpenChunk(TextureSamplerData);
-                binReader.ReadValue(out SampleFilter filter);
-                binReader.ReadValue(out GorgonColor borderColor);
-                binReader.ReadValue(out Comparison compareFunc);
-                binReader.ReadValue(out TextureWrap wrapU);
-                binReader.ReadValue(out TextureWrap wrapV);
-                binReader.ReadValue(out TextureWrap wrapW);
-                binReader.ReadValue(out int maxAnisotropy);
-                binReader.ReadValue(out float minLod);
-                binReader.ReadValue(out float maxLod);
-                binReader.ReadValue(out float mipLodBias);
-                reader.CloseChunk();
+                if ((indices == null) || (indices.Length == 0))
+                {
+                    var builder = new GorgonPolySpriteBuilder(Renderer);
+                    return builder.AddVertices(vertices)
+                                  .Anchor(anchor)
+                                  .AlphaTest(alphaRange)
+                                  .Texture(texture)
+                                  .TextureArrayIndex(textureArrayIndex)
+                                  .TextureTransform(textureOffset, textureScale)
+                                  .TextureSampler(samplerState)
+                                  .Build();
+                }
 
-                sprite.TextureSampler(builder.Wrapping(wrapU, wrapV, wrapW, borderColor)
-                                               .Filter(filter)
-                                               .ComparisonFunction(compareFunc)
-                                               .MaxAnisotropy(maxAnisotropy)
-                                               .MipLevelOfDetail(minLod, maxLod, mipLodBias)
-                                               .Build());
+                var sprite = GorgonPolySprite.Create(Renderer, vertices, indices);
+                sprite.Anchor = anchor;
+                sprite.AlphaTest = alphaRange;
+                sprite.Texture = texture;
+                sprite.TextureArrayIndex = textureArrayIndex;
+                sprite.TextureOffset = textureOffset;
+                sprite.TextureScale = textureScale;
+                sprite.TextureSampler = samplerState;
 
-                return sprite.Build();
+                return sprite;
             }
             finally
             {
@@ -267,6 +308,20 @@ namespace Gorgon.IO
                 }
 
                 writer.CloseChunk();
+
+                if (sprite.Indices.Count > 0)
+                {
+                    binWriter = writer.OpenChunk(IndexData);
+
+                    binWriter.Write(sprite.Indices.Count);
+
+                    for (int i = 0; i < sprite.Indices.Count; ++i)
+                    {
+                        binWriter.Write(sprite.Indices[i]);
+                    }
+
+                    writer.CloseChunk();
+                }
 
                 // We have no texture data, so don't bother writing out that chunk.
                 if (sprite.Texture != null)

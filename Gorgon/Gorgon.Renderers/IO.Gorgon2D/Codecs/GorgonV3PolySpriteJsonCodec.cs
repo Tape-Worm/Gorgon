@@ -30,7 +30,9 @@ using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
+using Gorgon.Math;
 using Gorgon.Renderers;
+using DX = SharpDX;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -275,10 +277,24 @@ namespace Gorgon.IO
             GorgonPolySprite workingSpriteData = jobj.ToObject<GorgonPolySprite>(serializer);
 
             // We have to rebuild the sprite because it's only data at this point and we need to build up its vertex/index buffers before we can render it.
-            var builder = new GorgonPolySpriteBuilder(renderer);
-            builder.ResetTo(workingSpriteData);
+            if (workingSpriteData.Indices.Count == 0)
+            {
+                var builder = new GorgonPolySpriteBuilder(renderer);
+                builder.ResetTo(workingSpriteData);
 
-            return builder.Build();
+                return builder.Build();
+            }
+
+            var result = GorgonPolySprite.Create(renderer, workingSpriteData.Vertices, workingSpriteData.Indices);
+            result.Anchor = workingSpriteData.Anchor;
+            result.AlphaTest = workingSpriteData.AlphaTest;
+            result.Texture = workingSpriteData.Texture;
+            result.TextureArrayIndex = workingSpriteData.TextureArrayIndex;
+            result.TextureOffset = workingSpriteData.TextureOffset;
+            result.TextureScale = (workingSpriteData.TextureScale.X.EqualsEpsilon(0) || workingSpriteData.TextureScale.Y.EqualsEpsilon(0)) ? DX.Vector2.One : workingSpriteData.TextureScale;
+            result.TextureSampler = workingSpriteData.TextureSampler;
+
+            return result;
         }
         #endregion
 

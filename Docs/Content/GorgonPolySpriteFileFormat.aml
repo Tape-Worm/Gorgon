@@ -190,6 +190,48 @@
 						</row>
 					</tableHeader>
 					<row>
+						<entry><para>INDXDATA</para></entry>
+						<entry><para>0x4154414458444e49</para></entry>
+						<entry><para>Data describing the indices used by the polygon sprite.</para></entry>
+						<entry><para>No</para></entry>
+					</row>
+				</table>
+				<para>The following represents the data contained within the chunk. The order of the values is the order in which they appear within the chunk.</para>
+				<table>
+					<title>INDXDATA Chunk Data</title>
+					<tableHeader>
+						<row>
+							<entry><para>Value</para></entry>
+							<entry><para>Data Type</para></entry>							
+							<entry><para>Description</para></entry>
+						</row>
+					</tableHeader>
+					<row>
+						<entry><para>Index Count</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>The number of indices used by the polygon sprite.</para>
+						<alert class="note">
+						<para>Applications should loop between 0 - <codeInline>Index Count - 1 (inclusive)</codeInline> and read the next value on each loop iteration.</para>
+						</alert>
+						</entry>
+					</row>
+					<row>
+						<entry><para>Indices</para></entry>
+						<entry><para><codeEntityReference>T:System.Int32</codeEntityReference></para></entry>
+						<entry><para>An index for the polygon sprite.</para></entry>
+					</row>
+				</table>
+				<table>				
+					<title>Chunk descriptor</title>
+					<tableHeader>
+						<row>
+							<entry><para>Chunk ID</para></entry>
+							<entry><para>Hex Value</para></entry>
+							<entry><para>Description</para></entry>
+							<entry><para>Required?</para></entry>
+						</row>
+					</tableHeader>
+					<row>
 						<entry><para>TXTRDATA</para></entry>
 						<entry><para>0x5458545244415441</para></entry>
 						<entry><para>Data describing the texture settings for the sprite.</para></entry>
