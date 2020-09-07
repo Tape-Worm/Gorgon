@@ -18,9 +18,9 @@ jobs:
   variables:
     solution: 'Gorgon.sln'
     buildPlatform: 'Any CPU'
-    buildConfiguration: 'Release'
+    buildConfiguration: 'Debug'
 
-  displayName: Release-Enhancements
+  displayName: Dev-Build
     
   steps:
   - task: PowerShell@2
