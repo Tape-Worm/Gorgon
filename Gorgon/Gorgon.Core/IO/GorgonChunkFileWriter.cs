@@ -236,7 +236,9 @@ namespace Gorgon.IO
                 chunkIDWriter.Write(chunkId);
             }
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
             _activeWriter = new GorgonBinaryWriter(new GorgonStreamWrapper(Stream, 0, 0), true);
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
             return _activeWriter;
         }

@@ -57,6 +57,7 @@ namespace Gorgon.Collections
         /// <summary>
         /// Property to return the backing store to objects that need it.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Need this for child classes.")]
         protected T[] BackingArray
         {
             get;
@@ -230,7 +231,7 @@ namespace Gorgon.Collections
         {
             if ((index < 0) || (index >= BackingArray.Length))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
 
             T oldValue = BackingArray[index];

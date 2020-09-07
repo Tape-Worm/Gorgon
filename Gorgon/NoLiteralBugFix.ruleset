@@ -70,6 +70,7 @@
     <Rule Id="CA1801" Action="None" />
     <Rule Id="CA1812" Action="None" />
     <Rule Id="CA1815" Action="None" />
+    <Rule Id="CA1819" Action="None" />
     <Rule Id="CA1822" Action="None" />
     <Rule Id="CA1823" Action="None" />
     <Rule Id="CA2007" Action="None" />

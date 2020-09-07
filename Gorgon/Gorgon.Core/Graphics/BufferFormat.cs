@@ -30,6 +30,7 @@ namespace Gorgon.Graphics
     /// <summary>
     /// Buffer data formats.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "No")]
     public enum BufferFormat
     {
         /// <summary>
