@@ -91,7 +91,7 @@ namespace Gorgon.Collections.Specialized
         {
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
 
             Items.Insert(index, item);
@@ -108,7 +108,7 @@ namespace Gorgon.Collections.Specialized
             if ((index < 0)
                 || (index >= Count))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
 
             InsertItems(index, items);

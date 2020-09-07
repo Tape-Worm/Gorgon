@@ -139,11 +139,12 @@ namespace Gorgon.Examples
 
             _renderer.Render();
 
+            ref readonly GorgonGraphicsStatistics stats = ref _graphics.Statistics;
+
             _2DRenderer.Begin();
             _textSprite.Text = $@"FPS: {GorgonTiming.FPS:0.0}, Delta: {(GorgonTiming.Delta * 1000):0.000} msec. " +
-                               $@"Tris: {
-                                       ((_triangle.TriangleCount) + (_plane.TriangleCount) + (_cube.TriangleCount) + (_sphere.TriangleCount) + (_icoSphere.TriangleCount) +
-                                        (_clouds.TriangleCount)):0} " +
+                               $@"Tris: {stats.TriangleCount} " +
+                               $@"Draw Calls: {stats.DrawCallCount} " +
                                $@"CamRot: {_cameraRotation} Mouse: {_mouse?.Position.X:0}x{_mouse?.Position.Y:0} Sensitivity: {_sensitivity:0.0##}";
             _2DRenderer.DrawTextSprite(_textSprite);
             _2DRenderer.End();

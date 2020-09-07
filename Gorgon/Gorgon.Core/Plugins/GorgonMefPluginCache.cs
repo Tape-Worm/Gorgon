@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.Registration;
 using System.IO;
 using System.Linq;
@@ -279,15 +280,15 @@ namespace Gorgon.PlugIns
         /// </summary>
         /// <param name="assemblyPath">Path to the assembly to check.</param>
         /// <param name="publicKey">[Optional] The full public key to verify against.</param>
-        /// <returns>A value from the <see cref="AssemblySigningResult"/>.</returns>
+        /// <returns>A value from the <see cref="AssemblySigningResults"/>.</returns>
         /// <remarks>
         /// <para>
         /// This method can be used to determine if an assembly has a strong name key pair (i.e. signed with a strong name) before loading it. If the assembly is not found, then 
-        /// the result of this method is <see cref="AssemblySigningResult.NotSigned"/>.
+        /// the result of this method is <see cref="AssemblySigningResults.NotSigned"/>.
         /// </para>
         /// <para>
         /// The <paramref name="publicKey"/> parameter is used to compare a known full public key (note: NOT the token) against that of the assembly being queried. If the bytes in 
-        /// the public key do not match that of the public key in the assembly being queried, then the return result will have a <see cref="AssemblySigningResult.KeyMismatch"/> 
+        /// the public key do not match that of the public key in the assembly being queried, then the return result will have a <see cref="AssemblySigningResults.KeyMismatch"/> 
         /// value OR'd with the result. To check for a mismatch do the following:
         /// <code language="csharp">
         /// // Compare the key for the current assembly to that of another assembly.
@@ -321,11 +322,11 @@ namespace Gorgon.PlugIns
         /// </note>
         /// </para>
         /// </remarks>
-        public static AssemblySigningResult VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
+        public static AssemblySigningResults VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
         {
             if ((string.IsNullOrWhiteSpace(assemblyPath)) || (!File.Exists(assemblyPath)))
             {
-                return AssemblySigningResult.NotSigned;
+                return AssemblySigningResults.NotSigned;
             }
 
             var clrStrongNameClsId = new Guid("B79B0ACD-F5CD-409b-B5A5-A16244610B92");
@@ -337,20 +338,20 @@ namespace Gorgon.PlugIns
 
             if ((result != 0) || (!wasVerified))
             {
-                return AssemblySigningResult.NotSigned;
+                return AssemblySigningResults.NotSigned;
             }
 
             if (publicKey == null)
             {
-                return AssemblySigningResult.Signed;
+                return AssemblySigningResults.Signed;
             }
 
             var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
             byte[] compareToken = assemblyName.GetPublicKey();
 
             return (compareToken == null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken))
-                ? AssemblySigningResult.Signed | AssemblySigningResult.KeyMismatch
-                : AssemblySigningResult.Signed;
+                ? AssemblySigningResults.Signed | AssemblySigningResults.KeyMismatch
+                : AssemblySigningResults.Signed;
         }
 
         /// <summary>
@@ -389,7 +390,16 @@ namespace Gorgon.PlugIns
 
             _container?.Dispose();
             _container = null;
-            _rootCatalog?.Dispose();
+
+            if (_rootCatalog != null)
+            {
+                foreach (ComposablePartCatalog item in _rootCatalog.Catalogs)
+                {
+                    item.Dispose();
+                }
+
+                _rootCatalog.Dispose();
+            }
             _rootCatalog = null;
         }
 
@@ -452,9 +462,11 @@ namespace Gorgon.PlugIns
                 }
                 else
                 {
+#pragma warning disable CA2000 // Dispose objects before losing scope
                     catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
+#pragma warning restore CA2000 // Dispose objects before losing scope
                     _rootCatalog.Catalogs.Add(catalog);
-
+                    
                     Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Verbose);
                 }
             }

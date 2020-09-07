@@ -9,7 +9,7 @@ namespace Gorgon.PlugIns
     /// The return values for the an assembly signing test.
     /// </summary>
     [Flags]
-    public enum AssemblySigningResult
+    public enum AssemblySigningResults
     {
         /// <summary>
         /// Assembly is not signed.  This flag is mutually exclusive.

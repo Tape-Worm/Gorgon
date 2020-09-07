@@ -367,7 +367,7 @@ namespace Gorgon.Native
 
             if (count < 0)
             {
-                throw new ArgumentException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+                throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(count));
             }
 
             if (startIndex + count.Value > Length)

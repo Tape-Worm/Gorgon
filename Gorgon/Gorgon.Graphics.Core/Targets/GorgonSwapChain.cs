@@ -1237,6 +1237,10 @@ namespace Gorgon.Graphics.Core
 
                 _swapChain.Present(interval, flags);
 
+                // Reset the statistics after we've presented.
+                ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
+                stats = new GorgonGraphicsStatistics();
+
                 if (prevTargetRange.TargetCount == 0)
                 {
                     return;

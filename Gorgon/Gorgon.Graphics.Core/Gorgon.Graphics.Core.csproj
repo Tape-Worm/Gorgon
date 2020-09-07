@@ -103,6 +103,7 @@
     <Compile Include="Geometry\GorgonStreamOutLayout.cs" />
     <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
     <Compile Include="GorgonGraphicsResource.cs" />
+    <Compile Include="GorgonGraphicsStatistics.cs" />
     <Compile Include="GorgonResourceLocator.cs" />
     <Compile Include="GorgonResourceView.cs" />
     <Compile Include="Pipeline\GorgonStreamOutCallPoolAllocator.cs" />
