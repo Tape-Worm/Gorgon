@@ -307,17 +307,3 @@ jobs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: drop
 
-# Index sources and publish symbols
-# Index your source code and publish symbols to a file share or Azure Artifacts symbol server
-      - task: PublishSymbols@2
-        inputs:
-          SymbolsFolder: '$(Build.SourcesDirectory)'
-          SearchPattern: |              
-              **/bin/**/Gorgon*.pdb
-              !**/Examples/**
-          IndexSources: true
-          PublishSymbols: true
-          SymbolServerType: 'teamServices'                    
-          DetailedLog: true
-          TreatNotIndexedAsWarning: false
-          SymbolsArtifactName: 'Gorgon_Symbols_$(BuildConfiguration)'
