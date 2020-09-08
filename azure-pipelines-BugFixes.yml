@@ -3,7 +3,7 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
-name: 3.1.$(Rev:r).$(DayOfYear)-BugFix
+name: 3.1.$(Rev:r).$(DayOfYear)
 
 trigger:
   branches:
@@ -11,266 +11,32 @@ trigger:
       - BugFixes
 
 jobs:
-  - job: "Release"
+  - job: 'BugFixes-Debug'
     pool:
-      vmImage: "windows-2019"
+      vmImage: 'windows-2019'
 
     variables:
-      solution: "Gorgon.sln"
-      buildPlatform: "Any CPU"
-      buildConfiguration: "Release"
-
-    displayName: Release-BugFix
+      solution: 'Gorgon.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Debug'
 
     steps:
       - task: PowerShell@2
-        displayName: "Updating version to $(Build.BuildNumber)"
+        displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
           targetType: filePath
           filePath: '.\VersionUpdater.ps1'
 
       - task: NuGetToolInstaller@1
         inputs:
-          versionSpec:
           checkLatest: true
 
       - task: NuGetCommand@2
         inputs:
-          restoreSolution: "$(solution)"
+          restoreSolution: '$(solution)'
 
       - task: VSBuild@1
         inputs:
-          solution: "$(solution)"
-          platform: "$(buildPlatform)"
-          configuration: "$(buildConfiguration)"
-
-      - task: CopyFiles@2
-        displayName: "Copying Core to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          CleanTargetFolder: true
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Windows specific to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Windows/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          CleanTargetFolder: true
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying FileSystem to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Input to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Core Graphics to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Core/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Fonts to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Fonts/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Imaging to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Imaging/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying 2D to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Gorgon2D/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Animation to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying 2D Animation to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Animation.Gorgon2D/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying 2D IO to $(Build.ArtifactStagingDirectory)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/IO.Gorgon2D/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Plugins to $(Build.ArtifactStagingDirectory)/Gorgon/PlugIns"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/"
-          Contents: "**/?(*.dll|*.xml)"
-          CleanTargetFolder: true
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/PlugIns"
-
-      - task: CopyFiles@2
-        displayName: "Copying artifacts to $(Build.ArtifactStagingDirectory)/Gorgon/Tools"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/"
-          Contents: "**/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml)"
-          CleanTargetFolder: true
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/Gorgon/Tools"
-
-      - task: PowerShell@2
-        displayName: "Copying artifacts to $(Build.ArtifactStagingDirectory)/Examples"
-        inputs:
-          TargetType: filePath
-          FilePath: '.\Deploy_Examples.ps1'
-
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: "$(Build.ArtifactStagingDirectory)"
-          ArtifactName: BugFixDrop
-
-  - job: "Debug"
-    pool:
-      vmImage: "windows-2019"
-
-    variables:
-      solution: "Gorgon.sln"
-      buildPlatform: "Any CPU"
-      buildConfiguration: "Debug"
-
-    displayName: Debug-BugFix
-
-    steps:
-      - task: PowerShell@2
-        displayName: "Updating version to $(Build.BuildNumber)"
-        inputs:
-          targetType: filePath
-          filePath: '.\VersionUpdater.ps1'
-
-      - task: NuGetToolInstaller@1
-        inputs:
-          versionSpec:
-          checkLatest: true
-
-      - task: NuGetCommand@2
-        inputs:
-          restoreSolution: "$(solution)"
-
-      - task: VSBuild@1
-        inputs:
-          solution: "$(solution)"
-          platform: "$(buildPlatform)"
-          configuration: "$(buildConfiguration)"
-
-      - task: CopyFiles@2
-        displayName: "Copying Core to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml)"
-          CleanTargetFolder: true
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Windows specific to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Windows/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          CleanTargetFolder: true
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying FileSystem to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Input to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Core Graphics to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Core/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Fonts to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Fonts/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Imaging to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Imaging/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying 2D to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Gorgon2D/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Animation to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying 2D Animation to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Animation.Gorgon2D/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying 2D IO to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/IO.Gorgon2D/bin/$(buildConfiguration)"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib"
-
-      - task: CopyFiles@2
-        displayName: "Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns"
-        inputs:
-          SourceFolder: "$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/"
-          Contents: "**/?(*.dll|*.xml|Gorgon*.pdb)"
-          CleanTargetFolder: true
-          TargetFolder: "$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns"
-
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: "$(Build.ArtifactStagingDirectory)"
-          ArtifactName: BugFixDrop
+          solution: '$(solution)'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'

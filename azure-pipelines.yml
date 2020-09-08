@@ -195,7 +195,6 @@ jobs:
           solution: '$(solution)'
           platform: '$(buildPlatform)'
           configuration: '$(buildConfiguration)'
-          msbuildArgs: '/p:SourceLinkCreate=true'
 
       - task: CopyFiles@2
         displayName: 'Copying Core to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
