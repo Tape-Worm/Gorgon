@@ -11,7 +11,7 @@ trigger:
       - BugFixes
 
 jobs:
-  - job: 'BugFixes-Debug'
+  - job: 'BugFixes_Debug'
     pool:
       vmImage: 'windows-2019'
 
