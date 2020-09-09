@@ -72,8 +72,8 @@ GorgonGBufferOutput GorgonPixelShaderGBuffer(GorgonLitVertex vertex) : SV_Target
 #endif
     result.Normal = float4((normalize(float3(0, 0, bump.z) + (bump.x * vertex.tangent + bump.y * vertex.bitangent)) + 1.0f) * 0.5f, 1.0f);
 
-#ifdef USE_ARRAY
-	result.Specular = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, _arrayIndices.y));	
+#ifndef USE_ARRAY
+	result.Specular = _arrayIndices.y < 0 ? float4(0, 0, 0, 0) : _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, _arrayIndices.y));
 #else
     result.Specular = _specularTexture.Sample(_specularSampler, vertex.uv.xy);
 #endif
