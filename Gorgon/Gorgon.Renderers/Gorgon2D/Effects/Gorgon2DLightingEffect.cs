@@ -169,6 +169,8 @@ namespace Gorgon.Renderers
         private bool _usingArray;
         // The currently active render target view.
         private GorgonRenderTargetView _currentRtv;
+        // The currently active array indices.
+        private (int normalIndex, int specIndex) _currentIndices;
         #endregion
 
         #region Properties.
@@ -319,6 +321,8 @@ namespace Gorgon.Renderers
             {
                 return;
             }
+            
+            _currentIndices = (-1, -1);
 
             GorgonPixelShader lightShader = Interlocked.Exchange(ref _pixelLitShader, null);
             GorgonConstantBufferView lightData = Interlocked.Exchange(ref _lightBuffer, null);
@@ -550,9 +554,14 @@ namespace Gorgon.Renderers
 
             _currentRtv = output;
 
-            if (!_usingArray)
+            if ((_currentIndices.normalIndex != 1) || (_currentIndices.specIndex != 2))
             {
                 _effectData.ArrayIndices = new DX.Vector4(1, 2, 0, 0);
+                _currentIndices = (1, 2);
+            }
+
+            if (!_usingArray)
+            {
                 Macros.Add(_arrayMacro);
                 _pixelLitShader = null;
                 _usingArray = true;
@@ -578,10 +587,15 @@ namespace Gorgon.Renderers
 
             _currentRtv = output;
 
-            if (!_usingArray)
+            if ((normalMapIndex != _currentIndices.normalIndex) || (specularMapIndex != _currentIndices.specIndex))
             {
                 _effectData.ArrayIndices = new DX.Vector4(normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1),
                                                           specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1), 0, 0);
+                _currentIndices = (normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1), specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1));
+            }
+
+            if (!_usingArray)
+            {
                 Macros.Add(_arrayMacro);
                 _pixelLitShader = null;
                 _usingArray = true;
