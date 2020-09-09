@@ -65,9 +65,11 @@ namespace Gorgon.Renderers
         private GorgonRenderTargetView _originalTarget;
         // Flag to indicate whether the effect has been initialized or not.
         private bool _initialized;
+        // The indices of the normal/specular map when using an array.
+        private (int normalIndex, int specularIndex) _indices;
         // The macro sent to the shader to enable using array indices.
         private readonly GorgonShaderMacro _useArrayMacro = new GorgonShaderMacro("USE_ARRAY");
-
+        
         // The texture information for the main GBuffer targets.
         private readonly GorgonTexture2DInfo _mainInfo = new GorgonTexture2DInfo("GBuffer")
         {
@@ -393,10 +395,15 @@ namespace Gorgon.Renderers
                 _initialized = true;
             }
 
-            if (!_useArray)
+            if ((_indices.normalIndex != normalMapIndex) || (_indices.specularIndex != specularMapIndex))
             {
                 var gbufferParams = new DX.Vector4(normalMapIndex, specularMapIndex, 0, 0);
                 _params.Buffer.SetData(ref gbufferParams);
+                _indices = (normalMapIndex, specularMapIndex);
+            }
+
+            if (!_useArray)
+            {
                 _pixelShader?.Dispose();
                 _pixelShader = null;
                 _useArray = true;
