@@ -35,6 +35,15 @@ jobs:
         inputs:
           restoreSolution: '$(solution)'
 
+      - task: DownloadSecureFile@1
+        inputs:
+          secureFile: GorgonFull.snk
+
+      - task: CmdLine@2
+        displayName: 'Signing code...'
+        inputs:
+          script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
+
       - task: VSBuild@1
         inputs:
           solution: '$(solution)'
