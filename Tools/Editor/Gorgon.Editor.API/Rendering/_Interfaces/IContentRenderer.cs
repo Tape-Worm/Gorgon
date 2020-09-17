@@ -168,6 +168,11 @@ namespace Gorgon.Editor.Rendering
         void SetZoom(float zoom);
 
         /// <summary>
+        /// Function to center the view.
+        /// </summary>
+        void CenterView();
+
+        /// <summary>
         /// Function to move the camera to the offset position, and, optionally, the zoom to the offset.
         /// </summary>
         /// <param name="offset">The offset to apply to the view, in client space.</param>

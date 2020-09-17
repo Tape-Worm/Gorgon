@@ -187,15 +187,7 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>Handles the Click event of the ButtonCenter control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonCenter_Click(object sender, EventArgs e)
-        {
-            if (Renderer == null)
-            {
-                return;
-            }
-
-            Renderer.MoveTo(DX.Vector2.Zero, - 1);
-        }
+        private void ButtonCenter_Click(object sender, EventArgs e) => Renderer?.CenterView();
 
         /// <summary>Handles the ValueChanged event of the ScrollVertical control.</summary>
         /// <param name="sender">The source of the event.</param>

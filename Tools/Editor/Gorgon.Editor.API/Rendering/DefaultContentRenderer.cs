@@ -1001,6 +1001,16 @@ namespace Gorgon.Editor.Rendering
         }
 
         /// <summary>
+        /// Function to center the view.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Developers can override this method to provide custom centering of the view. The default is to zoom to the current client size of the window.
+        /// </para>
+        /// </remarks>
+        protected virtual void OnCenterView() => MoveTo(DX.Vector2.Zero, -1.0f);
+
+        /// <summary>
         /// Function to adjust a zoom value based on the input zoom value.
         /// </summary>
         /// <param name="requestedZoom">The zoom value to adjust.</param>
@@ -1260,6 +1270,11 @@ namespace Gorgon.Editor.Rendering
             _camera.Zoom = new DX.Vector2(zoom, zoom);
             OnZoom();
         }
+
+        /// <summary>
+        /// Function to center the view.
+        /// </summary>
+        public void CenterView() => OnCenterView();
 
         /// <summary>
         /// Function to move the camera to the offset position, and, optionally, the zoom to the offset.
