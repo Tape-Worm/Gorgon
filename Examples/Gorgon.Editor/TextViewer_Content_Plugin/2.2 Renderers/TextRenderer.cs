@@ -244,12 +244,12 @@ namespace Gorgon.Examples
             ChangeFont();
 
             DataContext.TextColor.PropertyChanged += TextColor_PropertyChanged;
-        }        
+        }
 
-        /// <summary>Function called when the renderer needs to clean up any resource data.</summary>
-        /// <remarks>
-        /// Developers should always override this method if they've overridden the <see cref="Gorgon.Editor.Rendering.DefaultContentRenderer{T}.OnLoad"/> method. Failure to do so can cause memory leakage.
-        /// </remarks>
+        /// <summary>
+        /// Function called when the renderer needs to clean up any resource data.
+        /// </summary>
+        /// <remarks>Developers should always override this method if they've overridden the <see cref="Gorgon.Editor.Rendering.DefaultContentRenderer{T}.OnLoad" /> method. Failure to do so can cause memory leakage.</remarks>
         protected override void OnUnload()
         {
             DataContext.TextColor.PropertyChanged -= TextColor_PropertyChanged;

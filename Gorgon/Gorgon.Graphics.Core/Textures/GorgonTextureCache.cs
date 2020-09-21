@@ -105,6 +105,8 @@ namespace Gorgon.Graphics.Core
         private readonly ConcurrentDictionary<string, Lazy<TextureEntry>> _cache = new ConcurrentDictionary<string, Lazy<TextureEntry>>(StringComparer.OrdinalIgnoreCase);
         // The lock for updating the cache concurrently.
         private SemaphoreSlim _cacheLock = new SemaphoreSlim(1, 1);
+        // The list of textures to that are currently being loaded.
+        private readonly List<string> _scheduledTextures = new List<string>();
         #endregion
 
         #region Properties.
@@ -196,7 +198,7 @@ namespace Gorgon.Graphics.Core
             }
 
             return true;
-        }
+        }        
 
         /// <summary>
         /// Function to retrieve a cached texture (or load one if it's not available).
@@ -250,17 +252,58 @@ namespace Gorgon.Graphics.Core
                 missingTextureAction = DefaultTextureLocator;
             }
 
+            // Function to retrieve the texture from the cache.
+            bool GetTextureFromCache(out T texture, out Lazy<TextureEntry> entry)
+            {
+                texture = null;
+
+                if ((_cache.TryGetValue(textureName, out entry)) && (entry?.Value?.Texture != null) && (entry.Value.Texture.TryGetTarget(out T textureRef)))
+                {
+                    entry.Value.Users++;
+                    _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
+                    texture = textureRef;
+                    return true;
+                }
+
+                return false;
+            }
+
             _graphics.Log.Print($"Retrieving texture '{textureName}'.", LoggingLevel.Verbose);
 
             try
             {
+                T result = null;
+                var spinner = new SpinWait();
+
                 await _cacheLock.WaitAsync();
 
-                if ((_cache.TryGetValue(textureName, out Lazy<TextureEntry> entry)) && (entry?.Value?.Texture != null) && (entry.Value.Texture.TryGetTarget(out T textureRef)))
+                // If we're requesting a texture that's in the process of loading, then wait until the previous guy is done.
+                await Task.Run(() =>
                 {
-                    entry.Value.Users++;
-                    _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
-                    return textureRef;
+                    while (_scheduledTextures.Contains(textureName))
+                    {
+                        _graphics.Log.Print($"Requested texture '{textureName}' is currently being loaded on another thread, waiting for it to become available.", LoggingLevel.Verbose);
+
+                        spinner.SpinOnce();
+
+                        if ((GetTextureFromCache(out result, out _)) && (result != null))
+                        {
+                            break;
+                        }
+                    }
+                });
+
+                if (result != null)
+                {
+                    return result;
+                }
+
+                _scheduledTextures.Add(textureName);
+                _cacheLock.Release();
+
+                if ((GetTextureFromCache(out result, out Lazy<TextureEntry> entry)) && (result != null))
+                {
+                    return result;
                 }
 
                 // If we are at this point, then the reference is dead, so clear it out before loading.
@@ -315,7 +358,16 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                _cacheLock.Release();
+                if (_cacheLock.CurrentCount != 0)
+                {
+                    await _cacheLock.WaitAsync();
+                    _scheduledTextures.Remove(textureName);
+                }
+
+                if (_cacheLock.CurrentCount == 0)
+                {
+                    _cacheLock.Release();
+                }
             }
         }
 

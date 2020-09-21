@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -564,8 +565,8 @@ namespace Gorgon.IO
                 && (paths.Count > 0))
             {
                 IEnumerable<Task<GorgonTexture2D>> dependencies = paths.Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
-                await Task.WhenAll(dependencies);
-                overrideTexture = dependencies.FirstOrDefault(item => string.Equals(item.Result?.Name, paths[0], StringComparison.OrdinalIgnoreCase))?.Result?.GetShaderResourceView();
+                GorgonTexture2D[] textures = await Task.WhenAll(dependencies);
+                overrideTexture = textures.FirstOrDefault(item => string.Equals(item?.Name, paths[0], StringComparison.OrdinalIgnoreCase))?.GetShaderResourceView();
             }
 
             using (Stream stream = spriteFile.OpenStream())
