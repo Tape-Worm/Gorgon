@@ -273,25 +273,17 @@ namespace Gorgon.Graphics.Core
             try
             {
                 T result = null;
-                var spinner = new SpinWait();
 
                 await _cacheLock.WaitAsync();
 
-                // If we're requesting a texture that's in the process of loading, then wait until the previous guy is done.
-                await Task.Run(() =>
+                if (_scheduledTextures.Contains(textureName))
                 {
-                    while (_scheduledTextures.Contains(textureName))
-                    {
-                        _graphics.Log.Print($"Requested texture '{textureName}' is currently being loaded on another thread, waiting for it to become available.", LoggingLevel.Verbose);
+                    _graphics.Log.Print($"Requested texture '{textureName}' is currently being loaded on another thread, waiting for it to become available.", LoggingLevel.Verbose);
 
-                        spinner.SpinOnce();
-
-                        if ((GetTextureFromCache(out result, out _)) && (result != null))
-                        {
-                            break;
-                        }
-                    }
-                });
+                    // If we're requesting a texture that's in the process of loading, then wait until the previous guy is done.
+                    await Task.Run(() => SpinWait.SpinUntil(() => (!_scheduledTextures.Contains(textureName)) 
+                                                                || ((GetTextureFromCache(out result, out _)) && (result != null))));
+                }
 
                 if (result != null)
                 {
