@@ -660,15 +660,15 @@ namespace Gorgon.IO
         ///		<term>8</term>
         /// </listheader>
         ///		<item>
-        ///			<term>Character</term>
-        ///			<term>'T' (0x54)</term>
-        ///			<term>'E' (0x45)</term>
-        ///			<term>'S' (0x53)</term>
-        ///			<term>'T' (0x54)</term>
-        ///			<term>'V' (0x56)</term>
-        ///			<term>'A' (0x41)</term>
-        ///			<term>'L' (0x4C)</term>
-        ///			<term>'U' (0x55)</term>
+        ///			<description>Character</description>
+        ///			<description>'T' (0x54)</description>
+        ///			<description>'E' (0x45)</description>
+        ///			<description>'S' (0x53)</description>
+        ///			<description>'T' (0x54)</description>
+        ///			<description>'V' (0x56)</description>
+        ///			<description>'A' (0x41)</description>
+        ///			<description>'L' (0x4C)</description>
+        ///			<description>'U' (0x55)</description>
         ///		</item>
         /// </list>
         /// </para>
