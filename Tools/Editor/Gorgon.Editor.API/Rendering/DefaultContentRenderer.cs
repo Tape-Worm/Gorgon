@@ -203,6 +203,9 @@ namespace Gorgon.Editor.Rendering
         /// <para>
         /// This property can also be used to retrieve the current camera position on the view, and the current zoom value.
         /// </para>
+        /// <para>
+        /// Plug in developers can override this property and return their own camera if necessary.
+        /// </para>
         /// </remarks>
         protected virtual IGorgon2DCamera Camera => _camera;
         
