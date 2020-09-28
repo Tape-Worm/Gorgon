@@ -3058,7 +3058,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> commands, this command uses 
+		/// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="Submit(GorgonDrawIndexCall, GorgonColor?, int, int)"/> command, this command uses 
 		/// pre-processed data from the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the draw call must have been assigned to the  previous
 		/// <see cref="GorgonDrawCallCommon.StreamOutBufferBindings"/> and had data deposited into it from the stream out stage. After that, it should be be assigned to a <see cref="GorgonStreamOutCall"/>
 		/// passed to this method.

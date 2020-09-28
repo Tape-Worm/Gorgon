@@ -48,11 +48,11 @@ namespace Gorgon.UI
     /// </para>
     /// <para>
     /// One of the key components to this class is the introduction of a proper Idle loop. This allows an application to perform operations while the windows message pump is in an idle state. This is useful 
-    /// for things like games, or applications that require constant interaction with other systems. To set an idle loop you may pass a method to execute in one of the <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> 
-    /// overloads. Or, if you choose, you may assign an idle method to execute at any point in the application life cycle by assigning a method to the <see cref="IdleMethod"/>.
+    /// for things like games, or applications that require constant interaction with other systems. To set an idle loop you may pass a method to execute in one of the <see cref="Run(Form, Func{bool})"/> 
+    /// method overloads. Or, if you choose, you may assign an idle method to execute at any point in the application life cycle by assigning a method to the <see cref="IdleMethod"/>.
     /// </para> 
     /// <para>
-    /// Like the <see cref="Application"/> class, this class also provides the ability to pass a windows <see cref="Form"/>, or <see cref="ApplicationContext"/> to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> 
+    /// Like the <see cref="Application"/> class, this class also provides the ability to pass a windows <see cref="Form"/>, or <see cref="ApplicationContext"/> to one of the <see cref="Run(Form, Func{bool})"/> 
     /// overloads. 
     /// </para>
     /// <para>
@@ -62,7 +62,7 @@ namespace Gorgon.UI
     /// The main form of an application may be retrieved from the <see cref="MainForm"/> property. 
     /// </para>
     /// <para>
-    /// If this is not suitable, one of the other <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> overloads will allow you to finely control the life cycle of your application.
+    /// If this is not suitable, one of the other <see cref="Run(Func{bool})"/> overloads will allow you to finely control the life cycle of your application.
     /// </para>
     /// </note>
     /// </para>

@@ -61,7 +61,7 @@ namespace Gorgon.Input
     /// <code language="csharp">
     /// <![CDATA[
     /// IReadOnlyList<GorgonGamingDeviceInfo> joysticks = null;
-    /// TODO: This needs fixing.
+    ///
     /// using (var assemblies = new GorgonPlugInAssemblyCache())
     /// {
     ///		var plugInService = new GorgonPlugInService(assemblies);

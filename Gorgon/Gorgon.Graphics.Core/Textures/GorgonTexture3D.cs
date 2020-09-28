@@ -463,7 +463,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// <para>
         /// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
-        /// copied, use the <see cref="O:Gorgon.Graphics.Core.GorgonTexture2D.CopyFrom"/> method.
+        /// copied, use the <see cref="CopyTo(GorgonTexture3D, DX.Rectangle?, GorgonRange?, int, int, int, int, int, CopyMode)"/> method.
         /// </para>
         /// <para>
         /// This method does not perform stretching, filtering or clipping.
@@ -1955,7 +1955,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// This constructor creates an empty texture. Data may be uploaded to the texture at a later time if its <see cref="GorgonGraphicsResource.Usage"/> is not set to 
         /// <see cref="ResourceUsage.Immutable"/>. If the <see cref="GorgonGraphicsResource.Usage"/> is set to <see cref="ResourceUsage.Immutable"/> with this constructor, then an exception will be thrown. 
-        /// To use an immutable texture, use the <see cref="O:Gorgon.Graphics.Core.GorgonImageTextureExtensions.ToTexture"/> extension method on the <see cref="IGorgonImage"/> type.
+        /// To use an immutable texture, use the <see cref="GorgonImageTextureExtensions.ToTexture3D(IGorgonImage, GorgonGraphics, GorgonTextureLoadOptions)"/> extension method on the <see cref="IGorgonImage"/> type.
         /// </para>
         /// </remarks>
         public GorgonTexture3D(GorgonGraphics graphics, IGorgonTexture3DInfo textureInfo)

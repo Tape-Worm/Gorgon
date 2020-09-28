@@ -94,7 +94,7 @@ namespace Gorgon.Graphics.Core
         public override GraphicsResourceType ResourceType => GraphicsResourceType.Buffer;
 
         /// <summary>
-        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/> methods.
+        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/> methods.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -114,7 +114,10 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData"/>
+        /// <seealso cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/>
+        /// <seealso cref="GorgonBufferCommon.GetData{T}(T[], int, int?, int)"/>
+        /// <seealso cref="GorgonBufferCommon.GetData{T}(out T, int)"/>
+        /// <seealso cref="GorgonBufferCommon.GetData{T}(int, int?)"/>
         public abstract bool IsCpuReadable
         {
             get;

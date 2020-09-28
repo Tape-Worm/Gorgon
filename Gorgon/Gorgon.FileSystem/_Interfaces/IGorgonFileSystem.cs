@@ -412,9 +412,6 @@ namespace Gorgon.IO
         /// This will unmount a physical file system from the virtual file system by removing all directories and files associated with that mount point <paramref name="physicalPath"/> and <paramref name="mountLocation"/>. 
         /// </para>
         /// <para>
-        /// Unlike the <see cref="O:Gorgon.IO.IGorgonFileSystem.Unmount">Unmount</see> overloads, this method will unmount all mount points with the specified <paramref name="physicalPath"/> and <paramref name="mountLocation"/>.
-        /// </para>
-        /// <para>
         /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh()"/> method if they 
         /// wish to restore any file/directory entries.
         /// </para>
@@ -434,9 +431,6 @@ namespace Gorgon.IO
         /// <remarks>
         /// <para>
         /// This will unmount a physical file system from the virtual file system by removing all directories and files associated with that mount point <paramref name="physicalPath"/>. 
-        /// </para>
-        /// <para>
-        /// Unlike the <see cref="O:Gorgon.IO.IGorgonFileSystem.Unmount">Unmount</see> overloads, this method will unmount all mount points containing the path specified by the <paramref name="physicalPath"/>.
         /// </para>
         /// <para>
         /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh()"/> method if they 

@@ -253,7 +253,7 @@ namespace Gorgon.IO
         /// </para>
         /// <para>
         /// If this method is not called, then the chunk will not be added to the chunk table in the file and the file will lose that chunk. This, however, does not mean the file is necessarily corrupt, 
-        /// just that the chunk will not exist. Regardless, this method should always be called when one of the <see cref="O:Gorgon.IO.GorgonChunkFile`1.OpenChunk"/> are called.
+        /// just that the chunk will not exist. Regardless, this method should always be called when <see cref="OpenChunk(ulong)"/> is called.
         /// </para>
         /// </remarks>
         public override void CloseChunk()

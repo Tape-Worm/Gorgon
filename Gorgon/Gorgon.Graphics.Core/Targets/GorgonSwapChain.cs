@@ -403,9 +403,10 @@ namespace Gorgon.Graphics.Core
         /// Property to return whether the swap chain is in windowed mode or not.
         /// </summary>
         /// <remarks>
-        /// To enter or exit full screen mode on a swap chain, call the <see cref="O:Gorgon.Graphics.Core.GorgonSwapChain.EnterFullScreen"/> or <see cref="ExitFullScreen"/> methods.
+        /// To enter or exit full screen mode on a swap chain, call the <see cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/> or <see cref="ExitFullScreen"/> methods.
         /// </remarks>
-        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonSwapChain.EnterFullScreen"/>
+        /// <seealso cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/>
+        /// <seealso cref="EnterFullScreen()"/>
         /// <seealso cref="ExitFullScreen"/>
         public bool IsWindowed => FullscreenOutput == null || _fullScreenVideoMode == null;
         #endregion
@@ -790,7 +791,7 @@ namespace Gorgon.Graphics.Core
         /// If full screen exclusive mode is required, users can call the <see cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/> overload instead.
         /// </para>
         /// </remarks>
-        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonSwapChain.EnterFullScreen"/>
+        /// <seealso cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/>
         public void EnterFullScreen()
         {
             if (ParentForm != Window)
@@ -1024,7 +1025,7 @@ namespace Gorgon.Graphics.Core
         /// When the swap chain is already in windowed mode, then this method will do nothing.
         /// </para>
         /// </remarks>
-        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonSwapChain.EnterFullScreen"/>
+        /// <seealso cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/>
         public void ExitFullScreen()
         {
             if ((IsWindowed)

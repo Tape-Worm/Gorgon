@@ -226,7 +226,7 @@ namespace Gorgon.IO
         /// Function to close an open chunk.
         /// </summary>
         /// <remarks>
-        /// This method should always be called when one of the <see cref="O:Gorgon.IO.GorgonChunkFile`1.OpenChunk">OpenChunk methods</see> are called. Failure to do so may cause file corruption.
+        /// This method should always be called when one of the <see cref="GorgonChunkFile{T}.OpenChunk(ulong)"/> methods are called. Failure to do so may cause file corruption.
         /// </remarks>
         public abstract void CloseChunk();
 

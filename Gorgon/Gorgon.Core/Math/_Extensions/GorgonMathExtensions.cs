@@ -47,7 +47,7 @@ namespace Gorgon.Math
     /// // Outputs: 100, 10
     /// </code>
     /// <para>
-    /// Other mathematical functions are included, such as <see cref="O:Gorgon.Math.GorgonMathExtensions.Sin">Sine</see>, <see cref="O:Gorgon.Math.GorgonMathExtensions.Cos">Cosine</see>, <see cref="O:Gorgon.Math.GorgonMathExtensions.Tan">Tangent</see>, etc... 
+    /// Other mathematical functions are included, such as <see cref="Sin(float)"/>, <see cref="Cos(float)"/>, <see cref="Tan(float)"/>, etc... 
     /// </para>
     /// </remarks>
     public static class GorgonMathExtensions

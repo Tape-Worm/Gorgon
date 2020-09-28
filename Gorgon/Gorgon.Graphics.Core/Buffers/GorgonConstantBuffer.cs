@@ -40,7 +40,7 @@ namespace Gorgon.Graphics.Core
     /// <remarks>
     /// <para>
     /// To send changing data to a shader from you application to a constant buffer, an application can upload a value type (or primitive) value to the buffer using one of the 
-    /// <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.SetData"/> methods. This allows an application to update the state of a shader to reflect changes in the application. Things like animation or setup 
+    /// <see cref="GorgonBufferCommon.SetData{T}(T[], int, int?, int, CopyMode)"/> methods. This allows an application to update the state of a shader to reflect changes in the application. Things like animation or setup 
     /// information can easily be sent to modify the state of a shader (hence somewhat making the term <i>constant</i> a bit of a misnomer).
     /// </para>
     /// <para>
