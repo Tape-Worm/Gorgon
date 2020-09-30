@@ -171,8 +171,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentInterface", "Examples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crawl", "Examples\Gorgon.Renderers.2D\Crawl\Crawl.csproj", "{6DF3E598-1ED7-4451-9B9F-49675B5C07C0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{57E94FC6-C9AE-4C3A-BD4E-7184E359DAE0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.AnimationEditor", "PlugIns\Gorgon.Editor.AnimationEditor\Gorgon.Editor.AnimationEditor.csproj", "{62AC77E7-B73D-4004-B0BB-1AB2CC263137}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Editor", "Gorgon.Editor", "{B770B900-800E-47B4-A397-65808037A296}"
