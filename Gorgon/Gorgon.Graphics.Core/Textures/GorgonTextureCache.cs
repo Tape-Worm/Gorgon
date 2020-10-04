@@ -257,10 +257,13 @@ namespace Gorgon.Graphics.Core
             {
                 texture = null;
 
-                if ((_cache.TryGetValue(textureName, out entry)) && (entry?.Value?.Texture != null) && (entry.Value.Texture.TryGetTarget(out T textureRef)))
+                if ((_cache.TryGetValue(textureName, out entry)) && (entry?.Value?.Texture != null))
                 {
-                    entry.Value.Users++;
-                    _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
+                    if (entry.Value.Texture.TryGetTarget(out T textureRef))
+                    {
+                        entry.Value.Users++;
+                        _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
+                    }
                     texture = textureRef;
                     return true;
                 }
@@ -275,28 +278,25 @@ namespace Gorgon.Graphics.Core
                 T result = null;
 
                 await _cacheLock.WaitAsync();
+                bool isScheduled = _scheduledTextures.Contains(textureName);
+                _cacheLock.Release();
 
-                if (_scheduledTextures.Contains(textureName))
+                if (isScheduled)
                 {
                     _graphics.Log.Print($"Requested texture '{textureName}' is currently being loaded on another thread, waiting for it to become available.", LoggingLevel.Verbose);
 
                     // If we're requesting a texture that's in the process of loading, then wait until the previous guy is done.
-                    await Task.Run(() => SpinWait.SpinUntil(() => (!_scheduledTextures.Contains(textureName)) 
-                                                                || ((GetTextureFromCache(out result, out _)) && (result != null))));
+                    await Task.Run(() => SpinWait.SpinUntil(() => (!_scheduledTextures.Contains(textureName)) || (GetTextureFromCache(out _, out _))));
                 }
 
-                if (result != null)
+                if ((result != null) || ((GetTextureFromCache(out result, out Lazy<TextureEntry> entry)) && (result != null)))
                 {
                     return result;
                 }
 
+                await _cacheLock.WaitAsync();
                 _scheduledTextures.Add(textureName);
                 _cacheLock.Release();
-
-                if ((GetTextureFromCache(out result, out Lazy<TextureEntry> entry)) && (result != null))
-                {
-                    return result;
-                }
 
                 // If we are at this point, then the reference is dead, so clear it out before loading.
                 if (entry?.Value?.Texture != null)
@@ -320,9 +320,9 @@ namespace Gorgon.Graphics.Core
                     }
 
                     entry.Value.Texture = new WeakReference<T>(texture);
-                    entry.Value.Users++;
+                    entry.Value.Users = 1;
 
-                    _graphics.Log.Print($"Texture '{entry.Value.TextureName}' loaded into cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
+                    _graphics.Log.Print($"Texture '{entry.Value.TextureName}' loaded into cache with 1 user.", LoggingLevel.Verbose);
 
                     return texture;
                 }
@@ -350,16 +350,9 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                if (_cacheLock.CurrentCount != 0)
-                {
-                    await _cacheLock.WaitAsync();
-                    _scheduledTextures.Remove(textureName);
-                }
-
-                if (_cacheLock.CurrentCount == 0)
-                {
-                    _cacheLock.Release();
-                }
+                await _cacheLock.WaitAsync();
+                _scheduledTextures.Remove(textureName);
+                _cacheLock.Release();
             }
         }
 
