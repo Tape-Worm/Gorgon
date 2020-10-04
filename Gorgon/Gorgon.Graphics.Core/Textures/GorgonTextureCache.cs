@@ -286,7 +286,7 @@ namespace Gorgon.Graphics.Core
                     _graphics.Log.Print($"Requested texture '{textureName}' is currently being loaded on another thread, waiting for it to become available.", LoggingLevel.Verbose);
 
                     // If we're requesting a texture that's in the process of loading, then wait until the previous guy is done.
-                    await Task.Run(() => SpinWait.SpinUntil(() => (!_scheduledTextures.Contains(textureName)) || (GetTextureFromCache(out _, out _))));
+                    await Task.Run(() => SpinWait.SpinUntil(() => (!_scheduledTextures.Contains(textureName)) || (GetTextureFromCache(out result, out _))));
                 }
 
                 if ((result != null) || ((GetTextureFromCache(out result, out Lazy<TextureEntry> entry)) && (result != null)))
