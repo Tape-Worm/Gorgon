@@ -46,6 +46,7 @@ jobs:
 
       - task: VSBuild@1
         inputs:
+          clean: true
           solution: '$(solution)'
           platform: '$(buildPlatform)'
           configuration: '$(buildConfiguration)'
