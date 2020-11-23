@@ -347,6 +347,7 @@ namespace Gorgon.Renderers.Services
             return result;
         }
 
+
         /// <summary>
         /// Function to determine the best texture size and array count for the texture atlas based on the sprites passed in.
         /// </summary>
@@ -371,6 +372,7 @@ namespace Gorgon.Renderers.Services
         /// the array count will be 0.
         /// </para>
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public (DX.Size2 textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, DX.Size2 minTextureSize, int minArrayCount)
         {
             if (sprites == null)
@@ -402,12 +404,10 @@ namespace Gorgon.Renderers.Services
 
             (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, bool noChange) = CalculateRegions(filtered, maxSize, 1);
 
-#pragma warning disable IDE0046 // Convert to conditional expression
             if (rects.Count > _graphics.VideoAdapter.MaxTextureArrayCount)
             {
                 return (maxSize, 0);
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return rects.Count == 0 ? (DX.Size2.Zero, 0) : (maxSize, rects.Count.Max(minArrayCount));
         }

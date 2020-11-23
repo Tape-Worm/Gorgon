@@ -31,7 +31,6 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Defines how a triangle primitive should be rendered.
     /// </summary>
-    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum FillMode
     {
         /// <summary>

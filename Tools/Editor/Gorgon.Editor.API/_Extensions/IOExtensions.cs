@@ -60,7 +60,7 @@ namespace Gorgon.IO
             // we just need to find the mount point for the "fs" directory, and go up one.
             if (jsonMetaDataFile == null)
             {
-                foreach (GorgonFileSystemMountPoint mountPoint in fileSystem.MountPoints.Where(item => item.PhysicalPath.EndsWith(Path.DirectorySeparatorChar + "fs" + Path.DirectorySeparatorChar)))
+                foreach (GorgonFileSystemMountPoint mountPoint in fileSystem.MountPoints.Where(item => item.PhysicalPath.EndsWith(Path.DirectorySeparatorChar + "fs" + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
                 {
                     string dirName = Path.GetDirectoryName(mountPoint.PhysicalPath.Substring(0, mountPoint.PhysicalPath.Length - 1));
                     if (File.Exists(Path.Combine(dirName, CommonEditorConstants.EditorMetadataFileName)))

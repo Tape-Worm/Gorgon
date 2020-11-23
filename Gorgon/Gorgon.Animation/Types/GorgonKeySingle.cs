@@ -46,9 +46,7 @@ namespace Gorgon.Animation
     {
         #region Variables.
         // The value for the key.
-#pragma warning disable IDE0044 // Add readonly modifier
         private float _value;
-#pragma warning restore IDE0044 // Add readonly modifier
         #endregion
 
         #region Properties.

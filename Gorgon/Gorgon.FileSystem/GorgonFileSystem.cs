@@ -352,7 +352,7 @@ namespace Gorgon.IO
             {
                 string directoryName = Path.GetDirectoryName(fileInfo.VirtualPath).FormatDirectory('/');
 
-                if (!directoryName.StartsWith("/"))
+                if (!directoryName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 {
                     directoryName += "/";
                 }
@@ -384,6 +384,7 @@ namespace Gorgon.IO
             _log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Simple, data.Directories.Count, data.Files.Count);
         }
 
+
         /// <summary>
         /// Function to determine if the name of an object matches the pattern specified.
         /// </summary>
@@ -391,18 +392,17 @@ namespace Gorgon.IO
         /// <param name="item">Item to compare.</param>
         /// <param name="searchMask">The mask used to filter.</param>
         /// <returns><b>true</b> if the name of the item matches the pattern, <b>false</b> if not.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         private static bool IsPatternMatch<T>(T item, string searchMask)
             where T : IGorgonNamedObject
         {
-
-#pragma warning disable IDE0046 // Convert to conditional expression
-            if ((searchMask.EndsWith("*")) || (!searchMask.StartsWith("*")) || (searchMask.Length != 1))
+            if ((searchMask.EndsWith("*", StringComparison.OrdinalIgnoreCase)) || (!searchMask.StartsWith("*", StringComparison.OrdinalIgnoreCase)) || (searchMask.Length != 1))
             {
                 return Regex.IsMatch(item.Name,
                                      Regex.Escape(searchMask).Replace(@"\*", ".*").Replace(@"\?", "."),
                                      RegexOptions.Singleline | RegexOptions.IgnoreCase);
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
+
             return item.Name.EndsWith(searchMask.Substring(searchMask.IndexOf('*') + 1), StringComparison.OrdinalIgnoreCase);
         }
 
@@ -1067,7 +1067,7 @@ namespace Gorgon.IO
             {
                 string directoryName = Path.GetDirectoryName(file.VirtualPath).FormatDirectory('/');
 
-                if (!directoryName.StartsWith("/"))
+                if (!directoryName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 {
                     directoryName += "/";
                 }

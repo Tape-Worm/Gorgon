@@ -50,8 +50,6 @@ namespace Gorgon.Renderers
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="Gorgon2DBatchState"/>
     /// <seealso cref="GorgonShader"/>
-    [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
-        Justification = "Seriously?  This doesn't even KEEP any IDisposable items, and there's nothing that can be disposed in the object itself. This suggestion is useless.")]
     public class Gorgon2DShaderStateBuilder<T>
         : IGorgonFluentBuilderAllocator<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>, IGorgonAllocator<Gorgon2DShaderState<T>>>
         where T : GorgonShader

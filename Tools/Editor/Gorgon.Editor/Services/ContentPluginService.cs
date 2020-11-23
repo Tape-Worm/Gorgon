@@ -90,6 +90,7 @@ namespace Gorgon.Editor.Services
         /// <param name="metadata">The metadata item to evaluate.</param>
         /// <returns>The plug in, and the <see cref="MetadataPlugInState"/> used to evaluate whether a deep inspection is required.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public (ContentPlugIn plugin, MetadataPlugInState state) GetContentPlugIn(ProjectItemMetadata metadata)
         {
             if (metadata == null)
@@ -103,13 +104,11 @@ namespace Gorgon.Editor.Services
                 return (null, MetadataPlugInState.Unassigned);
             }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
             if ((string.IsNullOrWhiteSpace(metadata.PlugInName))
                 || (!PlugIns.TryGetValue(metadata.PlugInName, out ContentPlugIn plugin)))
             {
                 return (null, MetadataPlugInState.NotFound);
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return (plugin, MetadataPlugInState.Assigned);
         }

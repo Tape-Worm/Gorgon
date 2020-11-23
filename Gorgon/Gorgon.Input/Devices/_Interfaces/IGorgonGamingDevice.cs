@@ -171,7 +171,6 @@ namespace Gorgon.Input
         /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
         /// </para>
         /// </remarks>
-        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Give me a good reason why. Not bullshit")]
         float[] POV
         {
             get;
@@ -188,7 +187,6 @@ namespace Gorgon.Input
         /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
         /// </para>
         /// </remarks>
-        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Give me a good reason why. Not bullshit")]
         GamingDeviceButtonState[] Button
         {
             get;

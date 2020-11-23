@@ -47,7 +47,6 @@ namespace Gorgon.IO
         /// <summary>
         /// The provider for this mount point.
         /// </summary>
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Nothing can change this object outside of the API.")]
         public readonly IGorgonFileSystemProvider Provider;
         /// <summary>
         /// The physical location of the mount point.

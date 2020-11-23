@@ -129,11 +129,13 @@ namespace Gorgon.Graphics.Core
             GC.SuppressFinalize(this);
         }
 
+
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public bool Equals(GorgonResourceView other)
         {
             if (other == null)
@@ -141,12 +143,10 @@ namespace Gorgon.Graphics.Core
                 return false;
             }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
             if (other == this)
             {
                 return true;
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return other._view == _view;
         }

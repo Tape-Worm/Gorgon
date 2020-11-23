@@ -54,7 +54,6 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// The vertex buffer to bind.
         /// </summary>
-        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public readonly GorgonVertexBuffer VertexBuffer;
         /// <summary>
         /// Stride of the items within the vertex buffer, in bytes.

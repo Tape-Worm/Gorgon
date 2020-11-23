@@ -136,7 +136,7 @@ namespace Gorgon.IO.Providers
 
             physicalPath = mountPoint + physicalPath.Replace(physicalRoot, string.Empty);
 
-            if (physicalPath.EndsWith(GorgonFileSystem.PhysicalDirSeparator))
+            if (physicalPath.EndsWith(GorgonFileSystem.PhysicalDirSeparator, StringComparison.OrdinalIgnoreCase))
             {
                 physicalPath = physicalPath.FormatDirectory('/');
             }

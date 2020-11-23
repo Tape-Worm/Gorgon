@@ -207,7 +207,7 @@ namespace Gorgon.Diagnostics.LogProviders
         /// <returns></returns>
         private static string HilightWord(string line, string word, ConsoleColor color)
         {
-            int start = line.IndexOf(word);
+            int start = line.IndexOf(word, StringComparison.CurrentCultureIgnoreCase);
 
             if (start == -1)
             {

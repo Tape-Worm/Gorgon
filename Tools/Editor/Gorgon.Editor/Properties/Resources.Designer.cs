@@ -1914,7 +1914,7 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
         ///&lt;!--Created by exporting the settings of a KryptonPalette instance.--&gt;
-        ///&lt;!--For more information about Krypton visit www.ComponentFactory.com--&gt;
+        ///&lt;!--For more information about Krypton visit www.com--&gt;
         ///&lt;!--WARNING: Modifying this file may render it invalid for importing.--&gt;
         ///&lt;KryptonPalette Version=&quot;18&quot; Generated=&quot;Saturday, 15 September 2018, 12:50&quot;&gt;
         ///  &lt;Properties&gt;

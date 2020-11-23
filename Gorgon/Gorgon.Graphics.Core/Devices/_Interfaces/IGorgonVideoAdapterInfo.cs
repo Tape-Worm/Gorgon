@@ -45,7 +45,6 @@ namespace Gorgon.Graphics.Core
     /// Applications can use this to define a minimum supported video adapter, or take an alternate code (potentially slower) path to achieve the same result.
     /// </para>
     /// </remarks>
-    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum FeatureSet
     {
         /// <summary>

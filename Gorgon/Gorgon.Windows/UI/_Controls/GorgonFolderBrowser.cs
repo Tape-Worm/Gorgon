@@ -498,7 +498,7 @@ namespace Gorgon.UI
             {
                 directoryName = directoryName.FormatDirectory(Path.DirectorySeparatorChar);
 
-                if (!directoryName.StartsWith(RootFolder.FullName))
+                if (!directoryName.StartsWith(RootFolder.FullName, StringComparison.OrdinalIgnoreCase))
                 {
                     return dirSep;
                 }
@@ -1172,7 +1172,7 @@ namespace Gorgon.UI
         private void SetCurrentDirectory(string dir, bool updateUndoList)
         {
             dir = dir?.FormatDirectory(Path.DirectorySeparatorChar);
-            if ((RootFolder != null) && ((dir == null) || (!dir.StartsWith(RootFolder.FullName))))
+            if ((RootFolder != null) && ((dir == null) || (!dir.StartsWith(RootFolder.FullName, StringComparison.OrdinalIgnoreCase))))
             {
                 dir = RootFolder.FullName;
             }
@@ -1277,7 +1277,6 @@ namespace Gorgon.UI
         /// Function to retrieve the directories.
         /// </summary>
         /// <param name="dir">The directory to evaluate.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Windows.Forms.ListViewItem+ListViewSubItemCollection.Add(System.String)", Justification = "You moron.  There's nothing to localize in here")]
         private void GetDirectories(string dir)
         {
             var dirEntry = new DirectoryInfo(dir.FormatDirectory(Path.DirectorySeparatorChar));

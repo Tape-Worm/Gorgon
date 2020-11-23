@@ -484,7 +484,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <returns>A new <seealso cref="IGorgonImageCodec"/> to read the file with.</returns>
         private static IGorgonImageCodec GetImageCodec(string fileNameExtension)
         {
-            if (!fileNameExtension.StartsWith("."))
+            if (!fileNameExtension.StartsWith(".", StringComparison.OrdinalIgnoreCase))
             {
                 fileNameExtension = "." + fileNameExtension;
             }

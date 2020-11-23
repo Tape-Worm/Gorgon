@@ -29,14 +29,10 @@ using System.Runtime.InteropServices;
 
 namespace Gorgon.Native
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     [StructLayout(LayoutKind.Sequential)]
     internal struct POINT
     {
-#pragma warning disable IDE0044 // Add readonly modifier
         public int x;
         public int y;
-#pragma warning restore IDE0044 // Add readonly modifier
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

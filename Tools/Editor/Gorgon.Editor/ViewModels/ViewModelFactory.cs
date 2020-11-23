@@ -71,16 +71,15 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="path">The path to the item to recycle.</param>
         /// <returns><b>true</b> if the item was recycled, <b>false</b> if not.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         private static bool RecycleFileSystemItem(string path)
         {
             bool isDirectory = (System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
 
-#pragma warning disable IDE0046 // Convert to conditional expression
             if (!Shell32.SendToRecycleBin(path, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING))
             {
                 return false;
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return !(isDirectory ? System.IO.Directory.Exists(path) : System.IO.File.Exists(path));
         }

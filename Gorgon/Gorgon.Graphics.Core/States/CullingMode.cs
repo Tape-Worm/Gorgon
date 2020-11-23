@@ -32,7 +32,6 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Defines how a triangle primitive should be culled from rendering.
     /// </summary>
-    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum CullingMode
     {
         /// <summary>

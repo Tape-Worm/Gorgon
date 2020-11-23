@@ -77,7 +77,6 @@ namespace Gorgon.IO
     /// <seealso cref="GorgonChunkFileReader"/>
     /// <seealso cref="GorgonChunkFileWriter"/>
     /// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
-    [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "The stream wrapper does not need its dispose method called. Ever.")]
     public abstract class GorgonChunkFile<T>
     {
         #region Constants.

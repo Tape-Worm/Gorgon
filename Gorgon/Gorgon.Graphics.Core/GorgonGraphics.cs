@@ -929,12 +929,11 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>
-		/// Function to fix the unordered access view resource sharing hazards prior to setting the uav.
-		/// </summary>
-		/// <param name="uav">The UAV to check.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "shader")]
-		private void CheckUavForSrvHazards(GorgonGraphicsResource uav)
+        /// <summary>
+        /// Function to fix the unordered access view resource sharing hazards prior to setting the uav.
+        /// </summary>
+        /// <param name="uav">The UAV to check.</param>
+        private void CheckUavForSrvHazards(GorgonGraphicsResource uav)
 		{
 			if ((_lastState == null) || (uav == null))
 			{
@@ -1116,14 +1115,13 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>
-		/// Function to fix the render target view resource sharing hazards prior to setting the rtv.
-		/// </summary>
-		/// <param name="rtViews">The render target views being assigned.</param>
-		/// <param name="rtvCount">Number of render targets to process.</param>
-		/// <param name="depth">The depth stencil being assigned.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "shader")]
-		private void CheckRtvsForSrvUavHazards(GorgonRenderTargetView[] rtViews, int rtvCount, GorgonDepthStencil2DView depth)
+        /// <summary>
+        /// Function to fix the render target view resource sharing hazards prior to setting the rtv.
+        /// </summary>
+        /// <param name="rtViews">The render target views being assigned.</param>
+        /// <param name="rtvCount">Number of render targets to process.</param>
+        /// <param name="depth">The depth stencil being assigned.</param>
+        private void CheckRtvsForSrvUavHazards(GorgonRenderTargetView[] rtViews, int rtvCount, GorgonDepthStencil2DView depth)
 		{
 			if (_lastState == null)
 			{

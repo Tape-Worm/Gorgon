@@ -32,7 +32,6 @@ namespace Gorgon.Native
     /// <summary>
     /// Operating system version information.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     [StructLayout(LayoutKind.Sequential)]
     internal struct OSVERSIONINFOEX
     {

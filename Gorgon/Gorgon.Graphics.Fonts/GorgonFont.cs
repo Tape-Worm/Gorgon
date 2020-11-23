@@ -321,7 +321,6 @@ namespace Gorgon.Graphics.Fonts
         /// </summary>
         /// <param name="glyphData">The glyph data, grouped by packed bitmap.</param>
         /// <returns>A dictionary of characters associated with a texture.</returns>
-        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         private void GenerateTextures(Dictionary<Bitmap, IEnumerable<GlyphInfo>> glyphData)
         {
             var imageSettings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)

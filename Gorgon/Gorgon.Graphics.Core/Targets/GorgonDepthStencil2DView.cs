@@ -292,20 +292,20 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
 		/// </summary>
 		public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the description for a 2D depth/stencil view.
-		/// </summary>
-		/// <returns>The direct 3D 2D depth/stencil view description.</returns>
-		private D3D11.DepthStencilViewDescription GetDesc2D()
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the description for a 2D depth/stencil view.
+        /// </summary>
+        /// <returns>The direct 3D 2D depth/stencil view description.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
+        private D3D11.DepthStencilViewDescription GetDesc2D()
 		{
 			bool isMultisampled = Texture.MultisampleInfo != GorgonMultisampleInfo.NoMultiSampling;
 
-			// Set up for arrayed and multisampled texture.
-#pragma warning disable IDE0046 // Convert to conditional expression
-			if (Texture.ArrayCount > 1)
+            // Set up for arrayed and multisampled texture.
+            if (Texture.ArrayCount > 1)
 			{
 				return new D3D11.DepthStencilViewDescription
 				{
@@ -321,9 +321,8 @@ namespace Gorgon.Graphics.Core
 					}
 				};
 			}
-#pragma warning restore IDE0046 // Convert to conditional expression
 
-			return new D3D11.DepthStencilViewDescription
+            return new D3D11.DepthStencilViewDescription
 			{
 				Format = (Format)Format,
 				Dimension = isMultisampled

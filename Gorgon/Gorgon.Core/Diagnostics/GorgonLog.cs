@@ -428,7 +428,6 @@ namespace Gorgon.Diagnostics
         /// If calling this method from a thread that is <b>not</b> the thread that created the object, then no new file will be created.
         /// </para>
         /// </remarks>
-        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Gorgon.Core.Diagnostics.IGorgonLogProvider.SendMessage(System.String)")]
         public void LogStart()
         {
             if (ThreadID != Environment.CurrentManagedThreadId)
@@ -502,13 +501,13 @@ namespace Gorgon.Diagnostics
                                     : string.Empty;
                 }
 
-                if ((extraPath.StartsWith(Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
-                    || (extraPath.StartsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture))))
+                if ((extraPath.StartsWith(Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.InvariantCulture))
+                    || (extraPath.StartsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.InvariantCulture)))
                 {
                     extraPath = extraPath.Substring(1);
                 }
 
-                if (!extraPath.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
+                if (!extraPath.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.InvariantCulture))
                 {
                     extraPath += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
                 }

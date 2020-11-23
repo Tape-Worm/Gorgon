@@ -31,7 +31,6 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Defines a type of operation to perform when masking using the stencil buffer.
     /// </summary>
-    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum StencilOperation
     {
         /// <summary>

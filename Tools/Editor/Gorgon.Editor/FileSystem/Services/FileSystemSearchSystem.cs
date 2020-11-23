@@ -130,29 +130,28 @@ namespace Gorgon.Editor.Services
             _searchKeywords[keyword] = attribute;
         }
 
+
         /// <summary>
         /// Function to check if the requested keyword value is within the attribute metadata for the file node content.
         /// </summary>
         /// <param name="file">The file to evaluate.</param>
         /// <param name="attributeName">The name of the attribute to look up.</param>
         /// <param name="attributeValue">The value to compare.</param>
-        /// <returns></returns>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         private bool CheckItemAttribute(IFile file, string attributeName, string attributeValue)
         {
-            //if ((!file.IsContent) || (file.Metadata == null))
             if (file.Metadata == null)
             {
                 return false;
             }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
             if ((string.IsNullOrWhiteSpace(attributeName)) || (string.IsNullOrWhiteSpace(attributeValue)))
             {
                 return false;
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
-            return file.Metadata.Attributes.TryGetValue(attributeName, out string value)
-&& string.Equals(value, attributeValue, StringComparison.CurrentCultureIgnoreCase);
+
+            return file.Metadata.Attributes.TryGetValue(attributeName, out string value) && string.Equals(value, attributeValue, StringComparison.CurrentCultureIgnoreCase);
         }
 
         /// <summary>

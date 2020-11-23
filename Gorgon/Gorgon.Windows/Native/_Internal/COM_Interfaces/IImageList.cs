@@ -30,7 +30,6 @@ using System.Runtime.InteropServices;
 
 namespace Gorgon.Native
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     /// <summary>
     /// IIimageList COM object interface.
     /// </summary>
@@ -193,5 +192,4 @@ namespace Gorgon.Native
             int iOverlay,
             ref int piIndex);
     };
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

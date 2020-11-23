@@ -88,7 +88,7 @@ namespace Gorgon.Editor
                     continue;
                 }
 
-                return (i < args.Length - 1) && (!args[i + 1].StartsWith("-")) && (!args[i + 1].StartsWith("/"))
+                return (i < args.Length - 1) && (!args[i + 1].StartsWith("-", StringComparison.OrdinalIgnoreCase)) && (!args[i + 1].StartsWith("/", StringComparison.OrdinalIgnoreCase))
                     ? (true, args[i + 1])
                     : (true, string.Empty);
             }

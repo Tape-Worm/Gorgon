@@ -67,7 +67,6 @@ namespace Gorgon.Renderers
     /// </remarks>
     /// <seealso cref="GorgonPolySpriteVertex"/>
     /// <seealso cref="GorgonPolySprite"/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "The internal worker object NEVER contains a disposable object. Only the Build method creates them on the new sprite when returning to the user.  It is the user's responsibility to dispose the object after that point.")]
     public class GorgonPolySpriteBuilder
         : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
     {

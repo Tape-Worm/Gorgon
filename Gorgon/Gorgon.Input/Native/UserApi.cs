@@ -185,8 +185,6 @@ namespace Gorgon.Native
         /// <param name="hwnd">Window handle to retrieve information from.</param>
         /// <param name="index">Type of information.</param>
         /// <returns>A pointer to the information.</returns>
-        [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
-        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
         [DllImport("user32.dll", EntryPoint = "GetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr GetWindowLongx86(HandleRef hwnd, int index);
 
@@ -196,8 +194,6 @@ namespace Gorgon.Native
         /// <param name="hwnd">Window handle to retrieve information from.</param>
         /// <param name="index">Type of information.</param>
         /// <returns>A pointer to the information.</returns>
-        [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
-        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
         private static extern IntPtr GetWindowLongx64(HandleRef hwnd, int index);
 
@@ -208,9 +204,6 @@ namespace Gorgon.Native
         /// <param name="index">Type of information.</param>
         /// <param name="info">Information to set.</param>
         /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
-        [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
-        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
         [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLongx86(HandleRef hwnd, int index, IntPtr info);
 
@@ -221,9 +214,6 @@ namespace Gorgon.Native
         /// <param name="index">Type of information.</param>
         /// <param name="info">Information to set.</param>
         /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
-        [SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
-        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLongx64(HandleRef hwnd, int index, IntPtr info);
 

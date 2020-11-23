@@ -1002,6 +1002,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }
         }
 
+
         /// <summary>
         /// Function to determine if this codec can read the image data within the stream or not.
         /// </summary>
@@ -1009,6 +1010,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <returns><b>true</b> if the codec can read the file, <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public override bool IsReadable(Stream stream)
         {
             TgaHeader header;
@@ -1060,13 +1062,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 return false;
             }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
             if ((header.ImageType != TgaImageType.TrueColor) && (header.ImageType != TgaImageType.TrueColorRLE)
                 && (header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE))
             {
                 return false;
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return ((header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE)) ||
                    (header.BPP == 8);

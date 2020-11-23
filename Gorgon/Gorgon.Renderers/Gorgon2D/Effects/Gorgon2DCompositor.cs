@@ -98,18 +98,18 @@ namespace Gorgon.Renderers
         /// </summary>
         public IGorgon2DCompositorPass this[int index] => _passes[index];
 
+
         /// <summary>
         /// Property to return the passes registered within the compositor by name.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public IGorgon2DCompositorPass this[string name]
         {
             get
             {
                 if (!_passLookup.TryGetValue(name, out int index))
                 {
-#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
                     throw new KeyNotFoundException();
-#pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
                 }
 
                 return this[index];

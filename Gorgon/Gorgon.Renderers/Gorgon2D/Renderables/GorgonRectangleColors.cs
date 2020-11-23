@@ -66,9 +66,7 @@ namespace Gorgon.Renderers
                         return _renderable.LowerLeftColor;
                 }
 
-#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
                 throw new ArgumentOutOfRangeException();
-#pragma warning restore CA1065 // Do not raise exceptions in unexpected locations
             }
             set
             {

@@ -33,7 +33,6 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Defines a type of comparison to perform for a comparison operation (e.g. depth compare).
     /// </summary>
-    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum Comparison
     {
         /// <summary>

@@ -2191,13 +2191,11 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns><b>true</b> if the file can be imported, <b>false</b> if not.</returns>
         private bool CanCopyToImage(CopyToImageArgs args)
         {
-#pragma warning disable IDE0046 // Convert to conditional expression
             if ((args?.ContentFilePaths == null) || (args.ContentFilePaths.Count == 0) || (CurrentPanel != null) || (CommandContext == FxContext))
             {
                 args.Cancel = true;
                 return false;
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return args.ContentFilePaths.Select(file => ContentFileManager.GetFile(file))
                         .Where(file => file != null)

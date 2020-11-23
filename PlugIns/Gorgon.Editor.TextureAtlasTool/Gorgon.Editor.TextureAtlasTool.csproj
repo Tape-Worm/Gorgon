@@ -114,13 +114,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krypton.Ribbon.Lite">
-      <Version>5.500.2008</Version>
+      <Version>5.550.2011</Version>
     </PackageReference>
     <PackageReference Include="Krypton.Toolkit.Lite">
-      <Version>5.500.2008</Version>
+      <Version>5.550.2011</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.0</Version>
+      <Version>3.3.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -145,7 +145,7 @@
       <Version>4.3.1</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>4.7.1</Version>
+      <Version>5.0.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

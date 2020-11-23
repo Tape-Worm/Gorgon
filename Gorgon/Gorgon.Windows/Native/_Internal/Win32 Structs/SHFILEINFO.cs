@@ -30,7 +30,6 @@ using System.Runtime.InteropServices;
 
 namespace Gorgon.Native
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     [StructLayout(LayoutKind.Sequential)]
     internal struct SHFILEINFO
     {
@@ -45,5 +44,4 @@ namespace Gorgon.Native
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
         internal string szTypeName;
     };
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

@@ -30,7 +30,6 @@ using System.Runtime.InteropServices;
 
 namespace Gorgon.Native
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     [StructLayout(LayoutKind.Sequential)]
     internal struct IMAGELISTDRAWPARAMS
     {
@@ -52,5 +51,4 @@ namespace Gorgon.Native
         internal int Frame;
         internal int crEffect;
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

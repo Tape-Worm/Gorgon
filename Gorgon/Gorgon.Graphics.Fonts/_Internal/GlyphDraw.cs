@@ -520,7 +520,6 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="glyphBounds">The rectangular boundaries for the glyphs.</param>
         /// <param name="hasOutline"><b>true</b> if the font has an outline, <b>false</b> if not.</param>
         /// <returns>A list of bitmaps assigned to the characters.</returns>
-        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public Dictionary<char, GlyphInfo> DrawToPackedBitmaps(List<char> characters, Dictionary<char, GlyphRegions> glyphBounds, bool hasOutline)
         {
             var result = new Dictionary<char, GlyphInfo>();

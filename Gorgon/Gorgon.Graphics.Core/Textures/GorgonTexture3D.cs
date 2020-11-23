@@ -1141,7 +1141,6 @@ namespace Gorgon.Graphics.Core
         /// ]]>
         /// </code>
         /// </example>
-        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "destSlice+1")]
         public void SetData(IGorgonImageBuffer imageBuffer, DX.Rectangle? destRectangle = null, int destSlice = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
         {
 #if DEBUG

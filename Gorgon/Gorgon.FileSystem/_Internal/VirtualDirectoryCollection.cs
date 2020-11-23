@@ -200,7 +200,7 @@ namespace Gorgon.IO
         {
             path = path.FormatDirectory('/');
 
-            if (!path.StartsWith("/"))
+            if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
                 path = "/" + path;
             }

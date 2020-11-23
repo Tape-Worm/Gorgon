@@ -39,8 +39,6 @@ namespace Gorgon.Input
     /// <remarks>
     /// This was adapted from the source code for SharpDX by Alexandre Mutel at http://sharpdx.org
     /// </remarks>
-    [SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable",
-        Justification = "This object is shut down when all devices are unregistered, this happens in a finalizer as well as the Unregister method, so dispose is unnecessary")]
     internal class MessageFilterHook
     {
         #region Delegates.
@@ -62,8 +60,8 @@ namespace Gorgon.Input
         private IntPtr _defaultWndProc;
         // Window to hook.
         private readonly IntPtr _hwnd;
+
         // New window procedure.
-        [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
         private IntPtr _newWndProcPtr;
         // The new window procedure method.
         private WndProc _newWndProc;

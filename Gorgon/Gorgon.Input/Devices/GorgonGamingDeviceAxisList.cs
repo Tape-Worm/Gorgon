@@ -63,7 +63,6 @@ namespace Gorgon.Input
         /// <summary>
         /// Gets the <see cref="GorgonGamingDeviceAxisInfo"/> at the specified index in the axis list.
         /// </summary>
-        [SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "What else would you expect me to do?  If an index is out of range, it should tell the user it's out of range.")]
         public T this[int index]
         {
             get
@@ -74,9 +73,7 @@ namespace Gorgon.Input
                     throw new ArgumentOutOfRangeException(nameof(index), Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
                 }
 #endif
-#pragma warning disable IDE0026 // Use expression body for indexers
                 return _infoList[_axisList[index]];
-#pragma warning restore IDE0026 // Use expression body for indexers
             }
         }
         #endregion

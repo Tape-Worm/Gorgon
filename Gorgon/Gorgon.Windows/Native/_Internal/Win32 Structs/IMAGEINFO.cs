@@ -30,7 +30,6 @@ using System.Runtime.InteropServices;
 
 namespace Gorgon.Native
 {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     [StructLayout(LayoutKind.Sequential)]
     internal struct IMAGEINFO
     {
@@ -40,5 +39,4 @@ namespace Gorgon.Native
         internal int Unused2;
         internal RECT rcImage;
     }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

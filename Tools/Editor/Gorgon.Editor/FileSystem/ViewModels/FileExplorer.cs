@@ -1573,11 +1573,13 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
+
         /// <summary>
         /// Function to determine if a directory can be selected or not.
         /// </summary>
         /// <param name="id">The ID of the directory to select.</param>
         /// <returns><b>true</b> if the directory can be selected, or <b>false</b> if not.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         private bool CanSelectDirectory(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -1585,12 +1587,10 @@ namespace Gorgon.Editor.ViewModels
                 return SelectedDirectory != null;
             }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
             if (!_directories.ContainsKey(id))
             {
                 return false;
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return (SelectedDirectory == null) || (!string.Equals(id, SelectedDirectory.ID, StringComparison.OrdinalIgnoreCase));
         }
@@ -2281,21 +2281,21 @@ namespace Gorgon.Editor.ViewModels
             }
         }
 
+
         /// <summary>
         /// Function to determine if the directory can be copied.
         /// </summary>
         /// <param name="copyData">The source and destination directory.</param>
         /// <returns><b>true</b> if the directory can be dropped, <b>false</b> if not.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         private bool CanCopyDirectory(IDirectoryCopyMoveData copyData) 
         {
-#pragma warning disable IDE0046 // Convert to conditional expression
             if ((!_directories.TryGetValue(copyData.SourceDirectory, out IDirectory srcDirectory))
                 || (!_directories.TryGetValue(copyData.DestinationDirectory, out IDirectory destDirectory))
                 || (srcDirectory.Parent == destDirectory))
             {
                 return false;
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return ((srcDirectory.AvailableActions & DirectoryActions.Copy) == DirectoryActions.Copy);
         }
@@ -2904,7 +2904,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 string path = args.Path;
 
-                if (!path.StartsWith("/"))
+                if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 {
                     path = "/" + path;
                 }
@@ -3081,7 +3081,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            if (!path.StartsWith("/"))
+            if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
                 path = "/" + path;
             }

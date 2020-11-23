@@ -48,14 +48,15 @@ namespace Gorgon.Animation
             }
         }
 
+
         /// <summary>
         /// Function to get a the <see cref="TrackInterpolationMode"/> from a culture sensitive string.
         /// </summary>
         /// <param name="mode">The string value to evaluate.</param>
         /// <returns>The enum value.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public static TrackInterpolationMode GetTrackInterpolationMode(this string mode)
         {
-#pragma warning disable IDE0046 // Convert to conditional expression
             if (string.IsNullOrWhiteSpace(mode))
             {
                 return TrackInterpolationMode.None;
@@ -70,7 +71,6 @@ namespace Gorgon.Animation
             {
                 return TrackInterpolationMode.Spline;
             }
-#pragma warning restore IDE0046 // Convert to conditional expression
 
             return TrackInterpolationMode.None;
         }
