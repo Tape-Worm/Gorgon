@@ -177,25 +177,12 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool Equals(Light other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (other == this)
-            {
-                return true;
-            }
-
-            return ((_attenuation.EqualsEpsilon(other._attenuation))
+        public bool Equals(Light other) => (other != null) && ((other == this) || (_attenuation.EqualsEpsilon(other._attenuation))
                     && (_specularPower.EqualsEpsilon(other._specularPower))
                     && (_lightColor.Equals(in other._lightColor))
                     && (_specularColor.Equals(in other._specularColor))
                     && (_position.Equals(ref other._position))
                     && (_intensity.EqualsEpsilon(other._intensity)));
-        }
         #endregion
 
         #region Constructor.

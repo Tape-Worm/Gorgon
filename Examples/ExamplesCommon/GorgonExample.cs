@@ -45,10 +45,10 @@ using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Common functionality for the example applications.
-	/// </summary>
-	public static class GorgonExample
+    /// <summary>
+    /// Common functionality for the example applications.
+    /// </summary>
+    public static class GorgonExample
 	{
 		#region Variables.
 		// The Gorgon logo.

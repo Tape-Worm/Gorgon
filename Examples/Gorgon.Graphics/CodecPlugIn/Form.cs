@@ -29,9 +29,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Examples;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
@@ -39,7 +39,7 @@ using Gorgon.PlugIns;
 using Gorgon.UI;
 using DX = SharpDX;
 
-namespace CodecPlugIn
+namespace Graphics.Examples
 {
     /// <summary>
     /// Our main UI window for the example.
@@ -107,7 +107,7 @@ namespace CodecPlugIn
         /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
         private bool LoadCodec()
         {
-            const string pluginName = "Gorgon.Graphics.Example.TvImageCodecPlugIn";
+            const string pluginName = "Gorgon.Examples.TvImageCodecPlugIn";
 
             _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 

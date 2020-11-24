@@ -262,9 +262,7 @@ namespace Gorgon.UI
         public override Font Font
         {
             get => base.Font;
-#pragma warning disable CA2245 // Do not assign a property to itself.
             set => base.Font = base.Font;
-#pragma warning restore CA2245 // Do not assign a property to itself.
         }
 
         /// <summary>Gets or sets a value indicating whether control's elements are aligned to support locales using right-to-left fonts.</summary>

@@ -29,6 +29,7 @@ Artifacts/
 Tools/Backup/
 __OLDE__/
 OLDE/
+*.GeneratedMSBuildEditorConfig.editorconfig
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

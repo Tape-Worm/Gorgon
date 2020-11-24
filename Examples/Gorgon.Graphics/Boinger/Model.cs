@@ -28,7 +28,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// The base model object.

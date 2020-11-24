@@ -12,7 +12,7 @@ namespace Gorgon.Examples.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.8.1.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -34,7 +34,7 @@ namespace Gorgon.Examples.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("..\\..\\..\\..\\..\\Resources\\")]
+        [global::System.Configuration.DefaultSettingValueAttribute("..\\..\\..\\..\\..\\..\\Resources\\")]
         public string ResourceLocation {
             get {
                 return ((string)(this["ResourceLocation"]));
@@ -43,7 +43,7 @@ namespace Gorgon.Examples.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("..\\\\..\\\\..\\\\..\\\\..\\\\PlugIns\\\\Bin\\\\{0}")]
+        [global::System.Configuration.DefaultSettingValueAttribute("..\\\\..\\\\..\\\\..\\\\..\\\\..\\\\PlugIns\\\\Bin\\\\{0}")]
         public string PlugInLocation {
             get {
                 return ((string)(this["PlugInLocation"]));

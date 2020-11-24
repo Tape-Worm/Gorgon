@@ -78,6 +78,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
             IEnumerable<IContentFile> imageFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
+                                                && (item.Metadata.ContentMetadata != null)
                                                 && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
             IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
@@ -103,6 +104,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             {
                 imageFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
+                                                            && (item.Metadata.ContentMetadata != null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
                 if (!imageFiles.Any())
                 {

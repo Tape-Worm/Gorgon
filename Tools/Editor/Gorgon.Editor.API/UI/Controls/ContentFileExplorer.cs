@@ -270,7 +270,7 @@ namespace Gorgon.Editor.UI.Controls
 
             foreach (ContentFileExplorerFileEntry file in files)
             {
-                if ((string.IsNullOrWhiteSpace(file.AssociationType)) || (_icons.ContainsKey(file.AssociationType)))
+                if ((string.IsNullOrWhiteSpace(file.AssociationType)) || (_icons.ContainsKey(file.AssociationType)) || (file.FileIcon == null))
                 {
                     continue;
                 }
@@ -784,7 +784,7 @@ namespace Gorgon.Editor.UI.Controls
             if ((string.IsNullOrWhiteSpace(file.AssociationType))
                 || (!_icons.TryGetValue(file.AssociationType, out icon)))
             {
-                e.Graphics.DrawImage(icon, new Rectangle(e.CellBounds.X + e.CellStyle.Padding.Left, e.CellBounds.Y + (e.CellBounds.Height / 2 - 10), 20, 20));
+                e.Graphics.DrawImage(icon ?? Resources.generic_file_20x20, new Rectangle(e.CellBounds.X + e.CellStyle.Padding.Left, e.CellBounds.Y + (e.CellBounds.Height / 2 - 10), 20, 20));
                 DrawText();
 
                 return;

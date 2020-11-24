@@ -28,7 +28,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Native;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// A plane object.

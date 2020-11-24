@@ -29,12 +29,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example.Properties;
 using Gorgon.Math;
 
-namespace ComputeEngine
+namespace Gorgon.Examples
 {
     /// <summary>
     /// The output data returned from the shader.

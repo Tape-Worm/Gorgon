@@ -6,10 +6,10 @@
       <Value Profile="(Default)">1280, 800</Value>
     </Setting>
     <Setting Name="ResourceLocation" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">..\..\..\..\..\Resources\</Value>
+      <Value Profile="(Default)">..\..\..\..\..\..\Resources\</Value>
     </Setting>
     <Setting Name="PlugInLocation" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">..\\..\\..\\..\\..\\PlugIns\\Bin\\{0}</Value>
+      <Value Profile="(Default)">..\\..\\..\\..\\..\\..\\PlugIns\\Bin\\{0}</Value>
     </Setting>
   </Settings>
 </SettingsFile>

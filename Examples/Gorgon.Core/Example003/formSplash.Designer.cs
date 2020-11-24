@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Gorgon.Examples
 {
-	partial class formSplash
+	partial class FormSplash
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -31,7 +31,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formSplash));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSplash));
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.labelText = new System.Windows.Forms.Label();
 			this.panel1.SuspendLayout();

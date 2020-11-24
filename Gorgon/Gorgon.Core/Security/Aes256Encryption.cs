@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography;
@@ -217,7 +216,7 @@ namespace Gorgon.Security
 
                 using (var aes = new AesManaged())
                 {
-                    using (var hashGen = new Rfc2898DeriveBytes(password, salt, 100, HashAlgorithmName.SHA512))
+                    using (var hashGen = new Rfc2898DeriveBytes(password, salt, 100))
                     {
                         return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
                     }

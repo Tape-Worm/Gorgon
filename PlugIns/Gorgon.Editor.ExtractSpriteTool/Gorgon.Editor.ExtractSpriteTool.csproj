@@ -1,181 +1,69 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gorgon.Editor.ExtractSpriteTool</RootNamespace>
-    <AssemblyName>Gorgon.Editor.ExtractSpriteTool</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <langversion>7.3</langversion>
-    <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <langversion>7.3</langversion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>A plug in for the Gorgon Editor that will extract sprites from a texture based on a grid of sprite cells.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RootNamespace>Gorgon.Editor.ExtractSpriteTool</RootNamespace>
+    <NeutralLanguage></NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WinFormsColor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="ExtractSpriteToolPlugIn.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\ExtractSpriteToolSettings.cs" />
-    <Compile Include="_Internal\Renderers\Renderer.cs" />
-    <Compile Include="_Internal\ViewModels\Extract.cs" />
-    <Compile Include="_Internal\ViewModels\ExtractParameters.cs" />
-    <Compile Include="_Internal\ViewModels\SaveSpritesArgs.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\IExtract.cs" />
-    <Compile Include="_Internal\Views\FormExtract.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\FormExtract.Designer.cs">
-      <DependentUpon>FormExtract.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-    <None Include="Resources\send_to_24x24.png" />
-    <None Include="Resources\left_16x16.png" />
-    <None Include="Resources\right_16x16.png" />
-    <None Include="Resources\extract_grid_48x48.png" />
-    <None Include="Resources\extract_grid_16x16.png" />
-    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset">
-      <Link>NoLiteralBugFix.ruleset</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\FormExtract.resx">
-      <DependentUpon>FormExtract.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Krypton.Toolkit.Lite">
-      <Version>5.550.2011</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="SharpDX">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="SharpDX.Mathematics">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>5.0.0</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
-      <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
-      <Name>Gorgon.FileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj">
-      <Project>{1dfb5973-950a-4b6e-84af-953de57c9213}</Project>
-      <Name>Gorgon.Graphics.Fonts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
-      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
-      <Name>Gorgon.Graphics.Imaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
-      <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
-      <Name>Gorgon.Renderers.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj">
-      <Project>{e5506a64-62c5-4aa3-adcb-766ab0cd5528}</Project>
-      <Name>Gorgon.IO.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
-      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
-      <Name>Gorgon.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
-      <Project>{695a6554-789a-4d5a-9de1-21fb621f6a8f}</Project>
-      <Name>Gorgon.Editor.API</Name>
-    </ProjectReference>
+    <None Include="..\..\Gorgon\g.png">
+      <Pack>True</Pack>
+    </None>
+    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Tools"
-copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Tools"
-copy "$(TargetDir)WinFormsColor.dll" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Tools"
-</PostBuildEvent>
-  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="WinFormsColor">
+      <HintPath>..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Tools&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Tools&quot;&#xD;&#xA;copy &quot;$(TargetDir)WinFormsColor.dll&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Tools&quot;" />
+  </Target>
 </Project>

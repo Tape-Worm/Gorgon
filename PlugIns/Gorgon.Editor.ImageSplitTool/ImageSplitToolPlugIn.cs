@@ -64,9 +64,11 @@ namespace Gorgon.Editor.ImageSplitTool
             IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
             IEnumerable<IContentFile> imageFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
+                                                            && (item.Metadata.ContentMetadata != null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
             IEnumerable<IContentFile> spriteFiles = ContentFileManager.EnumerateContentFiles("/", "*", true)
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
+                                                            && (item.Metadata.ContentMetadata != null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
             IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
             var imagesAndSprites = new Dictionary<IContentFile, IReadOnlyList<IContentFile>>();
@@ -129,6 +131,7 @@ namespace Gorgon.Editor.ImageSplitTool
             {
                 imageFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
+                                                            && (item.Metadata.ContentMetadata != null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
 
                 if (!imageFiles.Any())

@@ -112,12 +112,12 @@ namespace Gorgon.Collections.Specialized
 
         #region IReadOnlyDictionary<TK,TV> Members
         /// <summary>
-        /// Gets a collection containing the keys in the <see cref="T:System.Collections.Generic.Dictionary`2" />.
+        /// Gets a collection containing the keys in the <see cref="Dictionary{Tk, Tv}" />.
         /// </summary>
         public new IEnumerable<TK> Keys => base.Keys;
 
         /// <summary>
-        /// Gets a collection containing the values in the <see cref="T:System.Collections.Generic.Dictionary`2" />.
+        /// Gets a collection containing the values in the <see cref="Dictionary{Tk, Tv}" />.
         /// </summary>
         public new IEnumerable<TV> Values => base.Values;
 

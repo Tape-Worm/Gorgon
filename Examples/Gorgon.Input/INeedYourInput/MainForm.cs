@@ -32,12 +32,11 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Input.Example.Properties;
+using Gorgon.Examples.Properties;
 using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
@@ -45,8 +44,10 @@ using Gorgon.UI;
 using DX = SharpDX;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
+using Gorgon.Input;
+using System.Diagnostics;
 
-namespace Gorgon.Input.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Main application form.
@@ -577,6 +578,7 @@ namespace Gorgon.Input.Example
 
             try
             {
+                Debug.Assert(IsHandleCreated, "No handle");
                 GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
 
                 // Load the assembly.

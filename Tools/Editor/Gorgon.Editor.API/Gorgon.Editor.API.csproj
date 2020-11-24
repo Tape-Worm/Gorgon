@@ -1,423 +1,83 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{695A6554-789A-4D5A-9DE1-21FB621F6A8F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gorgon.Editor</RootNamespace>
-    <AssemblyName>Gorgon.Editor.API</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon.Editor.API.xml</DocumentationFile>
-    <langversion>7.3</langversion>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>..\..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Gorgon.Editor.API.xml</DocumentationFile>
-    <langversion>7.3</langversion>
-    <CodeAnalysisRuleSet>..\..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>The API to allow external applications to interact with files created by the Gorgon.Editor, and to create plug ins for the editor.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RootNamespace>Gorgon.Editor</RootNamespace>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\Gorgon.Editor.API.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\Gorgon.Editor.API.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WinFormsColor">
-      <HintPath>..\..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="CommonEditorConstants.cs" />
-    <Compile Include="CommonEditorContentTypes.cs" />
-    <Compile Include="Content\ContentFileRenamedEventArgs.cs" />
-    <Compile Include="Content\SelectedFilesChangedEventArgs.cs" />
-    <Compile Include="Content\_Interfaces\IContentFile.cs" />
-    <Compile Include="Content\_Interfaces\IContentFileManager.cs" />
-    <Compile Include="Converters\JsonSharpDxRectConverter.cs" />
-    <Compile Include="Gorgon2D\_Interfaces\IGorgonContentLoader.cs" />
-    <Compile Include="Gorgon2D\_Internal\ContentLoader2D.cs" />
-    <Compile Include="Metadata\_Internal\ProjectItemMetadata30.cs" />
-    <Compile Include="Plugins\EditorPlugin.cs" />
-    <Compile Include="Plugins\ContentImportPlugin.cs" />
-    <Compile Include="Plugins\ContentPlugin.cs" />
-    <Compile Include="Plugins\ToolPlugin.cs" />
-    <Compile Include="Plugins\_Interfaces\IHostContentServices.cs" />
-    <Compile Include="Plugins\_Interfaces\IHostServices.cs" />
-    <Compile Include="Plugins\FileWriterPlugIn.cs" />
-    <Compile Include="Plugins\PlugInAssemblyState.cs" />
-    <Compile Include="Plugins\_Interfaces\IToolPluginRibbonButton.cs" />
-    <Compile Include="Plugins\ToolPluginRibbonButton.cs" />
-    <Compile Include="ProjectData\RecentItem.cs" />
-    <Compile Include="ProjectData\_Interfaces\IProjectMetadata.cs" />
-    <Compile Include="PropertyMonitor.cs" />
-    <Compile Include="Rendering\DefaultToolRenderer.cs" />
-    <Compile Include="Rendering\DefaultContentRenderer.cs" />
-    <Compile Include="Rendering\_Interfaces\ITextureCache.cs" />
-    <Compile Include="Rendering\MouseArgs.cs" />
-    <Compile Include="Rendering\OffsetEventArgs.cs" />
-    <Compile Include="Rendering\TextureCache.cs" />
-    <Compile Include="Rendering\ZoomScaleEventArgs.cs" />
-    <Compile Include="Rendering\_Interfaces\IToolRenderer.cs" />
-    <Compile Include="Rendering\_Interfaces\IContentRenderer.cs" />
-    <Compile Include="Rendering\_Interfaces\IMarchingAnts.cs" />
-    <Compile Include="Rendering\MarchingAnts.cs" />
-    <Compile Include="Rendering\_Internal\CameraAnimationController.cs" />
-    <Compile Include="Services\ColorPickerService.cs" />
-    <Compile Include="Services\FileSaveDialogService.cs" />
-    <Compile Include="Services\EditorContentSearchService.cs" />
-    <Compile Include="Services\_Interfaces\IAnchorEditService.cs" />
-    <Compile Include="Services\ProgressData.cs" />
-    <Compile Include="Services\AnchorEditService.cs" />
-    <Compile Include="Services\SpriteExtractionData.cs" />
-    <Compile Include="Services\SpriteExtractorService.cs" />
-    <Compile Include="Services\_Interfaces\IColorPickerService.cs" />
-    <Compile Include="Services\_Interfaces\IFileSystemFolderBrowseService.cs" />
-    <Compile Include="Services\_Interfaces\ISpriteExtractorService.cs" />
-    <Compile Include="Services\_Interfaces\IToolPluginService.cs" />
-    <Compile Include="Services\RectClipperService.cs" />
-    <Compile Include="Services\RectHandle.cs" />
-    <Compile Include="Services\_Interfaces\IRectClipperService.cs" />
-    <Compile Include="Services\_Interfaces\ISearchService.cs" />
-    <Compile Include="Services\_Interfaces\IUndoService.cs" />
-    <Compile Include="Services\_Interfaces\IContentPluginService.cs" />
-    <Compile Include="Services\_Interfaces\IEditorContentImporter.cs" />
-    <Compile Include="UI\Controls\AlphaPicker.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\AlphaPicker.Designer.cs">
-      <DependentUpon>AlphaPicker.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\ColorChangedEventArgs.cs" />
-    <Compile Include="UI\Controls\ColorPicker.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\ColorPicker.Designer.cs">
-      <DependentUpon>ColorPicker.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\ContentFileEntriesFocusedArgs.cs" />
-    <Compile Include="UI\Controls\ContentFileEntrySelectedEventArgs.cs" />
-    <Compile Include="UI\Controls\ContentFileExplorer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\ContentFileExplorer.Designer.cs">
-      <DependentUpon>ContentFileExplorer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\ContentFileExplorerFileEntry.cs" />
-    <Compile Include="UI\Controls\ContentFileExplorerDirectoryEntry.cs" />
-    <Compile Include="UI\Controls\EditorSubPanelCommon.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\EditorSubPanelCommon.Designer.cs">
-      <DependentUpon>EditorSubPanelCommon.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\_Interfaces\IContentFileExplorerSearchEntry.cs" />
-    <Compile Include="UI\DarkFormsRenderer.cs" />
-    <Compile Include="UI\_Internal\FormColorPicker.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\_Internal\FormColorPicker.Designer.cs">
-      <DependentUpon>FormColorPicker.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ProgressPanelDisplay.cs" />
-    <Compile Include="UI\ViewModels\CloseToolArgs.cs" />
-    <Compile Include="UI\ViewModels\EditorToolViewModelBase.cs" />
-    <Compile Include="UI\ViewModels\EditorContext.cs" />
-    <Compile Include="UI\ViewModels\EditorViewModelBase.cs" />
-    <Compile Include="UI\ViewModels\ContentViewModelInjection.cs" />
-    <Compile Include="UI\ViewModels\ContentEditorViewModelBase.cs" />
-    <Compile Include="UI\ViewModels\HostedPanelViewModelBase.cs" />
-    <Compile Include="UI\ViewModels\PlugInsCategory.cs" />
-    <Compile Include="UI\ViewModels\SettingsCategoryBase.cs" />
-    <Compile Include="UI\ViewModels\HostedPanelViewModelParameters.cs" />
-    <Compile Include="UI\ViewModels\SettingsCategoryViewModelParameters.cs" />
-    <Compile Include="UI\ViewModels\PlugInsCategoryViewModelParameters.cs" />
-    <Compile Include="UI\ViewModels\EditorToolViewModelInjection.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IEditorToolViewModelInjection.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IContentViewModelInjection.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IEditorContext.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IEditorTool.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IVisualEditorContent.cs" />
-    <Compile Include="UI\Views\ContentBaseControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Views\ContentBaseControl.Designer.cs">
-      <DependentUpon>ContentBaseControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Views\VisualContentBaseControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Views\VisualContentBaseControl.Designer.cs">
-      <DependentUpon>VisualContentBaseControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\WaitPanelDisplay.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IEditorContent.cs" />
-    <Compile Include="UI\Forms\FormName.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\FormName.Designer.cs">
-      <DependentUpon>FormName.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\GetClipboardDataTypeArgs.cs" />
-    <Compile Include="UI\ViewModels\ViewModelInjection.cs" />
-    <Compile Include="UI\Views\EditorToolBaseForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Views\EditorToolBaseForm.Designer.cs">
-      <DependentUpon>EditorToolBaseForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Views\SettingsBaseControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Views\SettingsBaseControl.Designer.cs">
-      <DependentUpon>SettingsBaseControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ZoomEventArgs.cs" />
-    <Compile Include="Rendering\_Interfaces\ISelectionRectangle.cs" />
-    <Compile Include="Rendering\SelectionRectangle.cs" />
-    <Compile Include="UI\ViewFactory.cs" />
-    <Compile Include="UI\ViewModels\CloseContentArgs.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IHostedPanelViewModel.cs" />
-    <Compile Include="UI\ZoomLevels.cs" />
-    <Compile Include="UI\_Extensions\ZoomLevelExtensions.cs" />
-    <Compile Include="UI\_Interfaces\IContentFileDragData.cs" />
-    <Compile Include="UI\_Interfaces\IClipboardHandler.cs" />
-    <Compile Include="CommonEditorResources.cs" />
-    <Compile Include="Plugins\_Interfaces\IDisabledPlugin.cs" />
-    <Compile Include="Plugins\_Extensions\EditorPluginExtensions.cs" />
-    <Compile Include="Plugins\_Interfaces\IContentPluginMetadata.cs" />
-    <Compile Include="Services\ClipboardService.cs" />
-    <Compile Include="Services\DirectoryLocateService.cs" />
-    <Compile Include="Services\FileOpenDialogService.cs" />
-    <Compile Include="Services\_Interfaces\IClipboardService.cs" />
-    <Compile Include="Services\_Interfaces\IDirectoryLocateService.cs" />
-    <Compile Include="Services\_Interfaces\IDisabledPluginService.cs" />
-    <Compile Include="Services\_Interfaces\IFileDialogService.cs" />
-    <Compile Include="Metadata\ProjectItemMetadata.cs" />
-    <Compile Include="ProjectData\_Interfaces\IProject.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Rendering\_Interfaces\IGraphicsContext.cs" />
-    <Compile Include="Rendering\_Interfaces\IRendererControl.cs" />
-    <Compile Include="Services\MessageBoxService.cs" />
-    <Compile Include="Services\WaitCursorBusyState.cs" />
-    <Compile Include="Services\_Interfaces\IBusyStateService.cs" />
-    <Compile Include="Services\_Interfaces\IMessageDisplayService.cs" />
-    <Compile Include="UI\EditorAsyncCommand.cs" />
-    <Compile Include="UI\EditorCommand.cs" />
-    <Compile Include="UI\ViewModels\ProgressPanelUpdateArgs.cs" />
-    <Compile Include="UI\ViewModels\WaitPanelActivateArgs.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IViewModelInjection.cs" />
-    <Compile Include="UI\Views\EditorBaseControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Views\EditorBaseControl.Designer.cs">
-      <DependentUpon>EditorBaseControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\_Interfaces\IEditorAsyncCommand.cs" />
-    <Compile Include="UI\_Interfaces\IEditorCommand.cs" />
-    <Compile Include="UI\ViewModels\ViewModelBase.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IViewModel.cs" />
-    <Compile Include="UI\Views\_Interfaces\IDataContext.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\ISettingsCategory.cs" />
-    <Compile Include="UI\ViewModels\_Interfaces\IUndoCommand.cs" />
-    <Compile Include="UI\_Interfaces\IUndoHandler.cs" />
-    <Compile Include="UI\_Internal\FormDirectoryLocator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\_Internal\FormDirectoryLocator.Designer.cs">
-      <DependentUpon>FormDirectoryLocator.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Extensions\Gorgon2DEditorExtensions.cs" />
-    <Compile Include="_Extensions\IOExtensions.cs" />
-    <Compile Include="_Extensions\Support\_Internal\EditorProjectMetadata31.cs" />
-    <Compile Include="_Extensions\Support\_Internal\EditorProjectMetadata30.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-    <None Include="Resources\Transparency_Pattern.png" />
-    <None Include="Resources\center_16x16.png" />
-    <None Include="Resources\error_16x16.png" />
-    <None Include="Resources\generic_file_20x20.png" />
-    <None Include="Resources\folder_20x20.png" />
-    <None Include="Resources\check_8x8.png" />
-    <None Include="Resources\expanded_8x8.png" />
-    <None Include="Resources\collapsed_8x8.png" />
-    <None Include="Resources\remove_plugins_22x22.png" />
-    <None Include="Resources\add_plugin_22x22.png" />
-    <None Include="Resources\manual_input_24x24.dds" />
-    <None Include="Resources\manual_vertex_edit_64x64.dds" />
-    <None Include="..\..\..\Gorgon\NoLiteralBugFix.ruleset">
-      <Link>NoLiteralBugFix.ruleset</Link>
+    <None Include="..\..\..\Gorgon\g.png">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
     </None>
-    <None Include="Resources\keyboard_20x20.dds" />
-    <None Include="Resources\march_ants_diag_32x32.dds" />
-    <None Include="Resources\selection_16x16.dds" />
-    <None Include="Resources\recent_item_badge_48x48.png" />
-    <None Include="Resources\recent_item_badge_64x64.png" />
-    <None Include="Resources\Pattern.dds" />
-    <None Include="Resources\folder_48x48.png" />
-    <None Include="Resources\file_48x48.png" />
-    <None Include="Resources\drive_remove_48x48.png" />
-    <None Include="Resources\drive_ram_48x48.png" />
-    <None Include="Resources\drive_network_48x48.png" />
-    <None Include="Resources\drive_cdrom_48x48.png" />
-    <None Include="Resources\drive_48x48.png" />
+    <None Include="..\..\..\Gorgon\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Controls\AlphaPicker.resx">
-      <DependentUpon>AlphaPicker.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Controls\ColorPicker.resx">
-      <DependentUpon>ColorPicker.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Controls\ContentFileExplorer.resx">
-      <DependentUpon>ContentFileExplorer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Controls\EditorSubPanelCommon.resx">
-      <DependentUpon>EditorSubPanelCommon.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\_Internal\FormColorPicker.resx">
-      <DependentUpon>FormColorPicker.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Forms\FormName.resx">
-      <DependentUpon>FormName.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Views\ContentBaseControl.resx">
-      <DependentUpon>ContentBaseControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Views\EditorBaseControl.resx">
-      <DependentUpon>EditorBaseControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Views\EditorToolBaseForm.resx">
-      <DependentUpon>EditorToolBaseForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Views\SettingsBaseControl.resx">
-      <DependentUpon>SettingsBaseControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Views\VisualContentBaseControl.resx">
-      <DependentUpon>VisualContentBaseControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\_Internal\FormDirectoryLocator.resx">
-      <DependentUpon>FormDirectoryLocator.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <Version>1.0.0</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Krypton.Ribbon.Lite">
       <Version>5.550.2011</Version>
     </PackageReference>
     <PackageReference Include="Krypton.Toolkit.Lite">
       <Version>5.550.2011</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>1.0.0</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="SharpDX">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="SharpDX.Mathematics">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>5.0.0</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Animation\Gorgon.Animation.csproj">
-      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
-      <Name>Gorgon.Animation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
-      <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
-      <Name>Gorgon.FileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj">
-      <Project>{1dfb5973-950a-4b6e-84af-953de57c9213}</Project>
-      <Name>Gorgon.Graphics.Fonts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
-      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
-      <Name>Gorgon.Graphics.Imaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
-      <Project>{780b5b61-77bb-4456-af77-e6681e7e48bf}</Project>
-      <Name>Gorgon.Input</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj">
-      <Project>{06f3a8a5-5c46-4f5a-8b17-ddbdcdd49745}</Project>
-      <Name>Gorgon.Animation.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
-      <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
-      <Name>Gorgon.Renderers.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj">
-      <Project>{e5506a64-62c5-4aa3-adcb-766ab0cd5528}</Project>
-      <Name>Gorgon.IO.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
-      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
-      <Name>Gorgon.Windows</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="WinFormsColor">
+      <HintPath>..\..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

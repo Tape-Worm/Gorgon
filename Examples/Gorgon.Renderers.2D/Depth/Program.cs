@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
@@ -95,13 +96,15 @@ namespace Gorgon.Examples
         // The position of the guy.
         private static DX.Vector2 _guyPosition;
         // Up animation.
-        private static Dictionary<AnimationName, IGorgonAnimation> _animations = new Dictionary<AnimationName, IGorgonAnimation>();
+        private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new Dictionary<AnimationName, IGorgonAnimation>();
         // The animation controller.
         private static GorgonSpriteAnimationController _controller;
         // The current animation.
         private static AnimationName _current;
         // The cache for our plug in assemblies.
         private static GorgonMefPlugInCache _assemblyCache;
+        // The cache for holding sprite textures.
+        private static GorgonTextureCache<GorgonTexture2D> _textureCache;
         #endregion
 
         #region Methods.
@@ -207,6 +210,12 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
+            // If the controller is not initialized, then we haven't finished loading our data yet.
+            if (_controller == null)
+            {
+                return true;
+            }
+
             _tileSize = new DX.Size2((int)(_screen.Width / _snowTile.ScaledSize.Width), (int)(_screen.Height / _snowTile.ScaledSize.Height));
 
             _screen.RenderTargetView.Clear(GorgonColor.White);
@@ -256,7 +265,7 @@ namespace Gorgon.Examples
                                                            .Where(item => item.Key.StartsWith("Guy_Turn_", StringComparison.OrdinalIgnoreCase))
                                                            .Select(item => item.Value);
 
-            List<GorgonSprite> walkLeftFrames = sprites.OrderBy(item => item.Key)
+            var walkLeftFrames = sprites.OrderBy(item => item.Key)
                                                                 .Where(item => item.Key.StartsWith("Guy_Left_", StringComparison.OrdinalIgnoreCase))
                                                                 .Select(item => item.Value)
                                                                 .ToList();
@@ -330,114 +339,99 @@ namespace Gorgon.Examples
 
         /// <summary>
         /// Function to initialize the application.
-        /// </summary>
-        /// <returns>The main window for the application.</returns>
-        private static FormMain Initialize()
+        /// </summary>        
+        private static async Task InitializeAsync(FormMain window)
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
             GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
 
-            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Depth");
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
 
-            try
+            if (videoDevices.Count == 0)
             {
-                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
-
-                if (videoDevices.Count == 0)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              "Gorgon requires at least a Direct3D 11.2 capable video device.\nThere is no suitable device installed on the system.");
-                }
-
-                // Find the best video device.
-                _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
-
-                _screen = new GorgonSwapChain(_graphics,
-                                              window,
-                                              new GorgonSwapChainInfo("Gorgon2D Depth Buffer Example")
-                                              {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
-                                                  Format = BufferFormat.R8G8B8A8_UNorm
-                                              });
-
-                _depthBuffer = GorgonDepthStencil2DView.CreateDepthStencil(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView)
-                {
-                    Binding = TextureBinding.DepthStencil,
-                    Format = BufferFormat.D24_UNorm_S8_UInt
-                });
-
-                // Tell the graphics API that we want to render to the "screen" swap chain.
-                _graphics.SetRenderTarget(_screen.RenderTargetView, _depthBuffer);
-
-                // Initialize the renderer so that we are able to draw stuff.
-                _renderer = new Gorgon2D(_graphics);
-
-                GorgonExample.LoadResources(_graphics);
-
-                // Load our packed file system plug in.
-                _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
-                _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll");
-                IGorgonPlugInService plugIns = new GorgonMefPlugInService(_assemblyCache);
-
-                // Load the file system containing our application data (sprites, images, etc...)
-                IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(plugIns, GorgonApplication.Log);
-                IGorgonFileSystemProvider provider = providerFactory.CreateProvider("Gorgon.IO.GorPack.GorPackProvider");
-                IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
-
-                // We can load the editor file system directly.
-                // This is handy for switching a production environment where your data may be stored 
-                // as a compressed file, and a development environment where your data consists of loose 
-                // files.				
-                // fileSystem.Mount(@"D:\unpak\scratch\DeepAsAPuddle.gorPack\fs\");
-
-                // For now though, we'll load the packed file.
-                fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "Depth.gorPack"));
-
-                // Get our sprites.  These make up the frames of animation for our Guy.
-                // If and when there's an animation editor, we'll only need to create a single sprite and load the animation.
-                IGorgonVirtualFile[] spriteFiles = fileSystem.FindFiles("/Sprites/", "*", true).ToArray();
-
-                // Load our sprite data (any associated textures will be loaded as well).
-                Dictionary<string, GorgonSprite> sprites = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
-
-                for (int i = 0; i < spriteFiles.Length; i++)
-                {
-                    IGorgonVirtualFile file = spriteFiles[i];
-                    (GorgonSprite sprite, GorgonTexture2D texture) = fileSystem.LoadSprite(_renderer, file.FullPath);
-
-                    // The LoadSprite extension method will automatically find and load your associated texture if you're using 
-                    // a Gorgon editor file system. So it's important that you leep track of your textures, disposing of just 
-                    // the associated GorgonTexture2DView won't cut it here, so you'll need to dispose the actual texture resource 
-                    // when you're done with it.
-                    if (!_textures.Contains(texture))
-                    {
-                        _textures.Add(texture);
-                    }
-
-                    // At super duper resolution, the example graphics would be really hard to see, so we'll scale them up.
-                    sprite.Scale = new DX.Vector2((_screen.Width / (_screen.Height / 2)) * 2.0f);
-                    sprites[file.Name] = sprite;
-                }
-
-                _snowTile = sprites["Snow"];
-                _snowTile.Depth = 0.5f;
-
-                _icicle = sprites["Icicle"];
-                _icicle.Depth = 0.2f;
-
-                _guySprite = sprites["Guy_Up_0"];
-                _guySprite.Depth = 0.1f;
-                _guyPosition = new DX.Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
-
-                BuildAnimations(sprites);
-            }
-            finally
-            {
-                GorgonExample.EndInit();
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                            "Gorgon requires at least a Direct3D 11.2 capable video device.\nThere is no suitable device installed on the system.");
             }
 
-            return window;
+            // Find the best video device.
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+
+            _screen = new GorgonSwapChain(_graphics,
+                                            window,
+                                            new GorgonSwapChainInfo("Gorgon2D Depth Buffer Example")
+                                            {
+                                                Width = Settings.Default.Resolution.Width,
+                                                Height = Settings.Default.Resolution.Height,
+                                                Format = BufferFormat.R8G8B8A8_UNorm
+                                            });
+
+            _depthBuffer = GorgonDepthStencil2DView.CreateDepthStencil(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView)
+            {
+                Binding = TextureBinding.DepthStencil,
+                Format = BufferFormat.D24_UNorm_S8_UInt
+            });
+
+            // Tell the graphics API that we want to render to the "screen" swap chain.
+            _graphics.SetRenderTarget(_screen.RenderTargetView, _depthBuffer);
+
+            // Initialize the renderer so that we are able to draw stuff.
+            _renderer = new Gorgon2D(_graphics);
+
+            GorgonExample.LoadResources(_graphics);
+
+            // Load our packed file system plug in.
+            _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
+            _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll");
+            IGorgonPlugInService plugIns = new GorgonMefPlugInService(_assemblyCache);
+
+            // Load the file system containing our application data (sprites, images, etc...)
+            IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(plugIns, GorgonApplication.Log);
+            IGorgonFileSystemProvider provider = providerFactory.CreateProvider("Gorgon.IO.GorPack.GorPackProvider");
+            IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
+
+            // We can load the editor file system directly.
+            // This is handy for switching a production environment where your data may be stored 
+            // as a compressed file, and a development environment where your data consists of loose 
+            // files.				
+            // fileSystem.Mount(@"D:\unpak\scratch\DeepAsAPuddle.gorPack\fs\");
+
+            // For now though, we'll load the packed file.
+            fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "Depth.gorPack"));
+
+            // Get our sprites.  These make up the frames of animation for our Guy.
+            // If and when there's an animation editor, we'll only need to create a single sprite and load the animation.
+            IGorgonVirtualFile[] spriteFiles = fileSystem.FindFiles("/Sprites/", "*", true).ToArray();
+
+            _textureCache = new GorgonTextureCache<GorgonTexture2D>(_graphics);
+
+            IGorgonContentLoader loader = fileSystem.CreateContentLoader(_renderer, _textureCache);
+
+            // Load our sprite data (any associated textures will be loaded as well).
+            var sprites = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
+
+            for (int i = 0; i < spriteFiles.Length; i++)
+            {
+                IGorgonVirtualFile file = spriteFiles[i];
+                GorgonSprite sprite = await loader.LoadSpriteAsync(file.FullPath);
+
+                // At super duper resolution, the example graphics would be really hard to see, so we'll scale them up.
+                sprite.Scale = new DX.Vector2((_screen.Width / (_screen.Height / 2)) * 2.0f);
+                sprites[file.Name] = sprite;
+            }
+
+            _snowTile = sprites["Snow"];
+            _snowTile.Depth = 0.5f;
+
+            _icicle = sprites["Icicle"];
+            _icicle.Depth = 0.2f;
+
+            _guySprite = sprites["Guy_Up_0"];
+            _guySprite.Depth = 0.1f;
+            _guyPosition = new DX.Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
+
+            BuildAnimations(sprites);
+
+            GorgonExample.EndInit();
         }
         #endregion
 
@@ -453,7 +447,14 @@ namespace Gorgon.Examples
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                GorgonApplication.Run(Initialize(), Idle);
+                // This is necessary to get winforms to play nice with our background thread prior to running the application.
+                WindowsFormsSynchronizationContext.AutoInstall = false;
+                SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+
+                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Depth", 
+                                                           async (o, _) => await InitializeAsync((FormMain)o));
+
+                GorgonApplication.Run(window, Idle);
             }
             catch (Exception ex)
             {
@@ -468,6 +469,7 @@ namespace Gorgon.Examples
                     texture?.Dispose();
                 }
 
+                _textureCache?.Dispose();
                 _renderer?.Dispose();
                 _depthBuffer?.Dispose();
                 _screen?.Dispose();

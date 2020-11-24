@@ -157,9 +157,7 @@ namespace Gorgon.IO
 
             if (textureMetadata.Attributes.TryGetValue("PremultipliedAlpha", out string isPremultiplied))
             {
-#pragma warning disable CA1806 // Do not ignore method results
                 bool.TryParse(isPremultiplied, out shouldConvertToPremultiplied);
-#pragma warning restore CA1806 // Do not ignore method results
             }
 
             if ((!textureMetadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
@@ -286,9 +284,7 @@ namespace Gorgon.IO
 
             if (fileMetadata.Attributes.TryGetValue("PremultipliedAlpha", out string isPremultiplied))
             {
-#pragma warning disable CA1806 // Do not ignore method results
                 bool.TryParse(isPremultiplied, out shouldConvertToPremultiplied);
-#pragma warning restore CA1806 // Do not ignore method results
             }
 
             using (Stream stream = file.OpenStream())

@@ -130,9 +130,9 @@ namespace Gorgon.Examples
         // The layout for a 3D vertex.
         private GorgonInputLayout _vertexLayout;
         // The pipeline state for rendering the planet.
-        private GorgonPipelineStateBuilder _stateBuilder;
+        private readonly GorgonPipelineStateBuilder _stateBuilder;
         // The builder for create a draw call.
-        private GorgonDrawIndexCallBuilder _drawCallBuilder;
+        private readonly GorgonDrawIndexCallBuilder _drawCallBuilder;
         // A constant buffer for holding the projection*view matrix.
         private GorgonConstantBufferView _viewProjectionBuffer;
         // A constant buffer for holding the world transformation matrix.
@@ -172,7 +172,7 @@ namespace Gorgon.Examples
         /// </summary>
         private void BuildConstantBuffers()
         {
-            var worldMatrix = DX.Matrix.Identity;
+            DX.Matrix worldMatrix = DX.Matrix.Identity;
             DX.Vector3 cameraPos = _viewMatrix.TranslationVector;
             var emptyMaterial = new Material
             {
@@ -251,7 +251,7 @@ namespace Gorgon.Examples
                 }
             }
 
-            Camera.GetViewMatrix(out DX.Matrix view);
+            Camera.GetViewMatrix(out DX.Matrix _);
 
             _drawPlanets.Clear();
 

@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
@@ -125,8 +124,6 @@ namespace Gorgon.IO
     /// ]]>
     /// </code>
     /// </example>
-    [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable"
-        , Justification = "This is not correct. GorgonBinaryReader does not close its underlying stream, thus Dispose does not need to be called.")]
     public sealed class GorgonChunkFileReader
         : GorgonChunkFile<GorgonBinaryReader>
     {
@@ -313,12 +310,10 @@ namespace Gorgon.IO
 
                 return FileFormatHeaderIDv0100 == headerID;
             }
-#pragma warning disable CA1031 // Do not catch general exception types
             catch
             {
                 return false;
             }
-#pragma warning restore CA1031 // Do not catch general exception types
             finally
             {
                 reader?.Dispose();
@@ -394,9 +389,7 @@ namespace Gorgon.IO
                 reader?.Dispose();
             }
 
-#pragma warning disable CA2000 // Dispose objects before losing scope
             _activeReader = new GorgonBinaryReader(new GorgonStreamWrapper(Stream, 0, _activeChunk.Size), true);
-#pragma warning restore CA2000 // Dispose objects before losing scope
 
             return _activeReader;
         }

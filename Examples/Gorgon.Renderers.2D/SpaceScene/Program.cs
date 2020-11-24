@@ -251,23 +251,29 @@ namespace Gorgon.Examples
             _sceneRenderer.LoadResources();
 
             // Our player ship.  Since this one is linked to the layer camera controller, we can use our keyboard to move around the scene.
-            _ship = new Ship(shipLayer);
-            _ship.Position = new DX.Vector2(120.0f, 75.0f);
-            _ship.Angle = -45.0f;
-            _ship.LayerController = controller;
+            _ship = new Ship(shipLayer)
+            {
+                Position = new DX.Vector2(120.0f, 75.0f),
+                Angle = -45.0f,
+                LayerController = controller
+            };
             _ship.LoadResources();
 
             // A secondary ship. Just here to look pretty.
-            _shipDeux = new Ship(shipLayerDeux);
-            _shipDeux.Position = new DX.Vector2(120.3f, 74.8f);
-            _shipDeux.Angle = -78.0f;
-            _shipDeux.Ai = new DummyAi();
+            _shipDeux = new Ship(shipLayerDeux)
+            {
+                Position = new DX.Vector2(120.3f, 74.8f),
+                Angle = -78.0f,
+                Ai = new DummyAi()
+            };
             _shipDeux.LoadResources();
 
             // Create a big ship for some scene variety.
-            _bigShip = new BigShip(shipLayerDeux);
-            _bigShip.Position = new DX.Vector2(120.3f, 74.5f);
-            _bigShip.Angle = -80.0f;
+            _bigShip = new BigShip(shipLayerDeux)
+            {
+                Position = new DX.Vector2(120.3f, 74.5f),
+                Angle = -80.0f
+            };
             _bigShip.LoadResources();
         }
 
@@ -295,7 +301,7 @@ namespace Gorgon.Examples
 
                 // Retrieve the list of video adapters. We can do this on a background thread because there's no interaction between other threads and the 
                 // underlying D3D backend yet.
-                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));                
+                var videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));                
 
                 if (videoDevices.Count == 0)
                 {
@@ -382,7 +388,7 @@ namespace Gorgon.Examples
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        public static async Task Main()
+        public static void Main()
         {
             try
             {

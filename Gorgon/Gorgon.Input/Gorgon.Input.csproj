@@ -1,190 +1,77 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectType>Local</ProjectType>
-    <ProjectGuid>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <OutputType>Library</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>Functionality to access the various input devices attached to the system.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Input</RootNamespace>
-    <AssemblyName>Gorgon.Input</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon.Input.xml</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <langversion>7.3</langversion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
-    <Prefer32Bit>false</Prefer32Bit>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\Gorgon.Input.XML</DocumentationFile>
-    <langversion>7.3</langversion>
-    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\Gorgon.Input.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\Gorgon.Input.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
+    <None Include="..\g.png">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
+    <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gorgon.Windows\Gorgon.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Devices\GorgonGamingDevice.cs" />
-    <Compile Include="Devices\GorgonGamingDeviceAxis.cs" />
-    <Compile Include="Devices\GorgonGamingDeviceAxisEqualityComparer.cs" />
-    <Compile Include="Devices\GorgonGamingDeviceAxisInfo.cs" />
-    <Compile Include="Devices\GorgonGamingDeviceAxisList.cs" />
-    <Compile Include="Devices\GorgonGamingDeviceRegistryInfo.cs" />
-    <Compile Include="Devices\GorgonKeyStateCollection.cs" />
-    <Compile Include="Devices\GorgonRawHID.cs" />
-    <Compile Include="Devices\GorgonRawHIDData.cs" />
-    <Compile Include="Devices\GorgonRawHIDInfo.cs" />
-    <Compile Include="Devices\GorgonRawKeyboard.cs" />
-    <Compile Include="Devices\GorgonRawKeyboardData.cs" />
-    <Compile Include="Devices\GorgonRawMouse.cs" />
-    <Compile Include="Devices\GorgonRawMouseData.cs" />
-    <Compile Include="Devices\_Events\GorgonHIDEventArgs.cs" />
-    <Compile Include="Devices\_Events\GorgonKeyboardEventArgs.cs" />
-    <Compile Include="Devices\_Events\GorgonMouseEventArgs.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonGamingDevice.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonGamingDeviceAxis.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonGamingDeviceInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonKeyboard.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonKeyboardInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonMouse.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonMouseInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonRawHID.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonRawHIDInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonRawInputDevice.cs" />
-    <Compile Include="Devices\_Internal\_Interfaces\IRawInputDeviceData.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonRawInputDeviceInfo.cs" />
-    <Compile Include="Devices\_Internal\RawKeyboardInfo.cs" />
-    <Compile Include="Devices\_Internal\RawMouseInfo.cs" />
-    <Compile Include="GorgonGamingDeviceDriver.cs" />
-    <Compile Include="GorgonGamingDeviceFactory.cs" />
-    <Compile Include="GorgonKeysEqualityComparer.cs" />
-    <Compile Include="GorgonRawInput.cs" />
-    <Compile Include="GorgonRawInputSettings.cs" />
-    <Compile Include="Native\RawInputApi.cs" />
-    <Compile Include="Native\UserApi.cs" />
-    <Compile Include="Native\Win32 Structs\CURSORINFO.cs" />
-    <Compile Include="Native\Win32 Structs\POINT.cs" />
-    <Compile Include="Native\Win32 Structs\RAWINPUT.cs" />
-    <Compile Include="Native\Win32 Structs\RAWINPUTDEVICE.cs" />
-    <Compile Include="Native\Win32 Structs\RAWINPUTDEVICELIST.cs" />
-    <Compile Include="Native\Win32 Structs\RAWINPUTHEADER.cs" />
-    <Compile Include="Native\Win32 Structs\RAWINPUTHID.cs" />
-    <Compile Include="Native\Win32 Structs\RAWINPUTKEYBOARD.cs" />
-    <Compile Include="Native\Win32 Structs\RAWINPUTMOUSE.cs" />
-    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO.cs" />
-    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_HID.cs" />
-    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_KEYBOARD.cs" />
-    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_MOUSE.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="_Interfaces\IGorgonGamingDeviceDriver.cs" />
-    <Compile Include="_Interfaces\IGorgonGamingDeviceDriverFactory.cs" />
-    <Compile Include="_Interfaces\IGorgonInput.cs" />
-    <Compile Include="_Interfaces\IGorgonRawInput.cs" />
-    <Compile Include="_Internal\DeviceKey.cs" />
-    <Compile Include="_Internal\MessageFilterHook.cs" />
-    <Compile Include="_Internal\RawInputDeviceRegistryInfo.cs" />
-    <Compile Include="_Internal\RawInputDispatcher.cs" />
-    <Compile Include="_Internal\RawInputMessageFilter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gorgon.Windows\Gorgon.Windows.csproj">
-      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
-      <Name>Gorgon.Windows</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>5.0.0</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\NoLiteralBugFix.ruleset">
-      <Link>NoLiteralBugFix.ruleset</Link>
-    </None>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

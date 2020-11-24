@@ -29,18 +29,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using Gorgon.Examples;
+using Gorgon.Examples.Properties;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// This example shows how to use a geometry shader with the Gorgon core graphics library.

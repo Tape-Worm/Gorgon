@@ -1,226 +1,42 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectType>Local</ProjectType>
-    <ProjectGuid>{933569ED-52A9-4232-A929-1D4C4489B5A1}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <AssemblyName>Gorgon.Core</AssemblyName>
-    <OutputType>Library</OutputType>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>Common and utility functionality used by the various Gorgon libraries.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon</RootNamespace>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <BaseAddress>4194304</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>bin\Debug\Gorgon.Core.xml</DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
-    <NoStdLib>false</NoStdLib>
-    <NoWarn>
-    </NoWarn>
-    <Optimize>false</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <langversion>7.3</langversion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <BaseAddress>4194304</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\Gorgon.Core.xml</DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
-    <NoStdLib>false</NoStdLib>
-    <NoWarn>
-    </NoWarn>
-    <Optimize>true</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <DebugType>pdbonly</DebugType>
-    <Prefer32Bit>false</Prefer32Bit>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <langversion>7.3</langversion>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Drawing">
-      <Name>System.Drawing</Name>
-    </Reference>
-    <Reference Include="System.Reflection.Context" />
-    <Reference Include="System.Windows.Forms">
-      <Name>System.Windows.Forms</Name>
-    </Reference>
-    <Reference Include="System.Xml">
-      <Name>System.XML</Name>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ArgumentEmptyException.cs" />
-    <Compile Include="ArgumentMissingException.cs" />
-    <Compile Include="Collections\GorgonArray.cs" />
-    <Compile Include="Collections\GorgonEpsilonFloatComparer.cs" />
-    <Compile Include="Collections\_Extensions\GorgonIReadOnlyListExtensions.cs" />
-    <Compile Include="Collections\_Extensions\GorgonTreeLinqExtensions.cs" />
-    <Compile Include="Collections\_Interfaces\IGorgonReadOnlyArray.cs" />
-    <Compile Include="Configuration\GorgonOption.cs" />
-    <Compile Include="Configuration\GorgonOptionBag.cs" />
-    <Compile Include="Collections\Specialized\GorgonConcurrentDictionary.cs" />
-    <Compile Include="Collections\Specialized\GorgonNamedObjectDictionary.cs" />
-    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyDictionary.cs" />
-    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectDictionary.cs" />
-    <Compile Include="Collections\Specialized\GorgonNamedObjectList.cs" />
-    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectList.cs" />
-    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyList.cs" />
-    <Compile Include="Configuration\_Interfaces\IGorgonOption.cs" />
-    <Compile Include="Configuration\_Interfaces\IGorgonOptionBag.cs" />
-    <Compile Include="Design\LocalCategoryAttribute.cs" />
-    <Compile Include="Design\LocalDescriptionAttribute.cs" />
-    <Compile Include="Design\LocalDisplayNameAttribute.cs" />
-    <Compile Include="Diagnostics\_Interfaces\IGorgonComputerInfo.cs" />
-    <Compile Include="Diagnostics\_Internal\LogDummy.cs" />
-    <Compile Include="Diagnostics\LogProviders\GorgonLogTextFileProvider.cs" />
-    <Compile Include="Diagnostics\_Interfaces\IGorgonLog.cs" />
-    <Compile Include="Diagnostics\LogProviders\_Interfaces\IGorgonLogProvider.cs" />
-    <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
-    <Compile Include="GorgonHandledEventArgs.cs" />
-    <Compile Include="Graphics\BufferFormat.cs" />
-    <Compile Include="Graphics\GorgonBox.cs" />
-    <Compile Include="Graphics\GorgonColor.cs" />
-    <Compile Include="Graphics\_Extensions\SharpDXRectExtensions.cs" />
-    <Compile Include="Graphics\_Extensions\SharpDXSize2Extensions.cs" />
-    <Compile Include="Graphics\_Extensions\SharpDXVector2Extensions.cs" />
-    <Compile Include="IO\GorgonChunk.cs" />
-    <Compile Include="IO\GorgonChunkCollection.cs" />
-    <Compile Include="IO\GorgonChunkFile.cs" />
-    <Compile Include="IO\GorgonChunkFileReader.cs" />
-    <Compile Include="IO\GorgonChunkFileWriter.cs" />
-    <Compile Include="IO\GorgonStreamWrapper.cs" />
-    <Compile Include="IO\_Interfaces\IGorgonReadOnlyChunkCollection.cs" />
-    <Compile Include="Math\GorgonRationalNumber.cs" />
-    <Compile Include="Math\_Interfaces\IGorgonSpline.cs" />
-    <Compile Include="Memory\GorgonPool.cs" />
-    <Compile Include="Memory\GorgonLinearPool.cs" />
-    <Compile Include="Memory\GorgonRingPool.cs" />
-    <Compile Include="Memory\_Interfaces\IGorgonAllocator.cs" />
-    <Compile Include="Native\GorgonIntPtrEqualityComparer.cs" />
-    <Compile Include="Native\GorgonNativeBuffer.cs" />
-    <Compile Include="Native\GorgonReadOnlyPointer.cs" />
-    <Compile Include="Native\_Extensions\GorgonNativeExtensions.cs" />
-    <Compile Include="Plugins\GorgonMefPluginService.cs" />
-    <Compile Include="Plugins\GorgonMefPluginCache.cs" />
-    <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
-    <Compile Include="Plugins\_Internal\_Interfaces\IClrStrongName.cs" />
-    <Compile Include="Security\Aes256Encryption.cs" />
-    <Compile Include="Security\_Interfaces\IEncryption.cs" />
-    <Compile Include="SharedAssemblyInfo.cs" />
-    <Compile Include="Timing\_Interfaces\IGorgonTimer.cs" />
-    <Compile Include="UI\_Enums\Alignment.cs" />
-    <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
-    <Compile Include="_Extensions\GorgonHashGenerationExtension.cs" />
-    <Compile Include="Diagnostics\_Extensions\GorgonDebugExtensions.cs" />
-    <Compile Include="IO\_Extensions\GorgonIOExtensions.cs" />
-    <Compile Include="Math\_Extensions\GorgonMathExtensions.cs" />
-    <Compile Include="_Extensions\GorgonNullExtensions.cs" />
-    <Compile Include="_Extensions\GorgonNumericFormattingExtensions.cs" />
-    <Compile Include="Reflection\_Extensions\GorgonReflectionExtensions.cs" />
-    <Compile Include="_Extensions\GorgonStringFormattingExtensions.cs" />
-    <Compile Include="_Extensions\SharpDXRectangleFFixes.cs" />
-    <Compile Include="_Interfaces\IGorgonFluentBuilder.cs" />
-    <Compile Include="_Interfaces\IGorgonFluentBuilderAllocator.cs" />
-    <Compile Include="_Interfaces\IGorgonCloneable.cs" />
-    <Compile Include="_Interfaces\IGorgonEquatableByRef.cs" />
-    <Compile Include="GorgonRange.cs" />
-    <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
-    <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
-    <Compile Include="Diagnostics\GorgonLog.cs" />
-    <Compile Include="Timing\GorgonTiming.cs" />
-    <Compile Include="_Interfaces\IGorgonNamedObject.cs" />
-    <Compile Include="IO\GorgonFileExtension.cs" />
-    <Compile Include="IO\GorgonFileExtensionCollection.cs" />
-    <Compile Include="IO\GorgonBinaryReader.cs" />
-    <Compile Include="IO\GorgonBinaryWriter.cs" />
-    <Compile Include="GorgonResult.cs" />
-    <Compile Include="GorgonNamedObject.cs" />
-    <Compile Include="IO\GorgonFileExtensionComparer.cs" />
-    <Compile Include="GorgonRandom.cs" />
-    <Compile Include="Math\GorgonCatmullRomSpline.cs" />
-    <Compile Include="Plugins\GorgonPlugin.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="GorgonException.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="_Internal\Noise.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\Gorgon.Core.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CenterCLR.XorRandomGenerator">
       <Version>1.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.0</Version>
@@ -242,9 +58,6 @@
     <PackageReference Include="System.ComponentModel.Composition">
       <Version>5.0.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Composition.Registration">
-      <Version>5.0.0</Version>
-    </PackageReference>
     <PackageReference Include="System.Composition">
       <Version>5.0.0</Version>
     </PackageReference>
@@ -263,6 +76,7 @@
     <PackageReference Include="System.Composition.TypedParts">
       <Version>5.0.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Reflection.Context" Version="5.0.0" />
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
@@ -271,15 +85,24 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\NoLiteralBugFix.ruleset">
-      <Link>NoLiteralBugFix.ruleset</Link>
+    <None Include="..\g.png">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
     </None>
+    <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

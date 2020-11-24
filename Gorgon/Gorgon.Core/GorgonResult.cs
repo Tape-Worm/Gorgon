@@ -176,7 +176,7 @@ namespace Gorgon.Core
         /// Returns the fully qualified type name of this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.String"/> containing a fully qualified type name.
+        /// A <see cref="System.String"/> containing a fully qualified type name.
         /// </returns>
         public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRESULT, Name, Description, Code.FormatHex());
 

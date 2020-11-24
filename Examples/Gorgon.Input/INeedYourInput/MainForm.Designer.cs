@@ -26,7 +26,7 @@
 
 using System.ComponentModel;
 
-namespace Gorgon.Input.Example
+namespace Gorgon.Examples
 {
 	partial class MainForm
 	{

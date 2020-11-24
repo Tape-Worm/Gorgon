@@ -214,7 +214,7 @@ namespace Gorgon.Examples
 
             // Load this font from our resources section.
             window.UpdateStatus($"Loading Resource Font...");
-            using (MemoryStream stream = new MemoryStream(Resources.Achafexp))
+            using (var stream = new MemoryStream(Resources.Achafexp))
             {
                 Drawing.FontFamily resFont = GorgonExample.Fonts.LoadTrueTypeFontFamily(stream);
                 _fontFamilies.Insert(0, resFont.Name);

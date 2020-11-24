@@ -1,384 +1,69 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{62AC77E7-B73D-4004-B0BB-1AB2CC263137}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gorgon.Editor.AnimationEditor</RootNamespace>
-    <AssemblyName>Gorgon.Editor.AnimationEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>A Gorgon Editor plug in that will allow editing and creation of animations for sprites.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RootNamespace>Gorgon.Editor.AnimationEditor</RootNamespace>
+    <NeutralLanguage></NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="AnimationEditorPlugIn.cs" />
-    <Compile Include="AnimationImporterPlugIn.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="_Extensions\GorgonSpriteExtensions.cs" />
-    <Compile Include="_Interfaces\IViewModelFactory.cs" />
-    <Compile Include="_Internal\Controls\DataGridViewEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="_Internal\Controls\CellsDragEventArgs.cs" />
-    <Compile Include="_Internal\Forms\FormNewAnimation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="_Internal\Forms\FormNewAnimation.Designer.cs">
-      <DependentUpon>FormNewAnimation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Renderers\Vector2AnimationViewer.cs" />
-    <Compile Include="_Internal\Renderers\SingleAnimationViewer.cs" />
-    <Compile Include="_Internal\Renderers\DefaultAnimationViewer.cs" />
-    <Compile Include="_Internal\Services\AnimationFactory.cs" />
-    <Compile Include="_Internal\Services\ContentServices.cs" />
-    <Compile Include="_Internal\Services\KeyProcessorService.cs" />
-    <Compile Include="_Internal\Services\NewAnimationService.cs" />
-    <Compile Include="_Internal\Services\VertexChangedEventArgs.cs" />
-    <Compile Include="_Internal\Services\VertexEditService.cs" />
-    <Compile Include="_Internal\ViewModels\GetTrackKeyArgs.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\_Interfaces\IKeyFrameCopyMoveData.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\KeyFrameCopyMoveData.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\KeyEditorContext.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\KeyEditorContextParameters.cs" />
-    <Compile Include="_Internal\ViewModels\KeyValueMetadata.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\KeyValueEditor.cs" />
-    <Compile Include="_Internal\ViewModels\MetadataValues.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\ColorValueEditor.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\_Interfaces\IColorValueEditor.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\_Interfaces\IKeyEditorContext.cs" />
-    <Compile Include="_Internal\ViewModels\KeyEditorContext\_Interfaces\IKeyValueEditor.cs" />
-    <Compile Include="_Internal\ViewModels\KeyFrame.cs" />
-    <Compile Include="_Internal\ViewModels\KeyFrameParameters.cs" />
-    <Compile Include="_Internal\ViewModels\AddTrack\AddTrack.cs" />
-    <Compile Include="_Internal\ViewModels\AddTrack\AddTrackParameters.cs" />
-    <Compile Include="_Internal\ViewModels\Properties\AnimProperties.cs" />
-    <Compile Include="_Internal\ViewModels\Properties\PropertiesParameters.cs" />
-    <Compile Include="_Internal\ViewModels\SetKeyFramesArgs.cs" />
-    <Compile Include="_Internal\ViewModels\TextureValue.cs" />
-    <Compile Include="_Internal\ViewModels\Track.cs" />
-    <Compile Include="_Internal\ViewModels\TrackKeySelection.cs" />
-    <Compile Include="_Internal\ViewModels\TrackParameters.cs" />
-    <Compile Include="_Internal\ViewModels\Properties\_Interfaces\IProperties.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\IKeyFrame.cs" />
-    <Compile Include="_Internal\ViewModels\AddTrack\_Interfaces\IAddTrack.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\ISpriteLoader.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\ITrack.cs" />
-    <Compile Include="_Internal\Views\AnimationProperties.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationProperties.Designer.cs">
-      <DependentUpon>AnimationProperties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationFloatKeyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationFloatKeyEditor.Designer.cs">
-      <DependentUpon>AnimationFloatKeyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationSettingsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationSettingsPanel.Designer.cs">
-      <DependentUpon>AnimationSettingsPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationCodecSettingsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationCodecSettingsPanel.Designer.cs">
-      <DependentUpon>AnimationCodecSettingsPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\CodecRegistry.cs" />
-    <Compile Include="_Internal\CodecSetting.cs" />
-    <Compile Include="_Internal\AnimationEditorSettings.cs" />
-    <Compile Include="_Internal\Forms\FormRibbon.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="_Internal\Forms\FormRibbon.Designer.cs">
-      <DependentUpon>FormRibbon.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Renderers\NoPrimarySpriteViewer.cs" />
-    <Compile Include="_Internal\Renderers\AnimationViewer.cs" />
-    <Compile Include="_Internal\Services\AnimationIOService.cs" />
-    <Compile Include="_Internal\Services\GorgonAnimationImporter.cs" />
-    <Compile Include="_Internal\ViewModels\ImportSettings.cs" />
-    <Compile Include="_Internal\ViewModels\ImportSettingsParameters.cs" />
-    <Compile Include="_Internal\ViewModels\AnimationContent.cs" />
-    <Compile Include="_Internal\ViewModels\AnimationContentParameters.cs" />
-    <Compile Include="_Internal\ViewModels\Settings.cs" />
-    <Compile Include="_Internal\ViewModels\SettingsParameters.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\IImportSettings.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\IAnimationContent.cs" />
-    <Compile Include="_Internal\ViewModels\_Interfaces\ISettings.cs" />
-    <Compile Include="_Internal\Views\AnimationEditorView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationEditorView.Designer.cs">
-      <DependentUpon>AnimationEditorView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationTrackContainer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationTrackContainer.Designer.cs">
-      <DependentUpon>AnimationTrackContainer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationAddTrack.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationAddTrack.Designer.cs">
-      <DependentUpon>AnimationAddTrack.cs</DependentUpon>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationColorKeyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="_Internal\Views\AnimationColorKeyEditor.Designer.cs">
-      <DependentUpon>AnimationColorKeyEditor.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset">
-      <Link>NoLiteralBugFix.ruleset</Link>
-    </None>
-    <None Include="Resources\no_thumb_sprite_64x64.png" />
-    <None Include="Resources\Transparency_Pattern.png" />
-    <None Include="Resources\go_back_48x48.png" />
-    <None Include="Resources\go_back_16x16.png" />
-    <None Include="Resources\anchor_24x24.dds" />
-    <None Include="Resources\auto_key_frame_48x48.png" />
-    <None Include="Resources\auto_key_frame_16x16.png" />
-    <None Include="Resources\sprite2_16x16.png" />
-    <None Include="Resources\anim_properties_48x48.png" />
-    <None Include="Resources\anim_properties_16x16.png" />
-    <None Include="Resources\sprite_48x48.png" />
-    <None Include="Resources\sprite_16x16.png" />
-    <None Include="Resources\length_48x48.png" />
-    <None Include="Resources\length_16x16.png" />
-    <None Include="Resources\clear_image_48x48.png" />
-    <None Include="Resources\clear_image_16x16.png" />
-    <None Include="Resources\load_image_16x16.png" />
-    <None Include="Resources\load_image_48x48.png" />
-    <None Include="Resources\anim_loop_48x48.png" />
-    <None Include="Resources\anim_loop_16x16.png" />
-    <None Include="Resources\edit_track_48x48.png" />
-    <None Include="Resources\edit_track_16x16.png" />
-    <None Include="Resources\clear_fs_16x16.png" />
-    <None Include="Resources\clear_fs_48x48.png" />
-    <None Include="Resources\paste_48x48.png" />
-    <None Include="Resources\paste_16x16.png" />
-    <None Include="Resources\cut_48x48.png" />
-    <None Include="Resources\cut_16x16.png" />
-    <None Include="Resources\copy_48x48.png" />
-    <None Include="Resources\copy_16x16.png" />
-    <None Include="Resources\remove_track_48x48.png" />
-    <None Include="Resources\remove_track_16x16.png" />
-    <None Include="Resources\remove_key_frame_48x48.png" />
-    <None Include="Resources\remove_key_frame_16x16.png" />
-    <None Include="Resources\add_track_48x48.png" />
-    <None Include="Resources\add_track_16x16.png" />
-    <None Include="Resources\add_key_frame_48x48.png" />
-    <None Include="Resources\add_key_frame_16x16.png" />
-    <None Include="Resources\anim_last_key_48x48.png" />
-    <None Include="Resources\anim_last_key_16x16.png" />
-    <None Include="Resources\anim_first_key_48x48.png" />
-    <None Include="Resources\anim_first_key_16x16.png" />
-    <None Include="Resources\anim_prev_key_48x48.png" />
-    <None Include="Resources\anim_prev_key_16x16.png" />
-    <None Include="Resources\anim_next_key_48x48.png" />
-    <None Include="Resources\anim_next_key_16x16.png" />
-    <None Include="Resources\anim_stop_48x48.png" />
-    <None Include="Resources\anim_stop_16x16.png" />
-    <None Include="Resources\anim_play_48x48.png" />
-    <None Include="Resources\anim_play_16x16.png" />
-    <None Include="Resources\key_with_data_16x16.png" />
-    <None Include="Resources\key_with_data_32x32.png" />
-    <None Include="Resources\filmstripbg.dds" />
-    <None Include="Resources\zoom_48x48.png" />
-    <None Include="Resources\zoom_16x16.png" />
-    <None Include="Resources\undo_48x48.png" />
-    <None Include="Resources\undo_16x16.png" />
-    <None Include="Resources\redo_48x48.png" />
-    <None Include="Resources\redo_16x16.png" />
-    <None Include="Resources\save_48x48.png" />
-    <None Include="Resources\save_16x16.png" />
-    <None Include="Resources\new_content_16x16.png" />
-    <None Include="Resources\new_content_48x48.png" />
-    <None Include="Resources\anim_thumbnail_256x256.dds" />
-    <None Include="Resources\remove_plugins_22x22.png" />
-    <None Include="Resources\add_plugin_22x22.png" />
-    <None Include="Resources\animation_editor_48x48.png" />
-    <None Include="Resources\animation_editor_24x24.png" />
-    <None Include="Resources\animation_editor_16x16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Controls\DataGridViewEx.resx">
-      <DependentUpon>DataGridViewEx.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Forms\FormNewAnimation.resx">
-      <DependentUpon>FormNewAnimation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\AnimationProperties.resx">
-      <DependentUpon>AnimationProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\AnimationFloatKeyEditor.resx">
-      <DependentUpon>AnimationFloatKeyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\AnimationSettingsPanel.resx">
-      <DependentUpon>AnimationSettingsPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\AnimationCodecSettingsPanel.resx">
-      <DependentUpon>AnimationCodecSettingsPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Forms\FormRibbon.resx">
-      <DependentUpon>FormRibbon.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\AnimationEditorView.resx">
-      <DependentUpon>AnimationEditorView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\AnimationTrackContainer.resx">
-      <DependentUpon>AnimationTrackContainer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\AnimationAddTrack.resx">
-      <DependentUpon>AnimationAddTrack.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="_Internal\Views\AnimationColorKeyEditor.resx">
-      <DependentUpon>AnimationColorKeyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Krypton.Ribbon.Lite">
-      <Version>5.550.2011</Version>
-    </PackageReference>
-    <PackageReference Include="Krypton.Toolkit.Lite">
-      <Version>5.550.2011</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="SharpDX">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="SharpDX.Mathematics">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Animation\Gorgon.Animation.csproj">
-      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
-      <Name>Gorgon.Animation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
-      <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
-      <Name>Gorgon.FileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj">
-      <Project>{1dfb5973-950a-4b6e-84af-953de57c9213}</Project>
-      <Name>Gorgon.Graphics.Fonts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
-      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
-      <Name>Gorgon.Graphics.Imaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj">
-      <Project>{06f3a8a5-5c46-4f5a-8b17-ddbdcdd49745}</Project>
-      <Name>Gorgon.Animation.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
-      <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
-      <Name>Gorgon.Renderers.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj">
-      <Project>{e5506a64-62c5-4aa3-adcb-766ab0cd5528}</Project>
-      <Name>Gorgon.IO.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
-      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
-      <Name>Gorgon.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
-      <Project>{695A6554-789A-4D5A-9DE1-21FB621F6A8F}</Project>
-      <Name>Gorgon.Editor.API</Name>
-    </ProjectReference>
+    <None Include="..\..\Gorgon\g.png">
+      <Pack>True</Pack>
+    </None>
+    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>REM Editor copy
-copy "$(TargetPath)" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Content"
-copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Content"
-copy "$(TargetDir)WinFormsColor.dll" "$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\Content"</PostBuildEvent>
-  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="WinFormsColor">
+      <HintPath>..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="REM Editor copy&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Content&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\Content&quot;" />
+  </Target>
 </Project>

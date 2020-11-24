@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using Gorgon.Properties;
 
@@ -39,7 +38,6 @@ namespace Gorgon
     /// The ideal use case for this exception is when a method expects a structure of data with specific members and a required member is not initialized (e.g. <b>null</b>).
     /// </para>
     /// </remarks>
-    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
     [Serializable]
     public class ArgumentMissingException
         : Exception

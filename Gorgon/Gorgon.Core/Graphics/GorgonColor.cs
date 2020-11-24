@@ -706,10 +706,10 @@ namespace Gorgon.Graphics
         public bool Equals(in GorgonColor other) => Equals(in this, in other);
 
         /// <summary>
-        /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with the data needed to serialize the target object.
+        /// Populates a <see cref="SerializationInfo" /> with the data needed to serialize the target object.
         /// </summary>
-        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> to populate with data.</param>
-        /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext" />) for this serialization.</param>
+        /// <param name="info">The <see cref="SerializationInfo" /> to populate with data.</param>
+        /// <param name="context">The destination (see <see cref="StreamingContext" />) for this serialization.</param>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) => info.AddValue("Color", ToARGB());
 
         /// <summary>

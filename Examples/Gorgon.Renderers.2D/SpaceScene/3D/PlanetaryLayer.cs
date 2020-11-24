@@ -60,9 +60,6 @@ namespace Gorgon.Examples
 
         /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Examples.PlanetaryLayer"/> class.</summary>
         /// <param name="mesh">The mesh.</param>
-        public PlanetaryLayer(MoveableMesh mesh)
-        {
-            Mesh = mesh;
-        }
+        public PlanetaryLayer(MoveableMesh mesh) => Mesh = mesh;
     }
 }

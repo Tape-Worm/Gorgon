@@ -125,7 +125,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void displayControl_Resize(object sender, EventArgs e)
+        private void DisplayControl_Resize(object sender, EventArgs e)
         {
             var displayControl = (Control)sender;
             System.Windows.Forms.Form ownerForm = displayControl.FindForm();
@@ -168,7 +168,7 @@ namespace Gorgon.Examples
             CreateDoubleBufferSurface(displayControl);
 
             _clearColor = displayControl.BackColor;
-            displayControl.Resize += displayControl_Resize;
+            displayControl.Resize += DisplayControl_Resize;
         }
         #endregion
 

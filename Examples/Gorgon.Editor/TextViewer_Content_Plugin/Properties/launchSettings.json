@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TextViewerContentExample": {
+      "commandName": "Executable",
+      "executablePath": "$(SolutionDir)Tools\\Editor\\Gorgon.Editor\\$(OutDir)\\Gorgon.Editor.exe",
+      "workingDirectory": "$(SolutionDir)Tools\\Editor\\Gorgon.Editor\\$(OutDir)",
+      "nativeDebugging": true
+    }
+  }
+}

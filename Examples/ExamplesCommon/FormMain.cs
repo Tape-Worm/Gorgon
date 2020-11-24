@@ -35,19 +35,30 @@ namespace Gorgon.Examples
     /// </summary>
     public partial class FormMain : Form
     {
-        #region Variables.
-        // Context for the UI thread.
-        private readonly SynchronizationContext _context;
-        #endregion
-
         #region Properties.
+        /// <summary>
+        /// Property to return the synchronization context for this window.
+        /// </summary>
+        public SynchronizationContext CurrentSyncContext
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to set or return whether the please wait label is visible.
         /// </summary>
         public bool IsLoaded
         {
             get => !LabelPleaseWait.Visible;
-            set => LabelPleaseWait.Visible = !value;
+            set
+            {
+                if (InvokeRequired)
+                {
+                    CurrentSyncContext.Post(arg => IsLoaded = value, null);
+                    return;
+                }
+                LabelPleaseWait.Visible = !value;
+            }
         }
         #endregion
 
@@ -69,7 +80,7 @@ namespace Gorgon.Examples
         {
             if (InvokeRequired)
             {
-                _context.Post(arg => UpdateStatus(arg?.ToString()), newText);
+                CurrentSyncContext.Post(arg => UpdateStatus(arg?.ToString()), newText);
                 return;
             }
             LabelPleaseWait.Text = string.IsNullOrWhiteSpace(newText) ? "Example is loading, please wait..." : newText;
@@ -87,7 +98,7 @@ namespace Gorgon.Examples
         {
             InitializeComponent();
 
-            _context = SynchronizationContext.Current;
+            CurrentSyncContext = SynchronizationContext.Current;
         }
         #endregion
     }
