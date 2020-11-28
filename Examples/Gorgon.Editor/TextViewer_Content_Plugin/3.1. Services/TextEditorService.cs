@@ -58,12 +58,7 @@ namespace Gorgon.Examples
             {
                 textEditor.ContentText = textEditor.OriginalText = currentText;
 
-                if (textEditor.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel)
-                {
-                    return null;
-                }
-
-                return textEditor.ContentText;
+                return textEditor.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : textEditor.ContentText;
             }
         }
     }

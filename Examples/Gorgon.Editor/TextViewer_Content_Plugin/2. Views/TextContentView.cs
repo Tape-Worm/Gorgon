@@ -73,7 +73,7 @@ namespace Gorgon.Examples
         private TextRenderer _renderer;
 
         // The form containing the ribbon used to merge with the application ribbon.
-        private FormRibbon _formRibbon;
+        private readonly FormRibbon _formRibbon;
         #endregion
 
         #region Properties.

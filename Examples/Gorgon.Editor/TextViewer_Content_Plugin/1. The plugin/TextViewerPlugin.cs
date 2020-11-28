@@ -323,8 +323,6 @@ namespace Gorgon.Examples
             //
             // In here, we create and initialize our view model(s) for use with the content editor and read our content data into it.
             var content = new TextContent();
-            string text = string.Empty;
-            Stream textStream = null;
             StreamReader reader = null;
 
             try
@@ -334,9 +332,9 @@ namespace Gorgon.Examples
                 // to perform simple read/write operations within the editor file system.
                 //
                 // We are given a copy of our content file by this method, so we can open a stream and read all of the text data.
-                textStream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
+                Stream textStream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
                 reader = new StreamReader(textStream, Encoding.UTF8, false, 80000, false);
-                text = await reader.ReadToEndAsync();
+                string text = await reader.ReadToEndAsync();
                 reader.Dispose();
 
                 // Trim the text down to 8,192 (16 KB) characters.  We don't need to render a book here.
@@ -495,7 +493,7 @@ namespace Gorgon.Examples
         /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
         /// <returns>A <see cref="IGorgonImage"/> containing the thumbnail image data.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile" />, or the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
-        public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken)
+        public Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken)
         {
             if (contentFile == null)
             {
@@ -520,7 +518,7 @@ namespace Gorgon.Examples
             // Note that we Clone the image so that the plug in will retain ownership of the image data.
             // Failure to do so may cause corruption.
 
-            return _noThumbnail.Clone();
+            return Task.FromResult(_noThumbnail.Clone());
         }
 
         // This should be pretty self explanatory.  This returns our icon for a new text content file.

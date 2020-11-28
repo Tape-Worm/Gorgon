@@ -56,7 +56,7 @@ namespace Gorgon.Examples
         // The sprite used to render our text data.
         private GorgonTextSprite _textSprite;
         // The factory used to create fonts.
-        private GorgonFontFactory _fontFactory;
+        private readonly GorgonFontFactory _fontFactory;
         // The fonts used for text rendering.
         private GorgonFont _arial;
         private GorgonFont _timesNewRoman;
@@ -198,8 +198,8 @@ namespace Gorgon.Examples
             // (Region Width / 2, Region Height / 2), but this depends on the camera setup). After this we'll call a utility function in the 
             // renderer to convert camera space into client space (ToClient). This will then allow us to set the clipping rectangle based on 
             // our camera position and zoom.
-            DX.RectangleF cameraSpaceRegion = new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height);
-            DX.Rectangle clientSpaceRegion = ToClient(cameraSpaceRegion).ToRectangle(); // The scissor rectangle must be in integer coordinates, ToRectangle will give us this.
+            var cameraSpaceRegion = new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height);
+            var clientSpaceRegion = ToClient(cameraSpaceRegion).ToRectangle(); // The scissor rectangle must be in integer coordinates, ToRectangle will give us this.
 
             // Set the scissor rectangle. Ideally we'd be doing this when the camera moves/zooms or the client size changes instead of every 
             // frame (way more efficient), but for the purposes of our example, we'll just set it per frame.
@@ -298,10 +298,7 @@ namespace Gorgon.Examples
         /// <param name="fonts">The factory used to create fonts.</param>
         /// <param name="dataContext">The view model for our text data.</param>
         public TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, GorgonFontFactory fonts, ITextContent dataContext)
-            : base("TextRenderer", renderer, mainRenderTarget, dataContext)
-        {
-            _fontFactory = fonts;
-        }
+            : base("TextRenderer", renderer, mainRenderTarget, dataContext) => _fontFactory = fonts;
         #endregion
     }
 }
