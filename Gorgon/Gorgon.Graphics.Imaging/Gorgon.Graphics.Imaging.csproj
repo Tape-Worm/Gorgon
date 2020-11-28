@@ -1,116 +1,56 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gorgon.Graphics.Imaging</RootNamespace>
-    <AssemblyName>Gorgon.Graphics.Imaging</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Gorgon.Graphics.Imaging.XML</DocumentationFile>
-    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <langversion>7.3</langversion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\Gorgon.Graphics.Imaging.XML</DocumentationFile>
-    <langversion>7.3</langversion>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>Functionality to read, write and manipulate image data using various common image formats.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RootNamespace>Gorgon.Graphics.Imaging</RootNamespace>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\Gorgon.Graphics.Imaging.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\Gorgon.Graphics.Imaging.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
+    <None Include="..\g.png">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
+    <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Codecs\GorgonCodecBmp.cs" />
-    <Compile Include="Codecs\GorgonCodecDds.cs" />
-    <Compile Include="Codecs\GorgonCodecGif.cs" />
-    <Compile Include="Codecs\GorgonCodecJpeg.cs" />
-    <Compile Include="Codecs\GorgonCodecPng.cs" />
-    <Compile Include="Codecs\GorgonCodecTga.cs" />
-    <Compile Include="Codecs\GorgonCodecWic.cs" />
-    <Compile Include="Codecs\GorgonDdsDecodingOptions.cs" />
-    <Compile Include="Codecs\GorgonGifDecodingOptions.cs" />
-    <Compile Include="Codecs\GorgonGifEncodingOptions.cs" />
-    <Compile Include="Codecs\GorgonImageCodec.cs" />
-    <Compile Include="Codecs\GorgonImageCodecDescription.cs" />
-    <Compile Include="Codecs\GorgonImageCodecPlugin.cs" />
-    <Compile Include="Codecs\GorgonJpegEncodingOptions.cs" />
-    <Compile Include="Codecs\GorgonPngEncodingOptions.cs" />
-    <Compile Include="Codecs\GorgonTgaDecodingOptions.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonImageCodec.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonImageCodecDecodingOptions.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonImageCodecEncodingOptions.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonWicDecodingOptions.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonWicEncodingOptions.cs" />
-    <Compile Include="Codecs\_Internal\DdsHeader.cs" />
-    <Compile Include="Codecs\_Internal\TgaHeader.cs" />
-    <Compile Include="GdiPlus\GdiPlusExtensions.cs" />
-    <Compile Include="GorgonFormatInfo.cs" />
-    <Compile Include="GorgonImage.cs" />
-    <Compile Include="GorgonImageBuffer.cs" />
-    <Compile Include="_Internal\ImageBufferList.cs" />
-    <Compile Include="GorgonImageExtensions.cs" />
-    <Compile Include="GorgonImageInfo.cs" />
-    <Compile Include="GorgonPitchLayout.cs" />
-    <Compile Include="_Interfaces\IGorgonImageBuffer.cs" />
-    <Compile Include="_Interfaces\IGorgonImage.cs" />
-    <Compile Include="_Interfaces\IGorgonImageBufferList.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="_Interfaces\IGorgonImageInfo.cs" />
-    <Compile Include="_Internal\ImageUtilities.cs" />
-    <Compile Include="_Internal\WicUtilities.cs" />
+    <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -122,36 +62,18 @@
     <PackageReference Include="SharpDX.Direct2D1">
       <Version>4.2.0</Version>
     </PackageReference>
-    <PackageReference Include="SharpDX.Mathematics">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>5.0.0</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\NoLiteralBugFix.ruleset">
-      <Link>NoLiteralBugFix.ruleset</Link>
-    </None>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

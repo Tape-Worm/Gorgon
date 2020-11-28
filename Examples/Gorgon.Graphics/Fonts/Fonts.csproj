@@ -1,148 +1,87 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E718D270-7490-48E1-A468-F754C2D7AD77}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Gorgon.Examples</RootNamespace>
-    <AssemblyName>Fonts</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <langversion>7.3</langversion>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>..\..\NoRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <langversion>7.3</langversion>
-    <CodeAnalysisRuleSet>..\..\NoRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>An example showing bitmap font support in Gorgon (uses the 2D renderer for text rendering).</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
+    <StartupObject>
+    </StartupObject>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Gorgon.Examples.Program</StartupObject>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
+    <None Include="..\..\..\Gorgon\g.png">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
+    <None Include="..\..\app.manifest" Link="app.manifest" />
+    <None Include="..\..\NoRules.ruleset" Link="NoRules.ruleset" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="..\..\app.manifest">
-      <Link>app.manifest</Link>
-    </None>
-    <None Include="Properties\Settings.settings">
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-    <None Include="Resources\Achafexp.ttf" />
-    <None Include="Resources\Gorgon_Logo_Small.DDS" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="SharpDX">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="SharpDX.Mathematics">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>5.0.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj">
-      <Project>{1dfb5973-950a-4b6e-84af-953de57c9213}</Project>
-      <Name>Gorgon.Graphics.Fonts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
-      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
-      <Name>Gorgon.Graphics.Imaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
-      <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
-      <Name>Gorgon.Renderers.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
-      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
-      <Name>Gorgon.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj">
-      <Project>{9dc4eea9-c32a-4fea-8a52-9cd0ac8ad8ac}</Project>
-      <Name>ExamplesCommon</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

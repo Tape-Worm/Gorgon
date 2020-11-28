@@ -87,7 +87,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void surfaceControl_Resize(object sender, EventArgs e)
+        private void SurfaceControl_Resize(object sender, EventArgs e)
         {
             System.Windows.Forms.Form parentForm = _control.FindForm();
 
@@ -290,7 +290,7 @@ namespace Gorgon.Examples
             _cursor = Resources.device_gamepad_48x48;
             CursorSize = new Size(_cursor.Width, _cursor.Height);
             _control = surfaceControl;
-            _control.Resize += surfaceControl_Resize;
+            _control.Resize += SurfaceControl_Resize;
             GetResources(true);
         }
         #endregion
@@ -309,7 +309,7 @@ namespace Gorgon.Examples
 
             if (disposing)
             {
-                _control.Resize -= surfaceControl_Resize;
+                _control.Resize -= SurfaceControl_Resize;
 
                 if (_cursorAttribs != null)
                 {

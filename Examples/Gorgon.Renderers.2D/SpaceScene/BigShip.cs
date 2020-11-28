@@ -52,7 +52,7 @@ namespace Gorgon.Examples
         // The ship sprite illumination map.
         private SpriteEntity _shipIllum;
         // The layer containing the sprite(s) for this ship.
-        private SpritesLayer _layer;
+        private readonly SpritesLayer _layer;
         // The angle of rotation.
         private float _angle;
         // Position of the ship.

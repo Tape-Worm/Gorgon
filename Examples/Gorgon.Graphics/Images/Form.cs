@@ -27,10 +27,9 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
-using Gorgon.Examples;
 using Gorgon.UI;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// This example focuses on Gorgon's Image library.

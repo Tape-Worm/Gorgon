@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Updates the animation frame index for a GIF.

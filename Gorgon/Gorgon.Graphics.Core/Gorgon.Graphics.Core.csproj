@@ -1,263 +1,57 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectType>Local</ProjectType>
-    <ProjectGuid>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <AssemblyName>Gorgon.Graphics.Core</AssemblyName>
-    <OutputType>Library</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>Provides access to low level graphics functionality utilizing hardware accelerated rendering through Direct3D 11.2.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Graphics.Core</RootNamespace>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon.Graphics.Core.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <langversion>7.3</langversion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\Gorgon.Graphics.Core.xml</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-    <langversion>7.3</langversion>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\Gorgon.Graphics.Core.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\Gorgon.Graphics.Core.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Windows.Forms" />
+    <None Include="..\g.png">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
+    <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="BufferFormatSupport.cs" />
-    <Compile Include="Buffers\GorgonBuffer.cs" />
-    <Compile Include="Buffers\GorgonBufferCommon.cs" />
-    <Compile Include="Buffers\GorgonBufferInfo.cs" />
-    <Compile Include="Buffers\GorgonBufferReadWriteView.cs" />
-    <Compile Include="Buffers\GorgonBufferReadWriteViewCommon.cs" />
-    <Compile Include="Buffers\GorgonBufferView.cs" />
-    <Compile Include="Buffers\GorgonBufferViewCommon.cs" />
-    <Compile Include="Buffers\GorgonConstantBuffer.cs" />
-    <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
-    <Compile Include="Buffers\GorgonConstantBufferView.cs" />
-    <Compile Include="Buffers\GorgonIndexBuffer.cs" />
-    <Compile Include="Buffers\GorgonIndexBufferInfo.cs" />
-    <Compile Include="Buffers\GorgonIndexBufferReadWriteView.cs" />
-    <Compile Include="Buffers\GorgonRawReadWriteView.cs" />
-    <Compile Include="Buffers\GorgonRawView.cs" />
-    <Compile Include="Buffers\GorgonStructuredReadWriteView.cs" />
-    <Compile Include="Buffers\GorgonStructuredView.cs" />
-    <Compile Include="Buffers\GorgonVertexBuffer.cs" />
-    <Compile Include="Buffers\GorgonVertexBufferInfo.cs" />
-    <Compile Include="Buffers\GorgonVertexBufferReadWriteView.cs" />
-    <Compile Include="Buffers\_Interfaces\IGorgonBufferInfo.cs" />
-    <Compile Include="Buffers\_Interfaces\IGorgonConstantBufferInfo.cs" />
-    <Compile Include="Buffers\_Interfaces\IGorgonIndexBufferInfo.cs" />
-    <Compile Include="Buffers\_Interfaces\IGorgonVertexBufferInfo.cs" />
-    <Compile Include="Buffers\_Internal\ShaderViewKey.cs" />
-    <Compile Include="Comparison.cs" />
-    <Compile Include="ComputeShaderFormat.cs" />
-    <Compile Include="Compute\GorgonComputeEngine.cs" />
-    <Compile Include="Compute\GorgonDispatchCall.cs" />
-    <Compile Include="Compute\GorgonDispatchCallBuilder.cs" />
-    <Compile Include="CopyMode.cs" />
-    <Compile Include="Devices\GorgonVideoAdapterOutputList.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonVideoAdapterInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
-    <Compile Include="Devices\_Internal\VideoAdapterEnumerator.cs" />
-    <Compile Include="Devices\_Internal\VideoAdapterInfo.cs" />
-    <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
-    <Compile Include="Devices\_ValueTypes\GorgonVideoAdapterMemory.cs" />
-    <Compile Include="Devices\_ValueTypes\GorgonVideoAdapterPciInfo.cs" />
-    <Compile Include="Devices\_ValueTypes\GorgonVideoMode.cs" />
-    <Compile Include="Geometry\GorgonInputElement.cs" />
-    <Compile Include="Geometry\GorgonInputLayout.cs" />
-    <Compile Include="Geometry\GorgonStreamOutElement.cs" />
-    <Compile Include="Geometry\GorgonStreamOutLayout.cs" />
-    <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
-    <Compile Include="GorgonGraphicsResource.cs" />
-    <Compile Include="GorgonGraphicsStatistics.cs" />
-    <Compile Include="GorgonResourceLocator.cs" />
-    <Compile Include="GorgonResourceView.cs" />
-    <Compile Include="Pipeline\GorgonStreamOutCallPoolAllocator.cs" />
-    <Compile Include="Pipeline\GorgonDrawCallPoolAllocator.cs" />
-    <Compile Include="Pipeline\GorgonStreamOutCallBuilder.cs" />
-    <Compile Include="Pipeline\GorgonInstancedCallBuilder.cs" />
-    <Compile Include="Pipeline\GorgonDrawCallBuilderCommon.cs" />
-    <Compile Include="Pipeline\GorgonInstancedIndexCallBuilder.cs" />
-    <Compile Include="Pipeline\GorgonDrawIndexCallBuilder.cs" />
-    <Compile Include="Pipeline\GorgonDrawIndexCall.cs" />
-    <Compile Include="Pipeline\GorgonDrawCall.cs" />
-    <Compile Include="Pipeline\GorgonDrawCallBuilder.cs" />
-    <Compile Include="Pipeline\GorgonDrawCallCommon.cs" />
-    <Compile Include="Pipeline\GorgonInstancedIndexCall.cs" />
-    <Compile Include="Pipeline\GorgonInstancedCall.cs" />
-    <Compile Include="Pipeline\GorgonStreamOutBinding.cs" />
-    <Compile Include="Pipeline\GorgonStreamOutBindings.cs" />
-    <Compile Include="Pipeline\GorgonStreamOutCall.cs" />
-    <Compile Include="Pipeline\_Internal\StateCopy.cs" />
-    <Compile Include="PrimitiveType.cs" />
-    <Compile Include="Shaders\GorgonComputeShaderResources.cs" />
-    <Compile Include="Shaders\GorgonShaderResourceViews.cs" />
-    <Compile Include="Buffers\GorgonConstantBuffers.cs" />
-    <Compile Include="Shaders\GorgonReadWriteViewBinding.cs" />
-    <Compile Include="Shaders\GorgonReadWriteViewBindings.cs" />
-    <Compile Include="States\Blend.cs" />
-    <Compile Include="States\BlendOperation.cs" />
-    <Compile Include="States\CullingMode.cs" />
-    <Compile Include="States\FillMode.cs" />
-    <Compile Include="States\GorgonBlendState.cs" />
-    <Compile Include="States\GorgonDepthStencilState.cs" />
-    <Compile Include="States\GorgonStateBuilderAllocator.cs" />
-    <Compile Include="States\GorgonStateBuilderPoolAllocator.cs" />
-    <Compile Include="States\GorgonStreamOutPipelineStateBuilder .cs" />
-    <Compile Include="States\GorgonPipelineStateBuilder.cs" />
-    <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
-    <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
-    <Compile Include="Pipeline\_Internal\D3DState.cs" />
-    <Compile Include="Shaders\GorgonComputeShader.cs" />
-    <Compile Include="Shaders\GorgonDomainShader.cs" />
-    <Compile Include="Shaders\GorgonGeometryShader.cs" />
-    <Compile Include="Shaders\GorgonHullShader.cs" />
-    <Compile Include="Shaders\GorgonPixelShader.cs" />
-    <Compile Include="Shaders\GorgonShader.cs" />
-    <Compile Include="Shaders\GorgonShaderFactory.cs" />
-    <Compile Include="Shaders\GorgonShaderInclude.cs" />
-    <Compile Include="Shaders\GorgonShaderMacro.cs" />
-    <Compile Include="Shaders\GorgonShaderResourceView.cs" />
-    <Compile Include="Shaders\GorgonReadWriteView.cs" />
-    <Compile Include="Shaders\GorgonVertexShader.cs" />
-    <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
-    <Compile Include="States\GorgonPipelineState.cs" />
-    <Compile Include="States\GorgonBlendStateBuilder.cs" />
-    <Compile Include="States\GorgonDepthStencilStateBuilder.cs" />
-    <Compile Include="States\GorgonSamplerStateBuilder.cs" />
-    <Compile Include="States\GorgonSamplerState.cs" />
-    <Compile Include="States\GorgonSamplerStates.cs" />
-    <Compile Include="States\GorgonStateBuilderCommon.cs" />
-    <Compile Include="States\GorgonRasterState.cs" />
-    <Compile Include="States\GorgonRasterStateBuilder.cs" />
-    <Compile Include="States\GorgonStencilOperation.cs" />
-    <Compile Include="States\GorgonStreamOutPipelineState.cs" />
-    <Compile Include="States\LogicOperation.cs" />
-    <Compile Include="States\SampleFilter.cs" />
-    <Compile Include="Shaders\GorgonShaderResources.cs" />
-    <Compile Include="States\StencilOperation.cs" />
-    <Compile Include="States\WriteMask.cs" />
-    <Compile Include="Targets\SwapChainResizingEventArgs.cs" />
-    <Compile Include="Targets\SwapChainResizedEventArgs.cs" />
-    <Compile Include="Targets\GorgonDepthStencil2DView.cs" />
-    <Compile Include="Targets\GorgonRenderTarget3DView.cs" />
-    <Compile Include="Targets\GorgonRenderTarget2DView.cs" />
-    <Compile Include="Targets\_Internal\RenderTargetFactory.cs" />
-    <Compile Include="Targets\GorgonRenderTargetView.cs" />
-    <Compile Include="Targets\GorgonSwapChain.cs" />
-    <Compile Include="Targets\GorgonSwapChainInfo.cs" />
-    <Compile Include="Targets\_Interfaces\IGorgonRenderTargetFactory.cs" />
-    <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
-    <Compile Include="Textures\GorgonTexture1D.cs" />
-    <Compile Include="Textures\GorgonTexture3DReadWriteView.cs" />
-    <Compile Include="Textures\GorgonTexture3DView.cs" />
-    <Compile Include="Textures\GorgonTexture3DInfo.cs" />
-    <Compile Include="Textures\GorgonTexture3D.cs" />
-    <Compile Include="Textures\GorgonTexture2D.cs" />
-    <Compile Include="Textures\GorgonTexture1DInfo.cs" />
-    <Compile Include="Textures\GorgonTexture2DInfo.cs" />
-    <Compile Include="Textures\GorgonTexture1DReadWriteView.cs" />
-    <Compile Include="Textures\GorgonTexture1DView.cs" />
-    <Compile Include="Textures\GorgonTexture2DLoadOptions.cs" />
-    <Compile Include="Textures\GorgonTextureLoadOptions.cs" />
-    <Compile Include="Textures\GorgonTexture2DView.cs" />
-    <Compile Include="Textures\GorgonTexture2DReadWriteView.cs" />
-    <Compile Include="Textures\GorgonTextureCache.cs" />
-    <Compile Include="Textures\_Interfaces\IGorgonTextureResource.cs" />
-    <Compile Include="Textures\TextureWrap.cs" />
-    <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
-    <Compile Include="Textures\_Interfaces\IGorgonTexture1DInfo.cs" />
-    <Compile Include="Textures\_Interfaces\IGorgonTexture3DInfo.cs" />
-    <Compile Include="Textures\_Interfaces\IGorgonTexture2DInfo.cs" />
-    <Compile Include="Textures\_Internal\BltVertex.cs" />
-    <Compile Include="Textures\_Internal\TextureBlitter.cs" />
-    <Compile Include="Textures\_Internal\TextureViewKey.cs" />
-    <Compile Include="_Extensions\GorgonCollectionExtensions.cs" />
-    <Compile Include="_Extensions\GorgonFeatureSetExtensions.cs" />
-    <Compile Include="_Interfaces\IGorgonGraphicsObject.cs" />
-    <Compile Include="_Internal\FormatSupportInfo.cs" />
-    <Compile Include="GorgonGraphics.cs" />
-    <Compile Include="GorgonMultiSampleInfo.cs" />
-    <Compile Include="_Interfaces\IGorgonFormatSupportInfo.cs" />
-    <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
-    <Compile Include="Native\Win32API.cs" />
-    <Compile Include="Native\Win32Types.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_Internal\DisposableRegistrar.cs" />
-    <Compile Include="_Internal\_Extensions\GorgonColorExtensions.cs" />
-    <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
+    <ProjectReference Include="..\Gorgon.Windows\Gorgon.Windows.csproj" />
+    <ProjectReference Include="..\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\NoLiteralBugFix.ruleset" />
-    <None Include="Resources\Gorgon_2.x_Logo_Small.png" />
-    <None Include="Resources\GraphicsShaders.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
-      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
-      <Name>Gorgon.Graphics.Imaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gorgon.Windows\Gorgon.Windows.csproj">
-      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
-      <Name>Gorgon.Windows</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -278,34 +72,21 @@
     <PackageReference Include="SharpDX.Mathematics">
       <Version>4.2.0</Version>
     </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>5.0.0</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-    <None Include="Resources\White_2x2.png" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)ResourceCommentCleaner $(ProjectDir)Properties\</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

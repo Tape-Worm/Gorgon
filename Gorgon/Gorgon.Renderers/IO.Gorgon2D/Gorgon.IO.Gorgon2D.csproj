@@ -1,183 +1,73 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Gorgon.IO</RootNamespace>
-    <AssemblyName>Gorgon.IO.Gorgon2D</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon.IO.Gorgon2D.xml</DocumentationFile>
-    <langversion>7.3</langversion>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>..\..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Gorgon.IO.Gorgon2D.xml</DocumentationFile>
-    <langversion>7.3</langversion>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <CodeAnalysisRuleSet>..\..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>Provides IO functionality used to serialize and deserialize 2D objects using streams, and the Gorgon file system.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RootNamespace>Gorgon.IO</RootNamespace>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\Gorgon.IO.Gorgon2D.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\Gorgon.IO.Gorgon2D.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <None Include="..\..\g.png">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
+    <None Include="..\..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Codecs\GorgonAnimationCodecCommon.cs" />
-    <Compile Include="Codecs\GorgonAnimationCodecDescription.cs" />
-    <Compile Include="Codecs\GorgonSpriteCodecDescription.cs" />
-    <Compile Include="Codecs\GorgonPolySpriteCodecCommon.cs" />
-    <Compile Include="Codecs\GorgonSpriteCodecCommon.cs" />
-    <Compile Include="Codecs\GorgonSpriteCodecPlugin.cs" />
-    <Compile Include="Codecs\GorgonV31AnimationJsonCodec.cs" />
-    <Compile Include="Codecs\GorgonV3AnimationBinaryCodec.cs" />
-    <Compile Include="Codecs\GorgonV3AnimationJsonCodec.cs" />
-    <Compile Include="Codecs\GorgonV1AnimationCodec.cs" />
-    <Compile Include="Codecs\GorgonV3PolySpriteBinaryCodec.cs" />
-    <Compile Include="Codecs\GorgonV3SpriteBinaryCodec.cs" />
-    <Compile Include="Codecs\GorgonV3PolySpriteJsonCodec.cs" />
-    <Compile Include="Codecs\GorgonV3SpriteJsonCodec.cs" />
-    <Compile Include="Codecs\GorgonV2SpriteCodec.cs" />
-    <Compile Include="Codecs\GorgonV1SpriteBinaryCodec.cs" />
-    <Compile Include="Codecs\_Interface\IGorgonAnimationCodec.cs" />
-    <Compile Include="Codecs\_Interface\IGorgonPolySpriteCodec.cs" />
-    <Compile Include="Codecs\_Interface\IGorgonSpriteCodec.cs" />
-    <Compile Include="Codecs\_Internal\JsonRectKeyConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonRectangleFConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonSamplerConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonSize2FConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonTexture2DConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonGorgonColorConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonGorgonColorKeyConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonSingleKeyConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonVector2KeyConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonVector4Converter.cs" />
-    <Compile Include="Codecs\_Internal\JsonVector4KeyConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonVector3KeyConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonTextureKeyConverter.cs" />
-    <Compile Include="Codecs\_Internal\JsonVector2Converter.cs" />
-    <Compile Include="Codecs\_Internal\JsonVector3Converter.cs" />
-    <Compile Include="Codecs\_Internal\v2\GorgonChunkedFormat.cs" />
-    <Compile Include="Codecs\_Internal\v2\GorgonChunkReader.cs" />
-    <Compile Include="Codecs\GorgonAnimationCodecPlugin.cs" />
-    <Compile Include="Codecs\GorgonV31AnimationBinaryCodec.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="_Extensions\Gorgon2DFileSystemExtensions.cs" />
-    <Compile Include="_Extensions\GorgonAnimationExtensions.cs" />
-    <Compile Include="_Extensions\GorgonGraphicExtensions.cs" />
-    <Compile Include="_Extensions\GorgonSpriteExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="SharpDX">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="SharpDX.Mathematics">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>5.0.0</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon.Animation\Gorgon.Animation.csproj">
-      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
-      <Name>Gorgon.Animation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
-      <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
-      <Name>Gorgon.FileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj">
-      <Project>{1dfb5973-950a-4b6e-84af-953de57c9213}</Project>
-      <Name>Gorgon.Graphics.Fonts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
-      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
-      <Name>Gorgon.Graphics.Imaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
-      <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
-      <Name>Gorgon.Renderers.Gorgon2D</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon.FileSystem\Gorgon.FileSystem.csproj" />
+    <ProjectReference Include="..\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\NoLiteralBugFix.ruleset">
-      <Link>NoLiteralBugFix.ruleset</Link>
-    </None>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

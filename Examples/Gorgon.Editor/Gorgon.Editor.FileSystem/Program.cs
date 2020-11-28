@@ -158,7 +158,7 @@ namespace Gorgon.Examples
                 _fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath("FileSystems").FullName, "Gorgon.Editor.FileSystem.gorPack"));
 
                 window.UpdateStatus("Initializing graphics...");
-                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
+                var videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
 
                 if (videoDevices.Count == 0)
                 {
@@ -243,7 +243,7 @@ namespace Gorgon.Examples
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static async Task Main()
+        static void Main()
         {
             try
             {
@@ -255,8 +255,9 @@ namespace Gorgon.Examples
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
                 // Create the window, and size it to our resolution.
-                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Gorgon.Editor.FileSystem - Loading content from an editor file system example.",
-                        async (sender, _) => await InitializeAsync(sender as FormMain));
+                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), 
+                                                           "Gorgon.Editor.FileSystem - Loading content from an editor file system example.",
+                                                           async (sender, _) => await InitializeAsync(sender as FormMain));
 
                 GorgonApplication.Run(window);
             }

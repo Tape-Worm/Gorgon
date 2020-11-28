@@ -29,9 +29,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using Gorgon.Examples;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example.Properties;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
@@ -40,7 +40,7 @@ using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
 	/// This is an example of using the base graphics API.  It's very similar to how Direct 3D 11 works, but with some enhancements
@@ -543,7 +543,7 @@ namespace Gorgon.Graphics.Example
                 _mainForm = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Boinger");
 
                 // Add a keybinding to switch to full screen or windowed.
-                _mainForm.KeyDown += _mainForm_KeyDown;
+                _mainForm.KeyDown += MainForm_KeyDown;
 
                 // Set up the swap chain, buffers, and texture(s).
                 InitializeGpuResources();
@@ -613,7 +613,7 @@ namespace Gorgon.Graphics.Example
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private static void _mainForm_KeyDown(object sender, KeyEventArgs e)
+        private static void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if ((!e.Alt) || (e.KeyCode != Keys.Enter))
             {

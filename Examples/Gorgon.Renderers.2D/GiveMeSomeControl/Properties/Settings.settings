@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ResourceLocation" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">..\..\..\..\..\Resources\</Value>
+      <Value Profile="(Default)">..\..\..\..\..\..\Resources\</Value>
     </Setting>
   </Settings>
 </SettingsFile>

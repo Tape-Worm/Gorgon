@@ -213,7 +213,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                 IContentFile previewFile = files[files.Count - 1]?.File;
 
-                if (previewFile == null)
+                if (previewFile?.Metadata?.ContentMetadata == null)
                 {
                     PreviewImage = null;
                     return;

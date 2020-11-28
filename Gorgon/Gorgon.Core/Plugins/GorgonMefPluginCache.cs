@@ -416,7 +416,7 @@ namespace Gorgon.PlugIns
         /// If the <paramref name="filePattern"/> is specified, then a standard file search wildcard can be used to located specific files to load (e.g. MyPlugIn-*.dll, OtherTypes*.so, etc...).
         /// </para>
         /// </remarks>
-	    public void LoadPlugInAssemblies(string directoryPath, string filePattern = "*.dll")
+        public void LoadPlugInAssemblies(string directoryPath, string filePattern = "*.dll")
         {
             if (directoryPath == null)
             {
@@ -462,9 +462,7 @@ namespace Gorgon.PlugIns
                 }
                 else
                 {
-#pragma warning disable CA2000 // Dispose objects before losing scope
                     catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
-#pragma warning restore CA2000 // Dispose objects before losing scope
                     _rootCatalog.Catalogs.Add(catalog);
                     
                     Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Verbose);
@@ -477,7 +475,7 @@ namespace Gorgon.PlugIns
         /// <summary>
         /// Function to refresh the loaded plugin assembly list, and import any other assemblies that match the previously watched paths.
         /// </summary>
-	    public void Refresh()
+        public void Refresh()
         {
             lock (_syncLock)
             {

@@ -142,7 +142,7 @@ namespace Gorgon.Examples
         // Previous position.
         private DX.Vector2 _previousPosition;
         // The renderer used to draw the particle(s).
-        private Gorgon2D _renderer;
+        private readonly Gorgon2D _renderer;
         // The position of the emitter.
         private DX.Vector2 _position;
         // The number of particles that are still active.
@@ -202,10 +202,7 @@ namespace Gorgon.Examples
         /// </remarks>
         public int MaximumParticleCount
         {
-            get
-            {
-                return _particles.Length;
-            }
+            get => _particles.Length;
             set
             {
                 value = value.Max(1);

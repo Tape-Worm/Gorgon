@@ -142,7 +142,7 @@ namespace Gorgon.Collections
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.
         /// </returns>
         public virtual IEnumerator<T> GetEnumerator()
         {
@@ -159,7 +159,7 @@ namespace Gorgon.Collections
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// An <see cref="IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -198,17 +198,17 @@ namespace Gorgon.Collections
         void ICollection<T>.Clear() => _list.Clear();
 
         /// <summary>
-        /// Copies the elements of the dictionary to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+        /// Copies the elements of the dictionary to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from dictionary. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from dictionary. The <see cref="Array"/> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// 	<paramref name="array"/> is null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// 	<paramref name="arrayIndex"/> is less than 0.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="ArgumentException">
         /// 	<paramref name="array"/> is multidimensional.
         /// -or-
         /// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.

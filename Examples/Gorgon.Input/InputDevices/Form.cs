@@ -230,7 +230,7 @@ namespace Gorgon.Examples
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private void _mouse_ButtonUp(object sender, GorgonMouseEventArgs e) =>
+        private void Mouse_ButtonUp(object sender, GorgonMouseEventArgs e) =>
             // Update the buttons so that only the buttons we have held down are showing.
             UpdateMouse(e.RelativePosition, e.ShiftButtons & ~e.Buttons);
 
@@ -240,7 +240,7 @@ namespace Gorgon.Examples
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private void _mouse_ButtonDown(object sender, GorgonMouseEventArgs e) => UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
+        private void Mouse_ButtonDown(object sender, GorgonMouseEventArgs e) => UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
 
         /// <summary>
         /// Handles the PointingDeviceMove event of the _mouse control.
@@ -248,7 +248,7 @@ namespace Gorgon.Examples
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private void _mouse_Move(object sender, GorgonMouseEventArgs e) =>
+        private void Mouse_Move(object sender, GorgonMouseEventArgs e) =>
             // Lock the cursor in place as well so that we can, again, fake an "exclusive" mode.
             UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
 
@@ -257,7 +257,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonKeyboardEventArgs" /> instance containing the event data.</param>
-        private void _keyboard_KeyUp(object sender, GorgonKeyboardEventArgs e)
+        private void Keyboard_KeyUp(object sender, GorgonKeyboardEventArgs e)
         {
             // If we press "P", then switch between polling and events.
             if (e.Key == Keys.P)
@@ -267,16 +267,16 @@ namespace Gorgon.Examples
                 if (_usePolling)
                 {
                     // Turn off mouse events when polling.
-                    _mouse.MouseMove -= _mouse_Move;
-                    _mouse.MouseButtonDown -= _mouse_ButtonDown;
-                    _mouse.MouseButtonUp -= _mouse_ButtonUp;
+                    _mouse.MouseMove -= Mouse_Move;
+                    _mouse.MouseButtonDown -= Mouse_ButtonDown;
+                    _mouse.MouseButtonUp -= Mouse_ButtonUp;
                 }
                 else
                 {
                     // Turn on mouse events when not polling.
-                    _mouse.MouseMove += _mouse_Move;
-                    _mouse.MouseButtonDown += _mouse_ButtonDown;
-                    _mouse.MouseButtonUp += _mouse_ButtonUp;
+                    _mouse.MouseMove += Mouse_Move;
+                    _mouse.MouseButtonDown += Mouse_ButtonDown;
+                    _mouse.MouseButtonUp += Mouse_ButtonUp;
                 }
             }
 
@@ -288,7 +288,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonKeyboardEventArgs" /> instance containing the event data.</param>		
-        private void _keyboard_KeyDown(object sender, GorgonKeyboardEventArgs e)
+        private void Keyboard_KeyDown(object sender, GorgonKeyboardEventArgs e)
         {
             // Exit the application.
             if (e.Key == Keys.Escape)
@@ -334,11 +334,11 @@ namespace Gorgon.Examples
             _mouse = new GorgonRawMouse();
 
             // Assign an event to notify us when the mouse is moving.
-            _mouse.MouseMove += _mouse_Move;
+            _mouse.MouseMove += Mouse_Move;
 
             // Assign another event to notify us when a mouse button was clicked.
-            _mouse.MouseButtonDown += _mouse_ButtonDown;
-            _mouse.MouseButtonUp += _mouse_ButtonUp;
+            _mouse.MouseButtonDown += Mouse_ButtonDown;
+            _mouse.MouseButtonUp += Mouse_ButtonUp;
 
             // Center the mouse on the window.
             _mousePosition = DisplayHalfSize;
@@ -363,8 +363,8 @@ namespace Gorgon.Examples
             _keyboard = new GorgonRawKeyboard();
 
             // Set up an event handler for our keyboard.
-            _keyboard.KeyDown += _keyboard_KeyDown;
-            _keyboard.KeyUp += _keyboard_KeyUp;
+            _keyboard.KeyDown += Keyboard_KeyDown;
+            _keyboard.KeyUp += Keyboard_KeyUp;
 
             _rawInput.RegisterDevice(_keyboard);
 

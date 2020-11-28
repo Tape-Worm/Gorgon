@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace CodecPlugIn
+namespace Graphics.Examples
 {
     partial class Form
     {

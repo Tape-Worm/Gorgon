@@ -29,16 +29,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example.Properties;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// The main window for our example.

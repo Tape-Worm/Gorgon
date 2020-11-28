@@ -29,7 +29,7 @@ using System.Windows.Forms;
 using Gorgon.Examples;
 using Gorgon.UI;
 
-namespace Gorgon.Input.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Example entry point.

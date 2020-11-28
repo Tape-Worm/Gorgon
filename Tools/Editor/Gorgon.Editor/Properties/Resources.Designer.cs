@@ -1923,7 +1923,7 @@ namespace Gorgon.Editor.Properties {
         ///        &lt;StateCommon&gt;
         ///          &lt;Back&gt;
         ///            &lt;Color1 Type=&quot;Color&quot; Value=&quot;Transparent&quot; /&gt;
-        ///            &lt;Color2 Type=&quot;Color&quot; Va [rest of string was truncated]&quot;;.
+        ///            &lt;Color2 Type=&quot;Color&quot; Value=&quot;Transparent&quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Krypton_DarkO2k10Theme {
             get {

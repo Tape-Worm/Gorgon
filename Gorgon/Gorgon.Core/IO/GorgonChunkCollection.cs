@@ -54,21 +54,21 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.
+        /// Determines the index of a specific item in the <see cref="IList{T}" />.
         /// </summary>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+        /// <param name="item">The object to locate in the <see cref="IList{T}" />.</param>
         /// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
         public int IndexOf(GorgonChunk item) => _list.IndexOf(item);
 
         /// <summary>
-        /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
+        /// Inserts an item to the <see cref="IList{T}" /> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+        /// <param name="item">The object to insert into the <see cref="IList{T}" />.</param>
         public void Insert(int index, GorgonChunk item) => _list.Insert(index, item);
 
         /// <summary>
-        /// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
+        /// Removes the <see cref="IList{T}" /> item at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
         public void RemoveAt(int index) => _list.RemoveAt(index);
@@ -78,13 +78,13 @@ namespace Gorgon.IO
         #region ICollection<GorgonChunk> Members
         #region Properties.
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// Gets the number of elements contained in the <see cref="ICollection{T}" />.
         /// </summary>
         /// <value>The count.</value>
         public int Count => _list.Count;
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+        /// Gets a value indicating whether the <see cref="ICollection{T}" /> is read-only.
         /// </summary>
         /// <value><b>true</b> if this instance is read only; otherwise, <b>false</b>.</value>
         bool ICollection<GorgonChunk>.IsReadOnly => false;
@@ -93,21 +93,21 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// Adds an item to the <see cref="ICollection{T}" />.
         /// </summary>
-        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <param name="item">The object to add to the <see cref="ICollection{T}" />.</param>
         public void Add(GorgonChunk item) => _list.Add(item);
 
         /// <summary>
-        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// Removes all items from the <see cref="ICollection{T}" />.
         /// </summary>
         public void Clear() => _list.Clear();
 
         /// <summary>
-        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
+        /// Determines whether the <see cref="ICollection{T}" /> contains a specific value.
         /// </summary>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-        /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
+        /// <param name="item">The object to locate in the <see cref="ICollection{T}" />.</param>
+        /// <returns>true if <paramref name="item" /> is found in the <see cref="ICollection{T}" />; otherwise, false.</returns>
         public bool Contains(GorgonChunk item) => IndexOf(item) != -1;
 
         /// <summary>
@@ -118,10 +118,10 @@ namespace Gorgon.IO
         public void CopyTo(GorgonChunk[] array, int arrayIndex) => _list.CopyTo(array, arrayIndex);
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// Removes the first occurrence of a specific object from the <see cref="ICollection{T}" />.
         /// </summary>
-        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-        /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+        /// <param name="item">The object to remove from the <see cref="ICollection{T}" />.</param>
+        /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="ICollection{T}" />.</returns>
         public bool Remove(GorgonChunk item) => _list.Remove(item);
         #endregion
         #endregion
@@ -130,7 +130,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
-        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+        /// <returns>A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.</returns>
         public IEnumerator<GorgonChunk> GetEnumerator() => _list.GetEnumerator();
         #endregion
 
@@ -138,7 +138,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_list).GetEnumerator();
         #endregion
 

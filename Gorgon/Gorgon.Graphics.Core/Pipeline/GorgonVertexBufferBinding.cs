@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;

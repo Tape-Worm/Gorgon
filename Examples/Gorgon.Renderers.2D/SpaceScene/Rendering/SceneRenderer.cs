@@ -53,17 +53,14 @@ namespace Gorgon.Examples
         // The resource manager.
         private readonly ResourceManagement _resources;
         // The camera used for rendering.
-        private IGorgon2DCamera _camera;
+        private readonly IGorgon2DCamera _camera;
         // The screen buffer.
         private GorgonRenderTarget2DView _screen;
         // The list of layers to render.
-        private List<Layer> _layers = new List<Layer>();
+        private readonly List<Layer> _layers = new List<Layer>();
         // Post processing groups.  Use to render specific layers with post processing effects.
         private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new List<(string name, Gorgon2DCompositor compositor)>();
         private readonly Dictionary<string, List<Layer>> _postProcessLayers = new Dictionary<string, List<Layer>>(StringComparer.OrdinalIgnoreCase);
-
-        // The controller for the layers in the application.
-        private LayerCamera _layerController;
         #endregion
 
         #region Methods.
@@ -215,10 +212,10 @@ namespace Gorgon.Examples
             {
                 // Since we're altering the size of the sprites, we'll need to get the original width/height from another place.
                 // This can be extracted from the sprite texture region (assuming the region is 1:1 with pixel space, scaling the texture coordinates will mess this up).
-                DX.Size2F size = sprite.Texture.ToPixel(sprite.TextureRegion.Size).ToSize2F();
+                var size = sprite.Texture.ToPixel(sprite.TextureRegion.Size).ToSize2F();
 
                 // Scale the size of the sprite to match our base resolution of 1920x1080.
-                DX.Size2F newSize = new DX.Size2F(size.Width / screen.Width * _camera.ViewDimensions.Width * 0.75f, size.Height / screen.Height * _camera.ViewDimensions.Height * 0.75f);
+                var newSize = new DX.Size2F(size.Width / screen.Width * _camera.ViewDimensions.Width * 0.75f, size.Height / screen.Height * _camera.ViewDimensions.Height * 0.75f);
 
                 sprite.Size = newSize;
             }
@@ -275,7 +272,6 @@ namespace Gorgon.Examples
         /// <param name="renderer">The renderer.</param>
         /// <param name="resources">The resources.</param>
         /// <param name="screen">The main render target for the scene.</param>
-        /// <param name="layerController">The layer controller for the scene.</param>
         /// <param name="camera">The camera for the scene.</param>
         public SceneRenderer(Gorgon2D renderer, ResourceManagement resources, GorgonRenderTarget2DView screen, LayerCamera layerController, IGorgon2DCamera camera)
         {
@@ -283,7 +279,6 @@ namespace Gorgon.Examples
             _renderer = renderer;
             _resources = resources;
             _screen = screen;
-            _layerController = layerController;
             _layers.AddRange(layerController.Layers);
             _camera = camera;
         }

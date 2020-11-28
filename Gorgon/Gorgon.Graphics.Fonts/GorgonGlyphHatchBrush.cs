@@ -33,7 +33,6 @@ namespace Gorgon.Graphics.Fonts
     /// <summary>
     /// The patterns used to draw the glyphs.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "Because")]
     public enum GlyphBrushHatchStyle
     {
         /// <summary>

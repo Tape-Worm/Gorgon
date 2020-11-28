@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Diagnostics.CodeAnalysis;
 
 namespace Gorgon.Core
 {

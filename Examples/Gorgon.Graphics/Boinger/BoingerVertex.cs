@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
 using SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// A vertex for our boinger objects.

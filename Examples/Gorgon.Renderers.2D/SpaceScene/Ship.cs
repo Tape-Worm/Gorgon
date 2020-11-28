@@ -61,13 +61,13 @@ namespace Gorgon.Examples
         // The engine sprite.
         private SpriteEntity _engine;
         // The layer containing the sprite(s) for this ship.
-        private SpritesLayer _layer;
+        private readonly SpritesLayer _layer;
         // The controller for the layers.
         private LayerCamera _layerController;
         // The angle of rotation.
         private float _angle;
         // The controller for the engine animation.
-        private GorgonSpriteAnimationController _engineAnimationController;
+        private readonly GorgonSpriteAnimationController _engineAnimationController;
         // Flag to indicate that we are slowing down.
         private bool _isSlowing;
         // Are we moving backwards?
@@ -76,8 +76,6 @@ namespace Gorgon.Examples
         private DX.Vector2 _engineOffset;
         // Position of the ship.
         private DX.Vector2 _position;
-        // The speed of the ship.
-        private float _speed;
         // The laughable AI.
         private DummyAi _ai;
         #endregion
@@ -86,7 +84,11 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the speed of the ship.
         /// </summary>
-        public float Speed => _speed;
+        public float Speed
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to set or return the AI for this ship.
@@ -179,7 +181,7 @@ namespace Gorgon.Examples
             }
 
             _ship.Rotation = _angle;
-            _engine.Rotation = _speed >= 0 ? _angle : _angle + 180;
+            _engine.Rotation = Speed >= 0 ? _angle : _angle + 180;
             _engine.LocalPosition = _ship.LocalPosition = _layerController == null ? _position : DX.Vector2.Zero;
         }
 
@@ -210,14 +212,14 @@ namespace Gorgon.Examples
             }
 
             // Ensure our speed locks at zero. 
-            if (((_backwards) && (_speed >= 0))
-                || (!_backwards) && (_speed <= 0))
+            if (((_backwards) && (Speed >= 0))
+                || (!_backwards) && (Speed <= 0))
             {
                 _isSlowing = false;
-                _speed = 0;
+                Speed = 0;
             }
 
-            _backwards = _speed < 0;
+            _backwards = Speed < 0;
         }
 
         /// <summary>
@@ -229,11 +231,11 @@ namespace Gorgon.Examples
             _ai?.Update();
 
             // Depending on our speed, fade the engine glow in/out.
-            _engine.Color = new GorgonColor(_engine.Color, _speed.Abs() / (_speed >= 0 ? 1.0f : 1f));
+            _engine.Color = new GorgonColor(_engine.Color, Speed.Abs() / (Speed >= 0 ? 1.0f : 1f));
 
             // If we're moving in reverse, then we can offset the engine glow to give the appearance of the 
             // engine burning from the other side of the ship.
-            if (_speed < 0)
+            if (Speed < 0)
             {
                 _engine.Anchor = new DX.Vector2(_engineOffset.X, 0.73f);
             }
@@ -243,7 +245,7 @@ namespace Gorgon.Examples
             }
 
             // If we have movement, then activate the animation for the engine, otherwise turn off the animation.
-            if (!_speed.EqualsEpsilon(0))
+            if (!Speed.EqualsEpsilon(0))
             {
                 if (_engineAnimationController.State != AnimationState.Playing)
                 {
@@ -259,7 +261,7 @@ namespace Gorgon.Examples
 
             // Convert our angle and speed to a vector so we can get movement along it.
             float rads = _angle.ToRadians();
-            DX.Vector2 dirMag = new DX.Vector2(-rads.Sin(), rads.Cos()) * _speed;
+            DX.Vector2 dirMag = new DX.Vector2(-rads.Sin(), rads.Cos()) * Speed;
             Position -= dirMag * GorgonTiming.Delta;
 
             // Ensure our animation moves to the next frame.
@@ -271,9 +273,9 @@ namespace Gorgon.Examples
         /// </summary>
         public void Accelerate()
         {
-            _speed += 0.25f * GorgonTiming.Delta;
-            _backwards = _speed < 0;
-            _speed = _speed.Max(-0.8f).Min(1.0f);
+            Speed += 0.25f * GorgonTiming.Delta;
+            _backwards = Speed < 0;
+            Speed = Speed.Max(-0.8f).Min(1.0f);
         }
 
         /// <summary>
@@ -281,9 +283,9 @@ namespace Gorgon.Examples
         /// </summary>
         public void Decelerate()
         {
-            _speed -= 0.25f * GorgonTiming.Delta;
-            _backwards = _speed < 0;
-            _speed = _speed.Max(-0.8f).Min(1.0f);
+            Speed -= 0.25f * GorgonTiming.Delta;
+            _backwards = Speed < 0;
+            Speed = Speed.Max(-0.8f).Min(1.0f);
         }
 
         /// <summary>
@@ -292,7 +294,7 @@ namespace Gorgon.Examples
         /// <remarks>
         /// The AI object uses this to ensure the ship stays stationary after it has decelerated to a certain point (we don't want it going in reverse).
         /// </remarks>
-        public void HardStop() => _speed = 0;
+        public void HardStop() => Speed = 0;
 
         /// <summary>
         /// Function to handle user input.

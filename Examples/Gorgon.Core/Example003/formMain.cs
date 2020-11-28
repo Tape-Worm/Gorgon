@@ -37,7 +37,7 @@ namespace Gorgon.Examples
     /// <summary>
     /// Our form for the example.
     /// </summary>
-    public partial class formMain : Form
+    public partial class FormMain : Form
     {
         #region Variables.
         // GDI+ form graphics interface.
@@ -174,9 +174,9 @@ namespace Gorgon.Examples
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="formMain" /> class.
+        /// Initializes a new instance of the <see cref="FormMain" /> class.
         /// </summary>
-        public formMain() => InitializeComponent();
+        public FormMain() => InitializeComponent();
         #endregion
     }
 }

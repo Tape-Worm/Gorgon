@@ -658,7 +658,6 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "ToPointer is the proper naming.")]
         public static explicit operator void*(GorgonNativeBuffer<T> buffer) => ToPointer(buffer);
 
         /// <summary>

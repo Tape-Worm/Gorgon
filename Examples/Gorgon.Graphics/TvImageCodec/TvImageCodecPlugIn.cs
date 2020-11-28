@@ -26,7 +26,7 @@
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Codecs;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Our entry point into the TV image codec.

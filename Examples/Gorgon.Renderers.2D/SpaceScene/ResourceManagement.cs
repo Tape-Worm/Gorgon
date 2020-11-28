@@ -67,15 +67,9 @@ namespace Gorgon.Examples
         // The 2D renderer interface for the application.
         private readonly Gorgon2D _renderer;
         // The plug in service for the application.
-        private IGorgonPlugInService _plugIns;
+        private readonly IGorgonPlugInService _plugIns;
         // The file system where resources are kept.
         private IGorgonFileSystem _fileSystem;
-        // The codec for images.
-        private readonly IGorgonImageCodec _imageCodec = new GorgonCodecDds();
-        // The codec for sprites.
-        private readonly IGorgonSpriteCodec _spriteCodec;
-        // The list of sprites available.
-        private readonly Dictionary<string, GorgonSprite> _sprites = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
         // The list of shaders.
         private readonly Dictionary<string, GorgonPixelShader> _pixelShaders = new Dictionary<string, GorgonPixelShader>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, GorgonVertexShader> _vertexShaders = new Dictionary<string, GorgonVertexShader>(StringComparer.OrdinalIgnoreCase);
@@ -450,8 +444,6 @@ namespace Gorgon.Examples
             _graphics = renderer.Graphics;
             _plugIns = plugIns;
             _textureCache = new GorgonTextureCache<GorgonTexture2D>(renderer.Graphics);
-
-            _spriteCodec = new GorgonV3SpriteBinaryCodec(renderer);
         }
         #endregion
     }

@@ -402,7 +402,7 @@ namespace Gorgon.Examples
         /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
         public override DX.RectangleF GetAABB()
         {
-            DX.RectangleF result = new DX.RectangleF(-Radius * 0.5f, -Radius * 0.5f, Radius, Radius);
+            var result = new DX.RectangleF(-Radius * 0.5f, -Radius * 0.5f, Radius, Radius);
             result.Offset((DX.Vector2)Position);
 
             return result;

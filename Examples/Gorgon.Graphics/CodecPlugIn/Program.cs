@@ -29,7 +29,7 @@ using System.Windows.Forms;
 using Gorgon.Examples;
 using Gorgon.UI;
 
-namespace CodecPlugIn
+namespace Graphics.Examples
 {
     /// <summary>
     /// This is an example to show a developer how to create their own image codec for loading/saving images.

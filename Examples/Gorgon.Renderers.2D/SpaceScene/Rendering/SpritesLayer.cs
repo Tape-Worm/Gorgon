@@ -44,11 +44,11 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // The list of sprites that are lit.
-        private List<Gorgon2DBatchState> _states = new List<Gorgon2DBatchState>();
+        private readonly List<Gorgon2DBatchState> _states = new List<Gorgon2DBatchState>();
         // The list of sprites organized by name.
-        private Dictionary<string, SpriteEntity> _spriteByName = new Dictionary<string, SpriteEntity>();
+        private readonly Dictionary<string, SpriteEntity> _spriteByName = new Dictionary<string, SpriteEntity>();
         // A list of sprite entities to draw.
-        private List<(int index, SpriteEntity entity)> _drawList = new List<(int index, SpriteEntity entity)>();
+        private readonly List<(int index, SpriteEntity entity)> _drawList = new List<(int index, SpriteEntity entity)>();
         #endregion
 
         #region Properties.
@@ -145,7 +145,6 @@ namespace Gorgon.Examples
                 return;
             }
 
-            bool needStateChange = true;
             bool wasLit = false;
 
             GorgonRenderTargetView rtv = Graphics.RenderTargets[0];
@@ -167,7 +166,7 @@ namespace Gorgon.Examples
                 GorgonSprite sprite = entity.Sprite;
                 Gorgon2DBatchState currentState = _states[spriteIndex];
 
-                needStateChange = (i == 0) || (lastState != currentState) || (wasLit != entity.IsLit);
+                bool needStateChange = (i == 0) || (lastState != currentState) || (wasLit != entity.IsLit);
 
                 if (needStateChange)
                 {
@@ -200,7 +199,6 @@ namespace Gorgon.Examples
                     }
 
                     wasLit = entity.IsLit;
-                    needStateChange = false;
                     lastState = currentState;
                 }
 
@@ -226,10 +224,11 @@ namespace Gorgon.Examples
         public override void LoadResources()
         {
             var builder = new Gorgon2DBatchStateBuilder();
-            GorgonBlendState state = null;
 
-            var batchStates = new Dictionary<GorgonBlendState, Gorgon2DBatchState>();
-            batchStates.Add(GorgonBlendState.Default, null);
+            var batchStates = new Dictionary<GorgonBlendState, Gorgon2DBatchState>
+            {
+                { GorgonBlendState.Default, null }
+            };
 
             foreach (GorgonBlendState blendState in Sprites.Select(item => item.BlendState).Distinct())
             {

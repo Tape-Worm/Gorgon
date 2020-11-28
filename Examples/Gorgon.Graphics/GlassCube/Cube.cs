@@ -30,7 +30,7 @@ using Gorgon.Math;
 using Gorgon.Native;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Object representing a 3D dimensional cube.

@@ -1,470 +1,103 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4FFFE2C0-D871-40B6-A60B-282F1359D1A9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Gorgon.Editor</RootNamespace>
-    <AssemblyName>Gorgon.Editor</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <langversion>7.3</langversion>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>..\..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <langversion>7.3</langversion>
-    <CodeAnalysisRuleSet>..\..\..\Gorgon\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
+    <Version>3.1.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>An editor used to create content for Gorgon applications.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RootNamespace>Gorgon.Editor</RootNamespace>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <ApplicationManifest>..\..\..\Examples\app.manifest</ApplicationManifest>
+    <StartupObject>
+    </StartupObject>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Gorgon.Editor.Program</StartupObject>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
-      <Link>SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Boot.cs" />
-    <Compile Include="ContentRibbonEventArgs.cs" />
-    <Compile Include="FileSystem\Services\FileSystemFolderBrowseService.cs" />
-    <Compile Include="FileSystem\Services\FileSystemSearchSystem.cs" />
-    <Compile Include="FileSystem\ViewModels\CreateDirectoryArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\DeleteArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\Directory.cs" />
-    <Compile Include="FileSystem\ViewModels\DirectoryCopyMoveData.cs" />
-    <Compile Include="FileSystem\ViewModels\DirectoryParameters.cs" />
-    <Compile Include="FileSystem\ViewModels\File.cs" />
-    <Compile Include="FileSystem\ViewModels\FileCopyMoveData.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorer.cs" />
-    <Compile Include="FileSystem\ViewModels\FileExplorerParameters.cs" />
-    <Compile Include="FileSystem\ViewModels\FileParameters.cs" />
-    <Compile Include="FileSystem\ViewModels\FileSystemClipboardHandler.cs" />
-    <Compile Include="FileSystem\ViewModels\GetDirectoryArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\GetSizeInBytesCommandArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\RenameArgs.cs" />
-    <Compile Include="FileSystem\ViewModels\RootDirectory.cs" />
-    <Compile Include="FileSystem\ViewModels\RootDirectoryParameters.cs" />
-    <Compile Include="FileSystem\Services\FileSystemProviders.cs" />
-    <Compile Include="FileSystem\ViewModels\_Extensions\FileSystemExtensions.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IDirectory.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IDirectoryCopyMoveData.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IExcludable.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IImportData.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IFile.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IFileCopyMoveData.cs" />
-    <Compile Include="FileSystem\ViewModels\_Interfaces\IFileExplorer.cs" />
-    <Compile Include="FileSystem\Views\DataGridViewEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="FileSystem\Views\DirectoryTreeNode.cs" />
-    <Compile Include="FileSystem\Views\ExplorerFilesDragData.cs" />
-    <Compile Include="FileSystem\Views\FileExploder.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="FileSystem\Views\FileExploder.Designer.cs">
-      <DependentUpon>FileExploder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FileSystem\Views\FileSystemNodeComparer.cs" />
-    <Compile Include="FileSystem\Views\FormFileSystemFolderBrowser.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FileSystem\Views\FormFileSystemFolderBrowser.Designer.cs">
-      <DependentUpon>FormFileSystemFolderBrowser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FileSystem\Views\GridRowsDragData.cs" />
-    <Compile Include="FileSystem\Views\ImportData.cs" />
-    <Compile Include="FileSystem\Views\RowsDragEventArgs.cs" />
-    <Compile Include="FileSystem\Views\TreeEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="FileSystem\Views\TreeNodeDragData.cs" />
-    <Compile Include="FormMain.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormMain.Designer.cs">
-      <DependentUpon>FormMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormSplash.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormSplash.designer.cs">
-      <DependentUpon>FormSplash.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Native\Shell32.cs" />
-    <Compile Include="Plugins\DisabledPlugin.cs" />
-    <Compile Include="Plugins\HostContentServices.cs" />
-    <Compile Include="ProjectData\FileCopyJob.cs" />
-    <Compile Include="ProjectData\Import\Project30.cs" />
-    <Compile Include="ProjectData\Import\Project30ItemMetadata.cs" />
-    <Compile Include="ProjectData\V2MetadataImporter.cs" />
-    <Compile Include="RibbonMerger.cs" />
-    <Compile Include="Services\ToolPluginService.cs" />
-    <Compile Include="Services\ContentPluginService.cs" />
-    <Compile Include="Services\EditorFileSaveDialogService.cs" />
-    <Compile Include="Services\EditorFileOpenDialogService.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="ProjectData\Project.cs" />
-    <Compile Include="ProjectData\ProjectManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\GraphicsContext.cs" />
-    <Compile Include="EditorSettings.cs" />
-    <Compile Include="Services\UndoService.cs" />
-    <Compile Include="Settings\ViewModels\SettingsPluginsList.cs" />
-    <Compile Include="ViewModels\AppCloseArgs.cs" />
-    <Compile Include="ViewModels\ContentPreview.cs" />
-    <Compile Include="ViewModels\ContentPreviewParameters.cs" />
-    <Compile Include="Settings\ViewModels\EditorSettings.cs" />
-    <Compile Include="Settings\ViewModels\EditorSettingsParameters.cs" />
-    <Compile Include="Settings\ViewModels\SettingsPluginListItem.cs" />
-    <Compile Include="ViewModels\SetProjectWorkspaceArgs.cs" />
-    <Compile Include="Settings\ViewModels\SettingsPluginListItemParameters.cs" />
-    <Compile Include="Settings\ViewModels\SettingsPluginsListParameters.cs" />
-    <Compile Include="ViewModels\UndoCommand.cs" />
-    <Compile Include="ViewModels\Main.cs" />
-    <Compile Include="ViewModels\MainParameters.cs" />
-    <Compile Include="ViewModels\Recent.cs" />
-    <Compile Include="ViewModels\SavePackFileArgs.cs" />
-    <Compile Include="ViewModels\NewProject.cs" />
-    <Compile Include="ViewModels\NewProjectParameters.cs" />
-    <Compile Include="ViewModels\ProjectEditor.cs" />
-    <Compile Include="ViewModels\ProjectEditorParameters.cs" />
-    <Compile Include="ViewModels\ViewModelCommonParameters.cs" />
-    <Compile Include="ViewModels\ViewModelFactory.cs" />
-    <Compile Include="Settings\ViewModels\_Interfaces\IEditorSettings.cs" />
-    <Compile Include="ViewModels\_Interfaces\IMain.cs" />
-    <Compile Include="ViewModels\_Interfaces\IContentPreview.cs" />
-    <Compile Include="ViewModels\_Interfaces\IRecent.cs" />
-    <Compile Include="Settings\ViewModels\_Interfaces\ISettingsPluginListItem.cs" />
-    <Compile Include="Settings\ViewModels\_Interfaces\ISettingsPluginsList.cs" />
-    <Compile Include="ViewModels\_Interfaces\INewProject.cs" />
-    <Compile Include="ViewModels\_Interfaces\IProjectEditor.cs" />
-    <Compile Include="Views\ContentPreviewPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\ContentPreviewPanel.Designer.cs">
-      <DependentUpon>ContentPreviewPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ProjectContainer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\ProjectContainer.Designer.cs">
-      <DependentUpon>ProjectContainer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\Views\EditorSettingsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Settings\Views\EditorSettingsPanel.Designer.cs">
-      <DependentUpon>EditorSettingsPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\Views\PluginListPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Settings\Views\PluginListPanel.Designer.cs">
-      <DependentUpon>PluginListPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RecentItemButton.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\RecentItemButton.Designer.cs">
-      <DependentUpon>RecentItemButton.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SaveEventArgs.cs" />
-    <Compile Include="Views\Stage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\Stage.Designer.cs">
-      <DependentUpon>Stage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\StageNew.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\StageNew.Designer.cs">
-      <DependentUpon>StageNew.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\StageRecent.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\StageRecent.Designer.cs">
-      <DependentUpon>StageRecent.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="FileSystem\Views\DataGridViewEx.resx">
-      <DependentUpon>DataGridViewEx.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FileSystem\Views\FileExploder.resx">
-      <DependentUpon>FileExploder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FileSystem\Views\FormFileSystemFolderBrowser.resx">
-      <DependentUpon>FormFileSystemFolderBrowser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormMain.resx">
-      <DependentUpon>FormMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormSplash.resx">
-      <DependentUpon>FormSplash.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="Views\ContentPreviewPanel.resx">
-      <DependentUpon>ContentPreviewPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\ProjectContainer.resx">
-      <DependentUpon>ProjectContainer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Settings\Views\EditorSettingsPanel.resx">
-      <DependentUpon>EditorSettingsPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Settings\Views\PluginListPanel.resx">
-      <DependentUpon>PluginListPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\RecentItemButton.resx">
-      <DependentUpon>RecentItemButton.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\Stage.resx">
-      <DependentUpon>Stage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\StageNew.resx">
-      <DependentUpon>StageNew.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\StageRecent.resx">
-      <DependentUpon>StageRecent.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="..\..\..\Examples\app.manifest">
-      <Link>app.manifest</Link>
-    </None>
-    <None Include="..\..\..\Gorgon\NoLiteralBugFix.ruleset">
-      <Link>NoLiteralBugFix.ruleset</Link>
-    </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-    <None Include="Resources\refresh_48x48.png" />
-    <None Include="Resources\refresh_16x16.png" />
-    <None Include="Resources\LoadingBg.dds" />
-    <None Include="Resources\file_explorer_48x48.png" />
-    <None Include="Resources\file_explorer_16x16.png" />
-    <None Include="Resources\content_preview_48x48.png" />
-    <None Include="Resources\content_preview_16x16.png" />
-    <None Include="Resources\recent_item_badge_48x48.png" />
-    <None Include="Resources\generic_file_20x20.png" />
-    <None Include="Resources\settings_48x48.png" />
-    <None Include="Resources\new_content_48x48.png" />
-    <None Include="Resources\new_content_16x16.png" />
-    <None Include="Resources\open_edit_16x16.png" />
-    <None Include="Resources\open_edit_48x48.png" />
-    <None Include="Resources\no_thumbnail_256x256.dds" />
-    <None Include="Resources\rename_48x48.png" />
-    <None Include="Resources\open_pack_file_48x48.png" />
-    <None Include="Resources\windo_deco_129x39.png" />
-    <None Include="Resources\stage_save_as_48x48.png" />
-    <None Include="Resources\stage_save_48x48.png" />
-    <None Include="Resources\Gorgon_2.x_Logo_Small.png" />
-    <None Include="Resources\Gorgon_2.x_Logo_Full_Site.png" />
-    <None Include="Resources\undo_16x16.png" />
-    <None Include="Resources\redo_48x48.png" />
-    <None Include="Resources\redo_16x16.png" />
-    <None Include="Resources\undo_48x48.png" />
-    <None Include="Resources\openproject_24x24.png" />
-    <None Include="Resources\recent_24x24.png" />
-    <None Include="Resources\newproject_24x24.png" />
-    <None Include="Resources\save_as_48x48.png" />
-    <None Include="Resources\save_as_16x16.png" />
-    <None Include="Resources\save_48x48.png" />
-    <None Include="Resources\save_16x16.png" />
-    <None Include="Resources\import_48x48.png" />
-    <None Include="Resources\import_16x16.png" />
-    <None Include="Resources\export_48x48.png" />
-    <None Include="Resources\export_16x16.png" />
-    <None Include="Resources\include_48x48.png" />
-    <None Include="Resources\clear_fs_16x16.png" />
-    <None Include="Resources\clear_fs_48x48.png" />
-    <None Include="Plugins\Content\Readme.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\Filesystem\Readme.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\paste_16x16.png" />
-    <None Include="Resources\copy_16x16.png" />
-    <None Include="Resources\copy_48x48.png" />
-    <None Include="Resources\cut_48x48.png" />
-    <None Include="Resources\cut_16x16.png" />
-    <None Include="Resources\paste_48x48.png" />
-    <None Include="Resources\expand_48x48.png" />
-    <None Include="Resources\expand_16x16.png" />
-    <None Include="Resources\collapse_48x48.png" />
-    <None Include="Resources\collapse_16x16.png" />
-    <None Include="Resources\show_external_16x16.png" />
-    <None Include="Resources\show_external_48x48.png" />
-    <None Include="Resources\icons8_16x16.png" />
-    <None Include="Resources\icons8_48x48.png" />
-    <None Include="Resources\rename_16x16.png" />
-    <None Include="Resources\add_directory_16x16.png" />
-    <None Include="Resources\add_directory_48x48.png" />
-    <None Include="Resources\back_icon_24x24.png" />
-    <None Include="Resources\back_icon_48x48.png" />
-    <None Include="Resources\file_48x48.png" />
-    <None Include="Resources\folder_48x48.png" />
-    <None Include="Resources\drive_remove_48x48.png" />
-    <None Include="Resources\drive_ram_48x48.png" />
-    <None Include="Resources\drive_network_48x48.png" />
-    <None Include="Resources\drive_cdrom_48x48.png" />
-    <None Include="Resources\drive_48x48.png" />
-    <None Include="Resources\open_folder_22x22.png" />
-    <None Include="Resources\recent_48x48.png" />
-    <None Include="Resources\openproject_48x48.png" />
-    <None Include="Resources\newproject_48x48.png" />
-    <None Include="Resources\Krypton_DarkO2k10Theme.xml" />
-    <None Include="Resources\Gorgon_2.x_Logo_Full.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Animation\Gorgon.Animation.csproj">
-      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
-      <Name>Gorgon.Animation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
-      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
-      <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
-      <Name>Gorgon.FileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj">
-      <Project>{1dfb5973-950a-4b6e-84af-953de57c9213}</Project>
-      <Name>Gorgon.Graphics.Fonts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
-      <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
-      <Name>Gorgon.Graphics.Imaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
-      <Project>{780b5b61-77bb-4456-af77-e6681e7e48bf}</Project>
-      <Name>Gorgon.Input</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj">
-      <Project>{06f3a8a5-5c46-4f5a-8b17-ddbdcdd49745}</Project>
-      <Name>Gorgon.Animation.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj">
-      <Project>{4bb4ef41-1f32-4c50-bcbf-43c02f9600bd}</Project>
-      <Name>Gorgon.Renderers.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj">
-      <Project>{e5506a64-62c5-4aa3-adcb-766ab0cd5528}</Project>
-      <Name>Gorgon.IO.Gorgon2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
-      <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
-      <Name>Gorgon.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
-      <Project>{695a6554-789a-4d5a-9de1-21fb621f6a8f}</Project>
-      <Name>Gorgon.Editor.API</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Krypton.Ribbon.Lite">
-      <Version>5.550.2011</Version>
-    </PackageReference>
-    <PackageReference Include="Krypton.Toolkit.Lite">
-      <Version>5.550.2011</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
-      <Version>3.3.1</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SharpDX">
-      <Version>4.2.0</Version>
+    <PackageReference Include="Krypton.Ribbon.Lite">
+      <Version>5.550.2011</Version>
     </PackageReference>
-    <PackageReference Include="SharpDX.Mathematics">
-      <Version>4.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.IO.FileSystem.AccessControl">
-      <Version>5.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime">
-      <Version>4.3.1</Version>
-    </PackageReference>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>5.0.0</Version>
-    </PackageReference>
+    <PackageReference Include="Krypton.Toolkit.Lite">
+      <Version>5.550.2011</Version>
+    </PackageReference>    
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)Tools\texconv\texconv.exe" "$(TargetDir)Plugins\content"</PostBuildEvent>
-  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Gorgon\g.png">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
+    <None Include="..\..\..\Examples\app.manifest" Link="app.manifest" />
+    <None Include="..\..\..\Gorgon\NoLiteralBugFix.ruleset" Link="NoLiterialBugFix.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Plugins\Content\Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\Filesystem\Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\Tools\Readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(SolutionDir)Tools\texconv\texconv.exe&quot; &quot;$(TargetDir)Plugins\content&quot;" />
+  </Target>
 </Project>

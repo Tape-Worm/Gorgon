@@ -28,7 +28,7 @@ using System.Windows.Forms;
 
 namespace Gorgon.Examples
 {
-    public partial class formSplash : Form
+    public partial class FormSplash : Form
     {
         /// <summary>
         /// Function to update the text label.
@@ -41,8 +41,8 @@ namespace Gorgon.Examples
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="formSplash" /> class.
+        /// Initializes a new instance of the <see cref="FormSplash" /> class.
         /// </summary>
-        public formSplash() => InitializeComponent();
+        public FormSplash() => InitializeComponent();
     }
 }

@@ -77,6 +77,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
             IEnumerable<IContentFile> spriteFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
+                                                && (item.Metadata.ContentMetadata != null)
                                                 && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
             IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
@@ -102,6 +103,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             {
                 spriteFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
+                                                            && (item.Metadata.ContentMetadata != null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
                 if (!spriteFiles.Any())
                 {

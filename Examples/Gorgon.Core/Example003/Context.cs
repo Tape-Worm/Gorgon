@@ -44,7 +44,7 @@ namespace Gorgon.Examples
         // A timer for the splash screen.
         private readonly IGorgonTimer _timer;
         // A splash screen.
-        private formSplash _splashScreen;
+        private FormSplash _splashScreen;
         #endregion
 
         #region Methods.
@@ -61,7 +61,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            ((formMain)MainForm).Clear();
+            ((FormMain)MainForm).Clear();
 
             if (GorgonApplication.IdleMethod == Program.Idle)
             {
@@ -183,8 +183,8 @@ namespace Gorgon.Examples
             }
 
             // Create the splash screen and the main interface.
-            _splashScreen = new formSplash();
-            MainForm = new formMain();          // Note that we're assign this to the inherited property 'MainForm'.
+            _splashScreen = new FormSplash();
+            MainForm = new FormMain();          // Note that we're assign this to the inherited property 'MainForm'.
                                                 // This how the application context knows which form controls the application.
 
             RunMe();

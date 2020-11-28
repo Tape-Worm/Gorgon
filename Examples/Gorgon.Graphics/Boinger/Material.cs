@@ -24,9 +24,10 @@
 // 
 #endregion
 
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Represents a material applied to a model.
