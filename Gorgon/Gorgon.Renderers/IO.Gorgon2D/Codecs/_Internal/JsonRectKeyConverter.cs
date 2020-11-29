@@ -38,7 +38,7 @@ namespace Gorgon.IO
         : JsonConverter<GorgonKeyRectangle>
     {
         /// <summary>Writes the JSON representation of the object.</summary>
-        /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
+        /// <param name="writer">The <see cref="Newtonsoft.Json.JsonWriter" /> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, GorgonKeyRectangle value, JsonSerializer serializer)
@@ -64,7 +64,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>Reads the JSON representation of the object.</summary>
-        /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
+        /// <param name="reader">The <see cref="Newtonsoft.Json.JsonReader" /> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
         /// <param name="hasExistingValue">The existing value has a value.</param>

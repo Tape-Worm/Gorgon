@@ -57,7 +57,7 @@ namespace Gorgon.IO
         public static bool Equals(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right) => string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>Returns the fully qualified type name of this instance.</summary>
-        /// <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
+        /// <returns>A <see cref="System.String" /> containing a fully qualified type name.</returns>
         public override string ToString() => string.Format(Resources.GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC, Name, Description);
 
         /// <summary>Indicates whether this instance and a specified object are equal.</summary>

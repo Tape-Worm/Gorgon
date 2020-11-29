@@ -162,7 +162,7 @@ namespace Gorgon.Editor.PlugIns
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.PlugIns.ToolPlugInRibbonButton"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.PlugIns.ToolPlugInRibbonButton"/> class.</summary>
         /// <param name="displayText">The display text.</param>
         /// <param name="largeIcon">The large icon.</param>
         /// <param name="smallIcon">The small icon.</param>

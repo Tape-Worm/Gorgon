@@ -81,7 +81,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.KeyUp"/> event.</summary>
-        /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs"/> that contains the event data.</param>
+        /// <param name="e">A <see cref="System.Windows.Forms.KeyEventArgs"/> that contains the event data.</param>
         protected override void OnKeyUp(KeyEventArgs e)
         {
             base.OnKeyUp(e);

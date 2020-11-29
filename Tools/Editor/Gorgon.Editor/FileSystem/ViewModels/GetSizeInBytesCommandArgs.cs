@@ -49,7 +49,7 @@ namespace Gorgon.Editor.ViewModels
             set;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ViewModels.GetSizeInBytesCommandArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.ViewModels.GetSizeInBytesCommandArgs"/> class.</summary>
         /// <param name="recursive"><b>true</b> to retrieve the size for all files plus all files within any subdirectories, <b>false</b> to only get the size of the files within the directory.</param>
         public GetSizeInBytesCommandArgs(bool recursive) => Recursive = recursive;
     }

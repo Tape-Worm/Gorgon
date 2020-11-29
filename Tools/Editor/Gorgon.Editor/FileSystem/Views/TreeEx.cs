@@ -85,7 +85,7 @@ namespace Gorgon.Editor.Views
             }
         }
 
-        /// <summary>Gets or sets the color of the lines connecting the nodes of the <see cref="T:System.Windows.Forms.TreeView"/> control.</summary>
+        /// <summary>Gets or sets the color of the lines connecting the nodes of the <see cref="System.Windows.Forms.TreeView"/> control.</summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new Color LineColor
         {
@@ -340,8 +340,8 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>Processes a command key.</summary>
-        /// <param name="msg">A <see cref="T:System.Windows.Forms.Message"/>, passed by reference, that represents the window message to process.</param>
-        /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys"/> values that represents the key to process.</param>
+        /// <param name="msg">A <see cref="System.Windows.Forms.Message"/>, passed by reference, that represents the window message to process.</param>
+        /// <param name="keyData">One of the <see cref="System.Windows.Forms.Keys"/> values that represents the key to process.</param>
         /// <returns>
         ///   <span class="keyword">
         ///     <span class="languageSpecificText">
@@ -386,7 +386,7 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.MouseDown"/> event.</summary>
-        /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs"/> that contains the event data.</param>
+        /// <param name="e">A <see cref="System.Windows.Forms.MouseEventArgs"/> that contains the event data.</param>
         protected override void OnMouseDown(MouseEventArgs e)
         {
             TreeViewCancelEventArgs args = null;

@@ -112,7 +112,7 @@ namespace Gorgon.Editor.UI.Controls
             #endregion
 
             #region Constructor.
-            /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Controls.GorgonContentFileExplorer.FileComparer"/> class.</summary>
+            /// <summary>Initializes a new instance of the <see cref="FileComparer"/> class.</summary>
             /// <param name="gridView">The grid view.</param>
             /// <param name="directory">The directory.</param>
             /// <param name="directoryName">Name of the directory.</param>
@@ -496,7 +496,7 @@ namespace Gorgon.Editor.UI.Controls
 
         /// <summary>Handles the CheckedChanged event of the CheckboxHeader control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void CheckboxHeader_Click(object sender, EventArgs e)
         {
             var checkBox = (CheckBox)sender;
@@ -977,7 +977,7 @@ namespace Gorgon.Editor.UI.Controls
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

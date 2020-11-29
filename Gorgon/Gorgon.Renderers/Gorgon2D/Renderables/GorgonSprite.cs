@@ -513,9 +513,9 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Renderers.GorgonSprite"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Renderers.GorgonSprite"/> class.</summary>
         /// <param name="clone">The clone.</param>
-        /// <exception cref="T:System.ArgumentNullException">Thrown when the <paramref name="clone"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="clone"/> parameter is <b>null</b>.</exception>
         public GorgonSprite(GorgonSprite clone)
             : this()
         {

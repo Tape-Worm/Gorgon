@@ -95,7 +95,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the foreground color of the control.</summary>
-        /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultForeColor" /> property.</returns>
+        /// <returns>The foreground <see cref="System.Drawing.Color" /> of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultForeColor" /> property.</returns>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override Color ForeColor
         {
@@ -104,7 +104,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the foreground color of the control.</summary>
-        /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultForeColor" /> property.</returns>
+        /// <returns>The foreground <see cref="System.Drawing.Color" /> of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultForeColor" /> property.</returns>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override Color BackColor
         {
@@ -116,7 +116,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the background color for the control.</summary>
-        /// <returns>A <see cref="T:System.Drawing.Color" /> that represents the background color of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultBackColor" /> property.</returns>
+        /// <returns>A <see cref="System.Drawing.Color" /> that represents the background color of the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultBackColor" /> property.</returns>
         [Browsable(true), Category("Appearance"),
          Description("Sets the background color for the control."),
          DefaultValue(typeof(Color), "Black"), RefreshProperties(RefreshProperties.Repaint)]
@@ -147,7 +147,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the size that is the lower limit that <see cref="M:System.Windows.Forms.Control.GetPreferredSize(System.Drawing.Size)" /> can specify.</summary>
-        /// <returns>An ordered pair of type <see cref="T:System.Drawing.Size" /> representing the width and height of a rectangle.</returns>
+        /// <returns>An ordered pair of type <see cref="System.Drawing.Size" /> representing the width and height of a rectangle.</returns>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override Size MinimumSize
         {
@@ -156,7 +156,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the size that is the upper limit that <see cref="M:System.Windows.Forms.Control.GetPreferredSize(System.Drawing.Size)" /> can specify.</summary>
-        /// <returns>An ordered pair of type <see cref="T:System.Drawing.Size" /> representing the width and height of a rectangle.</returns>
+        /// <returns>An ordered pair of type <see cref="System.Drawing.Size" /> representing the width and height of a rectangle.</returns>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override Size MaximumSize
         {
@@ -165,8 +165,8 @@ namespace Gorgon.UI
         }
 
         /// <summary>Indicates the automatic sizing behavior of the control.</summary>
-        /// <returns>One of the <see cref="T:System.Windows.Forms.AutoSizeMode" /> values.</returns>
-        /// <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">The specified value when setting this property is not a valid <see cref="T:System.Windows.Forms.AutoSizeMode" /> values.</exception>
+        /// <returns>One of the <see cref="System.Windows.Forms.AutoSizeMode" /> values.</returns>
+        /// <exception cref="System.ComponentModel.InvalidEnumArgumentException">The specified value when setting this property is not a valid <see cref="System.Windows.Forms.AutoSizeMode" /> values.</exception>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override DockStyle Dock
         {
@@ -228,7 +228,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the edges of the container to which a control is bound and determines how a control is resized with its parent. </summary>
-        /// <returns>A bitwise combination of the <see cref="T:System.Windows.Forms.AnchorStyles" /> values. The default is <see langword="Top" /> and <see langword="Left" />.</returns>
+        /// <returns>A bitwise combination of the <see cref="System.Windows.Forms.AnchorStyles" /> values. The default is <see langword="Top" /> and <see langword="Left" />.</returns>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override AnchorStyles Anchor
         {
@@ -236,8 +236,8 @@ namespace Gorgon.UI
             set => base.Anchor = value;
         }
 
-        /// <summary>Gets or sets the <see cref="T:System.Windows.Forms.ContextMenuStrip" /> associated with this control.</summary>
-        /// <returns>The <see cref="T:System.Windows.Forms.ContextMenuStrip" /> for this control, or <see langword="null" /> if there is no <see cref="T:System.Windows.Forms.ContextMenuStrip" />. The default is <see langword="null" />.</returns>
+        /// <summary>Gets or sets the <see cref="System.Windows.Forms.ContextMenuStrip" /> associated with this control.</summary>
+        /// <returns>The <see cref="System.Windows.Forms.ContextMenuStrip" /> for this control, or <see langword="null" /> if there is no <see cref="System.Windows.Forms.ContextMenuStrip" />. The default is <see langword="null" />.</returns>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override ContextMenuStrip ContextMenuStrip
         {
@@ -257,7 +257,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the font of the text displayed by the control.</summary>
-        /// <returns>The <see cref="T:System.Drawing.Font" /> to apply to the text displayed by the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultFont" /> property.</returns>
+        /// <returns>The <see cref="System.Drawing.Font" /> to apply to the text displayed by the control. The default is the value of the <see cref="P:System.Windows.Forms.Control.DefaultFont" /> property.</returns>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override Font Font
         {
@@ -266,8 +266,8 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets a value indicating whether control's elements are aligned to support locales using right-to-left fonts.</summary>
-        /// <returns>One of the <see cref="T:System.Windows.Forms.RightToLeft" /> values. The default is <see cref="F:System.Windows.Forms.RightToLeft.Inherit" />.</returns>
-        /// <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">The assigned value is not one of the <see cref="T:System.Windows.Forms.RightToLeft" /> values. </exception>
+        /// <returns>One of the <see cref="System.Windows.Forms.RightToLeft" /> values. The default is <see cref="F:System.Windows.Forms.RightToLeft.Inherit" />.</returns>
+        /// <exception cref="System.ComponentModel.InvalidEnumArgumentException">The assigned value is not one of the <see cref="System.Windows.Forms.RightToLeft" /> values. </exception>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override RightToLeft RightToLeft
         {
@@ -285,9 +285,9 @@ namespace Gorgon.UI
             set => base.AllowDrop = false;
         }
 
-        /// <summary>Gets or sets the background image layout as defined in the <see cref="T:System.Windows.Forms.ImageLayout" /> enumeration.</summary>
-        /// <returns>One of the values of <see cref="T:System.Windows.Forms.ImageLayout" /> (<see cref="F:System.Windows.Forms.ImageLayout.Center" /> , <see cref="F:System.Windows.Forms.ImageLayout.None" />, <see cref="F:System.Windows.Forms.ImageLayout.Stretch" />, <see cref="F:System.Windows.Forms.ImageLayout.Tile" />, or <see cref="F:System.Windows.Forms.ImageLayout.Zoom" />). <see cref="F:System.Windows.Forms.ImageLayout.Tile" /> is the default value.</returns>
-        /// <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">The specified enumeration value does not exist. </exception>
+        /// <summary>Gets or sets the background image layout as defined in the <see cref="System.Windows.Forms.ImageLayout" /> enumeration.</summary>
+        /// <returns>One of the values of <see cref="System.Windows.Forms.ImageLayout" /> (<see cref="F:System.Windows.Forms.ImageLayout.Center" /> , <see cref="F:System.Windows.Forms.ImageLayout.None" />, <see cref="F:System.Windows.Forms.ImageLayout.Stretch" />, <see cref="F:System.Windows.Forms.ImageLayout.Tile" />, or <see cref="F:System.Windows.Forms.ImageLayout.Zoom" />). <see cref="F:System.Windows.Forms.ImageLayout.Tile" /> is the default value.</returns>
+        /// <exception cref="System.ComponentModel.InvalidEnumArgumentException">The specified enumeration value does not exist. </exception>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override ImageLayout BackgroundImageLayout
         {
@@ -296,7 +296,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Gets or sets the background image displayed in the control.</summary>
-        /// <returns>An <see cref="T:System.Drawing.Image" /> that represents the image to display in the background of the control.</returns>
+        /// <returns>An <see cref="System.Drawing.Image" /> that represents the image to display in the background of the control.</returns>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override Image BackgroundImage
         {
@@ -339,7 +339,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.GotFocus"/> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
         protected override void OnGotFocus(EventArgs e)
         {
             base.OnGotFocus(e);
@@ -376,8 +376,8 @@ namespace Gorgon.UI
         }
 
         /// <summary>Processes a command key.</summary>
-        /// <param name="msg">A <see cref="T:System.Windows.Forms.Message" />, passed by reference, that represents the window message to process. </param>
-        /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values that represents the key to process. </param>
+        /// <param name="msg">A <see cref="System.Windows.Forms.Message" />, passed by reference, that represents the window message to process. </param>
+        /// <param name="keyData">One of the <see cref="System.Windows.Forms.Keys" /> values that represents the key to process. </param>
         /// <returns>
         /// <see langword="true" /> if the character was processed by the control; otherwise, <see langword="false" />.</returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
@@ -394,7 +394,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.ParentChanged" /> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
+        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data. </param>
         protected override void OnParentChanged(EventArgs e)
         {
             base.OnParentChanged(e);
@@ -422,7 +422,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.</summary>
-        /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data. </param>
+        /// <param name="e">A <see cref="System.Windows.Forms.PaintEventArgs" /> that contains the event data. </param>
         protected override void OnPaint(PaintEventArgs e)
         {
             Form parentForm = FindForm();

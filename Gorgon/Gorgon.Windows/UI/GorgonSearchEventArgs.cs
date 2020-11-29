@@ -45,7 +45,7 @@ namespace Gorgon.UI
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.UI.GorgonSearchEventArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.UI.GorgonSearchEventArgs"/> class.</summary>
         /// <param name="searchText">  The text to search for.</param>
         public GorgonSearchEventArgs(string searchText) => SearchText = searchText ?? string.Empty;
         #endregion

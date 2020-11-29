@@ -103,7 +103,7 @@ namespace Gorgon.Editor.UI.Controls
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Controls.ColorPicker"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.UI.Controls.ColorPicker"/> class.</summary>
         public ColorPicker() => InitializeComponent();
         #endregion
     }

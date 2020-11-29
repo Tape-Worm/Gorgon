@@ -63,7 +63,7 @@ namespace Gorgon.Examples
         #region Methods.
         /// <summary>Handles the ColorChanged event of the Picker control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:Gorgon.Editor.UI.Controls.ColorChangedEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="Gorgon.Editor.UI.Controls.ColorChangedEventArgs"/> instance containing the event data.</param>
         private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
         {
             if (DataContext == null)
@@ -190,7 +190,7 @@ namespace Gorgon.Examples
         protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
         
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

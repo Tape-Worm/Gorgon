@@ -43,7 +43,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
         /// </summary>
-        /// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
+        /// <param name="e">A <see cref="System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);

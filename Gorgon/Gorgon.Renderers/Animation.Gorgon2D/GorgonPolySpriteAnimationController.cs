@@ -266,7 +266,7 @@ namespace Gorgon.Animation
             // Not needed for sprites.
         }
 
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Animation.GorgonPolySpriteAnimationController"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Animation.GorgonPolySpriteAnimationController"/> class.</summary>
         public GorgonPolySpriteAnimationController()
         {
             RegisterTrack(AngleTrack);

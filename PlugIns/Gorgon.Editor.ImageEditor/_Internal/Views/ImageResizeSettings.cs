@@ -333,7 +333,7 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Views.ImageResizeSettings"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.Views.ImageResizeSettings"/> class.</summary>
         public ImageResizeSettings()
         {
             InitializeComponent();

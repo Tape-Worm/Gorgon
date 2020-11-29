@@ -138,7 +138,7 @@ namespace Gorgon.Examples
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Examples.AudioPlayback"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Examples.AudioPlayback"/> class.</summary>
         public AudioPlayback()
         {
             _audio = new Xa.XAudio2();

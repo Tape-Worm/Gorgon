@@ -214,7 +214,7 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Handles the Click event of the ButtonNextMip control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void ButtonNextMip_Click(object sender, EventArgs e)
         {
             if (DataContext != null)
@@ -226,7 +226,7 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Handles the Click event of the ButtonPrevMip control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevMip_Click(object sender, EventArgs e)
         {
             if (DataContext != null)

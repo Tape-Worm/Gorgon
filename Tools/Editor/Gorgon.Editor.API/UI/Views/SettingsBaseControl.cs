@@ -66,7 +66,7 @@ namespace Gorgon.Editor.UI.Views
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.UI.Views.SettingsBaseControl"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.UI.Views.SettingsBaseControl"/> class.</summary>
         public SettingsBaseControl() => InitializeComponent();
         #endregion
     }

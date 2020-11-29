@@ -520,7 +520,7 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ImageEditor.ImageIO"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.ImageEditor.ImageIO"/> class.</summary>
         /// <param name="defaultCodec">The default codec used by the plug in.</param>
         /// <param name="installedCodecs">The list of installed codecs.</param>
         /// <param name="importDialog">The dialog service used to export an image.</param>

@@ -101,7 +101,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown"></see> event.
         /// </summary>
-        /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs"></see> that contains the event data.</param>
+        /// <param name="e">A <see cref="System.Windows.Forms.KeyEventArgs"></see> that contains the event data.</param>
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -155,7 +155,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Shown"></see> event.
         /// </summary>
-        /// <param name="e">A <see cref="T:System.EventArgs"></see> that contains the event data.</param>
+        /// <param name="e">A <see cref="System.EventArgs"></see> that contains the event data.</param>
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
@@ -271,7 +271,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.</summary>
-        /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
+        /// <param name="e">A <see cref="System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);

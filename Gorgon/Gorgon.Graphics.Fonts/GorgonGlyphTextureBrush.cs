@@ -260,7 +260,7 @@ namespace Gorgon.Graphics.Fonts
         #endregion
 
         #region Constructor
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Graphics.Fonts.GorgonGlyphTextureBrush"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Graphics.Fonts.GorgonGlyphTextureBrush"/> class.</summary>
         internal GorgonGlyphTextureBrush() => TextureRegion = new DX.RectangleF(0, 0, 1, 1);
 
         /// <summary>

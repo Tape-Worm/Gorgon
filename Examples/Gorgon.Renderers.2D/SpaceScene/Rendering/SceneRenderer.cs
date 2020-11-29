@@ -268,7 +268,7 @@ namespace Gorgon.Examples
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Examples.Renderer"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Examples.Renderer"/> class.</summary>
         /// <param name="renderer">The renderer.</param>
         /// <param name="resources">The resources.</param>
         /// <param name="screen">The main render target for the scene.</param>

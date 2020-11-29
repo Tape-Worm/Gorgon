@@ -61,7 +61,7 @@ namespace Gorgon.Renderers
         /// <summary>When overridden in a derived class, serves as a hash function for the specified object for hashing algorithms and data structures, such as a hash table.</summary>
         /// <param name="obj">The object for which to get a hash code.</param>
         /// <returns>A hash code for the specified object.</returns>
-        /// <exception cref="T:System.ArgumentNullException">The type of <paramref name="obj" /> is a reference type and <paramref name="obj" /> is <see langword="null" />.</exception>
+        /// <exception cref="System.ArgumentNullException">The type of <paramref name="obj" /> is a reference type and <paramref name="obj" /> is <see langword="null" />.</exception>
         public override int GetHashCode(BatchRenderable obj) => obj == null ? 0 : 281.GenerateHash(obj.Texture).GenerateHash(obj.TextureSampler).GenerateHash(obj.AlphaTestData);
     }
 }

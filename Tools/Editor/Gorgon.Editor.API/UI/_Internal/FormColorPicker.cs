@@ -77,7 +77,7 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.ExtractSpriteTool.FormColorPicker"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="FormColorPicker"/> class.</summary>
         public FormColorPicker() => InitializeComponent();
         #endregion
     }

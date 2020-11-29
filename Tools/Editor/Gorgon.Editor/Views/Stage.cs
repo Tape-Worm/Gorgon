@@ -181,7 +181,7 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="T:Gorgon.Editor.Views.Stage"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.Views.Stage"/> class.</summary>
         public Stage() => InitializeComponent();
         #endregion
     }

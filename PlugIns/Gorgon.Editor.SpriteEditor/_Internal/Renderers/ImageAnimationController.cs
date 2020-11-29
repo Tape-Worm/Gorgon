@@ -86,7 +86,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
         }
 
-        /// <summary>Function called when a <see cref="T:Gorgon.Graphics.GorgonColor"/> value needs to be updated on the animated object.</summary>
+        /// <summary>Function called when a <see cref="Gorgon.Graphics.GorgonColor"/> value needs to be updated on the animated object.</summary>
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>

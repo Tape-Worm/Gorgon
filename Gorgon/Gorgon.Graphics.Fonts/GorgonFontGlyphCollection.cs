@@ -45,10 +45,10 @@ namespace Gorgon.Graphics.Fonts
 
         #region Properties.
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// Gets the number of elements contained in the <see cref="System.Collections.Generic.ICollection{T}"/>.
         /// </summary>
         /// <returns>
-        /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// The number of elements contained in the <see cref="System.Collections.Generic.ICollection{T}"/>.
         ///   </returns>
         public int Count => _list.Count;
 
@@ -70,9 +70,9 @@ namespace Gorgon.Graphics.Fonts
 
         #region Methods.
         /// <summary>
-        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// Adds an item to the <see cref="System.Collections.Generic.ICollection{T}" />.
         /// </summary>
-        /// <param name="glyph">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <param name="glyph">The object to add to the <see cref="System.Collections.Generic.ICollection{T}" />.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph" /> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="glyph" /> parameter already exists in this collection.</exception>
         internal void Add(GorgonGlyph glyph) => _list.Add(glyph.Character, glyph);
@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Fonts
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// A <see cref="System.Collections.Generic.IEnumerator{T}"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<GorgonGlyph> GetEnumerator()
         {
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Fonts
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// An <see cref="System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -114,11 +114,11 @@ namespace Gorgon.Graphics.Fonts
         }
 
         /// <summary>
-        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+        /// Determines whether the <see cref="System.Collections.Generic.ICollection{T}"/> contains a specific value.
         /// </summary>
-        /// <param name="glyph">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+        /// <param name="glyph">The object to locate in the <see cref="System.Collections.Generic.ICollection{T}"/>.</param>
         /// <returns>
-        /// true if <paramref name="glyph"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+        /// true if <paramref name="glyph"/> is found in the <see cref="System.Collections.Generic.ICollection{T}"/>; otherwise, false.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
         public bool Contains(GorgonGlyph glyph) => glyph == null ? throw new ArgumentNullException(nameof(glyph)) : _list.ContainsValue(glyph);

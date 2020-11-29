@@ -81,7 +81,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.FontChanged"/> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
         protected override void OnFontChanged(EventArgs e)
         {
             base.OnFontChanged(e);
@@ -91,7 +91,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged"/> event when the <see cref="P:System.Windows.Forms.Control.Font"/> property value of the control's container changes.
         /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
         protected override void OnParentFontChanged(EventArgs e)
         {
             base.OnFontChanged(e);
@@ -145,7 +145,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.Leave" /> event.
         /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
         protected override void OnLeave(EventArgs e)
         {
             Invalidate();
@@ -155,7 +155,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.Enter" /> event.
         /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
         protected override void OnEnter(EventArgs e)
         {
             Invalidate();
@@ -167,7 +167,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.TextBox" /> and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="System.Windows.Forms.TextBox" /> and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)

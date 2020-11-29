@@ -129,7 +129,7 @@ namespace Gorgon.Editor
             return null;
         }
 
-        /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ApplicationContext" /> and optionally releases the managed resources.</summary>
+        /// <summary>Releases the unmanaged resources used by the <see cref="System.Windows.Forms.ApplicationContext" /> and optionally releases the managed resources.</summary>
         /// <param name="disposing">
         /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources. </param>
         protected override void Dispose(bool disposing)
