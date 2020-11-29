@@ -54,11 +54,9 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying Core to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)/netstandard2.0'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           CleanTargetFolder: true
-          FlattenFolders: true
-          OverWrite: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
@@ -72,7 +70,7 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying FileSystem to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/$(buildConfiguration)/netstandard2.0'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
