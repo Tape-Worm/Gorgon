@@ -169,7 +169,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to draw the effect.</param>
         public Gorgon2DSilhouetteEffect(Gorgon2D renderer)
-            : base(renderer, Resources.GOR2D_EFFECT_SILHOUETTE, Resources.GOR2D_EFFECT_SILHOUETTE, 1) => Macros.Add(new GorgonShaderMacro("SILHOUETTE_EFFECT"));
+            : base(renderer, Resources.GOR2D_EFFECT_SILHOUETTE, Resources.GOR2D_EFFECT_SILHOUETTE_DESC, 1) => Macros.Add(new GorgonShaderMacro("SILHOUETTE_EFFECT"));
         #endregion
     }
 }

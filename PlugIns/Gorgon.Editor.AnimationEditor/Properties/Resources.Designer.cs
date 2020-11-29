@@ -313,36 +313,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap animation_editor_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("animation_editor_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap auto_key_frame_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("auto_key_frame_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap auto_key_frame_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("auto_key_frame_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap clear_fs_16x16 {
             get {
                 object obj = ResourceManager.GetObject("clear_fs_16x16", resourceCulture);
@@ -740,17 +710,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error loading the codec plug in.
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GORANM_ERR_CANNOT_LOAD_CODEC {
-            get {
-                return ResourceManager.GetString("GORANM_ERR_CANNOT_LOAD_CODEC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error while playing the animation..
         /// </summary>
         internal static string GORANM_ERR_CANNOT_PLAY_ANIMATION {
@@ -769,17 +728,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to remove the selected codec(s).
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GORANM_ERR_CANNOT_UNLOAD_CODECS {
-            get {
-                return ResourceManager.GetString("GORANM_ERR_CANNOT_UNLOAD_CODECS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error clearing the animation tracks/keys.
         ///
         ///Please try again..
@@ -787,17 +735,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         internal static string GORANM_ERR_CLEAR_ANIMATION {
             get {
                 return ResourceManager.GetString("GORANM_ERR_CLEAR_ANIMATION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error clearing the background image.
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GORANM_ERR_CLEAR_BG_IMAGE {
-            get {
-                return ResourceManager.GetString("GORANM_ERR_CLEAR_BG_IMAGE", resourceCulture);
             }
         }
         
@@ -935,15 +872,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         internal static string GORANM_ERR_MOVING_KEYFRAMES {
             get {
                 return ResourceManager.GetString("GORANM_ERR_MOVING_KEYFRAMES", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is no codec loaded that can read the file &apos;{0}&apos;..
-        /// </summary>
-        internal static string GORANM_ERR_NO_CODEC {
-            get {
-                return ResourceManager.GetString("GORANM_ERR_NO_CODEC", resourceCulture);
             }
         }
         
@@ -1105,15 +1033,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Alpha:.
-        /// </summary>
-        internal static string GORANM_TEXT_ALPHA {
-            get {
-                return ResourceManager.GetString("GORANM_TEXT_ALPHA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enter a name for the animation....
         /// </summary>
         internal static string GORANM_TEXT_CUE_ANIMATION_NAME {
@@ -1155,15 +1074,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         internal static string GORANM_TEXT_INTERPOLATION {
             get {
                 return ResourceManager.GetString("GORANM_TEXT_INTERPOLATION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Left:.
-        /// </summary>
-        internal static string GORANM_TEXT_LEFT {
-            get {
-                return ResourceManager.GetString("GORANM_TEXT_LEFT", resourceCulture);
             }
         }
         
@@ -1231,24 +1141,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Top:.
-        /// </summary>
-        internal static string GORANM_TEXT_TOP {
-            get {
-                return ResourceManager.GetString("GORANM_TEXT_TOP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to W:.
-        /// </summary>
-        internal static string GORANM_TEXT_W {
-            get {
-                return ResourceManager.GetString("GORANM_TEXT_W", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Width:.
         /// </summary>
         internal static string GORANM_TEXT_WIDTH {
@@ -1272,15 +1164,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         internal static string GORANM_TEXT_Y {
             get {
                 return ResourceManager.GetString("GORANM_TEXT_Y", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Z:.
-        /// </summary>
-        internal static string GORANM_TEXT_Z {
-            get {
-                return ResourceManager.GetString("GORANM_TEXT_Z", resourceCulture);
             }
         }
         
@@ -1321,36 +1204,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         internal static System.Drawing.Bitmap key_with_data_16x16 {
             get {
                 object obj = ResourceManager.GetObject("key_with_data_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap key_with_data_32x32 {
-            get {
-                object obj = ResourceManager.GetObject("key_with_data_32x32", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap length_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("length_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap length_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("length_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1511,16 +1364,6 @@ namespace Gorgon.Editor.AnimationEditor.Properties {
         internal static System.Drawing.Bitmap save_48x48 {
             get {
                 object obj = ResourceManager.GetObject("save_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sprite_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("sprite_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

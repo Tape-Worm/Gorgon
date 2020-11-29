@@ -150,35 +150,14 @@
   <data name="GORFS_ERR_NO_PROVIDER_PLUGIN" xml:space="preserve">
     <value>The file system provider plug in '{0}' was not found.</value>
   </data>
-  <data name="GORFS_ERR_NO_RAMDISK_PROVIDER" xml:space="preserve">
-    <value>The ram disk writer needs a file system that contains a ram disk provider.</value>
-  </data>
   <data name="GORFS_ERR_PATH_INVALID" xml:space="preserve">
     <value>The path '{0}' is not valid.</value>
-  </data>
-  <data name="GORFS_ERR_RAMDISK_FILE_ALREADY_EXISTS" xml:space="preserve">
-    <value>Cannot write to an existing file with a file mode of CreateNew.</value>
-  </data>
-  <data name="GORFS_ERR_RAMDISK_FILE_IS_READ_ONLY" xml:space="preserve">
-    <value>The file stream is read only.</value>
-  </data>
-  <data name="GORFS_ERR_RAMDISK_FILE_IS_WRITE_ONLY" xml:space="preserve">
-    <value>The file stream is write only.</value>
-  </data>
-  <data name="GORFS_ERR_RAMDISK_FILE_NOT_SEEKABLE" xml:space="preserve">
-    <value>The file stream is unable to seek.</value>
   </data>
   <data name="GORFS_FOLDER_FS_DESC" xml:space="preserve">
     <value>A provider to mount a physical directory as a file system.</value>
   </data>
   <data name="GORFS_FOLDER_WRITER_FS_DESC" xml:space="preserve">
     <value>A file system writer that stores directories and file data in an operating system directory.</value>
-  </data>
-  <data name="GORFS_RAMDISK_FS_DESC" xml:space="preserve">
-    <value>A provider that will use memory to hold files and directories.</value>
-  </data>
-  <data name="GORFS_RAMDISK_WRITER_FS_DESC" xml:space="preserve">
-    <value>A file system writer that stores directories and file data in memory.</value>
   </data>
   <data name="GORFS_TOSTR_MOUNTPOINT" xml:space="preserve">
     <value>Mount Point Virtual Location: {0}, Physical Location: {1}</value>

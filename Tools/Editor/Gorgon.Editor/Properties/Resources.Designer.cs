@@ -93,16 +93,6 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap back_icon_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("back_icon_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap clear_fs_16x16 {
             get {
                 object obj = ResourceManager.GetObject("clear_fs_16x16", resourceCulture);
@@ -116,26 +106,6 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap clear_fs_48x48 {
             get {
                 object obj = ResourceManager.GetObject("clear_fs_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap collapse_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("collapse_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap collapse_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("collapse_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -213,16 +183,6 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap drive_cdrom_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("drive_cdrom_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap drive_network_48x48 {
             get {
                 object obj = ResourceManager.GetObject("drive_network_48x48", resourceCulture);
@@ -246,26 +206,6 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap drive_remove_48x48 {
             get {
                 object obj = ResourceManager.GetObject("drive_remove_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap expand_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("expand_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap expand_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("expand_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -341,15 +281,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Confirmation.
-        /// </summary>
-        internal static string GOREDIT_CAPTION_CONFIRM {
-            get {
-                return ResourceManager.GetString("GOREDIT_CAPTION_CONFIRM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {0}.
         /// </summary>
         internal static string GOREDIT_CAPTION_FILE {
@@ -408,16 +339,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you wish to delete &apos;{0}&apos;?
-        ///.
-        /// </summary>
-        internal static string GOREDIT_CONFIRM_DELETE_NO_CHILDREN {
-            get {
-                return ResourceManager.GetString("GOREDIT_CONFIRM_DELETE_NO_CHILDREN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This will delete the project at &apos;{0}&apos;.
         ///
         ///This action will delete all files and folders from the directory.
@@ -439,17 +360,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CONFIRM_DEST_IS_DIRECTORY {
             get {
                 return ResourceManager.GetString("GOREDIT_CONFIRM_DEST_IS_DIRECTORY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This directory already contains an editor project named &apos;{0}&apos;.
-        ///
-        ///Would you like to overwrite it?.
-        /// </summary>
-        internal static string GOREDIT_CONFIRM_EXISTING_PROJECT {
-            get {
-                return ResourceManager.GetString("GOREDIT_CONFIRM_EXISTING_PROJECT", resourceCulture);
             }
         }
         
@@ -491,17 +401,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file &apos;{0}&apos; is open in the editor and has unsaved changes. Deleting this file will result in the loss of these changes.
-        ///
-        ///Are you sure you wish to delete this file?.
-        /// </summary>
-        internal static string GOREDIT_CONFIRM_FILE_OPEN_DELETE {
-            get {
-                return ResourceManager.GetString("GOREDIT_CONFIRM_FILE_OPEN_DELETE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This will delete {0} files.
         ///
         ///Are you sure?.
@@ -509,23 +408,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CONFIRM_MULTIPLE_FILE_DELETE {
             get {
                 return ResourceManager.GetString("GOREDIT_CONFIRM_MULTIPLE_FILE_DELETE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The editor uses a special directory for storing working copies of the files for a project. This is known as the project work space.
-        ///
-        ///Currently, no work space directory has been set up. Would you like to select your workspace directory now? 
-        ///
-        ///If you select &quot;No&quot;, the application will exit.
-        ///
-        ///Note: Workspaces must be accessible by the current user, and inside of an existing directory on the drive. Root directories are not valid due to security concerns.
-        ///
-        ///.
-        /// </summary>
-        internal static string GOREDIT_CONFIRM_NEED_WORKSPACE {
-            get {
-                return ResourceManager.GetString("GOREDIT_CONFIRM_NEED_WORKSPACE", resourceCulture);
             }
         }
         
@@ -587,17 +469,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The project &apos;{0}&apos; has unsaved changes.
-        ///
-        ///Would you like to save this project now?.
-        /// </summary>
-        internal static string GOREDIT_CONFIRM_UNSAVED_PROJ {
-            get {
-                return ResourceManager.GetString("GOREDIT_CONFIRM_UNSAVED_PROJ", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The path &apos;{0}&apos; already exists.
         ///
         ///Would you like to use it anyway?  
@@ -616,16 +487,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_CREATE_NEW {
             get {
                 return ResourceManager.GetString("GOREDIT_CREATE_NEW", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while loading the importer plug in.
-        ///Exception: {0}.
-        /// </summary>
-        internal static string GOREDIT_DISABLE_CONTENT_IMPORT_PLUGIN_EXCEPTION {
-            get {
-                return ResourceManager.GetString("GOREDIT_DISABLE_CONTENT_IMPORT_PLUGIN_EXCEPTION", resourceCulture);
             }
         }
         
@@ -650,34 +511,12 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The editor was unable to locate a workspace location that is accessible to the current user.
-        ///
-        ///The application will now close..
-        /// </summary>
-        internal static string GOREDIT_ERR_CANNOT_AUTO_FIND_WORKSPACE_LOCATION {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_AUTO_FIND_WORKSPACE_LOCATION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos; to &apos;{1}&apos;.
         ///Please try again..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_COPY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_COPY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos;. 
-        ///
-        ///An item with the same name exists in the destination..
-        /// </summary>
-        internal static string GOREDIT_ERR_CANNOT_COPY_DUPE {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_COPY_DUPE", resourceCulture);
             }
         }
         
@@ -707,24 +546,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_MOVE_DIR_OPEN_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_DIR_OPEN_FILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot move the directory because there is a directory with the same name in the destination directory..
-        /// </summary>
-        internal static string GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_DUPE_DIR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot move the directory because there is a file with the same name in the destination directory..
-        /// </summary>
-        internal static string GOREDIT_ERR_CANNOT_MOVE_FILE_DIR {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_MOVE_FILE_DIR", resourceCulture);
             }
         }
         
@@ -778,18 +599,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not use &apos;{0}&apos; as the work space directory:
-        ///{1}
-        ///
-        ///You will be prompted to select a new work space directory. If no directory is selected, then the application will close..
-        /// </summary>
-        internal static string GOREDIT_ERR_CANNOT_USE_WORKSPACE {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_USE_WORKSPACE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error while closing the application.
         ///
         ///Please try again..
@@ -821,16 +630,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos; to the clipboard.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_COPYING_FILE_OR_DIR_CLIPBOARD {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_COPYING_FILE_OR_DIR_CLIPBOARD", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error while creating the project.
         ///Please try again..
         /// </summary>
@@ -841,33 +640,12 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error creating the file &apos;{0}&apos;.
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_CREATING_CONTENT_FILE {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_CREATING_CONTENT_FILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error deleting &apos;{0}&apos;.
         ///Please try again..
         /// </summary>
         internal static string GOREDIT_ERR_DELETE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_DELETE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error while deleting the entire file system.
-        ///Press F5 in the file system tree to refresh and try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_DELETE_ALL {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_DELETE_ALL", resourceCulture);
             }
         }
         
@@ -901,15 +679,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_DIRECTORY_NO_PROJECT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_DIRECTORY_NO_PROJECT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The directory on the path &apos;{0}&apos; is not empty..
-        /// </summary>
-        internal static string GOREDIT_ERR_DIRECTORY_NOT_EMPTY {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_DIRECTORY_NOT_EMPTY", resourceCulture);
             }
         }
         
@@ -960,17 +729,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name &apos;{0}&apos; contains illegal characters.
-        ///
-        ///&apos;{1}&apos; are not allowed in node names..
-        /// </summary>
-        internal static string GOREDIT_ERR_FILENAME_ILLEGAL_CHARS {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_FILENAME_ILLEGAL_CHARS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an unexpected error.
         ///The application must close..
         /// </summary>
@@ -987,38 +745,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_IMPORT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_IMPORT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error including/excluding the entire file system.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_INCLUDE_ALL {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_INCLUDE_ALL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error including/excluding &apos;{0}&apos;.
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_INCLUDE_NODE {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_INCLUDE_NODE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The ID for the content is an invalid type.
-        ///
-        ///Content IDs should be GUID values..
-        /// </summary>
-        internal static string GOREDIT_ERR_INVALID_CONTENT_TYPE_ID {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_INVALID_CONTENT_TYPE_ID", resourceCulture);
             }
         }
         
@@ -1046,41 +772,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while showing the New Project screen.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_NEW_PROJECT {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NEW_PROJECT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path &apos;{0}&apos; does not contain a file name..
-        /// </summary>
-        internal static string GOREDIT_ERR_NO_FILENAME {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NO_FILENAME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There is no plugin loaded that can handle opening the file &apos;{0}&apos;..
         /// </summary>
         internal static string GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The plug in path was not found.  No plug ins will be available for the editor.
-        ///
-        ///Please check the application log for more information..
-        /// </summary>
-        internal static string GOREDIT_ERR_NO_PLUGINS {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NO_PLUGINS", resourceCulture);
             }
         }
         
@@ -1113,40 +809,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find a suitable plug in for writing the file.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_NO_WRITER {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NO_WRITER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The node &apos;{0}&apos; is unable to create child nodes.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NODE_CANNOT_CREATE_CHILDREN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There is already a file or directory with the name &apos;{0}&apos; in this directory..
         /// </summary>
         internal static string GOREDIT_ERR_NODE_EXISTS {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NODE_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not find &apos;{0}&apos;..
-        /// </summary>
-        internal static string GOREDIT_ERR_NODE_NOT_EXIST {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NODE_NOT_EXIST", resourceCulture);
             }
         }
         
@@ -1157,15 +824,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_NODE_SELECTION {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NODE_SELECTION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a Gorgon Editor project file..
-        /// </summary>
-        internal static string GOREDIT_ERR_NOT_A_PROJECT_FILE {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NOT_A_PROJECT_FILE", resourceCulture);
             }
         }
         
@@ -1189,16 +847,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error pasting the data from the clipboard into the file system.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_PASTE_FILE_OR_DIR {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_PASTE_FILE_OR_DIR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There is a directory with the name &apos;{0}&apos; already on this path..
         /// </summary>
         internal static string GOREDIT_ERR_PATH_IS_DIRECTORY {
@@ -1217,33 +865,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The path &apos;{0}&apos; is not contained within the project file system workspace &apos;{1}&apos;..
-        /// </summary>
-        internal static string GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path &apos;{0}&apos; was not found..
-        /// </summary>
-        internal static string GOREDIT_ERR_PATH_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_PATH_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path &apos;{0}&apos; does not exist in the project metadata..
-        /// </summary>
-        internal static string GOREDIT_ERR_PATH_NOT_INCLUDED {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_PATH_NOT_INCLUDED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not find the project on the path &apos;{0}&apos;.
         ///
         ///Please select another file and try again..
@@ -1255,15 +876,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The location &apos;{0}&apos; does not contain an Editor project..
-        /// </summary>
-        internal static string GOREDIT_ERR_PROJECT_NOT_VALID {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_PROJECT_NOT_VALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The project located at &apos;{0}&apos; is open in another instance of the Gorgon Editor, and is currently locked. 
         ///
         ///Please select another location for your project..
@@ -1271,47 +883,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_PROJECT_OPEN_LOCKED {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_PROJECT_OPEN_LOCKED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error while refreshing the file system.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_REFRESH {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_REFRESH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error while renaming the directory.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_RENAMING_DIRECTORY {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_RENAMING_DIRECTORY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error while renaming the file.
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_RENAMING_FILE {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_RENAMING_FILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error while saving the content metadata for &apos;{0}&apos;.
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GOREDIT_ERR_SAVING_METADATA {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_SAVING_METADATA", resourceCulture);
             }
         }
         
@@ -1358,74 +929,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot copy .
-        /// </summary>
-        internal static string GOREDIT_ERR_SOURCE_IS_ANCESTOR {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_SOURCE_IS_ANCESTOR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The tool plug in &apos;{0}&apos; is missing its ribbon button..
-        /// </summary>
-        internal static string GOREDIT_ERR_TOOL_NO_BUTTON {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_TOOL_NO_BUTTON", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unsuitable workspace location: The directory is the root of a disk file system..
-        /// </summary>
-        internal static string GOREDIT_ERR_WORKSPACE_DIRECTORY_IS_ROOT {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_DIRECTORY_IS_ROOT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unsuitable workspace location: There was an error accessing the directory: &apos;{0}&apos;.
-        /// </summary>
-        internal static string GOREDIT_ERR_WORKSPACE_EXCEPTION {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_EXCEPTION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The project workspace path &apos;{0}&apos; already exists..
         /// </summary>
         internal static string GOREDIT_ERR_WORKSPACE_EXISTS {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unsuitable workspace location: No directory was specified..
-        /// </summary>
-        internal static string GOREDIT_ERR_WORKSPACE_NO_DIRECTORY {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_NO_DIRECTORY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unsuitable workspace location: The user has no permission to read from or write to the directory..
-        /// </summary>
-        internal static string GOREDIT_ERR_WORKSPACE_NOT_AUTHORIZED {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_NOT_AUTHORIZED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unsuitable workspace location: There are files or subdirectories in this directory..
-        /// </summary>
-        internal static string GOREDIT_ERR_WORKSPACE_NOT_EMPTY {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_NOT_EMPTY", resourceCulture);
             }
         }
         
@@ -1479,15 +987,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not loaded.
-        /// </summary>
-        internal static string GOREDIT_PLUGIN_STATE_NOT_LOADED {
-            get {
-                return ResourceManager.GetString("GOREDIT_PLUGIN_STATE_NOT_LOADED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to content-type.
         /// </summary>
         internal static string GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE {
@@ -1511,24 +1010,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_ALL_FILES {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_ALL_FILES", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Clearing the file system....
-        /// </summary>
-        internal static string GOREDIT_TEXT_CLEARING_FILESYSTEM {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_CLEARING_FILESYSTEM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Configuring workspace....
-        /// </summary>
-        internal static string GOREDIT_TEXT_CONFIGURE_WORKSPACE {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_CONFIGURE_WORKSPACE", resourceCulture);
             }
         }
         
@@ -1605,15 +1086,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File System.
-        /// </summary>
-        internal static string GOREDIT_TEXT_FILESYSTEM {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_FILESYSTEM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Select a directory to import....
         /// </summary>
         internal static string GOREDIT_TEXT_IMPORT_FROM {
@@ -1664,15 +1136,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading content importer plug ins....
-        /// </summary>
-        internal static string GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_IMPORT_CONTENT_PLUGINS", resourceCulture);
             }
         }
         
@@ -1731,15 +1194,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Content Preview.
-        /// </summary>
-        internal static string GOREDIT_TEXT_PREVIEW {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_PREVIEW", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Save editor file as....
         /// </summary>
         internal static string GOREDIT_TEXT_SAVE_EDITOR_FILE {
@@ -1758,15 +1212,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scanning files....
-        /// </summary>
-        internal static string GOREDIT_TEXT_SCANNING {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_SCANNING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to All supported files|{0}.
         /// </summary>
         internal static string GOREDIT_TEXT_SUPPORTED_FILES {
@@ -1781,42 +1226,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TEXT_UNKNOWN {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_UNKNOWN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Directory creation..
-        /// </summary>
-        internal static string GOREDIT_UNDO_CREATE_DIR {
-            get {
-                return ResourceManager.GetString("GOREDIT_UNDO_CREATE_DIR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Delete.
-        /// </summary>
-        internal static string GOREDIT_UNDO_DELETE {
-            get {
-                return ResourceManager.GetString("GOREDIT_UNDO_DELETE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include/Exclude.
-        /// </summary>
-        internal static string GOREDIT_UNDO_INCLUDE_EXCLUDE {
-            get {
-                return ResourceManager.GetString("GOREDIT_UNDO_INCLUDE_EXCLUDE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rename.
-        /// </summary>
-        internal static string GOREDIT_UNDO_RENAME {
-            get {
-                return ResourceManager.GetString("GOREDIT_UNDO_RENAME", resourceCulture);
             }
         }
         
@@ -1902,36 +1311,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap include_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("include_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
-        ///&lt;!--Created by exporting the settings of a KryptonPalette instance.--&gt;
-        ///&lt;!--For more information about Krypton visit www.com--&gt;
-        ///&lt;!--WARNING: Modifying this file may render it invalid for importing.--&gt;
-        ///&lt;KryptonPalette Version=&quot;18&quot; Generated=&quot;Saturday, 15 September 2018, 12:50&quot;&gt;
-        ///  &lt;Properties&gt;
-        ///    &lt;ButtonStyles&gt;
-        ///      &lt;ButtonCommon&gt;
-        ///        &lt;StateCommon&gt;
-        ///          &lt;Back&gt;
-        ///            &lt;Color1 Type=&quot;Color&quot; Value=&quot;Transparent&quot; /&gt;
-        ///            &lt;Color2 Type=&quot;Color&quot; Value=&quot;Transparent&quot; [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Krypton_DarkO2k10Theme {
-            get {
-                return ResourceManager.GetString("Krypton_DarkO2k10Theme", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] LoadingBg {
@@ -1957,16 +1336,6 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap new_content_48x48 {
             get {
                 object obj = ResourceManager.GetObject("new_content_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap newproject_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("newproject_24x24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2014,29 +1383,9 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap open_folder_22x22 {
-            get {
-                object obj = ResourceManager.GetObject("open_folder_22x22", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap open_pack_file_48x48 {
             get {
                 object obj = ResourceManager.GetObject("open_pack_file_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap openproject_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("openproject_24x24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2074,16 +1423,6 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap recent_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("recent_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap recent_48x48 {
             get {
                 object obj = ResourceManager.GetObject("recent_48x48", resourceCulture);
@@ -2097,26 +1436,6 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap recent_item_badge_48x48 {
             get {
                 object obj = ResourceManager.GetObject("recent_item_badge_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap redo_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("redo_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap redo_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("redo_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -2164,46 +1483,6 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap save_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("save_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap save_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("save_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap save_as_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("save_as_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap save_as_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("save_as_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap settings_48x48 {
             get {
                 object obj = ResourceManager.GetObject("settings_48x48", resourceCulture);
@@ -2214,59 +1493,9 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap show_external_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("show_external_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap show_external_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("show_external_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap stage_save_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("stage_save_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap stage_save_as_48x48 {
             get {
                 object obj = ResourceManager.GetObject("stage_save_as_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap undo_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("undo_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap undo_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("undo_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

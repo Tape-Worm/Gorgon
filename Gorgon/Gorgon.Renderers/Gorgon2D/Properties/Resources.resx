@@ -229,9 +229,6 @@
   <data name="GOR2D_EFFECT_WAVE_DESC" xml:space="preserve">
     <value>Causes a waving effect on a texture.</value>
   </data>
-  <data name="GOR2D_ERR_2D_IMAGE_ONLY" xml:space="preserve">
-    <value>The {0} image must be 2D.</value>
-  </data>
   <data name="GOR2D_ERR_ATLAS_INVALID_FORMAT" xml:space="preserve">
     <value>The texture format [{0}] is not valid for a texture atlas.</value>
   </data>
@@ -253,9 +250,6 @@
   <data name="GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID" xml:space="preserve">
     <value>The kernel size must be between 3 and 81 (inclusive).</value>
   </data>
-  <data name="GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED" xml:space="preserve">
-    <value>The format [{0}] is not supported for render targets.</value>
-  </data>
   <data name="GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT" xml:space="preserve">
     <value>The format [{0}] is not supported for render targets.</value>
   </data>
@@ -264,9 +258,6 @@
   </data>
   <data name="GOR2D_ERR_INVALID_SAMPLER_INDEX" xml:space="preserve">
     <value>The sampler index must be 0 or less than {1}.</value>
-  </data>
-  <data name="GOR2D_ERR_NO_RTV" xml:space="preserve">
-    <value>Could not initialize the 2D renderer because there was no render target assigned to slot 0 on the graphics interface.</value>
   </data>
   <data name="GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS" xml:space="preserve">
     <value>A minimum of 3 vertices is required for a polygonal sprite.</value>
@@ -279,9 +270,6 @@
   </data>
   <data name="HdrBloom" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HdrBloom.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="Icons" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Lighting" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Lighting.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>

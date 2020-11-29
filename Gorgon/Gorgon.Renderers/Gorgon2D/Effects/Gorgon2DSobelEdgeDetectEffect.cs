@@ -327,7 +327,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to render this effect.</param>
         public Gorgon2DSobelEdgeDetectEffect(Gorgon2D renderer)
-            : base(renderer, Resources.GOR2D_EFFECT_SHARPEMBOSS, Resources.GOR2D_EFFECT_SHARPEMBOSS_DESC, 1)
+            : base(renderer, Resources.GOR2D_EFFECT_SOBEL, Resources.GOR2D_EFFECT_SOBEL_DESC, 1)
         {
             _settings = new Settings(Color.Black, DX.Vector2.Zero, 0.75f);
             Macros.Add(new GorgonShaderMacro("SOBEL_EDGE_EFFECT"));

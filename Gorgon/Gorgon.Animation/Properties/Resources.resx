@@ -117,71 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORANM_ANIMATION_ALREADY_EXISTS" xml:space="preserve">
-    <value>The animation '{0}' already exists in this collection.</value>
-  </data>
-  <data name="GORANM_KEY_EXISTS_AT_TIME" xml:space="preserve">
-    <value>There's already a key frame at the time '{0}'</value>
-  </data>
-  <data name="GORANM_KEY_TRACK_TYPE_MISMATCH" xml:space="preserve">
-    <value>Cannot use a key frame type '{0}' in a track that requires '{1}'.</value>
-  </data>
   <data name="GORANM_TRACK_ALREADY_EXISTS" xml:space="preserve">
     <value>The track '{0}' already exists in this collection.</value>
-  </data>
-  <data name="GORANM_TRACK_HAS_NO_KEYS" xml:space="preserve">
-    <value>The track does not have any keys.</value>
-  </data>
-  <data name="GORANM_TRACK_TYPE_DOES_NOT_EXIST" xml:space="preserve">
-    <value>There is no track named '{0}' that matches a property on the type '{1}'.</value>
-  </data>
-  <data name="GORANM_ANIMATION_DOES_NOT_EXIST" xml:space="preserve">
-    <value>The animation '{0}' was not found in this collection.</value>
-  </data>
-  <data name="GORANM_ANIMATION_TYPE_MISMATCH" xml:space="preserve">
-    <value>This animation is for type '{0}' and is not compatible with a controller bound to type '{1}'.</value>
-  </data>
-  <data name="GORANM_KEYFRAME_TEXTURE_NOGFX" xml:space="preserve">
-    <value>Cannot load a 2D texture key frame without a graphics instance.</value>
   </data>
   <data name="GORANM_TRACK_DOES_NOT_EXIST" xml:space="preserve">
     <value>The track '{0}' does not exist.</value>
   </data>
-  <data name="GORANM_ERR_STREAM_READ_ONLY" xml:space="preserve">
-    <value>The stream is read-only.</value>
-  </data>
-  <data name="GORANM_ERR_NO_TRACK_INFORMATION" xml:space="preserve">
-    <value>The controller requires track information for type '{0}'.</value>
-  </data>
-  <data name="GORANM_ERR_ANIMATION_HAS_CONTROLLER" xml:space="preserve">
-    <value>The animation '{0}' already belongs to another controller.</value>
-  </data>
-  <data name="GORANM_NAME_POSITION" xml:space="preserve">
-    <value>Position</value>
-  </data>
   <data name="GORANM_ERR_KEY_ALREADY_IN_TRACK" xml:space="preserve">
     <value>The key is already in the track at time index {0}.</value>
-  </data>
-  <data name="GORANM_NAME_BOUNDS" xml:space="preserve">
-    <value>Bounds</value>
-  </data>
-  <data name="GORANM_NAME_COLOR" xml:space="preserve">
-    <value>Color</value>
-  </data>
-  <data name="GORANM_NAME_TEXTURE_2D" xml:space="preserve">
-    <value>2D Texture</value>
-  </data>
-  <data name="GORANM_NAME_SCALE" xml:space="preserve">
-    <value>Scale</value>
-  </data>
-  <data name="GORANM_NAME_ROTATION" xml:space="preserve">
-    <value>Rotation</value>
-  </data>
-  <data name="GORANM_NAME_SIZE" xml:space="preserve">
-    <value>Size</value>
-  </data>
-  <data name="GORANM_ERR_TRACK_TYPE_NOT_VALID" xml:space="preserve">
-    <value>The type '{0}' is not a valid track data type.</value>
   </data>
   <data name="GORANM_TOSTR_TRACKREG" xml:space="preserve">
     <value>Track '{0}', Type: {1}</value>

@@ -456,15 +456,6 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
-        internal static string GOR2D_ERR_2D_IMAGE_ONLY {
-            get {
-                return ResourceManager.GetString("GOR2D_ERR_2D_IMAGE_ONLY", resourceCulture);
-            }
-        }
-        
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
         internal static string GOR2D_ERR_ATLAS_INVALID_FORMAT {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_ATLAS_INVALID_FORMAT", resourceCulture);
@@ -528,15 +519,6 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
-        internal static string GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED {
-            get {
-                return ResourceManager.GetString("GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED", resourceCulture);
-            }
-        }
-        
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
         internal static string GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT", resourceCulture);
@@ -558,15 +540,6 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_ERR_INVALID_SAMPLER_INDEX {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_INVALID_SAMPLER_INDEX", resourceCulture);
-            }
-        }
-        
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
-        internal static string GOR2D_ERR_NO_RTV {
-            get {
-                return ResourceManager.GetString("GOR2D_ERR_NO_RTV", resourceCulture);
             }
         }
         
@@ -611,16 +584,6 @@ namespace Gorgon.Renderers.Properties {
         internal static string HdrBloom {
             get {
                 return ResourceManager.GetString("HdrBloom", resourceCulture);
-            }
-        }
-        
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
-        internal static System.Drawing.Bitmap Icons {
-            get {
-                object obj = ResourceManager.GetObject("Icons", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

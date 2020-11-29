@@ -62,7 +62,7 @@ namespace Gorgon.Core
         /// <summary>
         /// There was not enough memory to complete the operation.
         /// </summary>
-        public static GorgonResult OutOfMemory => new GorgonResult(nameof(OutOfMemory), ErrorBase + 0xb, Resources.GOR_RESULT_OUT_OF_MEMORY);
+        public static GorgonResult OutOfMemory => new GorgonResult(nameof(OutOfMemory), ErrorBase + 0xb, Resources.GOR_RESULT_DESC_OUT_OF_MEMORY);
 
         /// <summary>
         /// Access is denied.
@@ -97,17 +97,17 @@ namespace Gorgon.Core
         /// <summary>
         /// The file format is not supported.
         /// </summary>
-        public static GorgonResult InvalidFileFormat => new GorgonResult(nameof(InvalidFileFormat), ErrorBase + 9, Resources.GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED);
+        public static GorgonResult InvalidFileFormat => new GorgonResult(nameof(InvalidFileFormat), ErrorBase + 9, Resources.GOR_RESULT_DESC_FILE_FORMAT_NOT_SUPPORTED);
 
         /// <summary>
         /// Cannot make this call across threads.
         /// </summary>
-        public static GorgonResult CrossThreadCall => new GorgonResult(nameof(CrossThreadCall), ErrorBase + 10, Resources.GOR_RESULT_CANNOT_CALL_CROSS_THREAD);
+        public static GorgonResult CrossThreadCall => new GorgonResult(nameof(CrossThreadCall), ErrorBase + 10, Resources.GOR_RESULT_DESC_CANNOT_CALL_CROSS_THREAD);
 
         /// <summary>
         /// Cannot compile the source code.
         /// </summary>
-        public static GorgonResult CannotCompile => new GorgonResult(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_CANNOT_COMPILE);
+        public static GorgonResult CannotCompile => new GorgonResult(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_DESC_CANNOT_COMPILE);
         #endregion
 
         #region Properties.

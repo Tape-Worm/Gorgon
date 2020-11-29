@@ -61,16 +61,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap add_plugin_22x22 {
-            get {
-                object obj = ResourceManager.GetObject("add_plugin_22x22", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Bg_Pattern_256x256 {
@@ -221,26 +211,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File.
-        /// </summary>
-        internal static string GOREDIT_CAPTION_FILE_COLUMN {
-            get {
-                return ResourceManager.GetString("GOREDIT_CAPTION_FILE_COLUMN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error updating the associated file information after it was moved.
-        ///
-        ///This content will now close in order to avoid corrupting the file..
-        /// </summary>
-        internal static string GOREDIT_ERR_AFTER_MOVE_UPDATE {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_AFTER_MOVE_UPDATE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot find the row associated with the file..
         /// </summary>
         internal static string GOREDIT_ERR_BROKEN_FILEROW {
@@ -366,15 +336,6 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Content objects must have a view associated with them..
-        /// </summary>
-        internal static string GOREDIT_ERR_NO_CONTENT_VIEW {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_NO_CONTENT_VIEW", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to No render control is assigned to this control..
         /// </summary>
         internal static string GOREDIT_ERR_NO_RENDER_CONTROL {
@@ -447,29 +408,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The stream is read only..
-        /// </summary>
-        internal static string GOREDIT_ERR_STREAM_READ_ONLY {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_STREAM_READ_ONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The tool renderer &apos;{0}&apos; already exists..
         /// </summary>
         internal static string GOREDIT_ERR_TOOL_RENDERER_EXISTS {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_TOOL_RENDERER_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is no tool renderer with the name &apos;{0}&apos;..
-        /// </summary>
-        internal static string GOREDIT_ERR_TOOL_RENDERER_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_TOOL_RENDERER_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -654,15 +597,6 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_TITLE_SAVE_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_TITLE_SAVE_FILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} dependency at &apos;{1}&apos;..
-        /// </summary>
-        internal static string GOREDIT_TOSTR_DEPENDENCY {
-            get {
-                return ResourceManager.GetString("GOREDIT_TOSTR_DEPENDENCY", resourceCulture);
             }
         }
         

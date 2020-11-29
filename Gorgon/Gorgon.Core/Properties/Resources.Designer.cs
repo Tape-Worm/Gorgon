@@ -124,15 +124,6 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The array is read only..
-        /// </summary>
-        internal static string GOR_ERR_ARRAY_READ_ONLY {
-            get {
-                return ResourceManager.GetString("GOR_ERR_ARRAY_READ_ONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The array length {0} is too small to accept {1} elements from the list..
         /// </summary>
         internal static string GOR_ERR_ARRAY_TOO_SMALL {
@@ -467,15 +458,6 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error Message.
-        /// </summary>
-        internal static string GOR_EXCEPT_DETAILS_MSG {
-            get {
-                return ResourceManager.GetString("GOR_EXCEPT_DETAILS_MSG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Exception Type.
         /// </summary>
         internal static string GOR_EXCEPT_EXCEPT_TYPE {
@@ -539,24 +521,6 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot call this method across threads..
-        /// </summary>
-        internal static string GOR_RESULT_CANNOT_CALL_CROSS_THREAD {
-            get {
-                return ResourceManager.GetString("GOR_RESULT_CANNOT_CALL_CROSS_THREAD", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There were errors compiling the source code..
-        /// </summary>
-        internal static string GOR_RESULT_CANNOT_COMPILE {
-            get {
-                return ResourceManager.GetString("GOR_RESULT_CANNOT_COMPILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Access is denied..
         /// </summary>
         internal static string GOR_RESULT_DESC_ACCESS_DENIED {
@@ -566,20 +530,29 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Operation already initialized..
-        /// </summary>
-        internal static string GOR_RESULT_DESC_ALREADY_INITIALIZED {
-            get {
-                return ResourceManager.GetString("GOR_RESULT_DESC_ALREADY_INITIALIZED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error during binding..
         /// </summary>
         internal static string GOR_RESULT_DESC_CANNOT_BIND {
             get {
                 return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_BIND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot call this method across threads..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_CALL_CROSS_THREAD {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_CALL_CROSS_THREAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There were errors compiling the source code..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_COMPILE {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_COMPILE", resourceCulture);
             }
         }
         
@@ -629,6 +602,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file format is not supported..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_FILE_FORMAT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_FILE_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The requested format is not supported..
         /// </summary>
         internal static string GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED {
@@ -647,20 +629,11 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file format is not supported..
-        /// </summary>
-        internal static string GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED {
-            get {
-                return ResourceManager.GetString("GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There is not enough memory to complete the operation..
         /// </summary>
-        internal static string GOR_RESULT_OUT_OF_MEMORY {
+        internal static string GOR_RESULT_DESC_OUT_OF_MEMORY {
             get {
-                return ResourceManager.GetString("GOR_RESULT_OUT_OF_MEMORY", resourceCulture);
+                return ResourceManager.GetString("GOR_RESULT_DESC_OUT_OF_MEMORY", resourceCulture);
             }
         }
         

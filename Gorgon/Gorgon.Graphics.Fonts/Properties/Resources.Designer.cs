@@ -142,29 +142,11 @@ namespace Gorgon.Graphics.Fonts.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The font file data is corrupt..
-        /// </summary>
-        internal static string GORGFX_ERR_FONT_FILE_CORRUPT {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_FONT_FILE_CORRUPT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The format for this font file is not valid..
         /// </summary>
         internal static string GORGFX_ERR_FONT_FILE_FORMAT_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FONT_FILE_FORMAT_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The glyph for character &apos;{0}&apos; does not have a texture assigned to it..
-        /// </summary>
-        internal static string GORGFX_ERR_FONT_GLYPH_HAS_NO_TEXTURE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_FONT_GLYPH_HAS_NO_TEXTURE", resourceCulture);
             }
         }
         
@@ -187,15 +169,6 @@ namespace Gorgon.Graphics.Fonts.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; was not found..
-        /// </summary>
-        internal static string GORGFX_ERR_FONT_GLYPH_TEXTURE_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_FONT_GLYPH_TEXTURE_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The font size {0} is too small..
         /// </summary>
         internal static string GORGFX_ERR_FONT_SIZE_TOO_SMALL {
@@ -205,29 +178,11 @@ namespace Gorgon.Graphics.Fonts.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; already exists in this collection..
-        /// </summary>
-        internal static string GORGFX_ERR_FONT_TEXTURE_EXISTS {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_FONT_TEXTURE_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The font texture file &apos;{0}&apos; was not found..
         /// </summary>
         internal static string GORGFX_ERR_FONT_TEXTURE_FILE_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FONT_TEXTURE_FILE_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; was not found in this collection..
-        /// </summary>
-        internal static string GORGFX_ERR_FONT_TEXTURE_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_FONT_TEXTURE_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -260,15 +215,6 @@ namespace Gorgon.Graphics.Fonts.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The character &apos;{0}&apos; already has a glyph assigned..
-        /// </summary>
-        internal static string GORGFX_ERR_GLYPH_CHARACTER_ASSIGNED {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_GLYPH_CHARACTER_ASSIGNED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The texture format for the glyph is not valid..
         /// </summary>
         internal static string GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID {
@@ -283,15 +229,6 @@ namespace Gorgon.Graphics.Fonts.Properties {
         internal static string GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot read beyond the end of a stream..
-        /// </summary>
-        internal static string GORGFX_ERR_STREAM_EOF {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_STREAM_EOF", resourceCulture);
             }
         }
         

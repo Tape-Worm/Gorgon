@@ -117,33 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="PROP_THEME_DESC" xml:space="preserve">
-    <value>Contains values to change the appearance of window elements.</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="up_directory_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\up_directory_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_THEME_CHECKDISABLED_IMAGE" xml:space="preserve">
-    <value>The image to use when showing a disabled check mark on a tool strip button.</value>
-  </data>
-  <data name="PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC" xml:space="preserve">
-    <value>The foreground color of the close icon on the window when the mouse is over the icon.</value>
-  </data>
-  <data name="PROP_CATEGORY_DESIGN" xml:space="preserve">
-    <value>Design</value>
-  </data>
-  <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOR_ERR_APPLICATION_ALREADY_RUNNING" xml:space="preserve">
     <value>The application is already running.</value>
-  </data>
-  <data name="PROP_THEME_MENUCHECKBACKCOLOR_DESC" xml:space="preserve">
-    <value>The color behind a checkmark on a menu item.</value>
-  </data>
-  <data name="GOR_ERR_DIR_NOT_FOUND" xml:space="preserve">
-    <value>The directory '{0}' does not exist.</value>
   </data>
   <data name="GOR_ERR_TIME_QPC_NOT_AVAILABLE" xml:space="preserve">
     <value>The QPC timer is not supported on this system.</value>
@@ -157,59 +136,14 @@
   <data name="GOR_LOG_WARNING2" xml:space="preserve">
     <value>[WARNING]:</value>
   </data>
-  <data name="remove_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\remove_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOR_EXCEPT_CUSTOM_INFO" xml:space="preserve">
     <value>Custom Information</value>
-  </data>
-  <data name="PROP_THEME_FORECOLOR_DESC" xml:space="preserve">
-    <value>The foreground color for general items in the window.</value>
   </data>
   <data name="GORWIN_ERR_DIR_ACCESS" xml:space="preserve">
     <value>Error: {0}</value>
   </data>
-  <data name="PROP_THEME_WINICONBACKHILIGHT_DESC" xml:space="preserve">
-    <value>The background color of the window icons (minimize, maximize and restore) when the mouse is over the icon.</value>
-  </data>
-  <data name="PROP_THEME_WINCLOSEFORECOLOR_DESC" xml:space="preserve">
-    <value>The foreground color of the close icon on the window.</value>
-  </data>
-  <data name="PROP_THEME_TOOLSTRIPBACKCOLOR_DESC" xml:space="preserve">
-    <value>The background color for a tool strip.</value>
-  </data>
-  <data name="GOR_ERR_FLATFORM_CANNOT_READ_THEME" xml:space="preserve">
-    <value>Cannot read theme xml file.</value>
-  </data>
-  <data name="GOR_TEXT_WAIT_TITLE" xml:space="preserve">
-    <value>Please wait</value>
-  </data>
-  <data name="PROP_THEME_CONTENTBACKCOLOR_DESC" xml:space="preserve">
-    <value>The background color for the content panel on the window.</value>
-  </data>
-  <data name="GOR_TEXT_FLATFORM_MAXIMIZE_TIP" xml:space="preserve">
-    <value>Maximize the window</value>
-  </data>
-  <data name="PROP_BORDER_DESC" xml:space="preserve">
-    <value>When set to true, a border will be drawn on the form.</value>
-  </data>
-  <data name="PROP_CATEGORY_WINDOWSTYLE" xml:space="preserve">
-    <value>Window Style</value>
-  </data>
   <data name="GOR_TEXT_FREE_SPACE" xml:space="preserve">
     <value>Free space</value>
-  </data>
-  <data name="VERB_SAVE_THEME" xml:space="preserve">
-    <value>Save theme...</value>
-  </data>
-  <data name="GOR_ERR_STREAM_IS_WRITEONLY" xml:space="preserve">
-    <value>The stream is write only.</value>
-  </data>
-  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
-    <value>Behavior</value>
-  </data>
-  <data name="PROP_THEME_TOOLSTRIPARROWCOLOR_DESC" xml:space="preserve">
-    <value>The color for an arrow on the tool strip.</value>
   </data>
   <data name="GOR_EXCEPT_EXCEPT_TYPE" xml:space="preserve">
     <value>Exception Type</value>
@@ -217,19 +151,8 @@
   <data name="GOR_ERR_DIR_ILLEGAL_CHARS" xml:space="preserve">
     <value>The path '{0}' contains illegal characters.</value>
   </data>
-  <data name="PROP_DPIAWARE_DESC" xml:space="preserve">
-    <value>Sets whether the form will scale with the display DPI or not.
-
-This flag only works when the app.config contains a setting for DpiAwareness that has a value of PerMonitorV2.</value>
-  </data>
   <data name="GOR_ERR_TIME_CANNOT_BEGIN" xml:space="preserve">
     <value>Cannot begin the timer period.</value>
-  </data>
-  <data name="GOR_TEXT_FLAT_THEME" xml:space="preserve">
-    <value>(Theme)</value>
-  </data>
-  <data name="PROP_THEME_WINBORDERACTIVE_DESC" xml:space="preserve">
-    <value>The color of a window border when the window is active.</value>
   </data>
   <data name="GOR_ERR_APPLICATION_CANNOT_REMOVE_IDLE_LOOP" xml:space="preserve">
     <value>Cannot remove an idle loop when there is no form or application context.</value>
@@ -240,20 +163,8 @@ This flag only works when the app.config contains a setting for DpiAwareness tha
   <data name="GOR_EXCEPT_NO_MSG" xml:space="preserve">
     <value>No message given.</value>
   </data>
-  <data name="GOR_TEXT_SAVE_THEME" xml:space="preserve">
-    <value>Save theme as...</value>
-  </data>
   <data name="GOR_ERR_LISTVIEW_CANNOT_UPDATE_COLUMN" xml:space="preserve">
     <value>Cannot update the column.</value>
-  </data>
-  <data name="Close" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Close.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="add_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\add_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PROP_RESIZEHANDLE_DESC" xml:space="preserve">
-    <value>The size, in pixels, of the resizable handles on the window border.</value>
   </data>
   <data name="add_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\add_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -261,38 +172,11 @@ This flag only works when the app.config contains a setting for DpiAwareness tha
   <data name="GOR_LOG_WARNING" xml:space="preserve">
     <value>WARNING: </value>
   </data>
-  <data name="PROP_TEXT_DESC" xml:space="preserve">
-    <value>Sets the text for the window caption.</value>
-  </data>
-  <data name="GOR_ERR_STREAM_EOS" xml:space="preserve">
-    <value>Cannot read beyond the end of the stream.</value>
-  </data>
-  <data name="GOR_TEXT_FLATFORM_RESTORE_TIP" xml:space="preserve">
-    <value>Restore the window to the original dimensions</value>
-  </data>
   <data name="Info_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Info_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_CATEGORY_LAYOUT" xml:space="preserve">
-    <value>Layout</value>
-  </data>
   <data name="GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD" xml:space="preserve">
     <value>The application can only start from a single thread.</value>
-  </data>
-  <data name="PROP_WINDOWCAPTION_DESC" xml:space="preserve">
-    <value>Shows or hides the caption for the window.  This will include the caption, system menu, and the minimize/maximize/close buttons.</value>
-  </data>
-  <data name="PROP_THEME_WINBACKCOLOR_DESC" xml:space="preserve">
-    <value>The main background color for a window.</value>
-  </data>
-  <data name="PROP_SHOWICON_DESC" xml:space="preserve">
-    <value>Shows or hides the icon for the window.</value>
-  </data>
-  <data name="PROP_THEME_HILIGHTBACKCOLOR_DESC" xml:space="preserve">
-    <value>The background color used when hilighting menu items.</value>
-  </data>
-  <data name="GOR_TEXT_FLATFORM_MAX_ICON" xml:space="preserve">
-    <value>2</value>
   </data>
   <data name="GOR_LOG_EXCEPTION" xml:space="preserve">
     <value>Exception</value>
@@ -305,35 +189,14 @@ This flag only works when the app.config contains a setting for DpiAwareness tha
 
 Are you sure you wish to delete this directory?</value>
   </data>
-  <data name="PROP_ICON_DESC" xml:space="preserve">
-    <value>Sets the icon for the window.</value>
-  </data>
   <data name="GOR_EXCEPT_TARGET_SITE" xml:space="preserve">
     <value>Target Site</value>
-  </data>
-  <data name="Check_Enabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Enabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PROP_RESIZABLE_DESC" xml:space="preserve">
-    <value>Determines if a form can be resized by the user or not.</value>
-  </data>
-  <data name="Restore" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Restore.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GorgonSelectablePanel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GorgonSelectablePanel.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOR_NEW_DIR" xml:space="preserve">
     <value>New Folder</value>
-  </data>
-  <data name="GOR_TEXT_PROGRESS" xml:space="preserve">
-    <value>Updating...</value>
-  </data>
-  <data name="PROP_THEME_WINICONHILIGHT_DESC" xml:space="preserve">
-    <value>Sets the color to use when a window icon (Minimize, Maximize and Restore) is high lighted.</value>
-  </data>
-  <data name="GOR_TEXT_WAIT_MESSAGE" xml:space="preserve">
-    <value>Loading...</value>
   </data>
   <data name="GOR_ERR_TIME_CANNOT_END" xml:space="preserve">
     <value>Cannot end the timer period.</value>
@@ -344,18 +207,6 @@ Are you sure you wish to delete this directory?</value>
   <data name="GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER" xml:space="preserve">
     <value>Cannot find the column header.</value>
   </data>
-  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
-    <value>Appearance</value>
-  </data>
-  <data name="PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC" xml:space="preserve">
-    <value>The color behind a checkmark on a menu item when the item is selected.</value>
-  </data>
-  <data name="GOR_TEXT_XML_FILTER" xml:space="preserve">
-    <value>Gorgon theme XML Files (*.xml)|*.xml</value>
-  </data>
-  <data name="PROP_TABSTOP_DESC" xml:space="preserve">
-    <value>Sets whether this control will be considered when navigating using the (Ctrl+)TAB key.</value>
-  </data>
   <data name="GOR_EXCEPT_SRC" xml:space="preserve">
     <value>Source</value>
   </data>
@@ -365,17 +216,8 @@ Are you sure you wish to delete this directory?</value>
   <data name="Confirm_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Confirm_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOR_TEXT_FLATFORM_RESTORE_ICON" xml:space="preserve">
-    <value>1</value>
-  </data>
   <data name="GOR_ERR_DIR_ALREADY_EXISTS" xml:space="preserve">
     <value>There is already a file or directory named '{0}'.</value>
-  </data>
-  <data name="PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC" xml:space="preserve">
-    <value>The background color of the close icon on the window when the mouse is over the icon.</value>
-  </data>
-  <data name="PROP_THEME_WINBORDERINACTIVE_DESC" xml:space="preserve">
-    <value>The color of a window border when the window is inactive or disabled.</value>
   </data>
   <data name="GOR_EXCEPT_STACK_TRACE" xml:space="preserve">
     <value>Stack trace</value>
@@ -383,46 +225,16 @@ Are you sure you wish to delete this directory?</value>
   <data name="GOR_ERR_APPLICATION_NOCONTEXT" xml:space="preserve">
     <value>Cannot run an application without either a main form, or a idle method.</value>
   </data>
-  <data name="Check_Disabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Disabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PROP_BORDERSIZE_DESC" xml:space="preserve">
-    <value>The size, in pixels, of the window border when the Border property is set to true.</value>
-  </data>
-  <data name="PROP_THEME_HILIGHTFORECOLOR_DESC" xml:space="preserve">
-    <value>The foreground color used when hilighting menu items.</value>
-  </data>
   <data name="GOR_DLG_CAPTION_INFO" xml:space="preserve">
     <value>Information</value>
-  </data>
-  <data name="PROP_THEME_CHECKENABLED_IMAGE" xml:space="preserve">
-    <value>The image to use when showing a check mark on a tool strip button.</value>
-  </data>
-  <data name="PROP_THEME_DISABLECOLOR_DESC" xml:space="preserve">
-    <value>The color used for disabled items in the window.</value>
-  </data>
-  <data name="GOR_TEXT_LOAD_THEME" xml:space="preserve">
-    <value>Load theme</value>
   </data>
   <data name="GOR_CONFIRM_CREATE_DIR" xml:space="preserve">
     <value>The directory '{0}' does not exist.
 
 Would you like to create it now?</value>
   </data>
-  <data name="Info_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Info_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOR_ERR_STREAM_IS_READONLY" xml:space="preserve">
-    <value>The stream is read-only.</value>
-  </data>
-  <data name="VERB_LOAD_THEME" xml:space="preserve">
-    <value>Load theme...</value>
-  </data>
   <data name="Error_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Error_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PROP_THEME_FORECOLOR_INACTIVE_DESC" xml:space="preserve">
-    <value>The color used on items in the window when the window is not active.</value>
   </data>
   <data name="GOR_TEXT_MODIFIED_DATE" xml:space="preserve">
     <value>Last Modified Date</value>
@@ -435,9 +247,6 @@ Would you like to create it now?</value>
   </data>
   <data name="GOR_EXCEPT_STACK_END" xml:space="preserve">
     <value>END</value>
-  </data>
-  <data name="PROP_THEME_DROPDOWNBORDERCOLOR_DESC" xml:space="preserve">
-    <value>The color applied to the border of a drop down menu.</value>
   </data>
   <data name="arrow_e_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\arrow_e_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

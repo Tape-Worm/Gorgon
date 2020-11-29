@@ -180,9 +180,6 @@ Code: 0x{2}</value>
   <data name="GOR_EXCEPT_CUSTOM_INFO" xml:space="preserve">
     <value>Custom Information</value>
   </data>
-  <data name="GOR_EXCEPT_DETAILS_MSG" xml:space="preserve">
-    <value>Error Message</value>
-  </data>
   <data name="GOR_EXCEPT_EXCEPT_TYPE" xml:space="preserve">
     <value>Exception Type</value>
   </data>
@@ -318,16 +315,16 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_RATIONAL" xml:space="preserve">
     <value>Rational number: {0}/{1} ({2}).</value>
   </data>
-  <data name="GOR_RESULT_CANNOT_CALL_CROSS_THREAD" xml:space="preserve">
+  <data name="GOR_RESULT_DESC_CANNOT_CALL_CROSS_THREAD" xml:space="preserve">
     <value>Cannot call this method across threads.</value>
   </data>
-  <data name="GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+  <data name="GOR_RESULT_DESC_FILE_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The file format is not supported.</value>
   </data>
   <data name="GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL" xml:space="preserve">
     <value>There must be a minimum of 1 item available to the allocator.</value>
   </data>
-  <data name="GOR_RESULT_CANNOT_COMPILE" xml:space="preserve">
+  <data name="GOR_RESULT_DESC_CANNOT_COMPILE" xml:space="preserve">
     <value>There were errors compiling the source code.</value>
   </data>
   <data name="GOR_TOSTR_BOX" xml:space="preserve">
@@ -339,7 +336,7 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_ALLOCATOR_FULL" xml:space="preserve">
     <value>The memory for the allocator is full.</value>
   </data>
-  <data name="GOR_RESULT_OUT_OF_MEMORY" xml:space="preserve">
+  <data name="GOR_RESULT_DESC_OUT_OF_MEMORY" xml:space="preserve">
     <value>There is not enough memory to complete the operation.</value>
   </data>
   <data name="GOR_ERR_ENCRYPTION_KEY_NOT_VALID" xml:space="preserve">
@@ -347,12 +344,6 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_DIRECTORY_NOT_FOUND" xml:space="preserve">
     <value>The directory '{0}' was not found.</value>
-  </data>
-  <data name="GOR_ERR_ARRAY_READ_ONLY" xml:space="preserve">
-    <value>The array is read only.</value>
-  </data>
-  <data name="GOR_RESULT_DESC_ALREADY_INITIALIZED" xml:space="preserve">
-    <value>Operation already initialized.</value>
   </data>
   <data name="GOR_ERR_CHUNK_FILE_NOT_OPEN" xml:space="preserve">
     <value>The chunk file is not opened.</value>

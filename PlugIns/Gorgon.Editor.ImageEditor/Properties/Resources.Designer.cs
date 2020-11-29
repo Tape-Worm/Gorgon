@@ -93,86 +93,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap arrow_e_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("arrow_e_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_n_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("arrow_n_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_ne_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("arrow_ne_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_nw_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("arrow_nw_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_s_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("arrow_s_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_se_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("arrow_se_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_sw_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("arrow_sw_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap arrow_w_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("arrow_w_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap burn_16x16 {
             get {
                 object obj = ResourceManager.GetObject("burn_16x16", resourceCulture);
@@ -206,46 +126,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap cancel_48x48 {
             get {
                 object obj = ResourceManager.GetObject("cancel_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap center_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap center_24x24 {
-            get {
-                object obj = ResourceManager.GetObject("center_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap codec_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("codec_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap codec_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("codec_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -585,15 +465,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error canceling the operation..
-        /// </summary>
-        internal static string GORIMG_ERR_CANCEL_OP {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_CANCEL_OP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error while compressing the image data.
         ///
         ///Please try again..
@@ -614,17 +485,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error loading the codec plug in.
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GORIMG_ERR_CANNOT_LOAD_CODEC {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_CANNOT_LOAD_CODEC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error opening the image picker.
         ///
         ///Please try again..
@@ -632,17 +492,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_CANNOT_OPEN_IMG_PICKER {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_CANNOT_OPEN_IMG_PICKER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to remove the selected codec(s).
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GORIMG_ERR_CANNOT_UNLOAD_CODECS {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_CANNOT_UNLOAD_CODECS", resourceCulture);
             }
         }
         
@@ -744,15 +593,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found..
-        /// </summary>
-        internal static string GORIMG_ERR_FILE_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_FILE_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There is no support for the [{0}] format..
         /// </summary>
         internal static string GORIMG_ERR_FORMAT_NOT_SUPPORTED {
@@ -778,15 +618,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_ERR_IMPORT_FAIL {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_IMPORT_FAIL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error managing the custom image codec plug ins..
-        /// </summary>
-        internal static string GORIMG_ERR_MANAGE_CODECS {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_MANAGE_CODECS", resourceCulture);
             }
         }
         
@@ -929,15 +760,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Alpha Channel.
-        /// </summary>
-        internal static string GORIMG_TEXT_ALPHA {
-            get {
-                return ResourceManager.GetString("GORIMG_TEXT_ALPHA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Array Index:.
         /// </summary>
         internal static string GORIMG_TEXT_ARRAY_INDEX {
@@ -961,15 +783,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_ARRAY_INDICES {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDICES", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Codec.
-        /// </summary>
-        internal static string GORIMG_TEXT_CODEC {
-            get {
-                return ResourceManager.GetString("GORIMG_TEXT_CODEC", resourceCulture);
             }
         }
         
@@ -1092,15 +905,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Redoing previous action....
-        /// </summary>
-        internal static string GORIMG_TEXT_REDO {
-            get {
-                return ResourceManager.GetString("GORIMG_TEXT_REDO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Target image dimensions: {0}x{1}.
         /// </summary>
         internal static string GORIMG_TEXT_RESIZE_CROP_IMAGE_SIZE {
@@ -1146,15 +950,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image Editor.
-        /// </summary>
-        internal static string GORIMG_TEXT_SETTINGS_IMAGE_EDITOR {
-            get {
-                return ResourceManager.GetString("GORIMG_TEXT_SETTINGS_IMAGE_EDITOR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The source image &apos;{0}&apos; has multiple array indices and/or multiple mip map levels.
         ///
         ///Please select an array index to import from the source image..
@@ -1173,15 +968,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_TEXT_SRC_IMG_PICKER_DESC_DEPTH {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_SRC_IMG_PICKER_DESC_DEPTH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Undoing previous action....
-        /// </summary>
-        internal static string GORIMG_TEXT_UNDO {
-            get {
-                return ResourceManager.GetString("GORIMG_TEXT_UNDO", resourceCulture);
             }
         }
         
@@ -1465,16 +1251,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap left_20x20 {
-            get {
-                object obj = ResourceManager.GetObject("left_20x20", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap no_thumb_64x64 {
             get {
                 object obj = ResourceManager.GetObject("no_thumb_64x64", resourceCulture);
@@ -1545,26 +1321,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap plugins_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("plugins_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap plugins_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("plugins_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap posterize_16x16 {
             get {
                 object obj = ResourceManager.GetObject("posterize_16x16", resourceCulture);
@@ -1618,16 +1374,6 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap right_16x16 {
             get {
                 object obj = ResourceManager.GetObject("right_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap right_20x20 {
-            get {
-                object obj = ResourceManager.GetObject("right_20x20", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

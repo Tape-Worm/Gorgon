@@ -143,28 +143,14 @@ Win32 Error Code: {0}</value>
   <data name="GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR" xml:space="preserve">
     <value>Unable to enumerate the raw input devices.</value>
   </data>
-  <data name="GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG" xml:space="preserve">
-    <value>Failed to hook the application window message procedure.</value>
-  </data>
   <data name="GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA" xml:space="preserve">
     <value>Could not read the raw input device data.</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_REGISTER" xml:space="preserve">
     <value>Could not register the raw input device.</value>
   </data>
-  <data name="GORINP_RAW_ERR_CANNOT_UNREGISTER" xml:space="preserve">
-    <value>Could not unregister the raw input device.</value>
-  </data>
-  <data name="GORINP_RAW_ERR_HOOK_STILL_ACTIVE" xml:space="preserve">
-    <value>The window hook for raw input is still active, but the message filter has no record of it.
-
-This may happen if the object is disposed, but not cleaned up correctly.</value>
-  </data>
   <data name="GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE" xml:space="preserve">
     <value>The type '{0}' is not valid for use with this type '{1}'.</value>
-  </data>
-  <data name="GORINP_RAW_ERR_ONLY_ONE_INSTANCE" xml:space="preserve">
-    <value>Only one instance of the raw input system may be active at any given time.</value>
   </data>
   <data name="GORINP_RAW_ERR_UNKNOWN_DEVICE_TYPE" xml:space="preserve">
     <value>The device type '{0}' is unknown.</value>

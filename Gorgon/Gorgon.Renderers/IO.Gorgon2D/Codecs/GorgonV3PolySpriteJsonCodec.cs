@@ -299,7 +299,7 @@ namespace Gorgon.IO
         /// <param name="renderer">The renderer used for resource handling.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
         public GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
-            : base(renderer, Resources.GOR2DIO_V3_JSON_CODEC, Resources.GOR2DIO_V3_JSON_CODEC_DESCRIPTION)
+            : base(renderer, Resources.GOR2DIO_V3_POLYSPRITE_JSON_CODEC, Resources.GOR2DIO_V3_POLYSPRITE_JSON_CODEC_DESCRIPTION)
         {
         }
         #endregion

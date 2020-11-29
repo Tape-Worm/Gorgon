@@ -123,16 +123,6 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap center_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap clip_sprite_16x16 {
             get {
                 object obj = ResourceManager.GetObject("clip_sprite_16x16", resourceCulture);
@@ -186,46 +176,6 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static System.Drawing.Bitmap confirm_48x48 {
             get {
                 object obj = ResourceManager.GetObject("confirm_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap edit_texture_coordinates_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("edit_texture_coordinates_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap edit_texture_coordinates_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("edit_texture_coordinates_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap edit_vertex_colors_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("edit_vertex_colors_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap edit_vertex_colors_48x48 {
-            get {
-                object obj = ResourceManager.GetObject("edit_vertex_colors_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -360,37 +310,6 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot activate the panel [{0}]..
-        /// </summary>
-        internal static string GORSPR_ERR_CANNOT_ACTIVATE_PANEL {
-            get {
-                return ResourceManager.GetString("GORSPR_ERR_CANNOT_ACTIVATE_PANEL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error loading the codec plug in.
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GORSPR_ERR_CANNOT_LOAD_CODEC {
-            get {
-                return ResourceManager.GetString("GORSPR_ERR_CANNOT_LOAD_CODEC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to remove the selected codec(s).
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GORSPR_ERR_CANNOT_UNLOAD_CODECS {
-            get {
-                return ResourceManager.GetString("GORSPR_ERR_CANNOT_UNLOAD_CODECS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The codec &apos;{0}&apos; was already loaded..
         /// </summary>
         internal static string GORSPR_ERR_CODEC_ALREADY_LOADED {
@@ -447,44 +366,6 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_ERR_FILESYSTEM_ITEM_EXISTS {
             get {
                 return ResourceManager.GetString("GORSPR_ERR_FILESYSTEM_ITEM_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error assigning the fixed width/height values.
-        ///
-        ///Please try again..
-        /// </summary>
-        internal static string GORSPR_ERR_FIXED_SIZE {
-            get {
-                return ResourceManager.GetString("GORSPR_ERR_FIXED_SIZE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error managing the custom image codec plug ins..
-        /// </summary>
-        internal static string GORSPR_ERR_MANAGE_CODECS {
-            get {
-                return ResourceManager.GetString("GORSPR_ERR_MANAGE_CODECS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error switching to manual input..
-        /// </summary>
-        internal static string GORSPR_ERR_MANUAL_CLIP {
-            get {
-                return ResourceManager.GetString("GORSPR_ERR_MANUAL_CLIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is no codec loaded that can read the file &apos;{0}&apos;..
-        /// </summary>
-        internal static string GORSPR_ERR_NO_CODEC {
-            get {
-                return ResourceManager.GetString("GORSPR_ERR_NO_CODEC", resourceCulture);
             }
         }
         
@@ -567,15 +448,6 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static string GORSPR_ERR_TEXTURE_CANNOT_READ {
             get {
                 return ResourceManager.GetString("GORSPR_ERR_TEXTURE_CANNOT_READ", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was no texture file found at &apos;{0}&apos;..
-        /// </summary>
-        internal static string GORSPR_ERR_TEXTURE_FILE_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORSPR_ERR_TEXTURE_FILE_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -761,16 +633,6 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap image_20x20 {
-            get {
-                object obj = ResourceManager.GetObject("image_20x20", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap left_16x16 {
             get {
                 object obj = ResourceManager.GetObject("left_16x16", resourceCulture);
@@ -814,26 +676,6 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         internal static byte[] NoImage_256x256 {
             get {
                 object obj = ResourceManager.GetObject("NoImage_256x256", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] pan_hand_close {
-            get {
-                object obj = ResourceManager.GetObject("pan_hand_close", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] pand_hand_open {
-            get {
-                object obj = ResourceManager.GetObject("pand_hand_open", resourceCulture);
                 return ((byte[])(obj));
             }
         }

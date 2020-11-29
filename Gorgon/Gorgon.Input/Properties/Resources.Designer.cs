@@ -135,15 +135,6 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to hook the application window message procedure..
-        /// </summary>
-        internal static string GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG {
-            get {
-                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not read the raw input device data..
         /// </summary>
         internal static string GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA {
@@ -162,40 +153,11 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not unregister the raw input device..
-        /// </summary>
-        internal static string GORINP_RAW_ERR_CANNOT_UNREGISTER {
-            get {
-                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_UNREGISTER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The window hook for raw input is still active, but the message filter has no record of it.
-        ///
-        ///This may happen if the object is disposed, but not cleaned up correctly..
-        /// </summary>
-        internal static string GORINP_RAW_ERR_HOOK_STILL_ACTIVE {
-            get {
-                return ResourceManager.GetString("GORINP_RAW_ERR_HOOK_STILL_ACTIVE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The type &apos;{0}&apos; is not valid for use with this type &apos;{1}&apos;..
         /// </summary>
         internal static string GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE {
             get {
                 return ResourceManager.GetString("GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Only one instance of the raw input system may be active at any given time..
-        /// </summary>
-        internal static string GORINP_RAW_ERR_ONLY_ONE_INSTANCE {
-            get {
-                return ResourceManager.GetString("GORINP_RAW_ERR_ONLY_ONE_INSTANCE", resourceCulture);
             }
         }
         

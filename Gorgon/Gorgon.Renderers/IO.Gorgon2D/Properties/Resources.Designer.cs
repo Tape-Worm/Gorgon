@@ -70,24 +70,6 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The codec &apos;{0}&apos; is not capable of decoding data..
-        /// </summary>
-        internal static string GOR2DIO_ERR_CODEC_CANNOT_DECODE {
-            get {
-                return ResourceManager.GetString("GOR2DIO_ERR_CODEC_CANNOT_DECODE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The codec &apos;{0}&apos; is not capable of encoding data..
-        /// </summary>
-        internal static string GOR2DIO_ERR_CODEC_CANNOT_ENCODE {
-            get {
-                return ResourceManager.GetString("GOR2DIO_ERR_CODEC_CANNOT_ENCODE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug in..
         /// </summary>
         internal static string GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN {
@@ -102,15 +84,6 @@ namespace Gorgon.IO.Properties {
         internal static string GOR2DIO_ERR_FILE_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOR2DIO_ERR_FILE_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The header for the animation data is invalid..
-        /// </summary>
-        internal static string GOR2DIO_ERR_INVALID_ANIM_HEADER {
-            get {
-                return ResourceManager.GetString("GOR2DIO_ERR_INVALID_ANIM_HEADER", resourceCulture);
             }
         }
         
@@ -165,15 +138,6 @@ namespace Gorgon.IO.Properties {
         internal static string GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND {
             get {
                 return ResourceManager.GetString("GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a Gorgon Sprite..
-        /// </summary>
-        internal static string GOR2DIO_ERR_NOT_A_SPRITE {
-            get {
-                return ResourceManager.GetString("GOR2DIO_ERR_NOT_A_SPRITE", resourceCulture);
             }
         }
         

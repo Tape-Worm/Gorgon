@@ -123,24 +123,11 @@
   <data name="GORGFX_ERR_INVALID_OS" xml:space="preserve">
     <value>The Gorgon Graphics interface requires Windows 10 (Build {0}) or better.</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Gorgon_2_x_Logo_Small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Gorgon_2.x_Logo_Small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORGFX_ERR_IMAGE_TYPE_INVALID" xml:space="preserve">
-    <value>The image type '{0}' is not a valid image type.</value>
-  </data>
-  <data name="GORGFX_ERR_BUFFER_ERR_WRITE_ONLY" xml:space="preserve">
-    <value>Only buffers with a usage of [Staging] can be read by the CPU. The buffer '{0}' has a usage of [{1}].</value>
-  </data>
   <data name="GORGFX_ERR_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The format [{0}] is not supported.</value>
   </data>
   <data name="GORGFX_ERR_LAYOUT_ELEMENT_IN_USE" xml:space="preserve">
     <value>The offset [{0}] or context '{1}' is in use by another item with the same index or slot.</value>
-  </data>
-  <data name="GORGFX_ERR_DEVICE_CANNOT_FIND_DEVICES" xml:space="preserve">
-    <value>Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature level of 10.0.</value>
   </data>
   <data name="GORGFX_TOSTR_SHADER_INCLUDE" xml:space="preserve">
     <value>Gorgon Shader Include '{0}'</value>
@@ -169,9 +156,6 @@
   <data name="GORGFX_ERR_BUFFER_SIZE_TOO_SMALL" xml:space="preserve">
     <value>The buffer requires at least {0} byte(s).</value>
   </data>
-  <data name="GORGFX_ERR_REQUIRES_FEATURE_LEVEL" xml:space="preserve">
-    <value>A device with feature level {0} (or better) is necessary to use this object or perform this operation.</value>
-  </data>
   <data name="GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID" xml:space="preserve">
     <value>The current aligned structure size of {0} is not valid.
 The structure size must be greater than 0 and no greater than 2048 bytes.</value>
@@ -189,9 +173,6 @@ The structure size must be greater than 0 and no greater than 2048 bytes.</value
     <value>There was a catastrophic error in Gorgon.
 
 Please report this error by pasting the details to the bug tracker in Gorgon's google code repository.  If possible, please attach any log  used by Gorgon to the bug report.</value>
-  </data>
-  <data name="GORGFX_TOSTR_DEVICE" xml:space="preserve">
-    <value>Gorgon Graphics Video Device: {0}</value>
   </data>
   <data name="GORGFX_ERR_STREAM_WRITE_ONLY" xml:space="preserve">
     <value>The stream is write-only.</value>
@@ -232,12 +213,6 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_ERR_TEXTURE_NOT_SAME_TYPE" xml:space="preserve">
     <value>The texure '{0}' is a [{1}] and cannot be copied to or from the type [{2}].</value>
   </data>
-  <data name="GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING" xml:space="preserve">
-    <value>Cannot lock a buffer for reading if the resource does not have a usage of [Staging].</value>
-  </data>
-  <data name="GORGFX_ERR_TEXTURE_USAGE_CANT_LOCK" xml:space="preserve">
-    <value>A texture with a usage of [{0}] cannot be locked.</value>
-  </data>
   <data name="GORGFX_ERR_TEXTURE_MULTISAMPLED" xml:space="preserve">
     <value>This operation does not support multisampled textures.</value>
   </data>
@@ -277,23 +252,14 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_ERR_TEXTURE_BC_SIZE_NOT_MOD_4" xml:space="preserve">
     <value>A compressed texture must have a width and height that is a multiple of 4.</value>
   </data>
-  <data name="GORGFX_ERR_TEXTURE_CUBE_REQUIRES_6_ARRAY" xml:space="preserve">
-    <value>Cannot create the texture cube array.  Feature level 10.0 devices require an array count of 6.</value>
-  </data>
   <data name="GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The format [{0}] is not supported for a [{1}] texture.</value>
-  </data>
-  <data name="GORGFX_ERR_UAV_REQUIRES_SM5" xml:space="preserve">
-    <value>Unordered access views for textures requires a feature level 11 or better video adapter.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT" xml:space="preserve">
     <value>The texture format [{0}] must be used with a mip map count of 1.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE" xml:space="preserve">
     <value>Cannot use a multisampled texture as a texture cube.</value>
-  </data>
-  <data name="GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME" xml:space="preserve">
-    <value>There is no video adapter with the name '{0}'.</value>
   </data>
   <data name="GORGFX_ERR_FEATURE_LEVEL_INVALID" xml:space="preserve">
     <value>The feature level [{0}] is not valid.</value>
@@ -312,9 +278,6 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   </data>
   <data name="GORGFX_ERR_RTV_NOT_SAME_TYPE" xml:space="preserve">
     <value>The render target views are not the same type: [{0}].</value>
-  </data>
-  <data name="GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE" xml:space="preserve">
-    <value>The size requested ({0} bytes) for the constant buffer exceeds the maximum value of {1} bytes.</value>
   </data>
   <data name="GORGFX_ERR_RTV_DEPTHSTENCIL_ARRAYCOUNT_MISMATCH" xml:space="preserve">
     <value>The array count in the render target views does not match with the depth/stencil view '{0}'.</value>
@@ -339,17 +302,8 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
 Errors:
 {0}</value>
   </data>
-  <data name="GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE" xml:space="preserve">
-    <value>The offset: {0} and count: {1} are too large for the source data.</value>
-  </data>
-  <data name="GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED" xml:space="preserve">
-    <value>The image type [{0}] is unsupported.</value>
-  </data>
   <data name="GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE" xml:space="preserve">
     <value>The texture '{0}' is not a shader resource, and cannot be bound to a shader.</value>
-  </data>
-  <data name="GORGFX_ERR_TEXTURE_TYPE_NOT_SUPPORTED" xml:space="preserve">
-    <value>The texture type [{0}] is unsupported.</value>
   </data>
   <data name="GORGFX_ERR_NOT_GORGON_SHADER" xml:space="preserve">
     <value>The data in the stream is not a Gorgon binary shader.</value>
@@ -363,20 +317,11 @@ Errors:
   <data name="GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID" xml:space="preserve">
     <value>The format [{0}] is not valid for a depth/stencil binding.</value>
   </data>
-  <data name="GORGFX_ERR_DEPTHSTENCIL_MS_FL101" xml:space="preserve">
-    <value>Cannot use multisampling with a depth/stencil texture on feature level 10 devices or below.</value>
-  </data>
   <data name="GORGFX_ERR_DEPTHSTENCIL_NOT_DEFAULT" xml:space="preserve">
     <value>A depth/stencil texture must have a usage of [Default].</value>
   </data>
   <data name="GORGFX_ERR_DEPTHSTENCIL_TYPED_SHADER_RESOURCE" xml:space="preserve">
     <value>A depth/stencil cannot be bound as a shader resource unless it has a typeless format.</value>
-  </data>
-  <data name="GORGFX_ERR_DEPTHSTENCIL_VOLUME" xml:space="preserve">
-    <value>A 3D texture cannot be used as a depth/stencil buffer.</value>
-  </data>
-  <data name="GORGFX_ERR_MULTISAMPLE_COUNT_NOT_SUPPORTED" xml:space="preserve">
-    <value>The multisample count {0} with a format of [{1}] is not supported on the device '{2}'.</value>
   </data>
   <data name="GORGFX_ERR_RENDERTARGET_NOT_DEFAULT" xml:space="preserve">
     <value>A render target texture must have a usage of [Default].</value>
@@ -399,31 +344,18 @@ Errors:
   <data name="GORGFX_ERR_VERTEX_TYPE_NOT_VALID_FOR_NATIVE" xml:space="preserve">
     <value>A vertex must not have complex marshalling (i.e. MarshalAsAttribute), be a reference type or have non-primitive/value type fields.</value>
   </data>
-  <data name="GORGFX_ERR_BUFFER_ALREADY_LOCKED" xml:space="preserve">
-    <value>The buffer is already locked.</value>
-  </data>
-  <data name="GORGFX_ERR_BUFFER_LOCK_NOT_DYNAMIC" xml:space="preserve">
-    <value>Only a buffer with a usage of [Dynamic] can be locked. The buffer '{0}' has a usage of [{1}]. </value>
-  </data>
-  <data name="GORGFX_ERR_BUFFER_LOCK_NOT_VALID" xml:space="preserve">
-    <value>The lock pointer for the buffer is not owned by this buffer.</value>
-  </data>
   <data name="GORGFX_ERR_TYPE_NO_FIELDS" xml:space="preserve">
     <value>The type '{0}' has no public fields.</value>
   </data>
   <data name="GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE" xml:space="preserve">
     <value>The type '{0}' has complex marshalling and cannot be used. </value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="GraphicsShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GraphicsShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="GORGFX_TOSTR_VERTEXBUFFER_BINDING" xml:space="preserve">
     <value>Vertex buffer binding.  Stride: {0}, Offset: {1}, VertexBuffer: {2}</value>
-  </data>
-  <data name="GORGFX_ERR_SWAP_BACKBUFFER_TOO_LARGE" xml:space="preserve">
-    <value>The requested width and/or height ({0}x{1}) for the swap chain backer buffer is too large. 
-
-The width must be a value between 1-{2}, and the height must be a value between 1-{3}.</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_STAGING_CANNOT_BE_BOUND_TO_GPU" xml:space="preserve">
     <value>A staging buffer cannot be bound to the GPU as a shader resource, stream out resource, or as an unordered access resource.</value>
@@ -431,44 +363,8 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING" xml:space="preserve">
     <value>A [{0}] buffer cannot use a binding of [None].</value>
   </data>
-  <data name="GORGFX_ERR_BUFFER_VIEW_START_COUNT_OUT_OF_RANGE" xml:space="preserve">
-    <value>The starting element {0} plus the count {1} is larger than the buffer element size of {2}.</value>
-  </data>
   <data name="GORGFX_ERR_BUFFER_IS_IMMUTABLE" xml:space="preserve">
     <value>Cannot update an immutable buffer.</value>
-  </data>
-  <data name="GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE" xml:space="preserve">
-    <value>The array index ({0}), and the count ({1}) are larger than the total number of array indices ({2}) in the texture.</value>
-  </data>
-  <data name="GORGFX_ERR_TEXTURE_VIEW_DEPTH_OUT_OF_RANGE" xml:space="preserve">
-    <value>The depth slice ({0}), and the slice count ({1}) are larger than the total depth ({2}) in the texture.</value>
-  </data>
-  <data name="GORGFX_ERR_TEXTURE_VIEW_MIP_OUT_OF_RANGE" xml:space="preserve">
-    <value>The first mip index ({0}), and the count ({1}) are larger than the total number of mip levels ({2}) in the texture.</value>
-  </data>
-  <data name="GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D" xml:space="preserve">
-    <value>Depth/stencil views cannot be created for 3D texture types.</value>
-  </data>
-  <data name="GORGFX_ERR_STATE_IMMUTABLE" xml:space="preserve">
-    <value>The {0} has been assigned and is now in a read only state.</value>
-  </data>
-  <data name="GORGFX_ERR_EFFECT_NOT_INITIALIZED" xml:space="preserve">
-    <value>The effect '{0}' has not been initialized.</value>
-  </data>
-  <data name="GORGFX_ERR_EFFECT_PASS_COUNT_INVALID" xml:space="preserve">
-    <value>There must be at least 1 pass for a shader effect.</value>
-  </data>
-  <data name="GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE" xml:space="preserve">
-    <value>The effect pass index ({0}) must be 0 or less than {1}.</value>
-  </data>
-  <data name="GORGFX_ERR_EFFECT_GAUSS_BLUR_KERNEL_SIZE_INVALID" xml:space="preserve">
-    <value>The kernel size must be between 3 and 81 (inclusive).</value>
-  </data>
-  <data name="GORGFX_NAME_GAUSS_BLUR_EFFECT" xml:space="preserve">
-    <value>Gaussian Blur Effect</value>
-  </data>
-  <data name="GORGFX_NAME_GRAYSCALE_EFFECT" xml:space="preserve">
-    <value>Grayscale Effect</value>
   </data>
   <data name="GORGFX_ERR_UAV_RESOURCE_NOT_VALID" xml:space="preserve">
     <value>The resource '{0}' does not have an [UnorderedAccess] binding.</value>
@@ -491,38 +387,14 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_SHADER_TYPE_MISMATCH" xml:space="preserve">
     <value>The shader is stored as a [{0}] type and cannot be converted to a '{1}'.</value>
   </data>
-  <data name="GORGFX_ERR_BUFFER_DYNAMIC_SO" xml:space="preserve">
-    <value>Cannot bind a dynamic buffer as a stream out buffer.</value>
-  </data>
-  <data name="GORGFX_ERR_BUFFER_DYNAMIC_UAV" xml:space="preserve">
-    <value>Cannot use unordered access views with dynamic buffers.</value>
-  </data>
   <data name="GORGFX_ERR_BUFFER_NO_SO" xml:space="preserve">
     <value>Buffers with a usage of [{0}] cannot be used for stream out.</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_NO_UAV" xml:space="preserve">
     <value>Buffers with a usage of [{0}] cannot be used for unordered access views.</value>
   </data>
-  <data name="GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH" xml:space="preserve">
-    <value>This buffer uses {0} bit indices. {1} bit indices cannot be written to it.</value>
-  </data>
   <data name="GORGFX_ERR_UAV_ALREADY_BOUND" xml:space="preserve">
     <value>The unordered access view for resource '{0}' is already bound.</value>
-  </data>
-  <data name="GORGFX_ERR_CONFLICT_RTV_UAV" xml:space="preserve">
-    <value>Cannot bind the '{0}' resource as a render target because it is already bound as an unordered access view at slot {1}.</value>
-  </data>
-  <data name="GORGFX_ERR_CONFLICT_SRV_DSV" xml:space="preserve">
-    <value>The resource '{0}' is already bound as a depth/stencil. Please unbind the depth/stencil before assigning it to a {1}.</value>
-  </data>
-  <data name="GORGFX_ERR_CONFLICT_SRV_RTV" xml:space="preserve">
-    <value>The resource '{0}' is already bound as a render target in slot {j}. Please unbind the render target before assigning it to a {1}.</value>
-  </data>
-  <data name="GORGFX_ERR_CONFLICT_SRV_UAV" xml:space="preserve">
-    <value>The resource '{0}' is already bound as an unordered access view in slot {1}. Please unbind the unordered access view before assigning it to a {2}.</value>
-  </data>
-  <data name="GORGFX_ERR_CONFLICT_UAV_RTV" xml:space="preserve">
-    <value>Cannot bind the '{0}' resource as an unordered access view because it is already bound as a render target view at slot {1}.</value>
   </data>
   <data name="GORGFX_TOSTR_VIDEO_MODE" xml:space="preserve">
     <value>Video Mode - {0}x{1} {2} Refresh Rate: {3:#####0.0}Hz</value>
@@ -530,9 +402,6 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_OUTPUT_ADAPTER_MISMATCH" xml:space="preserve">
     <value>Outputs from different adapters cannot be mixed.
 The current graphics object instance uses the adapter '{0}'. The output supplied is from the '{1}' adapter. </value>
-  </data>
-  <data name="GORGFX_ERR_CANNOT_COPY_LOCKED" xml:space="preserve">
-    <value>Cannot copy the data.  The resource or destination resource is locked.</value>
   </data>
   <data name="GORGFX_ERR_RENDERTARGET_FORMAT_NOT_VALID" xml:space="preserve">
     <value>The format [{0}] is not valid for a render target.</value>
@@ -570,9 +439,6 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_SOURCE_INDEX_AND_COUNT_TOO_LARGE" xml:space="preserve">
     <value>The source index and the count ({0}) is too large for the maximum size ({1}).</value>
   </data>
-  <data name="GORGFX_ERR_CB_OFFSET_TYPE_TOO_LARGE" xml:space="preserve">
-    <value>The offset and the size of the type would exceed the total size of this buffer ({0}).</value>
-  </data>
   <data name="GORGFX_ERR_BUFFER_INCORRECT_BINDING" xml:space="preserve">
     <value>The buffer does not have a [{0}] binding.</value>
   </data>
@@ -603,9 +469,6 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_CBUFFER_SLOT_INVALID" xml:space="preserve">
     <value>The constant buffer slot must be 0 or less than {0}.</value>
   </data>
-  <data name="GORGFX_ERR_SCISSOR_INDEX_INVALID" xml:space="preserve">
-    <value>The scissor index must be 0 or less than 16.</value>
-  </data>
   <data name="GORGFX_ERR_VIEW_ALREADY_BOUND" xml:space="preserve">
     <value>The resource view at index {0} is already bound elsewhere on the pipeline.</value>
   </data>
@@ -630,9 +493,6 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_SO_SLOT_INVALID" xml:space="preserve">
     <value>The stream output slot must be 0 or less than {0}.</value>
   </data>
-  <data name="GORGFX_ERR_NO_INPUT_LAYOUT" xml:space="preserve">
-    <value>A draw call requires an input layout before it can be used.</value>
-  </data>
   <data name="GORGFX_ERR_NO_VERTEX_SHADER" xml:space="preserve">
     <value>Draw calls require a vertex shader.</value>
   </data>
@@ -650,9 +510,6 @@ Current binding: [{0}]</value>
   </data>
   <data name="GORGFX_ERR_INPUT_BOUND_AS_RTV" xml:space="preserve">
     <value>The resource '{0}' is already bound to the pipeline as a render target.</value>
-  </data>
-  <data name="GORGFX_ERR_INPUT_BOUND_AS_UAV" xml:space="preserve">
-    <value>The resource '{0}' is already bound to the pipeline as a read/write resource.</value>
   </data>
   <data name="GORGFX_ERR_BACKBUFFER_USAGE_INVALID" xml:space="preserve">
     <value>The back buffer texture usage must be either [Default] or [Staging].</value>

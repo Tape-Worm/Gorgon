@@ -182,14 +182,8 @@ Please try again.</value>
   <data name="keyboard_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\keyboard_20x20.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="GOREDIT_ERR_TOOL_RENDERER_NOT_FOUND" xml:space="preserve">
-    <value>There is no tool renderer with the name '{0}'.</value>
-  </data>
   <data name="GOREDIT_ERR_TOOL_RENDERER_EXISTS" xml:space="preserve">
     <value>The tool renderer '{0}' already exists.</value>
-  </data>
-  <data name="GOREDIT_ERR_STREAM_READ_ONLY" xml:space="preserve">
-    <value>The stream is read only.</value>
   </data>
   <data name="GOREDIT_ERR_CLOSE_TOOL" xml:space="preserve">
     <value>There was an error closing the tool.
@@ -229,11 +223,6 @@ Please try again.</value>
   <data name="GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN" xml:space="preserve">
     <value>The plug in '{0}' did not produce any content.</value>
   </data>
-  <data name="GOREDIT_ERR_AFTER_MOVE_UPDATE" xml:space="preserve">
-    <value>There was an error updating the associated file information after it was moved.
-
-This content will now close in order to avoid corrupting the file.</value>
-  </data>
   <data name="drive_remove_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_remove_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -265,9 +254,6 @@ Some changes may not have been saved.</value>
   </data>
   <data name="remove_plugins_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\remove_plugins_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_CAPTION_FILE_COLUMN" xml:space="preserve">
-    <value>File</value>
   </data>
   <data name="GOREDIT_ERR_NOT_SPRITE" xml:space="preserve">
     <value>The file '{0}' is not a sprite.</value>
@@ -301,9 +287,6 @@ Please try again.</value>
   <data name="GOREDIT_TITLE_OPEN_FILE" xml:space="preserve">
     <value>Open a file...</value>
   </data>
-  <data name="GOREDIT_ERR_NO_CONTENT_VIEW" xml:space="preserve">
-    <value>Content objects must have a view associated with them.</value>
-  </data>
   <data name="GOREDIT_ERR_UNABLE_TO_UNLOAD_PLUGINS" xml:space="preserve">
     <value>There was an error while unloading the plug ins.</value>
   </data>
@@ -319,14 +302,8 @@ Please try again.</value>
   <data name="GOREDIT_ZOOM_25" xml:space="preserve">
     <value>25%</value>
   </data>
-  <data name="GOREDIT_TOSTR_DEPENDENCY" xml:space="preserve">
-    <value>{0} dependency at '{1}'.</value>
-  </data>
   <data name="GOREDIT_ZOOM_TO_WINDOW" xml:space="preserve">
     <value>To Window</value>
-  </data>
-  <data name="add_plugin_22x22" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\add_plugin_22x22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_TITLE_SAVE_FILE" xml:space="preserve">
     <value>Save the file as...</value>

@@ -144,14 +144,8 @@
   <data name="GORGFX_ERR_FONT_EXISTS" xml:space="preserve">
     <value>A different font with the name '{0}' already exists for this factory.</value>
   </data>
-  <data name="GORGFX_ERR_FONT_FILE_CORRUPT" xml:space="preserve">
-    <value>The font file data is corrupt.</value>
-  </data>
   <data name="GORGFX_ERR_FONT_FILE_FORMAT_INVALID" xml:space="preserve">
     <value>The format for this font file is not valid.</value>
-  </data>
-  <data name="GORGFX_ERR_FONT_GLYPH_HAS_NO_TEXTURE" xml:space="preserve">
-    <value>The glyph for character '{0}' does not have a texture assigned to it.</value>
   </data>
   <data name="GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D" xml:space="preserve">
     <value>A glyph can only use a 2D image.</value>
@@ -159,20 +153,11 @@
   <data name="GORGFX_ERR_FONT_GLYPH_NODE_TOO_LARGE" xml:space="preserve">
     <value>Glyph node size is too large for the image.</value>
   </data>
-  <data name="GORGFX_ERR_FONT_GLYPH_TEXTURE_NOT_FOUND" xml:space="preserve">
-    <value>The texture '{0}' was not found.</value>
-  </data>
   <data name="GORGFX_ERR_FONT_SIZE_TOO_SMALL" xml:space="preserve">
     <value>The font size {0} is too small.</value>
   </data>
-  <data name="GORGFX_ERR_FONT_TEXTURE_EXISTS" xml:space="preserve">
-    <value>The texture '{0}' already exists in this collection.</value>
-  </data>
   <data name="GORGFX_ERR_FONT_TEXTURE_FILE_NOT_FOUND" xml:space="preserve">
     <value>The font texture file '{0}' was not found.</value>
-  </data>
-  <data name="GORGFX_ERR_FONT_TEXTURE_NOT_FOUND" xml:space="preserve">
-    <value>The texture '{0}' was not found in this collection.</value>
   </data>
   <data name="GORGFX_ERR_FONT_TEXTURE_NOT_VALID" xml:space="preserve">
     <value>The font can only load textures of the following types:
@@ -184,17 +169,11 @@
   <data name="GORGFX_ERR_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The format [{0}] is not supported.</value>
   </data>
-  <data name="GORGFX_ERR_GLYPH_CHARACTER_ASSIGNED" xml:space="preserve">
-    <value>The character '{0}' already has a glyph assigned.</value>
-  </data>
   <data name="GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID" xml:space="preserve">
     <value>The texture format for the glyph is not valid.</value>
   </data>
   <data name="GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
-  </data>
-  <data name="GORGFX_ERR_STREAM_EOF" xml:space="preserve">
-    <value>Cannot read beyond the end of a stream.</value>
   </data>
   <data name="GORGFX_ERR_STREAM_NO_SEEK" xml:space="preserve">
     <value>The stream cannot perform seek operations.</value>

@@ -129,9 +129,6 @@ Please try again.</value>
   <data name="no_thumb_sprite_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\no_thumb_sprite_64x64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="edit_texture_coordinates_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\edit_texture_coordinates_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GORSPR_CAPTION_SELECT_CODEC_DLL" xml:space="preserve">
     <value>Select a codec plug in DLL</value>
   </data>
@@ -142,9 +139,6 @@ Please try again.</value>
   </data>
   <data name="GORSPR_ERR_NOT_SUPPORTED" xml:space="preserve">
     <value>The file '{0}' is not a known image file.</value>
-  </data>
-  <data name="center_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\center_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORSPR_TEXT_CUE_SPRITE_NAME" xml:space="preserve">
     <value>Enter a name for the sprite...</value>
@@ -163,9 +157,6 @@ Please try again.</value>
   </data>
   <data name="rectangle_edit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rectangle_edit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORSPR_ERR_TEXTURE_FILE_NOT_FOUND" xml:space="preserve">
-    <value>There was no texture file found at '{0}'.</value>
   </data>
   <data name="color_pick_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\color_pick_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -192,9 +183,6 @@ Would you like to save these changes now?</value>
   </data>
   <data name="sprite_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sprite_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORSPR_ERR_NO_CODEC" xml:space="preserve">
-    <value>There is no codec loaded that can read the file '{0}'.</value>
   </data>
   <data name="left_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\left_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -238,9 +226,6 @@ Please try again.</value>
   <data name="full_size_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\full_size_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="image_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="save_content_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\save_content_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -255,29 +240,11 @@ Are you sure you want to do this?</value>
   <data name="anchor_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\anchor_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORSPR_ERR_FIXED_SIZE" xml:space="preserve">
-    <value>There was an error assigning the fixed width/height values.
-
-Please try again.</value>
-  </data>
   <data name="wrapping_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\wrapping_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="rectangle_edit_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rectangle_edit_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORSPR_ERR_CANNOT_UNLOAD_CODECS" xml:space="preserve">
-    <value>There was an error while trying to remove the selected codec(s).
-
-Please try again.</value>
-  </data>
-  <data name="GORSPR_ERR_CANNOT_LOAD_CODEC" xml:space="preserve">
-    <value>There was an error loading the codec plug in.
-
-Please try again.</value>
-  </data>
-  <data name="pand_hand_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pand_hand_open.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="GORSPR_UNDO_DESC_ANCHOR" xml:space="preserve">
     <value>Anchor change</value>
@@ -291,16 +258,10 @@ Please try again.</value>
   <data name="GORSPR_TEXT_ZOOM_BUTTON" xml:space="preserve">
     <value>Zoom: {0}</value>
   </data>
-  <data name="pan_hand_close" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pan_hand_close.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="GORSPR_ERR_UNDO" xml:space="preserve">
     <value>There was an error performing the undo action.
 
 Please try again.</value>
-  </data>
-  <data name="GORSPR_ERR_CANNOT_ACTIVATE_PANEL" xml:space="preserve">
-    <value>Cannot activate the panel [{0}].</value>
   </data>
   <data name="sprite_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sprite_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -322,9 +283,6 @@ Please try again.</value>
 
 Please select a 2D image and try again.</value>
   </data>
-  <data name="edit_texture_coordinates_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\edit_texture_coordinates_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="filtering_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\filtering_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -339,14 +297,8 @@ Please check the Details pane for more information.</value>
   <data name="GORSPR_CAPTION_SPRITE_NAME" xml:space="preserve">
     <value>New Sprite</value>
   </data>
-  <data name="anchor_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\anchor_24x24.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="manual_input_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\manual_input_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="edit_vertex_colors_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\edit_vertex_colors_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="reset_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\reset_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -356,9 +308,6 @@ Please check the Details pane for more information.</value>
   </data>
   <data name="sprite_color_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sprite_color_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORSPR_ERR_MANAGE_CODECS" xml:space="preserve">
-    <value>There was an error managing the custom image codec plug ins.</value>
   </data>
   <data name="pick_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pick_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -429,9 +378,6 @@ Please choose another and try again.</value>
   <data name="filtering_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\filtering_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="edit_vertex_colors_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\edit_vertex_colors_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="pick_padding_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pick_padding_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -458,9 +404,6 @@ The performance of the current tool may be impacted by this.</value>
   <data name="Transparency_Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Transparency_Pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORSPR_ERR_MANUAL_CLIP" xml:space="preserve">
-    <value>There was an error switching to manual input.</value>
-  </data>
   <data name="GORSPR_TEXT_SAVING" xml:space="preserve">
     <value>Saving...</value>
   </data>
@@ -471,5 +414,8 @@ The performance of the current tool may be impacted by this.</value>
     <value>The sprite '{0}' already exists.
 
 Would you like to overwrite it?</value>
+  </data>
+  <data name="anchor_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anchor_24x24.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

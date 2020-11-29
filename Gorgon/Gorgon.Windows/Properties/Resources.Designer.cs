@@ -63,16 +63,6 @@ namespace Gorgon.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap add_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("add_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap add_24x24 {
             get {
                 object obj = ResourceManager.GetObject("add_24x24", resourceCulture);
@@ -163,49 +153,9 @@ namespace Gorgon.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cancel_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap center_24x24 {
             get {
                 object obj = ResourceManager.GetObject("center_24x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Check_Disabled1 {
-            get {
-                object obj = ResourceManager.GetObject("Check_Disabled1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Check_Enabled1 {
-            get {
-                object obj = ResourceManager.GetObject("Check_Enabled1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Close {
-            get {
-                object obj = ResourceManager.GetObject("Close", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -326,24 +276,6 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The directory &apos;{0}&apos; does not exist..
-        /// </summary>
-        internal static string GOR_ERR_DIR_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GOR_ERR_DIR_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot read theme xml file..
-        /// </summary>
-        internal static string GOR_ERR_FLATFORM_CANNOT_READ_THEME {
-            get {
-                return ResourceManager.GetString("GOR_ERR_FLATFORM_CANNOT_READ_THEME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot find the column header..
         /// </summary>
         internal static string GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER {
@@ -358,33 +290,6 @@ namespace Gorgon.Windows.Properties {
         internal static string GOR_ERR_LISTVIEW_CANNOT_UPDATE_COLUMN {
             get {
                 return ResourceManager.GetString("GOR_ERR_LISTVIEW_CANNOT_UPDATE_COLUMN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot read beyond the end of the stream..
-        /// </summary>
-        internal static string GOR_ERR_STREAM_EOS {
-            get {
-                return ResourceManager.GetString("GOR_ERR_STREAM_EOS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream is read-only..
-        /// </summary>
-        internal static string GOR_ERR_STREAM_IS_READONLY {
-            get {
-                return ResourceManager.GetString("GOR_ERR_STREAM_IS_READONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream is write only..
-        /// </summary>
-        internal static string GOR_ERR_STREAM_IS_WRITEONLY {
-            get {
-                return ResourceManager.GetString("GOR_ERR_STREAM_IS_WRITEONLY", resourceCulture);
             }
         }
         
@@ -551,51 +456,6 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Theme).
-        /// </summary>
-        internal static string GOR_TEXT_FLAT_THEME {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLAT_THEME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 2.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_MAX_ICON {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_MAX_ICON", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximize the window.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_MAXIMIZE_TIP {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_MAXIMIZE_TIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 1.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_RESTORE_ICON {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_RESTORE_ICON", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Restore the window to the original dimensions.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_RESTORE_TIP {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_RESTORE_TIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Free space.
         /// </summary>
         internal static string GOR_TEXT_FREE_SPACE {
@@ -605,65 +465,11 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Load theme.
-        /// </summary>
-        internal static string GOR_TEXT_LOAD_THEME {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_LOAD_THEME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Last Modified Date.
         /// </summary>
         internal static string GOR_TEXT_MODIFIED_DATE {
             get {
                 return ResourceManager.GetString("GOR_TEXT_MODIFIED_DATE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Updating....
-        /// </summary>
-        internal static string GOR_TEXT_PROGRESS {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_PROGRESS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save theme as....
-        /// </summary>
-        internal static string GOR_TEXT_SAVE_THEME {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_SAVE_THEME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading....
-        /// </summary>
-        internal static string GOR_TEXT_WAIT_MESSAGE {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_WAIT_MESSAGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please wait.
-        /// </summary>
-        internal static string GOR_TEXT_WAIT_TITLE {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_WAIT_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gorgon theme XML Files (*.xml)|*.xml.
-        /// </summary>
-        internal static string GOR_TEXT_XML_FILTER {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_XML_FILTER", resourceCulture);
             }
         }
         
@@ -689,364 +495,9 @@ namespace Gorgon.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Info_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("Info_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Info_48x48 {
             get {
                 object obj = ResourceManager.GetObject("Info_48x48", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to When set to true, a border will be drawn on the form..
-        /// </summary>
-        internal static string PROP_BORDER_DESC {
-            get {
-                return ResourceManager.GetString("PROP_BORDER_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The size, in pixels, of the window border when the Border property is set to true..
-        /// </summary>
-        internal static string PROP_BORDERSIZE_DESC {
-            get {
-                return ResourceManager.GetString("PROP_BORDERSIZE_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Appearance.
-        /// </summary>
-        internal static string PROP_CATEGORY_APPEARANCE {
-            get {
-                return ResourceManager.GetString("PROP_CATEGORY_APPEARANCE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Behavior.
-        /// </summary>
-        internal static string PROP_CATEGORY_BEHAVIOR {
-            get {
-                return ResourceManager.GetString("PROP_CATEGORY_BEHAVIOR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Design.
-        /// </summary>
-        internal static string PROP_CATEGORY_DESIGN {
-            get {
-                return ResourceManager.GetString("PROP_CATEGORY_DESIGN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Layout.
-        /// </summary>
-        internal static string PROP_CATEGORY_LAYOUT {
-            get {
-                return ResourceManager.GetString("PROP_CATEGORY_LAYOUT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Window Style.
-        /// </summary>
-        internal static string PROP_CATEGORY_WINDOWSTYLE {
-            get {
-                return ResourceManager.GetString("PROP_CATEGORY_WINDOWSTYLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets whether the form will scale with the display DPI or not.
-        ///
-        ///This flag only works when the app.config contains a setting for DpiAwareness that has a value of PerMonitorV2..
-        /// </summary>
-        internal static string PROP_DPIAWARE_DESC {
-            get {
-                return ResourceManager.GetString("PROP_DPIAWARE_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets the icon for the window..
-        /// </summary>
-        internal static string PROP_ICON_DESC {
-            get {
-                return ResourceManager.GetString("PROP_ICON_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Determines if a form can be resized by the user or not..
-        /// </summary>
-        internal static string PROP_RESIZABLE_DESC {
-            get {
-                return ResourceManager.GetString("PROP_RESIZABLE_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The size, in pixels, of the resizable handles on the window border..
-        /// </summary>
-        internal static string PROP_RESIZEHANDLE_DESC {
-            get {
-                return ResourceManager.GetString("PROP_RESIZEHANDLE_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shows or hides the icon for the window..
-        /// </summary>
-        internal static string PROP_SHOWICON_DESC {
-            get {
-                return ResourceManager.GetString("PROP_SHOWICON_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets whether this control will be considered when navigating using the (Ctrl+)TAB key..
-        /// </summary>
-        internal static string PROP_TABSTOP_DESC {
-            get {
-                return ResourceManager.GetString("PROP_TABSTOP_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets the text for the window caption..
-        /// </summary>
-        internal static string PROP_TEXT_DESC {
-            get {
-                return ResourceManager.GetString("PROP_TEXT_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The image to use when showing a disabled check mark on a tool strip button..
-        /// </summary>
-        internal static string PROP_THEME_CHECKDISABLED_IMAGE {
-            get {
-                return ResourceManager.GetString("PROP_THEME_CHECKDISABLED_IMAGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The image to use when showing a check mark on a tool strip button..
-        /// </summary>
-        internal static string PROP_THEME_CHECKENABLED_IMAGE {
-            get {
-                return ResourceManager.GetString("PROP_THEME_CHECKENABLED_IMAGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The background color for the content panel on the window..
-        /// </summary>
-        internal static string PROP_THEME_CONTENTBACKCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_CONTENTBACKCOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Contains values to change the appearance of window elements..
-        /// </summary>
-        internal static string PROP_THEME_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The color used for disabled items in the window..
-        /// </summary>
-        internal static string PROP_THEME_DISABLECOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_DISABLECOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The color applied to the border of a drop down menu..
-        /// </summary>
-        internal static string PROP_THEME_DROPDOWNBORDERCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_DROPDOWNBORDERCOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The foreground color for general items in the window..
-        /// </summary>
-        internal static string PROP_THEME_FORECOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_FORECOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The color used on items in the window when the window is not active..
-        /// </summary>
-        internal static string PROP_THEME_FORECOLOR_INACTIVE_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_FORECOLOR_INACTIVE_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The background color used when hilighting menu items..
-        /// </summary>
-        internal static string PROP_THEME_HILIGHTBACKCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_HILIGHTBACKCOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The foreground color used when hilighting menu items..
-        /// </summary>
-        internal static string PROP_THEME_HILIGHTFORECOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_HILIGHTFORECOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The color behind a checkmark on a menu item..
-        /// </summary>
-        internal static string PROP_THEME_MENUCHECKBACKCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_MENUCHECKBACKCOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The color behind a checkmark on a menu item when the item is selected..
-        /// </summary>
-        internal static string PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The color for an arrow on the tool strip..
-        /// </summary>
-        internal static string PROP_THEME_TOOLSTRIPARROWCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_TOOLSTRIPARROWCOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The background color for a tool strip..
-        /// </summary>
-        internal static string PROP_THEME_TOOLSTRIPBACKCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_TOOLSTRIPBACKCOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The main background color for a window..
-        /// </summary>
-        internal static string PROP_THEME_WINBACKCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_WINBACKCOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The color of a window border when the window is active..
-        /// </summary>
-        internal static string PROP_THEME_WINBORDERACTIVE_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_WINBORDERACTIVE_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The color of a window border when the window is inactive or disabled..
-        /// </summary>
-        internal static string PROP_THEME_WINBORDERINACTIVE_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_WINBORDERINACTIVE_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The background color of the close icon on the window when the mouse is over the icon..
-        /// </summary>
-        internal static string PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The foreground color of the close icon on the window..
-        /// </summary>
-        internal static string PROP_THEME_WINCLOSEFORECOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_WINCLOSEFORECOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The foreground color of the close icon on the window when the mouse is over the icon..
-        /// </summary>
-        internal static string PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The background color of the window icons (minimize, maximize and restore) when the mouse is over the icon..
-        /// </summary>
-        internal static string PROP_THEME_WINICONBACKHILIGHT_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_WINICONBACKHILIGHT_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets the color to use when a window icon (Minimize, Maximize and Restore) is high lighted..
-        /// </summary>
-        internal static string PROP_THEME_WINICONHILIGHT_DESC {
-            get {
-                return ResourceManager.GetString("PROP_THEME_WINICONHILIGHT_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shows or hides the caption for the window.  This will include the caption, system menu, and the minimize/maximize/close buttons..
-        /// </summary>
-        internal static string PROP_WINDOWCAPTION_DESC {
-            get {
-                return ResourceManager.GetString("PROP_WINDOWCAPTION_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap remove_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("remove_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1064,38 +515,10 @@ namespace Gorgon.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Restore {
-            get {
-                object obj = ResourceManager.GetObject("Restore", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap up_directory_16x16 {
             get {
                 object obj = ResourceManager.GetObject("up_directory_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Load theme....
-        /// </summary>
-        internal static string VERB_LOAD_THEME {
-            get {
-                return ResourceManager.GetString("VERB_LOAD_THEME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save theme....
-        /// </summary>
-        internal static string VERB_SAVE_THEME {
-            get {
-                return ResourceManager.GetString("VERB_SAVE_THEME", resourceCulture);
             }
         }
         
