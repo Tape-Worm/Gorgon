@@ -21,11 +21,10 @@ jobs:
       buildConfiguration: 'Release'
 
     steps:
-      - task: PowerShell@2
+      - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
-          targetType: filePath
-          filePath: '.\VersionUpdater.ps1'
+          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
 
       - task: NuGetToolInstaller@1
         inputs:
@@ -54,14 +53,14 @@ jobs:
         displayName: 'Copying Core to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:          
           Contents: '**/?(*.dll|*.xml)'
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)/netstandard2.0'
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Windows specific to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Windows/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Windows/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
@@ -69,63 +68,63 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying FileSystem to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/$(buildConfiguration)/netstandard2.0'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Input to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Core Graphics to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Core/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Core/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Fonts to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Fonts/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Fonts/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Imaging to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Imaging/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Imaging/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying 2D to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Gorgon2D/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Gorgon2D/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Animation to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying 2D Animation to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Animation.Gorgon2D/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Animation.Gorgon2D/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying 2D IO to $(Build.ArtifactStagingDirectory)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/IO.Gorgon2D/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/IO.Gorgon2D/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/lib'
 
@@ -140,7 +139,7 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying Tools to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/'
+          SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/net472'
           Contents: |
             **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
             !**/TextViewerExample.*
@@ -176,11 +175,10 @@ jobs:
       buildConfiguration: 'Debug'
 
     steps:
-      - task: PowerShell@2
+      - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
-          targetType: filePath
-          filePath: '.\VersionUpdater.ps1'
+          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
 
       - task: NuGetToolInstaller@1
         inputs:
@@ -199,7 +197,7 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying Core to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)/netstandard2.0'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
@@ -207,7 +205,7 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying Windows specific to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Windows/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Windows/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
@@ -215,63 +213,63 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying FileSystem to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.FileSystem/bin/$(buildConfiguration)/netstandard2.0'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Input to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Input/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Core Graphics to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Core/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Core/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Fonts to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Fonts/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Fonts/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Imaging to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Imaging/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Graphics.Imaging/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying 2D to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Gorgon2D/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Gorgon2D/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying Animation to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying 2D Animation to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Animation.Gorgon2D/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Animation.Gorgon2D/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
         displayName: 'Copying 2D IO to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/IO.Gorgon2D/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/IO.Gorgon2D/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
@@ -286,7 +284,7 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying Tools to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/'
+          SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/net472'
           Contents: |
             **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
             !**/TextViewerExample.*

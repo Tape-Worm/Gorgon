@@ -21,11 +21,10 @@ jobs:
       buildConfiguration: 'Debug'
 
     steps:
-      - task: PowerShell@2
+      - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
-          targetType: filePath
-          filePath: '.\VersionUpdater.ps1'
+          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
 
       - task: NuGetToolInstaller@1
         inputs:
