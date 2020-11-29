@@ -52,10 +52,10 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Krypton.Ribbon.Lite">
-      <Version>5.550.2011</Version>
+      <Version>5.500.2008</Version>
     </PackageReference>
     <PackageReference Include="Krypton.Toolkit.Lite">
-      <Version>5.550.2011</Version>
+      <Version>5.500.2008</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -15,7 +15,8 @@
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Editor.ExtractSpriteTool</RootNamespace>
-    <NeutralLanguage></NeutralLanguage>
+    <NeutralLanguage>
+    </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>

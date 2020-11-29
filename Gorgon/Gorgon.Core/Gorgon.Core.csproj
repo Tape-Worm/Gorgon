@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -7,7 +7,7 @@
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
     <Description>Common and utility functionality used by the various Gorgon libraries.</Description>
-    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>    
+    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
@@ -15,14 +15,14 @@
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon</RootNamespace>
-    <NeutralLanguage></NeutralLanguage>
+    <NeutralLanguage>
+    </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyVersion>3.1.0.0</AssemblyVersion>
     <FileVersion>3.1.0.0</FileVersion>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\Gorgon.Core.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

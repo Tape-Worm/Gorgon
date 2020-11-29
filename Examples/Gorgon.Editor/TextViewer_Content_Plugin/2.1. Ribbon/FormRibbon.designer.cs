@@ -42,28 +42,28 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.RibbonTextContent = new Krypton.Ribbon.KryptonRibbon();
-            this.TabText = new Krypton.Ribbon.KryptonRibbonTab();
-            this.GroupImageFile = new Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupTriple1 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonSaveText = new Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.GroupTextEdit = new Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupLines2 = new Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonTextUndo = new Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonTextRedo = new Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.GroupText = new Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupTriple2 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonFont = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.RibbonTextContent = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
+            this.TabText = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
+            this.GroupImageFile = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonSaveText = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupTextEdit = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupLines2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonTextUndo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonTextRedo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupText = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonFont = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.MenuFonts = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ItemArial = new System.Windows.Forms.ToolStripMenuItem();
             this.ItemTimesNewRoman = new System.Windows.Forms.ToolStripMenuItem();
             this.ItemPapyrus = new System.Windows.Forms.ToolStripMenuItem();
-            this.kryptonRibbonGroupLines1 = new Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonTextColor = new Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonChangeText = new Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator3 = new Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.kryptonRibbonGroupLines3 = new Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonZoom = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonTextColor = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonChangeText = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.kryptonRibbonGroupLines3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonZoom = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.MenuZoom = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ItemZoomToWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
@@ -87,7 +87,7 @@
             this.RibbonTextContent.AllowFormIntegrate = true;
             this.RibbonTextContent.InDesignHelperMode = true;
             this.RibbonTextContent.Name = "RibbonTextContent";
-            this.RibbonTextContent.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
+            this.RibbonTextContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabText});
             this.RibbonTextContent.SelectedContext = null;
             this.RibbonTextContent.SelectedTab = this.TabText;
@@ -96,7 +96,7 @@
             // 
             // TabText
             // 
-            this.TabText.Groups.AddRange(new Krypton.Ribbon.KryptonRibbonGroup[] {
+            this.TabText.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
             this.GroupImageFile,
             this.GroupTextEdit,
             this.GroupText});
@@ -106,16 +106,16 @@
             // 
             this.GroupImageFile.AllowCollapsed = false;
             this.GroupImageFile.DialogBoxLauncher = false;
-            this.GroupImageFile.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupImageFile.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple1});
             this.GroupImageFile.KeyTipGroup = "F";
             this.GroupImageFile.TextLine1 = "File";
             // 
             // kryptonRibbonGroupTriple1
             // 
-            this.kryptonRibbonGroupTriple1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupTriple1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonSaveText});
-            this.kryptonRibbonGroupTriple1.MinimumSize = Krypton.Ribbon.GroupItemSize.Large;
+            this.kryptonRibbonGroupTriple1.MinimumSize = ComponentFactory.Krypton.Ribbon.GroupItemSize.Large;
             // 
             // ButtonSaveText
             // 
@@ -134,14 +134,14 @@
             // 
             this.GroupTextEdit.AllowCollapsed = false;
             this.GroupTextEdit.DialogBoxLauncher = false;
-            this.GroupTextEdit.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupTextEdit.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupLines2});
             this.GroupTextEdit.KeyTipGroup = "E";
             this.GroupTextEdit.TextLine1 = "Edit";
             // 
             // kryptonRibbonGroupLines2
             // 
-            this.kryptonRibbonGroupLines2.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupLines2.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonTextUndo,
             this.ButtonTextRedo});
             // 
@@ -171,7 +171,7 @@
             // 
             this.GroupText.AllowCollapsed = false;
             this.GroupText.DialogBoxLauncher = false;
-            this.GroupText.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupText.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple2,
             this.kryptonRibbonGroupLines1,
             this.kryptonRibbonGroupSeparator3,
@@ -181,12 +181,12 @@
             // 
             // kryptonRibbonGroupTriple2
             // 
-            this.kryptonRibbonGroupTriple2.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupTriple2.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonFont});
             // 
             // ButtonFont
             // 
-            this.ButtonFont.ButtonType = Krypton.Ribbon.GroupButtonType.DropDown;
+            this.ButtonFont.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.DropDown;
             this.ButtonFont.ContextMenuStrip = this.MenuFonts;
             this.ButtonFont.ImageLarge = global::Gorgon.Examples.Properties.Resources.font_48x48;
             this.ButtonFont.ImageSmall = global::Gorgon.Examples.Properties.Resources.font_16x16;
@@ -234,7 +234,7 @@
             // 
             // kryptonRibbonGroupLines1
             // 
-            this.kryptonRibbonGroupLines1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonTextColor,
             this.ButtonChangeText});
             // 
@@ -262,12 +262,12 @@
             // 
             // kryptonRibbonGroupLines3
             // 
-            this.kryptonRibbonGroupLines3.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupLines3.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonZoom});
             // 
             // ButtonZoom
             // 
-            this.ButtonZoom.ButtonType = Krypton.Ribbon.GroupButtonType.DropDown;
+            this.ButtonZoom.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.DropDown;
             this.ButtonZoom.ContextMenuStrip = this.MenuZoom;
             this.ButtonZoom.ImageLarge = global::Gorgon.Examples.Properties.Resources.zoom_48x48;
             this.ButtonZoom.ImageSmall = global::Gorgon.Examples.Properties.Resources.zoom_16x16;
@@ -419,21 +419,21 @@
         }
 
         #endregion
-        private Krypton.Ribbon.KryptonRibbonTab TabText;
-        private Krypton.Ribbon.KryptonRibbonGroup GroupImageFile;
-        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;
-        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonSaveText;
-        internal Krypton.Ribbon.KryptonRibbon RibbonTextContent;
-        private Krypton.Ribbon.KryptonRibbonGroup GroupText;
-        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
-        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonFont;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab TabText;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupImageFile;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSaveText;
+        internal ComponentFactory.Krypton.Ribbon.KryptonRibbon RibbonTextContent;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupText;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFont;
         private System.Windows.Forms.ContextMenuStrip MenuFonts;
         private System.Windows.Forms.ToolStripMenuItem ItemArial;
         private System.Windows.Forms.ToolStripMenuItem ItemTimesNewRoman;
         private System.Windows.Forms.ToolStripMenuItem ItemPapyrus;
-        private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
-        private Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines3;
-        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonZoom;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines3;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonZoom;
         private System.Windows.Forms.ContextMenuStrip MenuZoom;
         private System.Windows.Forms.ToolStripMenuItem ItemZoomToWindow;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
@@ -447,12 +447,12 @@
         private System.Windows.Forms.ToolStripMenuItem Item1600Percent;
         private System.Windows.Forms.ToolStripMenuItem Item3200Percent;
         private System.Windows.Forms.ToolStripMenuItem Item6400Percent;
-        private Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
-        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonTextColor;
-        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonChangeText;
-        private Krypton.Ribbon.KryptonRibbonGroup GroupTextEdit;
-        private Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines2;
-        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonTextUndo;
-        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonTextRedo;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonTextColor;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonChangeText;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupTextEdit;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines2;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonTextUndo;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonTextRedo;
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
-using Krypton.Toolkit;
+using ComponentFactory.Krypton.Toolkit;
 using DX = SharpDX;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
