@@ -57,7 +57,7 @@ jobs:
           SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Core/bin/$(buildConfiguration)'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           CleanTargetFolder: true
-          flattenFolders: true
+          FlattenFolders: true
           OverWrite: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
