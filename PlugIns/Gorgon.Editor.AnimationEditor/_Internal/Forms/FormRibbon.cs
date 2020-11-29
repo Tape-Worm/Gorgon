@@ -141,6 +141,9 @@ namespace Gorgon.Editor.AnimationEditor
                         _currentUndoHandler = DataContext.CommandContext as IUndoHandler;
                     }
                     break;
+                case nameof(IAnimationContent.IsLooping):
+                    CheckAnimationLoop.Checked = DataContext.IsLooping;
+                    break;
                 case nameof(IAnimationContent.State):
                     switch (DataContext.State)
                     {

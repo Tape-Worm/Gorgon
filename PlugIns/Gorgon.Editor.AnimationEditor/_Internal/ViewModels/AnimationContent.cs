@@ -345,6 +345,8 @@ namespace Gorgon.Editor.AnimationEditor
                 }
 
                 OnPropertyChanged();
+
+                ContentState = ContentState.Modified;
             }
         }
 
