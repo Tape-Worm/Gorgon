@@ -63,8 +63,7 @@ jobs:
         displayName: 'Copying Windows specific to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Windows/bin/$(buildConfiguration)/net472'
-          Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
-          CleanTargetFolder: true
+          Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'          
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
@@ -110,23 +109,23 @@ jobs:
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
-        displayName: 'Copying Animation to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib/net472'
+        displayName: 'Copying Animation to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Animation/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
-        displayName: 'Copying 2D Animation to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib/net472'
+        displayName: 'Copying 2D Animation to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Animation.Gorgon2D/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/Animation.Gorgon2D/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
       - task: CopyFiles@2
-        displayName: 'Copying 2D IO to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib/net472'
+        displayName: 'Copying 2D IO to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/IO.Gorgon2D/bin/$(buildConfiguration)'
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon/Gorgon.Renderers/IO.Gorgon2D/bin/$(buildConfiguration)/net472'
           Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
