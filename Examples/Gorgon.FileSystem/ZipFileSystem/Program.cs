@@ -191,7 +191,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Main()
         {
-            _log = new GorgonLog("ZipFileSystem", "Tape_Worm");
+            _log = new GorgonTextFileLog("ZipFileSystem", "Tape_Worm");
             _log.LogStart();
 
             // Create the plugin assembly cache.

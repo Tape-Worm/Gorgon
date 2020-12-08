@@ -64,7 +64,7 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
-            Log = new GorgonLog("Writing", "Tape_Worm");
+            Log = new GorgonTextFileLog("Writing", "Tape_Worm");
 
             Log.LogStart();
 

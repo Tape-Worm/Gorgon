@@ -128,7 +128,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Main()
         {
-            _log = new GorgonLog("FileSystemProviders", "Tape_Worm");
+            _log = new GorgonTextFileLog("FileSystemProviders", "Tape_Worm");
             _log.LogStart();
 
             // Create a plugin assembly cache to hold our plugin assemblies.

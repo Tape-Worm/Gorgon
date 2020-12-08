@@ -117,7 +117,7 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
-            Log = new GorgonLog("MultiSource", "Tape_Worm");
+            Log = new GorgonTextFileLog("MultiSource", "Tape_Worm");
             Log.LogStart();
 
             try

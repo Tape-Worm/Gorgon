@@ -578,6 +578,36 @@ namespace Gorgon.Graphics.Core
 
             // We have different dirty states, so this array is different than the other one.
         }
+
+        /// <summary>
+        /// Function to return a read only span for a slice of the array.
+        /// </summary>
+        /// <param name="start">The starting index for the array.</param>
+        /// <param name="end">The ending index for the array.</param>
+        /// <returns>The read only span for the array slice.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="start"/>, or <paramref name="end"/> parameter is less than 0, or greater than the entire length of the array.</exception>
+        public ReadOnlySpan<GorgonShaderResourceView> AsSpan(int start, int end) => _backingArray.AsSpan(start, (end + 1) - start);
+
+        /// <summary>
+        /// Function to return a read only span for the array.
+        /// </summary>
+        /// <returns>The read only span for the array.</returns>
+        public ReadOnlySpan<GorgonShaderResourceView> AsSpan() => _backingArray.AsSpan();
+
+        /// <summary>
+        /// Function to return read only memory for a slice of the array.
+        /// </summary>
+        /// <param name="start">The starting index for the array.</param>
+        /// <param name="end">The ending index for the array.</param>
+        /// <returns>The read only memory for the array slice.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="start"/>, or <paramref name="end"/> parameter is less than 0, or greater than the entire length of the array.</exception>
+        public ReadOnlyMemory<GorgonShaderResourceView> AsMemory(int start, int end) => _backingArray.AsMemory(start, (end + 1) - start);
+
+        /// <summary>
+        /// Function to return read only memory for a slice of the array.
+        /// </summary>
+        /// <returns>The read only memory for the array slice.</returns>
+        public ReadOnlyMemory<GorgonShaderResourceView> AsMemory() => _backingArray.AsMemory();
         #endregion
 
         #region Constructor/Finalizer.

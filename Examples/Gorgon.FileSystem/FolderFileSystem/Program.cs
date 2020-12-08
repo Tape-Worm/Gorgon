@@ -102,7 +102,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Main()
         {
-            _log = new GorgonLog("FolderFileSystem", "Tape_Worm");
+            _log = new GorgonTextFileLog("FolderFileSystem", "Tape_Worm");
             _log.LogStart();
 
             try

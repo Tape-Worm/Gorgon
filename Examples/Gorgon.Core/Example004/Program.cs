@@ -79,7 +79,7 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main(string[] args)
         {
-            _log = new GorgonLog("Example 004", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
+            _log = new GorgonTextFileLog("Example 004", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
 
             // Set up the assembly cache.
             // We'll need the assemblies loaded into this object in order to load our plugin types.
