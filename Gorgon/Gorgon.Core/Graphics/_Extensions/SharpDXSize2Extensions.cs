@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Math;
 using DX = SharpDX;
 
@@ -65,7 +66,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent vector value.</returns>
-        public static DX.Vector2 ToVector2(this DX.Size2F size) => new DX.Vector2(size.Width, size.Height);
+        public static Vector2 ToVector2(this DX.Size2F size) => new Vector2(size.Width, size.Height);
 
         /// <summary>
         /// Function to convert a size into an integer size.
@@ -73,6 +74,20 @@ namespace Gorgon.Graphics
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent size value.</returns>
         public static DX.Size2 ToSize2(this DX.Size2F size) => new DX.Size2((int)size.Width, (int)size.Height);
+
+        /// <summary>
+        /// Function to convert an integer size to a point.
+        /// </summary>
+        /// <param name="size">The size value to convert.</param>
+        /// <returns>The point value.</returns>
+        public static DX.Point ToPoint(this DX.Size2 size) => new DX.Point(size.Width, size.Height);
+
+        /// <summary>
+        /// Function to convert an integer size to a point.
+        /// </summary>
+        /// <param name="point">The point value to convert.</param>
+        /// <returns>The size value.</returns>
+        public static DX.Size2 ToSize2(this DX.Point point) => new DX.Size2(point.X, point.Y);
 
         /// <summary>
         /// Function to convert a size into an floating point size.
@@ -86,6 +101,6 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent vector value.</returns>
-        public static DX.Vector2 ToVector2(this DX.Size2 size) => new DX.Vector2(size.Width, size.Height);
+        public static Vector2 ToVector2(this DX.Size2 size) => new Vector2(size.Width, size.Height);
     }
 }

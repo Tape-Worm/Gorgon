@@ -140,15 +140,15 @@ namespace Gorgon.Native
     internal enum ShellIconSize
     {
         /// <summary>
-        /// Get large icons (32x32)
+        /// Get large icons (32x32) - Affected by DPI.
         /// </summary>
         Large = 0,
         /// <summary>
-        /// Small icons (16x16)
+        /// Small icons (16x16) - Affected by DPI.
         /// </summary>
         Small = 0x1,
         /// <summary>
-        /// Extra large icons (48x48)
+        /// Extra large icons (48x48) - Affected by DPI.
         /// </summary>
         ExtraLarge = 0x2,
         /// <summary>
@@ -200,30 +200,38 @@ namespace Gorgon.Native
         /// <returns>The Icon if found, or <b>null</b> if not.</returns>
         public static Icon ExtractShellIcon(StandardShellIcons icon)
         {
-            IntPtr Get48x48Icon(int iImage)
+            IntPtr hIcon = IntPtr.Zero;
+            IImageList imageList = null;
+
+            // COM interface ID for the shell image list.
+            var IID = new Guid(IID_IImageList);
+
+            try
             {
-                IntPtr hIcon = IntPtr.Zero;
-                IImageList imageList = null;
-
-                // COM interface ID for the shell image list.
-                var IID = new Guid(IID_IImageList);
-
                 _ = SHGetImageList((int)ShellIconSize.ExtraLarge, ref IID, ref imageList);
-                _ = imageList.GetIcon(iImage, ILD_TRANSPARENT | ILD_IMAGE, ref hIcon);
 
-                return hIcon;
+                if (imageList == null)
+                {
+                    return null;
+                }
+
+                _ = imageList.GetIcon((int)icon, ILD_TRANSPARENT | ILD_IMAGE, ref hIcon);
+
+                Icon result = null;
+
+                if (hIcon != IntPtr.Zero)
+                {
+                    result = Icon.FromHandle(hIcon);
+                }
+
+                return result;
             }
-
-            IntPtr handle = Get48x48Icon((int)icon);
-
-            if (handle == IntPtr.Zero)
+            finally
             {
-                return null;
-            }
-
-            using (var iconFromShell = Icon.FromHandle(handle))
-            {
-                return (Icon)iconFromShell.Clone();
+                if (imageList != null)
+                {
+                    Marshal.ReleaseComObject(imageList);
+                }
             }
         }
         #endregion

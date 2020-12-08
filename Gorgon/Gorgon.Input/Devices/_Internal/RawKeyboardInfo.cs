@@ -33,7 +33,7 @@ namespace Gorgon.Input
     /// Provides information about a Raw Input keyboard device.
     /// </summary>
     internal class RawKeyboardInfo
-        : IGorgonRawInputDeviceInfo, IGorgonKeyboardInfo
+        : IGorgonKeyboardInfo
     {
         #region Properties.
         /// <summary>

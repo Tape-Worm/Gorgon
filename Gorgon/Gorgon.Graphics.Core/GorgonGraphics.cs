@@ -25,11 +25,12 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Collections;
@@ -195,13 +196,14 @@ namespace Gorgon.Graphics.Core
 		private readonly D3D11.RenderTargetView[] _d3DRtvs = new D3D11.RenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 
 		// The Native unordered access views.
-		private (D3D11.UnorderedAccessView[], int[]) _d3DUavs = (new D3D11.UnorderedAccessView[1], new int[1]);
+		private (D3D11.UnorderedAccessView[] View, int[] InitialCount) _d3DUavs = (new D3D11.UnorderedAccessView[1], new int[1]);
 
 		// The viewports used to define the area to render into.
 		private readonly DX.ViewportF[] _viewports = new DX.ViewportF[16];
 
 		// The rectangles used to define the clipping area.
 		private readonly DX.Rectangle[] _scissors = new DX.Rectangle[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
+		private DX.Rectangle[] _scissorBuffer = new DX.Rectangle[1];
 
 		// The flag used to determine if a render target and/or depth/stencil is updated.
 		private (bool RtvsChanged, bool DepthViewChanged) _isTargetUpdated;
@@ -277,6 +279,14 @@ namespace Gorgon.Graphics.Core
 
 		// The statistics for rendering.
 		private GorgonGraphicsStatistics _stats;
+
+		// The updated set scissor rectangle method.
+		private static Action<D3D11.RasterizerStage, int, IntPtr> _setScissorRects;
+
+		// The evaluator used to determine pipeline and resource state changes.
+		private readonly StateEvaluator _stateEvaluator = new StateEvaluator();
+		// The applicator that will assign state and resource binding.
+		private readonly D3D11StateApplicator _stateApplicator;
 		#endregion
 
 		#region Properties.
@@ -474,6 +484,30 @@ namespace Gorgon.Graphics.Core
 
 		#region Methods.
 		/// <summary>
+		/// Function to retrieve the internal set scissor rectangle method that allows us to assign scissor rectangles via a pointer rather than a params array.
+		/// </summary>
+		private static void FixSetScissorRects()
+		{
+			MethodInfo methodInfo = typeof(D3D11.RasterizerStage).GetMethod("SetScissorRects", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(IntPtr) }, null);
+
+			if (methodInfo == null)
+			{
+				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
+				Debug.Print("[ERROR] Cannot find method SetScissorRects(int, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
+				return;
+			}
+
+			ParameterExpression rasterizerParam = Expression.Parameter(typeof(D3D11.RasterizerStage), "rasterizer");
+			ParameterExpression countParam = Expression.Parameter(typeof(int), "count");
+			ParameterExpression ptrParam = Expression.Parameter(typeof(IntPtr), "rectPtr");
+			MethodCallExpression caller = Expression.Call(rasterizerParam, methodInfo, countParam, ptrParam);
+
+			LambdaExpression setScissorRects = Expression.Lambda(caller, rasterizerParam, countParam, ptrParam);
+
+			_setScissorRects = (Action<D3D11.RasterizerStage, int, IntPtr>)setScissorRects.Compile();
+		}
+
+		/// <summary>
 		/// Function to initialize the cached sampler states with the predefined states provided on the sampler state class.
 		/// </summary>
 		private void InitializeCachedSamplers()
@@ -506,8 +540,8 @@ namespace Gorgon.Graphics.Core
 			Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
 			Array.Clear(_streamOutBindingCache, 0, _streamOutBindingCache.Length);
 			Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
-			Array.Clear(_d3DUavs.Item1, 0, _d3DUavs.Item1.Length);
-			Array.Clear(_d3DUavs.Item2, 0, _d3DUavs.Item2.Length);
+			Array.Clear(_d3DUavs.View, 0, _d3DUavs.View.Length);
+			Array.Clear(_d3DUavs.InitialCount, 0, _d3DUavs.InitialCount.Length);
 		}
 
 		/// <summary>
@@ -686,7 +720,7 @@ namespace Gorgon.Graphics.Core
 
 			if ((changes & DrawCallChanges.Topology) == DrawCallChanges.Topology)
 			{
-				D3DDeviceContext.InputAssembler.PrimitiveTopology = (D3D.PrimitiveTopology)_lastState.PipelineState.PrimitiveType;
+				D3DDeviceContext.InputAssembler.PrimitiveTopology = (D3D.PrimitiveTopology)currentState.PrimitiveType;
 			}
 
 			if ((changes & DrawCallChanges.RasterState) == DrawCallChanges.RasterState)
@@ -742,49 +776,49 @@ namespace Gorgon.Graphics.Core
 
 			if (GetPipelineChanges(lastState.PrimitiveType == currentState.PrimitiveType, DrawCallChanges.Topology, ref changes))
 			{
-				_lastState.PipelineState.PrimitiveType = currentState.PrimitiveType;
+				lastState.PrimitiveType = currentState.PrimitiveType;
 			}
 
 			if (GetPipelineChanges(lastState.D3DRasterState == currentState.D3DRasterState, DrawCallChanges.RasterState, ref changes))
 			{
-				_lastState.PipelineState.D3DRasterState = currentState.D3DRasterState;
+				lastState.D3DRasterState = currentState.D3DRasterState;
 			}
 
 			if (GetPipelineChanges(lastState.D3DBlendState == currentState.D3DBlendState, DrawCallChanges.BlendState, ref changes))
 			{
-				_lastState.PipelineState.IsAlphaToCoverageEnabled = currentState.IsAlphaToCoverageEnabled;
-				_lastState.PipelineState.IsIndependentBlendingEnabled = currentState.IsIndependentBlendingEnabled;
-				_lastState.PipelineState.D3DBlendState = currentState.D3DBlendState;
+				lastState.IsAlphaToCoverageEnabled = currentState.IsAlphaToCoverageEnabled;
+				lastState.IsIndependentBlendingEnabled = currentState.IsIndependentBlendingEnabled;
+				lastState.D3DBlendState = currentState.D3DBlendState;
 			}
 
 			if (GetPipelineChanges(lastState.D3DDepthStencilState == currentState.D3DDepthStencilState, DrawCallChanges.DepthStencilState, ref changes))
 			{
-				_lastState.PipelineState.D3DDepthStencilState = currentState.D3DDepthStencilState;
+				lastState.D3DDepthStencilState = currentState.D3DDepthStencilState;
 			}
 
 			if (GetPipelineChanges(lastState.VertexShader == currentState.VertexShader, DrawCallChanges.VertexShader, ref changes))
 			{
-				_lastState.PipelineState.VertexShader = currentState.VertexShader;
+				lastState.VertexShader = currentState.VertexShader;
 			}
 
 			if (GetPipelineChanges(lastState.PixelShader == currentState.PixelShader, DrawCallChanges.PixelShader, ref changes))
 			{
-				_lastState.PipelineState.PixelShader = currentState.PixelShader;
+				lastState.PixelShader = currentState.PixelShader;
 			}
 
 			if (GetPipelineChanges(lastState.GeometryShader == currentState.GeometryShader, DrawCallChanges.GeometryShader, ref changes))
 			{
-				_lastState.PipelineState.GeometryShader = currentState.GeometryShader;
+				lastState.GeometryShader = currentState.GeometryShader;
 			}
 
 			if (GetPipelineChanges(lastState.DomainShader == currentState.DomainShader, DrawCallChanges.DomainShader, ref changes))
 			{
-				_lastState.PipelineState.DomainShader = currentState.DomainShader;
+				lastState.DomainShader = currentState.DomainShader;
 			}
 
 			if (GetPipelineChanges(lastState.HullShader == currentState.HullShader, DrawCallChanges.HullShader, ref changes))
 			{
-				_lastState.PipelineState.HullShader = currentState.HullShader;
+				lastState.HullShader = currentState.HullShader;
 			}
 
 			return changes;
@@ -900,31 +934,31 @@ namespace Gorgon.Graphics.Core
 
 			(int start, int count) = uavs.GetDirtyItems();
 
-			if (_d3DUavs.Item1.Length != count)
+			if (_d3DUavs.View.Length != count)
 			{
 				_d3DUavs = (new D3D11.UnorderedAccessView[count], new int[count]);
 			}
 
 			for (int i = 0; i < count; ++i)
 			{
-				_d3DUavs.Item1[i] = uavs.Native[i];
-				_d3DUavs.Item2[i] = uavs.Counts[i];
+				_d3DUavs.View[i] = uavs.Native[i];
+				_d3DUavs.InitialCount[i] = uavs.Counts[i];
 			}
 
 
 			if (!useCs)
 			{
-				D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
+				D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(start, _d3DUavs.View, _d3DUavs.InitialCount);
 			}
 			else
 			{
-				if (_d3DUavs.Item1.Length == 0)
+				if (_d3DUavs.View.Length == 0)
 				{
 					D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(0, _emptyUavs, _emptyUavCounts);
 				}
 				else
 				{
-					D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
+					D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(start, _d3DUavs.View, _d3DUavs.InitialCount);
 				}
 			}
 		}
@@ -1121,7 +1155,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="rtViews">The render target views being assigned.</param>
         /// <param name="rtvCount">Number of render targets to process.</param>
         /// <param name="depth">The depth stencil being assigned.</param>
-        private void CheckRtvsForSrvUavHazards(GorgonRenderTargetView[] rtViews, int rtvCount, GorgonDepthStencil2DView depth)
+        private void CheckRtvsForSrvUavHazards(ReadOnlySpan<GorgonRenderTargetView> rtViews, int rtvCount, GorgonDepthStencil2DView depth)
 		{
 			if (_lastState == null)
 			{
@@ -2148,7 +2182,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="depthStencilReference">The depth stencil reference.</param>
 		private void SetDrawStates(D3DState state, GorgonColor factor, int blendSampleMask, int depthStencilReference)
 		{
-			if (!factor.Equals(in _blendFactor))
+			/*if (!factor.Equals(in _blendFactor))
 			{
 				_blendFactor = factor;
 				D3DDeviceContext.OutputMerger.BlendFactor = _blendFactor.ToRawColor4();
@@ -2167,13 +2201,12 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// If the pipeline is the same as last time, then don't even bother with changing states.
-			DrawCallChanges stateChanges = DrawCallChanges.None;
+			DrawCallChanges.None;
+			stateChanges = BuildStateChanges(state.PipelineState);
+			ApplyState(state.PipelineState, stateChanges);*/
 
-			if (_lastState.PipelineState != state.PipelineState)
-			{
-				stateChanges = BuildStateChanges(state.PipelineState);
-				ApplyState(_lastState.PipelineState, stateChanges);
-			}
+			DrawCallChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, factor, blendSampleMask, depthStencilReference);
+			_stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, factor, blendSampleMask, depthStencilReference);
 
 			DrawCallChanges changes = BuildDrawCallResources(state, stateChanges);
 			BindResources(changes);
@@ -2503,7 +2536,7 @@ namespace Gorgon.Graphics.Core
 				viewport = new DX.ViewportF(0, 0, _renderTargets[0].Width, _renderTargets[0].Height);
 			}
 
-			SetViewport(ref viewport);
+			SetViewport(in viewport);
 
 			if (_isTargetUpdated.DepthViewChanged)
 			{
@@ -2554,10 +2587,9 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		/// <seealso cref="GorgonDepthStencil2DView"/>
 		/// <seealso cref="GorgonTexture2D"/>
-		public void SetRenderTargets(GorgonRenderTargetView[] renderTargets, GorgonDepthStencil2DView depthStencil = null)
+		public void SetRenderTargets(ReadOnlySpan<GorgonRenderTargetView> renderTargets, GorgonDepthStencil2DView depthStencil = null)
 		{
-			if ((renderTargets == null)
-				|| (renderTargets.Length == 0))
+			if (renderTargets.IsEmpty)
 			{
 				ClearState();
 
@@ -2616,7 +2648,7 @@ namespace Gorgon.Graphics.Core
 				viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
 			}
 
-			SetViewport(ref viewport);
+			SetViewport(in viewport);
 
 			OnDepthStencilChanging();
 
@@ -2645,9 +2677,9 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonRasterState"/>
 		public void SetScissorRect(DX.Rectangle rect)
 		{
-			ref DX.Rectangle firstRect = ref _scissors[0];
+			ref readonly DX.Rectangle firstRect = ref _scissors[0];
 
-			if (firstRect.Equals(ref rect))
+			if (firstRect.Equals(in rect))
 			{
 				return;
 			}
@@ -2676,46 +2708,77 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="GorgonRasterState"/>
-		public void SetScissorRects(DX.Rectangle[] rects)
+		public void SetScissorRects(ReadOnlySpan<DX.Rectangle> rects)
 		{
-			if (rects == null)
+			void OldShittyWay(ReadOnlySpan<DX.Rectangle> localRects, int localScissorCount)
+			{
+				// We have to do this because for some ungodly reason, SetScissorRectangles only provides an array 
+				// for its parameter. We can't use ArrayPool because the count returned may not be exact, and thus 
+				// inefficient. So, the only thing we can do is recreate the array. 
+				//
+				// In 99% of cases though, the default array count of 1 will be sufficient, and we shouldn't see this
+				// code called very often, if at all.
+				if (_scissorBuffer.Length != localScissorCount)
+				{
+					_scissorBuffer = new DX.Rectangle[localScissorCount];
+				}
+
+				unsafe
+				{
+					fixed (DX.Rectangle* leftPtr = &localRects[0])
+					fixed (DX.Rectangle* rightPtr = &_scissors[0])
+					{
+						var left = new GorgonPtr<DX.Rectangle>(leftPtr, localScissorCount);
+						var right = new GorgonPtr<DX.Rectangle>(rightPtr, localScissorCount);
+
+						if (left.CompareData(right))
+						{
+							return;
+						}
+
+						left.CopyTo(_scissorBuffer);
+						D3DDeviceContext.Rasterizer.SetScissorRectangles(_scissorBuffer);
+					}
+				}
+			}
+
+			if (rects.IsEmpty)
 			{
 				Array.Clear(_scissors, 0, _scissors.Length);
-				D3DDeviceContext.Rasterizer.SetViewport(0, 0, 1, 1);
+				D3DDeviceContext.Rasterizer.SetScissorRectangle(-16384, -16384, 32768, 32768);
 				return;
 			}
 
-			bool isChanged = false;
 			int scissorCount = rects.Length.Min(_scissors.Length);
-
-			DX.Rectangle[] finalRects = ArrayPool<DX.Rectangle>.Shared.Rent(scissorCount);
 
 			if (scissorCount < _scissors.Length)
 			{
 				Array.Clear(_scissors, scissorCount, _scissors.Length - scissorCount);
 			}
 
-			for (int i = 0; i < scissorCount; ++i)
+			if (_setScissorRects == null)
 			{
-				ref DX.Rectangle cachedRect = ref _scissors[i];
-				ref DX.Rectangle newRect = ref rects[i];
-
-				if (cachedRect.Equals(ref newRect))
-				{
-					continue;
-				}
-
-				finalRects[i] = cachedRect = newRect;
-				isChanged = true;
+				OldShittyWay(rects, scissorCount);
+				return;
 			}
 
-			if (!isChanged)
+			unsafe
 			{
-				return;
-			}                
+				fixed (DX.Rectangle* leftPtr = &rects[0])
+				fixed (DX.Rectangle* rightPtr = &_scissors[0])
+				{
+					var left = new GorgonPtr<DX.Rectangle>(leftPtr, scissorCount);
+					var right = new GorgonPtr<DX.Rectangle>(rightPtr, scissorCount);
 
-			D3DDeviceContext.Rasterizer.SetScissorRectangles(finalRects);
-			ArrayPool<DX.Rectangle>.Shared.Return(finalRects, true);
+					if (left.CompareData(right))
+					{
+						return;
+					}
+
+					left.CopyTo(right);
+					_setScissorRects(D3DDeviceContext.Rasterizer, scissorCount, right);
+				}
+			}
 		}
 
 		/// <summary>
@@ -2727,11 +2790,11 @@ namespace Gorgon.Graphics.Core
 		/// This will define the area to render into on the current <see cref="RenderTargets"/>. This method will set the first viewport at index 0 only, any other viewports assigned will be unassigned.
 		/// </para>
 		/// </remarks>
-		public void SetViewport(ref DX.ViewportF viewport)
+		public void SetViewport(in DX.ViewportF viewport)
 		{
-			ref DX.ViewportF firstViewport = ref _viewports[0];
+			ref readonly DX.ViewportF firstViewport = ref _viewports[0];
 
-			if (firstViewport.Equals(ref viewport))
+			if (firstViewport.Equals(in viewport))
 			{
 				return;
 			}
@@ -2758,10 +2821,9 @@ namespace Gorgon.Graphics.Core
 		/// This will define the area to render into on the current <see cref="RenderTargets"/>. This method will set the first viewport at index 0 only, any other viewports assigned will be unassigned.
 		/// </para>
 		/// </remarks>
-		public void SetViewports(DX.ViewportF[] viewports)
+		public void SetViewports(ReadOnlySpan<DX.ViewportF> viewports)
 		{
-			// ReSharper disable once ConvertIfStatementToSwitchStatement
-			if (viewports == null)
+			if (viewports.IsEmpty)
 			{
 				if (OnViewportChanging())
 				{
@@ -2776,45 +2838,33 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			bool isChanged = false;
 			int viewportCount = viewports.Length.Min(_viewports.Length);
-
+			
 			unsafe
 			{
-				RawViewportF* viewportPtr = stackalloc RawViewportF[viewportCount];
-
 				if (viewportCount < _viewports.Length)
 				{
 					Array.Clear(_viewports, viewportCount, _viewports.Length - viewportCount);
 				}
 
-				for (int i = 0; i < viewportCount; ++i)
+				var cachedViewport = (RawViewportF *)Unsafe.AsPointer(ref _viewports[0]);
+				fixed (DX.ViewportF* newViewport = &viewports[0])
 				{
-					ref DX.ViewportF cachedViewport = ref _viewports[i];
-					ref DX.ViewportF newViewport = ref viewports[i];
+					var left = new GorgonPtr<RawViewportF>(cachedViewport, viewportCount);
+					var right = new GorgonPtr<RawViewportF>((RawViewportF*)newViewport, viewportCount);
 
-					if (cachedViewport.Equals(ref newViewport))
+					// If nothing's changed, then get out.
+					if ((left.CompareData(right))
+						|| (OnViewportChanging()))
 					{
-						continue;
+						return;
 					}
 
-					viewportPtr[i] = cachedViewport = newViewport;
-					isChanged = true;
-				}
+					D3DDeviceContext.Rasterizer.SetViewports((RawViewportF*)right, viewportCount);
 
-				if (!isChanged)
-				{
-					return;
+					EventHandler handler = ViewportChanged;
+					handler?.Invoke(this, EventArgs.Empty);
 				}
-
-				if (OnViewportChanging())
-				{
-					return;
-				}
-
-				D3DDeviceContext.Rasterizer.SetViewports(viewportPtr, viewportCount);
-				EventHandler handler = ViewportChanged;
-				handler?.Invoke(this, EventArgs.Empty);
 			}
 		}
 
@@ -3117,6 +3167,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="GorgonTexture2DView"/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void DrawTexture(GorgonTexture2DView texture,
 								DX.Point destination,
 								GorgonColor? color = null,
@@ -3158,6 +3209,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="GorgonTexture2DView"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void DrawTexture(GorgonTexture2DView texture,
 								DX.Rectangle destinationRectangle,
 								DX.Point sourceOffset = default,
@@ -3317,6 +3369,8 @@ namespace Gorgon.Graphics.Core
 
 			_rtvFactory = new RenderTargetFactory(this);
 
+			_stateApplicator = new D3D11StateApplicator(_deviceContext);
+
 			Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}
 
@@ -3326,6 +3380,7 @@ namespace Gorgon.Graphics.Core
 		static GorgonGraphics()
 		{
 			CheckMinimumOperatingSystem();
+			FixSetScissorRects();
 
 			DX.Configuration.ThrowOnShaderCompileError = false;
 

@@ -424,12 +424,16 @@ namespace Gorgon.Graphics.Core
             {
                 if (initialData.Width < info.Width)
                 {
-                    initialData = initialData.Expand(info.Width, 1, 1);
+                    initialData = initialData.BeginUpdate()
+                                             .Expand(info.Width, 1, 1)
+                                             .EndUpdate();
                 }
 
                 if (initialData.Width > info.Width)
                 {
-                    initialData = initialData.Crop(new DX.Rectangle(0, 0, info.Width, 1), 1);
+                    initialData = initialData.BeginUpdate()
+                                             .Crop(new DX.Rectangle(0, 0, info.Width, 1), 1)
+                                             .EndUpdate();
                 }
             }
 

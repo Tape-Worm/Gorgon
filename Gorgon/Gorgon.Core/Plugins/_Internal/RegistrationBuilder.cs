@@ -1,4 +1,5 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿#if NETSTANDARD2_0
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -138,7 +139,7 @@ namespace System.ComponentModel.Composition.Registration
         }
 
         // Handle Type Exports and Parts
-        protected override IEnumerable<object> GetCustomAttributes(System.Reflection.MemberInfo member, IEnumerable<object> declaredAttributes)
+        protected override IEnumerable<object> GetCustomAttributes(MemberInfo member, IEnumerable<object> declaredAttributes)
         {
             IEnumerable<object> attributes = base.GetCustomAttributes(member, declaredAttributes);
 
@@ -231,7 +232,7 @@ namespace System.ComponentModel.Composition.Registration
         }
 
         //This is where ParameterImports will be handled
-        protected override IEnumerable<object> GetCustomAttributes(System.Reflection.ParameterInfo parameter, IEnumerable<object> declaredAttributes)
+        protected override IEnumerable<object> GetCustomAttributes(ParameterInfo parameter, IEnumerable<object> declaredAttributes)
         {
             IEnumerable<object> attributes = base.GetCustomAttributes(parameter, declaredAttributes);
             List<Attribute> cachedAttributes = ReadParameterCustomAttributes(parameter);
@@ -311,3 +312,4 @@ namespace System.ComponentModel.Composition.Registration
         }
     }
 }
+#endif

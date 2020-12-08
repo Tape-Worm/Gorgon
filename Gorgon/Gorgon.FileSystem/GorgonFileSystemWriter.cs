@@ -499,15 +499,18 @@ namespace Gorgon.IO
             // If the file doesn't exist, then we don't need to actually delete it.
             if (File.Exists(physicalPath))
             {
-                if (_deleteAction == null)
+                if (!file.MountPoint.Provider.IsReadOnly)
                 {
-                    File.Delete(physicalPath);
-                }
-                else
-                {
-                    if (!_deleteAction(physicalPath))
+                    if (_deleteAction == null)
                     {
-                        return false;
+                        File.Delete(physicalPath);
+                    }
+                    else
+                    {
+                        if (!_deleteAction(physicalPath))
+                        {
+                            return false;
+                        }
                     }
                 }
 
@@ -773,15 +776,18 @@ namespace Gorgon.IO
 
                 if (Directory.Exists(physicalPath))
                 {
-                    if (_deleteAction == null)
+                    if (!dir.MountPoint.Provider.IsReadOnly)
                     {
-                        Directory.Delete(physicalPath);
-                    }
-                    else
-                    {
-                        if (!_deleteAction(physicalPath))
+                        if (_deleteAction == null)
                         {
-                            continue;
+                            Directory.Delete(physicalPath);
+                        }
+                        else
+                        {
+                            if (!_deleteAction(physicalPath))
+                            {
+                                continue;
+                            }
                         }
                     }
 
@@ -998,12 +1004,15 @@ namespace Gorgon.IO
             string physicalPath = GetWriteFilePath(file.Directory.FullPath, file.Name);
             string newPhysicalPath = GetWriteFilePath(file.Directory.FullPath, newName);
 
-            if (File.Exists(physicalPath))
-            {
-                File.Move(physicalPath, newPhysicalPath);
-            }
+            if (!file.MountPoint.Provider.IsReadOnly)
+            {            
+                if (File.Exists(physicalPath))
+                {
+                    File.Move(physicalPath, newPhysicalPath);
+                }
 
-            _notifier.NotifyFileRenamed(_mountPoint, oldPath, new PhysicalFileInfo(_mountPoint, newPhysicalPath));
+                _notifier.NotifyFileRenamed(_mountPoint, oldPath, new PhysicalFileInfo(_mountPoint, newPhysicalPath));
+            }
 
             EventHandler<VirtualFileRenamedEventArgs> handler = VirtualFileRenamed;
             handler?.Invoke(this, new VirtualFileRenamedEventArgs(file, oldName));
@@ -1080,13 +1089,16 @@ namespace Gorgon.IO
             string physicalPath = GetWriteDirectoryPath(directory.FullPath);
             string newPhysicalPath = GetWriteDirectoryPath(directory.Parent.FullPath + newName);
 
-            if (Directory.Exists(physicalPath))
+            if (!directory.MountPoint.Provider.IsReadOnly)
             {
-                // .NET has no facility (at least none that I'm aware of) to rename a directory, so we move it instead, hence why we need the full path for the new name.
-                Directory.Move(physicalPath, newPhysicalPath);
-            }
+                if (Directory.Exists(physicalPath))
+                {
+                    // .NET has no facility (at least none that I'm aware of) to rename a directory, so we move it instead, hence why we need the full path for the new name.
+                    Directory.Move(physicalPath, newPhysicalPath);
+                }
 
-            _notifier.NotifyDirectoryRenamed(_mountPoint, oldPath, newPhysicalPath, newName);
+                _notifier.NotifyDirectoryRenamed(_mountPoint, oldPath, newPhysicalPath, newName);
+            }
 
             EventHandler<VirtualDirectoryRenamedEventArgs> handler = VirtualDirectoryRenamed;
             handler?.Invoke(this, new VirtualDirectoryRenamedEventArgs(directory, oldName));
@@ -1285,7 +1297,7 @@ namespace Gorgon.IO
                         BlockCopyFile(srcFile, destFilePath, progressCallback, cancelToken);                        
 
                         // Delete the source file, we won't need it anymore.                        
-                        if (File.Exists(srcFile.PhysicalFile.FullPath))
+                        if ((File.Exists(srcFile.PhysicalFile.FullPath)) && (!_mountPoint.Provider.IsReadOnly))
                         {
                             File.Delete(srcFile.PhysicalFile.FullPath);
                         }
@@ -1309,7 +1321,7 @@ namespace Gorgon.IO
                     }
 
                     string physicalPath = _mountPoint.Provider.MapToPhysicalPath(srcDir.FullPath, _mountPoint);
-                    if (Directory.Exists(physicalPath))
+                    if ((Directory.Exists(physicalPath)) && (!_mountPoint.Provider.IsReadOnly))
                     {
                         Directory.Delete(physicalPath);                        
                     }
@@ -1660,7 +1672,7 @@ namespace Gorgon.IO
                     BlockCopyFile(srcFile, destFilePath, progressCallback, cancelToken);
 
                     // Delete the source file, we won't need it anymore.                        
-                    if (File.Exists(srcFile.PhysicalFile.FullPath))
+                    if ((File.Exists(srcFile.PhysicalFile.FullPath)) && (!_mountPoint.Provider.IsReadOnly))
                     {
                         File.Delete(srcFile.PhysicalFile.FullPath);
                     }
@@ -2502,8 +2514,8 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(writeLocation));
             }
 
-            _deleteAction = deleteAction;
             FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+            _deleteAction = deleteAction;
             _notifier = notifier ?? throw new ArgumentNullException(nameof(notifier));
             WriteLocation = writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
             _mountPoint = new GorgonFileSystemMountPoint(fileSystem.DefaultProvider, WriteLocation, "/");

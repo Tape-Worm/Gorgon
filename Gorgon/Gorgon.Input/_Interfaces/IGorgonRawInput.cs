@@ -76,18 +76,17 @@ namespace Gorgon.Input
     /// </code>
     /// </example>
     public interface IGorgonRawInput
-        : IDisposable, IGorgonInput
+        : IDisposable
     {
         /// <summary>
-        /// Function to register the device with the raw input provider.
+        /// Function to register a mouse device with the raw input provider.
         /// </summary>
-        /// <param name="device">The device to register with the raw input provider.</param>
+        /// <param name="device">The mouse device to register with the raw input provider.</param>
         /// <param name="settings">[Optional] Settings for the device type.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// This will register the <see cref="IGorgonRawInputDevice"/> with the application. For the very first device of a specific type (e.g. a mouse, keyboard, etc...) the Raw Input object will set up 
-        /// the device type registration for the device. This enables an application to start receiving Raw Input messages from a device type.
+        /// This will register the <see cref="IGorgonMouse"/> device with the application. For the very first device the Raw Input object will set up the registration for the mouse. This enables an 
+        /// application to start receiving Raw Input messages from a mouse.
         /// </para>
         /// <para>
         /// The optional <paramref name="settings"/> parameter allows an application change how raw input handles the device being registered. It can be used to set up background input monitoring, or a 
@@ -95,26 +94,102 @@ namespace Gorgon.Input
         /// whichever window has focus).
         /// </para>
         /// <para>
-        /// Every call to this method should be paired with a call to <see cref="GorgonRawInput.UnregisterDevice"/> when the device(s) are no longer needed.
+        /// Every call to this method should be paired with a call to <see cref="UnregisterDevice(IGorgonMouse)"/> when the mouse is no longer needed.
         /// </para>
         /// </remarks>
-        void RegisterDevice(IGorgonRawInputDevice device, GorgonRawInputSettings? settings = null);
+        void RegisterDevice(IGorgonMouse device, GorgonRawInputSettings? settings = null);
 
         /// <summary>
-        /// Function to unregister the device from the raw input provider.
+        /// Function to register a keyboard device with the raw input provider.
         /// </summary>
-        /// <param name="device">The device to unregister from the raw input provider.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b>.</exception>
+        /// <param name="device">The keyboard device to register with the raw input provider.</param>
+        /// <param name="settings">[Optional] Settings for the device type.</param>        
         /// <remarks>
-        /// This will unregister a previously registered <see cref="IGorgonRawInputDevice"/>. When the last device of a specific type (e.g. a mouse, keyboard, etc...) is unregistered, then the 
-        /// Raw Input messages for that device type will also be unregistered and the application will no longer receive messages from that type of device.
+        /// <para>
+        /// This will register the <see cref="IGorgonMouse"/> device with the application. For the very first device the Raw Input object will set up the registration for the keyboard. This enables an 
+        /// application to start receiving Raw Input messages from a keyboard.
+        /// </para>
+        /// <para>
+        /// The optional <paramref name="settings"/> parameter allows an application change how raw input handles the device being registered. It can be used to set up background input monitoring, or a 
+        /// target window for raw input messages (which must be set if the background option is turned on). By default, there is no background message processing and no target window (messages go to 
+        /// whichever window has focus).
+        /// </para>
+        /// <para>
+        /// Every call to this method should be paired with a call to <see cref="UnregisterDevice(IGorgonKeyboard)"/> when the keyboard is no longer needed.
+        /// </para>
         /// </remarks>
-        void UnregisterDevice(IGorgonRawInputDevice device);
+        void RegisterDevice(IGorgonKeyboard device, GorgonRawInputSettings? settings = null);
+
+        /// <summary>
+        /// Function to register a HID with the raw input provider.
+        /// </summary>
+        /// <param name="device">The HID to register with the raw input provider.</param>
+        /// <param name="settings">[Optional] Settings for the device type.</param>
+        /// <remarks>
+        /// <para>
+        /// This will register the <see cref="IGorgonMouse"/> device with the application. For the very first device the Raw Input object will set up the registration for the HID. This enables an 
+        /// application to start receiving Raw Input messages from a HID.
+        /// </para>
+        /// <para>
+        /// The optional <paramref name="settings"/> parameter allows an application change how raw input handles the device being registered. It can be used to set up background input monitoring, or a 
+        /// target window for raw input messages (which must be set if the background option is turned on). By default, there is no background message processing and no target window (messages go to 
+        /// whichever window has focus).
+        /// </para>
+        /// <para>
+        /// Every call to this method should be paired with a call to <see cref="UnregisterDevice(IGorgonRawHID)"/> when the HID is no longer needed.
+        /// </para>
+        /// </remarks>
+        void RegisterDevice(IGorgonRawHID device, GorgonRawInputSettings? settings = null);
+
+        /// <summary>
+        /// Function to unregister a mouse from the raw input provider.
+        /// </summary>
+        /// <param name="device">The mouse to unregister from the raw input provider.</param>
+        /// <remarks>
+        /// <para>
+        /// This will unregister a previously registered <see cref="IGorgonMouse"/>. 
+        /// </para>
+        /// </remarks>
+        void UnregisterDevice(IGorgonMouse device);
+
+        /// <summary>
+        /// Function to unregister a keyboard from the raw input provider.
+        /// </summary>
+        /// <param name="device">The keyboard to unregister from the raw input provider.</param>
+        /// <remarks>
+        /// <para>
+        /// This will unregister a previously registered <see cref="IGorgonKeyboard"/>. 
+        /// </para>
+        /// </remarks>
+        void UnregisterDevice(IGorgonKeyboard device);
+
+        /// <summary>
+        /// Function to unregister a HID from the raw input provider.
+        /// </summary>
+        /// <param name="device">The HID to unregister from the raw input provider.</param>
+        /// <remarks>
+        /// <para>
+        /// This will unregister a previously registered <see cref="IGorgonRawHID"/>. 
+        /// </para>
+        /// </remarks>
+        void UnregisterDevice(IGorgonRawHID device);
 
         /// <summary>
         /// Function to retrieve a list of human interface devices (HID).
         /// </summary>
         /// <returns>A read only list containing information about each human interface device.</returns>
         IReadOnlyList<GorgonRawHIDInfo> EnumerateHumanInterfaceDevices();
+
+        /// <summary>
+        /// Function to retrieve a list of keyboards.
+        /// </summary>
+        /// <returns>A read only list containing information about each keyboard.</returns>
+        IReadOnlyList<IGorgonKeyboardInfo> EnumerateKeyboards();
+
+        /// <summary>
+        /// Function to retrieve a list of mice.
+        /// </summary>
+        /// <returns>A read only list containing information about each mouse.</returns>
+        IReadOnlyList<IGorgonMouseInfo> EnumerateMice();
     }
 }

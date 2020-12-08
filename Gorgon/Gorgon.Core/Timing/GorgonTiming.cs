@@ -49,7 +49,7 @@ namespace Gorgon.Timing
     /// {
     ///     Console.CursorLeft = 0;
     ///     Console.CursorTop = 0;
-    ///		Console.WriteLine("FPS: {0}", GorgonTiming.FPS);
+    ///		Console.WriteLine($"FPS: {GorgonTiming.FPS}");
     /// 
     ///		return true;
     /// }
@@ -158,7 +158,7 @@ namespace Gorgon.Timing
         /// to read when checking for performance.
         /// </para>
         /// <para>
-        /// The article at <a href="https://www.mvps.org/directx/articles/fps_versus_frame_time.htm" target="_blank">https://www.mvps.org/directx/articles/fps_versus_frame_time.htm</a> has more 
+        /// The article at <a href="https://cgvr.cs.ut.ee/wp/index.php/frame-rate-vs-frame-time/" target="_blank">https://cgvr.cs.ut.ee/wp/index.php/frame-rate-vs-frame-time/</a> has more 
         /// information on using frame delta instead of frames per second. 
         /// </para>
         /// <para>
@@ -336,7 +336,7 @@ namespace Gorgon.Timing
         /// of the next frame.
         /// </para>
         /// <para>
-        /// See the article at <a href="https://www.mvps.org/directx/articles/fps_versus_frame_time.htm" target="_blank">https://www.mvps.org/directx/articles/fps_versus_frame_time.htm</a> for more 
+        /// See the article at <a href="https://cgvr.cs.ut.ee/wp/index.php/frame-rate-vs-frame-time/" target="_blank">https://cgvr.cs.ut.ee/wp/index.php/frame-rate-vs-frame-time/</a> for more 
         /// information on using frame delta instead of frames per second. 
         /// </para>
         /// </remarks>

@@ -1,4 +1,5 @@
-﻿#region MIT
+﻿#if NETSTANDARD2_0
+#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2020 Michael Winsor
@@ -90,3 +91,4 @@ namespace System.Composition.Diagnostics
         public const string Argument_ExpressionMustBePropertyMember = "Argument {0} must be a property.";
     }
 }
+#endif

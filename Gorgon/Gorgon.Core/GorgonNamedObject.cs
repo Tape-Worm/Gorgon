@@ -51,10 +51,10 @@ namespace Gorgon.Core
         public override int GetHashCode() => string.IsNullOrWhiteSpace(Name) ? 0 : 281.GenerateHash(Name);
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents the current <see cref="GorgonNamedObject"/>.
+        /// Returns a <see cref="string"/> that represents the current <see cref="GorgonNamedObject"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents the current <see cref="GorgonNamedObject"/>.
+        /// A <see cref="string"/> that represents the current <see cref="GorgonNamedObject"/>.
         /// </returns>
         public override string ToString() => string.Format(Resources.GOR_TOSTR_NAMEDOBJECT, Name);
         #endregion

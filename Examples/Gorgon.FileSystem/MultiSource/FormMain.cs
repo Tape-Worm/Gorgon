@@ -80,6 +80,8 @@ namespace Gorgon.Examples
         private Font _textFont;
         // Instructions label.
         private Label _instructions;
+        // File system plug in assembly cache.
+        private GorgonMefPlugInCache _cache;
         #endregion
 
         #region Methods.
@@ -214,16 +216,11 @@ namespace Gorgon.Examples
             // We can load the objects we need and discard the plugin system after.
             // This works because we keep the references to the objects that our 
             // plugin creates, even after the plugin is gone.
-            using (var pluginAssemblies = new GorgonMefPlugInCache(Program.Log))
-            {
-                pluginAssemblies.LoadPlugInAssemblies(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL");
+            _cache = new GorgonMefPlugInCache(Program.Log);
 
-                var providerFactory = new GorgonFileSystemProviderFactory(
-                    new GorgonMefPlugInService(pluginAssemblies),
-                    Program.Log);
+            var providerFactory = new GorgonFileSystemProviderFactory(_cache, Program.Log);
 
-                _fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPlugInName), Program.Log);
-            }
+            _fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(Path.Combine(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL"), zipProviderPlugInName), Program.Log);           
         }
 
         /// <summary>
@@ -343,49 +340,22 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+        /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data.</param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
 
-            try
-            {
-                if (_picture != null)
-                {
-                    _picture.Dispose();
-                    _picture = null;
-                }
-
-                if (_image != null)
-                {
-                    _image.Dispose();
-                    _image = null;
-                }
-
-                if (_textDisplay != null)
-                {
-                    _textDisplay.Dispose();
-                    _textDisplay = null;
-                }
-
-                if (_textFont == null)
-                {
-                    return;
-                }
-
-                _textFont.Dispose();
-                _textFont = null;
-            }
-            catch (Exception ex)
-            {
-                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
-            }
+            _cache?.Dispose();
+            _picture?.Dispose();
+            _image?.Dispose();
+            _textDisplay?.Dispose();
+            _textFont?.Dispose();
         }
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

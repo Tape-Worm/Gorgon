@@ -153,7 +153,6 @@ namespace Gorgon.Examples
             }
 
             _buffer.Graphics.DrawImage(cursor, new Point(position.X + Hotspot.X, position.Y + Hotspot.Y));
-            _buffer.Render();
             _buffer.Render(_graphics);
         }
         #endregion

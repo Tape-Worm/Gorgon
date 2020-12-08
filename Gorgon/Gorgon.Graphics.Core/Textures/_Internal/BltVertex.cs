@@ -35,7 +35,7 @@ namespace Gorgon.Graphics
     /// The vertex of the blitter used to blit textures to the current render target.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct BltVertex
+    internal struct BltVertex        
     {
         /// <summary>
         /// The size of the vertex, in bytes.

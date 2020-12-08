@@ -15,6 +15,7 @@
         {
             if (disposing)
             {
+                OperationCancelledEvent = null;
                 ButtonCancel.Click -= ButtonCancel_Click;
             }
 

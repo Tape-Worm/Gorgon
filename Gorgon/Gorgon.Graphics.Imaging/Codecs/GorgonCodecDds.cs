@@ -103,6 +103,7 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -684,7 +685,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <param name="destFormat">The destination format.</param>
         /// <param name="bitFlags">Image bit conversion control flags.</param>
         /// <param name="palette">Palette to assigned to indexed images.</param>
-        private static unsafe void ExpandLegacyScanline(void* src, int srcPitch, DdsConversionFlags srcFormat, void* dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
+        private static void ExpandLegacyScanline(in GorgonPtr<byte> src, int srcPitch, DdsConversionFlags srcFormat, in GorgonPtr<byte> dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
         {
             if (((srcFormat == DdsConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UNorm))
                 || ((srcFormat != DdsConversionFlags.RGB332) && (destFormat != BufferFormat.R8G8B8A8_UNorm)))
@@ -692,156 +693,168 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, destFormat));
             }
 
-            if (((srcFormat == DdsConversionFlags.Palette) || (srcFormat == DdsConversionFlags.A8P8)) && ((palette == null) || (palette.Length != 256)))
+            uint[] actualPalette = palette;
+
+            try
             {
-                // Create an empty palette if we didn't supply one.
-                palette = new uint[256];
+                if (((srcFormat == DdsConversionFlags.Palette) || (srcFormat == DdsConversionFlags.A8P8)) && ((palette == null) || (actualPalette.Length != 256)))
+                {
+                    // Create an empty palette if we didn't supply one.
+                    actualPalette = ArrayPool<uint>.Shared.Rent(256);
+                }
+
+                unsafe
+                {
+                    switch (srcFormat)
+                    {
+                        case DdsConversionFlags.Palette:
+                            {
+                                byte* srcPtr = (byte*)src;
+                                uint* destPtr = (uint*)dest;
+
+                                // Copy indexed data.
+                                for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+                                {
+                                    *(destPtr++) = actualPalette[*(srcPtr++)];
+                                }
+                            }
+                            break;
+                        case DdsConversionFlags.A4L4:
+                            {
+                                byte* srcPtr = (byte*)src;
+                                uint* destPtr = (uint*)dest;
+
+                                // Copy alpha luminance.
+                                for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+                                {
+                                    byte pixel = *(srcPtr++);
+
+                                    uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0) << 24) | ((pixel & (0xF0 << 20))));
+                                    uint lum = (uint)((pixel & (0x0F << 4)) | (pixel & 0x0F));
+
+                                    *(destPtr++) = lum | (lum << 8) | (lum << 16) | alpha;
+                                }
+                            }
+                            break;
+                        case DdsConversionFlags.RGB332:
+                            {
+                                byte* srcPtr = (byte*)src;
+
+                                switch (destFormat)
+                                {
+                                    case BufferFormat.R8G8B8A8_UNorm:
+                                        {
+                                            uint* destPtr = (uint*)dest;
+
+                                            // Copy 8 bit RGB.
+                                            for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+                                            {
+                                                byte pixel = *(srcPtr++);
+
+                                                uint r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
+                                                uint g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
+                                                uint b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+
+                                                *(destPtr++) = r | g | b | 0xFF000000;
+                                            }
+                                        }
+                                        break;
+                                    case BufferFormat.B5G6R5_UNorm:
+                                        {
+                                            ushort* destPtr = (ushort*)dest;
+
+                                            // Copy 8 bit RGB.
+                                            for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 2)
+                                            {
+                                                byte pixel = *(srcPtr++);
+
+                                                uint r = (uint)(((pixel & 0xE0) << 8) | ((pixel & 0xC0) << 5));
+                                                uint g = (uint)(((pixel & 0x1C) << 6) | ((pixel & 0x1C) << 3));
+                                                uint b = (uint)(((pixel & 0x03) << 3) | ((pixel & 0x03) << 1) | ((pixel & 0x02) >> 1));
+
+                                                *(destPtr++) = (ushort)(r | g | b);
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+                        case DdsConversionFlags.A8P8:
+                            {
+                                ushort* srcPtr = (ushort*)src;
+                                uint* destPtr = (uint*)dest;
+
+                                // Copy indexed data with alpha.
+                                for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
+                                {
+                                    ushort pixel = *(srcPtr++);
+                                    uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
+
+                                    *(destPtr++) = pixel | alpha;
+                                }
+                            }
+                            break;
+                        case DdsConversionFlags.RGB8332:
+                            {
+                                ushort* srcPtr = (ushort*)src;
+                                uint* destPtr = (uint*)dest;
+
+                                // Copy 8 bit RGB with alpha.
+                                for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
+                                {
+                                    ushort pixel = (ushort)(*(srcPtr++) & 0xFF);
+                                    uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
+
+                                    uint r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
+                                    uint g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
+                                    uint b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+
+                                    *(destPtr++) = r | g | b | alpha;
+                                }
+                            }
+                            break;
+                        case DdsConversionFlags.RGB4444:
+                            {
+                                ushort* srcPtr = (ushort*)src;
+                                uint* destPtr = (uint*)dest;
+
+                                // Copy 12 bit RGB with 4 bit alpha.
+                                for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
+                                {
+                                    ushort pixel = *(srcPtr++);
+                                    uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF000) << 16) | ((pixel & 0xF000) << 12));
+
+                                    uint r = (uint)(((pixel & 0x0F00) >> 4) | ((pixel & 0x0F00) >> 8));
+                                    uint g = (uint)(((pixel & 0x00F0) << 4) | ((pixel & 0x00F0) << 8));
+                                    uint b = (uint)(((pixel & 0x000F) << 16) | ((pixel & 0x000F) << 20));
+
+                                    *(destPtr++) = r | g | b | alpha;
+                                }
+                            }
+                            break;
+                        case DdsConversionFlags.RGB888:
+                            {
+                                byte* srcPtr = (byte*)src;
+                                uint* destPtr = (uint*)dest;
+
+                                // Copy 24 bit RGB.
+                                for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+                                {
+                                    // 24 bit DDS files are encoded as BGR, need to swizzle.
+                                    uint b = (uint)(*(srcPtr++) << 16);
+                                    uint g = (uint)(*(srcPtr++) << 8);
+                                    byte r = *(srcPtr++);
+
+                                    *(destPtr++) = r | g | b | 0xFF000000;
+                                }
+                            }
+                            break;
+                    }
+                }
             }
-
-            switch (srcFormat)
+            finally
             {
-                case DdsConversionFlags.Palette:
-                    {
-                        byte* srcPtr = (byte*)src;
-                        uint* destPtr = (uint*)dest;
-
-                        // Copy indexed data.
-                        for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
-                        {
-                            *(destPtr++) = palette[*(srcPtr++)];
-                        }
-                    }
-                    break;
-                case DdsConversionFlags.A4L4:
-                    {
-                        byte* srcPtr = (byte*)src;
-                        uint* destPtr = (uint*)dest;
-
-                        // Copy alpha luminance.
-                        for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
-                        {
-                            byte pixel = *(srcPtr++);
-
-                            uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0) << 24) | ((pixel & (0xF0 << 20))));
-                            uint lum = (uint)((pixel & (0x0F << 4)) | (pixel & 0x0F));
-
-                            *(destPtr++) = lum | (lum << 8) | (lum << 16) | alpha;
-                        }
-                    }
-                    break;
-                case DdsConversionFlags.RGB332:
-                    {
-                        byte* srcPtr = (byte*)src;
-
-                        switch (destFormat)
-                        {
-                            case BufferFormat.R8G8B8A8_UNorm:
-                                {
-                                    uint* destPtr = (uint*)dest;
-
-                                    // Copy 8 bit RGB.
-                                    for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
-                                    {
-                                        byte pixel = *(srcPtr++);
-
-                                        uint r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
-                                        uint g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
-                                        uint b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
-
-                                        *(destPtr++) = r | g | b | 0xFF000000;
-                                    }
-                                }
-                                break;
-                            case BufferFormat.B5G6R5_UNorm:
-                                {
-                                    ushort* destPtr = (ushort*)dest;
-
-                                    // Copy 8 bit RGB.
-                                    for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 2)
-                                    {
-                                        byte pixel = *(srcPtr++);
-
-                                        uint r = (uint)(((pixel & 0xE0) << 8) | ((pixel & 0xC0) << 5));
-                                        uint g = (uint)(((pixel & 0x1C) << 6) | ((pixel & 0x1C) << 3));
-                                        uint b = (uint)(((pixel & 0x03) << 3) | ((pixel & 0x03) << 1) | ((pixel & 0x02) >> 1));
-
-                                        *(destPtr++) = (ushort)(r | g | b);
-                                    }
-                                }
-                                break;
-                        }
-                    }
-                    break;
-                case DdsConversionFlags.A8P8:
-                    {
-                        ushort* srcPtr = (ushort*)src;
-                        uint* destPtr = (uint*)dest;
-
-                        // Copy indexed data with alpha.
-                        for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
-                        {
-                            ushort pixel = *(srcPtr++);
-                            uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
-
-                            *(destPtr++) = pixel | alpha;
-                        }
-                    }
-                    break;
-                case DdsConversionFlags.RGB8332:
-                    {
-                        ushort* srcPtr = (ushort*)src;
-                        uint* destPtr = (uint*)dest;
-
-                        // Copy 8 bit RGB with alpha.
-                        for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
-                        {
-                            ushort pixel = (ushort)(*(srcPtr++) & 0xFF);
-                            uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
-
-                            uint r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
-                            uint g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
-                            uint b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
-
-                            *(destPtr++) = r | g | b | alpha;
-                        }
-                    }
-                    break;
-                case DdsConversionFlags.RGB4444:
-                    {
-                        ushort* srcPtr = (ushort*)src;
-                        uint* destPtr = (uint*)dest;
-
-                        // Copy 12 bit RGB with 4 bit alpha.
-                        for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
-                        {
-                            ushort pixel = *(srcPtr++);
-                            uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF000) << 16) | ((pixel & 0xF000) << 12));
-
-                            uint r = (uint)(((pixel & 0x0F00) >> 4) | ((pixel & 0x0F00) >> 8));
-                            uint g = (uint)(((pixel & 0x00F0) << 4) | ((pixel & 0x00F0) << 8));
-                            uint b = (uint)(((pixel & 0x000F) << 16) | ((pixel & 0x000F) << 20));
-
-                            *(destPtr++) = r | g | b | alpha;
-                        }
-                    }
-                    break;
-                case DdsConversionFlags.RGB888:
-                    {
-                        byte* srcPtr = (byte*)src;
-                        uint* destPtr = (uint*)dest;
-
-                        // Copy 24 bit RGB.
-                        for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
-                        {
-                            // 24 bit DDS files are encoded as BGR, need to swizzle.
-                            uint b = (uint)(*(srcPtr++) << 16);
-                            uint g = (uint)(*(srcPtr++) << 8);
-                            byte r = *(srcPtr++);
-
-                            *(destPtr++) = r | g | b | 0xFF000000;
-                        }
-                    }
-                    break;
+                ArrayPool<uint>.Shared.Return(actualPalette);
             }
         }
 
@@ -1055,7 +1068,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <param name="flags">Conversion flags used to determine how to expand the scanline.</param>
         /// <param name="imageBitFlags">Bit depth conversion flags.</param>
         /// <param name="palette">A palette, used to expand indexed 8 bpp image data.</param>
-        private static unsafe void ExpandScanline(byte* srcData, byte* destData, int srcRowPitch, int destRowPitch, BufferFormat format, DdsConversionFlags flags, ImageBitFlags imageBitFlags, uint[] palette)
+        private static void ExpandScanline(in GorgonPtr<byte> srcData, in GorgonPtr<byte> destData, int srcRowPitch, int destRowPitch, BufferFormat format, DdsConversionFlags flags, ImageBitFlags imageBitFlags, uint[] palette)
         {
             // Perform expansion.
             if (((flags & DdsConversionFlags.RGB565) == DdsConversionFlags.RGB565)
@@ -1073,7 +1086,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                     expandFormat = BufferFormat.B4G4R4A4_UNorm;
                 }
 
-                ImageUtilities.Expand16BPPScanline(srcData, srcRowPitch, expandFormat, destData, destRowPitch, imageBitFlags);
+                ImageUtilities.Expand16BPPScanline(in srcData, srcRowPitch, expandFormat, in destData, destRowPitch, imageBitFlags);
+                
                 return;
             }
 
@@ -1085,7 +1099,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, expandLegacyFormat));
             }
 
-            ExpandLegacyScanline(srcData, srcRowPitch, expandLegacyFormat, destData, destRowPitch, format, imageBitFlags, palette);
+            ExpandLegacyScanline(in srcData, srcRowPitch, expandLegacyFormat, in destData, destRowPitch, format, imageBitFlags, palette);
         }
 
         /// <summary>
@@ -1156,81 +1170,78 @@ namespace Gorgon.Graphics.Imaging.Codecs
             int depth = image.Depth;
             GorgonNativeBuffer<byte> lineBuffer = null;
 
-            unsafe
+            try
             {
-                try
+                for (int array = 0; array < image.ArrayCount; array++)
                 {
-                    for (int array = 0; array < image.ArrayCount; array++)
+                    for (int mipLevel = 0; mipLevel < image.MipCount; mipLevel++)
                     {
-                        for (int mipLevel = 0; mipLevel < image.MipCount; mipLevel++)
+                        // Get our destination buffer.
+                        IGorgonImageBuffer destBuffer = image.Buffers[mipLevel, array];
+                        GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(destBuffer.Width, destBuffer.Height, pitchFlags);
+                        GorgonPtr<byte> destPointer = destBuffer.Data;
+
+                        for (int slice = 0; slice < depth; slice++)
                         {
-                            // Get our destination buffer.
-                            IGorgonImageBuffer destBuffer = image.Buffers[mipLevel, array];
-                            GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(destBuffer.Width, destBuffer.Height, pitchFlags);
-                            byte* destPointer = (byte*)destBuffer.Data;
-
-                            for (int slice = 0; slice < depth; slice++)
+                            // We're using compressed data, just copy.
+                            if (formatInfo.IsCompressed)
                             {
-                                // We're using compressed data, just copy.
-                                if (formatInfo.IsCompressed)
-                                {
-                                    int size = pitchInfo.SlicePitch.Min(destBuffer.PitchInformation.SlicePitch);
-                                    reader.ReadRange(destBuffer.Data, count: size);
-                                    continue;
-                                }
-
-                                // Read each scan line if we require some form of conversion. 
-                                for (int h = 0; h < destBuffer.Height; h++)
-                                {
-                                    // Use this to read a line of data from the source.
-                                    if (lineBuffer == null)
-                                    {
-                                        lineBuffer = new GorgonNativeBuffer<byte>(pitchInfo.RowPitch);
-                                    }
-
-                                    reader.ReadRange(lineBuffer, count: pitchInfo.RowPitch);
-
-                                    byte* srcPointer = (byte*)lineBuffer;
-
-                                    if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
-                                    {
-                                        ExpandScanline(srcPointer,
-                                                       destPointer,
-                                                       pitchInfo.RowPitch,
-                                                       destBuffer.PitchInformation.RowPitch,
-                                                       image.Format,
-                                                       conversionFlags,
-                                                       expFlags,
-                                                       palette);
-                                    }
-                                    else if ((conversionFlags & DdsConversionFlags.Swizzle) == DdsConversionFlags.Swizzle)
-                                    {
-                                        // Perform swizzle.
-                                        ImageUtilities.SwizzleScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
-                                    }
-                                    else
-                                    {
-                                        // Copy and set constant alpha (if necessary).
-                                        ImageUtilities.CopyScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
-                                    }
-
-                                    // Increment our pointer data by one line.
-                                    destPointer += destBuffer.PitchInformation.RowPitch;
-                                }
+                                int size = pitchInfo.SlicePitch.Min(destBuffer.PitchInformation.SlicePitch);
+                                reader.ReadRange(destBuffer.Data, count: size);
+                                continue;
                             }
 
-                            if (depth > 1)
+                            // Read each scan line if we require some form of conversion. 
+                            for (int h = 0; h < destBuffer.Height; h++)
                             {
-                                depth >>= 1;
+                                // Use this to read a line of data from the source.
+                                if (lineBuffer == null)
+                                {
+                                    lineBuffer = new GorgonNativeBuffer<byte>(pitchInfo.RowPitch);
+                                }
+
+                                reader.ReadRange<byte>(lineBuffer, count: pitchInfo.RowPitch);
+
+                                ref readonly GorgonPtr<byte> srcPointer = ref lineBuffer.Pointer;
+
+                                if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
+                                {
+                                    ExpandScanline(in srcPointer,
+                                                   in destPointer,
+                                                   pitchInfo.RowPitch,
+                                                   destBuffer.PitchInformation.RowPitch,
+                                                   image.Format,
+                                                   conversionFlags,
+                                                   expFlags,
+                                                   palette);
+                                }
+                                else if ((conversionFlags & DdsConversionFlags.Swizzle) == DdsConversionFlags.Swizzle)
+                                {
+                                    // Perform swizzle.
+                                    ImageUtilities.SwizzleScanline(in srcPointer, pitchInfo.RowPitch, in destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
+                                }
+                                else
+                                {
+                                    // Copy and set constant alpha (if necessary).
+                                    ImageUtilities.CopyScanline(in srcPointer, pitchInfo.RowPitch, in destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
+                                }
+
+                                // Increment our pointer data by one line.
+                                destPointer += destBuffer.PitchInformation.RowPitch;
                             }
+                        }
+
+                        if (depth > 1)
+                        {
+                            depth >>= 1;
                         }
                     }
                 }
-                finally
-                {
-                    lineBuffer?.Dispose();
-                }
             }
+            finally
+            {
+                lineBuffer?.Dispose();
+            }            
         }
 
         /// <summary>

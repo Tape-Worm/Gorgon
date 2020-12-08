@@ -154,7 +154,7 @@ namespace Gorgon.Input
         /// ]]>
         /// </code>
         /// </example>
-        GorgonGamingDeviceAxisList<GorgonGamingDeviceAxis> Axis
+        GorgonGamingDeviceAxisList<IGorgonGamingDeviceAxis> Axis
         {
             get;
         }

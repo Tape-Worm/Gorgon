@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Imaging
         // List of buffers.
         private IGorgonImageBuffer[] _buffers;
         // Image that owns this buffer.
-        private readonly IGorgonImage _image;
+        private readonly IGorgonImageInfo _imageInfo;
         #endregion
 
         #region Properties.
@@ -88,17 +88,17 @@ namespace Gorgon.Graphics.Imaging
             {
                 (int, int) offsetSize;
 
-                mipLevel.ValidateRange(nameof(mipLevel), 0, _image.MipCount);
+                mipLevel.ValidateRange(nameof(mipLevel), 0, _imageInfo.MipCount);
 
-                if (_image.ImageType == ImageType.Image3D)
+                if (_imageInfo.ImageType == ImageType.Image3D)
                 {
-                    depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _image.Depth);
+                    depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _imageInfo.Depth);
                     offsetSize = MipOffsetSize[mipLevel];
                     return _buffers[offsetSize.Item1 + depthSliceOrArrayIndex];
                 }
 
-                depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _image.ArrayCount);
-                offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _image.MipCount)];
+                depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _imageInfo.ArrayCount);
+                offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _imageInfo.MipCount)];
                 return _buffers[offsetSize.Item1];
             }
         }
@@ -109,70 +109,67 @@ namespace Gorgon.Graphics.Imaging
         /// Function to create a list of buffers to use.
         /// </summary>
         /// <param name="data">Data to copy/reference.</param>
-        internal void CreateBuffers(GorgonNativeBuffer<byte> data)
+        internal void CreateBuffers(in GorgonPtr<byte> data)
         {
             int bufferIndex = 0;
-            var formatInfo = new GorgonFormatInfo(_image.Format);   // Format information.
+            var formatInfo = new GorgonFormatInfo(_imageInfo.Format);   // Format information.
 
             // Allocate enough room for the array and mip levels.
-            _buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_image.Depth, _image.MipCount) * _image.ArrayCount];
+            _buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_imageInfo.Depth, _imageInfo.MipCount) * _imageInfo.ArrayCount];
 
             // Offsets for the mip maps.
-            MipOffsetSize = new (int BufferIndex, int MipDepth)[_image.MipCount * _image.ArrayCount];
+            MipOffsetSize = new (int BufferIndex, int MipDepth)[_imageInfo.MipCount * _imageInfo.ArrayCount];
 
-            unsafe
+            GorgonPtr<byte> dataAddress = data;
+
+            // Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
+            for (int array = 0; array < _imageInfo.ArrayCount; array++)
             {
-                byte* dataAddress = (byte*)data;
+                int mipWidth = _imageInfo.Width;
+                int mipHeight = _imageInfo.Height;
+                int mipDepth = _imageInfo.Depth;
 
-                // Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
-                for (int array = 0; array < _image.ArrayCount; array++)
+                // Enumerate mip map levels.
+                for (int mip = 0; mip < _imageInfo.MipCount; mip++)
                 {
-                    int mipWidth = _image.Width;
-                    int mipHeight = _image.Height;
-                    int mipDepth = _image.Depth;
+                    int arrayIndex = mip + (array * _imageInfo.MipCount);
+                    GorgonPitchLayout pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
 
-                    // Enumerate mip map levels.
-                    for (int mip = 0; mip < _image.MipCount; mip++)
+                    // Calculate buffer offset by mip.
+                    MipOffsetSize[arrayIndex] = (bufferIndex, mipDepth);
+
+                    // Enumerate depth slices.
+                    for (int depth = 0; depth < mipDepth; depth++)
                     {
-                        int arrayIndex = mip + (array * _image.MipCount);
-                        GorgonPitchLayout pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
+                        // Get mip information.						
+                        _buffers[bufferIndex] = new GorgonImageBuffer(new GorgonPtr<byte>(dataAddress, pitchInformation.SlicePitch),
+                                                                        pitchInformation,
+                                                                        mip,
+                                                                        array,
+                                                                        depth,
+                                                                        mipWidth,
+                                                                        mipHeight,
+                                                                        mipDepth,
+                                                                        _imageInfo.Format,
+                                                                        formatInfo);
 
-                        // Calculate buffer offset by mip.
-                        MipOffsetSize[arrayIndex] = (bufferIndex, mipDepth);
+                        dataAddress += pitchInformation.SlicePitch;
+                        bufferIndex++;
+                    }
 
-                        // Enumerate depth slices.
-                        for (int depth = 0; depth < mipDepth; depth++)
-                        {
-                            // Get mip information.						
-                            _buffers[bufferIndex] = new GorgonImageBuffer(new GorgonNativeBuffer<byte>(dataAddress, pitchInformation.SlicePitch),
-                                                                          pitchInformation,
-                                                                          mip,
-                                                                          array,
-                                                                          depth,
-                                                                          mipWidth,
-                                                                          mipHeight,
-                                                                          mipDepth,
-                                                                          _image.Format,
-                                                                          _image.FormatInfo);
+                    if (mipWidth > 1)
+                    {
+                        mipWidth >>= 1;
+                    }
 
-                            dataAddress += pitchInformation.SlicePitch;
-                            bufferIndex++;
-                        }
+                    if (mipHeight > 1)
+                    {
+                        mipHeight >>= 1;
+                    }
 
-                        if (mipWidth > 1)
-                        {
-                            mipWidth >>= 1;
-                        }
-
-                        if (mipHeight > 1)
-                        {
-                            mipHeight >>= 1;
-                        }
-
-                        if (mipDepth > 1)
-                        {
-                            mipDepth >>= 1;
-                        }
+                    if (mipDepth > 1)
+                    {
+                        mipDepth >>= 1;
                     }
                 }
             }
@@ -182,7 +179,7 @@ namespace Gorgon.Graphics.Imaging
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<IGorgonImageBuffer> GetEnumerator()
         {
@@ -197,7 +194,7 @@ namespace Gorgon.Graphics.Imaging
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator() => _buffers.GetEnumerator();
 
@@ -218,18 +215,18 @@ namespace Gorgon.Graphics.Imaging
         {
             (int, int) offsetSize;
 
-            mipLevel = mipLevel.Max(0).Min(_image.MipCount - 1);
+            mipLevel = mipLevel.Max(0).Min(_imageInfo.MipCount - 1);
 
-            if (_image.ImageType == ImageType.Image3D)
+            if (_imageInfo.ImageType == ImageType.Image3D)
             {
-                depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_image.Depth - 1);
+                depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_imageInfo.Depth - 1);
                 offsetSize = MipOffsetSize[mipLevel];
 
                 return offsetSize.Item1 + depthSliceOrArrayIndex;
             }
 
-            depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_image.ArrayCount - 1);
-            offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _image.MipCount)];
+            depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_imageInfo.ArrayCount - 1);
+            offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _imageInfo.MipCount)];
             return offsetSize.Item1;
         }
 
@@ -246,10 +243,10 @@ namespace Gorgon.Graphics.Imaging
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageBufferList"/> class.
         /// </summary>
-        /// <param name="image">The image that owns this list.</param>
-        internal ImageBufferList(IGorgonImage image)
+        /// <param name="imageInfo">The image information for the image that will hold this list.</param>
+        internal ImageBufferList(IGorgonImageInfo imageInfo)
         {
-            _image = image;
+            _imageInfo = imageInfo;
             _buffers = Array.Empty<IGorgonImageBuffer>();
         }
         #endregion

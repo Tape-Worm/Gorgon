@@ -26,8 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Gorgon.Diagnostics;
-using DX = SharpDX;
 
 namespace Gorgon.Math
 {
@@ -86,9 +86,9 @@ namespace Gorgon.Math
     {
         #region Variables.
         // Spline coefficients.
-        private DX.Matrix _coefficients = DX.Matrix.Identity;
+        private Matrix4x4 _coefficients = Matrix4x4.Identity;
         // Tangents.
-        private DX.Vector4[] _tangents;
+        private Vector4[] _tangents;
         #endregion
 
         #region Properties.
@@ -98,7 +98,7 @@ namespace Gorgon.Math
         /// <remarks>
         /// When adding or removing points from the spline, a call to the <see cref="IGorgonSpline.UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
         /// </remarks>
-        public IList<DX.Vector4> Points
+        public IList<Vector4> Points
         {
             get;
         }
@@ -121,9 +121,9 @@ namespace Gorgon.Math
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>        
-		public DX.Vector4 GetInterpolatedValue(int startPointIndex, float delta)
+		public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
         {
-            DX.Matrix calculations = DX.Matrix.Identity;
+            Matrix4x4 calculations = Matrix4x4.Identity;
 
             startPointIndex.ValidateRange(nameof(startPointIndex), 0, Points.Count - 1);
 
@@ -137,22 +137,20 @@ namespace Gorgon.Math
                 return Points[startPointIndex + 1];
             }
 
-            var deltaCubeSquare = new DX.Vector4(delta * delta * delta, delta * delta, delta, 1.0f);
+            var deltaCubeSquare = new Vector4(delta * delta * delta, delta * delta, delta, 1.0f);
 
-            DX.Vector4 startPoint = Points[startPointIndex];
-            DX.Vector4 startPointNext = Points[startPointIndex + 1];
-            DX.Vector4 tangent = _tangents[startPointIndex];
-            DX.Vector4 tangentNext = _tangents[startPointIndex + 1];
+            Vector4 startPoint = Points[startPointIndex];
+            Vector4 startPointNext = Points[startPointIndex + 1];
+            Vector4 tangent = _tangents[startPointIndex];
+            Vector4 tangentNext = _tangents[startPointIndex + 1];
 
-            calculations.Row1 = startPoint;
-            calculations.Row2 = startPointNext;
-            calculations.Row3 = tangent;
-            calculations.Row4 = tangentNext;
+            calculations.SetRow(0, in startPoint);
+            calculations.SetRow(1, in startPointNext);
+            calculations.SetRow(2, in tangent);
+            calculations.SetRow(3, in tangentNext);
 
-            DX.Matrix.Multiply(ref _coefficients, ref calculations, out DX.Matrix calcResult);
-            DX.Vector4.Transform(ref deltaCubeSquare, ref calcResult, out DX.Vector4 result);
-
-            return result;
+            var calcResult = Matrix4x4.Multiply(_coefficients, calculations);
+            return Vector4.Transform(deltaCubeSquare, calcResult);
         }
 
         /// <summary>
@@ -166,7 +164,7 @@ namespace Gorgon.Math
         /// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
         /// </para>
         /// </remarks>
-        public DX.Vector4 GetInterpolatedValue(float delta)
+        public Vector4 GetInterpolatedValue(float delta)
         {
             // Wrap to 0 and 1.
             while (delta < 0.0f)
@@ -205,14 +203,14 @@ namespace Gorgon.Math
 
             if (_tangents.Length < Points.Count)
             {
-                _tangents = new DX.Vector4[Points.Count * 2];
+                _tangents = new Vector4[Points.Count * 2];
             }
 
             // Calculate...
             for (int i = 0; i < Points.Count; i++)
             {
-                DX.Vector4 next;
-                DX.Vector4 prev;
+                Vector4 next;
+                Vector4 prev;
 
                 if (i == 0)
                 {
@@ -240,9 +238,8 @@ namespace Gorgon.Math
                     }
                 }
 
-                DX.Vector4.Subtract(ref next, ref prev, out DX.Vector4 diff);
-                DX.Vector4.Multiply(ref diff, 0.5f, out diff);
-                _tangents[i] = diff;
+                var diff = Vector4.Subtract(next, prev);
+                _tangents[i] = Vector4.Multiply(diff, 0.5f);
             }
         }
         #endregion
@@ -253,13 +250,13 @@ namespace Gorgon.Math
         /// </summary>
         public GorgonCatmullRomSpline()
         {
-            _coefficients.Row1 = new DX.Vector4(2, -2, 1, 1);
-            _coefficients.Row2 = new DX.Vector4(-3, 3, -2, -1);
-            _coefficients.Row3 = new DX.Vector4(0, 0, 1, 0);
-            _coefficients.Row4 = new DX.Vector4(1, 0, 0, 0);
+            _coefficients.SetRow(0, new Vector4(2, -2, 1, 1));
+            _coefficients.SetRow(1, new Vector4(-3, 3, -2, -1));
+            _coefficients.SetRow(2, new Vector4(0, 0, 1, 0));
+            _coefficients.SetRow(3, new Vector4(1, 0, 0, 0));
 
-            Points = new List<DX.Vector4>(256);
-            _tangents = new DX.Vector4[256];
+            Points = new List<Vector4>(256);
+            _tangents = new Vector4[256];
         }
         #endregion
     }

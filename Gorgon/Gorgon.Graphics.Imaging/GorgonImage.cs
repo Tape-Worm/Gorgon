@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using BCnDecode = BCnEncoder.Decoder;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -52,7 +53,7 @@ namespace Gorgon.Graphics.Imaging
     /// longer required. Failure to do so might cause a memory leak until the garbage collector can deal with it.
     /// </para>
     /// </remarks>
-    public class GorgonImage
+    public partial class GorgonImage
         : IGorgonImage
     {
         #region Variables.
@@ -62,17 +63,17 @@ namespace Gorgon.Graphics.Imaging
         private ImageBufferList _imageBuffers;
         // The backing image data store.
         private GorgonNativeBuffer<byte> _imageData;
+        // The pointer to the image buffer.
+        private GorgonPtr<byte> _imagePtr;
+        // Flag to indicate that the image is in an editing state.
+        private bool _isEditing;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the pointer to the beginning of the internal buffer.
         /// </summary>
-        public GorgonNativeBuffer<byte> ImageData
-        {
-            get => _imageData;
-            private set => _imageData = value;
-        }
+        public GorgonPtr<byte> ImageData => _imagePtr;
 
         /// <summary>
         /// Property to return information about the pixel format for this image.
@@ -168,39 +169,20 @@ namespace Gorgon.Graphics.Imaging
 
         #region Methods.
         /// <summary>
-        /// Function to return the pointer to the image data.
-        /// </summary>
-        /// <param name="data">The image data base pointer.</param>
-        /// <param name="copy"><b>true</b> to copy the data in the base pointer to a new pointer, or <b>false</b> to alias the existing base pointer.</param>
-        private void GetImagePointer(GorgonReadOnlyPointer data, bool copy)
-        {
-            // Create a buffer large enough to hold our data.
-            if ((!data.IsNull) && (!copy))
-            {
-                ImageData = new GorgonNativeBuffer<byte>(data);
-                return;
-            }
-
-            ImageData = new GorgonNativeBuffer<byte>(SizeInBytes);
-
-            if (data.IsNull)
-            {
-                return;
-            }
-
-            data.CopyTo(ImageData);
-        }
-
-        /// <summary>
         /// Function to initialize the image data.
         /// </summary>
         /// <param name="data">Pre-existing data to use.</param>
-        /// <param name="copy"><b>true</b> to copy the data, <b>false</b> to take ownership of the pointer.  Only applies when data is non-null.</param>
-        private void Initialize(GorgonReadOnlyPointer data, bool copy)
+        private void Initialize(ReadOnlySpan<byte> data)
         {
-            GetImagePointer(data, copy);
+            _imagePtr = _imageData = new GorgonNativeBuffer<byte>(SizeInBytes);
+
+            if (!data.IsEmpty)
+            {
+                data.CopyTo(_imagePtr);
+            }            
+
             _imageBuffers = new ImageBufferList(this);
-            _imageBuffers.CreateBuffers(ImageData);
+            _imageBuffers.CreateBuffers(in _imagePtr);
         }
 
         /// <summary>
@@ -415,10 +397,9 @@ namespace Gorgon.Graphics.Imaging
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="mipLevel"/> parameter exceeds the number of mip maps for the image or is less than 0.</exception>
-        public int GetDepthCount(int mipLevel) => (mipLevel < 0)
-                || (mipLevel >= _imageInfo.MipCount)
+        public int GetDepthCount(int mipLevel) => (mipLevel < 0) || (mipLevel >= _imageInfo.MipCount)
                 ? throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, _imageInfo.MipCount))
-                : _imageInfo.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].MipDepth;
+                : (_imageInfo.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].MipDepth);
 
         /// <summary>
         /// Function to determine if the pixel format for this image can be converted to another pixel format.
@@ -460,10 +441,10 @@ namespace Gorgon.Graphics.Imaging
         /// </summary>
         /// <param name="destFormats">List of destination formats to compare.</param>
         /// <returns>A list of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
-        public IReadOnlyList<BufferFormat> CanConvertToFormats(BufferFormat[] destFormats)
+        public IReadOnlyList<BufferFormat> CanConvertToFormats(IReadOnlyList<BufferFormat> destFormats)
         {
             if ((destFormats == null)
-                || (destFormats.Length == 0))
+                || (destFormats.Count == 0))
             {
                 return Array.Empty<BufferFormat>();
             }
@@ -484,65 +465,207 @@ namespace Gorgon.Graphics.Imaging
         }
 
         /// <summary>
-        /// Function to copy another <see cref="IGorgonImage"/> into this image object.
+        /// Function to copy an image into this image.
         /// </summary>
-        /// <param name="source">The image that will be copied into this image.</param>
+        /// <param name="image">The image that will copied into this image.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="image"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// This will clone the <paramref name="source"/> image into this one . All information in this image will be replaced with the image data present in <paramref name="source"/>. If copying parts of 
-        /// an image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> method.
+        /// This will clone the <paramref name="image"/> into this image. All information in the current image will be discarded and replaced with a duplicate of the data present in the source 
+        /// <paramref name="image"/>. If copying parts of an image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> 
+        /// method.
         /// </para>
         /// </remarks>
-        public void CopyFrom(IGorgonImage source)
+        /// <seealso cref="IGorgonImageBuffer"/>
+        public void Copy(IGorgonImage image)
         {
-            if (source == null)
+            if (image == null)
             {
-                throw new ArgumentNullException(nameof(source));
+                throw new ArgumentNullException(nameof(image));
             }
 
-            Dispose();
+            var info = new GorgonImageInfo(image);
+            var formatInfo = new GorgonFormatInfo(info.Format);
+            var data = new GorgonNativeBuffer<byte>(image.SizeInBytes);
+            GorgonPtr<byte> ptr = data.Pointer;
 
-            _imageInfo = new GorgonImageInfo(source);
-            FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
-            SizeInBytes = CalculateSizeInBytes(_imageInfo);
-            Initialize((GorgonReadOnlyPointer)source.ImageData, true);
-        }
+            image.ImageData.CopyTo(ptr);
 
-        /// <summary>
-        /// Function to copy this image into another image object.
-        /// </summary>
-        /// <param name="destination">The image that will receive the contents of this image.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// This will clone this image into the <paramref name="destination"/> . All information in the destination image will be replaced with the image data present in this image. If copying parts of an 
-        /// image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> method.
-        /// </para>
-        /// </remarks>
-        public void CopyTo(IGorgonImage destination)
-        {
-            if (destination == null)
-            {
-                throw new ArgumentNullException(nameof(destination));
-            }
+            var buffers = new ImageBufferList(info);
+            buffers.CreateBuffers(in ptr);
 
-            destination.CopyFrom(this);
+            _imageData.Dispose();
+            _imageData = data;
+            _imagePtr = ptr;
+            _imageBuffers = buffers;
+            SizeInBytes = data.SizeInBytes;
+            _imageInfo = info;
+            FormatInfo = formatInfo;
         }
 
         /// <summary>
         /// Function to make a clone of this image.
         /// </summary>
         /// <returns>A new <see cref="IGorgonImage"/> that contains an identical copy of this image and its data.</returns>
-        public IGorgonImage Clone()
-        {
-            var image = new GorgonImage(_imageInfo)
-            {
-                FormatInfo = new GorgonFormatInfo(_imageInfo.Format),
-                SizeInBytes = CalculateSizeInBytes(_imageInfo)
-            };
-            image.Initialize((GorgonReadOnlyPointer)ImageData, true);
+        public IGorgonImage Clone() => new GorgonImage(this);
 
-            return image;
+        /// <summary>Function to decompress an image containing block compressed data.</summary>
+        /// <param name="useBC1Alpha">[Optional] <b>true</b> if the image is compressed with BC1 (DXT1) compression, and the contains alpha, <b>false</b> if no alpha is in the image.</param>
+        /// <returns>The image with decompressed image data.</returns>
+        /// <exception cref="NotSupportedException">Thrown if the image data is not block compressed, or contains typeless data.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the image is already being edited.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will decompress an image containing image data that has been compressed with one of the standard block compression formats. The <see cref="BufferFormat"/> enum contains 7 levels of 
+        /// block compression named BC1 - BC7. The features of each compression level are documented at <a target="_blank" href="https://docs.microsoft.com/en-us/windows/win32/direct3d11/texture-block-compression-in-direct3d-11"/>.
+        /// </para>
+        /// <para>
+        /// The decompressed image data will result in 32 bit RGBA data in the format of <see cref="BufferFormat.R8G8B8A8_UNorm"/>.
+        /// </para>
+        /// <para>
+        /// Block compression is, by nature, a lossy compression format. Thus some fidelity will be lost when the image data is compressed, it is recommended that images be compressed as a last stage in 
+        /// processing. Because block compression lays the image data out differently than standard image data, the functionality provided for modifying an image (e.g. 
+        /// <see cref="IGorgonImageUpdateFluent.Resize"/>) will not work and will throw an exception if used on block compressed data, this method will allow users to make alterations with the image 
+        /// modification functionality.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// Because block compressed data is lossy, it is not recommended that images be decompressed and compressed over and over as it will degrade the image fidelity severely. 
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// If the image data was compressed with BC1 compression, optional 1-bit alpha channel data may be stored with the image data. The developer must specify whether to use the alpha data or not via 
+        /// the <paramref name="useBC1Alpha"/> parameter.
+        /// </para>
+        /// <para>
+        /// This method returns the <see cref="IGorgonImageUpdateFluent"/> interface to allow users to modify the image modification after decompression. This means that this method calls 
+        /// <see cref="BeginUpdate"/> implicitly after execution.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IGorgonImageUpdateFluent.Compress"/>
+        /// <seealso cref="BeginUpdate"/>
+        public IGorgonImageUpdateFluent Decompress(bool useBC1Alpha)
+        {
+            if ((_isEditing) || (_wic != null))
+            {
+                throw new InvalidOperationException(Resources.GORIMG_ERR_ALREADY_EDITING);
+            }
+
+            if ((!FormatInfo.IsCompressed) || (FormatInfo.IsTypeless))
+            {
+                throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
+            }
+
+            // Performs the actual decompression.
+            void DoDecompress()
+            {
+                var decoder = new BCnDecode.BcDecoder
+                {
+                    LuminanceAsRed = true
+                };
+
+                var info = new GorgonImageInfo(ImageType, BufferFormat.R8G8B8A8_UNorm)
+                {
+                    MipCount = MipCount,
+                    ArrayCount = ArrayCount,
+                    Depth = Depth,
+                    HasPreMultipliedAlpha = HasPreMultipliedAlpha,
+                    Width = Width,
+                    Height = Height
+                };
+
+                ImageBufferList bufferList;
+                var decoded = new GorgonNativeBuffer<byte>(CalculateSizeInBytes(info));
+
+                try
+                {
+                    bufferList = new ImageBufferList(info);
+                    bufferList.CreateBuffers(decoded.Pointer);
+
+                    for (int arrayIndex = 0; arrayIndex < ArrayCount; ++arrayIndex)
+                    {
+                        for (int mip = 0; mip < MipCount; ++mip)
+                        {
+                            for (int depthSlice = 0; depthSlice < GetDepthCount(mip); ++depthSlice)
+                            {
+                                int depthArrayIndex = ImageType != ImageType.Image3D ? arrayIndex : depthSlice;
+                                IGorgonImageBuffer buffer = Buffers[mip, depthArrayIndex];
+
+                                using (GorgonNativeBuffer<byte> decompressedData = decoder.Decode(buffer.Data, buffer.Width, buffer.Height, useBC1Alpha, Format))
+                                {
+                                    // Replace the data in the source image buffer with our newly compressed data.
+                                    decompressedData.CopyTo((Span<byte>)bufferList[mip, depthArrayIndex].Data);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    decoded?.Dispose();
+                    throw;
+                }
+
+                _imageData?.Dispose();
+                _imagePtr = _imageData = null;
+
+                SanitizeInfo(info);
+                FormatInfo = new GorgonFormatInfo(info.Format);
+                SizeInBytes = decoded.SizeInBytes;
+                _imagePtr = _imageData = decoded;
+                _imageBuffers = bufferList;
+            }
+
+            _isEditing = true;
+            _wic = new WicUtilities();
+
+            _commands.Enqueue(DoDecompress);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Function to begin updating the image.
+        /// </summary>
+        /// <returns>The fluent interface for editing the image.</returns>
+        /// <exception cref="NotSupportedException">Thrown if the image cannot be updated because of its format.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the image is already being edited.</exception>
+        /// <remarks>
+        /// <para>
+        /// This begins an update to the current image instance by returning a fluent interface (<see cref="IGorgonImageUpdateFluent"/>) that will provide operations that can be performed on the image 
+        /// in place. 
+        /// </para>
+        /// <para>
+        /// OTHER STUFF TO BE DONE HERE.
+        /// </para>
+        /// <para>
+        /// If the image data is compressed using block compression, this method will throw an exception. Check the <see cref="FormatInfo"/> property to determine if the image has block compressed image 
+        /// data.
+        /// </para>
+        /// <para>
+        /// Once done updating the image, call the <see cref="IGorgonImageUpdateFinalize.EndUpdate"/> method to apply or cancel the changes to the image data. This method must be called if <c>BeginUpdate</c>
+        /// is to be called again. Calling <c>BeginUpdate</c> more than once without calling <see cref="IGorgonImageUpdateFinalize.EndUpdate"/> will throw an exception.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IGorgonImageUpdateFinalize.EndUpdate"/>
+        public IGorgonImageUpdateFluent BeginUpdate() 
+        {
+            if ((FormatInfo.IsCompressed) || (FormatInfo.IsTypeless))
+            {
+                throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
+            }
+
+            if ((_isEditing) || (_wic != null))
+            {
+                throw new InvalidOperationException(Resources.GORIMG_ERR_ALREADY_EDITING);
+            }
+
+            _isEditing = true;
+            _wic = new WicUtilities();
+
+            return this;
         }
 
         /// <summary>
@@ -550,36 +673,63 @@ namespace Gorgon.Graphics.Imaging
         /// </summary>
         public void Dispose()
         {
+            // If we were editing, shut it down.
+            if (_isEditing)
+            {
+                ((IGorgonImageUpdateFluent)this).EndUpdate(true);
+            }
+
             GorgonNativeBuffer<byte> imageData = Interlocked.Exchange(ref _imageData, null);
+            _imagePtr = GorgonPtr<byte>.NullPtr;
             imageData?.Dispose();
         }
         #endregion
 
         #region Constructor/Destructor.
+        /// <summary>Initializes a new instance of the <see cref="GorgonImage" /> class.</summary>
+        /// <param name="source">The source image to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This is a copy constructor for an image object. The new object will contain a duplicate of all data provided by the <paramref name="source"/>.
+        /// </para>
+        /// </remarks>
+        public GorgonImage(IGorgonImage source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            _imageInfo = new GorgonImageInfo(source);
+            FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
+            SizeInBytes = CalculateSizeInBytes(_imageInfo);
+            Initialize(source.ImageData);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonImage" /> class.
         /// </summary>
         /// <param name="info">A <see cref="IGorgonImageInfo"/> containing information used to create the image.</param>
-        /// <param name="data">[Optional] A <see cref="GorgonReadOnlyPointer"/> that points to a blob of existing image data.</param>
+        /// <param name="data">[Optional] A read only span of byte data that points to a blob of existing image data.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
         /// <remarks>
         /// <para>
-        /// If the <paramref name="data"/> parameter is <b>null</b>, then a new, empty, image will be created, otherwise the buffer that is pointed at by <paramref name="data"/> will be wrapped by this 
-        /// object to provide a view of the data as image data. The <paramref name="data"/> passed to this image must be large enough to accomodate the size of the image described by <paramref name="info"/>, 
-        /// otherwise an exception will be thrown. To determine how large the image size will be, in bytes, use the static <see cref="CalculateSizeInBytes(IGorgonImageInfo,PitchFlags)"/> method to determine the 
-        /// potential size of an image prior to creation.
+        /// If the <paramref name="data"/> parameter is omitted, then a new, empty, image will be created, otherwise the data within the span will be copied into this image. The <paramref name="data"/> passed 
+        /// to this image must be large enough to accomodate the size of the image described by <paramref name="info"/>, otherwise an exception will be thrown. To determine how large the image size will be, in 
+        /// bytes, use the static <see cref="CalculateSizeInBytes(IGorgonImageInfo,PitchFlags)"/> method to determine the potential size of an image prior to creation.
         /// </para>
         /// <para>
         /// <note type="important">
         /// <para>
-        /// If the <paramref name="data"/> parameter is not omitted, then the user is responsible for managing the lifetime of the <see cref="GorgonReadOnlyPointer"/> object passed in. Failure to do so may cause 
-        /// a potential memory leak until garbage collection can recover the object.
+        /// The <paramref name="data"/>, if not omitted, is <b>copied</b>, not wrapped. This ensures that the lifetime of the data passed in remains the responsibility of the caller and does not affect the 
+        /// image object integrity.
         /// </para>
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonImage(IGorgonImageInfo info, GorgonReadOnlyPointer? data = null)
+        public GorgonImage(IGorgonImageInfo info, ReadOnlySpan<byte> data = default)
         {
             if (info == null)
             {
@@ -611,12 +761,12 @@ namespace Gorgon.Graphics.Imaging
             SizeInBytes = CalculateSizeInBytes(_imageInfo);
 
             // Validate the image size.
-            if ((data != null) && (SizeInBytes > data.Value.SizeInBytes))
+            if ((!data.IsEmpty) && (SizeInBytes > data.Length))
             {
-                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_IMAGE_SIZE_MISMATCH, SizeInBytes, data.Value.SizeInBytes), nameof(data));
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_IMAGE_SIZE_MISMATCH, SizeInBytes, data.Length), nameof(data));
             }
 
-            Initialize(data ?? GorgonReadOnlyPointer.Null, false);
+            Initialize(data);
         }
         #endregion
     }

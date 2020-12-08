@@ -30,15 +30,8 @@ namespace Gorgon.Input
     /// Provides capability information about a keyboard device.
     /// </summary>
     public interface IGorgonKeyboardInfo
+        : IGorgonRawInputDeviceInfo
     {
-        /// <summary>
-        /// Property to return a human friendly description of the device.
-        /// </summary>
-        string Description
-        {
-            get;
-        }
-
         /// <summary>
         /// Property to return the total number of keys present on the keyboard.
         /// </summary>

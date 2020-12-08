@@ -1463,7 +1463,7 @@ namespace Gorgon.IO
             {
                 string providerTypeName = provider.GetType().FullName;
 
-                Debug.Assert(providerTypeName != null, nameof(providerTypeName) + " != null");
+                Debug.Assert(providerTypeName != null, nameof(providerTypeName) + " is null");
 
                 _providers[providerTypeName] = provider;
             }
@@ -1483,7 +1483,7 @@ namespace Gorgon.IO
             _providers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
             _mountProviders = new HashSet<GorgonFileSystemMountPoint>();
 
-            DefaultProvider = new GorgonFileSystemProvider();
+            DefaultProvider = new FolderFileSystemProvider();
 
             _rootDirectory = new VirtualDirectory(default, this, null, "/");
         }

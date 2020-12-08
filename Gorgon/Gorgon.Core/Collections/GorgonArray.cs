@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Gorgon.Math;
 
 namespace Gorgon.Collections
@@ -149,6 +150,39 @@ namespace Gorgon.Collections
         }
 #endif
 
+        /// <summary>
+        /// Function to return a read only span for a slice of the array.
+        /// </summary>
+        /// <param name="start">The starting index for the array.</param>
+        /// <param name="end">The ending index for the array.</param>
+        /// <returns>The read only span for the array slice.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="start"/>, or <paramref name="end"/> parameter is less than 0, or greater than the entire length of the array.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<T> AsSpan(int start, int end) => BackingArray.AsSpan(start, (end + 1) - start);
+
+        /// <summary>
+        /// Function to return a read only span for the array.
+        /// </summary>
+        /// <returns>The read only span for the array.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<T> AsSpan() => BackingArray.AsSpan();
+
+        /// <summary>
+        /// Function to return read only memory for a slice of the array.
+        /// </summary>
+        /// <param name="start">The starting index for the array.</param>
+        /// <param name="end">The ending index for the array.</param>
+        /// <returns>The read only memory for the array slice.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="start"/>, or <paramref name="end"/> parameter is less than 0, or greater than the entire length of the array.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlyMemory<T> AsMemory(int start, int end) => BackingArray.AsMemory(start, (end + 1) - start);
+
+        /// <summary>
+        /// Function to return read only memory for a slice of the array.
+        /// </summary>
+        /// <returns>The read only memory for the array slice.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlyMemory<T> AsMemory() => BackingArray.AsMemory();
 
         /// <summary>
         /// Function to retrieve the dirty items in this list.
@@ -435,58 +469,6 @@ namespace Gorgon.Collections
 
             // If the dirty state has already been updated for both arrays, then just check that.
             if (((_dirtyItems.Start != otherRange.otherStart) || (_dirtyItems.Count != otherRange.otherCount)) && (offset == 0))
-            {
-                return false;
-            }
-
-            for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count && i + offset < BackingArray.Length; ++i)
-            {
-                T thisItem = BackingArray[i + offset];
-                T otherItem = other[i];
-
-                // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if ((thisItem == null) && (otherItem == null))
-                {
-                    continue;
-                }
-
-                if (thisItem == null)
-                {
-                    return false;
-                }
-
-                if (!thisItem.Equals(otherItem))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-
-            // We have different dirty states, so this array is different than the other one.
-        }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <param name="offset">[Optional] The offset in this array to start comparing from.</param>
-        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool DirtyEquals(GorgonArray<T> other, int offset = 0)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (IsDirty)
-            {
-                // Update the dirty item state on this instance so we can cut down on some checking.
-                GetDirtyItems();
-            }
-
-            // If the dirty state has already been updated for both arrays, then just check that.
-            if (((_dirtyIndices != 0) || (other._dirtyIndices != 0) || (_dirtyItems.Start != other._dirtyItems.Start) || (_dirtyItems.Count != other._dirtyItems.Count)) && (offset == 0))
             {
                 return false;
             }

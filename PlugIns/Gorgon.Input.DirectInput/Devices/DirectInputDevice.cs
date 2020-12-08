@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Gorgon.Core;
@@ -47,9 +48,11 @@ namespace Gorgon.Input.DirectInput
         // Direct input device.
         private readonly DI.DirectInput _directInput;
         // Device information.
-        private readonly DirectInputDeviceInfo _info;
+        private readonly IGorgonGamingDeviceInfo _info;
         // Device state.
         private DI.JoystickState _state = new DI.JoystickState();
+        // The axis to Direct Input property mappings.
+        private readonly IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> _axisMappings;
         #endregion
 
         #region Properties.
@@ -65,7 +68,7 @@ namespace Gorgon.Input.DirectInput
         /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
         /// </para>
         /// </remarks>
-        public override bool IsConnected => _directInput.IsDeviceAttached(_info.InstanceGuid);
+        public override bool IsConnected => _directInput.IsDeviceAttached(_info.DeviceID);
         #endregion
 
         #region Methods.
@@ -122,9 +125,9 @@ namespace Gorgon.Input.DirectInput
         /// <param name="directInput">The direct input interface.</param>
         /// <param name="deviceInfo">The device information for the gaming device to use.</param>
         /// <returns>The DirectInput joystick object.</returns>
-        private DI.Joystick CreateJoystick(DI.DirectInput directInput, DirectInputDeviceInfo deviceInfo)
+        private DI.Joystick CreateJoystick(DI.DirectInput directInput, IGorgonGamingDeviceInfo deviceInfo)
         {
-            var result = new DI.Joystick(directInput, deviceInfo.InstanceGuid);
+            var result = new DI.Joystick(directInput, deviceInfo.DeviceID);
 
             IntPtr mainWindow = FindMainApplicationWindow();
 
@@ -139,7 +142,7 @@ namespace Gorgon.Input.DirectInput
             result.Properties.AxisMode = DI.DeviceAxisMode.Absolute;
 
             // Set up dead zones.
-            foreach (GorgonGamingDeviceAxis axis in Axis)
+            foreach (IGorgonGamingDeviceAxis axis in Axis)
             {
                 // Skip the throttle.  Dead zones on the throttle don't work too well for regular joysticks.
                 // Game pads may be another story, but the user can manage those settings if required.
@@ -149,7 +152,7 @@ namespace Gorgon.Input.DirectInput
                 }
 
                 GorgonGamingDeviceAxisInfo info = Info.AxisInfo[axis.Axis];
-                DI.ObjectProperties properties = result.GetObjectPropertiesById(_info.AxisMappings[axis.Axis]);
+                DI.ObjectProperties properties = result.GetObjectPropertiesById(_axisMappings[axis.Axis]);
 
                 if (properties == null)
                 {
@@ -255,7 +258,7 @@ namespace Gorgon.Input.DirectInput
             }
 
             // Update axes.
-            foreach (GorgonGamingDeviceAxis axis in Axis)
+            foreach (IGorgonGamingDeviceAxis axis in Axis)
             {
                 switch (axis.Axis)
                 {
@@ -334,12 +337,14 @@ namespace Gorgon.Input.DirectInput
         /// </summary>
         /// <param name="deviceInfo">The gaming device information for the specific device to use.</param>
         /// <param name="directInput">The direct input interface to use when creating the object.</param>
-        public DirectInputDevice(DirectInputDeviceInfo deviceInfo, DI.DirectInput directInput)
+        /// <param name="axisMappings">The mappings for axes and Direct Input properties.</param>
+        public DirectInputDevice(IGorgonGamingDeviceInfo deviceInfo, DI.DirectInput directInput, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> axisMappings)
             : base(deviceInfo)
         {
             _directInput = directInput;
             _info = deviceInfo;
             _joystick = new Lazy<DI.Joystick>(() => CreateJoystick(directInput, deviceInfo), true);
+            _axisMappings = axisMappings;
         }
         #endregion
     }

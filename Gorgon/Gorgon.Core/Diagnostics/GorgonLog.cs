@@ -28,22 +28,19 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
-using Gorgon.IO;
 using Gorgon.Properties;
 
 namespace Gorgon.Diagnostics
 {
     /// <summary>
-    /// Sends logging information to a text file.
+    /// Base class for logging objects.
     /// </summary>
-    public class GorgonLog
+    public abstract class GorgonLog
         : IGorgonThreadedLog
     {
         #region Variables.
@@ -86,7 +83,7 @@ namespace Gorgon.Diagnostics
             {
                 if (_filterLevel != value)
                 {
-                    Print("\r\n**** Filter level: {0}\r\n", LoggingLevel.All, value);
+                    Print($"\r\n**** Filter level: {value}\r\n", LoggingLevel.All);
                 }
 
                 _filterLevel = value;
@@ -106,7 +103,7 @@ namespace Gorgon.Diagnostics
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Logging implementations that inherit from this class will be able to assign their own provider.
+        /// Logging implementations that inherit from this class will be able to assign their own provider in the base constructor.
         /// </para>
         /// </remarks>
         public IGorgonLogProvider Provider
@@ -305,7 +302,7 @@ namespace Gorgon.Diagnostics
         /// Function to flush all the lines of text to the file.
         /// </summary>
         /// <param name="lines">The lines to flush out</param>
-	    private void FlushLines(List<string> lines)
+        private void FlushLines(List<string> lines)
         {
             if (lines == null)
             {
@@ -468,60 +465,6 @@ namespace Gorgon.Diagnostics
             LogApplication = appName;
 
             _appVersion = version;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonLog"/> class.
-        /// </summary>
-        /// <param name="appName">File name for the log file.</param>
-        /// <param name="extraPath">Additional directories for the path.</param>
-        /// <param name="version">[Optional] The version of the application that is logging.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appName"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appName"/> parameter is empty.</exception>
-        /// <remarks>
-        /// <para>
-        /// This constructor automatically creates a <see cref="IGorgonLogProvider"/> that outputs to a text file and assigns it to the <see cref="Provider"/> property.
-        /// </para>
-        /// </remarks>
-        public GorgonLog(string appName, string extraPath, Version version = null)
-            : this(appName, version)
-        {
-            string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            logPath += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-
-            // Verify the extra path information.
-            if (!string.IsNullOrEmpty(extraPath))
-            {
-                // Remove any text up to and after the volume separator character.
-                if (extraPath.Contains(Path.VolumeSeparatorChar.ToString(CultureInfo.InvariantCulture)))
-                {
-                    extraPath = extraPath.IndexOf(Path.VolumeSeparatorChar) < (extraPath.Length - 1)
-                                    ? extraPath.Substring(extraPath.IndexOf(Path.VolumeSeparatorChar) + 1)
-                                    : string.Empty;
-                }
-
-                if ((extraPath.StartsWith(Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.InvariantCulture))
-                    || (extraPath.StartsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.InvariantCulture)))
-                {
-                    extraPath = extraPath.Substring(1);
-                }
-
-                if (!extraPath.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.InvariantCulture))
-                {
-                    extraPath += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-                }
-
-                if (!string.IsNullOrEmpty(extraPath))
-                {
-                    logPath += extraPath;
-                }
-            }
-
-            logPath += appName;
-            logPath = logPath.FormatDirectory(Path.DirectorySeparatorChar);
-            logPath += "ApplicationLogging.txt";
-
-            Provider = new GorgonLogTextFileProvider(logPath);
         }
         #endregion
     }

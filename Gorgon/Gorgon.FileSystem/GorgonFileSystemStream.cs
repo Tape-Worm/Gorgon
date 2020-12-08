@@ -91,8 +91,8 @@ namespace Gorgon.IO
         /// </summary>
         /// <value></value>
         /// <returns>A long value representing the length of the stream in bytes.</returns>
-        /// <exception cref="System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="NotSupportedException">A class derived from Stream does not support seeking. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override long Length => _baseStream.Length;
 
         /// <summary>
@@ -100,9 +100,9 @@ namespace Gorgon.IO
         /// </summary>
         /// <value></value>
         /// <returns>The current position within the stream.</returns>
-        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
-        /// <exception cref="System.NotSupportedException">The stream does not support seeking. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
+        /// <exception cref="NotSupportedException">The stream does not support seeking. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override long Position
         {
             get => _baseStream.Position;
@@ -114,7 +114,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <value></value>
         /// <returns>A value, in miliseconds, that determines how long the stream will attempt to read before timing out.</returns>
-        /// <exception cref="System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="System.InvalidOperationException"/>. </exception>
+        /// <exception cref="InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="InvalidOperationException"/>. </exception>
         public override int ReadTimeout
         {
             get => _baseStream.ReadTimeout;
@@ -126,7 +126,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <value></value>
         /// <returns>A value, in milliseconds, that determines how long the stream will attempt to write before timing out.</returns>
-        /// <exception cref="System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="System.InvalidOperationException"/>. </exception>
+        /// <exception cref="InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="InvalidOperationException"/>. </exception>
         public override int WriteTimeout
         {
             get => _baseStream.WriteTimeout;
@@ -136,7 +136,7 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="System.IO.Stream"/> and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="Stream"/> and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
@@ -165,12 +165,12 @@ namespace Gorgon.IO
         /// <param name="callback">An optional asynchronous callback, to be called when the read is complete.</param>
         /// <param name="state">A user-provided object that distinguishes this particular asynchronous read request from other requests.</param>
         /// <returns>
-        /// An <see cref="System.IAsyncResult"/> that represents the asynchronous read, which could still be pending.
+        /// An <see cref="IAsyncResult"/> that represents the asynchronous read, which could still be pending.
         /// </returns>
-        /// <exception cref="System.IO.IOException">Attempted an asynchronous read past the end of the stream, or a disk error occurs. </exception>
-        /// <exception cref="System.ArgumentException">One or more of the arguments is invalid. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-        /// <exception cref="System.NotSupportedException">The current Stream implementation does not support the read operation. </exception>
+        /// <exception cref="IOException">Attempted an asynchronous read past the end of the stream, or a disk error occurs. </exception>
+        /// <exception cref="ArgumentException">One or more of the arguments is invalid. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="NotSupportedException">The current Stream implementation does not support the read operation. </exception>
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => _baseStream.BeginRead(buffer, offset, count, callback, state);
 
         /// <summary>
@@ -184,10 +184,10 @@ namespace Gorgon.IO
         /// <returns>
         /// An IAsyncResult that represents the asynchronous write, which could still be pending.
         /// </returns>
-        /// <exception cref="System.IO.IOException">Attempted an asynchronous write past the end of the stream, or a disk error occurs. </exception>
-        /// <exception cref="System.ArgumentException">One or more of the arguments is invalid. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-        /// <exception cref="System.NotSupportedException">The current Stream implementation does not support the write operation. </exception>
+        /// <exception cref="IOException">Attempted an asynchronous write past the end of the stream, or a disk error occurs. </exception>
+        /// <exception cref="ArgumentException">One or more of the arguments is invalid. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="NotSupportedException">The current Stream implementation does not support the write operation. </exception>
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => _baseStream.BeginWrite(buffer, offset, count, callback, state);
 
         /// <summary>
@@ -197,28 +197,28 @@ namespace Gorgon.IO
         /// <returns>
         /// The number of bytes read from the stream, between zero (0) and the number of bytes you requested. Streams return zero (0) only at the end of the stream, otherwise, they should block until at least one byte is available.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// 	<paramref name="asyncResult"/> is null. </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         /// 	<paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream. </exception>
-        /// <exception cref="System.IO.IOException">The stream is closed or an internal error has occurred.</exception>
+        /// <exception cref="IOException">The stream is closed or an internal error has occurred.</exception>
         public override int EndRead(IAsyncResult asyncResult) => _baseStream.EndRead(asyncResult);
 
         /// <summary>
         /// Ends an asynchronous write operation.
         /// </summary>
         /// <param name="asyncResult">A reference to the outstanding asynchronous I/O request.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// 	<paramref name="asyncResult"/> is null. </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         /// 	<paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream. </exception>
-        /// <exception cref="System.IO.IOException">The stream is closed or an internal error has occurred.</exception>
+        /// <exception cref="IOException">The stream is closed or an internal error has occurred.</exception>
         public override void EndWrite(IAsyncResult asyncResult) => _baseStream.EndWrite(asyncResult);
 
         /// <summary>
         /// When overridden in a derived class, clears all buffers for this stream and causes any buffered data to be written to the underlying device.
         /// </summary>
-        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
         public override void Flush() => _baseStream.Flush();
 
         /// <summary>
@@ -230,14 +230,14 @@ namespace Gorgon.IO
         /// <returns>
         /// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
         /// </returns>
-        /// <exception cref="System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>
+        /// <exception cref="ArgumentNullException">
         /// 	<paramref name="buffer"/> is null. </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// 	<paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
-        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
-        /// <exception cref="System.NotSupportedException">The stream does not support reading. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
+        /// <exception cref="NotSupportedException">The stream does not support reading. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override int Read(byte[] buffer, int offset, int count) => _baseStream.Read(buffer, offset, count);
 
         /// <summary>
@@ -246,30 +246,30 @@ namespace Gorgon.IO
         /// <returns>
         /// The unsigned byte cast to an Int32, or -1 if at the end of the stream.
         /// </returns>
-        /// <exception cref="System.NotSupportedException">The stream does not support reading. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="NotSupportedException">The stream does not support reading. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override int ReadByte() => _baseStream.ReadByte();
 
         /// <summary>
         /// When overridden in a derived class, sets the position within the current stream.
         /// </summary>
         /// <param name="offset">A byte offset relative to the <paramref name="origin"/> parameter.</param>
-        /// <param name="origin">A value of type <see cref="System.IO.SeekOrigin"/> indicating the reference point used to obtain the new position.</param>
+        /// <param name="origin">A value of type <see cref="SeekOrigin"/> indicating the reference point used to obtain the new position.</param>
         /// <returns>
         /// The new position within the current stream.
         /// </returns>
-        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
-        /// <exception cref="System.NotSupportedException">The stream does not support seeking, such as if the stream is constructed from a pipe or console output. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
+        /// <exception cref="NotSupportedException">The stream does not support seeking, such as if the stream is constructed from a pipe or console output. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override long Seek(long offset, SeekOrigin origin) => _baseStream.Seek(offset, origin);
 
         /// <summary>
         /// When overridden in a derived class, sets the length of the current stream.
         /// </summary>
         /// <param name="value">The desired length of the current stream in bytes.</param>
-        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
-        /// <exception cref="System.NotSupportedException">The stream does not support both writing and seeking, such as if the stream is constructed from a pipe or console output. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
+        /// <exception cref="NotSupportedException">The stream does not support both writing and seeking, such as if the stream is constructed from a pipe or console output. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override void SetLength(long value) => _baseStream.SetLength(value);
 
         /// <summary>
@@ -278,23 +278,23 @@ namespace Gorgon.IO
         /// <param name="buffer">An array of bytes. This method copies <paramref name="count"/> bytes from <paramref name="buffer"/> to the current stream.</param>
         /// <param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin copying bytes to the current stream.</param>
         /// <param name="count">The number of bytes to be written to the current stream.</param>
-        /// <exception cref="System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length. </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length. </exception>
+        /// <exception cref="ArgumentNullException">
         /// 	<paramref name="buffer"/> is null. </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// 	<paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
-        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
-        /// <exception cref="System.NotSupportedException">The stream does not support writing. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
+        /// <exception cref="NotSupportedException">The stream does not support writing. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override void Write(byte[] buffer, int offset, int count) => _baseStream.Write(buffer, offset, count);
 
         /// <summary>
         /// Writes a byte to the current position in the stream and advances the position within the stream by one byte.
         /// </summary>
         /// <param name="value">The byte to write to the stream.</param>
-        /// <exception cref="System.IO.IOException">An I/O error occurs. </exception>
-        /// <exception cref="System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-        /// <exception cref="System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="IOException">An I/O error occurs. </exception>
+        /// <exception cref="NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+        /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public override void WriteByte(byte value) => _baseStream.WriteByte(value);
         #endregion
 

@@ -33,6 +33,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Native;
 using SharpDX.WIC;
 using DX = SharpDX;
 
@@ -321,11 +322,8 @@ namespace Gorgon.Graphics.Imaging
         /// <returns>The WIC bitmap pointing to the data stored in <paramref name="imageData"/>.</returns>
         private Bitmap GetBitmap(IGorgonImageBuffer imageData, Guid pixelFormat)
         {
-            unsafe
-            {
-                var dataRect = new DX.DataRectangle(new IntPtr((void*)imageData.Data), imageData.PitchInformation.RowPitch);
-                return new Bitmap(_factory, imageData.Width, imageData.Height, pixelFormat, dataRect);
-            }
+            var dataRect = new DX.DataRectangle(imageData.Data, imageData.PitchInformation.RowPitch);
+            return new Bitmap(_factory, imageData.Width, imageData.Height, pixelFormat, dataRect);
         }
 
         /// <summary>
@@ -456,11 +454,11 @@ namespace Gorgon.Graphics.Imaging
                 if (color.Alpha >= alpha)
                 {
                     // We set the alpha to 1.0 because we only get opaque or transparent colors for 8 bit.
-                    dxColors[i] = new DX.Color(color.ToVector3(), 1.0f);
+                    dxColors[i] = new GorgonColor(color, 1.0f);
                 }
                 else
                 {
-                    dxColors[i] = new DX.Color(0, 0, 0, 0);
+                    dxColors[i] = GorgonColor.BlackTransparent;
                 }
             }
 
@@ -513,11 +511,11 @@ namespace Gorgon.Graphics.Imaging
                 if (color.Alpha >= alpha)
                 {
                     // We set the alpha to 1.0 because we only get opaque or transparent colors for 8 bit.
-                    dxColors[i] = new DX.Color(color.ToVector3(), 1.0f);
+                    dxColors[i] = new GorgonColor(color, 1.0f);
                 }
                 else
                 {
-                    dxColors[i] = new DX.Color(0, 0, 0, 0);
+                    dxColors[i] = GorgonColor.BlackTransparent;
                 }
             }
 
@@ -609,10 +607,7 @@ namespace Gorgon.Graphics.Imaging
                 }
                 else
                 {
-                    unsafe
-                    {
-                        frame.WritePixels(buffer.Height, new IntPtr((void*)buffer.Data), buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
-                    }
+                    frame.WritePixels(buffer.Height, buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
                 }
 
                 frame.Commit();
@@ -802,32 +797,28 @@ namespace Gorgon.Graphics.Imaging
 
             try
             {
-                unsafe
+                for (int i = 0; i < data.ArrayCount; ++i)
                 {
-                    for (int i = 0; i < data.ArrayCount; ++i)
+                    IGorgonImageBuffer buffer = data.Buffers[0, i];
+
+                    frame?.Dispose();
+                    frame = decoder.GetFrame(i);
+                    DX.Point offset = frameOffsetMetadataItems?.Count > 0 ? GetFrameOffsetMetadataItems(frame, frameOffsetMetadataItems) : new DX.Point(0, 0);
+
+                    // Get the pointer to the buffer and adjust its offset to that of the current frame.
+                    GorgonPtr<byte> bufferPtr = buffer.Data + (offset.Y * buffer.PitchInformation.RowPitch) + (offset.X * buffer.PitchInformation.RowPitch / buffer.Width);
+
+                    BitmapSource bitmapSource = frame;
+
+                    // Convert the format as necessary.
+                    if (srcFormat != convertFormat)
                     {
-                        IGorgonImageBuffer buffer = data.Buffers[0, i];
-
-                        frame?.Dispose();
-                        frame = decoder.GetFrame(i);
-                        DX.Point offset = frameOffsetMetadataItems?.Count > 0 ? GetFrameOffsetMetadataItems(frame, frameOffsetMetadataItems) : new DX.Point(0, 0);
-
-                        // Get the pointer to the buffer and adjust its offset to that of the current frame.
-                        IntPtr bufferPtr = new IntPtr((void*)buffer.Data) + (offset.Y * buffer.PitchInformation.RowPitch) +
-                                           (offset.X * buffer.PitchInformation.RowPitch / buffer.Width);
-
-                        BitmapSource bitmapSource = frame;
-
-                        // Convert the format as necessary.
-                        if (srcFormat != convertFormat)
-                        {
-                            converter = new FormatConverter(_factory);
-                            converter.Initialize(frame, convertFormat, (BitmapDitherType)dithering, null, 0.0, BitmapPaletteType.Custom);
-                            bitmapSource = converter;
-                        }
-
-                        bitmapSource.CopyPixels(buffer.PitchInformation.RowPitch, bufferPtr, buffer.PitchInformation.SlicePitch);
+                        converter = new FormatConverter(_factory);
+                        converter.Initialize(frame, convertFormat, (BitmapDitherType)dithering, null, 0.0, BitmapPaletteType.Custom);
+                        bitmapSource = converter;
                     }
+
+                    bitmapSource.CopyPixels(buffer.PitchInformation.RowPitch, bufferPtr, buffer.PitchInformation.SlicePitch);
                 }
             }
             finally
@@ -844,14 +835,14 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="convertFormat">Conversion format.</param>
         /// <param name="frame">Frame containing the image data.</param>
         /// <param name="decodingOptions">Options used to decode the image data.</param>
-        private unsafe void ReadFrame(IGorgonImage data, Guid convertFormat, BitmapFrameDecode frame, IGorgonWicDecodingOptions decodingOptions)
+        private void ReadFrame(IGorgonImage data, Guid convertFormat, BitmapFrameDecode frame, IGorgonWicDecodingOptions decodingOptions)
         {
             IGorgonImageBuffer buffer = data.Buffers[0];
 
             // We don't need to convert, so just leave.
             if ((convertFormat == Guid.Empty) || (frame.PixelFormat == convertFormat))
             {
-                frame.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr((void*)buffer.Data), buffer.PitchInformation.SlicePitch);
+                frame.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
                 return;
             }
 
@@ -886,7 +877,7 @@ namespace Gorgon.Graphics.Imaging
                     formatConverter = GetFormatConverter(sourceBitmap, convertFormat, dither, null, 0.0f);
                 }
 
-                formatConverter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr((void*)buffer.Data), buffer.PitchInformation.SlicePitch);
+                formatConverter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
             }
             finally
             {
@@ -911,20 +902,17 @@ namespace Gorgon.Graphics.Imaging
             {
                 scaler.Initialize(bitmap, width, height, (BitmapInterpolationMode)filter);
 
-                unsafe
+                if (bitmap.PixelFormat == scaler.PixelFormat)
                 {
-                    if (bitmap.PixelFormat == scaler.PixelFormat)
-                    {
-                        scaler.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr((void*)buffer.Data), buffer.PitchInformation.SlicePitch);
-                        return;
-                    }
+                    scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
+                    return;
+                }
 
-                    // There's a chance that, due the filter applied, that the format is now different. 
-                    // So we'll need to convert.
-                    using (FormatConverter converter = GetFormatConverter(scaler, bitmap.PixelFormat, ImageDithering.None, null, 0))
-                    {
-                        converter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr((void*)buffer.Data), buffer.PitchInformation.SlicePitch);
-                    }
+                // There's a chance that, due the filter applied, that the format is now different. 
+                // So we'll need to convert.
+                using (FormatConverter converter = GetFormatConverter(scaler, bitmap.PixelFormat, ImageDithering.None, null, 0))
+                {
+                    converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
                 }
             }
         }
@@ -938,12 +926,9 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="offsetY">The vertical offset to start cropping at.</param>
         private static void ExpandBitmapData(BitmapSource bitmap, IGorgonImageBuffer buffer, int offsetX, int offsetY)
         {
-            unsafe
-            {
-                int pixelStride = buffer.PitchInformation.RowPitch / buffer.Width;
-                byte* data = ((byte*)buffer.Data) + ((offsetY * buffer.PitchInformation.RowPitch) + (offsetX * pixelStride));
-                bitmap.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(data), buffer.PitchInformation.SlicePitch);
-            }
+            int pixelStride = buffer.PitchInformation.RowPitch / buffer.Width;
+            GorgonPtr<byte> data = buffer.Data + ((offsetY * buffer.PitchInformation.RowPitch) + (offsetX * pixelStride));
+            bitmap.CopyPixels(buffer.PitchInformation.RowPitch, data, buffer.PitchInformation.SlicePitch);
         }
 
         /// <summary>
@@ -969,10 +954,7 @@ namespace Gorgon.Graphics.Imaging
 
                 // Intersect our clipping rectangle with the buffer size.
                 clipper.Initialize(bitmap, rect);
-                unsafe
-                {
-                    clipper.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr((void*)buffer.Data), buffer.PitchInformation.SlicePitch);
-                }
+                clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
             }
         }
 
@@ -1021,7 +1003,6 @@ namespace Gorgon.Graphics.Imaging
 
             try
             {
-                // We don't be needing this.
                 wicStream = new WICStream(_factory, wrapper);
 
                 decoder = new BitmapDecoder(_factory, fileFormat);
@@ -1223,14 +1204,17 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="scaleFilter">The filter to apply when smoothing the image during scaling.</param>
         /// <param name="resizeMode">The type of resize to perform.</param>
         /// <returns>A new <see cref="IGorgonImage"/> containing the resized data.</returns>
-        public IGorgonImage Resize(IGorgonImage imageData, int offsetX, int offsetY, int newWidth, int newHeight, int newDepth, int calculatedMipLevels, ImageFilter scaleFilter, ResizeMode resizeMode)
+        public GorgonImage Resize(GorgonImage imageData, int offsetX, int offsetY, int newWidth, int newHeight, int newDepth, int calculatedMipLevels, ImageFilter scaleFilter, ResizeMode resizeMode)
         {
             IGorgonImage workingImage = imageData;
 
             // If we have a 4 bit per channel image, then we need to convert it back to 8 bit per channel (WIC doesn't like 4 bit per channel it seems).
             if (imageData.Format == BufferFormat.B4G4R4A4_UNorm)
             {
-                workingImage = imageData.Clone().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                workingImage = imageData.Clone()
+                                        .BeginUpdate()
+                                        .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                                        .EndUpdate();
             }
 
             Guid pixelFormat = GetGUID(workingImage.Format);
@@ -1249,7 +1233,7 @@ namespace Gorgon.Graphics.Imaging
                 MipCount = calculatedMipLevels
             };
 
-            IGorgonImage result = new GorgonImage(imageInfo);
+            var result = new GorgonImage(imageInfo);
             Bitmap bitmap = null;
 
             try
@@ -1286,12 +1270,6 @@ namespace Gorgon.Graphics.Imaging
                     }
                 }
 
-                // Convert back to 4 bit per channel.
-                if (imageData.Format == BufferFormat.B4G4R4A4_UNorm)
-                {
-                    result = result.ConvertToFormat(BufferFormat.B4G4R4A4_UNorm);
-                }
-
                 return result;
             }
             catch
@@ -1319,7 +1297,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="isSrcSRgb"><b>true</b> if the image data uses sRgb; otherwise <b>false</b>.</param>
         /// <param name="isDestSRgb"><b>true</b> if the resulting image data should use sRgb; otherwise <b>false</b>.</param>
         /// <returns>A <see cref="IGorgonImage"/> containing the converted image data.</returns>
-        public IGorgonImage ConvertToFormat(IGorgonImage imageData, BufferFormat format, ImageDithering dithering, bool isSrcSRgb, bool isDestSRgb)
+        public GorgonImage ConvertToFormat(GorgonImage imageData, BufferFormat format, ImageDithering dithering, bool isSrcSRgb, bool isDestSRgb)
         {
             Guid sourceFormat = GetGUID(imageData.Format);
             Guid destFormat = GetGUID(format);
@@ -1338,58 +1316,55 @@ namespace Gorgon.Graphics.Imaging
 
             try
             {
-                unsafe
+                for (int array = 0; array < resultInfo.ArrayCount; array++)
                 {
-                    for (int array = 0; array < resultInfo.ArrayCount; array++)
+                    for (int mip = 0; mip < resultInfo.MipCount; mip++)
                     {
-                        for (int mip = 0; mip < resultInfo.MipCount; mip++)
+                        int depthCount = result.GetDepthCount(mip);
+
+                        for (int depth = 0; depth < depthCount; depth++)
                         {
-                            int depthCount = result.GetDepthCount(mip);
+                            // Get the array/mip/depth buffer.
+                            IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
+                            IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
+                            var rect = new DX.DataRectangle(srcBuffer.Data, srcBuffer.PitchInformation.RowPitch);
 
-                            for (int depth = 0; depth < depthCount; depth++)
+                            Bitmap bitmap = null;
+                            BitmapSource formatConverter = null;
+                            BitmapSource sRgbConverter = null;
+                            ColorContext srcColorContext = null;
+                            ColorContext destColorContext = null;
+
+                            try
                             {
-                                // Get the array/mip/depth buffer.
-                                IGorgonImageBuffer destBuffer = result.Buffers[mip, resultInfo.ImageType == ImageType.Image3D ? depth : array];
-                                IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, resultInfo.ImageType == ImageType.Image3D ? depth : array];
-                                var rect = new DX.DataRectangle(new IntPtr((void*)srcBuffer.Data), srcBuffer.PitchInformation.RowPitch);
+                                // Create a WIC bitmap so we have a source for conversion.
+                                bitmap = new Bitmap(_factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, srcBuffer.PitchInformation.SlicePitch);
 
-                                Bitmap bitmap = null;
-                                BitmapSource formatConverter = null;
-                                BitmapSource sRgbConverter = null;
-                                ColorContext srcColorContext = null;
-                                ColorContext destColorContext = null;
-
-                                try
+                                // If we have an sRgb conversion, then apply that after converting formats.
+                                if ((isSrcSRgb) || (isDestSRgb))
                                 {
-                                    // Create a WIC bitmap so we have a source for conversion.
-                                    bitmap = new Bitmap(_factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, srcBuffer.PitchInformation.SlicePitch);
-
-                                    // If we have an sRgb conversion, then apply that after converting formats.
-                                    if ((isSrcSRgb) || (isDestSRgb))
-                                    {
-                                        sRgbConverter = GetSRgbTransform(bitmap, isDestSRgb ? destFormat : sourceFormat, isSrcSRgb, isDestSRgb, out srcColorContext, out destColorContext);
-                                        formatConverter = GetFormatConverter(sRgbConverter, destFormat, dithering, null, 0);
-                                    }
-                                    else
-                                    {
-                                        formatConverter = GetFormatConverter(bitmap, destFormat, dithering, null, 0);
-                                    }
-
-                                    formatConverter.CopyPixels(destBuffer.PitchInformation.RowPitch,
-                                                               new IntPtr((void*)destBuffer.Data),
-                                                               destBuffer.PitchInformation.SlicePitch);
+                                    sRgbConverter = GetSRgbTransform(bitmap, isDestSRgb ? destFormat : sourceFormat, isSrcSRgb, isDestSRgb, out srcColorContext, out destColorContext);
+                                    formatConverter = GetFormatConverter(sRgbConverter, destFormat, dithering, null, 0);
                                 }
-                                finally
+                                else
                                 {
-                                    srcColorContext?.Dispose();
-                                    destColorContext?.Dispose();
-                                    sRgbConverter?.Dispose();
-                                    formatConverter?.Dispose();
-                                    bitmap?.Dispose();
+                                    formatConverter = GetFormatConverter(bitmap, destFormat, dithering, null, 0);
                                 }
+
+                                formatConverter.CopyPixels(destBuffer.PitchInformation.RowPitch,
+                                                            destBuffer.Data,
+                                                            destBuffer.PitchInformation.SlicePitch);
+                            }
+                            finally
+                            {
+                                srcColorContext?.Dispose();
+                                destColorContext?.Dispose();
+                                sRgbConverter?.Dispose();
+                                formatConverter?.Dispose();
+                                bitmap?.Dispose();
                             }
                         }
-                    }
+                    }                  
                 }
 
                 return result;

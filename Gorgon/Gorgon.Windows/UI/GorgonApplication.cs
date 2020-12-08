@@ -112,14 +112,63 @@ namespace Gorgon.UI
         #endregion
 
         #region Events.
+        // Event fired when the application is about to exit.
+        private static event EventHandler ExitEvent;
+
+        // Event fired when a message pump thread is about to exit.
+        private static event EventHandler ThreadExitEvent;
+
         /// <summary>
         /// Event fired when the application is about to exit.
         /// </summary>
-        public static event EventHandler Exit;
+        public static event EventHandler Exit
+        {
+            add
+            {
+                if (value == null)
+                {
+                    ExitEvent = null;
+                    return;
+                }
+
+                ExitEvent += value;
+            }
+            remove
+            {
+                if (value == null)
+                {                    
+                    return;
+                }
+
+                ExitEvent -= value;
+            }
+        }
+
         /// <summary>
         /// Event fired when a message pump thread is about to exit.
         /// </summary>
-        public static event EventHandler ThreadExit;
+        public static event EventHandler ThreadExit
+        {
+            add
+            {
+                if (value == null)
+                {
+                    ThreadExitEvent = null;
+                    return;
+                }
+
+                ThreadExitEvent += value;
+            }
+            remove
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                ThreadExitEvent -= value;
+            }
+        }
         #endregion
 
         #region Variables.
@@ -469,9 +518,8 @@ namespace Gorgon.UI
                     GorgonTiming.StartTiming<GorgonTimerMultimedia>();
                 }
             }
-
-            // ReSharper disable once UnusedVariable
-            while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG message, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
+                        
+            while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG _, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
             {
                 GorgonTiming.Update();
 
@@ -512,11 +560,11 @@ namespace Gorgon.UI
 
             // Display information
             Log.Print("Logging interface assigned. Initializing...", LoggingLevel.All);
-            Log.Print("Architecture: {0}", LoggingLevel.Verbose, ComputerInfo.PlatformArchitecture);
-            Log.Print("Processor count: {0}", LoggingLevel.Verbose, ComputerInfo.ProcessorCount);
-            Log.Print("Installed Memory: {0}", LoggingLevel.Verbose, ComputerInfo.TotalPhysicalRAM.FormatMemory());
-            Log.Print("Available Memory: {0}", LoggingLevel.Verbose, ComputerInfo.AvailablePhysicalRAM.FormatMemory());
-            Log.Print("Operating System: {0} ({1})", LoggingLevel.Verbose, ComputerInfo.OperatingSystemVersionText, ComputerInfo.OperatingSystemArchitecture);
+            Log.Print($"Architecture: {ComputerInfo.PlatformArchitecture}", LoggingLevel.Verbose);
+            Log.Print($"Processor count: {ComputerInfo.ProcessorCount}", LoggingLevel.Verbose);
+            Log.Print($"Installed Memory: {ComputerInfo.TotalPhysicalRAM.FormatMemory()}", LoggingLevel.Verbose);
+            Log.Print($"Available Memory: {ComputerInfo.AvailablePhysicalRAM.FormatMemory()}", LoggingLevel.Verbose);
+            Log.Print($"Operating System: {ComputerInfo.OperatingSystemVersionText} ({ComputerInfo.OperatingSystemArchitecture})", LoggingLevel.Verbose);
             Log.Print(string.Empty, LoggingLevel.Verbose);
         }
 
@@ -564,8 +612,7 @@ namespace Gorgon.UI
 
             // This will only allow one thread to actually call this.
             // It also has the added benefit of unassigning the exit handler when the application shuts down.
-            EventHandler exitHandler = Interlocked.Exchange(ref ThreadExit, null);
-
+            EventHandler exitHandler = Interlocked.Exchange(ref ThreadExitEvent, null);
             exitHandler?.Invoke(sender, e);
         }
 
@@ -580,8 +627,7 @@ namespace Gorgon.UI
 
             // This will only allow one thread to actually call this.
             // It also has the added benefit of unassigning the exit handler when the application shuts down.
-            EventHandler exitHandler = Interlocked.Exchange(ref Exit, null);
-
+            EventHandler exitHandler = Interlocked.Exchange(ref ExitEvent, null);
             exitHandler?.Invoke(sender, e);
         }
 
@@ -597,10 +643,13 @@ namespace Gorgon.UI
             // Remove quit handlers.
             Application.ApplicationExit -= Application_ApplicationExit;
             Application.ThreadExit -= Application_ThreadExit;
+            ExitEvent = null;
+            ThreadExitEvent = null;
 
             if (IdleMethod != null)
             {
                 Application.Idle -= Application_Idle;
+                _loop = null;
                 Log.Print("Application loop stopped.", LoggingLevel.Simple);
             }
 
@@ -901,7 +950,7 @@ namespace Gorgon.UI
 
             try
             {
-                Log = new GorgonLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
+                Log = new GorgonTextFileLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
             }
             catch
             {

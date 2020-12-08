@@ -65,7 +65,7 @@ namespace Gorgon.Input
         // The new window procedure method.
         private WndProc _newWndProc;
         // The list of message filters.
-        private List<IMessageFilter> _messageFilters = new List<IMessageFilter>();
+        private List<RawInputMessageFilter> _messageFilters = new List<RawInputMessageFilter>();
         // Flag to indicate whether the hook is installed.
         private bool _hooked;
         #endregion
@@ -101,7 +101,7 @@ namespace Gorgon.Input
             for (int i = 0; i < _messageFilters.Count; i++)
             {
                 // ReSharper disable once InconsistentlySynchronizedField
-                IMessageFilter filter = _messageFilters[i];
+                RawInputMessageFilter filter = _messageFilters[i];
 
                 if (filter.PreFilterMessage(ref windowMessage))
                 {
@@ -151,31 +151,31 @@ namespace Gorgon.Input
         /// Function to add a filter to the window procedure hook.
         /// </summary>
         /// <param name="filter">The filter to add to the hook.</param>
-        private void AddFilter(IMessageFilter filter)
+        private void AddFilter(RawInputMessageFilter filter)
         {
-            var filters = new List<IMessageFilter>(_messageFilters);
-
-            if (!_messageFilters.Contains(filter))
+            if (_messageFilters.Contains(filter))
             {
-                filters.Add(filter);
+                return;
             }
 
-            _messageFilters = filters;
+            _messageFilters = new List<RawInputMessageFilter>(_messageFilters)
+            {
+                filter
+            };
         }
 
         /// <summary>
         /// Function to remove a filter from the window procedure hook.
         /// </summary>
         /// <param name="filter">The filter to remove from the hook.</param>
-        private void RemoveFilter(IMessageFilter filter)
+        private void RemoveFilter(RawInputMessageFilter filter)
         {
-            var filters = new List<IMessageFilter>(_messageFilters);
-
             if (!_messageFilters.Contains(filter))
             {
                 return;
             }
 
+            var filters = new List<RawInputMessageFilter>(_messageFilters);
             filters.Remove(filter);
 
             if (filters.Count == 0)
@@ -192,7 +192,7 @@ namespace Gorgon.Input
         /// <param name="hwnd">Window handle to hook.</param>
         /// <param name="filter">Filter to install into the hook</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hwnd"/> parameter is <see cref="IntPtr.Zero"/>, or the <paramref name="filter"/> parameter is <b>null</b>.</exception>
-        public static void AddFilter(IntPtr hwnd, IMessageFilter filter)
+        public static void AddFilter(IntPtr hwnd, RawInputMessageFilter filter)
         {
             if (hwnd == IntPtr.Zero)
             {
@@ -206,7 +206,6 @@ namespace Gorgon.Input
 
             lock (_registeredHooks)
             {
-
                 if (!_registeredHooks.TryGetValue(hwnd, out MessageFilterHook hook))
                 {
                     hook = new MessageFilterHook(hwnd);
@@ -224,7 +223,7 @@ namespace Gorgon.Input
         /// <param name="hwnd">Window handle to hook.</param>
         /// <param name="filter">Filter to uninstall from the hook</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hwnd"/> parameter is <see cref="IntPtr.Zero"/>, or the <paramref name="filter"/> parameter is <b>null</b>.</exception>
-        public static void RemoveFilter(IntPtr hwnd, IMessageFilter filter)
+        public static void RemoveFilter(IntPtr hwnd, RawInputMessageFilter filter)
         {
             if (hwnd == IntPtr.Zero)
             {

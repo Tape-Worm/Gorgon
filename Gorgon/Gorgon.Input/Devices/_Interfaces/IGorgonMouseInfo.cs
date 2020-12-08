@@ -30,15 +30,8 @@ namespace Gorgon.Input
     /// Provides capability information about a mouse device.
     /// </summary>
     public interface IGorgonMouseInfo
+        : IGorgonRawInputDeviceInfo
     {
-        /// <summary>
-        /// Property to return a human friendly description of the device.
-        /// </summary>
-        string Description
-        {
-            get;
-        }
-
         /// <summary>
         /// Property to return the sampling rate for the mouse.
         /// </summary>

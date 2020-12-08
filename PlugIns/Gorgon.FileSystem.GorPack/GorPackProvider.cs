@@ -52,6 +52,11 @@ namespace Gorgon.IO.GorPack
         public const string GorPackHeader = "GORPACK1.SharpZip.BZ2";
         #endregion
 
+        #region Properties.
+        /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
+        public override bool IsReadOnly => true;
+        #endregion
+
         #region Methods.
         /// <summary>
         /// Function to decompress a data block.
@@ -238,6 +243,14 @@ namespace Gorgon.IO.GorPack
                                                         EnumerateFiles(index, reader.BaseStream.Position, physicalLocation, mountPoint));
             }
         }
+
+        /// <summary>Function to enumerate the files for a given directory.</summary>
+        /// <param name="physicalLocation">The physical location containing files to enumerate.</param>
+        /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory" /> that the files from the physical file system will be mounted into.</param>
+        /// <returns>A list of files contained within the physical file system.</returns>
+        /// <exception cref="NotSupportedException">This plug in provider does not support this functionality.</exception>
+        protected override IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
+            => throw new NotSupportedException();
 
         /// <summary>Function to return the physical file system path from a virtual file system path.</summary>
         /// <param name="virtualPath">Virtual path to the file/folder.</param>

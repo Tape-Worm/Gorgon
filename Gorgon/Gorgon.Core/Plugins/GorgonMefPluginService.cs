@@ -145,7 +145,7 @@ namespace Gorgon.PlugIns
     /// {
     ///		LoadFunctionality();
     ///		
-    ///		Console.WriteLine("The ultimate answer and stuff: {0}", _functionality.DoSomething());
+    ///		Console.WriteLine($"The ultimate answer and stuff: {_functionality.DoSomething()}");
     ///		
     ///     _assemblies?.Dispose();
     /// }
@@ -331,7 +331,7 @@ namespace Gorgon.PlugIns
                             }
                         }
 
-                        _log.Print("Created plugin '{0}'.", LoggingLevel.Verbose, name);
+                        _log.Print($"Created plugin '{name}'.", LoggingLevel.Verbose);
                     }
 
                     break;

@@ -354,4 +354,10 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_ARRAY_TOO_SMALL" xml:space="preserve">
     <value>The array length {0} is too small to accept {1} elements from the list.</value>
   </data>
+  <data name="GOR_ERR_PTR_NULL" xml:space="preserve">
+    <value>The pointer must not be null.</value>
+  </data>
+  <data name="GOR_TOSTR_POINTER" xml:space="preserve">
+    <value>Gorgon Pointer: {0}</value>
+  </data>
 </root>

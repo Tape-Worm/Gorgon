@@ -66,6 +66,17 @@ namespace Gorgon.IO
 		/// Property to return whether the extension is empty or not.
 		/// </summary>
 		public bool IsEmpty => string.IsNullOrWhiteSpace(Extension);
+
+		/// <summary>
+        /// Property to return the fully qualified extension.
+        /// </summary>
+        /// <remarks>
+        /// This property is the same as the <see cref="Extension"/> value, except it is prefixed with a period.
+        /// </remarks>
+		public string FullExtension
+		{
+			get;
+		}
 		#endregion
 
 		#region Operators.
@@ -179,17 +190,16 @@ namespace Gorgon.IO
 		/// </returns>
 		public bool Equals(string other)
 		{
-			if (string.IsNullOrWhiteSpace(other))
-			{
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if (string.IsNullOrWhiteSpace(other))
+            {
 				return false;
 			}
 
-			if (other.StartsWith(".", StringComparison.Ordinal))
-			{
-				other = other.Substring(1);
-			}
-
-			return string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
+            return other.StartsWith(".", StringComparison.Ordinal)
+                ? string.Equals(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+                : string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
+#pragma warning restore IDE0046 // Convert to conditional expression
 		}
 
 		/// <summary>
@@ -202,17 +212,16 @@ namespace Gorgon.IO
 		/// <exception cref="NotImplementedException"></exception>
 		public int CompareTo(string other)
 		{
-			if (string.IsNullOrWhiteSpace(other))
-			{
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if (string.IsNullOrWhiteSpace(other))
+            {
 				return -1;
 			}
 
-			if (other.StartsWith(".", StringComparison.Ordinal))
-			{
-				other = other.Substring(1);
-			}
-
-			return string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
+            return other.StartsWith(".", StringComparison.Ordinal)
+                ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+                : string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
+#pragma warning restore IDE0046 // Convert to conditional expression
 		}
 		#endregion
 
@@ -240,6 +249,7 @@ namespace Gorgon.IO
 			}
 
 			Extension = extension;
+			FullExtension = $".{extension}";
 			Description = description;
 		}
 

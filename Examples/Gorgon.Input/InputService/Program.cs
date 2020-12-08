@@ -82,29 +82,14 @@ namespace Gorgon.Examples
         {
             GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.InputPlugInPath);
 
-            // Access our plugin cache.
+            // Create a plug in assembly cache for our input assemblies.
             _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
-            // Get the files from the plugin directory.
-            // The plugin directory can be changed in the configuration file
-            // to point at wherever you'd like.  If a {0} place holder is
-            // in the path, it will be replaced with whatever the build
-            // configuration is set to (i.e. DEBUG or RELEASE).
-            _pluginCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll");
-
-            if (_pluginCache.PlugInAssemblies.Count == 0)
-            {
-                return Array.Empty<IGorgonGamingDeviceDriver>();
-            }
-
-            // Create our plugin service.
-            IGorgonPlugInService pluginService = new GorgonMefPlugInService(_pluginCache);
-
             // Create our input service factory.
-            var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
+            var factory = new GorgonGamingDeviceDriverFactory(_pluginCache, GorgonApplication.Log);
 
             // Retrieve the list of driver plug ins from the input service factory.
-            return factory.LoadAllDrivers();
+            return factory.LoadAllDrivers(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll"));
         }
 
         /// <summary>
@@ -146,7 +131,7 @@ namespace Gorgon.Examples
 
                 // Display the plugin information.
                 Console.WriteLine();
-                Console.WriteLine("{0} gaming device driver plug ins found:", inputPlugIns.Count);
+                Console.WriteLine($"{inputPlugIns.Count} gaming device driver plug ins found:");
                 foreach (IGorgonGamingDeviceDriver plugIn in inputPlugIns)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -166,7 +151,7 @@ namespace Gorgon.Examples
                     catch (Exception ex)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Cannot enumerate devices from {0}. Error:\n{1}", plugIn.Description, ex.Message.Ellipses(Console.WindowWidth - 4));
+                        Console.WriteLine($"Cannot enumerate devices from {plugIn.Description}. Error:\n{ex.Message.Ellipses(Console.WindowWidth - 4)}");
                     }
                 }
 
@@ -178,11 +163,11 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                ex.Catch(_ =>
+                ex.Catch(e =>
                          {
                              Console.Clear();
                              Console.ForegroundColor = ConsoleColor.Red;
-                             Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
+                             Console.WriteLine($"Exception:\n{e.Message}\n\nStack Trace:{e.StackTrace}");
                          });
                 Console.ResetColor();
                 Console.ReadKey();

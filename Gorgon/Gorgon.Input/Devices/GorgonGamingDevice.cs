@@ -119,7 +119,7 @@ namespace Gorgon.Input
         /// ]]>
         /// </code>
         /// </example>
-        public GorgonGamingDeviceAxisList<GorgonGamingDeviceAxis> Axis
+        public GorgonGamingDeviceAxisList<IGorgonGamingDeviceAxis> Axis
         {
             get;
         }
@@ -338,7 +338,7 @@ namespace Gorgon.Input
                 _povDirections[i] = Input.POVDirection.Center;
             }
 
-            foreach (GorgonGamingDeviceAxis axis in Axis)
+            foreach (GamingDeviceAxisProperties axis in Axis)
             {
                 axis.Value = Info.AxisInfo[axis.Axis].DefaultValue;
             }
@@ -438,7 +438,7 @@ namespace Gorgon.Input
             POV = new float[_povDirections.Length];
             Button = new GamingDeviceButtonState[deviceInfo.ButtonCount];
             Info = deviceInfo;
-            Axis = new GorgonGamingDeviceAxisList<GorgonGamingDeviceAxis>(deviceInfo.AxisInfo.Select(item => new GorgonGamingDeviceAxis(item)));
+            Axis = new GorgonGamingDeviceAxisList<IGorgonGamingDeviceAxis>(deviceInfo.AxisInfo.Select(item => new GamingDeviceAxisProperties(item.Value)));
         }
         #endregion
     }

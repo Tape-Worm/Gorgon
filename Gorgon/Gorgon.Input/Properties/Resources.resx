@@ -120,6 +120,9 @@
   <data name="GORINP_ERR_DRIVER_NOT_FOUND" xml:space="preserve">
     <value>The gaming device driver '{0}' was not found.</value>
   </data>
+  <data name="GORINP_ERR_INVALID_PATH" xml:space="preserve">
+    <value>The path '{0}' is not valid.</value>
+  </data>
   <data name="GORINP_ERR_JOYSTICK_AXES_INVALID" xml:space="preserve">
     <value>There is no gaming device axis at the specified index.</value>
   </data>

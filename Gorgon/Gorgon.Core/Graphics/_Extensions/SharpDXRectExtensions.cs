@@ -35,6 +35,55 @@ namespace Gorgon.Graphics
     public static class SharpDXRectExtensions
     {
         /// <summary>
+        /// Function to compare viewports for equality using a read only reference.
+        /// </summary>
+        /// <param name="thisView">The view being compared.</param>
+        /// <param name="other">The other view being compared.</param>
+        /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
+        public static bool Equals(in this DX.ViewportF thisView, in DX.ViewportF other) => (thisView.X.EqualsEpsilon(other.X))
+                && (thisView.Y.EqualsEpsilon(other.Y))
+                && (thisView.Width.EqualsEpsilon(other.Width))
+                && (thisView.Height.EqualsEpsilon(other.Height))
+                && (thisView.MinDepth.EqualsEpsilon(other.MinDepth))
+                && (thisView.MaxDepth.EqualsEpsilon(other.MaxDepth));
+
+        /// <summary>
+        /// Function to compare rectangles for equality using a read only reference.
+        /// </summary>
+        /// <param name="thisRect">The rectangle being compared.</param>
+        /// <param name="other">The other view being compared.</param>
+        /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
+        public static bool Equals(in this DX.RectangleF thisRect, in DX.RectangleF other) => (thisRect.X.EqualsEpsilon(other.X))
+                && (thisRect.Y.EqualsEpsilon(other.Y))
+                && (thisRect.Width.EqualsEpsilon(other.Width))
+                && (thisRect.Height.EqualsEpsilon(other.Height));
+
+        /// <summary>
+        /// Function to compare rectangles for equality using a read only reference.
+        /// </summary>
+        /// <param name="thisRect">The rectangle being compared.</param>
+        /// <param name="other">The other view being compared.</param>
+        /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
+        public static bool Equals(in this DX.Rectangle thisRect, in DX.Rectangle other) => (thisRect.X == other.X)
+                && (thisRect.Y == other.Y)
+                && (thisRect.Width == other.Width)
+                && (thisRect.Height == other.Height);
+
+        /// <summary>
+        /// Function to determine if a point is contained within a rectangle.
+        /// </summary>
+        /// <param name="rect">The rectangle to evaluate.</param>
+        /// <param name="point">The point to evaluate.</param>
+        /// <returns><b>true</b> if the point lies within the rectangle, <b>false</b> if not.</returns>
+        public static bool Contains(this DX.Rectangle rect, DX.Point point) => rect.Contains(point.X, point.Y);
+
+        /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
+        /// <param name="rect">The source rectangle to compare.</param>
+        /// <param name="value">The rectangle to evaluate.</param>
+        /// <returns><b>true</b> if the rectangle is contained within the other rectangle, or <b>false</b> if not.</returns>
+        public static bool Contains(this DX.RectangleF rect, DX.RectangleF value) => (rect.X <= value.X) && (value.Right <= rect.Right) && (rect.Y <= value.Y) && value.Bottom <= rect.Bottom;
+
+        /// <summary>
         /// Function to convert an integer rectangle to a floating point rectangle/
         /// </summary>
         /// <param name="rect">The rectangle to convert.</param>

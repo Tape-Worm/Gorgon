@@ -279,69 +279,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to copy the contents of a pipeline state to another pipeline state.
-        /// </summary>
-        /// <param name="pipelineState">The pipeline state to copy.</param>
-        internal void CopyTo(GorgonPipelineState pipelineState)
-        {
-            if (RasterState != null)
-            {
-                if (pipelineState.RasterState == null)
-                {
-                    pipelineState.RasterState = new GorgonRasterState();
-                }
-
-                pipelineState.RasterState.IsAntialiasedLineEnabled = RasterState.IsAntialiasedLineEnabled;
-                pipelineState.RasterState.CullMode = RasterState.CullMode;
-                pipelineState.RasterState.DepthBias = RasterState.DepthBias;
-                pipelineState.RasterState.DepthBiasClamp = RasterState.DepthBiasClamp;
-                pipelineState.RasterState.IsDepthClippingEnabled = RasterState.IsDepthClippingEnabled;
-                pipelineState.RasterState.FillMode = RasterState.FillMode;
-                pipelineState.RasterState.ForcedReadWriteViewSampleCount = RasterState.ForcedReadWriteViewSampleCount;
-                pipelineState.RasterState.IsFrontCounterClockwise = RasterState.IsFrontCounterClockwise;
-                pipelineState.RasterState.IsMultisamplingEnabled = RasterState.IsMultisamplingEnabled;
-                pipelineState.RasterState.ScissorRectsEnabled = RasterState.ScissorRectsEnabled;
-                pipelineState.RasterState.SlopeScaledDepthBias = RasterState.SlopeScaledDepthBias;
-                pipelineState.RasterState.UseConservativeRasterization = RasterState.UseConservativeRasterization;
-            }
-
-            if (DepthStencilState != null)
-            {
-                if (pipelineState.DepthStencilState == null)
-                {
-                    pipelineState.DepthStencilState = new GorgonDepthStencilState();
-                }
-
-                pipelineState.DepthStencilState.BackFaceStencilOp.Comparison = DepthStencilState.BackFaceStencilOp.Comparison;
-                pipelineState.DepthStencilState.BackFaceStencilOp.DepthFailOperation = DepthStencilState.BackFaceStencilOp.DepthFailOperation;
-                pipelineState.DepthStencilState.BackFaceStencilOp.FailOperation = DepthStencilState.BackFaceStencilOp.FailOperation;
-                pipelineState.DepthStencilState.BackFaceStencilOp.PassOperation = DepthStencilState.BackFaceStencilOp.PassOperation;
-
-                pipelineState.DepthStencilState.FrontFaceStencilOp.Comparison = DepthStencilState.FrontFaceStencilOp.Comparison;
-                pipelineState.DepthStencilState.FrontFaceStencilOp.DepthFailOperation = DepthStencilState.FrontFaceStencilOp.DepthFailOperation;
-                pipelineState.DepthStencilState.FrontFaceStencilOp.FailOperation = DepthStencilState.FrontFaceStencilOp.FailOperation;
-                pipelineState.DepthStencilState.FrontFaceStencilOp.PassOperation = DepthStencilState.FrontFaceStencilOp.PassOperation;
-
-                pipelineState.DepthStencilState.DepthComparison = DepthStencilState.DepthComparison;
-                pipelineState.DepthStencilState.IsDepthWriteEnabled = DepthStencilState.IsDepthWriteEnabled;
-                pipelineState.DepthStencilState.IsDepthEnabled = DepthStencilState.IsDepthEnabled;
-                pipelineState.DepthStencilState.IsStencilEnabled = DepthStencilState.IsStencilEnabled;
-                pipelineState.DepthStencilState.StencilReadMask = DepthStencilState.StencilReadMask;
-                pipelineState.DepthStencilState.StencilWriteMask = DepthStencilState.StencilWriteMask;
-            }
-
-            pipelineState.IsIndependentBlendingEnabled = IsIndependentBlendingEnabled;
-            pipelineState.IsAlphaToCoverageEnabled = IsAlphaToCoverageEnabled;
-            pipelineState.PixelShader = PixelShader;
-            pipelineState.VertexShader = VertexShader;
-            pipelineState.GeometryShader = GeometryShader;
-            pipelineState.DomainShader = DomainShader;
-            pipelineState.HullShader = HullShader;
-            pipelineState.PrimitiveType = PrimitiveType;
-            RwBlendStates.CopyTo(pipelineState.RwBlendStates);
-        }
-
-        /// <summary>
         /// Function to clear the pipeline state.
         /// </summary>
 	    internal void Clear()
@@ -362,6 +299,35 @@ namespace Gorgon.Graphics.Core
             PrimitiveType = PrimitiveType.None;
             RwBlendStates.Clear();
         }
+
+        /// <summary>
+        /// Function to copy the state from this pipeline state object to the one passed to the method.
+        /// </summary>
+        /// <param name="state">The state to copy into.</param>
+        /// <param name="copyD3DStates"><b>true</b> to copy the Direct3D state objects, <b>false</b> to ignore.</param>
+        internal void CopyTo(GorgonPipelineState state, bool copyD3DStates = true)
+        {
+            state.RasterState = RasterState;
+            state.DepthStencilState = DepthStencilState;
+            state.IsIndependentBlendingEnabled = IsIndependentBlendingEnabled;
+            state.IsAlphaToCoverageEnabled = IsAlphaToCoverageEnabled;
+            state.PixelShader = PixelShader;
+            state.VertexShader = VertexShader;
+            state.GeometryShader = GeometryShader;
+            state.DomainShader = DomainShader;
+            state.HullShader = HullShader;
+            state.PrimitiveType = PrimitiveType;
+            RwBlendStates.CopyTo(state.RwBlendStates);
+
+            if (!copyD3DStates)
+            {
+                return;
+            }
+
+            state.D3DBlendState = D3DBlendState;
+            state.D3DDepthStencilState = D3DDepthStencilState;
+            state.D3DRasterState = D3DRasterState;
+        }
         #endregion
 
         #region Constructor.
@@ -369,20 +335,7 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonPipelineState"/> class.
         /// </summary>
         /// <param name="state">The state copy.</param>
-        internal GorgonPipelineState(GorgonPipelineState state)
-        {
-            RasterState = state.RasterState;
-            DepthStencilState = state.DepthStencilState;
-            IsIndependentBlendingEnabled = state.IsIndependentBlendingEnabled;
-            IsAlphaToCoverageEnabled = state.IsAlphaToCoverageEnabled;
-            PixelShader = state.PixelShader;
-            VertexShader = state.VertexShader;
-            GeometryShader = state.GeometryShader;
-            DomainShader = state.DomainShader;
-            HullShader = state.HullShader;
-            PrimitiveType = state.PrimitiveType;
-            state.RwBlendStates.CopyTo(RwBlendStates);
-        }
+        internal GorgonPipelineState(GorgonPipelineState state) => state.CopyTo(this);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonPipelineState" /> class.

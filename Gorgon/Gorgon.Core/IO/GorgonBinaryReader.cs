@@ -25,12 +25,10 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Properties;
 
@@ -90,53 +88,6 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Function to read data from a stream into a <see cref="GorgonNativeBuffer{T}"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of data in the buffer. Must be an unmanaged value type.</typeparam>
-        /// <param name="buffer">The buffer that will receive the contents of the stream.</param>
-        /// <param name="index">[Optional] The index in the buffer to start copying data into.</param>
-        /// <param name="count">[Optional] The number of items to copy into the buffer.</param>
-        /// <remarks>
-        /// <para>
-        /// If the <paramref name="count"/> is omitted, then the <see cref="GorgonNativeBuffer{T}.Length"/> of the buffer minus the index is used.
-        /// </para>
-        /// <para>
-        /// This method will constrain the <paramref name="index"/> and <paramref name="count"/> parameters to ensure they do not go out of bounds in the buffer.
-        /// </para>
-        /// </remarks>
-        public void ReadRange<T>(GorgonNativeBuffer<T> buffer, int index = 0, int? count = null)
-            where T : unmanaged
-        {
-            if (buffer == null)
-            {
-                return;
-            }
-
-            // Constrain the start index to within the length of the buffer.
-            index = index.Max(0).Min(buffer.Length);
-
-            if (count == null)
-            {
-                count = buffer.Length - index;
-            }
-
-            if ((count + index) > buffer.Length)
-            {
-                count = buffer.Length - index;
-            }
-
-            if (count < 1)
-            {
-                return;
-            }
-
-            for (int i = index; i < count.Value; ++i)
-            {
-                ReadValue(out buffer[i]);
-            }
-        }
-
-        /// <summary>
         /// Function to read bytes from a stream into a buffer pointed at by the pointer.
         /// </summary>
         /// <param name="pointer">Pointer to the buffer to fill with data.</param>
@@ -165,6 +116,7 @@ namespace Gorgon.IO
                     *((long*)bytePtr) = ReadInt64();
                     bytePtr += sizeof(long);
                     size -= sizeof(long);
+                    continue;
                 }
 
                 if (size >= sizeof(int))
@@ -172,6 +124,7 @@ namespace Gorgon.IO
                     *((int*)bytePtr) = ReadInt32();
                     bytePtr += sizeof(int);
                     size -= sizeof(int);
+                    continue;
                 }
 
                 if (size >= sizeof(short))
@@ -179,15 +132,66 @@ namespace Gorgon.IO
                     *((short*)bytePtr) = ReadInt16();
                     bytePtr += sizeof(short);
                     size -= sizeof(short);
-                }
-
-                if (size <= 0)
-                {
-                    return;
+                    continue;
                 }
 
                 *bytePtr = ReadByte();
                 ++bytePtr;
+                --size;
+            }
+        }
+
+        /// <summary>
+        /// Function to read bytes from a stream into a reference to a buffer.
+        /// </summary>
+        /// <param name="buffer">The reference to the buffer to fill with data.</param>
+        /// <param name="size">Number of bytes to read.</param>
+        /// <remarks>
+        /// <para>
+        /// This method will read the number of bytes specified by the <paramref name="size"/> parameter into memory referenced by <paramref name="buffer"/>.
+        /// </para>
+        /// <note type="caution">
+        /// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
+        /// </note>
+        /// </remarks>
+        
+        public void Read(ref byte buffer, int size)
+        {
+            if (size < 1)
+            {
+                return;
+            }
+
+            int byteCount = 0;
+
+            while (size > 0)
+            {
+                if (size >= sizeof(long))
+                {
+                    Unsafe.As<byte, long>(ref Unsafe.Add(ref buffer, byteCount)) = ReadInt64();
+                    byteCount += sizeof(long);
+                    size -= sizeof(long);
+                    continue;
+                }
+
+                if (size >= sizeof(int))
+                {
+                    Unsafe.As<byte, int>(ref Unsafe.Add(ref buffer, byteCount)) = ReadInt32();
+                    byteCount += sizeof(int);
+                    size -= sizeof(int);
+                    continue;
+                }
+
+                if (size >= sizeof(short))
+                {
+                    Unsafe.As<byte, short>(ref Unsafe.Add(ref buffer, byteCount)) = ReadInt16();
+                    byteCount += sizeof(short);
+                    size -= sizeof(short);
+                    continue;
+                }
+
+                Unsafe.Add(ref buffer, byteCount) = ReadByte();
+                ++byteCount;
                 --size;
             }
         }
@@ -243,10 +247,98 @@ namespace Gorgon.IO
             where T : unmanaged
         {
             result = default;
-            unsafe
+            Read(ref Unsafe.As<T, byte>(ref result), Unsafe.SizeOf<T>());
+        }
+
+        /// <summary>
+        /// Function to read a range of generic values into a span.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read. Must be an unmanaged value type.</typeparam>
+        /// <param name="buffer">The span buffer to read data into.</param>
+        /// <remarks>
+        /// <para>
+        /// This will read data from the binary stream into the specified span of type <typeparamref name="T"/>. 
+        /// </para>
+        /// <note type="important">
+        /// <para>
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        public void ReadRange<T>(Span<T> buffer) 
+            where T : unmanaged => Read(ref Unsafe.As<T, byte>(ref buffer[0]), Unsafe.SizeOf<T>() * buffer.Length);
+
+        /// <summary>
+        /// Function to read a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
+        /// <param name="pointer">Pointer to memory that will store the values.</param>
+        /// <param name="startIndex">[Optional] Starting index in the pointer.</param>
+        /// <param name="count">[Optional] Number of elements to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+        /// </exception>
+        /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will read data from the binary stream into the specified memory pointer containing values of type <typeparamref name="T"/>. The values will be populated starting at the 
+        /// <paramref name="startIndex"/> up to the <paramref name="count"/> specified. If the <paramref name="count"/> is not specified (i.e. it is <b>null</b>), then the entire memory block minus 
+        /// the <paramref name="startIndex"/> will be used.
+        /// </para>
+        /// <note type="important">
+        /// <para>
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        public void ReadRange<T>(GorgonPtr<T> pointer, int startIndex = 0, int? count = null)
+            where T : unmanaged
+        {
+            if (pointer == GorgonPtr<T>.NullPtr)
             {
-                void* ptr = Unsafe.AsPointer(ref result);
-                Read(ptr, Unsafe.SizeOf<T>());
+                throw new ArgumentNullException(nameof(pointer));
+            }
+
+            if (count == null)
+            {
+                count = pointer.Length - startIndex;
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex, 0));
+            }
+
+            if (startIndex >= pointer.Length)
+            {
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, startIndex, pointer.Length));
+            }
+
+            if ((pointer.Length == 0) || (count <= 0))
+            {
+                return;
+            }
+
+            if (startIndex + count > pointer.Length)
+            {
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex + count, pointer.Length));
+            }
+
+            unsafe
+            {        
+                Read((pointer + startIndex), Unsafe.SizeOf<T>() * count.Value);
             }
         }
 
@@ -313,38 +405,7 @@ namespace Gorgon.IO
                 throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex + count, value.Length));
             }
 
-            byte[] tempBuffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
-
-            try
-            {
-                int typeSize = Unsafe.SizeOf<T>();
-                int blockSize = _bufferSize;
-                int size = typeSize * count.Value;
-                int offset = 0;
-                ref byte valueRef = ref Unsafe.As<T, byte>(ref value[startIndex]);
-                ref byte bufferRef = ref tempBuffer[0];
-
-                while (size > 0)
-                {
-                    if (blockSize > size)
-                    {
-                        blockSize = size;
-                    }
-
-                    ref byte destRef = ref Unsafe.Add(ref valueRef, offset);
-
-                    // Read the data from the stream as byte values.
-                    Read(tempBuffer, 0, blockSize);
-                    Unsafe.CopyBlock(ref destRef, ref bufferRef, (uint)blockSize);
-
-                    size -= blockSize;
-                    offset += blockSize;
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(tempBuffer);
-            }
+            Read(ref Unsafe.As<T, byte>(ref value[startIndex]), Unsafe.SizeOf<T>() * count.Value);
         }
 
         /// <summary>

@@ -27,12 +27,14 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.UI;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
+using Gorgon.Timing;
 // ReSharper disable All
 
 namespace Gorgon.Examples
@@ -102,8 +104,14 @@ namespace Gorgon.Examples
         private Point _mousePosition = Point.Empty;
         // Current image for the cursor.
         private Image _currentCursor;
+        // Pointing hand image for the cursor.
+        private Image _pointerCursor;
+        // Open hand image for the cursor.
+        private Image _openHandCursor;
         // Flag to indicate whether to use polling or events.
         private bool _usePolling;
+        // Timer used to refresh the labels.
+        private readonly GorgonTimerQpc _labelTimer = new GorgonTimerQpc();
         #endregion
 
         #region Properties.
@@ -142,11 +150,11 @@ namespace Gorgon.Examples
             // info in real time during our idle time.
             if (_usePolling)
             {
-                UpdateMouse(_mouse.RelativePositionOffset, _mouse.Buttons);
+                UpdateMousePointerDisplay(_mouse.RelativePositionOffset, _mouse.Buttons);
 
                 // Reset the relative positioning here. Otherwise, this value will not be updated until the next 
                 // mouse event, which would cause our cursor to drift.
-                _mouse.RelativePositionOffset = Point.Empty;
+                _mouse.RelativePositionOffset = DX.Point.Zero;
             }
 
             // Display the mouse cursor.			
@@ -160,7 +168,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="relativePosition">The raw input relative position of the mouse since it was last moved.</param>
         /// <param name="button">The current button being held down.</param>
-        private void UpdateMouse(Point relativePosition, GorgonMouseButtons button)
+        private void UpdateMousePointerDisplay(DX.Point relativePosition, GorgonMouseButtons button)
         {
             Cursor.Position = PointToScreen(DisplayHalfSize);
 
@@ -179,18 +187,35 @@ namespace Gorgon.Examples
                 _mousePosition.Y = mousePositionY;
             }
 
-            if (button == GorgonMouseButtons.Button1)
+            switch (button)
             {
-                _spray.SprayPoint(_mousePosition);
-                _currentCursor = Resources.hand_pointer_icon;
-            }
-            else
-            {
-                _currentCursor = Resources.hand_icon;
+                case GorgonMouseButtons.Button1:
+                    _spray.SprayPoint(_mousePosition, false);
+                    _currentCursor = _pointerCursor;
+                    break;
+                case GorgonMouseButtons.Button2:
+                    _spray.SprayPoint(_mousePosition, true);
+                    _currentCursor = _pointerCursor;
+                    break;
+                default:
+                    _currentCursor = _openHandCursor;
+                    break;
             }
 
-            labelMouse.Text = $"{_mouse.Info.Description}: {_mousePosition.X}x{_mousePosition.Y} (Raw: {_mouse.Position.X}x{_mouse.Position.Y}) " +
+            if (_labelTimer.Milliseconds < 15)
+            {
+                return;
+            }
+
+            string newText = $"{_mouse.Info.Description}: {_mousePosition.X}x{_mousePosition.Y} (Raw: {_mouse.Position.X}x{_mouse.Position.Y}) " +
                               $"Button: {button}.  Using {(_usePolling ? "Polling" : "Events")} for data retrieval.";
+
+            if (!string.Equals(newText, labelMouse.Text, StringComparison.CurrentCulture))
+            {
+                labelMouse.Text = newText;
+            }
+
+            _labelTimer.Reset();
         }
 
         /// <summary>
@@ -198,7 +223,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="key">Key that's currently pressed.</param>
         /// <param name="shift">Shifted keys.</param>
-        private void UpdateKeyboard(Keys key, Keys shift)
+        private void UpdateKeyboardDisplay(Keys key, Keys shift)
         {
             Keys shiftKey = Keys.None;
 
@@ -217,11 +242,12 @@ namespace Gorgon.Examples
                 shiftKey = (shift & Keys.LShiftKey) == Keys.LShiftKey ? Keys.LShiftKey : Keys.RShiftKey;
             }
 
+            string newText = $"{_keyboard.Info.Description}. Currently pressed key: {key}{((shiftKey != Keys.None) && (shiftKey != key) ? " + " + shiftKey : string.Empty)}  (Press 'P' to switch between polling and events for the mouse. Press 'ESC' to close.)";
 
-            labelKeyboard.Text = string.Format("{2}. Currently pressed key: {0}{1}  (Press 'P' to switch between polling and events for the mouse. Press 'ESC' to close.)"
-                                                , key
-                                                , ((shiftKey != Keys.None) && (shiftKey != key) ? " + " + shiftKey : string.Empty)
-                                                , _keyboard.Info.Description);
+            if (!string.Equals(newText, labelKeyboard.Text, StringComparison.CurrentCulture))
+            {
+                labelKeyboard.Text = newText;
+            }
         }
 
         /// <summary>
@@ -232,7 +258,7 @@ namespace Gorgon.Examples
         /// <exception cref="NotSupportedException"></exception>
         private void Mouse_ButtonUp(object sender, GorgonMouseEventArgs e) =>
             // Update the buttons so that only the buttons we have held down are showing.
-            UpdateMouse(e.RelativePosition, e.ShiftButtons & ~e.Buttons);
+            UpdateMousePointerDisplay(e.RelativePosition, e.ShiftButtons & ~e.Buttons);
 
         /// <summary>
         /// Handles the PointingDeviceDown event of the _mouse control.
@@ -240,7 +266,7 @@ namespace Gorgon.Examples
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private void Mouse_ButtonDown(object sender, GorgonMouseEventArgs e) => UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
+        private void Mouse_ButtonDown(object sender, GorgonMouseEventArgs e) => UpdateMousePointerDisplay(e.RelativePosition, e.Buttons | e.ShiftButtons);
 
         /// <summary>
         /// Handles the PointingDeviceMove event of the _mouse control.
@@ -249,8 +275,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
         /// <exception cref="NotSupportedException"></exception>
         private void Mouse_Move(object sender, GorgonMouseEventArgs e) =>
-            // Lock the cursor in place as well so that we can, again, fake an "exclusive" mode.
-            UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
+            UpdateMousePointerDisplay(e.RelativePosition, e.Buttons | e.ShiftButtons);
 
         /// <summary>
         /// Handles the KeyUp event of the _keyboard control.
@@ -262,7 +287,7 @@ namespace Gorgon.Examples
             // If we press "P", then switch between polling and events.
             if (e.Key == Keys.P)
             {
-                _mouse.RelativePositionOffset = Point.Empty;
+                _mouse.RelativePositionOffset = DX.Point.Zero;
                 _usePolling = !_usePolling;
                 if (_usePolling)
                 {
@@ -280,7 +305,7 @@ namespace Gorgon.Examples
                 }
             }
 
-            UpdateKeyboard(Keys.None, e.ModifierKeys);
+            UpdateKeyboardDisplay(Keys.None, e.ModifierKeys);
         }
 
         /// <summary>
@@ -297,7 +322,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            UpdateKeyboard(e.Key, e.ModifierKeys);
+            UpdateKeyboardDisplay(e.Key, e.ModifierKeys);
         }
 
         /// <summary>
@@ -321,10 +346,6 @@ namespace Gorgon.Examples
         /// </summary>
         private void CreateMouse()
         {
-            // We will simulate exclusive access to the mouse by hiding the windows cursor, 
-            // and locking it to our window. 
-            GorgonRawMouse.CursorVisible = false;
-
             // Create the raw input mouse.
             // Note, this constructor could be changed to:
             // _mouse = new GorgonRawMouse(mouseInfo) 
@@ -344,9 +365,11 @@ namespace Gorgon.Examples
             _mousePosition = DisplayHalfSize;
             Cursor.Position = PointToScreen(DisplayHalfSize);
 
+            // Finally, register our mouse device with the raw input system so it can receive 
+            // raw input data.
             _rawInput.RegisterDevice(_mouse);
 
-            UpdateMouse(_mouse.Position, GorgonMouseButtons.None);
+            UpdateMousePointerDisplay(_mouse.Position, GorgonMouseButtons.None);
         }
 
         /// <summary>
@@ -366,15 +389,17 @@ namespace Gorgon.Examples
             _keyboard.KeyDown += Keyboard_KeyDown;
             _keyboard.KeyUp += Keyboard_KeyUp;
 
+            // Finally, register our keyboard device with the raw input system so it can receive 
+            // raw input data.
             _rawInput.RegisterDevice(_keyboard);
 
-            UpdateKeyboard(Keys.None, Keys.None);
+            UpdateKeyboardDisplay(Keys.None, Keys.None);
         }
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -382,7 +407,8 @@ namespace Gorgon.Examples
             try
             {
                 // Set our default cursor.
-                _currentCursor = Resources.hand_icon;
+                _currentCursor = _openHandCursor = Resources.hand_icon;
+                _pointerCursor = Resources.hand_pointer_icon;
 
                 // Create our input factory.
                 _rawInput = new GorgonRawInput(this);
@@ -464,7 +490,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+        /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data.</param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);

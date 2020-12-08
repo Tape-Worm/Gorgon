@@ -102,7 +102,7 @@ namespace Gorgon.PlugIns
     /// {
     ///		LoadFunctionality();
     ///		
-    ///		Console.WriteLine("The ultimate answer and stuff: {0}", _functionality.DoSomething());
+    ///		Console.WriteLine($"The ultimate answer and stuff: {_functionality.DoSomething()}");
     ///		
     ///     _assemblies?.Dispose();
     /// }
@@ -449,10 +449,8 @@ namespace Gorgon.PlugIns
             {
                 // Check to see if we have this directory and search pattern already.
                 DirectoryCatalog catalog = _rootCatalog.Catalogs.OfType<DirectoryCatalog>()
-                                                       .FirstOrDefault(item => string.Equals(item.FullPath, directoryPath, StringComparison.OrdinalIgnoreCase)
-                                                                               && string.Equals(item.SearchPattern,
-                                                                                                filePattern,
-                                                                                                StringComparison.OrdinalIgnoreCase));
+                                                                .FirstOrDefault(item => string.Equals(item.FullPath, directoryPath, StringComparison.OrdinalIgnoreCase)
+                                                                                     && string.Equals(item.SearchPattern, filePattern, StringComparison.OrdinalIgnoreCase));
 
                 // This catalog was already loaded, so just refresh it by recomposing.
                 if (catalog != null)

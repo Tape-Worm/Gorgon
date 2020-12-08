@@ -69,7 +69,7 @@ namespace Gorgon.Input.XInput
         /// </para>
         /// <para>
         /// A device may lose acquisition when the application goes into the background, and as such, the application will no longer receive information from the device. When this is the case, the 
-        /// application should immediately check after it regains foreground focus to see whether the device is acquired or not. For a winforms application this can be achieved with the <see cref="System.Windows.Forms.Form.Activated"/> 
+        /// application should immediately check after it regains foreground focus to see whether the device is acquired or not. For a winforms application this can be achieved with the <see cref="Forms.Form.Activated"/> 
         /// event. When that happens, set this property to <b>true</b>.
         /// </para>
         /// <para>
@@ -114,12 +114,12 @@ namespace Gorgon.Input.XInput
         private void UpdateAxisValues(XI.Gamepad state)
         {
 
-            if (Axis.TryGetValue(GamingDeviceAxis.LeftStickX, out GorgonGamingDeviceAxis xAxis))
+            if (Axis.TryGetValue(GamingDeviceAxis.LeftStickX, out IGorgonGamingDeviceAxis xAxis))
             {
                 xAxis.Value = state.LeftThumbX;
             }
 
-            if (Axis.TryGetValue(GamingDeviceAxis.LeftStickY, out GorgonGamingDeviceAxis yAxis))
+            if (Axis.TryGetValue(GamingDeviceAxis.LeftStickY, out IGorgonGamingDeviceAxis yAxis))
             {
                 yAxis.Value = state.LeftThumbY;
             }
@@ -251,16 +251,15 @@ namespace Gorgon.Input.XInput
         {
             // XInput devices don't lose acquisition when the application loses focus.
             IsAcquired = true;
-            _info = deviceInfo;
-            _controller = new XI.Controller(deviceInfo.ID);
+            _info = deviceInfo;            
+            _controller = new XI.Controller(deviceInfo.DeviceID.ToUserIndex());
 
-
-            if (Axis.TryGetValue(GamingDeviceAxis.XAxis, out GorgonGamingDeviceAxis _))
+            if (Axis.Contains(GamingDeviceAxis.XAxis))
             {
                 Axis[GamingDeviceAxis.XAxis].DeadZone = new GorgonRange(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
             }
 
-            if (Axis.TryGetValue(GamingDeviceAxis.YAxis, out GorgonGamingDeviceAxis _))
+            if (Axis.Contains(GamingDeviceAxis.YAxis))
             {
                 Axis[GamingDeviceAxis.YAxis].DeadZone = new GorgonRange(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
             }

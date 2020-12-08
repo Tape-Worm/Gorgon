@@ -1,9 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <UseWindowsForms>true</UseWindowsForms>
     <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
@@ -47,6 +45,7 @@
     <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Dependencies\BCnEncoder.NET\BCnEnc.Net\BCnEncoder.csproj" />
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
