@@ -285,7 +285,7 @@ namespace Gorgon.Core
         /// Returns the fully qualified type name of this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> containing a fully qualified type name.
+        /// A <see cref="string"/> containing a fully qualified type name.
         /// </returns>
         public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 
@@ -766,7 +766,7 @@ namespace Gorgon.Core
         /// Returns the fully qualified type name of this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> containing a fully qualified type name.
+        /// A <see cref="string"/> containing a fully qualified type name.
         /// </returns>
         public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 
@@ -1249,7 +1249,7 @@ namespace Gorgon.Core
         /// Returns the fully qualified type name of this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> containing a fully qualified type name.
+        /// A <see cref="string"/> containing a fully qualified type name.
         /// </returns>
         public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 
@@ -1730,7 +1730,7 @@ namespace Gorgon.Core
         /// Returns the fully qualified type name of this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> containing a fully qualified type name.
+        /// A <see cref="string"/> containing a fully qualified type name.
         /// </returns>
         public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 

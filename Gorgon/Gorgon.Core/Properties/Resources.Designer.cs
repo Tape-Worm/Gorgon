@@ -368,6 +368,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The pointer must not be null..
+        /// </summary>
+        internal static string GOR_ERR_PTR_NULL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_PTR_NULL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This stream does not support asynchronous I/O on this method..
         /// </summary>
         internal static string GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC {
@@ -699,6 +708,15 @@ namespace Gorgon.Properties {
         internal static string GOR_TOSTR_NAMEDOBJECT {
             get {
                 return ResourceManager.GetString("GOR_TOSTR_NAMEDOBJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Pointer: {0}.
+        /// </summary>
+        internal static string GOR_TOSTR_POINTER {
+            get {
+                return ResourceManager.GetString("GOR_TOSTR_POINTER", resourceCulture);
             }
         }
         

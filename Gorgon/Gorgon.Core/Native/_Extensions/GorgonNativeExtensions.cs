@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Gorgon.IO;
+using Gorgon.Math;
 using Gorgon.Properties;
 
 namespace Gorgon.Native
@@ -98,28 +99,175 @@ namespace Gorgon.Native
         }
 
         /// <summary>
-        /// Function to copy the contents of an array into a <see cref="GorgonNativeBuffer{T}"/>.
+        /// Function to copy the contents of a stream into a <see cref="GorgonPtr{T}"/>.
         /// </summary>
-        /// <typeparam name="T">The type of data in the array and buffer. Must be an unmanaged value type.</typeparam>
+        /// <typeparam name="T">The type of value in the pointer. Must be an unmanaged value type.</typeparam>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="pointer">The pointer to copy the stream data into.</param>
+        /// <param name="index">[Optional] The index within the pointer to start writing at.</param>
+        /// <param name="count">[Optional] The maximum number of items to read from the stream.</param>
+        /// <returns>A <see cref="GorgonNativeBuffer{T}"/> containing the contents of the stream.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="index"/>, <paramref name="count"/>, or both values added together will exceed the size of the <paramref name="pointer"/> or the <paramref name="stream"/>.</exception>
+        /// <exception cref="EndOfStreamException">Thrown when the <paramref name="stream"/> is at its end.</exception>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write only.</exception>
+        public static void CopyTo<T>(this Stream stream, GorgonPtr<T> pointer, int index = 0, int? count = null)
+            where T : unmanaged
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (stream.Position == stream.Length)
+            {
+                throw new EndOfStreamException();
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+            }
+
+            if (index < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+            }
+
+            if (count == null)
+            {
+                count = pointer.Length.Min((int)(stream.Length - stream.Position));
+            }
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            int countBytes = count.Value * Unsafe.SizeOf<T>();
+
+            if (((index + count.Value) > pointer.Length)
+                || ((stream.Position + countBytes) > stream.Length))
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
+            }            
+
+            var result = new GorgonNativeBuffer<T>(count.Value);            
+            using (var reader = new GorgonBinaryReader(stream, true))
+            {                
+                for (int i = 0; i < count.Value; ++i)
+                {
+                    reader.ReadValue(out result[i]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to copy the contents of a span into a <see cref="GorgonPtr{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of data in the span and pointer. Must be an unmanaged value type.</typeparam>
+        /// <param name="span">The span to copy from.</param>
+        /// <param name="pointer">The pointer that will receive the data.</param>
+        /// <param name="pointerIndex">[Optional] The index in the pointer to start writing into.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="pointerIndex"/> parameter is less than 0.</exception>
+        /// <exception cref="ArgumentException">
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="pointerIndex"/> + span length is too big for the <paramref name="pointer"/>.</para>
+        /// </exception>
+        public static void CopyTo<T>(this ReadOnlySpan<T> span, GorgonPtr<T> pointer, int pointerIndex = 0)
+            where T : unmanaged
+        {
+            if (pointer == GorgonPtr<T>.NullPtr)
+            {
+                throw new ArgumentNullException(nameof(pointer));
+            }
+
+            if (pointerIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pointerIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+            }
+
+            if (pointerIndex + span.Length > pointer.Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, pointerIndex, span.Length));
+            }
+
+            unsafe
+            {
+                fixed (T* srcPtr = &span[0])
+                fixed (T* destPtr = &pointer[pointerIndex])
+                {
+                    Unsafe.CopyBlock(destPtr, srcPtr, (uint)(span.Length * Unsafe.SizeOf<T>()));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to copy the contents of a memory type into a <see cref="GorgonPtr{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of data in the memory type and pointer. Must be an unmanaged value type.</typeparam>
+        /// <param name="memory">The memory type to copy from.</param>
+        /// <param name="pointer">The pointer that will receive the data.</param>
+        /// <param name="pointerIndex">[Optional] The index in the pointer to start writing into.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="pointerIndex"/> parameter is less than 0.</exception>
+        /// <exception cref="ArgumentException">
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="pointerIndex"/> + memory type length is too big for the <paramref name="pointer"/>.</para>
+        /// </exception>
+        public static void CopyTo<T>(this ReadOnlyMemory<T> memory, GorgonPtr<T> pointer, int pointerIndex = 0)
+            where T : unmanaged
+        {
+            if (pointer == GorgonPtr<T>.NullPtr)
+            {
+                throw new ArgumentNullException(nameof(pointer));
+            }
+
+            if (pointerIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pointerIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+            }
+
+            if (pointerIndex + memory.Length > pointer.Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, pointerIndex, memory.Length));
+            }
+
+            unsafe
+            {
+                fixed (T* srcPtr = &memory.Span[0])
+                fixed (T* destPtr = &pointer[pointerIndex])
+                {
+                    Unsafe.CopyBlock(destPtr, srcPtr, (uint)(memory.Length * Unsafe.SizeOf<T>()));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to copy the contents of an array into a <see cref="GorgonPtr{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of data in the array and pointer. Must be an unmanaged value type.</typeparam>
         /// <param name="array">The array to copy from.</param>
-        /// <param name="buffer">The buffer that will receive the data.</param>
+        /// <param name="pointer">The pointer that will receive the data.</param>
         /// <param name="arrayIndex">[Optional] The index in the array to start copying from.</param>
         /// <param name="count">[Optional] The number of items to copy.</param>
-        /// <param name="bufferIndex">[Optional] The index in the buffer to start writing into.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/>, or <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/>, or the <paramref name="bufferIndex"/> parameter is less than 0.</exception>
+        /// <param name="pointerIndex">[Optional] The index in the pointer to start writing into.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/>, or <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/>, or the <paramref name="pointerIndex"/> parameter is less than 0.</exception>
         /// <exception cref="ArgumentException">
         /// <para>Thrown when the <paramref name="arrayIndex"/> + <paramref name="count"/> is too big for the <paramref name="array"/>.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="bufferIndex"/> + <paramref name="count"/> is too big for the <paramref name="buffer"/>.</para>
+        /// <para>Thrown when the <paramref name="pointerIndex"/> + <paramref name="count"/> is too big for the <paramref name="pointer"/>.</para>
         /// </exception>
         /// <remarks>
         /// <para>
-        /// If the <paramref name="count"/> parameter is ommitted, then the full length of the source buffer, minus the <paramref name="arrayIndex"/> is used. Ensure that there is enough space in the 
-        /// <paramref name="buffer"/> to accomodate the amount of data required.
+        /// If the <paramref name="count"/> parameter is ommitted, then the full length of the source pointer, minus the <paramref name="arrayIndex"/> is used. Ensure that there is enough space in the 
+        /// <paramref name="pointer"/> to accomodate the amount of data required.
         /// </para>
-        /// </remarks>
-        public static void CopyTo<T>(this T[] array, GorgonNativeBuffer<T> buffer, int arrayIndex = 0, int? count = null, int bufferIndex = 0)
+        /// </remarks>        
+        public static void CopyTo<T>(this T[] array, GorgonPtr<T> pointer, int arrayIndex = 0, int? count = null, int pointerIndex = 0)
             where T : unmanaged
         {
             if (array == null)
@@ -127,9 +275,9 @@ namespace Gorgon.Native
                 throw new ArgumentNullException(nameof(array));
             }
 
-            if (buffer == null)
+            if (pointer == GorgonPtr<T>.NullPtr)
             {
-                throw new ArgumentNullException(nameof(buffer));
+                throw new ArgumentNullException(nameof(pointer));
             }
 
             if (count == null)
@@ -139,22 +287,22 @@ namespace Gorgon.Native
 
             GorgonNativeBuffer<T>.ValidateArrayParams(array, arrayIndex, count.Value);
 
-            if (bufferIndex < 0)
+            if (pointerIndex < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(bufferIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+                throw new ArgumentOutOfRangeException(nameof(pointerIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
             }
 
-            if (bufferIndex + count.Value > buffer.Length)
+            if (pointerIndex + count.Value > pointer.Length)
             {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, bufferIndex, count));
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, pointerIndex, count));
             }
 
             unsafe
             {
                 fixed (T* srcPtr = &array[arrayIndex])
-                fixed (T* destPtr = &buffer[bufferIndex])
+                fixed (T* destPtr = &pointer[pointerIndex])
                 {
-                    Unsafe.CopyBlock(destPtr, srcPtr, (uint)count.Value);
+                    Unsafe.CopyBlock(destPtr, srcPtr, (uint)(count.Value * Unsafe.SizeOf<T>()));
                 }
             }
         }
@@ -183,7 +331,7 @@ namespace Gorgon.Native
         /// This method <b>copies</b> the data from the array into the buffer. This may have a negative impact on performance and memory usage. 
         /// </note>
         /// </para>
-        /// </remarks>
+        /// </remarks>        
         public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this T[] array, int index = 0, int? count = null)
             where T : unmanaged
         {
@@ -204,6 +352,46 @@ namespace Gorgon.Native
                 }
             }
 
+            return result;
+        }
+
+        /// <summary>
+        /// Function to copy the contents of a span slice to a <see cref="GorgonNativeBuffer{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of data in the array. Must be an unmanaged value type.</typeparam>
+        /// <param name="span">The span to copy from.</param>
+        /// <returns>A native buffer containing the contents of the span.</returns>
+        public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this ReadOnlySpan<T> span)
+            where T : unmanaged
+        {
+            if (span.Length == 0)
+            {
+                return null;
+            }
+
+            var result = new GorgonNativeBuffer<T>(span.Length);
+            span.CopyTo(result.Pointer);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to copy the contents of a memory type to a <see cref="GorgonNativeBuffer{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of data in the array. Must be an unmanaged value type.</typeparam>
+        /// <param name="memory">The memory type to copy from.</param>
+        /// <returns>A native buffer containing the contents of the memory type.</returns>
+        public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this ReadOnlyMemory<T> memory)
+            where T : unmanaged
+        {
+            if (memory.Length == 0)
+            {
+                return null;
+            }
+
+            var result = new GorgonNativeBuffer<T>(memory.Length);
+            memory.Span.CopyTo(result.Pointer);
+            
             return result;
         }
 
@@ -232,7 +420,7 @@ namespace Gorgon.Native
         /// performance.
         /// </note>
         /// </para>
-        /// </remarks>
+        /// </remarks>        
         public static GorgonNativeBuffer<T> ToPinned<T>(this T[] array, int index = 0, int? count = null)
             where T : unmanaged
         {

@@ -7,9 +7,13 @@ namespace Gorgon.Timing
     /// <para>
     /// Timers can be used to set up events that occur during a predefined time period, and/or can be used to measure the amount of time that operation takes to complete. 
     /// </para>
+    /// <para>
+    /// A timer is closely tied to the operating system, thus a concrete class will be provided by an operating system specific assembly.
+    /// </para>
     /// </remarks>
     public interface IGorgonTimer
     {
+        #region Properties.
         /// <summary>
         /// Property to return the number of milliseconds elapsed since the timer was started.
         /// </summary>
@@ -73,10 +77,13 @@ namespace Gorgon.Timing
         {
             get;
         }
+        #endregion
 
+        #region Methods.
         /// <summary>
         /// Function to reset the timer.
         /// </summary>
         void Reset();
+        #endregion
     }
 }

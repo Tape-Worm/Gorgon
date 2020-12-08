@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DX = SharpDX;
+using System.Numerics;
 
 namespace Gorgon.Math
 {
@@ -66,7 +66,7 @@ namespace Gorgon.Math
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>
-        DX.Vector4 GetInterpolatedValue(int startPointIndex, float delta);
+        Vector4 GetInterpolatedValue(int startPointIndex, float delta);
 
         /// <summary>
         /// Function to return an interpolated point from the spline.
@@ -79,7 +79,7 @@ namespace Gorgon.Math
         /// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
         /// </para>
         /// </remarks>
-        DX.Vector4 GetInterpolatedValue(float delta);
+        Vector4 GetInterpolatedValue(float delta);
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ namespace Gorgon.Math
         /// <remarks>
         /// When adding or removing points> from the spline, a call to the <see cref="UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
         /// </remarks>
-        IList<DX.Vector4> Points
+        IList<Vector4> Points
         {
             get;
         }

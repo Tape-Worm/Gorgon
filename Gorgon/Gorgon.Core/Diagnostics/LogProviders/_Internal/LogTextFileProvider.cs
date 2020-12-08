@@ -36,7 +36,7 @@ namespace Gorgon.Diagnostics.LogProviders
     /// <summary>
     /// A provider used to store logging messages to a text file.
     /// </summary>
-    public class GorgonLogTextFileProvider
+    internal class LogTextFileProvider
         : IGorgonLogProvider
     {
         #region Variables.
@@ -139,12 +139,12 @@ namespace Gorgon.Diagnostics.LogProviders
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonLogTextFileProvider"/> class.
+        /// Initializes a new instance of the <see cref="LogTextFileProvider"/> class.
         /// </summary>
         /// <param name="filePath">The path to the file to write into.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
-        public GorgonLogTextFileProvider(string filePath)
+        public LogTextFileProvider(string filePath)
         {
             if (filePath == null)
             {
@@ -155,7 +155,6 @@ namespace Gorgon.Diagnostics.LogProviders
             {
                 throw new ArgumentEmptyException(nameof(filePath));
             }
-
 
             _filePath = new FileInfo(filePath.FormatPath(Path.DirectorySeparatorChar));
         }

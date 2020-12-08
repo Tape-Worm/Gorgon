@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Gorgon.Math;
 
 namespace Gorgon.Collections
@@ -149,6 +150,39 @@ namespace Gorgon.Collections
         }
 #endif
 
+        /// <summary>
+        /// Function to return a read only span for a slice of the array.
+        /// </summary>
+        /// <param name="start">The starting index for the array.</param>
+        /// <param name="end">The ending index for the array.</param>
+        /// <returns>The read only span for the array slice.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="start"/>, or <paramref name="end"/> parameter is less than 0, or greater than the entire length of the array.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<T> AsSpan(int start, int end) => BackingArray.AsSpan(start, (end + 1) - start);
+
+        /// <summary>
+        /// Function to return a read only span for the array.
+        /// </summary>
+        /// <returns>The read only span for the array.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<T> AsSpan() => BackingArray.AsSpan();
+
+        /// <summary>
+        /// Function to return read only memory for a slice of the array.
+        /// </summary>
+        /// <param name="start">The starting index for the array.</param>
+        /// <param name="end">The ending index for the array.</param>
+        /// <returns>The read only memory for the array slice.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="start"/>, or <paramref name="end"/> parameter is less than 0, or greater than the entire length of the array.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlyMemory<T> AsMemory(int start, int end) => BackingArray.AsMemory(start, (end + 1) - start);
+
+        /// <summary>
+        /// Function to return read only memory for a slice of the array.
+        /// </summary>
+        /// <returns>The read only memory for the array slice.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlyMemory<T> AsMemory() => BackingArray.AsMemory();
 
         /// <summary>
         /// Function to retrieve the dirty items in this list.

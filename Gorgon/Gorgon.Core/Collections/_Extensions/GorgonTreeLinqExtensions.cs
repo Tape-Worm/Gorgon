@@ -35,7 +35,48 @@ namespace Gorgon.Collections
     public static class GorgonTreeLinqExtensions
     {
         /// <summary>
-        /// Function to flatten a tree of objects into a flat traversable list.
+        /// Function to flatten a tree of objects into a flat traversable list using a depth first approach.
+        /// </summary>
+        /// <typeparam name="T">The type of value in the tree.</typeparam>
+        /// <param name="children">The list of objects to evaluate.</param>
+        /// <param name="getChildren">The method to retrieve the next level of children.</param>
+        /// <returns>An enumerable containing the flattened list of objects.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
+        public static IEnumerable<T> TraverseDepthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
+        {
+            if (children == null)
+            {
+                throw new ArgumentNullException(nameof(children));
+            }
+
+            var queue = new Stack<T>();
+            foreach (T child in children)
+            {
+                queue.Push(child);
+            }
+
+            while (queue.Count > 0)
+            {
+                T node = queue.Pop();
+
+                yield return node;
+
+                IEnumerable<T> subChildren = getChildren?.Invoke(node);
+
+                if (subChildren == null)
+                {
+                    continue;
+                }
+
+                foreach (T child in subChildren)
+                {
+                    queue.Push(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to flatten a tree of objects into a flat traversable list using a breadth first approach.
         /// </summary>
         /// <typeparam name="T">The type of value in the tree.</typeparam>
         /// <param name="children">The list of objects to evaluate.</param>

@@ -43,11 +43,11 @@ namespace Gorgon.IO
 	/// </para>
 	/// <para>
 	/// When reading or writing, the parent stream will have its position manipulated by this stream to locate the start of this stream plus the current position of this stream. Once these operations 
-	/// are complete, the parent stream <see cref="P:System.IO.Stream.Position"/> will be set back to the original position it was in prior to the read/write operation. This ensures that when this 
+	/// are complete, the parent stream <see cref="Stream.Position"/> will be set back to the original position it was in prior to the read/write operation. This ensures that when this 
 	/// object is finished its work, the original parent position will remain unaffected by this stream.
 	/// </para>
 	/// <note>
-	/// It is not necessary to call the <see cref="M:System.IO.Stream.Dispose"/> method or the <see cref="M:System.IO.Stream.Close"/> method on this object since there is nothing to close 
+	/// It is not necessary to call the <see cref="Stream.Dispose(bool)"/> method or the <see cref="Stream.Close"/> method on this object since there is nothing to close 
 	/// and ownership of the parent stream resides with the creator of that stream (i.e. this type does <i>not</i> take ownership of a parent stream). In fact, closing or disposing of this object 
 	/// does nothing.
 	/// </note>
@@ -154,7 +154,7 @@ namespace Gorgon.IO
         #region Methods.		
 
         /// <summary>
-        /// Begins an asynchronous read operation. (Consider using <see cref="M:System.IO.Stream.ReadAsync(System.Byte[],System.Int32,System.Int32)"/> instead; see the Remarks section.)
+        /// Begins an asynchronous read operation. (Consider using <see cref="Stream.ReadAsync(byte[],int,int)"/> instead; see the Remarks section.)
         /// </summary>
         /// <returns>
         /// An <see cref="IAsyncResult"/> that represents the asynchronous read, which could still be pending.
@@ -166,7 +166,7 @@ namespace Gorgon.IO
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
 
         /// <summary>
-        /// Begins an asynchronous write operation. (Consider using <see cref="M:System.IO.Stream.WriteAsync(System.Byte[],System.Int32,System.Int32)"/> instead; see the Remarks section.)
+        /// Begins an asynchronous write operation. (Consider using <see cref="Stream.WriteAsync(byte[],int,int)"/> instead; see the Remarks section.)
         /// </summary>
         /// <returns>
         /// An IAsyncResult that represents the asynchronous write, which could still be pending.
@@ -177,20 +177,20 @@ namespace Gorgon.IO
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
 
         /// <summary>
-        /// Waits for the pending asynchronous read to complete. (Consider using <see cref="M:System.IO.Stream.ReadAsync(System.Byte[],System.Int32,System.Int32)"/> instead; see the Remarks section.)
+        /// Waits for the pending asynchronous read to complete. (Consider using <see cref="Stream.ReadAsync(byte[],int,int)"/> instead; see the Remarks section.)
         /// </summary>
         /// <returns>
         /// The number of bytes read from the stream, between zero (0) and the number of bytes you requested. Streams return zero (0) only at the end of the stream, otherwise, they should block until at least one byte is available.
         /// </returns>
-        /// <param name="asyncResult">The reference to the pending asynchronous request to finish. </param><exception cref="ArgumentNullException"><paramref name="asyncResult"/> is null. </exception><exception cref="ArgumentException">A handle to the pending read operation is not available.-or-The pending operation does not support reading.</exception><exception cref="InvalidOperationException"><paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream.</exception><exception cref="IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
+        /// <param name="asyncResult">The reference to the pending asynchronous request to finish. </param><exception cref="ArgumentNullException"><paramref name="asyncResult"/> is null. </exception><exception cref="ArgumentException">A handle to the pending read operation is not available.-or-The pending operation does not support reading.</exception><exception cref="InvalidOperationException"><paramref name="asyncResult"/> did not originate from a <see cref="Stream.BeginRead(byte[],int,int,AsyncCallback,object)"/> method on the current stream.</exception><exception cref="IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
         /// <exception cref="NotSupportedException">This stream does not support asynchronous I/O with this method.</exception>
         [Obsolete("Use the ReadAsync method instead.")]
         public override int EndRead(IAsyncResult asyncResult) => throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
 
         /// <summary>
-        /// Ends an asynchronous write operation. (Consider using <see cref="M:System.IO.Stream.WriteAsync(System.Byte[],System.Int32,System.Int32)"/> instead; see the Remarks section.)
+        /// Ends an asynchronous write operation. (Consider using <see cref="Stream.WriteAsync(byte[],int,int)"/> instead; see the Remarks section.)
         /// </summary>
-        /// <param name="asyncResult">A reference to the outstanding asynchronous I/O request. </param><exception cref="ArgumentNullException"><paramref name="asyncResult"/> is null. </exception><exception cref="ArgumentException">A handle to the pending write operation is not available.-or-The pending operation does not support writing.</exception><exception cref="InvalidOperationException"><paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream.</exception><exception cref="IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
+        /// <param name="asyncResult">A reference to the outstanding asynchronous I/O request. </param><exception cref="ArgumentNullException"><paramref name="asyncResult"/> is null. </exception><exception cref="ArgumentException">A handle to the pending write operation is not available.-or-The pending operation does not support writing.</exception><exception cref="InvalidOperationException"><paramref name="asyncResult"/> did not originate from a <see cref="Stream.BeginWrite(byte[],int,int,AsyncCallback,object)"/> method on the current stream.</exception><exception cref="IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
         /// <exception cref="NotSupportedException">This stream does not support asynchronous I/O with this method.</exception>
         [Obsolete("Use the WriteAsync method instead.")]
         public override void EndWrite(IAsyncResult asyncResult) => throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
@@ -202,7 +202,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A task that represents the asynchronous flush operation.
         /// </returns>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="ObjectDisposedException">The stream has been disposed.</exception>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param><exception cref="ObjectDisposedException">The stream has been disposed.</exception>
         public override Task FlushAsync(CancellationToken cancellationToken) => ParentStream.FlushAsync(cancellationToken);
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A task that represents the asynchronous copy operation.
         /// </returns>
-        /// <param name="destination">The stream to which the contents of the current stream will be copied.</param><param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero. The default size is 81920.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="ArgumentNullException"><paramref name="destination"/> is null.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception><exception cref="ObjectDisposedException">Either the current stream or the destination stream is disposed.</exception><exception cref="NotSupportedException">The current stream does not support reading, or the destination stream does not support writing.</exception>
+        /// <param name="destination">The stream to which the contents of the current stream will be copied.</param><param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero. The default size is 81920.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param><exception cref="ArgumentNullException"><paramref name="destination"/> is null.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception><exception cref="ObjectDisposedException">Either the current stream or the destination stream is disposed.</exception><exception cref="NotSupportedException">The current stream does not support reading, or the destination stream does not support writing.</exception>
         public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
             if (destination == null)
@@ -251,7 +251,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A task that represents the asynchronous read operation. The value of the <paramref name="count"/> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if the end of the stream has been reached. 
         /// </returns>
-        /// <param name="buffer">The buffer to write the data into.</param><param name="offset">The byte offset in <paramref name="buffer"/> at which to begin writing data from the stream.</param><param name="count">The maximum number of bytes to read.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception><exception cref="ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception><exception cref="NotSupportedException">The stream does not support reading.</exception><exception cref="ObjectDisposedException">The stream has been disposed.</exception><exception cref="InvalidOperationException">The stream is currently in use by a previous read operation. </exception>
+        /// <param name="buffer">The buffer to write the data into.</param><param name="offset">The byte offset in <paramref name="buffer"/> at which to begin writing data from the stream.</param><param name="count">The maximum number of bytes to read.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param><exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception><exception cref="ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception><exception cref="NotSupportedException">The stream does not support reading.</exception><exception cref="ObjectDisposedException">The stream has been disposed.</exception><exception cref="InvalidOperationException">The stream is currently in use by a previous read operation. </exception>
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (buffer == null)
@@ -315,7 +315,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A task that represents the asynchronous write operation.
         /// </returns>
-        /// <param name="buffer">The buffer to write data from.</param><param name="offset">The zero-based byte offset in <paramref name="buffer"/> from which to begin copying bytes to the stream.</param><param name="count">The maximum number of bytes to write.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception><exception cref="ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception><exception cref="NotSupportedException">The stream does not support writing.</exception><exception cref="ObjectDisposedException">The stream has been disposed.</exception><exception cref="InvalidOperationException">The stream is currently in use by a previous write operation. </exception>
+        /// <param name="buffer">The buffer to write data from.</param><param name="offset">The zero-based byte offset in <paramref name="buffer"/> from which to begin copying bytes to the stream.</param><param name="count">The maximum number of bytes to write.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param><exception cref="ArgumentNullException"><paramref name="buffer"/> is null.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception><exception cref="ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception><exception cref="NotSupportedException">The stream does not support writing.</exception><exception cref="ObjectDisposedException">The stream has been disposed.</exception><exception cref="InvalidOperationException">The stream is currently in use by a previous write operation. </exception>
         public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (buffer == null)
@@ -567,7 +567,7 @@ namespace Gorgon.IO
         /// <summary>
         /// When overridden in a derived class, writes a sequence of bytes to the current stream and advances the current position within this stream by the number of bytes written.
         /// </summary>
-        /// <param name="buffer">An array of bytes. This method copies <paramref name="count"/> bytes from <paramref name="buffer"/> to the current stream. </param><param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin copying bytes to the current stream. </param><param name="count">The number of bytes to be written to the current stream. </param><exception cref="ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length.</exception><exception cref="ArgumentNullException"><paramref name="buffer"/>  is null.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception><exception cref="IOException">An I/O error occured, such as the specified file cannot be found.</exception><exception cref="NotSupportedException">The stream does not support writing.</exception><exception cref="ObjectDisposedException"><see cref="M:System.IO.Stream.Write(System.Byte[],System.Int32,System.Int32)"/> was called after the stream was closed.</exception><filterpriority>1</filterpriority>
+        /// <param name="buffer">An array of bytes. This method copies <paramref name="count"/> bytes from <paramref name="buffer"/> to the current stream. </param><param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin copying bytes to the current stream. </param><param name="count">The number of bytes to be written to the current stream. </param><exception cref="ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length.</exception><exception cref="ArgumentNullException"><paramref name="buffer"/>  is null.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception><exception cref="IOException">An I/O error occured, such as the specified file cannot be found.</exception><exception cref="NotSupportedException">The stream does not support writing.</exception><exception cref="ObjectDisposedException"><see cref="Stream.Write(byte[],int,int)"/> was called after the stream was closed.</exception><filterpriority>1</filterpriority>
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (buffer == null)

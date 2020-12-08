@@ -25,12 +25,10 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Properties;
 
@@ -90,53 +88,12 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Function to write data from a <see cref="GorgonNativeBuffer{T}"/> to a stream.
+        /// Function to write data from a span to a stream.
         /// </summary>
-        /// <typeparam name="T">The type of data in the buffer. Must be an unmanaged value type.</typeparam>
-        /// <param name="buffer">The buffer to write to the stream.</param>
-        /// <param name="index">[Optional] The index in the buffer to start copying from.</param>
-        /// <param name="count">[Optional] The number of items in the buffer to copy.</param>
-        /// <remarks>
-        /// <para>
-        /// If the <paramref name="count"/> is omitted, then the <see cref="GorgonNativeBuffer{T}.Length"/> of the buffer minus the index is used.
-        /// </para>
-        /// <para>
-        /// This method will constrain the <paramref name="index"/> and <paramref name="count"/> parameters to ensure they do not go out of bounds in the buffer.
-        /// </para>
-        /// </remarks>
-        public void WriteRange<T>(GorgonNativeBuffer<T> buffer, int index = 0, int? count = null)
-            where T : unmanaged
-        {
-            if (buffer == null)
-            {
-                return;
-            }
-
-            // Constrain the start index to within the length of the buffer.
-            index = index.Max(0).Min(buffer.Length);
-
-            if (count == null)
-            {
-                count = buffer.Length - index;
-            }
-
-            if ((count + index) > buffer.Length)
-            {
-                count = buffer.Length - index;
-            }
-
-            if (count < 1)
-            {
-                return;
-            }
-
-            unsafe
-            {
-                int typeSize = Unsafe.SizeOf<T>();
-                void* ptr = (byte*)buffer + (typeSize * index);
-                Write(ptr, count.Value * typeSize);
-            }
-        }
+        /// <typeparam name="T">The type of data in the span buffer. Must be an unmanaged value type.</typeparam>
+        /// <param name="buffer">The span buffer to write to the stream.</param>
+        public void WriteRange<T>(Span<T> buffer)
+            where T : unmanaged => Write(ref Unsafe.As<T, byte>(ref buffer[0]), Unsafe.SizeOf<T>() * buffer.Length);
 
         /// <summary>
         /// Function to write the bytes pointed at by the pointer into the stream.
@@ -195,33 +152,56 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to write a generic value to the stream.
+        /// Function to write the bytes in a referenced buffer into the stream.
         /// </summary>
-        /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
-        /// <param name="value">Value to write to the stream.</param>
+        /// <param name="buffer">The reference to the buffer to write to the stream.</param>
+        /// <param name="size">Number of bytes to write.</param>
         /// <remarks>
         /// <para>
-        /// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
-        /// <typeparamref name="T"/>, and any packing rules applied.
+        /// This method will write the number of bytes specified by the <paramref name="size"/> parameter from the referenced byte <paramref name="buffer"/>.
         /// </para>
-        /// <note type="important">
-        /// <para>
-        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-        /// </para>
-        /// <para>
-        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-        /// </para>
+        /// <note type="caution">
+        /// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
         /// </note>
-        /// </remarks>
-        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
-        public void WriteValue<T>(ref T value)
-            where T : unmanaged
+        /// </remarks>        
+        public void Write(ref byte buffer, int size)
         {
-            unsafe
+            if (size < 1)
             {
-                void* ptr = Unsafe.AsPointer(ref value);
-                Write(ptr, Unsafe.SizeOf<T>());
+                return;
+            }
+
+            int offset = 0;
+
+            while (size > 0)
+            {
+                if (size >= sizeof(long))
+                {
+                    Write(Unsafe.As<byte, long>(ref Unsafe.Add(ref buffer, offset)));
+                    size -= sizeof(long);
+                    offset += sizeof(long);
+                    continue;
+                }
+
+                if (size >= sizeof(int))
+                {
+                    Write(Unsafe.As<byte, int>(ref Unsafe.Add(ref buffer, offset)));
+                    size -= sizeof(int);
+                    offset += sizeof(int);
+                    continue;
+                }
+
+                if (size >= 2)
+                {
+                    Write(Unsafe.As<byte, short>(ref Unsafe.Add(ref buffer, offset)));
+                    size -= sizeof(short);
+                    offset += sizeof(short);
+                    continue;
+                }
+
+                Write(Unsafe.Add(ref buffer, offset));
+                size--;
+                offset++;
             }
         }
 
@@ -246,15 +226,32 @@ namespace Gorgon.IO
         /// </note>
         /// </remarks>
         /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+        public void WriteValue<T>(ref T value)
+            where T : unmanaged => Write(ref Unsafe.As<T, byte>(ref value), Unsafe.SizeOf<T>());
+
+        /// <summary>
+        /// Function to write a generic value to the stream.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
+        /// <param name="value">Value to write to the stream.</param>
+        /// <remarks>
+        /// <para>
+        /// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
+        /// <typeparamref name="T"/>, and any packing rules applied.
+        /// </para>
+        /// <note type="important">
+        /// <para>
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
         public void WriteValue<T>(T value)
-            where T : unmanaged
-        {
-            unsafe
-            {
-                void* ptr = Unsafe.AsPointer(ref value);
-                Write(ptr, Unsafe.SizeOf<T>());
-            }
-        }
+            where T : unmanaged => WriteValue(ref value);
 
         /// <summary>
         /// Function to write a range of generic values.
@@ -323,39 +320,80 @@ namespace Gorgon.IO
                 throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex + count, value.Length));
             }
 
-            byte[] tempBuffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
+            Write(ref Unsafe.As<T, byte>(ref value[startIndex]), count.Value * Unsafe.SizeOf<T>());
+        }
 
-            try
+        /// <summary>
+        /// Function to write a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
+        /// <param name="value">Pointer to memory containing the values to write.</param>
+        /// <param name="startIndex">[Optional] Starting index in the pointer.</param>
+        /// <param name="count">[Optional] Number of elements to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+        /// </exception>
+        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will write data into the binary stream from the specified pointer to memory containing values of type <typeparamref name="T"/>. The values will start at the 
+        /// <paramref name="startIndex"/> in the array up to the <paramref name="count"/> specified. If the <paramref name="count"/> is not specified (i.e. it is <b>null</b>), then the entire 
+        /// memory block minus the <paramref name="startIndex"/> will be used.
+        /// </para>
+        /// <para>
+        /// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> <c>* (</c><paramref name="count"/>-<paramref name="startIndex"/><c>)</c>. 
+        /// Packing rules on type <typeparamref name="T"/> will affect the size of the type.
+        /// </para>
+        /// <note type="important">
+        /// <para>
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        public void WriteRange<T>(GorgonPtr<T> value, int startIndex = 0, int? count = null)
+            where T : unmanaged
+        {
+            if (value == GorgonPtr<T>.NullPtr)
             {
-                int typeSize = Unsafe.SizeOf<T>();
-                int totalSize = count.Value * typeSize;
-                int blockSize = _bufferSize;
-                int offset = 0;
-                ref byte valueRef = ref Unsafe.As<T, byte>(ref value[startIndex]);
-                ref byte bufferRef = ref tempBuffer[0];
-
-                while (totalSize > 0)
-                {
-                    if (blockSize > totalSize)
-                    {
-                        blockSize = totalSize;
-                    }
-
-                    ref byte srcRef = ref Unsafe.Add(ref valueRef, offset);
-
-                    // Not a fan of doing it this way. This extra indirection is kind of annoying, but we have no real way to cast T[] into byte[] and passing that 
-                    // to the Stream Write method.  This may be solvable with Span<T>, but it's still in preview and I won't touch that with a 10,000 foot pole 
-                    // until it's ready for use.
-                    Unsafe.CopyBlock(ref bufferRef, ref srcRef, (uint)blockSize);
-                    Write(tempBuffer, 0, blockSize);
-
-                    totalSize -= blockSize;
-                    offset += blockSize;
-                }
+                throw new ArgumentNullException(nameof(value));
             }
-            finally
+
+            if (count == null)
             {
-                ArrayPool<byte>.Shared.Return(tempBuffer);
+                count = value.Length - startIndex;
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex, 0));
+            }
+
+            if (startIndex >= value.Length)
+            {
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, startIndex, value.Length));
+            }
+
+            if ((value.Length == 0) || (count <= 0))
+            {
+                return;
+            }
+
+            if ((startIndex + count) > value.Length)
+            {
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex + count, value.Length));
+            }
+
+            unsafe
+            {
+                Write((value + startIndex), count.Value * Unsafe.SizeOf<T>());
             }
         }
         #endregion

@@ -131,15 +131,9 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// This method is not available for this type.
-        /// </summary>
-        /// <exception cref="NotSupportedException">Reading is not supported by this type.</exception>
-        protected override void ReadHeaderValidate() => throw new NotSupportedException();
-
-        /// <summary>
         /// Function to write the header information for the chunk file.
         /// </summary>
-        protected override void WriteHeader()
+        protected override void OnOpen()
         {
             using (var writer = new GorgonBinaryWriter(Stream, true))
             {
@@ -296,7 +290,6 @@ namespace Gorgon.IO
             }
 
             _appHeaderId = appHeaderId;
-            Mode = ChunkFileMode.Write;
         }
         #endregion
     }

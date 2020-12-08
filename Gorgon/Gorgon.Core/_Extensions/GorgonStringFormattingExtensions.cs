@@ -40,13 +40,13 @@ namespace Gorgon.Core
         /// <summary>
         /// Function to break a string into an array of strings based on the newline control characters present in the text.
         /// </summary>
-        /// <param name="renderText">The text to evaluate.</param>
+        /// <param name="text">The text to evaluate.</param>
         /// <param name="buffer">The array of strings representing a single line per newline control character.</param>
-        public static void GetLines(this StringBuilder renderText, ref string[] buffer)
+        public static void GetLines(this StringBuilder text, ref string[] buffer)
         {
             int lineCount = 0;
 
-            if (renderText.Length == 0)
+            if (text.Length == 0)
             {
                 buffer = Array.Empty<string>();
                 return;
@@ -56,9 +56,9 @@ namespace Gorgon.Core
             int charCount = 0;
 
             // Find out how many lines we have.
-            for (int i = 0; i < renderText.Length; ++i)
+            for (int i = 0; i < text.Length; ++i)
             {
-                char character = renderText[i];
+                char character = text[i];
 
                 if (character == '\n')
                 {
@@ -75,9 +75,9 @@ namespace Gorgon.Core
             }
 
             int line = 0;
-            for (int i = 0; i < renderText.Length; ++i)
+            for (int i = 0; i < text.Length; ++i)
             {
-                char character = renderText[i];
+                char character = text[i];
 
                 if (character != '\n')
                 {
@@ -92,7 +92,7 @@ namespace Gorgon.Core
                 }
                 else
                 {
-                    buffer[line] = renderText.ToString(startChar, charCount);
+                    buffer[line] = text.ToString(startChar, charCount);
                     startChar += charCount + 1;
                 }
 
@@ -106,7 +106,7 @@ namespace Gorgon.Core
             }
 
             // Get last line.
-            buffer[line] = renderText.ToString(startChar, charCount);
+            buffer[line] = text.ToString(startChar, charCount);
         }
 
         /// <summary>
