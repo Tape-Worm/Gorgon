@@ -24,10 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Windows.Forms;
 
-namespace Gorgon.UI
+namespace System.Windows.Forms
 {
     /// <summary>
     /// Extension methods for the <see cref="Control"/> base class.

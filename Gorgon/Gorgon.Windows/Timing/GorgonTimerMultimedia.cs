@@ -156,23 +156,23 @@ namespace Gorgon.Timing
             long currentTime = WinMultimediaApi.timeGetTime();
             long ticks = Environment.TickCount;
 
-            // Handle wrap around every ~50 days.
-            if (currentTime < _startTime)
-            {
-                long diff = uint.MaxValue - _startTime;
-                _startTime = diff;
-                currentTime += diff;
-            }
-
-            if (ticks < _startTick)
-            {
-                long diff = uint.MaxValue - _startTick;
-                _startTick = diff;
-                ticks += diff;
-            }
-
             unchecked
             {
+                // Handle wrap around every ~50 days.
+                if (currentTime < _startTime)
+                {
+                    long diff = uint.MaxValue - _startTime;
+                    _startTime = diff;
+                    currentTime += diff;
+                }
+
+                if (ticks < _startTick)
+                {
+                    long diff = uint.MaxValue - _startTick;
+                    _startTick = diff;
+                    ticks += diff;
+                }
+
                 _milliseconds = (currentTime - _startTime);
                 _currentTicks = ticks - _startTick;
             }

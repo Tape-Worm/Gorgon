@@ -20,20 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 1, 2020 10:56:27 AM
+// Created: February 1, 2020 10:56:32 AM
 // 
 #endregion
 
 using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Gorgon.UI
 {
     /// <summary>
-    /// A form for displaying a progress meter panel on an application.
+    /// A form for displaying a "please wait" panel on an application.
     /// </summary>
-    public partial class FormProgress : Form
+    internal partial class FormWait : Form
     {
+        // Flag to indicate that the form is in the middle of a refresh.
+        private int _isRefreshing;
+
         /// <summary>Raises the <see cref="Form.FormClosing"/> event.</summary>
         /// <param name="e">A <see cref="FormClosingEventArgs"/> that contains the event data.</param>
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -43,7 +47,7 @@ namespace Gorgon.UI
                 e.Cancel = true;
             }
 
-            base.OnFormClosing(e);            
+            base.OnFormClosing(e);
         }
 
         /// <summary>Raises the <see cref="Form.Shown"/> event.</summary>
@@ -68,42 +72,43 @@ namespace Gorgon.UI
             CenterToParent();
         }
 
-        /// <summary>Handles the Resize event of the Progress control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void Progress_Resize(object sender, EventArgs e)
-        {
-            if (!IsHandleCreated)
-            {
-                return;
-            }
-            CenterToParent();
-        }
-
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.KeyUp"/> event.</summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.KeyEventArgs"/> that contains the event data.</param>
-        protected override void OnKeyUp(KeyEventArgs e)
-        {
-            base.OnKeyUp(e);
-
-            if (e.KeyCode == Keys.Escape)
-            {
-                Progress.Cancel();
-            }
-        }
-
         /// <summary>Raises the <see cref="Form.Load"/> event.</summary>
         /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
             CenterToParent();
-            Focus();
-            Progress.Focus();
         }
 
-        /// <summary>Initializes a new instance of the <see cref="FormProgress"/> class.</summary>
-        public FormProgress() => InitializeComponent();
+        /// <summary>Handles the Resize event of the Wait control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void Wait_Resize(object sender, EventArgs e) => CenterToParent();
+
+        /// <summary>Forces the control to invalidate its client area and immediately redraw itself and any child controls.</summary>
+        public override void Refresh()
+        {
+            base.Refresh();
+
+            if (Interlocked.Exchange(ref _isRefreshing, 1) == 1)
+            {
+                return;
+            }
+
+            try
+            {
+                if ((!IsDisposed) && (!Disposing))
+                {
+                    CenterToParent();
+                }
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _isRefreshing, 0);
+            }
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="FormWait"/> class.</summary>
+        public FormWait() => InitializeComponent();
     }
 }

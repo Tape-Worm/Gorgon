@@ -172,7 +172,7 @@ namespace Gorgon.Diagnostics
             _machineVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             _userVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             _processVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
+            
             RefreshEnvironmentVariables();
         }
         #endregion

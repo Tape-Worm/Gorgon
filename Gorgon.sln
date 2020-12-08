@@ -2,23 +2,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Core", "Gorgon\Gorgon.Core\Gorgon.Core.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Core", "Gorgon\Gorgon.Core\Gorgon.Core.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E656298C-C1C6-4274-87B5-A19C6BA689CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example001", "Examples\Gorgon.Core\Example001\Example001.csproj", "{92184B11-8908-40DE-A81B-827CE74FE8C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example001", "Examples\Gorgon.Core\Example001\Example001.csproj", "{92184B11-8908-40DE-A81B-827CE74FE8C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example002", "Examples\Gorgon.Core\Example002\Example002.csproj", "{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example002", "Examples\Gorgon.Core\Example002\Example002.csproj", "{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example003", "Examples\Gorgon.Core\Example003\Example003.csproj", "{CD211613-DE0D-4D09-9D3E-60ACFA893791}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example003", "Examples\Gorgon.Core\Example003\Example003.csproj", "{CD211613-DE0D-4D09-9D3E-60ACFA893791}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Core", "Gorgon.Core", "{9A8C2588-028B-42F6-92B4-EA4AF2B8489B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004", "Examples\Gorgon.Core\Example004\Example004.csproj", "{7E9E7C1E-AE39-4474-833F-A85EC045C74F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example004", "Examples\Gorgon.Core\Example004\Example004.csproj", "{7E9E7C1E-AE39-4474-833F-A85EC045C74F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004.BluePlugIn", "Examples\Gorgon.Core\Example004\PlugIns\Example004.BluePlugIn\Example004.BluePlugIn.csproj", "{D6B85D9F-975C-4C28-BEB8-ACF18E453B3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example004.BluePlugIn", "Examples\Gorgon.Core\Example004\PlugIns\Example004.BluePlugIn\Example004.BluePlugIn.csproj", "{D6B85D9F-975C-4C28-BEB8-ACF18E453B3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004.GreenAndPurplePlugIn", "Examples\Gorgon.Core\Example004\PlugIns\Example004.GreenAndPurplePlugIn\Example004.GreenAndPurplePlugIn.csproj", "{2E14312F-4E7E-45AD-945A-D91DC5E254CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example004.GreenAndPurplePlugIn", "Examples\Gorgon.Core\Example004\PlugIns\Example004.GreenAndPurplePlugIn\Example004.GreenAndPurplePlugIn.csproj", "{2E14312F-4E7E-45AD-945A-D91DC5E254CD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Input", "Gorgon.Input", "{E110A495-36C7-44AB-9748-A8C29EFA276C}"
 EndProject
@@ -26,9 +26,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.FileSystem", "Gorgon
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Graphics", "Gorgon.Graphics", "{C421D2F1-B2C4-4136-A33E-52A17B0E907C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example005", "Examples\Gorgon.Core\Example005\Example005.csproj", "{07147BD3-7F0F-42AD-8ECA-69E94DE7F49F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example005", "Examples\Gorgon.Core\Example005\Example005.csproj", "{07147BD3-7F0F-42AD-8ECA-69E94DE7F49F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Windows", "Gorgon\Gorgon.Windows\Gorgon.Windows.csproj", "{A19CB981-2D25-4316-9542-1D2BD7064F2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Windows", "Gorgon\Gorgon.Windows\Gorgon.Windows.csproj", "{A19CB981-2D25-4316-9542-1D2BD7064F2B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Imaging", "Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj", "{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}"
 EndProject
@@ -207,6 +207,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.ImageAtlasToo
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Windows", "Gorgon.Windows", "{838F5E4C-79E1-4D2E-9554-3345214D2426}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plexi", "Examples\Gorgon.Windows\Plexi\Plexi.csproj", "{0352D073-8FB9-42D0-9A41-B49B5611352E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderBrowser", "Examples\Gorgon.Windows\FolderBrowser\FolderBrowser.csproj", "{3DA6AAE8-D596-455F-B4A5-0DCF7223E921}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -510,6 +516,14 @@ Global
 		{8E09187C-F82A-450B-971F-D1EF14FA10F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E09187C-F82A-450B-971F-D1EF14FA10F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E09187C-F82A-450B-971F-D1EF14FA10F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0352D073-8FB9-42D0-9A41-B49B5611352E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0352D073-8FB9-42D0-9A41-B49B5611352E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0352D073-8FB9-42D0-9A41-B49B5611352E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0352D073-8FB9-42D0-9A41-B49B5611352E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DA6AAE8-D596-455F-B4A5-0DCF7223E921}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DA6AAE8-D596-455F-B4A5-0DCF7223E921}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DA6AAE8-D596-455F-B4A5-0DCF7223E921}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DA6AAE8-D596-455F-B4A5-0DCF7223E921}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -584,6 +598,9 @@ Global
 		{4EB38809-FAB9-47AC-93C5-B577901F1B3E} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 		{45418E1D-D303-47EA-BAFE-F69FB9A13BFE} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
 		{8E09187C-F82A-450B-971F-D1EF14FA10F8} = {9491DE41-CAB3-4B22-9AFD-8BA8958453E5}
+		{838F5E4C-79E1-4D2E-9554-3345214D2426} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
+		{0352D073-8FB9-42D0-9A41-B49B5611352E} = {838F5E4C-79E1-4D2E-9554-3345214D2426}
+		{3DA6AAE8-D596-455F-B4A5-0DCF7223E921} = {838F5E4C-79E1-4D2E-9554-3345214D2426}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}

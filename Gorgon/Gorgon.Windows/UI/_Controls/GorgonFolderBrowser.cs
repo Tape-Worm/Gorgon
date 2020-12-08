@@ -58,6 +58,8 @@ namespace Gorgon.UI
         : UserControl
     {
         #region Variables.
+        // Flag to indicate that the browser is in read only mode.
+        private bool _isReadOnly;
         // The directory that we are currently viewing in the list.
         private string _activeDirectory;
         // Flag to indicate that we're currently filling the list.
@@ -475,6 +477,20 @@ namespace Gorgon.UI
             get => (Parent != null) && (base.BackColor == Color.Empty) ? Parent.BackColor : base.BackColor;
             set => base.BackColor = value;
         }
+
+        /// <summary>
+        /// Property to set or return whether the browser is in read only mode.
+        /// </summary>
+        [Browsable(true), Category("Behavior"), Description("Sets whether the browser is in read only mode. If in read only mode, then the add/remove directory buttons are disabled."), DefaultValue(false)]
+        public bool IsReadOnly
+        {
+            get => _isReadOnly;
+            set
+            {
+                _isReadOnly = value;
+                ValidateControls();
+            }
+        }
         #endregion
 
         #region Methods.
@@ -518,7 +534,7 @@ namespace Gorgon.UI
         {
             try
             {
-                if ((e.Item < 0) || (_activeDirectory == null))
+                if ((e.Item < 0) || (_activeDirectory == null) || (_isReadOnly))
                 {
                     e.CancelEdit = true;
                     return;
@@ -1059,16 +1075,8 @@ namespace Gorgon.UI
 
                 if (!dir.Exists)
                 {
-                    if (GorgonDialogs.ConfirmBox(ParentForm, string.Format(Resources.GOR_CONFIRM_CREATE_DIR, dir.FullName)) == ConfirmationResult.Yes)
-                    {
-                        dir.Create();
-                        dir.Refresh();
-                    }
-                    else
-                    {
-                        TextDirectory.Text = FormatDirectoryPath(_currentDirectory);
-                        dir = new DirectoryInfo(_currentDirectory.FormatDirectory(Path.DirectorySeparatorChar));
-                    }
+                    SetErrorMessage(string.Format(Resources.GOR_ERR_DIRECTORY_NOT_FOUND, dir.FullName));
+                    return;
                 }
 
                 SetCurrentDirectory(dir.FullName, true);
@@ -1113,7 +1121,7 @@ namespace Gorgon.UI
                     // Don't go any higher than the active directory.
                     if (!string.Equals(_currentDirectory, _activeDirectory, StringComparison.OrdinalIgnoreCase))
                     {
-                        _currentDirectory = (RootFolder == null) ? dir?.Parent.FullName : _activeDirectory;
+                        _currentDirectory = (RootFolder == null) ? dir?.Parent?.FullName : _activeDirectory;
                         TextDirectory.Text = FormatDirectoryPath(_currentDirectory);
                     }
                 }
@@ -1269,8 +1277,8 @@ namespace Gorgon.UI
         {
             ButtonDirUp.Enabled = (_activeDirectory != null) && (_currentDirectory != null)
                 && ((RootFolder == null) || (!string.Equals(RootFolder.FullName, _activeDirectory, StringComparison.OrdinalIgnoreCase)));
-            ButtonAddDir.Enabled = (_activeDirectory != null) && (_currentDirectory != null) && (_editItem == null);
-            ButtonDeleteDir.Enabled = (ButtonAddDir.Enabled) && (!string.Equals(_currentDirectory, _activeDirectory, StringComparison.OrdinalIgnoreCase));
+            ButtonAddDir.Enabled = (!_isReadOnly) && ((_activeDirectory != null) && (_currentDirectory != null) && (_editItem == null));
+            ButtonDeleteDir.Enabled = (!_isReadOnly) && ((ButtonAddDir.Enabled) && (!string.Equals(_currentDirectory, _activeDirectory, StringComparison.OrdinalIgnoreCase)));
         }
 
         /// <summary>
@@ -1415,8 +1423,8 @@ namespace Gorgon.UI
         /// </summary>
         private void GetDrives()
         {
-            IEnumerable<DriveInfo> drives = DriveInfo
-                                            .GetDrives().Where(item => item.DriveType != DriveType.Unknown);
+            IEnumerable<DriveInfo> drives = DriveInfo.GetDrives()
+                                                     .Where(item => item.DriveType != DriveType.Unknown);
 
             if (_sortOrder == SortOrder.Ascending)
             {
@@ -1641,8 +1649,8 @@ namespace Gorgon.UI
             UpdateIcon(6, _fileIcon);
         }
 
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data. </param>
+        /// <summary>Raises the <see cref="UserControl.Load" /> event.</summary>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

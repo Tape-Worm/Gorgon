@@ -38,7 +38,7 @@ namespace Gorgon.Diagnostics.LogProviders
     /// <summary>
     /// A provider used to store logging messages to a console window.
     /// </summary>
-    public class GorgonLogConsoleProvider
+    internal class LogConsoleProvider
         : IGorgonLogProvider
     {
         #region Enums.

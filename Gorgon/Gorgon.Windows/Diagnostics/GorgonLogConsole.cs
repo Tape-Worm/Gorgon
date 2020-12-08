@@ -45,7 +45,7 @@ namespace Gorgon.Diagnostics
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
         public GorgonLogConsole(string appname, Version version = null)
-            : base(appname, version) => Provider = new GorgonLogConsoleProvider();
+            : base(appname, version) => Provider = new LogConsoleProvider();
         #endregion
     }
 }

@@ -138,7 +138,7 @@ namespace Gorgon.UI
         /// <param name="y">The new <see cref="P:System.Windows.Forms.Control.Top"/> property value of the control.</param>
         /// <param name="width">The new <see cref="P:System.Windows.Forms.Control.Width"/> property value of the control.</param>
         /// <param name="height">The new <see cref="P:System.Windows.Forms.Control.Height"/> property value of the control.</param>
-        /// <param name="specified">A bitwise combination of the <see cref="System.Windows.Forms.BoundsSpecified"/> values.</param>
+        /// <param name="specified">A bitwise combination of the <see cref="BoundsSpecified"/> values.</param>
         protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified) => base.SetBoundsCore(x, y, 105, 105, specified);
         #endregion
 
@@ -167,7 +167,7 @@ namespace Gorgon.UI
     internal class GorgonAlignmentPickerDesigner
         : ControlDesigner
     {
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.UI.GorgonAlignmentPickerDesigner"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="GorgonAlignmentPickerDesigner"/> class.</summary>
         internal GorgonAlignmentPickerDesigner() => AutoResizeHandles = true;
 
         /// <summary>Gets the selection rules that indicate the movement capabilities of a component.</summary>
