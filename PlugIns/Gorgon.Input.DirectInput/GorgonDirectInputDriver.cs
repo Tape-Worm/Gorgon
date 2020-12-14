@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using System.Text;
+using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Input.DirectInput.Properties;
 using DI = SharpDX.DirectInput;
@@ -49,6 +50,9 @@ namespace Gorgon.Input.DirectInput
         private Lazy<DI.DirectInput> _directInput;
         // List of xinput device ID values.
         private readonly Lazy<IEnumerable<string>> _xinputDeviceIDs;
+        // The available axis mappings for the individual gaming devices.
+        private readonly Dictionary<IGorgonGamingDeviceInfo, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId>> _axisMappings = 
+                                    new Dictionary<IGorgonGamingDeviceInfo, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId>>();
         #endregion
 
         #region Methods.
@@ -122,6 +126,26 @@ namespace Gorgon.Input.DirectInput
             return false;
         }
 
+        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
+        /// <param name="disposing">
+        ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
+
+            Lazy<DI.DirectInput> di = Interlocked.Exchange(ref _directInput, null);
+
+            if ((di == null) || (!di.IsValueCreated))
+            {
+                return;
+            }
+
+            di.Value.Dispose();
+        }
+
         /// <summary>
         /// Function to enumerate the gaming devices supported by this driver.
         /// </summary>
@@ -137,45 +161,46 @@ namespace Gorgon.Input.DirectInput
 
             Log.Print("Enumerating DirectInput gaming devices...", LoggingLevel.Verbose);
 
+            bool FilterDiDevices(DI.DeviceInstance device)
+            {
+                bool notXInputController = !IsXInputController(device);
+
+                if (!notXInputController)
+                {
+                    Log.Print("WARNING: Found XInput controller.  The Direct Input driver does not support this type of controller.  Skipping...", LoggingLevel.Verbose);
+                    return false;
+                }
+
+                bool isAttached = _directInput.Value.IsDeviceAttached(device.InstanceGuid);
+
+                if ((connectedOnly) || (isAttached))
+                {
+                    return true;
+                }
+
+                Log.Print($"WARNING: Found gaming device '{device.ProductName}', but it is not attached and enumeration is filtered for attached devices only.  Skipping...",
+                          LoggingLevel.Verbose);
+
+                return false;
+            }
+
+            DirectInputDeviceInfo CreateDeviceInfo(DI.DeviceInstance device)
+            {
+                var info = new DirectInputDeviceInfo(device);
+
+                using (var joystick = new DI.Joystick(_directInput.Value, info.DeviceID))
+                {
+                    _axisMappings[info] = info.GetDeviceCaps(joystick);
+
+                    Log.Print($"Found DirectInput gaming device \"{info.Description}\"", LoggingLevel.Verbose);
+                }
+                return info;
+            }
+
             // Enumerate all controllers.
-            IReadOnlyList<DirectInputDeviceInfo> result = devices
-                .Where(item =>
-                       {
-                           bool notXInputController = !IsXInputController(item);
-
-                           if (!notXInputController)
-                           {
-                               Log.Print("WARNING: Found XInput controller.  The Direct Input driver does not support this type of controller.  Skipping...", LoggingLevel.Verbose);
-                               return false;
-                           }
-
-                           bool isAttached = _directInput.Value.IsDeviceAttached(item.InstanceGuid);
-
-                           if ((connectedOnly) || (isAttached))
-                           {
-                               return true;
-                           }
-
-                           Log.Print("WARNING: Found gaming device '{0}', but it is not attached and enumeration is filtered for attached devices only.  Skipping...",
-                                     LoggingLevel.Verbose, item.ProductName);
-
-                           return false;
-                       })
-                .Select(item =>
-                        {
-                            var info = new DirectInputDeviceInfo(item);
-
-                            using (var joystick = new DI.Joystick(_directInput.Value, info.InstanceGuid))
-                            {
-                                info.GetDeviceCaps(joystick);
-
-                                Log.Print("Found DirectInput gaming device \"{0}\"",
-                                          LoggingLevel.Verbose, info.Description);
-                            }
-
-                            return info;
-                        })
-                .ToArray();
+            IReadOnlyList<DirectInputDeviceInfo> result = devices.Where(FilterDiDevices)
+                                                                 .Select(CreateDeviceInfo)
+                                                                 .ToArray();
 
             return result;
         }
@@ -194,34 +219,12 @@ namespace Gorgon.Input.DirectInput
         /// on the object when you are done with the object so that those resources may be freed.
         /// </para>
         /// </remarks>
-        public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo) => !(gamingDeviceInfo is DirectInputDeviceInfo deviceInfo)
-                ? throw new ArgumentException(Resources.GORINP_ERR_DI_NOT_A_DI_DEVICE_INFO, nameof(gamingDeviceInfo))
-                : new DirectInputDevice(deviceInfo, _directInput.Value)
-                {
-                    // Attempt to acquire the device immediately.
-                    IsAcquired = true
-                };
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public override void Dispose()
-        {
-            if (_directInput == null)
-            {
-                base.Dispose();
-                return;
-            }
-
-            if (_directInput.IsValueCreated)
-            {
-                _directInput.Value.Dispose();
-            }
-
-            _directInput = null;
-
-            base.Dispose();
-        }
+        public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo) 
+            => new DirectInputDevice(gamingDeviceInfo, _directInput.Value, _axisMappings[gamingDeviceInfo])
+               {
+                   // Attempt to acquire the device immediately.
+                   IsAcquired = true
+               };
         #endregion
 
         #region Constructor/Finalizer.

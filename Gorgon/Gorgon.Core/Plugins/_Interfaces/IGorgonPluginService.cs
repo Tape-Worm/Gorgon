@@ -132,7 +132,7 @@ namespace Gorgon.PlugIns
     /// {
     ///		LoadFunctionality();
     ///		
-    ///		Console.WriteLine("The ultimate answer and stuff: {0}", _functionality.DoSomething());
+    ///		Console.WriteLine($"The ultimate answer and stuff: {_functionality.DoSomething()}");
     /// }
     /// ]]>
     /// </code>

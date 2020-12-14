@@ -80,16 +80,16 @@ namespace Gorgon.Examples
                 Console.CursorLeft = 0;
                 Console.CursorTop = 0;
 
-                Console.WriteLine("Gorgon architecture:  {0}", _computerInfo.PlatformArchitecture);
+                Console.WriteLine($"Gorgon architecture:  {_computerInfo.PlatformArchitecture}");
                 Console.WriteLine();
-                Console.WriteLine("Computer name:        {0}", _computerInfo.ComputerName);
-                Console.WriteLine("# of processors:      {0}", _computerInfo.ProcessorCount);
-                Console.WriteLine("Total RAM:            {0} ({1:#,###} bytes)", _computerInfo.TotalPhysicalRAM.FormatMemory(), _computerInfo.TotalPhysicalRAM);
-                Console.WriteLine("Available RAM:        {0} ({1:#,###} bytes)", _computerInfo.AvailablePhysicalRAM.FormatMemory(), _computerInfo.AvailablePhysicalRAM);
+                Console.WriteLine($"Computer name:        {_computerInfo.ComputerName}");
+                Console.WriteLine($"# of processors:      {_computerInfo.ProcessorCount}");
+                Console.WriteLine($"Total RAM:            {_computerInfo.TotalPhysicalRAM.FormatMemory()} ({_computerInfo.TotalPhysicalRAM:#,###} bytes)");
+                Console.WriteLine($"Available RAM:        {_computerInfo.AvailablePhysicalRAM.FormatMemory()} ({_computerInfo.AvailablePhysicalRAM:#,###} bytes)");
                 Console.WriteLine();
-                Console.WriteLine("Windows version:      {0} {1}", _computerInfo.OperatingSystemVersionText, string.IsNullOrEmpty(_computerInfo.OperatingSystemServicePack) ? string.Empty : _computerInfo.OperatingSystemServicePack);
-                Console.WriteLine("Windows architecture: {0}", _computerInfo.OperatingSystemArchitecture);
-                Console.WriteLine("System path:          {0}", _computerInfo.SystemDirectory);
+                Console.WriteLine($"Windows version:      {_computerInfo.OperatingSystemVersionText} {(string.IsNullOrEmpty(_computerInfo.OperatingSystemServicePack) ? string.Empty : _computerInfo.OperatingSystemServicePack)}");
+                Console.WriteLine($"Windows architecture: {_computerInfo.OperatingSystemArchitecture}");
+                Console.WriteLine($"System path:          {_computerInfo.SystemDirectory}");
 
                 // Display exit.
                 Console.CursorLeft = 0;
@@ -113,7 +113,7 @@ namespace Gorgon.Examples
 
             foreach (KeyValuePair<string, string> envString in _computerInfo.MachineEnvironmentVariables)
             {
-                Console.WriteLine("{0} = {1}", envString.Key, envString.Value);
+                Console.WriteLine($"{envString.Key} = {envString.Value}");
             }
 
             Console.BackgroundColor = ConsoleColor.Black;

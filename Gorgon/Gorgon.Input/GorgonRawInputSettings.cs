@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using Gorgon.Native;
+using System;
 
 namespace Gorgon.Input
 {
@@ -59,6 +59,6 @@ namespace Gorgon.Input
         /// If the <see cref="AllowBackground"/> is set to <b>true</b>, then this value must be set.
         /// </para>
         /// </remarks>
-        public GorgonReadOnlyPointer TargetWindow;
+        public IntPtr TargetWindow;
     }
 }

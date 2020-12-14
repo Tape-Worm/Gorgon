@@ -92,6 +92,7 @@ namespace Gorgon.Input
     /// </summary>
 
     public interface IGorgonKeyboard
+        : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawKeyboardData>
     {
         #region Events.
         /// <summary>

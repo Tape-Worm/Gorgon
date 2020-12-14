@@ -66,8 +66,8 @@ namespace Gorgon.Input.XInput
 
             foreach (XInputDeviceInfo info in result)
             {
-                Log.Print("Found XInput controller {0}", LoggingLevel.Verbose, info.Description);
-                info.GetCaps(new XI.Controller(info.ID));
+                Log.Print($"Found XInput controller {info.Description}", LoggingLevel.Verbose);
+                info.GetCaps(new XI.Controller(info.DeviceID.ToUserIndex()));
             }
 
             return result;
@@ -90,6 +90,14 @@ namespace Gorgon.Input.XInput
         public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo) => !(gamingDeviceInfo is XInputDeviceInfo xInputInfo)
                 ? throw new ArgumentException(Resources.GORINP_ERR_XINP_NOT_AN_XINPUT_DEVICE_INFO, nameof(gamingDeviceInfo))
                 : new XInputDevice(xInputInfo);
+
+        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
+        /// <param name="disposing">
+        ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            // Nothing to do dispose.
+        }
         #endregion
 
         #region Constructor/Destructor.

@@ -40,7 +40,7 @@ namespace Gorgon.Input
     /// </para>
     /// </remarks>
     public class GorgonRawKeyboard
-        : IGorgonRawInputDevice, IRawInputDeviceData<GorgonRawKeyboardData>, IGorgonKeyboard
+        : IGorgonKeyboard
     {
         #region Events.
         /// <summary>
@@ -294,7 +294,7 @@ namespace Gorgon.Input
         /// Function to process the Gorgon raw input data into device state data and appropriate events.
         /// </summary>
         /// <param name="rawInputData">The data to process.</param>
-        void IRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(ref GorgonRawKeyboardData rawInputData)
+        void IGorgonRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(in GorgonRawKeyboardData rawInputData)
         {
             // Get the key code.
             Keys keyCode = rawInputData.Key;
@@ -344,15 +344,12 @@ namespace Gorgon.Input
         /// </remarks>
         public GorgonRawKeyboard(IGorgonKeyboardInfo keyboardInfo = null)
         {
-            var rawInfo = keyboardInfo as RawKeyboardInfo;
-
             if (keyboardInfo == null)
             {
-                keyboardInfo = rawInfo = GetSysKeyboardInfo();
+                keyboardInfo = GetSysKeyboardInfo();
             }
 
-            _deviceHandle = rawInfo?.Handle ?? throw new InvalidCastException(string.Format(Resources.GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE, keyboardInfo.GetType().FullName, GetType().FullName));
-
+            _deviceHandle = keyboardInfo.Handle;
             Info = keyboardInfo;
             KeyStates = new GorgonKeyStateCollection();
             KeyStates.Reset();

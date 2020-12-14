@@ -83,7 +83,7 @@ namespace Gorgon.Diagnostics
             {
                 if (_filterLevel != value)
                 {
-                    Print("\r\n**** Filter level: {0}\r\n", LoggingLevel.All, value);
+                    Print($"\r\n**** Filter level: {value}\r\n", LoggingLevel.All);
                 }
 
                 _filterLevel = value;
@@ -302,7 +302,7 @@ namespace Gorgon.Diagnostics
         /// Function to flush all the lines of text to the file.
         /// </summary>
         /// <param name="lines">The lines to flush out</param>
-	    private void FlushLines(List<string> lines)
+        private void FlushLines(List<string> lines)
         {
             if (lines == null)
             {

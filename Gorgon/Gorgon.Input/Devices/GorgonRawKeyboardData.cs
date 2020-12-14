@@ -69,21 +69,32 @@ namespace Gorgon.Input
     /// This type is not intended for use by applications.
     /// </para>
     /// </remarks>
-    public struct GorgonRawKeyboardData
+    public readonly struct GorgonRawKeyboardData
     {
         /// <summary>
         /// Property to return the scan code for the key.
         /// </summary>
-        public int ScanCode;
+        public readonly int ScanCode;
 
         /// <summary>
         /// Property to return flags for the scan code information.
         /// </summary>
-        public KeyboardDataFlags Flags;
+        public readonly KeyboardDataFlags Flags;
 
         /// <summary>
         /// Property to return the key being used.
         /// </summary>
-        public Keys Key;
+        public readonly Keys Key;
+
+        /// <summary>Initializes a new instance of the <see cref="GorgonRawKeyboardData" /> struct.</summary>
+        /// <param name="scanCode">The scan code for the key.</param>
+        /// <param name="flags">The flags for the scan code.</param>
+        /// <param name="key">The virtual key.</param>
+        public GorgonRawKeyboardData(int scanCode, KeyboardDataFlags flags, Keys key)
+        {
+            ScanCode = scanCode;
+            Flags = flags;
+            Key = key;
+        }
     }
 }

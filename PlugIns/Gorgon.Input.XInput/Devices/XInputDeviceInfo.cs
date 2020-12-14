@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
@@ -42,14 +43,6 @@ namespace Gorgon.Input.XInput
         /// Property to return the list of supported buttons for this controller.
         /// </summary>
         public Dictionary<XI.GamepadButtonFlags, int> SupportedButtons
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the ID of the device.
-        /// </summary>
-        public XI.UserIndex ID
         {
             get;
         }
@@ -107,7 +100,7 @@ namespace Gorgon.Input.XInput
         /// <remarks>
         /// Use this value to retrieve the number of axes the gaming device supports by checking its <see cref="GorgonGamingDeviceAxisList{T}.Count"/> property.
         /// </remarks>
-        public GorgonGamingDeviceAxisList<GorgonGamingDeviceAxisInfo> AxisInfo
+        public IReadOnlyDictionary<GamingDeviceAxis, GorgonGamingDeviceAxisInfo> AxisInfo
         {
             get;
             private set;
@@ -125,6 +118,12 @@ namespace Gorgon.Input.XInput
         /// Property to return the number of point of view controls on the gaming device.
         /// </summary>
         public int POVCount => 1;
+
+        /// <summary>Property to return the unique ID for the device.</summary>
+        public Guid DeviceID
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -236,7 +235,7 @@ namespace Gorgon.Input.XInput
             }
 
             // Find out the ranges for each axis.
-            var axes = new Dictionary<GamingDeviceAxis, GorgonRange>(new GorgonGamingDeviceAxisEqualityComparer());
+            var axes = new Dictionary<GamingDeviceAxis, GorgonRange>();
 
             if (capabilities.Gamepad.LeftThumbX != 0)
             {
@@ -272,7 +271,7 @@ namespace Gorgon.Input.XInput
                 Capabilities |= GamingDeviceCapabilityFlags.SupportsThrottle;
             }
 
-            AxisInfo = new GorgonGamingDeviceAxisList<GorgonGamingDeviceAxisInfo>(axes.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, 0)));
+            AxisInfo = axes.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, 0)).ToDictionary(k => k.Axis, v => v);
         }
         #endregion
 
@@ -286,7 +285,7 @@ namespace Gorgon.Input.XInput
         {
             SupportedButtons = new Dictionary<XI.GamepadButtonFlags, int>(new ButtonFlagsEqualityComparer());
             Description = deviceDescription;
-            ID = id;
+            DeviceID = id.ToGuid();
             ManufacturerID = 0;
             ProductID = 0;
         }

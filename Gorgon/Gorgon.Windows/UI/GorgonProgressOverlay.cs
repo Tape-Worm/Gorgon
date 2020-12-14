@@ -215,7 +215,7 @@ namespace Gorgon.UI
         /// If the <paramref name="cancelAction"/> parameter is supplied, a cancel button will appear on the progress window, otherwise it will be hidden.
         /// </para>
         /// <para>
-        /// Passing <b>null</b> to the <paramref name="parentWindow"/> parameter is the same as calling <see cref="parentWindow"/>.
+        /// Passing <b>null</b> to the <paramref name="parentWindow"/> parameter is the same as calling <see cref="Hide"/>.
         /// </para>
         /// </remarks>
         public IWin32Window Show(IWin32Window parentWindow, string title, string message = null, Action cancelAction = null, ProgressBarStyle meterStyle = ProgressBarStyle.Marquee, float initialValue = 0)

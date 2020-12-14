@@ -41,36 +41,12 @@ namespace Gorgon.Input.DirectInput
     {
         #region Properties.
         /// <summary>
-        /// Property to return the axis mappings for the device.
-        /// </summary>
-        public Dictionary<GamingDeviceAxis, DI.DeviceObjectId> AxisMappings
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the GUID for the device instance.
-        /// </summary>
-        public Guid InstanceGuid
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the GUID for the product.
-        /// </summary>
-        public Guid ProductGuid
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the <see cref="GorgonGamingDeviceAxisInfo"/> values for each axis on the gaming device.
         /// </summary>
         /// <remarks>
         /// Use this value to retrieve the number of axes the gaming device supports by checking its <see cref="GorgonGamingDeviceAxisList{T}.Count"/> property.
         /// </remarks>
-        public GorgonGamingDeviceAxisList<GorgonGamingDeviceAxisInfo> AxisInfo
+        public IReadOnlyDictionary<GamingDeviceAxis, GorgonGamingDeviceAxisInfo> AxisInfo
         {
             get;
             private set;
@@ -144,6 +120,12 @@ namespace Gorgon.Input.DirectInput
             get;
             private set;
         }
+
+        /// <summary>Property to return the unique ID for the device.</summary>
+        public Guid DeviceID
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -152,10 +134,10 @@ namespace Gorgon.Input.DirectInput
         /// Function to retrieve the capabilities from the DirectInput joystick.
         /// </summary>
         /// <param name="joystick">The DirectInput joystick to evaluate.</param>
-        public void GetDeviceCaps(DI.Joystick joystick)
+        public IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> GetDeviceCaps(DI.Joystick joystick)
         {
-            var defaults = new Dictionary<GamingDeviceAxis, int>(new GorgonGamingDeviceAxisEqualityComparer());
-            var axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>(new GorgonGamingDeviceAxisEqualityComparer());
+            var defaults = new Dictionary<GamingDeviceAxis, int>();
+            var axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>();
 
             ProductID = joystick.Properties.ProductId;
             ManufacturerID = joystick.Properties.VendorId;
@@ -164,6 +146,7 @@ namespace Gorgon.Input.DirectInput
             Capabilities = POVCount > 0 ? GamingDeviceCapabilityFlags.SupportsPOV : GamingDeviceCapabilityFlags.None;
 
             IList<DI.DeviceObjectInstance> axisInfo = joystick.GetObjects(DI.DeviceObjectTypeFlags.Axis);
+            var axisMappings = new Dictionary<GamingDeviceAxis, DI.DeviceObjectId>();
 
             foreach (DI.DeviceObjectInstance axis in axisInfo)
             {
@@ -182,41 +165,41 @@ namespace Gorgon.Input.DirectInput
                 switch (usage)
                 {
                     case HIDUsage.X:
-                        AxisMappings[GamingDeviceAxis.XAxis] = axis.ObjectId;
+                        axisMappings[GamingDeviceAxis.XAxis] = axis.ObjectId;
                         axisRanges[GamingDeviceAxis.XAxis] = range;
                         defaults[GamingDeviceAxis.XAxis] = range.Minimum < 0 ? 0 : midPoint;
                         break;
                     case HIDUsage.Y:
-                        AxisMappings[GamingDeviceAxis.YAxis] = axis.ObjectId;
+                        axisMappings[GamingDeviceAxis.YAxis] = axis.ObjectId;
                         axisRanges[GamingDeviceAxis.YAxis] = range;
                         defaults[GamingDeviceAxis.YAxis] = range.Minimum < 0 ? 0 : midPoint;
                         break;
                     case HIDUsage.Slider:
-                        AxisMappings[GamingDeviceAxis.Throttle] = axis.ObjectId;
+                        axisMappings[GamingDeviceAxis.Throttle] = axis.ObjectId;
                         axisRanges[GamingDeviceAxis.Throttle] = range;
                         defaults[GamingDeviceAxis.Throttle] = 0;
                         Capabilities |= GamingDeviceCapabilityFlags.SupportsThrottle;
                         break;
                     case HIDUsage.Z:
-                        AxisMappings[GamingDeviceAxis.ZAxis] = axis.ObjectId;
+                        axisMappings[GamingDeviceAxis.ZAxis] = axis.ObjectId;
                         axisRanges[GamingDeviceAxis.ZAxis] = range;
                         defaults[GamingDeviceAxis.ZAxis] = range.Minimum < 0 ? 0 : midPoint;
                         Capabilities |= GamingDeviceCapabilityFlags.SupportsZAxis;
                         break;
                     case HIDUsage.RelativeX:
-                        AxisMappings[GamingDeviceAxis.XAxis2] = axis.ObjectId;
+                        axisMappings[GamingDeviceAxis.XAxis2] = axis.ObjectId;
                         axisRanges[GamingDeviceAxis.XAxis2] = range;
                         Capabilities |= GamingDeviceCapabilityFlags.SupportsSecondaryXAxis;
                         defaults[GamingDeviceAxis.XAxis2] = midPoint;
                         break;
                     case HIDUsage.RelativeY:
-                        AxisMappings[GamingDeviceAxis.YAxis2] = axis.ObjectId;
+                        axisMappings[GamingDeviceAxis.YAxis2] = axis.ObjectId;
                         axisRanges[GamingDeviceAxis.YAxis2] = range;
                         Capabilities |= GamingDeviceCapabilityFlags.SupportsSecondaryYAxis;
                         defaults[GamingDeviceAxis.YAxis2] = midPoint;
                         break;
                     case HIDUsage.RelativeZ:
-                        AxisMappings[GamingDeviceAxis.ZAxis2] = axis.ObjectId;
+                        axisMappings[GamingDeviceAxis.ZAxis2] = axis.ObjectId;
                         axisRanges[GamingDeviceAxis.ZAxis2] = range;
                         Capabilities |= GamingDeviceCapabilityFlags.SupportsRudder;
                         defaults[GamingDeviceAxis.ZAxis2] = 0;
@@ -224,8 +207,9 @@ namespace Gorgon.Input.DirectInput
                 }
             }
 
-            AxisInfo = new GorgonGamingDeviceAxisList<GorgonGamingDeviceAxisInfo>(
-                    axisRanges.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, defaults[item.Key])));
+            AxisInfo = axisRanges.Select(item => new GorgonGamingDeviceAxisInfo(item.Key, item.Value, defaults[item.Key])).ToDictionary(k => k.Axis, v => v);
+
+            return axisMappings;
         }
         #endregion
 
@@ -237,10 +221,8 @@ namespace Gorgon.Input.DirectInput
         public DirectInputDeviceInfo(DI.DeviceInstance devInstance)
         {
             VibrationMotorRanges = Array.Empty<GorgonRange>();
-            InstanceGuid = devInstance.InstanceGuid;
-            ProductGuid = devInstance.ProductGuid;
+            DeviceID = devInstance.InstanceGuid;
             Description = devInstance.ProductName;
-            AxisMappings = new Dictionary<GamingDeviceAxis, DI.DeviceObjectId>(new GorgonGamingDeviceAxisEqualityComparer());
         }
         #endregion
     }

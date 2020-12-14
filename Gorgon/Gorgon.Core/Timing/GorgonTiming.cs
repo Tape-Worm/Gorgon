@@ -49,7 +49,7 @@ namespace Gorgon.Timing
     /// {
     ///     Console.CursorLeft = 0;
     ///     Console.CursorTop = 0;
-    ///		Console.WriteLine("FPS: {0}", GorgonTiming.FPS);
+    ///		Console.WriteLine($"FPS: {GorgonTiming.FPS}");
     /// 
     ///		return true;
     /// }

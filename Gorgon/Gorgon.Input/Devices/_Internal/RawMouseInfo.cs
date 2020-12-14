@@ -33,7 +33,7 @@ namespace Gorgon.Input
     /// Provides information about a Raw Input mouse device.
     /// </summary>
     internal class RawMouseInfo
-        : IGorgonMouseInfo, IGorgonRawInputDeviceInfo
+        : IGorgonMouseInfo
     {
         #region Properties.
         /// <summary>

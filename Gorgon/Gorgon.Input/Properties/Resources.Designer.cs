@@ -70,6 +70,15 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; is not valid..
+        /// </summary>
+        internal static string GORINP_ERR_INVALID_PATH {
+            get {
+                return ResourceManager.GetString("GORINP_ERR_INVALID_PATH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no gaming device axis at the specified index..
         /// </summary>
         internal static string GORINP_ERR_JOYSTICK_AXES_INVALID {

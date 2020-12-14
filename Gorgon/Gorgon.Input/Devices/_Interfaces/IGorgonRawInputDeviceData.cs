@@ -33,13 +33,13 @@ namespace Gorgon.Input
     /// <remarks>
     /// This interface is not meant to be used within an application and should only be used internally by Gorgon.
     /// </remarks>
-    internal interface IRawInputDeviceData<T>
+    public interface IGorgonRawInputDeviceData<T>
         where T : struct
     {
         /// <summary>
         /// Function to process the Gorgon raw input data into device state data and appropriate events.
         /// </summary>
         /// <param name="rawInputData">The data to process.</param>
-        void ProcessData(ref T rawInputData);
+        void ProcessData(in T rawInputData);
     }
 }

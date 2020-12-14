@@ -41,17 +41,24 @@ namespace Gorgon.Native
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is a pointer access type that allows safe access to native memory. It does this by wrapping other known memory types and accessing their pointers directly while ensuring nothing goes out 
-    /// of bounds when accessing the memory pointed at by the pointer.
+    /// This is a pointer access type that allows safe access to pre-existing blocks of native memory. It does this by wrapping other the native pointer to the memory block and provides safety checks to 
+    /// ensure nothing goes out of bounds when accessing the memory pointed at by the pointer. 
+    /// </para>
+    /// <para>
+    /// Developers may use this pointer type like a regular native pointer and increment or decrement it the usual way: <c>gorPtr++, gorPtr--</c>. And beyond that, many functions are available to allow 
+    /// copying of the memory pointed at by the pointer to another type of data. 
+    /// </para>
+    /// <para>
+    /// This pointer type only wraps a native pointer to previously allocated memory, therefore it does <b>not</b> perform any memory allocation on its own. Gorgon includes the 
+    /// <see cref="GorgonNativeBuffer{T}"/> for that purpose. The <see cref="GorgonNativeBuffer{T}"/> will implicitly convert to this type, so it can be used in situations where this type is required.
     /// </para>
     /// <para>
     /// <note type="information">
-    /// This type does not allocate native memory (see <see cref="GorgonNativeBuffer{T}"/> for that). It merely provides a safe mechanism to access native memory.
-    /// </note>
-    /// </para>
     /// <para>
-    /// Developers can use this pointer type like a regular native pointer and increment or decrement it the usual way: <c>gorPtr++, gorPtr--</c>. And beyond that, many functions are available to allow 
-    /// copying of the memory pointed at by the pointer to another type of data. 
+    /// This type is suitable when the type of data stored in native memory is known. If the type of data in memory is not known (e.g. <c>void *</c>), or refers to an opaque handle (e.g. <c>HWND</c>), 
+    /// an <see cref="IntPtr"/> should be used instead. 
+    /// </para>
+    /// </note>
     /// </para>
     /// <para>
     /// <note type="important">
@@ -61,7 +68,7 @@ namespace Gorgon.Native
     /// (developers can cast this type to a native pointer). But do so with the understanding that all safety is off and memory corruption is a very real possibility.
     /// </para>
     /// <para>
-    /// <h3>Before making a choice, ALWAYS profile your application with a profiler. Never assume that the fastest functionality is required when safety is on the line.</h3>
+    /// <h3>Before making a choice, ALWAYS profile your application with a profiler. Never assume that the fastest functionality is required when memory safety is on the line.</h3>
     /// </para>
     /// </note>
     /// </para>
@@ -1201,7 +1208,7 @@ namespace Gorgon.Native
 
         /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
-        public override string ToString() => string.Format(Resources.GOR_TOSTR_POINTER, _ptr == null ? @"NULL" : $"0x{(IntPtr.Size == 4 ? ((int)_ptr).FormatHex() : ((long)_ptr).FormatHex())}");
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_POINTER, _ptr == null ? @"NULL" : $"0x{(!Environment.Is64BitProcess ? ((int)_ptr).FormatHex() : ((long)_ptr).FormatHex())}");
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>

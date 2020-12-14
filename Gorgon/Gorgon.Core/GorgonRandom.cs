@@ -189,9 +189,9 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="start">Starting value for the random number.</param>
         /// <param name="end">Ending value for the random number range.  This value is inclusive.</param>
-        /// <returns>The random <see cref="int"/> value within the range of <paramref name="start"/> to <paramref name="end"/>.</returns>
+        /// <returns>The random <see cref="int"/> value within the range of <paramref name="start"/> to <paramref name="end"/> (inclusive).</returns>
         /// <remarks>
-        /// This overload generates a random <see cref="int"/> number between the range of <paramref name="start"/> and <paramref name="end"/>-1.
+        /// This overload generates a random <see cref="int"/> number between the range of <paramref name="start"/> and <paramref name="end"/> (inclusive).
         /// </remarks>
         public static int RandomInt32(int start, int end) => _rnd.Next(start, end);
 

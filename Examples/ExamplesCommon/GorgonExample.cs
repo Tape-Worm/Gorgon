@@ -33,11 +33,12 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
+/*
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
-using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Graphics.Imaging.Codecs;*/
 using Gorgon.IO;
-using Gorgon.Renderers;
+/*using Gorgon.Renderers;*/
 using Gorgon.Timing;
 using Gorgon.UI;
 using Drawing = System.Drawing;
@@ -51,12 +52,14 @@ namespace Gorgon.Examples
     public static class GorgonExample
 	{
 		#region Variables.
+		/*
 		// The Gorgon logo.
 		private static GorgonTexture2DView _logo;
 		// The font factory to use.
 		private static GorgonFontFactory _factory;
 		// The font used for statistics.
 		private static GorgonFont _statsFont;
+		*/
 		// The string containing our statistics.
 		private static readonly StringBuilder _statsText = new StringBuilder();
 		// The main window for the application.
@@ -91,10 +94,12 @@ namespace Gorgon.Examples
 			set;
 		} = true;
 
+		/*
 		/// <summary>
 		/// Property to return the font factory used to handle font creation for our examples.
 		/// </summary>
 		public static GorgonFontFactory Fonts => _factory;
+		*/
 		#endregion
 
 		#region Methods.
@@ -169,6 +174,7 @@ namespace Gorgon.Examples
 			Cursor.Current = Cursors.Default;
 		}
 
+		/*
 		/// <summary>
 		/// Function to blit the logo without the aid of the 2D renderer.
 		/// </summary>
@@ -185,6 +191,7 @@ namespace Gorgon.Examples
 			var logoRegion = new DX.Rectangle(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
 			graphics.DrawTexture(_logo, logoRegion, blendState: GorgonBlendState.Default);
 		}
+		*/
 
 		/// <summary>
 		/// Function to handle an exception should one occur.
@@ -201,6 +208,7 @@ namespace Gorgon.Examples
 			ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex), GorgonApplication.Log);
 		}
 
+		/*
 		/// <summary>
 		/// Function to draw the statistics and the logo for the example.
 		/// </summary>
@@ -336,7 +344,7 @@ namespace Gorgon.Examples
 				});
 			}
 		}
-
+		*/
 		/// <summary>
 		/// Function to initialize the application.
 		/// </summary>

@@ -142,6 +142,14 @@ namespace Gorgon.Input
     public interface IGorgonGamingDeviceInfo
     {
         /// <summary>
+        /// Property to return the unique ID for the device.
+        /// </summary>
+        Guid DeviceID
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the number of point of view controls on the gaming device.
         /// </summary>
         int POVCount
@@ -179,7 +187,7 @@ namespace Gorgon.Input
         /// <remarks>
         /// Use this value to retrieve the number of axes the gaming device supports by checking its <see cref="GorgonGamingDeviceAxisList{T}.Count"/> property.
         /// </remarks>
-        GorgonGamingDeviceAxisList<GorgonGamingDeviceAxisInfo> AxisInfo
+        IReadOnlyDictionary<GamingDeviceAxis, GorgonGamingDeviceAxisInfo> AxisInfo
         {
             get;
         }

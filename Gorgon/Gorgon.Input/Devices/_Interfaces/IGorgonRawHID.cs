@@ -17,7 +17,7 @@ namespace Gorgon.Input
     /// </para>
     /// </remarks>
     public interface IGorgonRawHID
-        : IGorgonRawInputDevice, IDisposable
+        : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawHIDData>, IDisposable
     {
         /// <summary>
         /// Event triggered when Raw Input receives data from the device.
@@ -35,7 +35,7 @@ namespace Gorgon.Input
         /// <summary>
         /// Property to return a pointer to the block of memory that stores the HID data.
         /// </summary>
-        GorgonReadOnlyPointer Data
+        GorgonPtr<byte> Data
         {
             get;
         }
@@ -59,7 +59,7 @@ namespace Gorgon.Input
         /// <summary>
         /// Property to return the pre-parsed data for this HID.
         /// </summary>
-        GorgonReadOnlyPointer PreParsedData
+        GorgonPtr<byte> PreParsedData
         {
             get;
         }

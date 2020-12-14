@@ -34,6 +34,14 @@ namespace Gorgon.Graphics
     /// </summary>
     public static class SharpDXRectExtensions
     {
+        /// <summary>
+        /// Function to determine if a point is contained within a rectangle.
+        /// </summary>
+        /// <param name="rect">The rectangle to evaluate.</param>
+        /// <param name="point">The point to evaluate.</param>
+        /// <returns><b>true</b> if the point lies within the rectangle, <b>false</b> if not.</returns>
+        public static bool Contains(this DX.Rectangle rect, DX.Point point) => rect.Contains(point.X, point.Y);
+
         /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
         /// <param name="rect">The source rectangle to compare.</param>
         /// <param name="value">The rectangle to evaluate.</param>

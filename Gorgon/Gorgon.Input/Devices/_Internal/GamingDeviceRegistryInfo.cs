@@ -34,7 +34,7 @@ namespace Gorgon.Input
     /// <summary>
     /// Functionality to return information about a gaming device from the registry.
     /// </summary>
-    public static class GorgonGamingDeviceRegistryInfo
+    internal static class GamingDeviceRegistryInfo
     {
         /// <summary>
         /// Function to get the human readable name for a gaming device from a <see cref="GorgonRawHIDInfo"/> object.

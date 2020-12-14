@@ -34,7 +34,7 @@ namespace Gorgon.Input
     /// <remarks>
     /// This will provide the current value for the axis that it represents, as well as its dead zone range. Users may set either of these values as required.
     /// </remarks>
-    public class GorgonGamingDeviceAxis
+    internal class GamingDeviceAxisProperties
         : IGorgonGamingDeviceAxis
     {
         #region Variables.
@@ -54,7 +54,7 @@ namespace Gorgon.Input
         }
 
         /// <summary>
-        /// Property to return the value representing the position of a gaming device axis.
+        /// Property to set or return the value representing the position of a gaming device axis.
         /// </summary>
         /// <remarks>
         /// When a <see cref="DeadZone"/> is applied to the axis, the value will remain at its <see cref="GorgonGamingDeviceAxisInfo.DefaultValue"/> until it exits the dead zone range.
@@ -93,10 +93,10 @@ namespace Gorgon.Input
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonGamingDeviceAxis"/> class.
+        /// Initializes a new instance of the <see cref="GamingDeviceAxisProperties"/> class.
         /// </summary>
         /// <param name="info">The information for the axis.</param>
-        internal GorgonGamingDeviceAxis(GorgonGamingDeviceAxisInfo info)
+        internal GamingDeviceAxisProperties(GorgonGamingDeviceAxisInfo info)
         {
             Axis = info.Axis;
             _defaultValue = info.DefaultValue;
