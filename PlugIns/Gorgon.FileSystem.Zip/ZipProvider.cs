@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,6 +45,11 @@ namespace Gorgon.IO.Zip
         /// Header bytes for a zip file.
         /// </summary>
         public static IEnumerable<byte> ZipHeader = new byte[] { 0x50, 0x4B, 0x3, 0x4 };
+        #endregion
+
+        #region Properties.
+        /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
+        public override bool IsReadOnly => true;
         #endregion
 
         #region Methods.
@@ -109,6 +115,14 @@ namespace Gorgon.IO.Zip
 
             return new GorgonPhysicalFileSystemData(directories, files);
         }
+
+        /// <summary>Function to enumerate the files for a given directory.</summary>
+        /// <param name="physicalLocation">The physical location containing files to enumerate.</param>
+        /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory" /> that the files from the physical file system will be mounted into.</param>
+        /// <returns>A list of files contained within the physical file system.</returns>
+        /// <exception cref="NotSupportedException">This plug in provider does not support this functionality.</exception>
+        protected override IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
+            => throw new NotSupportedException();
 
         /// <summary>Function to return the physical file system path from a virtual file system path.</summary>
         /// <param name="virtualPath">Virtual path to the file/folder.</param>

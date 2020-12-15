@@ -46,13 +46,13 @@ namespace Gorgon.Examples
     /// This means when you update a file or add one, it will get rerouted to the write directory.  The write directory MUST be a 
     /// physical directory on your hard drive and must be able to be written into.
     /// 
-    /// Setting up a write directory is fairly simple:  Just set the WriteLocation property on your file system object.  Once this is
-    /// done the directory is automatically mounted into the file system.  Once a write location is set, the files in it will take precedence
-    /// over all files in the file system.  So, for example, if SomeText.txt exists in root of the mounted folder, and the same file
-    /// name exists in the root of the WriteLocation, then the version in the write location will be used for file I/O operations.
+    /// Setting up a write directory is fairly simple: Create an instance of a GorgonFileSystemWriter and pass in the file system 
+    /// that you wish to set up for writing, and the physical location on the windows file system where the data will be written into. 
+    /// Once a writer is setup, the files in it will take precedenceover all files in the file system.  So, for example, if 
+    /// SomeText.txt exists in root of the mounted folder, and the same file name exists in the physical file system directory, then 
+    /// the version in the physical file system directory will be used for file I/O operations.
     /// 
-    /// Here, we do exactly this.  We take the file from the root of the directory and read it in.  By assigning the write directory
-    /// after we can then load in the modified version of the file (if it exists).
+    /// Here, we do exactly this.  We take the file from the root of the directory and read it in.  
     /// </remarks>
     public partial class Form
         : System.Windows.Forms.Form
@@ -156,7 +156,7 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+                ex.Catch(except => GorgonDialogs.ErrorBox(this, except), Program.Log);
             }
             finally
             {

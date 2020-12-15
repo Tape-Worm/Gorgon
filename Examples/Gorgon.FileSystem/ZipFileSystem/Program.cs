@@ -67,8 +67,6 @@ namespace Gorgon.Examples
         #region Variables.
         // The plugin assemblies.
         private static GorgonMefPlugInCache _pluginAssemblies;
-        // The plugin service.
-        private static IGorgonPlugInService _pluginService;
         // File system.
         private static GorgonFileSystem _fileSystem;
         // The log file used for debug logging.
@@ -156,18 +154,15 @@ namespace Gorgon.Examples
                 return false;
             }
 
-            // Load the plugin assembly.
-            _pluginAssemblies.LoadPlugInAssemblies(zipProviderFile.Directory?.FullName, zipProviderFile.Name);
-
             // Create our file system provider factory so we can retrieve the zip file provider.
-            var providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
+            var providerFactory = new GorgonFileSystemProviderFactory(_pluginAssemblies, _log);
 
             // Get our zip file provider.
             GorgonFileSystemProvider provider;
 
             try
             {
-                provider = providerFactory.CreateProvider(PlugInName);
+                provider = providerFactory.CreateProvider(zipProviderFile.FullName, PlugInName);
             }
             catch (GorgonException gEx)
             {
@@ -196,8 +191,6 @@ namespace Gorgon.Examples
 
             // Create the plugin assembly cache.
             _pluginAssemblies = new GorgonMefPlugInCache(_log);
-            // Create the plugin service.
-            _pluginService = new GorgonMefPlugInService(_pluginAssemblies);
 
             try
             {

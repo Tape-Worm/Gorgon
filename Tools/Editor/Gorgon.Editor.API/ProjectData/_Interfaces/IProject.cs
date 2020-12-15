@@ -27,6 +27,11 @@
 using System.IO;
 using Newtonsoft.Json;
 
+Add functionality to add plugin names to the project indicating which plugins were available when the project was created.
+If no names are present - Do a full scan on loading the file system.
+If all plug in names match in count and names - Quick load.
+If plug in names differ, or a plug in is missing, or a new plug in was added - Do a full scan on loading the file system.
+
 namespace Gorgon.Editor.ProjectData
 {
     /// <summary>
