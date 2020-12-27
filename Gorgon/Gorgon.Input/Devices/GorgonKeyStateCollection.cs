@@ -110,38 +110,38 @@ namespace Gorgon.Input
         #region ICollection<KeyState> Members
         #region Properties.
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="System.Collections.Generic.ICollection{T}"></see>.
+        /// Gets the number of elements contained in the <see cref="ICollection{T}"></see>.
         /// </summary>
-        /// <returns>The number of elements contained in the <see cref="System.Collections.Generic.ICollection{T}"></see>.</returns>
+        /// <returns>The number of elements contained in the <see cref="ICollection{T}"></see>.</returns>
         public int Count => _keys.Count;
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="System.Collections.Generic.ICollection{T}"></see> is read-only.
+        /// Gets a value indicating whether the <see cref="ICollection{T}"></see> is read-only.
         /// </summary>
-        /// <returns>true if the <see cref="System.Collections.Generic.ICollection{T}"></see> is read-only; otherwise, false.</returns>
+        /// <returns>true if the <see cref="ICollection{T}"></see> is read-only; otherwise, false.</returns>
         public bool IsReadOnly => true;
 
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Adds an item to the <see cref="System.Collections.Generic.ICollection{T}"></see>.
+        /// Adds an item to the <see cref="ICollection{T}"></see>.
         /// </summary>
-        /// <param name="item">The object to add to the <see cref="System.Collections.Generic.ICollection{T}"></see>.</param>
+        /// <param name="item">The object to add to the <see cref="ICollection{T}"></see>.</param>
         /// <exception cref="NotSupportedException"></exception>
         void ICollection<KeyState>.Add(KeyState item) => throw new NotSupportedException();
 
         /// <summary>
-        /// Removes all items from the <see cref="System.Collections.Generic.ICollection{T}"></see>.
+        /// Removes all items from the <see cref="ICollection{T}"></see>.
         /// </summary>
         void ICollection<KeyState>.Clear() => Reset();
 
         /// <summary>
-        /// Determines whether the <see cref="System.Collections.Generic.ICollection{T}"></see> contains a specific value.
+        /// Determines whether the <see cref="ICollection{T}"></see> contains a specific value.
         /// </summary>
-        /// <param name="item">The object to locate in the <see cref="System.Collections.Generic.ICollection{T}"></see>.</param>
+        /// <param name="item">The object to locate in the <see cref="ICollection{T}"></see>.</param>
         /// <returns>
-        /// true if item is found in the <see cref="System.Collections.Generic.ICollection{T}"></see>; otherwise, false.
+        /// true if item is found in the <see cref="ICollection{T}"></see>; otherwise, false.
         /// </returns>
         bool ICollection<KeyState>.Contains(KeyState item) => _keys.ContainsValue(item);
 
@@ -154,11 +154,11 @@ namespace Gorgon.Input
         void ICollection<KeyState>.CopyTo(KeyState[] array, int arrayIndex) => throw new NotSupportedException();
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="System.Collections.Generic.ICollection{T}"></see>.
+        /// Removes the first occurrence of a specific object from the <see cref="ICollection{T}"></see>.
         /// </summary>
-        /// <param name="item">The object to remove from the <see cref="System.Collections.Generic.ICollection{T}"></see>.</param>
+        /// <param name="item">The object to remove from the <see cref="ICollection{T}"></see>.</param>
         /// <returns>
-        /// true if item was successfully removed from the <see cref="System.Collections.Generic.ICollection{T}"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="System.Collections.Generic.ICollection{T}"></see>.
+        /// true if item was successfully removed from the <see cref="ICollection{T}"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="ICollection{T}"></see>.
         /// </returns>
         /// <exception cref="NotSupportedException"></exception>
         bool ICollection<KeyState>.Remove(KeyState item) => false;
@@ -170,7 +170,7 @@ namespace Gorgon.Input
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{T}"></see> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}"></see> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<KeyState> GetEnumerator()
         {
@@ -187,7 +187,7 @@ namespace Gorgon.Input
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using Gorgon.Native;
 using DX = SharpDX;
 
@@ -106,7 +107,7 @@ namespace Gorgon.Graphics.Imaging
         /// <summary>
         /// Property to return the native memory buffer holding the data for this image buffer.
         /// </summary>
-        GorgonNativeBuffer<byte> Data
+        GorgonPtr<byte> Data
         {
             get;
         }
@@ -118,6 +119,26 @@ namespace Gorgon.Graphics.Imaging
         {
             get;
         }
+
+        /// <summary>
+        /// Function to set the alpha channel for a specific buffer in the image.
+        /// </summary>
+        /// <param name="alphaValue">The value to set.</param>
+        /// <param name="updateAlphaRange">[Optional] The range of alpha values in the buffer that will be updated.</param>
+        /// <param name="region">[Optional] The region in the buffer to update.</param>
+        /// <remarks>
+        /// <para>
+        /// This will set the alpha channel for the image data in the buffer> to a discrete value specified by <paramref name="alphaValue"/>. 
+        /// </para>
+        /// <para>
+        /// If the <paramref name="updateAlphaRange"/> parameter is set, then the alpha values in the buffer will be examined and if the alpha value is less than the minimum range or 
+        /// greater than the maximum range, then the <paramref name="alphaValue"/> will <b>not</b> be set on the alpha channel.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="region"/> is not specified, then the entire buffer is updated, otherwise only the values within the <paramref name="region"/> are updated. 
+        /// </para>
+        /// </remarks>
+        void SetAlpha(float alphaValue, GorgonRangeF? updateAlphaRange = null, DX.Rectangle? region = null);
 
         /// <summary>
         /// Function to copy the image buffer data from this buffer into another.

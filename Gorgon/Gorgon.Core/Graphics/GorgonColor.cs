@@ -31,6 +31,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Properties;
@@ -667,6 +668,14 @@ namespace Gorgon.Graphics
         [Pure]
         public Color ToColor() => Color.FromArgb(ToARGB());
 
+
+        /// <summary>
+        /// Function to conver this <see cref="GorgonColor"/> into a <c>SharpDX.Color</c>.
+        /// </summary>
+        /// <returns>The <c>SharpDX.Color</c> value.</returns>
+        [Pure]
+        public DX.Color ToSharpDXColor() => new DX.Color(Red, Green, Blue, Alpha);
+
         /// <summary>
         /// Function to convert this <see cref="GorgonColor"/> into a Vector3.
         /// </summary>
@@ -797,6 +806,20 @@ namespace Gorgon.Graphics
         public static implicit operator Color(GorgonColor color) => ToColor(color);
 
         /// <summary>
+        /// Performs an implicit conversion from <see cref="GorgonColor"/> to a <c>SharpDX.Color</c>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator DX.Color(GorgonColor color) => ToSharpDXColor(color);
+
+        /// <summary>
+        /// Performs an implicit conversion from a <c>SharpDX.Color</c> to a <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GorgonColor(DX.Color color) => ToGorgonColor(color);
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="Color"/> to <see cref="GorgonColor"/>.
         /// </summary>
         /// <param name="color">The color to convert.</param>
@@ -872,6 +895,13 @@ namespace Gorgon.Graphics
         public static GorgonColor ToGorgonColor(Color color) => new GorgonColor(color);
 
         /// <summary>
+        /// Function to perform an implicit conversion from a <c>SharpDX.Color</c> to <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static GorgonColor ToGorgonColor(DX.Color color) => new GorgonColor(color);
+
+        /// <summary>
         /// Function to perform an implicit conversion from <see cref="int"/> to <see cref="GorgonColor"/>.
         /// </summary>
         /// <param name="color">The color.</param>
@@ -938,6 +968,35 @@ namespace Gorgon.Graphics
         /// <param name="color">The color to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static Color ToColor(GorgonColor color) => color.ToColor();
+
+        /// <summary>
+        /// Function to perform an implicit conversion from <see cref="GorgonColor"/> to a <c>SharpDX.Color</c>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The SharpDX color.</returns>
+        public static DX.Color ToSharpDXColor(GorgonColor color) => color.ToSharpDXColor();
+
+        /// <summary>
+        /// Function to deconstruct the color into individual color components.
+        /// </summary>
+        /// <returns>A tuple containing the color channels as integer values scaled from 0 to 255.</returns>
+        public (int R, int G, int B, int A) GetIntegerComponents() => ((int)(Red * 255.0f), (int)(Green * 255.0f), (int)(Blue * 255.0f), (int)(Alpha * 255.0f));
+
+        /// <summary>
+        /// Function to deconstruct the color into individual color components.
+        /// </summary>
+        /// <param name="r">The red component for the color.</param>
+        /// <param name="g">The green component for the color.</param>
+        /// <param name="b">The blue component for the color.</param>
+        /// <param name="a">The alpha component for the color.</param>
+        /// <returns>A tuple containing the color channels as integer values scaled from 0 to 255.</returns>
+        public void Deconstruct(out float r, out float g, out float b, out float a)
+        {
+            r = Red;
+            g = Green;
+            b = Blue;
+            a = Alpha;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -1033,6 +1092,16 @@ namespace Gorgon.Graphics
             Green = color.Green;
             Blue = color.Blue;
             Alpha = alpha;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="GorgonColor" /> struct.</summary>
+        /// <param name="color">A SharpDX color value.</param>
+        public GorgonColor(DX.Color color)
+        {
+            Red = color.R;
+            Green = color.G;
+            Blue = color.B;
+            Alpha = color.A;
         }
 
         /// <summary>

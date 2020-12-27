@@ -545,7 +545,7 @@ namespace Gorgon.Native
         /// </summary>
         /// <param name="buffer">The buffer to convert.</param>
         /// <returns>The <see cref="GorgonPtr{T}"/> wrapping the buffer data.</returns>
-        public static implicit operator GorgonPtr<T>(GorgonNativeBuffer<T> buffer) => buffer._memoryBlock;
+        public static implicit operator GorgonPtr<T>(GorgonNativeBuffer<T> buffer) => buffer?._memoryBlock ?? GorgonPtr<T>.NullPtr;
 
         /// <summary>
         /// Function to return the underlying <see cref="GorgonPtr{T}"/> for this buffer.

@@ -30,6 +30,7 @@ using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
+using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -75,7 +76,7 @@ namespace Gorgon.Graphics.Imaging
         /// Use this to expand a 16 BPP (B5G6R5 or B5G5R5A1 format) into a 32 BPP R8G8B8A8 (normalized unsigned integer) format.
         /// </para>
         /// </remarks>
-        public static unsafe void Expand16BPPScanline(void* src, int srcPitch, BufferFormat srcFormat, void* dest, int destPitch, ImageBitFlags bitFlags)
+        public static unsafe void Expand16BPPScanline(in GorgonPtr<byte> src, int srcPitch, BufferFormat srcFormat, in GorgonPtr<byte> dest, int destPitch, ImageBitFlags bitFlags)
         {
             ushort* srcPtr = (ushort*)src;
             uint* destPtr = (uint*)dest;
@@ -85,12 +86,12 @@ namespace Gorgon.Graphics.Imaging
                 throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_IS_NOT_16BPP, srcFormat), nameof(srcFormat));
             }
 
-            if (src == null)
+            if (src == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(src));
             }
 
-            if (dest == null)
+            if (dest == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(dest));
             }
@@ -157,17 +158,17 @@ namespace Gorgon.Graphics.Imaging
         /// Use this method to copy a single scanline and swizzle the bits of an image and (optionally) set an opaque constant alpha value.
         /// </para>
         /// </remarks>
-        public static unsafe void SwizzleScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
+        public static unsafe void SwizzleScanline(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
         {
             int size = srcPitch.Min(destPitch);
             uint r, g, b, a, pixel;
 
-            if (src == null)
+            if (src == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(src));
             }
 
-            if (dest == null)
+            if (dest == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(dest));
             }
@@ -253,7 +254,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="format">The format used to copy.</param>
         /// <param name="flipHorizontal"><b>true</b> to write horizontal pixel values from right to left, or <b>false</b> to write left to right.</param>
         /// <returns><b>true</b> if the line contains all 0 alpha values, <b>false</b> if not.</returns>
-        public static unsafe bool CopyScanline(void* src, int srcPitch, void* dest, BufferFormat format, bool flipHorizontal)
+        public static unsafe bool CopyScanline(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, BufferFormat format, bool flipHorizontal)
         {
             bool result = true;
 
@@ -533,14 +534,14 @@ namespace Gorgon.Graphics.Imaging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
         /// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
-        public static unsafe void CopyScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
+        public static unsafe void CopyScanline(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
         {
-            if (src == null)
+            if (src == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(src));
             }
 
-            if (dest == null)
+            if (dest == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(dest));
             }
@@ -733,14 +734,14 @@ namespace Gorgon.Graphics.Imaging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
         /// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
-        public static unsafe void SetAlphaScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, uint alphaValue, uint minAlpha, uint maxAlpha)
+        public static unsafe void SetAlphaScanline(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, int destPitch, BufferFormat format, uint alphaValue, uint minAlpha, uint maxAlpha)
         {
-            if (src == null)
+            if (src == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(src));
             }
 
-            if (dest == null)
+            if (dest == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(dest));
             }
@@ -947,14 +948,14 @@ namespace Gorgon.Graphics.Imaging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
         /// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
-        public static unsafe void SetPremultipliedScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format)
+        public static unsafe void SetPremultipliedScanline(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, int destPitch, BufferFormat format)
         {
-            if (src == null)
+            if (src == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(src));
             }
 
-            if (dest == null)
+            if (dest == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(dest));
             }
@@ -1174,14 +1175,14 @@ namespace Gorgon.Graphics.Imaging
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
         /// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
-        public static unsafe void RemovePremultipliedScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format)
+        public static unsafe void RemovePremultipliedScanline(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, int destPitch, BufferFormat format)
         {
-            if (src == null)
+            if (src == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(src));
             }
 
-            if (dest == null)
+            if (dest == GorgonPtr<byte>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(dest));
             }
@@ -1401,7 +1402,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="srcPitch">The number of bytes for a scanline in the source data.</param>
         /// <param name="dest">The pointer to the destination buffer to fill.</param>
         /// <param name="reverse"><b>true</b> to fill the destination from the right side, <b>false</b> to fill from the left.</param>
-        public static unsafe void Expand24BPPScanLine(void* src, int srcPitch, void* dest, bool reverse)
+        public static unsafe void Expand24BPPScanLine(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, bool reverse)
         {
             byte* srcPtr = (byte*)src;
             uint* destPtr = (uint*)dest;
@@ -1429,7 +1430,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="dest">The pointer to the destination data.</param>
         /// <param name="destPitch">The pitch of the destination data.</param>
         /// <param name="swizzle"><b>true</b> to swap the R and B components, <b>false</b> to leave as is.</param>
-        public static unsafe void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch, bool swizzle)
+        public static unsafe void Compress24BPPScanLine(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, int destPitch, bool swizzle)
         {
             uint* srcPtr = (uint*)src;
             byte* destPtr = (byte*)dest;

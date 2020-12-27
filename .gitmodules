@@ -1,0 +1,3 @@
+[submodule "Dependencies/BCnEncoder.NET"]
+	path = Dependencies/BCnEncoder.NET
+	url = https://github.com/Tape-Worm/BCnEncoder.NET.git

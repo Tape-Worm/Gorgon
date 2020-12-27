@@ -107,7 +107,7 @@ namespace Gorgon.Input
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// An <see cref="IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_infoList.Values).GetEnumerator();

@@ -69,7 +69,7 @@ namespace Gorgon.Input.XInput
         /// </para>
         /// <para>
         /// A device may lose acquisition when the application goes into the background, and as such, the application will no longer receive information from the device. When this is the case, the 
-        /// application should immediately check after it regains foreground focus to see whether the device is acquired or not. For a winforms application this can be achieved with the <see cref="System.Windows.Forms.Form.Activated"/> 
+        /// application should immediately check after it regains foreground focus to see whether the device is acquired or not. For a winforms application this can be achieved with the <see cref="Forms.Form.Activated"/> 
         /// event. When that happens, set this property to <b>true</b>.
         /// </para>
         /// <para>

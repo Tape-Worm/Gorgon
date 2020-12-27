@@ -139,7 +139,7 @@ namespace Gorgon.Native
                 {
                     throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, 0, Length));
                 }
-
+                
                 return ref Unsafe.AsRef<T>(_ptr + index);
             }
         }
@@ -263,7 +263,7 @@ namespace Gorgon.Native
         public static implicit operator DX.DataPointer(GorgonPtr<T> ptr) => ToDataPointer(ptr);
 
         /// <summary>
-        /// Operator to conver this pointer to a native pointer.
+        /// Operator to convert this pointer to a native pointer.
         /// </summary>
         /// <param name="ptr">The pointer to convert.</param>
         /// <returns>A native pointer.</returns>
@@ -285,6 +285,22 @@ namespace Gorgon.Native
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator void*(GorgonPtr<T> ptr) => ToPointer(ptr);
+
+        /// <summary>
+        /// Operator to convert this pointer to a <see cref="long"/> value representing the memory address of the block of memory being pointed at.
+        /// </summary>
+        /// <param name="ptr">The pointer to convert.</param>
+        /// <returns>The memory address as a <see cref="long"/> value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator long(GorgonPtr<T> ptr) => (long)ptr._ptr;
+
+        /// <summary>
+        /// Operator to convert this pointer to a <see cref="ulong"/> value representing the memory address of the block of memory being pointed at.
+        /// </summary>
+        /// <param name="ptr">The pointer to convert.</param>
+        /// <returns>The memory address as a <see cref="ulong"/> value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator ulong(GorgonPtr<T> ptr) => (ulong)ptr._ptr;
 
         /// <summary>
         /// Operator to convert this pointer to a native pointer.
@@ -322,7 +338,7 @@ namespace Gorgon.Native
         /// <typeparam name="Tc">The type to convert to. Must be an unmanaged value type.</typeparam>
         /// <returns>The casted pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new GorgonPtr<Tc>((Tc *)_ptr, SizeInBytes);
+        public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new GorgonPtr<Tc>((Tc *)_ptr, SizeInBytes / Unsafe.SizeOf<Tc>());
 
         /// <summary>
         /// Operator to increment the pointer by the given index offset.
@@ -338,6 +354,15 @@ namespace Gorgon.Native
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static GorgonPtr<T> operator +(in GorgonPtr<T> ptr, int indexOffset) => Add(in ptr, indexOffset);
+
+        /// <summary>
+        /// Function to subtract two pointers to return the number of bytes between them.
+        /// </summary>
+        /// <param name="left">The left pointer to subtract.</param>
+        /// <param name="right">The right pointer to subtract.</param>
+        /// <returns>The difference in bytes between the two pointers.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long operator -(in GorgonPtr<T> left, in GorgonPtr<T> right) => Subtract(in left, in right);
 
         /// <summary>
         /// Operator to decrement the pointer by the given index offset.
@@ -407,6 +432,14 @@ namespace Gorgon.Native
         }
 
         /// <summary>
+        /// Function to subtract two pointers to return the number of bytes between them.
+        /// </summary>
+        /// <param name="left">The left pointer to subtract.</param>
+        /// <param name="right">The right pointer to subtract.</param>
+        /// <returns>The difference in bytes between the two pointers.</returns>
+        public static long Subtract(in GorgonPtr<T> left, in GorgonPtr<T> right) => ((byte*)left._ptr) - ((byte*)right._ptr);
+
+        /// <summary>
         /// Function to increment the pointer by the given index offset.
         /// </summary>
         /// <param name="ptr">The pointer to increment.</param>
@@ -432,7 +465,7 @@ namespace Gorgon.Native
             // For the sake of performance (yes, it's an actual hit), we'll return a null pointer instead of throwing.
             return (newIndex < 0) || (newIndex >= ptr.Length)
                 ? NullPtr
-                : new GorgonPtr<T>(ptr._ptr + indexOffset, newIndex, ptr.Length - indexOffset);
+                : new GorgonPtr<T>(ptr._ptr + indexOffset, newIndex, ptr.Length);
         }
 
         /// <summary>
@@ -534,7 +567,7 @@ namespace Gorgon.Native
         /// <paramref name="destination"/> memory block to accomodate the amount of data required.
         /// </para>
         /// </remarks>
-        public void CopyTo(GorgonPtr<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
+        public void CopyTo(in GorgonPtr<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
         {
             if (_ptr == null)
             {
@@ -857,7 +890,23 @@ namespace Gorgon.Native
         public static T* ToPointer(GorgonPtr<T> ptr) => ptr._ptr;
 
         /// <summary>
-        /// Function to convert a pointer to a native pointer.
+        /// Function to convert a pointer to a <see cref="long"/> value representing the memory address of the block of memory being pointed at.
+        /// </summary>
+        /// <param name="ptr">The pointer to convert.</param>
+        /// <returns>The memory address as a <see cref="long"/> value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long ToLong(GorgonPtr<T> ptr) => (long)ptr._ptr;
+
+        /// <summary>
+        /// Function to convert a pointer to a <see cref="ulong"/> value representing the memory address of the block of memory being pointed at.
+        /// </summary>
+        /// <param name="ptr">The pointer to convert.</param>
+        /// <returns>The memory address as a <see cref="ulong"/> value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong ToUnsignedLong(GorgonPtr<T> ptr) => (ulong)ptr._ptr;
+
+        /// <summary>
+        /// Function to convert pointer to a native pointer.
         /// </summary>
         /// <param name="ptr">The pointer to convert.</param>
         /// <returns>The native pointer.</returns>

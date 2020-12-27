@@ -774,6 +774,9 @@ namespace Gorgon.Graphics
                 case BufferFormat.R8G8B8A8_SInt:
                     Group = BufferFormat.R8G8B8A8_Typeless;
                     break;
+                case BufferFormat.B4G4R4A4_UNorm:
+                    Group = BufferFormat.B4G4R4A4_UNorm;
+                    break;
                 default:
                     Group = BufferFormat.Unknown;
                     break;
