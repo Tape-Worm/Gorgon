@@ -1558,7 +1558,9 @@ namespace Gorgon.Graphics.Core
             {
                 if (options.ConvertToPremultipliedAlpha)
                 {
-                    image.ConvertToPremultipliedAlpha();
+                    image.BeginUpdate()
+                         .ConvertToPremultipliedAlpha()
+                         .EndUpdate();
                 }
 
                 return new GorgonTexture1D(graphics, image, options);
@@ -1638,7 +1640,9 @@ namespace Gorgon.Graphics.Core
             {
                 if (options.ConvertToPremultipliedAlpha)
                 {
-                    image.ConvertToPremultipliedAlpha();
+                    image.BeginUpdate()
+                         .ConvertToPremultipliedAlpha()
+                         .EndUpdate();
                 }
 
                 return new GorgonTexture1D(graphics, image, options);

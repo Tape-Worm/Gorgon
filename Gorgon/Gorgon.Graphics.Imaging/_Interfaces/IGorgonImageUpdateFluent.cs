@@ -203,11 +203,11 @@ namespace Gorgon.Graphics.Imaging
         /// parameter.
         /// </para>
         /// <para>
-        /// Unlike the <see cref="Decompress"/> method, this method does not return an image. This is done to signify that the compress operation is the last operation in a chain of calls via the image 
+        /// Unlike the <see cref="IGorgonImage.Decompress"/> method, this method does not return an image. This is done to signify that the compress operation is the last operation in a chain of calls via the image 
         /// modification fluent interface.
         /// </para>
         /// </remarks>
-        /// <seealso cref="Decompress"/>
+        /// <seealso cref="IGorgonImage.Decompress"/>
         IGorgonImageUpdateFinalize Compress(BufferFormat compressionFormat, bool useBC1Alpha = false, BcCompressionQuality quality = BcCompressionQuality.Fast, bool multithreadCompression = true);
     }
 }

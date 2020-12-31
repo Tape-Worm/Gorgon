@@ -40,7 +40,7 @@ namespace Gorgon.Graphics.Core
     /// <remarks>
     /// <para>
     /// To send changing data to a shader from you application to a constant buffer, an application can upload a value type (or primitive) value to the buffer using one of the 
-    /// <see cref="GorgonBufferCommon.SetData{T}(T[], int, int?, int, CopyMode)"/> methods. This allows an application to update the state of a shader to reflect changes in the application. Things like animation or setup 
+    /// <see cref="GorgonBufferCommon.SetData{T}(ReadOnlySpan{T}, int, CopyMode)"/> methods. This allows an application to update the state of a shader to reflect changes in the application. Things like animation or setup 
     /// information can easily be sent to modify the state of a shader (hence somewhat making the term <i>constant</i> a bit of a misnomer).
     /// </para>
     /// <para>
@@ -152,7 +152,7 @@ namespace Gorgon.Graphics.Core
         /// Function to initialize the buffer data.
         /// </summary>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
-        private void Initialize(GorgonNativeBuffer<byte> initialData)
+        private void Initialize(ReadOnlySpan<byte> initialData)
         {
             // If the buffer is not aligned to 16 bytes, then pad the size.
             _info.SizeInBytes = (_info.SizeInBytes + 15) & ~15;
@@ -173,23 +173,7 @@ namespace Gorgon.Graphics.Core
                 StructureByteStride = 0
             };
 
-            if ((initialData != null) && (initialData.Length > 0))
-            {
-                unsafe
-                {
-                    D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((void*)initialData), desc)
-                    {
-                        DebugName = Name
-                    };
-                }
-            }
-            else
-            {
-                D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
-                {
-                    DebugName = Name
-                };
-            }
+            D3DResource = Native = BufferFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
         }
 
         /// <summary>
@@ -297,7 +281,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="GorgonException">
         /// Thrown when the size of the constant buffer exceeds the maximum constant buffer size. See <see cref="IGorgonVideoAdapterInfo.MaxConstantBufferSize"/> to determine the maximum size of a constant buffer.
         /// </exception>
-        public GorgonConstantBuffer(GorgonGraphics graphics, IGorgonConstantBufferInfo info, GorgonNativeBuffer<byte> initialData = null)
+        public GorgonConstantBuffer(GorgonGraphics graphics, IGorgonConstantBufferInfo info, ReadOnlySpan<byte> initialData = default)
             : base(graphics)
         {
             if (info == null)

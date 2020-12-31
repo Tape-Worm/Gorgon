@@ -474,14 +474,18 @@ namespace Gorgon.Graphics.Core
                     || (initialData.Height > info.Height)
                     || (initialData.Depth > info.Depth))
                 {
-                    initialData = initialData.Expand(info.Width, info.Height, info.Depth);
+                    initialData = initialData.BeginUpdate()
+                                             .Expand(info.Width, info.Height, info.Depth)
+                                             .EndUpdate();
                 }
 
                 if ((initialData.Width < info.Width)
                     || (initialData.Height < info.Height)
                     || (initialData.Depth < info.Depth))
                 {
-                    initialData = initialData.Crop(new DX.Rectangle(0, 0, info.Width, info.Height), info.Depth);
+                    initialData = initialData.BeginUpdate()
+                                             .Crop(new DX.Rectangle(0, 0, info.Width, info.Height), info.Depth)
+                                             .EndUpdate();
                 }
             }
 

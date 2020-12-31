@@ -40,8 +40,8 @@ namespace Gorgon.Graphics.Core
     /// <remarks>
     /// <para>
     /// To send vertices to the GPU using a vertex buffer, an application can upload vertices, represented as a value type, to the buffer using one of the
-    /// <see cref="GorgonBufferCommon.SetData{T}(T[], int, int?, int, CopyMode)"/> overloads. For best performance, it is recommended to upload vertex data only once, or rarely. However, in some scenarios, and with the
-    /// correct <see cref="GorgonGraphicsResource.Usage"/> flag, vertex animation is possible by uploading data to a <see cref="ResourceUsage.Dynamic"/> vertex buffer.
+    /// <see cref="GorgonBufferCommon.SetData{T}(ReadOnlySpan{T}, int, CopyMode)"/> overloads. For best performance, it is recommended to upload vertex data only once, or rarely. However, in some 
+    /// scenarios, and with the correct <see cref="GorgonGraphicsResource.Usage"/> flag, vertex animation is possible by uploading data to a <see cref="ResourceUsage.Dynamic"/> vertex buffer.
     /// </para>
     /// <para>
     /// To use a vertex buffer with the GPU pipeline, one must create a <see cref="GorgonVertexBufferBinding"/> to inform the GPU on how to use the vertex buffer.
@@ -153,7 +153,7 @@ namespace Gorgon.Graphics.Core
         public override int SizeInBytes => _info.SizeInBytes;
 
         /// <summary>
-        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/> methods.
+        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(Span{T}, int, int?)"/> methods.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -167,8 +167,7 @@ namespace Gorgon.Graphics.Core
         /// This will always return <b>false</b> for this buffer type, except when its <see cref="GorgonGraphicsResource.Usage"/> is <see cref="ResourceUsage.Staging"/>.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/>
-        /// <seealso cref="GorgonBufferCommon.GetData{T}(T[], int, int?, int)"/>
+        /// <seealso cref="GorgonBufferCommon.GetData{T}(Span{T}, int, int?)"/>
         /// <seealso cref="GorgonBufferCommon.GetData{T}(out T, int)"/>
         /// <seealso cref="GorgonBufferCommon.GetData{T}(int, int?)"/>
         public override bool IsCpuReadable => Usage == ResourceUsage.Staging;
@@ -214,7 +213,7 @@ namespace Gorgon.Graphics.Core
         /// Function to initialize the buffer data.
         /// </summary>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
-        private void Initialize(GorgonNativeBuffer<byte> initialData)
+        private void Initialize(ReadOnlySpan<byte> initialData)
         {
             D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.VertexBuffer);
 
@@ -244,23 +243,7 @@ namespace Gorgon.Graphics.Core
                 StructureByteStride = 0
             };
 
-            if ((initialData != null) && (initialData.Length > 0))
-            {
-                unsafe
-                {
-                    D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((void*)initialData), desc)
-                    {
-                        DebugName = Name
-                    };
-                }
-            }
-            else
-            {
-                D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
-                {
-                    DebugName = Name
-                };
-            }
+            D3DResource = Native = BufferFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
         }
 
         /// <summary>
@@ -388,7 +371,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
-        public GorgonVertexBuffer(GorgonGraphics graphics, IGorgonVertexBufferInfo info, GorgonNativeBuffer<byte> initialData = null)
+        public GorgonVertexBuffer(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<byte> initialData = default)
             : base(graphics)
         {
             _info = new GorgonVertexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));

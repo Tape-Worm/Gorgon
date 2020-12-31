@@ -86,12 +86,12 @@ namespace Gorgon.Graphics.Core
         internal D3D11.ShaderResourceView[] Native => _native;
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// Gets the number of elements contained in the <see cref="ICollection{T}" />.
         /// </summary>
         int IReadOnlyCollection<GorgonShaderResourceView>.Count => Length;
 
-        /// <summary>Gets the number of elements contained in the <see cref="System.Collections.Generic.ICollection{T}" />.</summary>
-        /// <returns>The number of elements contained in the <see cref="System.Collections.Generic.ICollection{T}" />.</returns>
+        /// <summary>Gets the number of elements contained in the <see cref="ICollection{T}" />.</summary>
+        /// <returns>The number of elements contained in the <see cref="ICollection{T}" />.</returns>
         int ICollection<GorgonShaderResourceView>.Count => Length;
 
         /// <summary>
@@ -99,8 +99,8 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public int Length => MaximumShaderResourceViewCount;
 
-        /// <summary>Gets a value indicating whether the <see cref="System.Collections.Generic.ICollection{T}" /> is read-only.</summary>
-        /// <returns>true if the <see cref="System.Collections.Generic.ICollection{T}" /> is read-only; otherwise, false.</returns>
+        /// <summary>Gets a value indicating whether the <see cref="ICollection{T}" /> is read-only.</summary>
+        /// <returns>true if the <see cref="ICollection{T}" /> is read-only; otherwise, false.</returns>
         bool ICollection<GorgonShaderResourceView>.IsReadOnly => false;
 
         /// <summary>
@@ -173,8 +173,8 @@ namespace Gorgon.Graphics.Core
         /// Function to reset the value at the specified index, and remove it from the dirty range.
         /// </summary>
         /// <param name="index">The index of the item to reset.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// <paramref name="index" /> is not a valid index in the <see cref="System.Collections.Generic.IList{T}" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is not a valid index in the <see cref="IList{T}" />.</exception>
         public void ResetAt(int index)
         {
             if ((index < 0) || (index >= MaximumShaderResourceViewCount))
@@ -297,40 +297,40 @@ namespace Gorgon.Graphics.Core
             return ref _dirtyItems;
         }
 
-        /// <summary>Removes the <see cref="System.Collections.Generic.IList{T}" /> item at the specified index.</summary>
+        /// <summary>Removes the <see cref="IList{T}" /> item at the specified index.</summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// <paramref name="index" /> is not a valid index in the <see cref="System.Collections.Generic.IList{T}" />.</exception>
-        /// <exception cref="System.NotSupportedException">The <see cref="System.Collections.Generic.IList{T}" /> is read-only.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is not a valid index in the <see cref="IList{T}" />.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="IList{T}" /> is read-only.</exception>
         void IList<GorgonShaderResourceView>.RemoveAt(int index) => throw new NotSupportedException();
 
-        /// <summary>Adds an item to the <see cref="System.Collections.Generic.ICollection{T}" />.</summary>
-        /// <param name="item">The object to add to the <see cref="System.Collections.Generic.ICollection{T}" />.</param>
-        /// <exception cref="System.NotSupportedException">The <see cref="System.Collections.Generic.ICollection{T}" /> is read-only.</exception>
+        /// <summary>Adds an item to the <see cref="ICollection{T}" />.</summary>
+        /// <param name="item">The object to add to the <see cref="ICollection{T}" />.</param>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}" /> is read-only.</exception>
         void ICollection<GorgonShaderResourceView>.Add(GorgonShaderResourceView item) => throw new NotSupportedException();
 
-        /// <summary>Inserts an item to the <see cref="System.Collections.Generic.IList{T}" /> at the specified index.</summary>
+        /// <summary>Inserts an item to the <see cref="IList{T}" /> at the specified index.</summary>
         /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="System.Collections.Generic.IList{T}" />.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// <paramref name="index" /> is not a valid index in the <see cref="System.Collections.Generic.IList{T}" />.</exception>
-        /// <exception cref="System.NotSupportedException">The <see cref="System.Collections.Generic.IList{T}" /> is read-only.</exception>
+        /// <param name="item">The object to insert into the <see cref="IList{T}" />.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is not a valid index in the <see cref="IList{T}" />.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="IList{T}" /> is read-only.</exception>
         void IList<GorgonShaderResourceView>.Insert(int index, GorgonShaderResourceView item) => throw new NotSupportedException();
 
-        /// <summary>Removes the first occurrence of a specific object from the <see cref="System.Collections.Generic.ICollection{T}" />.</summary>
-        /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="System.Collections.Generic.ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="System.Collections.Generic.ICollection{T}" />.</returns>
-        /// <param name="item">The object to remove from the <see cref="System.Collections.Generic.ICollection{T}" />.</param>
-        /// <exception cref="System.NotSupportedException">The <see cref="System.Collections.Generic.ICollection{T}" /> is read-only.</exception>
+        /// <summary>Removes the first occurrence of a specific object from the <see cref="ICollection{T}" />.</summary>
+        /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="ICollection{T}" />.</returns>
+        /// <param name="item">The object to remove from the <see cref="ICollection{T}" />.</param>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}" /> is read-only.</exception>
         bool ICollection<GorgonShaderResourceView>.Remove(GorgonShaderResourceView item) => throw new NotSupportedException();
 
-        /// <summary>Determines the index of a specific item in the <see cref="System.Collections.Generic.IList{T}" />.</summary>
+        /// <summary>Determines the index of a specific item in the <see cref="IList{T}" />.</summary>
         /// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-        /// <param name="item">The object to locate in the <see cref="System.Collections.Generic.IList{T}" />.</param>
+        /// <param name="item">The object to locate in the <see cref="IList{T}" />.</param>
         public int IndexOf(GorgonShaderResourceView item) => Array.IndexOf(_backingArray, item);
 
-        /// <summary>Determines whether the <see cref="System.Collections.Generic.ICollection{T}" /> contains a specific value.</summary>
-        /// <returns>true if <paramref name="item" /> is found in the <see cref="System.Collections.Generic.ICollection{T}" />; otherwise, false.</returns>
-        /// <param name="item">The object to locate in the <see cref="System.Collections.Generic.ICollection{T}" />.</param>
+        /// <summary>Determines whether the <see cref="ICollection{T}" /> contains a specific value.</summary>
+        /// <returns>true if <paramref name="item" /> is found in the <see cref="ICollection{T}" />; otherwise, false.</returns>
+        /// <param name="item">The object to locate in the <see cref="ICollection{T}" />.</param>
         public bool Contains(GorgonShaderResourceView item) => IndexOf(item) != -1;
 
         /// <summary>
@@ -359,20 +359,20 @@ namespace Gorgon.Graphics.Core
             return -1;
         }
 
-        /// <summary>Copies the elements of the <see cref="System.Collections.Generic.ICollection{T}" /> to an <see cref="System.Array" />, starting at a particular <see cref="System.Array" /> index.</summary>
-        /// <param name="array">The one-dimensional <see cref="System.Array" /> that is the destination of the elements copied from <see cref="System.Collections.Generic.ICollection{T}" />. The <see cref="System.Array" /> must have zero-based indexing.</param>
+        /// <summary>Copies the elements of the <see cref="ICollection{T}" /> to an <see cref="Array" />, starting at a particular <see cref="Array" /> index.</summary>
+        /// <param name="array">The one-dimensional <see cref="Array" /> that is the destination of the elements copied from <see cref="ICollection{T}" />. The <see cref="Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="array" /> is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="arrayIndex" /> is less than 0.</exception>
-        /// <exception cref="System.ArgumentException">The number of elements in the source <see cref="System.Collections.Generic.ICollection{T}" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
         public void CopyTo(GorgonShaderResourceView[] array, int arrayIndex) => _backingArray.CopyTo(array, arrayIndex);
 
-        /// <summary>Copies the elements of the <see cref="System.Collections.Generic.ICollection{T}" /> to an <see cref="System.Array" />, starting at a particular <see cref="System.Array" /> index.</summary>
-        /// <param name="array">The one-dimensional <see cref="System.Array" /> that is the destination of the elements copied from <see cref="System.Collections.Generic.ICollection{T}" />. The <see cref="System.Array" /> must have zero-based indexing.</param>
+        /// <summary>Copies the elements of the <see cref="ICollection{T}" /> to an <see cref="Array" />, starting at a particular <see cref="Array" /> index.</summary>
+        /// <param name="array">The one-dimensional <see cref="Array" /> that is the destination of the elements copied from <see cref="ICollection{T}" />. The <see cref="Array" /> must have zero-based indexing.</param>
         /// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
-        /// <exception cref="System.ArgumentNullException"><paramref name="array" /> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="array" /> is null.</exception>
         public void CopyTo(GorgonShaderResourceViews array, int destIndex = 0)
         {
             if (array == null)
@@ -429,8 +429,8 @@ namespace Gorgon.Graphics.Core
             }
         }
 
-        /// <summary>Removes all items from the <see cref="System.Collections.Generic.ICollection{T}" />.</summary>
-        /// <exception cref="System.NotSupportedException">The <see cref="System.Collections.Generic.ICollection{T}" /> is read-only. </exception>
+        /// <summary>Removes all items from the <see cref="ICollection{T}" />.</summary>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}" /> is read-only. </exception>
         public void Clear()
         {
             Array.Clear(Native, 0, Native.Length);
@@ -453,7 +453,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
-        /// <returns>An <see cref="System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
         /// <filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator() => _backingArray.GetEnumerator();
 

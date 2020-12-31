@@ -176,6 +176,18 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         CsUavs = 0x4000_0000_0000_0000,
         /// <summary>
+        /// The blend factor color has changed.
+        /// </summary>
+        BlendFactor = 0x8000_0000_0000_0000,
+        /// <summary>
+        /// The blending sample mask has changed.
+        /// </summary>
+        BlendSampleMask = 0x1_0000_0000_0000,
+        /// <summary>
+        /// The depth/stencil reference value has changed.
+        /// </summary>
+        DepthStencilReference = 0x2_0000_0000_0000,
+        /// <summary>
         /// All pipeline states.
         /// </summary>
         AllPipelineState = Topology
@@ -186,7 +198,10 @@ namespace Gorgon.Graphics.Core
                            | VertexShader
                            | GeometryShader
                            | DomainShader
-                           | HullShader,
+                           | HullShader
+                           | BlendFactor
+                           | BlendSampleMask
+                           | DepthStencilReference,
         /// <summary>
         /// Everything changed.
         /// </summary>

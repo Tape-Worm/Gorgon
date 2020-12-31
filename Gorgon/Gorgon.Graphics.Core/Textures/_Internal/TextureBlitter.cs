@@ -98,7 +98,7 @@ namespace Gorgon.Graphics
                            1.0f,
                            out DX.Matrix projectionMatrix);
 
-            _wvpBuffer.Buffer.SetData(ref projectionMatrix);
+            _wvpBuffer.Buffer.SetData(in projectionMatrix);
 
             _targetBounds = new DX.Rectangle(0, 0, target.Width, target.Height);
             _needsWvpUpdate = false;
@@ -119,7 +119,8 @@ namespace Gorgon.Graphics
                 && (_drawCall.PixelShader.Samplers[0] == samplerState)
                 && (_pipelineState.BlendStates[0] == blendState)
                 && (_drawCall.PixelShader.ShaderResources[0] == texture)
-                && (_drawCall.PixelShader.ConstantBuffers.DirtyEquals(constantBuffers)))
+                && ((constantBuffers == _emptyPsConstants)
+                    || (_drawCall.PixelShader.ConstantBuffers.DirtyEquals(constantBuffers))))
             {
                 // This draw call hasn't changed, so return the previous one.
                 return;
@@ -136,7 +137,7 @@ namespace Gorgon.Graphics
 
             _drawCall = _drawCallBuilder.ConstantBuffers(ShaderType.Pixel, constantBuffers)
                                         .SamplerState(ShaderType.Pixel, samplerState)
-                                        .ShaderResource(ShaderType.Pixel, texture)
+                                        .ShaderResource(ShaderType.Pixel, texture)                                        
                                         .Build(_drawAllocator);
         }
 
@@ -175,10 +176,12 @@ namespace Gorgon.Graphics
 
                 _vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
                 {
-                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<BltVertex>(_graphics,
-                                                                                                          4,
-                                                                                                          ResourceUsage.Dynamic,
-                                                                                                          bufferName: "Gorgon Blitter Vertex Buffer")
+                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<BltVertex>(_graphics, new GorgonVertexBufferInfo("Gorgon Blitter Vertex Buffer")
+                    {
+                        Binding = VertexIndexBufferBinding.None,
+                        SizeInBytes = BltVertex.Size * 4,
+                        Usage = ResourceUsage.Dynamic
+                    })
                 };
 
                 _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
@@ -322,7 +325,7 @@ namespace Gorgon.Graphics
             };
 
             // Copy to the vertex buffer.
-            _vertexBufferBindings[0].VertexBuffer.SetData(_vertices);
+            _vertexBufferBindings[0].VertexBuffer.SetData<BltVertex>(_vertices);
             _graphics.Submit(_drawCall);
         }
 

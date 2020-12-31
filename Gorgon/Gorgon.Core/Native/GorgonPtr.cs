@@ -1276,6 +1276,100 @@ namespace Gorgon.Native
         /// <returns>0 if the two pointers point at the same memory address, -1 if the this pointer address is less than the other pointer address and 1 if this pointer address is greater than the other pointer address.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int CompareTo(GorgonPtr<T> other) => other == this ? 0 : this < other ? -1 : 1;
+
+        /// <summary>
+        /// Function to compare the data pointed at by this pointer and another pointer.
+        /// </summary>
+        /// <param name="other">The other pointer to compare with.</param>
+        /// <returns><b>true</b> if the data is the same, or <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method is the equivalent of a <c>memcmp</c> in C/C++. It takes two pointers and compares the byte data in memory pointed at by both pointers. If any data is different at the byte level 
+        /// then the method will return <b>false</b>, otherwise, if all bytes are the same, then the method will return <b>true</b>. If both pointers point at the same memory address, then this method 
+        /// will always return <b>true</b>.
+        /// </para>
+        /// </remarks>
+        public bool CompareData(GorgonPtr<T> other)
+        {
+            if (other.Equals(this))
+            {
+                return true;
+            }
+
+            unsafe
+            {
+                if ((_ptr == null) || (other._ptr == null))
+                {
+                    return false;
+                }
+
+                byte* leftData = (byte *)_ptr;
+                byte* rightData = (byte*)other._ptr;
+                int dataLength = SizeInBytes - (_index * TypeSize).Min(other.SizeInBytes - (other._index * TypeSize));
+
+                while (dataLength > 0)
+                { 
+                    if (dataLength > sizeof(long))
+                    {                        
+                        long left = *((long*)leftData);
+                        long right = *((long*)rightData);
+
+                        if (left != right)
+                        {
+                            return false;
+                        }
+
+                        leftData += sizeof(long);
+                        rightData += sizeof(long);
+                        dataLength -= sizeof(long);
+                        continue;
+                    }
+
+                    if (dataLength > sizeof(int))
+                    {
+                        int left = *((int *)leftData);
+                        int right = *((int *)rightData);
+
+                        if (left != right)
+                        {
+                            return false;
+                        }
+
+                        leftData += sizeof(int);
+                        rightData += sizeof(int);
+                        dataLength -= sizeof(int);
+                        continue;
+                    }
+
+                    if (dataLength > sizeof(short))
+                    {
+                        short left = *((short *)leftData);
+                        short right = *((short *)rightData);
+
+                        if (left != right)
+                        {
+                            return false;
+                        }
+
+                        leftData += sizeof(short);
+                        rightData += sizeof(short);
+                        dataLength -= sizeof(short);
+                        continue;
+                    }
+
+                    if (*leftData != *rightData)
+                    {
+                        return false;
+                    }
+
+                    leftData++;
+                    rightData++;
+                    dataLength--;
+                }
+            }
+
+            return true;
+        }
         #endregion
 
         #region Constructor/Finalizer.       

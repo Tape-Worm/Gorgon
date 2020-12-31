@@ -622,13 +622,17 @@ namespace Gorgon.Graphics.Core
                 if ((initialData.Width > info.Width)
                     || (initialData.Height > info.Height))
                 {
-                    initialData = initialData.Expand(info.Width, info.Height, 1);
+                    initialData = initialData.BeginUpdate()
+                                             .Expand(info.Width, info.Height, 1)
+                                             .EndUpdate();
                 }
 
                 if ((initialData.Width < info.Width)
                     || (initialData.Height < info.Height))
                 {
-                    initialData = initialData.Crop(new DX.Rectangle(0, 0, info.Width, info.Height), 1);
+                    initialData = initialData.BeginUpdate()
+                                             .Crop(new DX.Rectangle(0, 0, info.Width, info.Height), 1)
+                                             .EndUpdate();
                 }
             }
 

@@ -169,37 +169,18 @@ namespace Gorgon.Graphics.Imaging
 
         #region Methods.
         /// <summary>
-        /// Function to return the pointer to the image data.
-        /// </summary>
-        /// <param name="data">The image data base pointer.</param>
-        /// <param name="copy"><b>true</b> to copy the data in the base pointer to a new pointer, or <b>false</b> to alias the existing base pointer.</param>
-        private void GetImagePointer(in GorgonPtr<byte> data, bool copy)
-        {
-            // Create a buffer large enough to hold our data.
-            if ((data != GorgonPtr<byte>.NullPtr) && (!copy))
-            {
-                _imagePtr = data;
-                return;
-            }
-
-            _imagePtr = _imageData = new GorgonNativeBuffer<byte>(SizeInBytes);
-
-            if (data == GorgonPtr<byte>.NullPtr)
-            {
-                return;
-            }
-
-            data.CopyTo(ImageData);
-        }
-
-        /// <summary>
         /// Function to initialize the image data.
         /// </summary>
         /// <param name="data">Pre-existing data to use.</param>
-        /// <param name="copy"><b>true</b> to copy the data, <b>false</b> to take ownership of the pointer.  Only applies when data is non-null.</param>
-        private void Initialize(in GorgonPtr<byte> data, bool copy)
+        private void Initialize(ReadOnlySpan<byte> data)
         {
-            GetImagePointer(in data, copy);
+            _imagePtr = _imageData = new GorgonNativeBuffer<byte>(SizeInBytes);
+
+            if (!data.IsEmpty)
+            {
+                data.CopyTo(_imagePtr);
+            }            
+
             _imageBuffers = new ImageBufferList(this);
             _imageBuffers.CreateBuffers(in _imagePtr);
         }
@@ -543,8 +524,9 @@ namespace Gorgon.Graphics.Imaging
         /// </para>
         /// <para>
         /// Block compression is, by nature, a lossy compression format. Thus some fidelity will be lost when the image data is compressed, it is recommended that images be compressed as a last stage in 
-        /// processing. Because block compression lays the image data out differently than standard image data, the functionality provided for modifying an image (e.g. <see cref="Resize"/>) will not 
-        /// work and will throw an exception if used on block compressed data, this method will allow users to make alterations with the image modification functionality.
+        /// processing. Because block compression lays the image data out differently than standard image data, the functionality provided for modifying an image (e.g. 
+        /// <see cref="IGorgonImageUpdateFluent.Resize"/>) will not work and will throw an exception if used on block compressed data, this method will allow users to make alterations with the image 
+        /// modification functionality.
         /// </para>
         /// <para>
         /// <note type="warning">
@@ -722,33 +704,32 @@ namespace Gorgon.Graphics.Imaging
             _imageInfo = new GorgonImageInfo(source);
             FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
             SizeInBytes = CalculateSizeInBytes(_imageInfo);
-            Initialize(source.ImageData, true);
+            Initialize(source.ImageData);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonImage" /> class.
         /// </summary>
         /// <param name="info">A <see cref="IGorgonImageInfo"/> containing information used to create the image.</param>
-        /// <param name="data">[Optional] A <see cref="GorgonPtr{T}">GorgonPtr&lt;byte&gt;</see> that points to a blob of existing image data.</param>
+        /// <param name="data">[Optional] A read only span of byte data that points to a blob of existing image data.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
         /// <remarks>
         /// <para>
-        /// If the <paramref name="data"/> parameter is <b>null</b>, then a new, empty, image will be created, otherwise the buffer that is pointed at by <paramref name="data"/> will be wrapped by this 
-        /// object to provide a view of the data as image data. The <paramref name="data"/> passed to this image must be large enough to accomodate the size of the image described by <paramref name="info"/>, 
-        /// otherwise an exception will be thrown. To determine how large the image size will be, in bytes, use the static <see cref="CalculateSizeInBytes(IGorgonImageInfo,PitchFlags)"/> method to determine the 
-        /// potential size of an image prior to creation.
+        /// If the <paramref name="data"/> parameter is omitted, then a new, empty, image will be created, otherwise the data within the span will be copied into this image. The <paramref name="data"/> passed 
+        /// to this image must be large enough to accomodate the size of the image described by <paramref name="info"/>, otherwise an exception will be thrown. To determine how large the image size will be, in 
+        /// bytes, use the static <see cref="CalculateSizeInBytes(IGorgonImageInfo,PitchFlags)"/> method to determine the potential size of an image prior to creation.
         /// </para>
         /// <para>
         /// <note type="important">
         /// <para>
-        /// If the <paramref name="data"/> parameter is not omitted, then the user is responsible for managing the lifetime of the <see cref="GorgonPtr{T}">GorgonPtr&lt;byte&gt;</see> object passed in. Failure to do so may cause 
-        /// a potential memory leak until garbage collection can recover the object.
+        /// The <paramref name="data"/>, if not omitted, is <b>copied</b>, not wrapped. This ensures that the lifetime of the data passed in remains the responsibility of the caller and does not affect the 
+        /// image object integrity.
         /// </para>
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonImage(IGorgonImageInfo info, GorgonPtr<byte>? data = null)
+        public GorgonImage(IGorgonImageInfo info, ReadOnlySpan<byte> data = default)
         {
             if (info == null)
             {
@@ -780,12 +761,12 @@ namespace Gorgon.Graphics.Imaging
             SizeInBytes = CalculateSizeInBytes(_imageInfo);
 
             // Validate the image size.
-            if ((data != null) && (SizeInBytes > data.Value.SizeInBytes))
+            if ((!data.IsEmpty) && (SizeInBytes > data.Length))
             {
-                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_IMAGE_SIZE_MISMATCH, SizeInBytes, data.Value.SizeInBytes), nameof(data));
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_IMAGE_SIZE_MISMATCH, SizeInBytes, data.Length), nameof(data));
             }
 
-            Initialize(data ?? GorgonPtr<byte>.NullPtr, false);
+            Initialize(data);
         }
         #endregion
     }
