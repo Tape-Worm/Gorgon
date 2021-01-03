@@ -184,7 +184,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="element">The element to search for.</param>
         /// <param name="index">The index of the current element.</param>
         /// <param name="parameterName">The name of the parameter being validated.</param>
-        private static void FindDuplicateElements(IList<GorgonInputElement> elements, GorgonInputElement element, int index, string parameterName)
+        private static void FindDuplicateElements(IList<GorgonInputElement> elements, in GorgonInputElement element, int index, string parameterName)
         {
             for (int i = 0; i < elements.Count; ++i)
             {

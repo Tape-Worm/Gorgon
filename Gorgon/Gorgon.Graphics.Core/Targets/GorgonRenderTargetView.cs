@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Core
 		/// This will clear the render target view to the specified <paramref name="color"/>.  
 		/// </para>
 		/// </remarks>
-		public void Clear(GorgonColor color)
+		public void Clear(in GorgonColor color)
 		{
 			Graphics.D3DDeviceContext.ClearRenderTargetView(Native, color.ToRawColor4());
 

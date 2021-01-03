@@ -95,7 +95,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription1 to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription ToModeDesc(this GorgonVideoMode mode) => new ModeDescription
+        public static ModeDescription ToModeDesc(this in GorgonVideoMode mode) => new ModeDescription
         {
             Format = (Format)mode.Format,
             Height = mode.Height,
@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription1 ToModeDesc1(this GorgonVideoMode mode) => new ModeDescription1
+        public static ModeDescription1 ToModeDesc1(this in GorgonVideoMode mode) => new ModeDescription1
         {
             Format = (Format)mode.Format,
             Height = mode.Height,
@@ -126,21 +126,21 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription1 to convert.</param>
         /// <param name="gorgonMode">The converted video mode.</param>
-        public static void ToGorgonVideoMode(this ModeDescription1 mode, out GorgonVideoMode gorgonMode) => gorgonMode = new GorgonVideoMode(mode);
+        public static void ToGorgonVideoMode(this in ModeDescription1 mode, out GorgonVideoMode gorgonMode) => gorgonMode = new GorgonVideoMode(mode);
 
         /// <summary>
         /// Function to convert a DXGI ModeDescription to a <see cref="GorgonVideoMode"/>.
         /// </summary>
         /// <param name="mode">ModeDescription to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static GorgonVideoMode ToGorgonVideoMode(this ModeDescription mode) => new GorgonVideoMode(mode.ToModeDesc1());
+        public static GorgonVideoMode ToGorgonVideoMode(this in ModeDescription mode) => new GorgonVideoMode(mode.ToModeDesc1());
 
         /// <summary>
         /// Function to convert a ModeDescription1 to a ModeDescription.
         /// </summary>
         /// <param name="mode">ModeDescription1 to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription ToModeDesc(this ModeDescription1 mode) => new ModeDescription
+        public static ModeDescription ToModeDesc(this in ModeDescription1 mode) => new ModeDescription
         {
             Format = mode.Format,
             Height = mode.Height,
@@ -155,7 +155,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription1 ToModeDesc1(this ModeDescription mode) => new ModeDescription1
+        public static ModeDescription1 ToModeDesc1(this in ModeDescription mode) => new ModeDescription1
         {
             Format = mode.Format,
             Height = mode.Height,
@@ -171,7 +171,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="binding">The binding to convert.</param>
         /// <returns>The D3D11 vertex buffer binding.</returns>
-	    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this GorgonVertexBufferBinding binding) => new D3D11.VertexBufferBinding(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
+	    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this in GorgonVertexBufferBinding binding) => new D3D11.VertexBufferBinding(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
 
         /// <summary>
         /// Function to convert a <see cref="GorgonMultisampleInfo"/> to a DXGI multi sample description.

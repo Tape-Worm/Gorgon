@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="color">The color to convert.</param>
         /// <returns>The SharpDX raw color 4 type.</returns>
-        public static RawColor4 ToRawColor4(this GorgonColor color) => new RawColor4(color.Red, color.Green, color.Blue, color.Alpha);
+        public static RawColor4 ToRawColor4(this in GorgonColor color) => new RawColor4(color.Red, color.Green, color.Blue, color.Alpha);
 
         /// <summary>
         /// Function to convert a SharpDX raw color 4 type to a <see cref="GorgonColor"/>.
@@ -53,7 +53,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="color">The color to convert.</param>
         /// <returns>The SharpDX raw color 3 type.</returns>
-        public static RawColor3 ToRawColor3(this GorgonColor color) => new RawColor3(color.Red, color.Green, color.Blue);
+        public static RawColor3 ToRawColor3(this in GorgonColor color) => new RawColor3(color.Red, color.Green, color.Blue);
 
         /// <summary>
         /// Function to convert a SharpDX raw color 3 type to a <see cref="GorgonColor"/>.
@@ -67,7 +67,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="color">The color to convert.</param>
         /// <returns>The SharpDX raw color 4 type.</returns>
-        public static DX.Color4 ToColor4(this GorgonColor color) => new DX.Color4(color.Red, color.Green, color.Blue, color.Alpha);
+        public static DX.Color4 ToColor4(this in GorgonColor color) => new DX.Color4(color.Red, color.Green, color.Blue, color.Alpha);
 
         /// <summary>
         /// Function to convert a SharpDX color 4 type to a <see cref="GorgonColor"/>.
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="color">The color to convert.</param>
         /// <returns>The SharpDX raw color 3 type.</returns>
-        public static DX.Color3 ToColor3(this GorgonColor color) => new DX.Color3(color.Red, color.Green, color.Blue);
+        public static DX.Color3 ToColor3(this in GorgonColor color) => new DX.Color3(color.Red, color.Green, color.Blue);
 
         /// <summary>
         /// Function to convert a SharpDX color 3 type to a <see cref="GorgonColor"/>.

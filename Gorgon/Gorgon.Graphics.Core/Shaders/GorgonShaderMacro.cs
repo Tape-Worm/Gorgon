@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool Equals(GorgonShaderMacro left, GorgonShaderMacro right) => string.Equals(left.Name, right.Name, StringComparison.Ordinal);
+        public static bool Equals(in GorgonShaderMacro left, in GorgonShaderMacro right) => string.Equals(left.Name, right.Name, StringComparison.Ordinal);
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/>, is equal to this instance.

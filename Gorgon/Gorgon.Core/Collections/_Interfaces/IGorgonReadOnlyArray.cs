@@ -60,9 +60,9 @@ namespace Gorgon.Collections
         /// Function to return a read only span for a slice of the array.
         /// </summary>
         /// <param name="start">The starting index for the array.</param>
-        /// <param name="end">The ending index for the array.</param>
+        /// <param name="count">The number of items to slice.</param>
         /// <returns>The read only span for the array slice.</returns>
-        ReadOnlySpan<T> AsSpan(int start, int end);
+        ReadOnlySpan<T> AsSpan(int start, int count);
 
         /// <summary>
         /// Function to return a read only span for the array.
@@ -74,9 +74,9 @@ namespace Gorgon.Collections
         /// Function to return read only memory for a slice of the array.
         /// </summary>
         /// <param name="start">The starting index for the array.</param>
-        /// <param name="end">The ending index for the array.</param>
+        /// <param name="count">The number of items to slice.</param>
         /// <returns>The read only memory for the array slice.</returns>
-        ReadOnlyMemory<T> AsMemory(int start, int end);
+        ReadOnlyMemory<T> AsMemory(int start, int count);
 
         /// <summary>
         /// Function to return read only memory for a slice of the array.
