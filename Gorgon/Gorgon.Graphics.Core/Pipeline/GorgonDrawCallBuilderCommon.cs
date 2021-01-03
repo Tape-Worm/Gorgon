@@ -40,7 +40,7 @@ namespace Gorgon.Graphics.Core
     /// <remarks>
     /// <para>
     /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
-    /// <see cref="GorgonGraphics.Submit(GorgonDrawCall, GorgonColor?, int, int)"/> methods.  
+    /// <see cref="GorgonGraphics.Submit(GorgonDrawCall, in GorgonColor?, int, int)"/> methods.  
     /// </para>
     /// <para>
     /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
@@ -223,7 +223,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="slot">[Optional] The slot for the binding.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonStreamOutBindings.MaximumStreamOutCount"/>.</exception>
-        public TB StreamOutBuffer(GorgonStreamOutBinding binding, int slot = 0)
+        public TB StreamOutBuffer(in GorgonStreamOutBinding binding, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonStreamOutBindings.MaximumStreamOutCount))
             {
@@ -279,7 +279,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonVertexBufferBindings.MaximumVertexBufferCount"/>.</exception>
-        public TB VertexBuffer(GorgonInputLayout layout, GorgonVertexBufferBinding binding, int slot = 0)
+        public TB VertexBuffer(GorgonInputLayout layout, in GorgonVertexBufferBinding binding, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonVertexBufferBindings.MaximumVertexBufferCount))
             {
@@ -496,7 +496,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="slot">[Optional] The slot used to asign the view.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
-        public TB ReadWriteView(GorgonReadWriteViewBinding resourceView, int slot = 0)
+        public TB ReadWriteView(in GorgonReadWriteViewBinding resourceView, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
             {

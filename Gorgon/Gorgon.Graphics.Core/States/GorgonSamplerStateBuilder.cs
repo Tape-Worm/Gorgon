@@ -152,7 +152,7 @@ namespace Gorgon.Graphics.Core
         /// If all parameters are set to <b>null</b> (i.e. omitted), then the corresponding values will be reset to their defaults.
         /// </para>
         /// </remarks>
-        public GorgonSamplerStateBuilder Wrapping(TextureWrap? wrapU = null, TextureWrap? wrapV = null, TextureWrap? wrapW = null, GorgonColor? borderColor = null)
+        public GorgonSamplerStateBuilder Wrapping(TextureWrap? wrapU = null, TextureWrap? wrapV = null, TextureWrap? wrapW = null, in GorgonColor? borderColor = null)
         {
             if ((wrapW == null) && (wrapU == null) && (wrapV == null) && (borderColor == null))
             {

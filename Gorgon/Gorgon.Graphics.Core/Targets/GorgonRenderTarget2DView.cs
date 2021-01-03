@@ -431,7 +431,7 @@ namespace Gorgon.Graphics.Core
 		/// If the <paramref name="rectangles"/> parameter is <b>null</b>, or has a zero length, the entirety of the view is cleared.
 		/// </para>
 		/// </remarks>
-		public void Clear(GorgonColor color, DX.Rectangle[] rectangles)
+		public void Clear(in GorgonColor color, DX.Rectangle[] rectangles)
 		{
 			if ((rectangles == null) || (rectangles.Length == 0))
 			{

@@ -48,7 +48,7 @@ namespace Gorgon.Collections
     {
         #region Variables.
         // The indices that are dirty.
-        private int _dirtyIndices;
+        private long _dirtyIndices;
 
         // The last set of dirty items.
         private (int Start, int Count) _dirtyItems;
@@ -100,7 +100,7 @@ namespace Gorgon.Collections
                 }
 
                 BackingArray[index] = value;
-                _dirtyIndices |= 1 << index;
+                _dirtyIndices |= 1L << index;
             }
         }
         #endregion
@@ -154,11 +154,10 @@ namespace Gorgon.Collections
         /// Function to return a read only span for a slice of the array.
         /// </summary>
         /// <param name="start">The starting index for the array.</param>
-        /// <param name="end">The ending index for the array.</param>
+        /// <param name="count">The number of items to slice.</param>
         /// <returns>The read only span for the array slice.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="start"/>, or <paramref name="end"/> parameter is less than 0, or greater than the entire length of the array.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<T> AsSpan(int start, int end) => BackingArray.AsSpan(start, (end + 1) - start);
+        public ReadOnlySpan<T> AsSpan(int start, int count) => BackingArray.AsSpan(start, count);
 
         /// <summary>
         /// Function to return a read only span for the array.
@@ -171,11 +170,10 @@ namespace Gorgon.Collections
         /// Function to return read only memory for a slice of the array.
         /// </summary>
         /// <param name="start">The starting index for the array.</param>
-        /// <param name="end">The ending index for the array.</param>
+        /// <param name="count">The number of items to slice.</param>
         /// <returns>The read only memory for the array slice.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="start"/>, or <paramref name="end"/> parameter is less than 0, or greater than the entire length of the array.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlyMemory<T> AsMemory(int start, int end) => BackingArray.AsMemory(start, (end + 1) - start);
+        public ReadOnlyMemory<T> AsMemory(int start, int count) => BackingArray.AsMemory(start, count);
 
         /// <summary>
         /// Function to return read only memory for a slice of the array.
@@ -208,12 +206,12 @@ namespace Gorgon.Collections
                 return ref _dirtyItems;
             }
 
-            int dirtyState = _dirtyIndices;
+            long dirtyState = _dirtyIndices;
             int dirtyIndex = 0;
 
             for (int i = 0; dirtyState != 0 && i < BackingArray.Length; ++i)
             {
-                int dirtyMask = 1 << i;
+                long dirtyMask = 1 << i;
 
                 if (((dirtyState & dirtyMask) == dirtyMask) && (startSlot == -1))
                 {
@@ -269,7 +267,7 @@ namespace Gorgon.Collections
 
             T oldValue = BackingArray[index];
             BackingArray[index] = default;
-            _dirtyIndices &= ~(1 << index);
+            _dirtyIndices &= ~(1L << index);
 
             OnItemReset(index, oldValue);
         }
@@ -506,7 +504,7 @@ namespace Gorgon.Collections
         /// Initializes a new instance of the <see cref="GorgonArray{T}"/> class.
         /// </summary>
         /// <param name="maxSize">The maximum size.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="maxSize"/> is less than 1.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="maxSize"/> is less than 1, or larger than 64.</exception>
         public GorgonArray(int maxSize)
         {
             if ((maxSize < 1) || (maxSize > 64))

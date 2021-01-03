@@ -236,7 +236,7 @@ namespace Gorgon.Graphics
         public void Blit(GorgonTexture2DView texture,
                          DX.Rectangle destRect,
                          DX.Point sourceOffset,
-                         GorgonColor color,
+                         in GorgonColor color,
                          bool clip,
                          GorgonBlendState blendState,
                          GorgonSamplerState samplerState,

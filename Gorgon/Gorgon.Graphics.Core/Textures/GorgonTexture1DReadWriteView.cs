@@ -400,7 +400,7 @@ namespace Gorgon.Graphics.Core
         /// If this method is called with a 3D texture bound to the view, and with regions specified, then the regions are ignored.
         /// </para>
         /// </remarks>
-        public void Clear(GorgonColor color, DX.Rectangle[] rectangles)
+        public void Clear(in GorgonColor color, DX.Rectangle[] rectangles)
         {
             if ((rectangles == null) || (rectangles.Length == 0))
             {

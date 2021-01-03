@@ -53,14 +53,47 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonStreamOutCall"/>
     public class GorgonPipelineState
     {
+        #region Variables.
+        // D3D States.
+        private D3D11.RasterizerState1 _d3DRasterState;
+        private D3D11.DepthStencilState _d3DDepthStencilState;
+        private D3D11.BlendState1 _d3DBlendState;
+        // Shaders.
+        private GorgonPixelShader _pixelShader;
+        private GorgonVertexShader _vertexShader;
+        private GorgonGeometryShader _geometryShader;
+        private GorgonDomainShader _domainShader;
+        private GorgonHullShader _hullShader;
+        // Topology.
+        private PrimitiveType _primitiveType;
+        #endregion
+
         #region Properties.
+        /// <summary>
+        /// Property to set or return the states that have been updated in this pipeline state.
+        /// </summary>
+        internal PipelineStateChanges UpdatedStates
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the Direct 3D 11 raster state.
         /// </summary>
         internal D3D11.RasterizerState1 D3DRasterState
         {
-            get;
-            set;
+            get => _d3DRasterState;
+            set
+            {
+                if (_d3DRasterState == value)
+                {
+                    return;
+                }
+
+                _d3DRasterState = value;
+                UpdatedStates |= PipelineStateChanges.RasterState;
+            }
         }
 
         /// <summary>
@@ -68,8 +101,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal D3D11.DepthStencilState D3DDepthStencilState
         {
-            get;
-            set;
+            get => _d3DDepthStencilState;
+            set
+            {
+                if (_d3DDepthStencilState == value)
+                {
+                    return;
+                }
+
+                _d3DDepthStencilState = value;
+                UpdatedStates |= PipelineStateChanges.DepthStencilState;
+            }
         }
 
         /// <summary>
@@ -77,8 +119,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal D3D11.BlendState1 D3DBlendState
         {
-            get;
-            set;
+            get => _d3DBlendState;
+            set
+            {
+                if (_d3DBlendState == value)
+                {
+                    return;
+                }
+
+                _d3DBlendState = value;
+                UpdatedStates |= PipelineStateChanges.BlendState;
+            }
         }
 
         /// <summary>
@@ -106,8 +157,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
 	    public GorgonPixelShader PixelShader
         {
-            get;
-            internal set;
+            get => _pixelShader;
+            internal set
+            {
+                if (_pixelShader == value)
+                {
+                    return;
+                }
+
+                _pixelShader = value;
+                UpdatedStates |= PipelineStateChanges.PixelShader;
+            }
         }
 
         /// <summary>
@@ -115,8 +175,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonVertexShader VertexShader
         {
-            get;
-            internal set;
+            get => _vertexShader;
+            internal set
+            {
+                if (_vertexShader == value)
+                {
+                    return;
+                }
+                                
+                _vertexShader = value;
+                UpdatedStates |= PipelineStateChanges.VertexShader;
+            }
         }
 
         /// <summary>
@@ -124,8 +193,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonGeometryShader GeometryShader
         {
-            get;
-            internal set;
+            get => _geometryShader;
+            internal set
+            {
+                if (_geometryShader == value)
+                {
+                    return;
+                }
+
+                _geometryShader = value;
+                UpdatedStates |= PipelineStateChanges.GeometryShader;
+            }
         }
 
         /// <summary>
@@ -133,8 +211,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonDomainShader DomainShader
         {
-            get;
-            internal set;
+            get => _domainShader;
+            internal set
+            {
+                if (_domainShader == value)
+                {
+                    return;
+                }
+
+                _domainShader = value;
+                UpdatedStates |= PipelineStateChanges.DomainShader;
+            }
         }
 
         /// <summary>
@@ -142,8 +229,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonHullShader HullShader
         {
-            get;
-            internal set;
+            get => _hullShader;
+            internal set
+            {
+                if (_hullShader == value)
+                {
+                    return;
+                }
+
+                _hullShader = value;
+                UpdatedStates |= PipelineStateChanges.HullShader;
+            }
         }
 
         /// <summary>
@@ -169,8 +265,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public PrimitiveType PrimitiveType
         {
-            get;
-            internal set;
+            get => _primitiveType;
+            internal set
+            {
+                if (_primitiveType == value)
+                {
+                    return;
+                }
+
+                _primitiveType = value;
+                UpdatedStates |= PipelineStateChanges.Topology;
+            }
         }
 
         /// <summary>
