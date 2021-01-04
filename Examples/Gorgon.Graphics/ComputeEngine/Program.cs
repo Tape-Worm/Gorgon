@@ -146,8 +146,8 @@ namespace Gorgon.Examples
             }
 
             // Send to the buffers.
-            _intBuffer.SetData(inputInts);
-            _floatBuffer.SetData(inputFloats);
+            _intBuffer.SetData<int>(inputInts);
+            _floatBuffer.SetData<float>(inputFloats);
         }
 
         /// <summary>
@@ -161,14 +161,14 @@ namespace Gorgon.Examples
 
             Console.WriteLine("Enumerating video devices...");
 
-            IGorgonVideoAdapterInfo firstDevice = deviceList.FirstOrDefault(item => item.FeatureSet >= FeatureSet.Level_12_0);
+            IGorgonVideoAdapterInfo firstDevice = deviceList.FirstOrDefault(item => item.FeatureSet >= FeatureSet.Level_11_2);
 
             // If a device with a feature set of at least 12.0 not found, then we cannot run this example. The compute engine requires a minimum 
             // of feature level 12.0 to run.
             if (firstDevice == null)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("No Level 12.0 or better adapters found in the system. This example requires a FeatureLevel 12.0 or better adapter.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("No Level 11.2 or better adapters found in the system. This example requires a FeatureLevel 11.2 or better adapter.");
                 Console.ResetColor();
                 return;
             }

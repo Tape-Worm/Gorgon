@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Example
 
             _sobelOptions[0] = thickness;
             _sobelOptions[1] = threshold;
-            _sobelData.SetData(_sobelOptions);
+            _sobelData.SetData<float>(_sobelOptions);
 
             // Send 32 threads per group.
             _compute.Execute(_dispatch, (int)(texture.Width / 32.0f).FastCeiling(), (int)(texture.Height / 32.0f).FastCeiling(), 1);

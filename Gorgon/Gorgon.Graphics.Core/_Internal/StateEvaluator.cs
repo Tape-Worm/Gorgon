@@ -586,15 +586,7 @@ namespace Gorgon.Graphics.Core
 
 			CheckArray(_prevResourceState.ReadWriteViews, newState.ReadWriteViews, ResourceStateChanges.Uavs, ref result, ref _ranges.Uavs);
 
-			if (_prevResourceState.ComputeShader == newState.ComputeShader)
-			{
-				return _ranges;
-			}
-
-			_prevResourceState.ComputeShader = newState.ComputeShader;
-			result |= ResourceStateChanges.ComputeShader;
-
-			if (_prevResourceState.ComputeShader == null)
+			if ((newState.ComputeShader == null) && ((result & ResourceStateChanges.ComputeShader) != ResourceStateChanges.ComputeShader))
 			{
 				return _ranges;
 			}

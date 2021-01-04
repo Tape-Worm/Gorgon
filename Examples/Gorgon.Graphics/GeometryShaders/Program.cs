@@ -104,8 +104,8 @@ namespace Gorgon.Examples
 
             // We've put our world matrix and center point offset inside of the same buffer since they're both updated once per
             // frame.
-            _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);
-            _vsConstants.Buffer.SetData(ref offset, 128, CopyMode.NoOverwrite);
+            _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
+            _vsConstants.Buffer.SetData(in offset, 128, CopyMode.NoOverwrite);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Gorgon.Examples
 
             // When we resize, the projection matrix will go out of date, so we need to update our constant buffer with an updated projection.
             DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
-            _vsConstants.Buffer.SetData(ref _projection);
+            _vsConstants.Buffer.SetData(in _projection);
         }
 
         /// <summary>
@@ -293,8 +293,8 @@ namespace Gorgon.Examples
                                                                              {
                                                                                  SizeInBytes = (DX.Matrix.SizeInBytes * 2) + DX.Vector4.SizeInBytes
                                                                              });
-                _vsConstants.Buffer.SetData(ref _projection, copyMode: CopyMode.Discard);
-                _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);
+                _vsConstants.Buffer.SetData(in _projection, copyMode: CopyMode.Discard);
+                _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
 
                 // Create a draw call so we actually have something we can draw.
                 _drawCall = _drawCallBuilder.VertexRange(0, 3)

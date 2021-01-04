@@ -462,7 +462,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// <para>
         /// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
-        /// copied, use the <see cref="CopyTo(GorgonTexture3D, DX.Rectangle?, GorgonRange?, int, int, int, int, int, CopyMode)"/> method.
+        /// copied, use the <see cref="CopyTo(GorgonTexture3D, in DX.Rectangle?, GorgonRange?, int, int, int, int, int, CopyMode)"/> method.
         /// </para>
         /// <para>
         /// This method does not perform stretching, filtering or clipping.
@@ -892,7 +892,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void CopyTo(GorgonTexture3D destinationTexture, DX.Rectangle? sourceRectangle = null, GorgonRange? sourceDepthSliceRange = null, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+        public void CopyTo(GorgonTexture3D destinationTexture, in DX.Rectangle? sourceRectangle = null, GorgonRange? sourceDepthSliceRange = null, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
         {
             destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -1140,7 +1140,7 @@ namespace Gorgon.Graphics.Core
         /// ]]>
         /// </code>
         /// </example>
-        public void SetData(IGorgonImageBuffer imageBuffer, DX.Rectangle? destRectangle = null, int destSlice = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+        public void SetData(IGorgonImageBuffer imageBuffer, in DX.Rectangle? destRectangle = null, int destSlice = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
         {
 #if DEBUG
             if (Usage == ResourceUsage.Immutable)

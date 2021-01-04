@@ -192,15 +192,17 @@ namespace Gorgon.Examples
                                                         IndexCount = indices.Length,
                                                         Use16BitIndices = true
                                                     },
-                                                    indexPtr);
+                                                    indexPtr.Pointer);
 
                 VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
                 {
-                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer(graphics,
-                                                                                      vertices.Length,
-                                                                                      ResourceUsage.Immutable,
-                                                                                      initialData: vertexPtr,
-                                                                                      bufferName: "GlassCube Vertex Buffer")
+                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GlassCubeVertex>(graphics,
+                                                                       new GorgonVertexBufferInfo("GlassCube Vertex Buffer")
+                                                                       {
+                                                                           Usage = ResourceUsage.Immutable,
+                                                                           SizeInBytes = vertices.Length * GlassCubeVertex.SizeInBytes,                                                                           
+                                                                       },
+                                                                       vertexPtr.ToSpan())
                 };
             }
         }

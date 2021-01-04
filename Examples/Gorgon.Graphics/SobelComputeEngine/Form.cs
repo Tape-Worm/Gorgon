@@ -100,7 +100,9 @@ namespace Gorgon.Examples
                 _outputTexture = null;
 
                 image = png.FromFile(DialogOpenPng.FileName);
-                _sourceTexture = image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                _sourceTexture = image.BeginUpdate()
+                                      .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                                      .EndUpdate()
                                       .ToTexture2D(_graphics,
                                                    new GorgonTexture2DLoadOptions
                                                    {

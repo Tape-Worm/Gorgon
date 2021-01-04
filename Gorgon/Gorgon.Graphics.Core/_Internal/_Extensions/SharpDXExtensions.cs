@@ -126,21 +126,21 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription1 to convert.</param>
         /// <param name="gorgonMode">The converted video mode.</param>
-        public static void ToGorgonVideoMode(this in ModeDescription1 mode, out GorgonVideoMode gorgonMode) => gorgonMode = new GorgonVideoMode(mode);
+        public static void ToGorgonVideoMode(this ModeDescription1 mode, out GorgonVideoMode gorgonMode) => gorgonMode = new GorgonVideoMode(mode);
 
         /// <summary>
         /// Function to convert a DXGI ModeDescription to a <see cref="GorgonVideoMode"/>.
         /// </summary>
         /// <param name="mode">ModeDescription to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static GorgonVideoMode ToGorgonVideoMode(this in ModeDescription mode) => new GorgonVideoMode(mode.ToModeDesc1());
+        public static GorgonVideoMode ToGorgonVideoMode(this ModeDescription mode) => new GorgonVideoMode(mode.ToModeDesc1());
 
         /// <summary>
         /// Function to convert a ModeDescription1 to a ModeDescription.
         /// </summary>
         /// <param name="mode">ModeDescription1 to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription ToModeDesc(this in ModeDescription1 mode) => new ModeDescription
+        public static ModeDescription ToModeDesc(this ModeDescription1 mode) => new ModeDescription
         {
             Format = mode.Format,
             Height = mode.Height,
@@ -155,7 +155,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription1 ToModeDesc1(this in ModeDescription mode) => new ModeDescription1
+        public static ModeDescription1 ToModeDesc1(this ModeDescription mode) => new ModeDescription1
         {
             Format = mode.Format,
             Height = mode.Height,

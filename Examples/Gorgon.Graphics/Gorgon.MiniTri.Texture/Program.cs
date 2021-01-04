@@ -147,7 +147,7 @@ namespace Gorgon.Examples
                                                                                         });
 
             // Send the vertex data into the buffer.
-            _vertexBuffer.VertexBuffer.SetData(vertices);
+            _vertexBuffer.VertexBuffer.SetData<MiniTriVertex>(vertices);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Gorgon.Examples
             // Create our constant buffer.
             //
             // The data we pass into here will apply the projection transformation to our vertex data so we can transform from 3D space into 2D space.
-            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref projectionMatrix, "MiniTri WVP Constant Buffer");
+            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in projectionMatrix, "MiniTri WVP Constant Buffer");
         }
 
         /// <summary>

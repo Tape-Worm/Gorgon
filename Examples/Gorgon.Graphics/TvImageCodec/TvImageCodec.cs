@@ -232,7 +232,7 @@ namespace Gorgon.Examples
                         uint color = (uint)(((pixel >> 8) & 0xff) << (8 * (x % 3)));
                         uint alpha = (uint)((pixel & 0xff) << 24);
 
-                        ref uint imagePixel = ref result.ImageData.ReadAs<uint>(ptrPosition);
+                        ref uint imagePixel = ref result.ImageData.AsRef<uint>(ptrPosition);
                         imagePixel = color | alpha;
                         ptrPosition += sizeof(uint);
                     }
@@ -294,7 +294,7 @@ namespace Gorgon.Examples
                     {
                         // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
                         // the format of the data.
-                        uint pixel = imageData.ImageData.ReadAs<uint>(pointerPos);
+                        uint pixel = imageData.ImageData.AsRef<uint>(pointerPos);
                         pointerPos += sizeof(uint);
 
                         // Get the alpha channel for this pixel.

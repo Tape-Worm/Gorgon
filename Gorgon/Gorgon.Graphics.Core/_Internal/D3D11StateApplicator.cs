@@ -246,7 +246,7 @@ namespace Gorgon.Graphics.Core
 		private void BindIndexBuffer(GorgonIndexBuffer indexBuffer)
 		{
 			D3D11.Buffer native = indexBuffer?.Native;
-			DXGI.Format format = indexBuffer == null ? DXGI.Format.Unknown : (indexBuffer.Use16BitIndices ? DXGI.Format.R16G16B16A16_UInt : DXGI.Format.R32_UInt);
+			DXGI.Format format = indexBuffer == null ? DXGI.Format.Unknown : (indexBuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt);
 			_graphics.D3DDeviceContext.InputAssembler.SetIndexBuffer(native, format, 0);
 		}
 

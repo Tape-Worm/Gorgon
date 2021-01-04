@@ -108,7 +108,7 @@ namespace Gorgon.Examples
             DX.Matrix.Transpose(ref wvp, out wvp);
 
             // Update the constant buffer.
-            _wvpBuffer.Buffer.SetData(ref wvp);
+            _wvpBuffer.Buffer.SetData(in wvp);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace Gorgon.Examples
             DX.Matrix dummyMatrix = DX.Matrix.Identity;
 
             // Create our constant buffer so we can send our transformation information to the shader.
-            _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref dummyMatrix, "GlassCube WVP Constant Buffer");
+            _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in dummyMatrix, "GlassCube WVP Constant Buffer");
 
             // Create a new projection matrix so we can transform from 3D to 2D space.
             DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);

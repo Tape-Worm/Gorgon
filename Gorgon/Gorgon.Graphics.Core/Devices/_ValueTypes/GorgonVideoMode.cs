@@ -241,7 +241,7 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonVideoMode" /> struct.
         /// </summary>
         /// <param name="modeDesc">The DXGI mode description to copy.</param>
-        internal GorgonVideoMode(in ModeDescription1 modeDesc)
+        internal GorgonVideoMode(ModeDescription1 modeDesc)
         {
             Width = modeDesc.Width;
             Height = modeDesc.Height;
