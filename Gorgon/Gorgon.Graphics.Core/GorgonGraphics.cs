@@ -169,15 +169,6 @@ namespace Gorgon.Graphics.Core
         // The DXGI factory
         private Factory5 _dxgiFactory;
 
-        // A list of cached pipeline states.
-        private readonly List<GorgonPipelineState> _cachedPipelineStates = new List<GorgonPipelineState>();
-        // A list of cached pipeline states.
-        private readonly List<GorgonSamplerState> _cachedSamplers = new List<GorgonSamplerState>();
-        // A syncrhonization lock for multiple thread when dealing with the pipeline state cache.
-        private readonly object _stateLock = new object();
-        // A syncrhonization lock for multiple thread when dealing with the sampler cache.
-        private readonly object _samplerLock = new object();
-
         // The texture blitter used to draw 2D textures to the render target.
         private Lazy<TextureBlitter> _textureBlitter;
 
@@ -191,6 +182,11 @@ namespace Gorgon.Graphics.Core
         private readonly StateEvaluator _stateEvaluator;
         // The applicator that will assign state and resource binding.
         private readonly D3D11StateApplicator _stateApplicator;
+
+        // The cache used to hold pipeline states.
+        private PipelineStateCache _pipelineStateCache;
+        // The cache used to hold sampler states.
+        private SamplerCache _samplerCache;
         #endregion
 
         #region Properties.
@@ -220,14 +216,14 @@ namespace Gorgon.Graphics.Core
         internal ref GorgonGraphicsStatistics RwStatistics => ref _stats;
 
         /// <summary>
-        /// Property to return the number of draw calls since the last frame.
+        /// Property to return the cache used to hold pipeline state objects.
         /// </summary>
-        [Obsolete("Use the Statistics property instead.")]
-        public ulong DrawCallCount
-        {
-            get;
-            private set;
-        }
+        internal PipelineStateCache PipelineStateCache => _pipelineStateCache;
+
+        /// <summary>
+        /// Property to return the cache used to hold sampler state objects.
+        /// </summary>
+        internal SamplerCache SamplerStateCache => _samplerCache;
 
         /// <summary>
         /// Property to return the statistics generated while rendering.
@@ -384,71 +380,6 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to initialize the cached sampler states with the predefined states provided on the sampler state class.
-        /// </summary>
-        private void InitializeCachedSamplers()
-        {
-            lock (_samplerLock)
-            {
-                GorgonSamplerState.Default.BuildD3D11SamplerState(_device);
-                GorgonSamplerState.AnisotropicFiltering.BuildD3D11SamplerState(_device);
-                GorgonSamplerState.PointFiltering.BuildD3D11SamplerState(_device);
-                GorgonSamplerState.Wrapping.BuildD3D11SamplerState(_device);
-                GorgonSamplerState.PointFilteringWrapping.BuildD3D11SamplerState(_device);
-
-                _cachedSamplers.Add(GorgonSamplerState.Default);
-                _cachedSamplers.Add(GorgonSamplerState.Wrapping);
-                _cachedSamplers.Add(GorgonSamplerState.AnisotropicFiltering);
-                _cachedSamplers.Add(GorgonSamplerState.PointFiltering);
-                _cachedSamplers.Add(GorgonSamplerState.PointFilteringWrapping);
-            }
-        }
-
-        /// <summary>
-        /// Function to clear the state cache for the pipeline states and sampler states.
-        /// </summary>
-        /// <param name="userCall"><b>true</b> if called by the user, <b>false</b> if called by Dispose.</param>
-        private void ClearStateCache(bool userCall)
-        {
-            lock (_samplerLock)
-            {
-                // ReSharper disable once ForCanBeConvertedToForeach
-                for (int i = 0; i < _cachedSamplers.Count; ++i)
-                {
-                    _cachedSamplers[i].ID = int.MinValue;
-                    _cachedSamplers[i].Native?.Dispose();
-                }
-
-                _cachedSamplers.Clear();
-            }
-
-            if (userCall)
-            {
-                InitializeCachedSamplers();
-            }
-
-            lock (_stateLock)
-            {
-                // Wipe out the state cache.
-                // ReSharper disable once ForCanBeConvertedToForeach
-                for (int i = 0; i < _cachedPipelineStates.Count; ++i)
-                {
-                    _cachedPipelineStates[i].ID = int.MinValue;
-                    _cachedPipelineStates[i].D3DRasterState?.Dispose();
-                    _cachedPipelineStates[i].D3DDepthStencilState?.Dispose();
-                    _cachedPipelineStates[i].D3DBlendState?.Dispose();
-                }
-
-                _cachedPipelineStates.Clear();
-            }
-
-            if (userCall)
-            {
-                ClearState();
-            }
-        }
-
-        /// <summary>
         /// Function to retrieve the multi sample maximum quality level support for a given format.
         /// </summary>
         /// <param name="device">The D3D 11 device to use.</param>
@@ -549,39 +480,6 @@ namespace Gorgon.Graphics.Core
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Function to initialize a <see cref="GorgonPipelineState" /> object with Direct 3D 11 state objects by creating new objects for the unassigned values.
-        /// </summary>
-        /// <param name="pipelineState">The pipeline state.</param>
-        /// <param name="blendState">An existing blend state to use.</param>
-        /// <param name="depthStencilState">An existing depth/stencil state to use.</param>
-        /// <param name="rasterState">An existing rasterizer state to use.</param>
-        /// <returns>A new <see cref="GorgonPipelineState"/>.</returns>
-        private void InitializePipelineState(GorgonPipelineState pipelineState,
-                                             D3D11.BlendState1 blendState,
-                                             D3D11.DepthStencilState depthStencilState,
-                                             D3D11.RasterizerState1 rasterState)
-        {
-            pipelineState.D3DRasterState = rasterState;
-            pipelineState.D3DBlendState = blendState;
-            pipelineState.D3DDepthStencilState = depthStencilState;
-
-            if ((rasterState == null) && (pipelineState.RasterState != null))
-            {
-                pipelineState.D3DRasterState = pipelineState.RasterState.GetD3D11RasterState(_device);
-            }
-
-            if ((depthStencilState == null) && (pipelineState.DepthStencilState != null))
-            {
-                pipelineState.D3DDepthStencilState = pipelineState.DepthStencilState.GetD3D11DepthStencilState(_device);
-            }
-
-            if (blendState == null)
-            {
-                pipelineState.BuildD3D11BlendState(D3DDevice);
-            }
         }
 
         /// <summary>
@@ -697,131 +595,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to build up a <see cref="GorgonSamplerState"/> object with its corresponding Direct3D 11 state object by either creating a new object, or inheriting a previous one.
-        /// </summary>
-        /// <param name="newState">The new state to initialize.</param>
-        /// <returns>If the state matches a cached state, then the cached state is returned, otherwise a copy of the the <paramref name="newState"/> is returned.</returns>
-        internal GorgonSamplerState CacheSamplerState(GorgonSamplerState newState)
-        {
-            lock (_samplerLock)
-            {
-                if (newState.ID != int.MinValue)
-                {
-                    return _cachedSamplers[newState.ID];
-                }
-
-                for (int i = 0; i < _cachedSamplers.Count; ++i)
-                {
-                    GorgonSamplerState cached = _cachedSamplers[i];
-
-                    if (cached?.Equals(newState) ?? false)
-                    {
-                        return cached;
-                    }
-                }
-
-                // We didn't find what we wanted, so create a new one.
-                var resultState = new GorgonSamplerState(newState)
-                {
-                    ID = _cachedSamplers.Count
-                };
-                resultState.BuildD3D11SamplerState(D3DDevice);
-                _cachedSamplers.Add(resultState);
-
-                return resultState;
-            }
-        }
-
-        /// <summary>
-        /// Function to build up a <see cref="GorgonPipelineState"/> object with Direct 3D 11 state objects by either creating new objects, or inheriting previous ones.
-        /// </summary>
-        /// <param name="newState">The new state to initialize.</param>
-        /// <returns>If the pipeline state matches a cached pipeline state, then the cached state is returned, otherwise a copy of the <paramref name="newState"/> is returned.</returns>
-        internal GorgonPipelineState CachePipelineState(GorgonPipelineState newState)
-        {
-            // Existing states.
-            D3D11.DepthStencilState depthStencilState = null;
-            D3D11.BlendState1 blendState = null;
-            D3D11.RasterizerState1 rasterState = null;
-
-            lock (_stateLock)
-            {
-                // ReSharper disable once ForCanBeConvertedToForeach
-                for (int i = 0; i < _cachedPipelineStates.Count; ++i)
-                {
-                    // Compute shaders don't use pipeline state.  So, we assume the compute shader is equal at all times.
-                    PipelineStateChanges inheritedState = PipelineStateChanges.None;
-                    GorgonPipelineState cachedState = _cachedPipelineStates[i];
-
-                    if (cachedState.PrimitiveType == newState.PrimitiveType)
-                    {
-                        inheritedState |= PipelineStateChanges.Topology;
-                    }					
-
-                    if (cachedState.VertexShader == newState.VertexShader)
-                    {
-                        inheritedState |= PipelineStateChanges.VertexShader;
-                    }
-
-                    if (cachedState.PixelShader == newState.PixelShader)
-                    {
-                        inheritedState |= PipelineStateChanges.PixelShader;
-                    }
-
-                    if (cachedState.GeometryShader == newState.GeometryShader)
-                    {
-                        inheritedState |= PipelineStateChanges.GeometryShader;
-                    }
-
-                    if (cachedState.DomainShader == newState.DomainShader)
-                    {
-                        inheritedState |= PipelineStateChanges.DomainShader;
-                    }
-
-                    if (cachedState.HullShader == newState.HullShader)
-                    {
-                        inheritedState |= PipelineStateChanges.HullShader;
-                    }
-
-                    if (cachedState.RasterState.Equals(newState.RasterState))
-                    {
-                        rasterState = cachedState.D3DRasterState;
-                        inheritedState |= PipelineStateChanges.RasterState;
-                    }
-
-                    if ((cachedState.RwBlendStates.Equals(newState.RwBlendStates))
-                        && (cachedState.IsAlphaToCoverageEnabled == newState.IsAlphaToCoverageEnabled)
-                        && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled))
-                    {
-                        blendState = cachedState.D3DBlendState;
-                        inheritedState |= PipelineStateChanges.BlendState;
-                    }
-
-                    if ((cachedState.DepthStencilState != null) &&
-                        (cachedState.DepthStencilState.Equals(newState.DepthStencilState)))
-                    {
-                        depthStencilState = cachedState.D3DDepthStencilState;
-                        inheritedState |= PipelineStateChanges.DepthStencilState;
-                    }
-
-                    // We've copied all the states, so just return the existing pipeline state.
-                    // We exclude blend flags like BlendFactor and whatnot as they're handled elsewhere.
-                    if (inheritedState == PipelineStateChanges.AllWithoutBlendFlags)
-                    {
-                        return cachedState;
-                    }
-                }
-
-                // Setup any uninitialized states.
-                var resultState = new GorgonPipelineState(newState);
-                InitializePipelineState(resultState, blendState, depthStencilState, rasterState);
-                resultState.ID = _cachedPipelineStates.Count;
-                _cachedPipelineStates.Add(resultState);
-                return resultState;
-            }
-        }
-
-        /// <summary>
         /// Function to execute a dispatch call for a compute shader.
         /// </summary>
         /// <param name="dispatchCall">The call to execute.</param>
@@ -914,7 +687,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonDepthStencil2DView"/>
         /// <seealso cref="GorgonTexture2D"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SetDepthStencil(GorgonDepthStencil2DView depthStencil) 
+        public void SetDepthStencil(GorgonDepthStencil2DView depthStencil)
         {
             (bool _, bool DsvChanged) changes = _stateEvaluator.GetRtvDsvChanges(_stateEvaluator.RenderTargets, depthStencil);
 
@@ -966,7 +739,7 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencil2DView depthStencil = null)
         {
-            GorgonRenderTargetView[] renderTargets = ArrayPool<GorgonRenderTargetView>.Shared.Rent(1);			
+            GorgonRenderTargetView[] renderTargets = ArrayPool<GorgonRenderTargetView>.Shared.Rent(1);
 
             try
             {
@@ -1204,7 +977,11 @@ namespace Gorgon.Graphics.Core
                 ClearState();
             }
 
-            ClearStateCache(true);
+            _samplerCache.Clear();
+            _samplerCache.WarmCache();
+            PipelineStateCache.Clear();
+
+            ClearState();
         }
 
         /// <summary>
@@ -1224,7 +1001,7 @@ namespace Gorgon.Graphics.Core
             {
                 ++_stats._drawCallCount;
                 _stats._triangleCount += drawCall.VertexCount / 3;
-            }            
+            }
         }
 
         /// <summary>
@@ -1531,12 +1308,15 @@ namespace Gorgon.Graphics.Core
             Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
             Factory5 factory = Interlocked.Exchange(ref _dxgiFactory, null);
             Lazy<TextureBlitter> blitter = Interlocked.Exchange(ref _textureBlitter, null);
+            PipelineStateCache pipeCache = Interlocked.Exchange(ref _pipelineStateCache, null);
+            SamplerCache samplerCache = Interlocked.Exchange(ref _samplerCache, null);
 
             // If these are all gone, then we've already disposed.
             if ((factory == null)
                 && (adapter == null)
                 && (device == null)
                 && (context == null)
+                && (pipeCache == null)
                 && (blitter == null))
             {
                 return;
@@ -1549,7 +1329,9 @@ namespace Gorgon.Graphics.Core
                 blitter.Value.Dispose();
             }
 
-            ClearStateCache(false);
+            // TODO:
+            samplerCache.Dispose();
+            pipeCache.Dispose();
 
             // Dispose all objects created from this interface.
             this.DisposeAll();
@@ -1649,9 +1431,7 @@ namespace Gorgon.Graphics.Core
             _deviceContext = _device.ImmediateContext.QueryInterface<D3D11.DeviceContext4>();
 
             FormatSupport = EnumerateFormatSupport(_device);
-
-            InitializeCachedSamplers();
-
+            
             _textureBlitter = new Lazy<TextureBlitter>(() =>
                                                        {
                                                            var blitter = new TextureBlitter(this);
@@ -1661,6 +1441,9 @@ namespace Gorgon.Graphics.Core
 
             _rtvFactory = new RenderTargetFactory(this);
 
+            _pipelineStateCache = new PipelineStateCache(_device);
+            _samplerCache = new SamplerCache(_device);
+            _samplerCache.WarmCache();
             _stateEvaluator = new StateEvaluator(this);
             _stateApplicator = new D3D11StateApplicator(this, _stateEvaluator.RenderTargets);
 

@@ -135,10 +135,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the readable/writable list of blending states for each render target.
         /// </summary>
-	    internal GorgonArray<GorgonBlendState> RwBlendStates
+	    internal BlendStateArray RwBlendStates
         {
             get;
-        } = new GorgonArray<GorgonBlendState>(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
+        } = new BlendStateArray();
 
         /// <summary>
         /// Property to return the ID of the pipeline state.
@@ -321,68 +321,6 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to build the D3D11 blend state.
-        /// </summary>
-        /// <param name="device">The device used to create the blend state.</param>
-	    internal void BuildD3D11BlendState(D3D11.Device5 device)
-        {
-            Debug.Assert(D3DBlendState == null, "D3D Blend state already assigned to this pipeline state.");
-
-            (int start, int count) = RwBlendStates.GetDirtyItems();
-            var desc = new D3D11.BlendStateDescription1
-            {
-                AlphaToCoverageEnable = IsAlphaToCoverageEnabled,
-                IndependentBlendEnable = IsIndependentBlendingEnabled
-            };
-
-            for (int i = 0; i < count; ++i)
-            {
-                GorgonBlendState state = RwBlendStates[start + i];
-
-                if (state == null)
-                {
-                    continue;
-                }
-
-                desc.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
-                {
-                    AlphaBlendOperation = (D3D11.BlendOperation)state.AlphaBlendOperation,
-                    BlendOperation = (D3D11.BlendOperation)state.ColorBlendOperation,
-                    IsLogicOperationEnabled = state.LogicOperation != LogicOperation.Noop,
-                    IsBlendEnabled = state.IsBlendingEnabled,
-                    RenderTargetWriteMask = (D3D11.ColorWriteMaskFlags)state.WriteMask,
-                    LogicOperation = (D3D11.LogicOperation)state.LogicOperation,
-                    SourceAlphaBlend = (D3D11.BlendOption)state.SourceAlphaBlend,
-                    SourceBlend = (D3D11.BlendOption)state.SourceColorBlend,
-                    DestinationAlphaBlend = (D3D11.BlendOption)state.DestinationAlphaBlend,
-                    DestinationBlend = (D3D11.BlendOption)state.DestinationColorBlend
-                };
-            }
-
-            for (int i = count; i < D3D11.OutputMergerStage.SimultaneousRenderTargetCount; ++i)
-            {
-                desc.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
-                {
-                    AlphaBlendOperation = D3D11.BlendOperation.Add,
-                    BlendOperation = D3D11.BlendOperation.Add,
-                    IsLogicOperationEnabled = false,
-                    IsBlendEnabled = false,
-                    RenderTargetWriteMask = D3D11.ColorWriteMaskFlags.All,
-                    LogicOperation = D3D11.LogicOperation.Noop,
-                    SourceAlphaBlend = D3D11.BlendOption.One,
-                    SourceBlend = D3D11.BlendOption.One,
-                    DestinationAlphaBlend = D3D11.BlendOption.Zero,
-                    DestinationBlend = D3D11.BlendOption.Zero
-                };
-            }
-
-            D3DBlendState = new D3D11.BlendState1(device, desc)
-            {
-                DebugName = nameof(GorgonBlendState)
-            };
-        }
-
         /// <summary>
         /// Function to clear the pipeline state.
         /// </summary>

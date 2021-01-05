@@ -304,7 +304,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A new pipeline state.</returns>
         public GorgonPipelineState Build() =>
             // Build the actual state.
-            Graphics.CachePipelineState(_workState);
+            Graphics.PipelineStateCache.Cache(_workState);
         #endregion
 
         #region Constructor.

@@ -278,11 +278,11 @@ namespace Gorgon.Graphics.Core
         {
             if (allocator == null)
             {
-                return new GorgonStreamOutPipelineState(Graphics.CachePipelineState(_workState.PipelineState));
+                return new GorgonStreamOutPipelineState(Graphics.PipelineStateCache.Cache(_workState.PipelineState));
             }
 
             // Caches the state info.
-            void CacheState(GorgonStreamOutPipelineState state) => Graphics.CachePipelineState(state.PipelineState);
+            void CacheState(GorgonStreamOutPipelineState state) => Graphics.PipelineStateCache.Cache(state.PipelineState);
             
             return allocator.Allocate(CacheState);
         }

@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The new render state.</returns>
-        protected override GorgonSamplerState OnCreateState() => Graphics.CacheSamplerState(WorkingState);
+        protected override GorgonSamplerState OnCreateState() => Graphics.SamplerStateCache.Cache(WorkingState);
 
         /// <summary>
         /// Function to reset the builder to the specified state.
