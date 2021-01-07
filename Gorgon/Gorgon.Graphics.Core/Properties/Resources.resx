@@ -533,4 +533,16 @@ This application will now exit.</value>
   <data name="GORGFX_TEXT_FEATURE_SET_UNKNOWN" xml:space="preserve">
     <value>Unknown</value>
   </data>
+  <data name="GORGFX_ERR_D3D_RESOURCE_IS_NOT_2D_TEXTURE" xml:space="preserve">
+    <value>The resource is not a 2D texture.</value>
+  </data>
+  <data name="GORGFX_ERR_DXGI_RESOURCE_IS_NOT_D3D_RESOURCE" xml:space="preserve">
+    <value>The DXGI resource is not a D3D resource.</value>
+  </data>
+  <data name="GORGFX_ERR_POINTER_NOT_COM_OBJECT" xml:space="preserve">
+    <value>The pointer cannot be wrapped into a COM object.</value>
+  </data>
+  <data name="GORGFX_ERR_POINTER_NOT_DXGI_RESOURCE" xml:space="preserve">
+    <value>The pointer is not a DXGI shared resource.</value>
+  </data>
 </root>

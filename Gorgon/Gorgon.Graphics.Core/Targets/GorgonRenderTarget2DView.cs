@@ -32,8 +32,9 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -526,6 +527,48 @@ namespace Gorgon.Graphics.Core
 
 			var texture = new GorgonTexture2D(graphics, newInfo);
 			GorgonRenderTarget2DView result = texture.GetRenderTargetView(arrayIndex: arrayIndex, arrayCount: arrayCount ?? 1);
+			result.OwnsResource = true;
+
+			return result;
+		}
+
+		/// <summary>
+        /// Function to create a render target used to interoperate with external rendering systems (e.g. WPF).
+        /// </summary>
+        /// <param name="graphics">The graphics interface used to create the objects for the render target view.</param>
+        /// <param name="surface">A pointer to a surface that Gorgon can render into.</param>
+        /// <param name="name">[Optional] The name to use for the render target texture resource.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="surface"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="surface"/> pointer could not be interpreted as a 2D Texture.</exception>
+        /// <returns>The new render target view.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method is used to wrap a surface from an external rendering system such as WPF (which is based on Direct3D 9) into a Gorgon render target view. This allows Gorgon to render into the 
+        /// external surface.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This render target view takes ownership of its underlying texture. Disposal of the render target view will also dispose the underlying texture resource.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+		public static GorgonRenderTarget2DView CreateInteropRenderTarget(GorgonGraphics graphics, IntPtr surface, string name)
+		{
+			if (graphics == null)
+			{
+				throw new ArgumentNullException(nameof(graphics));
+			}
+
+			if (surface == IntPtr.Zero)
+			{
+				throw new ArgumentNullException(nameof(surface));
+			}
+
+			var texture = new GorgonTexture2D(graphics, surface);
+			texture.D3DResource.DebugName = name ?? $"WPF_Render_Target_{Guid.NewGuid():N}";
+			GorgonRenderTarget2DView result = texture.GetRenderTargetView(0, 1);
 			result.OwnsResource = true;
 
 			return result;

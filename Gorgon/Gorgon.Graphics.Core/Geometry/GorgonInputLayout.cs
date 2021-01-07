@@ -31,6 +31,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Reflection;
@@ -85,6 +86,15 @@ namespace Gorgon.Graphics.Core
                 },
                 {
                     typeof(float), BufferFormat.R32_Float
+                },
+                {
+                    typeof(Vector2), BufferFormat.R32G32_Float
+                },
+                {
+                    typeof(Vector3), BufferFormat.R32G32B32_Float
+                },
+                {
+                    typeof(Vector4), BufferFormat.R32G32B32A32_Float
                 },
                 {
                     typeof(DX.Vector2), BufferFormat.R32G32_Float

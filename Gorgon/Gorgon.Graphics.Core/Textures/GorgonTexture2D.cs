@@ -36,9 +36,10 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
-using SharpDX.DXGI;
+using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
+using System.Diagnostics;
 
 namespace Gorgon.Graphics.Core
 {
@@ -502,7 +503,7 @@ namespace Gorgon.Graphics.Core
 
             var tex2DDesc = new D3D11.Texture2DDescription1
             {
-                Format = (Format)Format,
+                Format = (DXGI.Format)Format,
                 Width = Width,
                 Height = Height,
                 ArraySize = ArrayCount,
@@ -1223,7 +1224,7 @@ namespace Gorgon.Graphics.Core
             int sourceIndex = D3D11.Resource.CalculateSubResourceIndex(srcMipLevel, srcArrayIndex, MipLevels);
             int destIndex = D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, destination.MipLevels);
 
-            Graphics.D3DDeviceContext.ResolveSubresource(D3DResource, sourceIndex, destination.D3DResource, destIndex, (Format)resolveFormat);
+            Graphics.D3DDeviceContext.ResolveSubresource(D3DResource, sourceIndex, destination.D3DResource, destIndex, (DXGI.Format)resolveFormat);
         }
 
         /// <summary>
@@ -2305,6 +2306,67 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="GorgonTexture2D" /> class.</summary>
+        /// <param name="graphics">The graphics interface used to create this texture.</param>
+        /// <param name="surface">The pointer to an external rendering surface.</param>
+        internal GorgonTexture2D(GorgonGraphics graphics, IntPtr surface)
+            : base(graphics)
+        {
+            D3D11.Texture2DDescription desc;
+
+            using (var com = new DX.ComObject(surface))
+            {
+                if (com == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_POINTER_NOT_COM_OBJECT);
+                }
+
+                DXGI.Resource resource = com.QueryInterface<DXGI.Resource>();
+
+                if (resource == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_POINTER_NOT_DXGI_RESOURCE);
+                }
+
+                D3DResource = graphics.D3DDevice.OpenSharedResource<D3D11.Resource>(resource.SharedHandle);
+
+                if (D3DResource == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DXGI_RESOURCE_IS_NOT_D3D_RESOURCE);
+                }
+
+                using (D3D11.Texture2D texture = D3DResource.QueryInterface<D3D11.Texture2D>())
+                {
+                    if (texture == null)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_D3D_RESOURCE_IS_NOT_2D_TEXTURE);
+                    }
+
+                    desc = texture.Description;
+                }
+            }
+
+            // Get the info from the back buffer texture.
+            _info = new GorgonTexture2DInfo(D3DResource.DebugName)
+            {
+                Format = (BufferFormat)desc.Format,
+                Width = desc.Width,
+                Height = desc.Height,
+                Usage = (ResourceUsage)desc.Usage,
+                ArrayCount = desc.ArraySize,
+                MipLevels = desc.MipLevels,
+                IsCubeMap = false,
+                MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
+                Binding = (TextureBinding)desc.BindFlags
+            };
+
+            FormatInformation = new GorgonFormatInfo(Format);
+            TextureID = Interlocked.Increment(ref _textureID);
+            SizeInBytes = CalculateSizeInBytes(_info);
+
+            this.RegisterDisposable(graphics);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
         /// </summary>

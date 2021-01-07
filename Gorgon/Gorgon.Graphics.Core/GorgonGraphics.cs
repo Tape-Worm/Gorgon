@@ -662,6 +662,11 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to flush the rendering commands.
+        /// </summary>
+        public void Flush() => D3DDeviceContext.Flush();
+
+        /// <summary>
         /// Function to assign a depth/stencil view.
         /// </summary>
         /// <param name="depthStencil">The depth/stencil to assign.</param>

@@ -25,6 +25,7 @@
 #endregion
 
 using System.Runtime.CompilerServices;
+using Gorgon.Math;
 
 namespace System.Numerics
 {
@@ -86,17 +87,58 @@ namespace System.Numerics
         public static void CreateFromQuaternion(float yaw, float pitch, float roll, out Matrix4x4 result) => result = Matrix4x4.CreateFromYawPitchRoll(yaw, pitch, roll);
 
         /// <summary>
-        /// Function to create a look at matrix.
+        /// Function to create a right handed look at matrix.
         /// </summary>
         /// <param name="cameraPosition">The position of the camera in the world.</param>
         /// <param name="cameraTarget">The look at target for the camera.</param>
         /// <param name="cameraUp">The up vector for the camera.</param>
         /// <param name="result">The look at matrix.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CreateLookAt(in Vector3 cameraPosition, in Vector3 cameraTarget, in Vector3 cameraUp, out Matrix4x4 result) => result = Matrix4x4.CreateLookAt(cameraPosition, cameraTarget, cameraUp);
+        public static void CreateLookAtRH(in Vector3 cameraPosition, in Vector3 cameraTarget, in Vector3 cameraUp, out Matrix4x4 result) => result = Matrix4x4.CreateLookAt(cameraPosition, cameraTarget, cameraUp);
 
         /// <summary>
-        /// Function to create an orthographic projection matrix.
+        /// Function to create a left handed look at matrix.
+        /// </summary>
+        /// <param name="cameraPosition">The position of the camera in the world.</param>
+        /// <param name="cameraTarget">The look at target for the camera.</param>
+        /// <param name="cameraUp">The up vector for the camera.</param>
+        /// <param name="result">The look at matrix.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CreateLookAtLH(in Vector3 cameraPosition, in Vector3 cameraTarget, in Vector3 cameraUp, out Matrix4x4 result)
+        {
+            Vector3 xaxis, yaxis, zaxis;
+
+            zaxis = Vector3.Subtract(cameraTarget, cameraPosition);
+            zaxis = Vector3.Normalize(zaxis);
+
+            xaxis = Vector3.Cross(cameraUp, zaxis);
+            xaxis = Vector3.Normalize(xaxis);
+
+            yaxis = Vector3.Cross(zaxis, xaxis);
+
+            result = Matrix4x4.Identity;
+            result.M11 = xaxis.X;
+            result.M21 = xaxis.Y;
+            result.M31 = xaxis.Z;
+            result.M12 = yaxis.X;
+            result.M22 = yaxis.Y;
+            result.M32 = yaxis.Z;
+            result.M13 = zaxis.X;
+            result.M23 = zaxis.Y;
+            result.M33 = zaxis.Z;
+
+            result.M41 = Vector3.Dot(xaxis, cameraPosition);
+            result.M42 = Vector3.Dot(yaxis, cameraPosition);
+            result.M43 = Vector3.Dot(zaxis, cameraPosition);
+
+            result.M41 = -result.M41;
+            result.M42 = -result.M42;
+            result.M43 = -result.M43;
+        }
+
+
+        /// <summary>
+        /// Function to create a right handed orthographic projection matrix.
         /// </summary>
         /// <param name="width">The width of the view.</param>
         /// <param name="height">The height of the view.</param>
@@ -104,10 +146,27 @@ namespace System.Numerics
         /// <param name="zFar">The far clipping plane on the z axis.</param>
         /// <param name="result">The orthographic projection matrix.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CreateOrthographic(float width, float height, float zNear, float zFar, out Matrix4x4 result) => result = Matrix4x4.CreateOrthographic(width, height, zNear, zFar);
+        public static void CreateOrthographicRH(float width, float height, float zNear, float zFar, out Matrix4x4 result) => result = Matrix4x4.CreateOrthographic(width, height, zNear, zFar);
 
         /// <summary>
-        /// Function to create an orthographic projection matrix that is centered around an arbitrary point.
+        /// Function to create a left handed orthographic projection matrix.
+        /// </summary>
+        /// <param name="width">The width of the view.</param>
+        /// <param name="height">The height of the view.</param>
+        /// <param name="zNear">The near clipping plane on the z axis.</param>
+        /// <param name="zFar">The far clipping plane on the z axis.</param>
+        /// <param name="result">The orthographic projection matrix.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CreateOrthographicLH(float width, float height, float zNear, float zFar, out Matrix4x4 result)
+        {
+            float halfWidth = width * 0.5f;
+            float halfHeight = height * 0.5f;
+
+            CreateOrthographicOffCenterLH(-halfWidth, halfWidth, -halfHeight, halfHeight, zNear, zFar, out result);
+        }
+    
+        /// <summary>
+        /// Function to create a right handed orthographic projection matrix that is centered around an arbitrary point.
         /// </summary>
         /// <param name="left">The left plane for the projection.</param>
         /// <param name="right">The right plane for the projection.</param>
@@ -117,11 +176,35 @@ namespace System.Numerics
         /// <param name="zFar">The far clipping plane on the z axis.</param>
         /// <param name="result">The orthographic projection matrix.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNear, float zFar, out Matrix4x4 result) 
+        public static void CreateOrthographicOffCenterRH(float left, float right, float bottom, float top, float zNear, float zFar, out Matrix4x4 result) 
             => result = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, zNear, zFar);
 
         /// <summary>
-        /// Function to create an perspective projection matrix.
+        /// Function to create a left handed orthographic projection matrix that is centered around an arbitrary point.
+        /// </summary>
+        /// <param name="left">The left plane for the projection.</param>
+        /// <param name="right">The right plane for the projection.</param>
+        /// <param name="bottom">The bottom plane for the projection.</param>
+        /// <param name="top">The top plane for the projection.</param>
+        /// <param name="zNear">The near clipping plane on the z axis.</param>
+        /// <param name="zFar">The far clipping plane on the z axis.</param>
+        /// <param name="result">The orthographic projection matrix.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CreateOrthographicOffCenterLH(float left, float right, float bottom, float top, float zNear, float zFar, out Matrix4x4 result)
+        {
+            float zRange = 1.0f / (zFar - zNear);
+
+            result = Matrix4x4.Identity;
+            result.M11 = 2.0f / (right - left);
+            result.M22 = 2.0f / (top - bottom);
+            result.M33 = zRange;
+            result.M41 = (left + right) / (left - right);
+            result.M42 = (top + bottom) / (bottom - top);
+            result.M43 = -zNear * zRange;
+        }
+
+        /// <summary>
+        /// Function to create a right handed perspective projection matrix.
         /// </summary>
         /// <param name="width">The width of the view.</param>
         /// <param name="height">The height of the view.</param>
@@ -129,10 +212,26 @@ namespace System.Numerics
         /// <param name="zFar">The far clipping plane on the z axis.</param>
         /// <param name="result">The perspective projection matrix.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CreatePerspective(float width, float height, float zNear, float zFar, out Matrix4x4 result) => result = Matrix4x4.CreatePerspective(width, height, zNear, zFar);
+        public static void CreatePerspectiveRH(float width, float height, float zNear, float zFar, out Matrix4x4 result) => result = Matrix4x4.CreatePerspective(width, height, zNear, zFar);
 
         /// <summary>
-        /// Function to create an perspective projection matrix using a field of view.
+        /// Function to create a left handed perspective projection matrix.
+        /// </summary>
+        /// <param name="width">The width of the view.</param>
+        /// <param name="height">The height of the view.</param>
+        /// <param name="zNear">The near clipping plane on the z axis.</param>
+        /// <param name="zFar">The far clipping plane on the z axis.</param>
+        /// <param name="result">The perspective projection matrix.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CreatePerspectiveLH(float width, float height, float zNear, float zFar, out Matrix4x4 result)
+        {
+            float halfWidth = width * 0.5f;
+            float halfHeight = height * 0.5f;
+
+            CreatePerspectiveOffCenterLH(-halfWidth, halfWidth, -halfHeight, halfHeight, zNear, zFar, out result);
+        }
+        /// <summary>
+        /// Function to create a left handed perspective projection matrix using a field of view.
         /// </summary>
         /// <param name="fov">The field of view, in radians.</param>
         /// <param name="aspectRatio">The aspect ratio for the view.</param>
@@ -140,10 +239,31 @@ namespace System.Numerics
         /// <param name="zFar">The far clipping plane on the z axis.</param>
         /// <param name="result">The perspective projection matrix.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CreatePerspectiveFov(float fov, float aspectRatio, float zNear, float zFar, out Matrix4x4 result) => result = Matrix4x4.CreatePerspectiveFieldOfView(fov, aspectRatio, zNear, zFar);
+        public static void CreatePerspectiveFovLH(float fov, float aspectRatio, float zNear, float zFar, out Matrix4x4 result)
+        {
+            float num = 1.0f / (fov * 0.5f).Tan();
+            float num2 = zFar / (zFar - zNear);
+            result = default;
+            result.M11 = num / aspectRatio;
+            result.M22 = num;
+            result.M33 = num2;
+            result.M34 = 1f;
+            result.M43 = (0f - num2) * zNear;
+        }
 
         /// <summary>
-        /// Function to create an perspective projection matrix that is centered around an arbitrary point.
+        /// Function to create a right handed perspective projection matrix using a field of view.
+        /// </summary>
+        /// <param name="fov">The field of view, in radians.</param>
+        /// <param name="aspectRatio">The aspect ratio for the view.</param>
+        /// <param name="zNear">The near clipping plane on the z axis.</param>
+        /// <param name="zFar">The far clipping plane on the z axis.</param>
+        /// <param name="result">The perspective projection matrix.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CreatePerspectiveFovRH(float fov, float aspectRatio, float zNear, float zFar, out Matrix4x4 result) => result = Matrix4x4.CreatePerspectiveFieldOfView(fov, aspectRatio, zNear, zFar);
+
+        /// <summary>
+        /// Function to create a right handed perspective projection matrix that is centered around an arbitrary point.
         /// </summary>
         /// <param name="left">The left plane for the projection.</param>
         /// <param name="right">The right plane for the projection.</param>
@@ -153,8 +273,33 @@ namespace System.Numerics
         /// <param name="zFar">The far clipping plane on the z axis.</param>
         /// <param name="result">The perspective projection matrix.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear, float zFar, out Matrix4x4 result)
+        public static void CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear, float zFar, out Matrix4x4 result)
             => result = Matrix4x4.CreatePerspectiveOffCenter(left, right, bottom, top, zNear, zFar);
+
+        /// <summary>
+        /// Function to create a left handed perspective projection matrix that is centered around an arbitrary point.
+        /// </summary>
+        /// <param name="left">The left plane for the projection.</param>
+        /// <param name="right">The right plane for the projection.</param>
+        /// <param name="bottom">The bottom plane for the projection.</param>
+        /// <param name="top">The top plane for the projection.</param>
+        /// <param name="zNear">The near clipping plane on the z axis.</param>
+        /// <param name="zFar">The far clipping plane on the z axis.</param>
+        /// <param name="result">The perspective projection matrix.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CreatePerspectiveOffCenterLH(float left, float right, float bottom, float top, float zNear, float zFar, out Matrix4x4 result)
+        {
+            float zRange = zFar / (zFar - zNear);
+
+            result = default;
+            result.M11 = 2.0f * zNear / (right - left);
+            result.M22 = 2.0f * zNear / (top - bottom);
+            result.M31 = (left + right) / (left - right);
+            result.M32 = (top + bottom) / (bottom - top);
+            result.M33 = zRange;
+            result.M34 = 1.0f;
+            result.M43 = -zNear * zRange;
+        }
 
         /// <summary>
         /// Function to create a reflection matrix.
