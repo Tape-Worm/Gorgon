@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -40,12 +40,12 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // The matrix that defines our rotation.
-        private DX.Matrix _rotation = DX.Matrix.Identity;
+        private Matrix4x4 _rotation = Matrix4x4.Identity;
         // The matrix that defines our translation.
-        private DX.Matrix _translation = DX.Matrix.Identity;
+        private Matrix4x4 _translation = Matrix4x4.Identity;
         // The world matrix to send to the vertex shader for transformation.
         // This is the combination of the rotation and translation matrix.
-        private DX.Matrix _world = DX.Matrix.Identity;
+        private Matrix4x4 _world = Matrix4x4.Identity;
         #endregion
 
         #region Properties.
@@ -77,11 +77,11 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the world matrix for this object.
         /// </summary>
-        public ref DX.Matrix WorldMatrix
+        public ref Matrix4x4 WorldMatrix
         {
             get
             {
-                DX.Matrix.Multiply(ref _rotation, ref _translation, out _world);
+                _rotation.Multiply(in _translation, out _world);
                 return ref _world;
             }
         }
@@ -99,11 +99,11 @@ namespace Gorgon.Examples
             // Quaternion for rotation.
 
             // Convert degrees to radians.
-            var rotRads = new DX.Vector3(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
+            var rotRads = new Vector3(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
 
             // Rotate and build a new rotation matrix.
-            DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
-            DX.Matrix.RotationQuaternion(ref quatRotation, out _rotation);
+            QuaternionFactory.CreateFromYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out Quaternion quatRotation);
+            MatrixFactory.CreateFromQuaternion(in quatRotation, out _rotation);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Gorgon.Examples
         /// <param name="x">X axis translation.</param>
         /// <param name="y">Y axis translation.</param>
         /// <param name="z">Z axis translation.</param>
-        public void Translate(float x, float y, float z) => DX.Matrix.Translation(x, y, z, out _translation);
+        public void Translate(float x, float y, float z) => MatrixFactory.CreateTranslation(new Vector3(x, y, z), out _translation);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -135,40 +135,40 @@ namespace Gorgon.Examples
             GlassCubeVertex[] vertices =
             {
 			    // Front face.
-			    new GlassCubeVertex(new DX.Vector3(-0.5f, 0.5f, -0.5f), new DX.Vector2(0, 0)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, -0.5f, -0.5f), new DX.Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(-0.5f, -0.5f, -0.5f), new DX.Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, 0.5f, -0.5f), new DX.Vector2(1.0f, 0.0f)),
+			    new GlassCubeVertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
+                new GlassCubeVertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Right face.
-			    new GlassCubeVertex(new DX.Vector3(0.5f, 0.5f, -0.5f), new DX.Vector2(0, 0)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, -0.5f, 0.5f), new DX.Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, -0.5f, -0.5f), new DX.Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, 0.5f, 0.5f), new DX.Vector2(1.0f, 0.0f)),
+			    new GlassCubeVertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
+                new GlassCubeVertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Back face.
-			    new GlassCubeVertex(new DX.Vector3(0.5f, 0.5f, 0.5f), new DX.Vector2(0, 0)),
-                new GlassCubeVertex(new DX.Vector3(-0.5f, -0.5f, 0.5f), new DX.Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, -0.5f, 0.5f), new DX.Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(-0.5f, 0.5f, 0.5f), new DX.Vector2(1.0f, 0.0f)),
+			    new GlassCubeVertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Left face.
-			    new GlassCubeVertex(new DX.Vector3(-0.5f, 0.5f, 0.5f), new DX.Vector2(0, 0)),
-                new GlassCubeVertex(new DX.Vector3(-0.5f, -0.5f, -0.5f), new DX.Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(-0.5f, -0.5f, 0.5f), new DX.Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(-0.5f, 0.5f, -0.5f), new DX.Vector2(1.0f, 0.0f)),
+			    new GlassCubeVertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Top face.
-			    new GlassCubeVertex(new DX.Vector3(-0.5f, 0.5f, 0.5f), new DX.Vector2(0, 0)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, 0.5f, -0.5f), new DX.Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(-0.5f, 0.5f, -0.5f), new DX.Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, 0.5f, 0.5f), new DX.Vector2(1.0f, 0.0f)),
+			    new GlassCubeVertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                new GlassCubeVertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Bottom face.
-			    new GlassCubeVertex(new DX.Vector3(-0.5f, -0.5f, -0.5f), new DX.Vector2(0, 0)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, -0.5f, 0.5f), new DX.Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(-0.5f, -0.5f, 0.5f), new DX.Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new DX.Vector3(0.5f, -0.5f, -0.5f), new DX.Vector2(1.0f, 0.0f))
+			    new GlassCubeVertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0, 0)),
+                new GlassCubeVertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
+                new GlassCubeVertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 0.0f))
             };
 
             ushort[] indices =

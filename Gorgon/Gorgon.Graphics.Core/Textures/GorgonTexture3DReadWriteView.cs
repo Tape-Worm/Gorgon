@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -270,7 +271,7 @@ namespace Gorgon.Graphics.Core
         /// for the underlying <see cref="Texture"/> is used.
         /// </para>
         /// </remarks>
-        public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates, int? mipLevel = null)
+        public (DX.Point, int) ToPixel(Vector3 texelCoordinates, int? mipLevel = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
@@ -305,7 +306,7 @@ namespace Gorgon.Graphics.Core
         /// is used.
         /// </para>
         /// </remarks>
-        public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null, int? depthSlice = null)
+        public Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null, int? depthSlice = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
@@ -315,13 +316,13 @@ namespace Gorgon.Graphics.Core
 
             if (mipLevel == null)
             {
-                return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
+                return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
+            return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
         }
 
         /// <summary>

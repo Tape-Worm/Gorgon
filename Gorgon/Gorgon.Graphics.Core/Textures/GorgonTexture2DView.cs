@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -537,20 +538,20 @@ namespace Gorgon.Graphics.Core
         /// for the underlying <see cref="Texture"/> is used.
         /// </para>
         /// </remarks>
-        public DX.Vector2 ToTexel(DX.Vector2 pixelVector, int? mipLevel = null)
+        public Vector2 ToTexel(Vector2 pixelVector, int? mipLevel = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
 
             if (mipLevel == null)
             {
-                return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+                return new Vector2(pixelVector.X / width, pixelVector.Y / height);
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+            return new Vector2(pixelVector.X / width, pixelVector.Y / height);
         }
 
         /// <summary>
@@ -566,20 +567,20 @@ namespace Gorgon.Graphics.Core
         /// for the underlying <see cref="Texture"/> is used.
         /// </para>
         /// </remarks>
-        public DX.Vector2 ToPixel(DX.Vector2 texelVector, int? mipLevel = null)
+        public Vector2 ToPixel(Vector2 texelVector, int? mipLevel = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
 
             if (mipLevel == null)
             {
-                return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+                return new Vector2(texelVector.X * width, texelVector.Y * height);
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+            return new Vector2(texelVector.X * width, texelVector.Y * height);
         }
 
         /// <summary>
@@ -616,20 +617,20 @@ namespace Gorgon.Graphics.Core
         /// for the underlying <see cref="Texture"/> is used.
         /// </para>
         /// </remarks>
-        public DX.Vector2 ToTexel(DX.Point pixelPoint, int? mipLevel = null)
+        public Vector2 ToTexel(DX.Point pixelPoint, int? mipLevel = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
 
             if (mipLevel == null)
             {
-                return new DX.Vector2(pixelPoint.X / width, pixelPoint.Y / height);
+                return new Vector2(pixelPoint.X / width, pixelPoint.Y / height);
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.Vector2(pixelPoint.X / width, pixelPoint.Y / height);
+            return new Vector2(pixelPoint.X / width, pixelPoint.Y / height);
         }
 
         /// <summary>

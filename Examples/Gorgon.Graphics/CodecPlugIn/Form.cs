@@ -92,7 +92,7 @@ namespace Graphics.Examples
             // Find the position.
             var bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
-            _graphics.DrawTexture(_texture, bounds);
+            GorgonExample.Blitter.Blit(_texture, bounds);
 
             GorgonExample.BlitLogo(_graphics);
 
@@ -187,7 +187,7 @@ namespace Graphics.Examples
 
             GorgonExample.UnloadResources();
 
-            _pluginCache?.Dispose();
+            _pluginCache?.Dispose();            
             _texture?.Dispose();
             _swap?.Dispose();
             _graphics?.Dispose();

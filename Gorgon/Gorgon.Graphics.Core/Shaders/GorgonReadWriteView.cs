@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 
@@ -121,7 +122,8 @@ namespace Gorgon.Graphics.Core
         /// This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value.
         /// </para>
         /// </remarks>
-        public void Clear(float value1, float value2, float value3, float value4) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(value1, value2, value3, value4));
+        public void Clear(float value1, float value2, float value3, float value4) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, 
+                                                                                 new DX.Mathematics.Interop.RawInt4((int)value1, (int)value2, (int)value3, (int)value4));
 
         /// <summary>
         /// Function to clear the unordered access value with the specified value.
@@ -135,7 +137,7 @@ namespace Gorgon.Graphics.Core
         /// This method works on any unordered access view that does not require format conversion.
         /// </para>
         /// </remarks>
-        public void Clear(float value) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(value));
+        public void Clear(float value) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Mathematics.Interop.RawInt4((int)value, (int)value, (int)value, (int)value));
 
         /// <summary>
         /// Function to clear the unordered access value with the specified values.
@@ -149,7 +151,7 @@ namespace Gorgon.Graphics.Core
         /// This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value in the vector.
         /// </para>
         /// </remarks>
-        public void Clear(DX.Vector4 values) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(values.X, values.Y, values.Z, values.W));
+        public void Clear(Vector4 values) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Mathematics.Interop.RawInt4((int)values.X, (int)values.Y, (int)values.Z, (int)values.W));
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

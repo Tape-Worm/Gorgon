@@ -29,6 +29,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
+using System.Numerics;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
@@ -474,12 +475,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="pixelVector">The pixel size to convert.</param>
 		/// <returns>A 2D vector containing the texel space coordinates.</returns>
-		public DX.Vector2 ToTexel(DX.Vector2 pixelVector)
+		public Vector2 ToTexel(Vector2 pixelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+			return new Vector2(pixelVector.X / width, pixelVector.Y / height);
 		}
 
 		/// <summary>
@@ -487,12 +488,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texelVector">The texel size to convert.</param>
 		/// <returns>A 2D vector containing the pixel space coordinates.</returns>
-		public DX.Vector2 ToPixel(DX.Vector2 texelVector)
+		public Vector2 ToPixel(Vector2 texelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+			return new Vector2(texelVector.X * width, texelVector.Y * height);
 		}
 
 		/// <summary>

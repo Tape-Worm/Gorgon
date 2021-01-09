@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -1380,7 +1381,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="texelCoordinates">The texel coordinates to convert.</param>
         /// <returns>The pixel coordinates.</returns>
-        public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates) => (new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
+        public (DX.Point, int) ToPixel(Vector3 texelCoordinates) => (new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
 
         /// <summary>
         /// Function to convert a pixel coordinate into a texel coordinate.
@@ -1388,14 +1389,14 @@ namespace Gorgon.Graphics.Core
         /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
         /// <param name="depthSlice">The depth slice to convert.</param>
         /// <returns>The texel coordinates.</returns>
-        public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int depthSlice) => new DX.Vector3(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
+        public Vector3 ToTexel(DX.Point pixelCoordinates, int depthSlice) => new Vector3(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
 
         /// <summary>
         /// Function to convert a pixel coordinate into a texel coordinate.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
         /// <returns>The texel coordinates.</returns>
-        public DX.Vector3 ToTexel(DX.Vector3 pixelCoordinates) => new DX.Vector3(pixelCoordinates.X / Width, pixelCoordinates.Y / Height, pixelCoordinates.Z / Depth);
+        public Vector3 ToTexel(Vector3 pixelCoordinates) => new Vector3(pixelCoordinates.X / Width, pixelCoordinates.Y / Height, pixelCoordinates.Z / Depth);
 
         /// <summary>
         /// Function to convert a texel size into a pixel size.

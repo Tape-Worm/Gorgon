@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core

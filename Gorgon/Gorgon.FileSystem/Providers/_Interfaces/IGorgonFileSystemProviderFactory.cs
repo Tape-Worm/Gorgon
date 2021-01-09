@@ -24,10 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Gorgon.Core;
 using Gorgon.PlugIns;
 
 namespace Gorgon.IO.Providers

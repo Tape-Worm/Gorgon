@@ -28,19 +28,13 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
 using Gorgon.Native;
 using SharpDX.DXGI;
-using SharpDX.Mathematics.Interop;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
@@ -168,9 +162,6 @@ namespace Gorgon.Graphics.Core
         private Adapter4 _dxgiAdapter;
         // The DXGI factory
         private Factory5 _dxgiFactory;
-
-        // The texture blitter used to draw 2D textures to the render target.
-        private Lazy<TextureBlitter> _textureBlitter;
 
         // A factory for creating temporary render targets.
         private RenderTargetFactory _rtvFactory;
@@ -1219,90 +1210,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to draw a texture to the current render target.
-        /// </summary>
-        /// <param name="texture">The texture to draw.</param>
-        /// <param name="destination">The location on the target to draw into.</param>
-        /// <param name="color">[Optional] The color to apply to the texture when drawing.</param>
-        /// <param name="blendState">[Optional] The type of blending to perform.</param>
-        /// <param name="samplerState">[Optional] The sampler state used to define how to sample the texture.</param>
-        /// <param name="pixelShader">[Optional] A pixel shader used to apply effects to the texture.</param>
-        /// <param name="psConstantBuffers">[Optional] A list of constant buffers for the pixel shader if they're required.</param>
-        /// <remarks>
-        /// <para>
-        /// This is a utility method used to draw a (2D) texture to the current render target.  This is handy for quick testing to ensure things are working as they should. 
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This method, while quite handy, should not be used for performance sensitive work as it is not the most optimal means of displaying texture data.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="GorgonTexture2DView"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawTexture(GorgonTexture2DView texture,
-                                DX.Point destination,
-                                in GorgonColor? color = null,
-                                GorgonBlendState blendState = null,
-                                GorgonSamplerState samplerState = null,
-                                GorgonPixelShader pixelShader = null,
-                                GorgonConstantBuffers psConstantBuffers = null) => _textureBlitter.Value.Blit(texture,
-                                       new DX.Rectangle(destination.X, destination.Y, texture.Width, texture.Height),
-                                       DX.Point.Zero,
-                                       color ?? GorgonColor.White,
-                                       true,
-                                       blendState,
-                                       samplerState,
-                                       pixelShader,
-                                       psConstantBuffers);
-
-        /// <summary>
-        /// Function to draw a texture to the current render target.
-        /// </summary>
-        /// <param name="texture">The texture to draw.</param>
-        /// <param name="destinationRectangle">The location on the target to draw into, and the size of the area to draw.</param>
-        /// <param name="sourceOffset">[Optional] The offset into the texture to start drawing from.</param>
-        /// <param name="clipRectangle">[Optional] <b>true</b> to clip the contents of the texture if the size does not match, or <b>false</b> to stretch.</param>
-        /// <param name="color">[Optional] The color to apply to the texture when drawing.</param>
-        /// <param name="blendState">[Optional] The type of blending to perform.</param>
-        /// <param name="samplerState">[Optional] The sampler state used to define how to sample the texture.</param>
-        /// <param name="pixelShader">[Optional] A pixel shader used to apply effects to the texture.</param>
-        /// <param name="psConstantBuffers">[Optional] A list of constant buffers for the pixel shader if they're required.</param>
-        /// <remarks>
-        /// <para>
-        /// This is a utility method used to draw a (2D) texture to the current render target.  This is handy for quick testing to ensure things are working as they should. 
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This method, while quite handy, should not be used for performance sensitive work as it is not the most optimal means of displaying texture data.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="GorgonTexture2DView"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawTexture(GorgonTexture2DView texture,
-                                DX.Rectangle destinationRectangle,
-                                DX.Point sourceOffset = default,
-                                bool clipRectangle = false,
-                                in GorgonColor? color = null,
-                                GorgonBlendState blendState = null,
-                                GorgonSamplerState samplerState = null,
-                                GorgonPixelShader pixelShader = null,
-                                GorgonConstantBuffers psConstantBuffers = null) => _textureBlitter.Value.Blit(texture,
-                                       destinationRectangle,
-                                       sourceOffset,
-                                       color ?? GorgonColor.White,
-                                       clipRectangle,
-                                       blendState,
-                                       samplerState,
-                                       pixelShader,
-                                       psConstantBuffers);
-
-        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -1312,7 +1219,6 @@ namespace Gorgon.Graphics.Core
             D3D11.Device5 device = Interlocked.Exchange(ref _device, null);
             Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
             Factory5 factory = Interlocked.Exchange(ref _dxgiFactory, null);
-            Lazy<TextureBlitter> blitter = Interlocked.Exchange(ref _textureBlitter, null);
             PipelineStateCache pipeCache = Interlocked.Exchange(ref _pipelineStateCache, null);
             SamplerCache samplerCache = Interlocked.Exchange(ref _samplerCache, null);
 
@@ -1321,18 +1227,12 @@ namespace Gorgon.Graphics.Core
                 && (adapter == null)
                 && (device == null)
                 && (context == null)
-                && (pipeCache == null)
-                && (blitter == null))
+                && (pipeCache == null))
             {
                 return;
             }
 
             rtvFactory?.Dispose();
-
-            if (blitter.IsValueCreated)
-            {
-                blitter.Value.Dispose();
-            }
 
             // TODO:
             samplerCache.Dispose();
@@ -1436,13 +1336,6 @@ namespace Gorgon.Graphics.Core
             _deviceContext = _device.ImmediateContext.QueryInterface<D3D11.DeviceContext4>();
 
             FormatSupport = EnumerateFormatSupport(_device);
-            
-            _textureBlitter = new Lazy<TextureBlitter>(() =>
-                                                       {
-                                                           var blitter = new TextureBlitter(this);
-                                                           blitter.Initialize();
-                                                           return blitter;
-                                                       });
 
             _rtvFactory = new RenderTargetFactory(this);
 

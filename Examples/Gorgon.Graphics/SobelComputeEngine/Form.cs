@@ -31,7 +31,6 @@ using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.UI;
@@ -243,6 +242,8 @@ namespace Gorgon.Examples
                 _sobelShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics, Resources.ComputeShader, "SobelCS");
 #endif
                 _sobel = new Sobel(_graphics, _sobelShader);
+
+                GorgonExample.LoadResources(_graphics);
 
                 GorgonApplication.IdleMethod = Idle;
             }

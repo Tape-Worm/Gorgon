@@ -21,9 +21,7 @@
         </Grid.ColumnDefinitions>
         
         <Canvas Grid.ColumnSpan="2" Style="{DynamicResource FunkyCanvas}"/>
-        <Border Grid.ColumnSpan="2" Style="{DynamicResource BorderContainer}">
-            <TextBlock Text="WPF" Grid.ColumnSpan="2" Style="{DynamicResource WpfTextBlock}"/>
-        </Border>
+        <TextBlock Text="WPF" Grid.ColumnSpan="2" Style="{DynamicResource WpfTextBlock}"/>
         
         <!-- This is where we'll see our cube being rendered -->
         <Image Stretch="Fill" x:Name="D3DImage" Grid.ColumnSpan="2">

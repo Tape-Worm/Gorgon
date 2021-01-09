@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -56,8 +55,8 @@ namespace Gorgon.Graphics.Core
     /// <pre>
     /// cbuffer ViewMatrix : register(b0)
     /// {
-    ///	   Matrix4x4 viewMatrix;
-    ///    Matrix4x4 other;
+    ///	   Vector3 viewMatrix;
+    ///    Vector3 other;
     /// }
     /// </pre>
     /// This binds a matrix used for the view to constant buffer slot 0. Note that the register slot name starts with a <b>b</b>.

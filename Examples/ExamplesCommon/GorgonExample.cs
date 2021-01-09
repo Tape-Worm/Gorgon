@@ -30,7 +30,6 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -38,7 +37,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 /*using Gorgon.Renderers;*/
-using Gorgon.Timing;
 using Gorgon.UI;
 using Drawing = System.Drawing;
 using DX = SharpDX;
@@ -58,6 +56,7 @@ namespace Gorgon.Examples
 		// The font used for statistics.
 		private static GorgonFont _statsFont;
 		*/
+		private static GorgonTextureBlitter _blitter;
 		// The string containing our statistics.
 		private static readonly StringBuilder _statsText = new StringBuilder();
 		// The main window for the application.
@@ -91,6 +90,11 @@ namespace Gorgon.Examples
 			get;
 			set;
 		} = true;
+
+		/// <summary>
+        /// Property to return the blitter used to draw textures on the current render target.
+        /// </summary>
+		public static GorgonTextureBlitter Blitter => _blitter;
 
 		/*
 		/// <summary>
@@ -186,7 +190,7 @@ namespace Gorgon.Examples
 			}
 
 			var logoRegion = new DX.Rectangle(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
-			graphics.DrawTexture(_logo, logoRegion, blendState: GorgonBlendState.Default);
+			_blitter.Blit(_logo, logoRegion, blendState: GorgonBlendState.Default);
 		}
 
 		/// <summary>
@@ -241,7 +245,7 @@ namespace Gorgon.Examples
 					r.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
 
 					// Draw FPS text.
-					r.DrawString(_statsText.ToString(), DX.Vector2.One, _statsFont, GorgonColor.White);
+					r.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColor.White);
 				})
 				.DrawFilledRectangle(logoRegion, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1))
 				.End();
@@ -283,7 +287,7 @@ namespace Gorgon.Examples
 				renderer.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
 
 				// Draw FPS text.
-				renderer.DrawString(_statsText.ToString(), DX.Vector2.One, _statsFont, GorgonColor.White);
+				renderer.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColor.White);
 			}
 
 			// Draw logo.
@@ -297,10 +301,12 @@ namespace Gorgon.Examples
 		/// </summary>
 		public static void UnloadResources()
 		{
+			GorgonTextureBlitter blitter = Interlocked.Exchange(ref _blitter, null);
 			GorgonTexture2DView logo = Interlocked.Exchange(ref _logo, null);
 			/*GorgonFont font = Interlocked.Exchange(ref _statsFont, null);
 			GorgonFontFactory factory = Interlocked.Exchange(ref _factory, null);*/
 
+			blitter?.Dispose();
 			logo?.Dispose();
 			/*font?.Dispose();
 			factory?.Dispose();*/
@@ -316,6 +322,8 @@ namespace Gorgon.Examples
 			{
 				throw new ArgumentNullException(nameof(graphics));
 			}
+
+			_blitter = new GorgonTextureBlitter(graphics);
 
 			/*_factory = new GorgonFontFactory(graphics);
 			_statsFont = _factory.GetFont(new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points, "Segoe UI 9pt Bold Outlined")

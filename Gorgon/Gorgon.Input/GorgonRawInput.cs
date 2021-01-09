@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
-using Gorgon.Input.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.Input

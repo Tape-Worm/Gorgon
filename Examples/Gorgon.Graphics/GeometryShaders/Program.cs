@@ -30,6 +30,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -60,9 +62,9 @@ namespace Gorgon.Examples
         // The application swap chain used to display our graphics.
         private static GorgonSwapChain _swap;
         // The projection matrix.
-        private static DX.Matrix _projection = DX.Matrix.Identity;
+        private static Matrix4x4 _projection = Matrix4x4.Identity;
         // The world matrix for moving our objects.
-        private static DX.Matrix _worldMatrix = DX.Matrix.Identity;
+        private static Matrix4x4 _worldMatrix = Matrix4x4.Identity;
         // A vertex shader that will generate our data to pass on to the geometry shader.
         private static GorgonVertexShader _bufferless;
         // Our vertex shader used to send data to the render target.
@@ -97,10 +99,10 @@ namespace Gorgon.Examples
         {
             // Update the animated offset for the center point.  We need to put this into a Vector4 because our data needs to be 
             // aligned to a 16 byte boundary for constant buffers.
-            var offset = new DX.Vector4(_heightOffset, 0, 0, 0);
+            var offset = new Vector4(_heightOffset, 0, 0, 0);
 
-            DX.Matrix.RotationY(_angle.ToRadians(), out _worldMatrix);
-            _worldMatrix.Row4 = new DX.Vector4(0, 0, 2.0f, 1.0f);
+            MatrixFactory.CreateRotationY(_angle.ToRadians(), out _worldMatrix);
+            _worldMatrix.SetRow(3, new Vector4(0, 0, 2.0f, 1.0f));
 
             // We've put our world matrix and center point offset inside of the same buffer since they're both updated once per
             // frame.
@@ -128,7 +130,7 @@ namespace Gorgon.Examples
             _graphics.SetDepthStencil(_depthStencil);
 
             // When we resize, the projection matrix will go out of date, so we need to update our constant buffer with an updated projection.
-            DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
+            MatrixFactory.CreatePerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
             _vsConstants.Buffer.SetData(in _projection);
         }
 
@@ -287,11 +289,11 @@ namespace Gorgon.Examples
                 _pipeStateBuilder = new GorgonPipelineStateBuilder(_graphics);
 
                 // Create a constant buffer so we can adjust the positioning of the data.
-                DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
+                MatrixFactory.CreatePerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
                 _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
                                                                              new GorgonConstantBufferInfo("WorldProjection CBuffer")
                                                                              {
-                                                                                 SizeInBytes = (DX.Matrix.SizeInBytes * 2) + DX.Vector4.SizeInBytes
+                                                                                 SizeInBytes = (Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>()
                                                                              });
                 _vsConstants.Buffer.SetData(in _projection, copyMode: CopyMode.Discard);
                 _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);

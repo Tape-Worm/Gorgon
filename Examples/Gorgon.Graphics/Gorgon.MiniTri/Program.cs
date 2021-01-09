@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Numerics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -126,9 +127,9 @@ namespace Gorgon.Examples
             // Define the points that make up our triangle.
             // We'll push it back half a unit along the Z-Axis so that we can see it.
             MiniTriVertex[] vertices = {
-                               new MiniTriVertex(new DX.Vector3(0, 0.5f, 1.0f), new GorgonColor(1, 0, 0)),
-                               new MiniTriVertex(new DX.Vector3(0.5f, -0.5f, 1.0f), new GorgonColor(0, 1, 0)),
-                               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1))
+                               new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), new GorgonColor(1, 0, 0)),
+                               new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), new GorgonColor(0, 1, 0)),
+                               new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1))
                            };
 
             // Create the vertex buffer.
@@ -158,7 +159,7 @@ namespace Gorgon.Examples
             // Note that we depth a depth range from 0.001f up to 1000.0f.  This provides a near and far plane for clipping.  
             // These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
             // linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-            DX.Matrix.PerspectiveFovLH(65.0f.ToRadians(), window.ClientSize.Width / (float)window.ClientSize.Height, 0.125f, 1000f, out DX.Matrix projectionMatrix);
+            MatrixFactory.CreatePerspectiveFovLH(65.0f.ToRadians(), window.ClientSize.Width / (float)window.ClientSize.Height, 0.125f, 1000f, out Matrix4x4 projectionMatrix);
 
             // Create our constant buffer.
             //

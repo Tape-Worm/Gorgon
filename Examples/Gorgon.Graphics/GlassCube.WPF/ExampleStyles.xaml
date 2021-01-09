@@ -17,56 +17,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="BorderContainer" TargetType="Border">
-        <Style.Resources>
-            <Storyboard x:Key="OnLoaded1" AutoReverse="True" RepeatBehavior="Forever">
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Effect).(Radius)">
-                    <SplineDoubleKeyFrame KeyTime="0" Value="0"/>
-                    <SplineDoubleKeyFrame KeyTime="0:0:4" Value="64"/>
-                </DoubleAnimationUsingKeyFrames>
-            </Storyboard>
-        </Style.Resources>
-        <Style.Triggers>
-            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                <BeginStoryboard Storyboard="{StaticResource OnLoaded1}"/>
-            </EventTrigger>
-        </Style.Triggers>
-        <Setter Property="Effect">
-            <Setter.Value>
-                <BlurEffect KernelType="Box"/>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style x:Key="WpfTextBlock" TargetType="TextBlock">
-        <Style.Resources>
-            <Storyboard RepeatBehavior="Forever" AutoReverse="True" x:Key="OnLoaded1">
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(SkewTransform.AngleX)" Storyboard.TargetName="{x:Null}">
-                    <EasingDoubleKeyFrame KeyTime="0" Value="-15">
-                        <EasingDoubleKeyFrame.EasingFunction>
-                            <QuinticEase EasingMode="EaseIn"/>
-                        </EasingDoubleKeyFrame.EasingFunction>
-                    </EasingDoubleKeyFrame>
-                    <EasingDoubleKeyFrame KeyTime="0:0:5" Value="15">
-                        <EasingDoubleKeyFrame.EasingFunction>
-                            <QuinticEase EasingMode="EaseInOut"/>
-                        </EasingDoubleKeyFrame.EasingFunction>
-                    </EasingDoubleKeyFrame>
-                </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(SkewTransform.AngleY)" Storyboard.TargetName="{x:Null}">
-                    <EasingDoubleKeyFrame KeyTime="0" Value="-15">
-                        <EasingDoubleKeyFrame.EasingFunction>
-                            <QuinticEase EasingMode="EaseIn"/>
-                        </EasingDoubleKeyFrame.EasingFunction>
-                    </EasingDoubleKeyFrame>
-                    <EasingDoubleKeyFrame KeyTime="0:0:5" Value="15">
-                        <EasingDoubleKeyFrame.EasingFunction>
-                            <QuinticEase EasingMode="EaseInOut"/>
-                        </EasingDoubleKeyFrame.EasingFunction>
-                    </EasingDoubleKeyFrame>
-                </DoubleAnimationUsingKeyFrames>
-            </Storyboard>
-        </Style.Resources>
         <Setter Property="FontSize" Value="64"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -108,11 +59,6 @@
                 </TransformGroup>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <EventTrigger RoutedEvent="TextBlock.Loaded">
-                <BeginStoryboard Storyboard="{StaticResource OnLoaded1}"/>
-            </EventTrigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="FunkyCanvas" TargetType="Canvas">

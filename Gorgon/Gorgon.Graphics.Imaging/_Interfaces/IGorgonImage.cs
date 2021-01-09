@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Native;
-using DX = SharpDX;
 using WIC = SharpDX.WIC;
 using BCn = BCnEncoder.Encoder;
 

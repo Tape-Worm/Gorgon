@@ -36,7 +36,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Reflection;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -95,15 +94,6 @@ namespace Gorgon.Graphics.Core
                 },
                 {
                     typeof(Vector4), BufferFormat.R32G32B32A32_Float
-                },
-                {
-                    typeof(DX.Vector2), BufferFormat.R32G32_Float
-                },
-                {
-                    typeof(DX.Vector3), BufferFormat.R32G32B32_Float
-                },
-                {
-                    typeof(DX.Vector4), BufferFormat.R32G32B32A32_Float
                 },
                 {
                     typeof(GorgonColor), BufferFormat.R32G32B32A32_Float

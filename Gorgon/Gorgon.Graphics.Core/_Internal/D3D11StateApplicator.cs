@@ -25,21 +25,16 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DXGI = SharpDX.DXGI;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 using System.Runtime.CompilerServices;
-using System.Buffers;
 using System.Diagnostics;
 using System.Reflection;
 using System.Linq.Expressions;
 using Gorgon.Math;
-using Gorgon.Graphics.Core.Properties;
 using SharpDX.Mathematics.Interop;
 
 namespace Gorgon.Graphics.Core

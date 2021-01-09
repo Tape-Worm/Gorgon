@@ -26,17 +26,19 @@
 
 using System;
 using System.Threading;
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using DX = SharpDX;
+using System.Runtime.CompilerServices;
 
 namespace Gorgon.Graphics
 {
     /// <summary>
     /// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
     /// </summary>
-    internal class TextureBlitter
+    public class GorgonTextureBlitter
         : IDisposable
     {
         #region Variables.
@@ -78,6 +80,85 @@ namespace Gorgon.Graphics
 
         #region Methods.
         /// <summary>
+        /// Function to initialize the blitter.
+        /// </summary>
+        private void Initialize()
+        {
+            try
+            {
+                // We've been initialized, so leave.
+                if ((_vertexShader != null) || (Interlocked.Increment(ref _initializedFlag) > 1))
+                {
+                    // Trap other threads until we're done initializing and then release them.
+                    while ((_vertexShader == null) && (_initializedFlag > 0))
+                    {
+                        var wait = new SpinWait();
+                        wait.SpinOnce();
+                    }
+
+                    return;
+                }
+
+
+                _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics,
+                                                                                Resources.GraphicsShaders,
+                                                                                "GorgonBltVertexShader",
+                                                                                GorgonGraphics.IsDebugEnabled);
+                _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics,
+                                                                              Resources.GraphicsShaders,
+                                                                              "GorgonBltPixelShader",
+                                                                              GorgonGraphics.IsDebugEnabled);
+
+                _inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _vertexShader);
+
+                _vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
+                {
+                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<BltVertex>(_graphics, new GorgonVertexBufferInfo("Gorgon Blitter Vertex Buffer")
+                    {
+                        Binding = VertexIndexBufferBinding.None,
+                        SizeInBytes = BltVertex.Size * 4,
+                        Usage = ResourceUsage.Dynamic
+                    })
+                };
+
+                _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
+                                                                           new GorgonConstantBufferInfo("Gorgon Blitter WVP Buffer")
+                                                                           {
+                                                                               Usage = ResourceUsage.Dynamic,
+                                                                               SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
+                                                                           });
+
+                // Finish initalizing the draw call.
+                _pipelineState = _pipeStateBuilder.VertexShader(_vertexShader)
+                                                  .BlendState(GorgonBlendState.NoBlending)
+                                                  .DepthStencilState(GorgonDepthStencilState.Default)
+                                                  .PrimitiveType(PrimitiveType.TriangleStrip)
+                                                  .RasterState(GorgonRasterState.Default)
+                                                  .PixelShader(_pixelShader)
+                                                  .Build();
+
+                _drawCallBuilder.VertexBuffers(_inputLayout, _vertexBufferBindings)
+                                .VertexRange(0, 4)
+                                .SamplerState(ShaderType.Pixel, GorgonSamplerState.Default)
+                                .PipelineState(_pipelineState)
+                                .ConstantBuffer(ShaderType.Vertex, _wvpBuffer);
+
+
+                _defaultTexture = Resources.White_2x2.ToTexture2D(_graphics,
+                                                                  new GorgonTexture2DLoadOptions
+                                                                  {
+                                                                      Name = "Gorgon_Default_White_Texture",
+                                                                      Usage = ResourceUsage.Immutable,
+                                                                      Binding = TextureBinding.ShaderResource
+                                                                  }).GetShaderResourceView();
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _initializedFlag);
+            }
+        }
+
+        /// <summary>
         /// Function to update the projection data.
         /// </summary>
         private void UpdateProjection()
@@ -90,14 +171,7 @@ namespace Gorgon.Graphics
 
             GorgonRenderTargetView target = _graphics.RenderTargets[0];
 
-            DX.Matrix.OrthoOffCenterLH(0,
-                           target.Width,
-                           target.Height,
-                           0,
-                           0,
-                           1.0f,
-                           out DX.Matrix projectionMatrix);
-
+            MatrixFactory.CreateOrthographicOffCenterLH(0, target.Width, target.Height, 0, 0, 1.0f, out Matrix4x4 projectionMatrix);
             _wvpBuffer.Buffer.SetData(in projectionMatrix);
 
             _targetBounds = new DX.Rectangle(0, 0, target.Width, target.Height);
@@ -141,110 +215,76 @@ namespace Gorgon.Graphics
                                         .Build(_drawAllocator);
         }
 
-
         /// <summary>
-        /// Function to initialize the blitter.
+        /// Function to draw a texture to the current render target.
         /// </summary>
-        public void Initialize()
-        {
-            try
-            {
-                // We've been initialized, so leave.
-                if ((_vertexShader != null) || (Interlocked.Increment(ref _initializedFlag) > 1))
-                {
-                    // Trap other threads until we're done initializing and then release them.
-                    while ((_vertexShader == null) && (_initializedFlag > 0))
-                    {
-                        var wait = new SpinWait();
-                        wait.SpinOnce();
-                    }
-
-                    return;
-                }
-
-
-                _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics,
-                                                                                Resources.GraphicsShaders,
-                                                                                "GorgonBltVertexShader",
-                                                                                GorgonGraphics.IsDebugEnabled);
-                _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics,
-                                                                              Resources.GraphicsShaders,
-                                                                              "GorgonBltPixelShader",
-                                                                              GorgonGraphics.IsDebugEnabled);
-
-                _inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _vertexShader);
-
-                _vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
-                {
-                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<BltVertex>(_graphics, new GorgonVertexBufferInfo("Gorgon Blitter Vertex Buffer")
-                    {
-                        Binding = VertexIndexBufferBinding.None,
-                        SizeInBytes = BltVertex.Size * 4,
-                        Usage = ResourceUsage.Dynamic
-                    })
-                };
-
-                _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
-                                                                           new GorgonConstantBufferInfo("Gorgon Blitter WVP Buffer")
-                                                                           {
-                                                                               Usage = ResourceUsage.Dynamic,
-                                                                               SizeInBytes = DX.Matrix.SizeInBytes
-                                                                           });
-
-                // Finish initalizing the draw call.
-                _pipelineState = _pipeStateBuilder.VertexShader(_vertexShader)
-                                                  .BlendState(GorgonBlendState.NoBlending)
-                                                  .DepthStencilState(GorgonDepthStencilState.Default)
-                                                  .PrimitiveType(PrimitiveType.TriangleStrip)
-                                                  .RasterState(GorgonRasterState.Default)
-                                                  .PixelShader(_pixelShader)
-                                                  .Build();
-
-                _drawCallBuilder.VertexBuffers(_inputLayout, _vertexBufferBindings)
-                                .VertexRange(0, 4)
-                                .SamplerState(ShaderType.Pixel, GorgonSamplerState.Default)
-                                .PipelineState(_pipelineState)
-                                .ConstantBuffer(ShaderType.Vertex, _wvpBuffer);
-
-
-                _defaultTexture = Resources.White_2x2.ToTexture2D(_graphics,
-                                                                  new GorgonTexture2DLoadOptions
-                                                                  {
-                                                                      Name = "Gorgon_Default_White_Texture",
-                                                                      Usage = ResourceUsage.Immutable,
-                                                                      Binding = TextureBinding.ShaderResource
-                                                                  }).GetShaderResourceView();
-            }
-            finally
-            {
-                Interlocked.Decrement(ref _initializedFlag);
-            }
-        }
+        /// <param name="texture">The texture to draw.</param>
+        /// <param name="destination">The location on the target to draw into.</param>
+        /// <param name="color">[Optional] The color to apply to the texture when drawing.</param>
+        /// <param name="blendState">[Optional] The type of blending to perform.</param>
+        /// <param name="samplerState">[Optional] The sampler state used to define how to sample the texture.</param>
+        /// <param name="pixelShader">[Optional] A pixel shader used to apply effects to the texture.</param>
+        /// <param name="psConstantBuffers">[Optional] A list of constant buffers for the pixel shader if they're required.</param>
+        /// <remarks>
+        /// <para>
+        /// This is a utility method used to draw a (2D) texture to the current render target.  This is handy for quick testing to ensure things are working as they should. 
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This method, while quite handy, should not be used for performance sensitive work as it is not the most optimal means of displaying texture data.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonTexture2DView"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Blit(GorgonTexture2DView texture,
+                                DX.Point destination,
+                                in GorgonColor? color = null,
+                                GorgonBlendState blendState = null,
+                                GorgonSamplerState samplerState = null,
+                                GorgonPixelShader pixelShader = null,
+                                GorgonConstantBuffers psConstantBuffers = null)
+            => Blit(texture,
+                    new DX.Rectangle(destination.X, destination.Y, texture?.Width ?? 1, texture?.Height ?? 1),
+                    null,
+                    color,
+                    blendState,
+                    samplerState,
+                    pixelShader,
+                    psConstantBuffers);
 
         /// <summary>
         /// Function to blit the texture to the specified render target.
         /// </summary>
         /// <param name="texture">The texture that will be blitted to the render target.</param>
         /// <param name="destRect">The layout area to blit the texture into.</param>
-        /// <param name="sourceOffset">The offset within the source texture to start blitting from.</param>
+        /// <param name="sourceRegion">The region on the texture to start blitting from.</param>
         /// <param name="color">The color used to tint the diffuse value of the texture.</param>
-        /// <param name="clip"><b>true</b> to clip the contents of the texture if the destination is larger/small than the size of the texture.</param>
         /// <param name="blendState">The blending state to apply.</param>
         /// <param name="samplerState">The sampler state to apply.</param>
         /// <param name="pixelShader">The pixel shader used to override the default pixel shader.</param>
         /// <param name="pixelShaderConstants">The pixel shader constant buffers to use.</param>
         public void Blit(GorgonTexture2DView texture,
                          DX.Rectangle destRect,
-                         DX.Point sourceOffset,
-                         in GorgonColor color,
-                         bool clip,
-                         GorgonBlendState blendState,
-                         GorgonSamplerState samplerState,
-                         GorgonPixelShader pixelShader,
-                         GorgonConstantBuffers pixelShaderConstants)
+                         in DX.Rectangle? sourceRegion = null,
+                         in GorgonColor? color = null,
+                         GorgonBlendState blendState = null,
+                         GorgonSamplerState samplerState = null,
+                         GorgonPixelShader pixelShader = null,
+                         GorgonConstantBuffers pixelShaderConstants = null)
         {
+            // If we haven't initialized yet, then do so now.
+            if (_initializedFlag == 0)
+            {
+                Initialize();
+            }
+
+            GorgonColor actualColor = color ?? GorgonColor.White;
+
             if ((_graphics.RenderTargets[0] == null)
-                || (color.Alpha.EqualsEpsilon(0)))
+                || (actualColor.Alpha.EqualsEpsilon(0)))
             {
                 return;
             }
@@ -290,38 +330,32 @@ namespace Gorgon.Graphics
             GetDrawCall(texture, blendState, samplerState, pixelShader, pixelShaderConstants);
 
             // Calculate position on the texture.
-            DX.Vector2 topLeft = texture.Texture.ToTexel(sourceOffset);
-            DX.Vector2 bottomRight = texture.Texture.ToTexel(clip ? new DX.Vector2(destRect.Width, destRect.Height) : new DX.Point(texture.Width, texture.Height));
-
-            if (clip)
-            {
-                DX.Vector2.Add(ref bottomRight, ref topLeft, out bottomRight);
-            }
+            DX.RectangleF region = texture.Texture.ToTexel(sourceRegion ?? new DX.Rectangle(0, 0, texture.Width, texture.Height));
 
             // Update the vertices.
             _vertices[0] = new BltVertex
             {
-                Position = new DX.Vector4(destRect.X, destRect.Y, 0, 1.0f),
-                Uv = topLeft,
-                Color = color
+                Position = new Vector4(destRect.X, destRect.Y, 0, 1.0f),
+                Uv = new Vector2(region.Left, region.Top),
+                Color = actualColor
             };
             _vertices[1] = new BltVertex
             {
-                Position = new DX.Vector4(destRect.Right, destRect.Y, 0, 1.0f),
-                Uv = new DX.Vector2(bottomRight.X, topLeft.Y),
-                Color = color
+                Position = new Vector4(destRect.Right, destRect.Y, 0, 1.0f),
+                Uv = new Vector2(region.Right, region.Top),
+                Color = actualColor
             };
             _vertices[2] = new BltVertex
             {
-                Position = new DX.Vector4(destRect.X, destRect.Bottom, 0, 1.0f),
-                Uv = new DX.Vector2(topLeft.X, bottomRight.Y),
-                Color = color
+                Position = new Vector4(destRect.X, destRect.Bottom, 0, 1.0f),
+                Uv = new Vector2(region.Left, region.Bottom),
+                Color = actualColor
             };
             _vertices[3] = new BltVertex
             {
-                Position = new DX.Vector4(destRect.Right, destRect.Bottom, 0, 1.0f),
-                Uv = new DX.Vector2(bottomRight.X, bottomRight.Y),
-                Color = color
+                Position = new Vector4(destRect.Right, destRect.Bottom, 0, 1.0f),
+                Uv = new Vector2(region.Right, region.Bottom),
+                Color = actualColor
             };
 
             // Copy to the vertex buffer.
@@ -345,11 +379,11 @@ namespace Gorgon.Graphics
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextureBlitter"/> class.
+        /// Initializes a new instance of the <see cref="GorgonTextureBlitter"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface used to create the required objects for blitting.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-        public TextureBlitter(GorgonGraphics graphics)
+        public GorgonTextureBlitter(GorgonGraphics graphics)
         {
             _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             _pipeStateBuilder = new GorgonPipelineStateBuilder(_graphics);

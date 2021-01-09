@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using Microsoft.Wpf.Interop.DirectX;
@@ -13,9 +9,7 @@ using Gorgon.Timing;
 using System.Windows.Controls;
 using Gorgon.Graphics.Wpf.Properties;
 using Gorgon.Graphics.Core;
-using System.Diagnostics;
 using System.Threading;
-using System.ComponentModel;
 
 namespace Gorgon.Graphics.Wpf
 {

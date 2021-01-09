@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -55,7 +55,7 @@ namespace Gorgon.Examples
         /// as indicated by the integer parameter.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public DX.Vector4 Position;
+        public Vector4 Position;
 
         /// <summary>
         /// This will be the color for our vertex.
@@ -68,11 +68,11 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="position">The position of the vertex in object space.</param>
         /// <param name="color">The color of the vertex.</param>
-        public MiniTriVertex(DX.Vector3 position, GorgonColor color)
+        public MiniTriVertex(Vector3 position, GorgonColor color)
         {
             // Note that we're passing a 3D vector, but storing a 4D vector. We need the W coordinate set to 1.0f to indicate that the coordinates are normalized.
             // For more information about the W component, go to http://www.tomdalling.com/blog/modern-opengl/explaining-homogenous-coordinates-and-projective-geometry/
-            Position = new DX.Vector4(position, 1.0f);
+            Position = new Vector4(position, 1.0f);
             Color = color;
         }
     }

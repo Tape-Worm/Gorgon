@@ -28,7 +28,7 @@ using System;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// The sobel edge detection shader.

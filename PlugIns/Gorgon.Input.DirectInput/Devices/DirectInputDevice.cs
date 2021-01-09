@@ -31,7 +31,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Input.DirectInput.Properties;
 using Gorgon.UI;
-using SharpDX;
+using DX = SharpDX;
 using DI = SharpDX.DirectInput;
 
 namespace Gorgon.Input.DirectInput
@@ -111,7 +111,7 @@ namespace Gorgon.Input.DirectInput
 
                 return acquireState;
             }
-            catch (SharpDXException)
+            catch (DX.SharpDXException)
             {
                 // If we fail acquisition, then an exception is typically thrown.
                 // Just handle it here and tell the user that we don't have acquisition.
@@ -243,7 +243,7 @@ namespace Gorgon.Input.DirectInput
             {
                 _joystick.Value.GetCurrentState(ref _state);
             }
-            catch (SharpDXException)
+            catch (DX.SharpDXException)
             {
                 // If we can't get the state, then it's likely that our joystick has become unacquired.
                 // So mark the device as unacquired and leave.

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -33,27 +34,26 @@ using Gorgon.Math;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A view to allow 2D texture based render targets to be bound to the pipeline.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
-	/// </para>
-	/// <para>
-	/// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
-	/// target. 
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="GorgonSwapChain"/>
-	/// <seealso cref="GorgonTexture2D"/>
-	/// <seealso cref="GorgonTexture3D"/>
-	public sealed class GorgonRenderTarget2DView
+    /// <summary>
+    /// A view to allow 2D texture based render targets to be bound to the pipeline.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
+    /// </para>
+    /// <para>
+    /// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
+    /// target. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonSwapChain"/>
+    /// <seealso cref="GorgonTexture2D"/>
+    /// <seealso cref="GorgonTexture3D"/>
+    public sealed class GorgonRenderTarget2DView
 		: GorgonRenderTargetView, IGorgonTexture2DInfo, IGorgonImageInfo
 	{
 		#region Variables.
@@ -397,12 +397,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="pixelVector">The pixel size to convert.</param>
 		/// <returns>A 2D vector containing the texel space coordinates.</returns>
-		public DX.Vector2 ToTexel(DX.Vector2 pixelVector)
+		public Vector2 ToTexel(Vector2 pixelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+			return new Vector2(pixelVector.X / width, pixelVector.Y / height);
 		}
 
 		/// <summary>
@@ -410,12 +410,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texelVector">The texel size to convert.</param>
 		/// <returns>A 2D vector containing the pixel space coordinates.</returns>
-		public DX.Vector2 ToPixel(DX.Vector2 texelVector)
+		public Vector2 ToPixel(Vector2 texelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+			return new Vector2(texelVector.X * width, texelVector.Y * height);
 		}
 
 		/// <summary>

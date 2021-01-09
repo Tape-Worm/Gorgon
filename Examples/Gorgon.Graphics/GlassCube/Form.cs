@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -36,7 +37,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -74,13 +74,13 @@ namespace Gorgon.Examples
         // The cube to draw.
         private Cube _cube;
         // The view matrix that acts as the camera.
-        private DX.Matrix _viewMatrix;
+        private Matrix4x4 _viewMatrix;
         // The projection matrix to transform from 3D space into 2D space.
-        private DX.Matrix _projectionMatrix;
+        private Matrix4x4 _projectionMatrix;
         // The rotation to apply to the cube, in degrees.
-        private DX.Vector3 _rotation;
+        private Vector3 _rotation;
         // The speed of rotation.
-        private DX.Vector3 _rotationSpeed = new DX.Vector3(1, 1, 1);
+        private Vector3 _rotationSpeed = new Vector3(1, 1, 1);
         // The current time.
         private float _accumulator;
         #endregion
@@ -96,16 +96,16 @@ namespace Gorgon.Examples
         /// model and project them into 2D space on your render target.
         /// </para>
         /// </remarks>
-        private void UpdateWVP(ref DX.Matrix world)
+        private void UpdateWVP(ref Matrix4x4 world)
         {
             // Build our world/view/projection matrix to send to
             // the shader.
-            DX.Matrix.Multiply(ref world, ref _viewMatrix, out DX.Matrix temp);
-            DX.Matrix.Multiply(ref temp, ref _projectionMatrix, out DX.Matrix wvp);
+            world.Multiply(in _viewMatrix, out Matrix4x4 temp);
+            temp.Multiply(in _projectionMatrix, out Matrix4x4 wvp);
 
             // Direct 3D 11 requires that we transpose our matrix 
             // before sending it to the shader.
-            DX.Matrix.Transpose(ref wvp, out wvp);
+            wvp.Transpose(out wvp);
 
             // Update the constant buffer.
             _wvpBuffer.Buffer.SetData(in wvp);
@@ -116,7 +116,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void AfterSwapChainResized(object sender, EventArgs eventArgs) => DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
+        private void AfterSwapChainResized(object sender, EventArgs eventArgs) => MatrixFactory.CreatePerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
 
         /// <summary>
 		/// Function to handle idle time for the application.
@@ -175,7 +175,7 @@ namespace Gorgon.Examples
                 _accumulator -= TargetDelta;
             }
 
-            ref DX.Matrix matrix = ref _cube.WorldMatrix;
+            ref Matrix4x4 matrix = ref _cube.WorldMatrix;
 
             // Send our world matrix to the constant buffer so the vertex shader can update the vertices.
             UpdateWVP(ref matrix);
@@ -213,15 +213,15 @@ namespace Gorgon.Examples
 
             // We use this as our initial world transform.
             // Since it's an identity, it will put the cube in the default orientation defined by the vertices.
-            DX.Matrix dummyMatrix = DX.Matrix.Identity;
+            Matrix4x4 dummyMatrix = Matrix4x4.Identity;
 
             // Create our constant buffer so we can send our transformation information to the shader.
             _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in dummyMatrix, "GlassCube WVP Constant Buffer");
 
             // Create a new projection matrix so we can transform from 3D to 2D space.
-            DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
+            MatrixFactory.CreatePerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
             // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
-            DX.Matrix.Translation(0, 0, 1.5f, out _viewMatrix);
+            MatrixFactory.CreateTranslation(new Vector3(0, 0, 1.5f), out _viewMatrix);
 
             _cube = new Cube(_graphics, _inputLayout);
 

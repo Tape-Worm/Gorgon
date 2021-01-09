@@ -24,10 +24,10 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {
@@ -46,7 +46,7 @@ namespace Gorgon.Graphics
         /// The position of the vertex.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public DX.Vector4 Position;
+        public Vector4 Position;
 
         /// <summary>
         /// The color of the vertex.
@@ -58,6 +58,6 @@ namespace Gorgon.Graphics
         /// The texture coordinate for the vertex.
         /// </summary>
         [InputElement(1, "TEXCOORD")]
-        public DX.Vector2 Uv;
+        public Vector2 Uv;
     }
 }

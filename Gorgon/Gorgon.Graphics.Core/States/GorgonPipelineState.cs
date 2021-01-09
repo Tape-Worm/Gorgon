@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Diagnostics;
 using Gorgon.Collections;
 using D3D11 = SharpDX.Direct3D11;
 

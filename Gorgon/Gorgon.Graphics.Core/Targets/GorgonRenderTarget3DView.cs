@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
@@ -239,7 +240,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
 		/// <returns>The pixel coordinates.</returns>
-		public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates)
+		public (DX.Point, int) ToPixel(Vector3 texelCoordinates)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
@@ -252,12 +253,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
 		/// <returns>The texel coordinates.</returns>
-		public DX.Vector3 ToTexel(DX.Point pixelCoordinates)
+		public Vector3 ToTexel(DX.Point pixelCoordinates)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
+			return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
 		}
 
 		/// <summary>
