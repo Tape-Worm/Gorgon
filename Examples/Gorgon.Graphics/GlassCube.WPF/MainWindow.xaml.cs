@@ -14,7 +14,39 @@ using Gorgon.Core;
 namespace Gorgon.Examples
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// GlassCube WPF
+    /// 
+    /// This is a WPF version of the GlassCube example. The purpose here is to show how to interoperate Gorgon with WPF.
+    /// 
+    /// For the most part, the code for rendering is exactly the same as the original WinForms code. But, unlike the WinForms version, no swap chain is required 
+    /// to display the image. Instead, WPF uses an Image control, with a D3D11Image as its image source. This setup gives us a render target that we can render 
+    /// into like normal.
+    /// 
+    /// To enable WPF rendering, place an Image control in your XAML (inside of a grid, canvas, whatever, doesn't matter). Then, add a reference to the 
+    /// Microsoft.Wpf.Interop.DirectX.dll (included in the Dependencies directory) assembly, and assign the D3D11Image to the ImageSource property of the Image 
+    /// control. Ensure that your Image control has a name (x:Name attribute on the XAML). To see an example setup for this, look at the MainWindow.xaml file.
+    /// 
+    /// Once that is done, we create an instance of the GorgonWpfTarget object after we initialize the GorgonGraphics object and assign the Image control via the  
+    /// constructor. 
+    /// 
+    /// Because WPF handles things quite differently than WinForms, we do not use the GorgonApplication object. So, to get your code handling idle CPU time for 
+    /// rendering we cannot just assign the Idle property on GorgonApplication. Instead, we assign the rendering method by calling the Run method on the 
+    /// GorgonWPFTarget. 
+    /// 
+    /// When rendering, just pass the GorgonWPFTarget.RenderTargetView to the GorgonGraphics.SetRenderTarget method and you're off the races.
+    /// 
+    /// And that is all that's required to get Gorgon working with WPF.
+    /// 
+    /// Now, for the bad news. There are several limitations due to the nature of WPF:
+    /// * This example, and anything using the Microsoft.Wpf.Interop.DirectX assembly MUST be compiled as x64. The assembly is compiled to x64 by default. If x86 
+    ///   is required, developers can grab the source for the assembly from https://github.com/Microsoft/WPFDXInterop and compile it as x86. Then replace the x64 
+    ///   reference with the x86 reference in the Gorgon.Graphics.WPF project and then recompile that as x86. This, however, is not recommended and unsupported.
+    ///   
+    /// * No exclusive full screen support. However, windowed full screen should still be possible if the Window is setup correctly.
+    /// 
+    /// * Only the 32 bit BGRA format is supported for the render target. This is enforced by WPF.
+    /// 
+    /// * A maximum frame rate of 60 frames per second is enforced by WPF. There is no stable way around this at this time.
     /// </summary>
     public partial class MainWindow 
         : Window
@@ -27,7 +59,7 @@ namespace Gorgon.Examples
         #region Variables.
         // The primary graphics interface.
         private GorgonGraphics _graphics;
-        // The WPF render target.
+        // The WPF render target. This is where we'll send our rendering.
         private GorgonWpfTarget _target;
         // The layout for a cube vertex.
         private GorgonInputLayout _inputLayout;
@@ -101,6 +133,9 @@ namespace Gorgon.Examples
 
             // Do nothing here.  When we need to update, we will.
             _target.RenderTargetView.Clear(GorgonColor.BlackTransparent);
+
+            // In order to get our rendering to show up in WPF, we need to render to the render target view provided to us by the 
+            // WPF render target.
             _graphics.SetRenderTarget(_target.RenderTargetView);
 
             // Use a fixed step timing to animate the cube.
@@ -160,6 +195,11 @@ namespace Gorgon.Examples
             _graphics.Submit(_drawCall);
 
             GorgonExample.BlitLogo(_graphics);
+
+            // You will notice that we do not need to call a Present method here anymore. This is handled entirely by the 
+            // GorgonWPFTarget object on your behalf.
+            //
+            // To force a render, users may call GorgonGraphics.Flush().
 
             return true;
         }
@@ -247,10 +287,18 @@ namespace Gorgon.Examples
 
                 _graphics = new GorgonGraphics(deviceList[0]);
 
+                // Unlike the Windows Forms version of this example, we don't need to use a swap chain. Instead, we use this 
+                // render target type to get our rendering to a WPF surface.
+                //
+                // The D3DImage object we're passing in is a standard WPF Image control with a D3D11Image object assigned to 
+                // its ImageSource property.
                 _target = new GorgonWpfTarget(_graphics, new GorgonWpfTargetInfo(D3DImage, "WPF Render Target"));
-
+                                
                 Initialize();
 
+                // This is where we kick off our rendering. And again, unlike the Windows Forms version of the example, we 
+                // do not need to assign the Idle method to the GorgonApplication class. Instead we pass it to the Run method 
+                // on the GorgonWPFTarget. This will call the Idle method when WPF requires rendering to be performed. 
                 _target.Run(Idle);
             }
             catch (Exception ex)
