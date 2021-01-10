@@ -26,6 +26,7 @@
 
 using System;
 using System.Numerics;
+using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 
@@ -64,18 +65,54 @@ namespace Gorgon.Graphics.Core
     public abstract class GorgonReadWriteView
         : GorgonResourceView
     {
+        #region Variables.
+        // The D3D11 UAV descriptor.
+        private D3D11.UnorderedAccessViewDescription1 _uavDesc;
+        #endregion
+
         #region Properties.
+        /// <summary>
+        /// Property to return a reference to the D3D11 UAV descriptor.
+        /// </summary>
+        private protected ref D3D11.UnorderedAccessViewDescription1 UavDesc => ref _uavDesc;
+
         /// <summary>
         /// Property to return the native Direct 3D 11 view.
         /// </summary>
         internal D3D11.UnorderedAccessView1 Native
         {
             get;
-            set;
+            private set;
         }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to perform the creation of a specific kind of view.
+        /// </summary>
+        /// <returns>The view that was created.</returns>
+        private protected sealed override D3D11.ResourceView OnCreateNativeView()
+        {
+            ref readonly D3D11.UnorderedAccessViewDescription1 desc = ref OnGetUavParams();
+            
+            Graphics.Log.Print($"Creating D3D11 {Resource.D3DResource.Dimension} unordered access view for {Resource.Name}.", LoggingLevel.Simple);
+
+            Native = new D3D11.UnorderedAccessView1(Graphics.D3DDevice, Resource.D3DResource, desc)
+            {
+                DebugName = $"{Resource.Name}_UAV"
+            };
+
+            Graphics.Log.Print($"Unordered Access View for '{Resource.Name}': {Resource.ResourceType} -> Start: {desc.Buffer.FirstElement}, Count: {desc.Buffer.ElementCount}", LoggingLevel.Verbose);
+
+            return Native;
+        }
+
+        /// <summary>
+        /// Function to retrieve the necessary parameters to create the native view.
+        /// </summary>
+        /// <returns>The D3D11 UAV descriptor.</returns>
+        private protected abstract ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams();
+
         /// <summary>
         /// Function to clear the unordered access value with the specified values.
         /// </summary>

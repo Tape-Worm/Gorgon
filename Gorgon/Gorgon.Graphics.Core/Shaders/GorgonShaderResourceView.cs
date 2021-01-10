@@ -25,7 +25,11 @@
 #endregion
 
 using System;
+using Gorgon.Diagnostics;
+using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using Gorgon.Core;
+using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Graphics.Core
 {
@@ -40,7 +44,17 @@ namespace Gorgon.Graphics.Core
     public abstract class GorgonShaderResourceView
         : GorgonResourceView, IEquatable<GorgonShaderResourceView>
     {
+        #region Variables.
+        // The shader resource view descriptor.
+        private D3D11.ShaderResourceViewDescription1 _srvDesc;
+        #endregion
+
         #region Properties.
+        /// <summary>
+        /// Property to return a reference to the shader resource view descriptor.
+        /// </summary>
+        private protected ref D3D11.ShaderResourceViewDescription1 SrvDesc => ref _srvDesc;
+
         /// <summary>
         /// Property to return the native Direct 3D 11 view.
         /// </summary>
@@ -51,7 +65,45 @@ namespace Gorgon.Graphics.Core
         }
         #endregion
 
-        #region Methods.
+        #region Methods.        
+        /// <summary>Function to perform the creation of a specific kind of view.</summary>
+        /// <returns>The view that was created.</returns>
+        private protected sealed override D3D11.ResourceView OnCreateNativeView()
+        {
+            Graphics.Log.Print($"Creating D3D11 {Resource.D3DResource.Dimension} shader resource view for {Resource.Name}.", LoggingLevel.Simple);
+
+            ref readonly D3D11.ShaderResourceViewDescription1 desc = ref OnGetSrvParams();
+
+            try
+            {                
+                Native = new D3D11.ShaderResourceView1(Graphics.D3DDevice, Resource.D3DResource, desc)
+                {
+                    DebugName = $"{Resource.Name}_SRV"
+                };
+
+                Graphics.Log.Print($"Shader Resource View for '{Resource.Name}': {Resource.ResourceType} -> Start: {desc.Buffer.ElementOffset}, Count: {desc.Buffer.ElementCount}", LoggingLevel.Verbose);
+                
+                return Native;
+            }
+            catch (DX.SharpDXException sDXEx)
+            {
+                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,                                                            
+                                                            (BufferFormat)desc.Format));
+                }
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve the necessary parameters to create the native view.
+        /// </summary>
+        /// <returns>A shader resource view descriptor.</returns>
+        private protected abstract ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams();
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

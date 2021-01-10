@@ -236,52 +236,52 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to retrieve the view description for a 2D texture.
         /// </summary>
-        /// <returns>The shader view description.</returns>
-        private D3D11.ShaderResourceViewDescription1 GetDesc2D()
+        private void GetDesc2D()
         {
             bool isMultisampled = ((Texture.MultisampleInfo.Count > 1)
                                    || (Texture.MultisampleInfo.Quality > 0));
 
             if (!isMultisampled)
             {
-                return new D3D11.ShaderResourceViewDescription1
+                SrvDesc = new D3D11.ShaderResourceViewDescription1
                 {
                     Format = (Format)Format,
                     Dimension = Texture.ArrayCount > 1
                                            ? D3D.ShaderResourceViewDimension.Texture2DArray
                                            : D3D.ShaderResourceViewDimension.Texture2D,
                     Texture2DArray =
-                           {
-                               MipLevels = MipCount,
-                               MostDetailedMip = MipSlice,
-                               FirstArraySlice = ArrayIndex,
-                               ArraySize = ArrayCount,
-                               PlaneSlice = 0
-                           }
+                    {
+                        MipLevels = MipCount,
+                        MostDetailedMip = MipSlice,
+                        FirstArraySlice = ArrayIndex,
+                        ArraySize = ArrayCount,
+                        PlaneSlice = 0
+                    }
                 };
+                return;
             }
 
             MipSlice = 0;
             MipCount = 1;
 
-            return new D3D11.ShaderResourceViewDescription1
+            SrvDesc = new D3D11.ShaderResourceViewDescription1
             {
                 Format = (Format)Format,
                 Dimension = Texture.ArrayCount > 1
                                        ? D3D.ShaderResourceViewDimension.Texture2DMultisampledArray
                                        : D3D.ShaderResourceViewDimension.Texture2DMultisampled,
                 Texture2DMSArray =
-                       {
-                           ArraySize = ArrayCount,
-                           FirstArraySlice = ArrayIndex
-                       }
+                {
+                    ArraySize = ArrayCount,
+                    FirstArraySlice = ArrayIndex
+                }
             };
         }
 
         /// <summary>
         /// Function to retrieve the view description for a 2D texture cube.
         /// </summary>
-        private D3D11.ShaderResourceViewDescription1 GetDesc2DCube()
+        private void GetDesc2DCube()
         {
             bool isMultisampled = ((Texture.MultisampleInfo.Count > 1)
                                    || (Texture.MultisampleInfo.Quality > 0));
@@ -298,7 +298,7 @@ namespace Gorgon.Graphics.Core
 
             int cubeArrayCount = ArrayCount / 6;
 
-            return new D3D11.ShaderResourceViewDescription1
+            SrvDesc = new D3D11.ShaderResourceViewDescription1
             {
                 Format = (Format)Format,
                 Dimension =
@@ -315,40 +315,20 @@ namespace Gorgon.Graphics.Core
             };
         }
 
-        /// <summary>
-        /// Function to initialize the shader resource view.
-        /// </summary>
-        /// <returns>The view that was created.</returns>
-        private protected override D3D11.ResourceView OnCreateNativeView()
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>A shader resource view descriptor.</returns>
+        private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
         {
-            D3D11.ShaderResourceViewDescription1 desc = IsCubeMap ? GetDesc2DCube() : GetDesc2D();
-
-            try
+            if (IsCubeMap)
             {
-                Graphics.Log.Print($"Creating D3D11 2D texture shader resource view for {Texture.Name}.", LoggingLevel.Simple);
-
-                // Create our SRV.
-                Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-                {
-                    DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_2D"
-                };
-
-                Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}, Cube Map: {IsCubeMap}", LoggingLevel.Verbose);
+                GetDesc2DCube();
             }
-            catch (DX.SharpDXException sDXEx)
+            else
             {
-                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-                                                            Texture.Format,
-                                                            Format));
-                }
-
-                throw;
+                GetDesc2D();
             }
-
-            return Native;
+            
+            return ref SrvDesc;
         }
 
         /// <summary>

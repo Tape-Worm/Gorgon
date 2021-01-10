@@ -189,7 +189,7 @@ namespace Gorgon.Graphics.Core
                 StructureByteStride = 0
             };
 
-            D3DResource = Native = BufferFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
+            D3DResource = Native = ResourceFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
         }
 
 

@@ -313,7 +313,7 @@ namespace Gorgon.Graphics.Core
 
             Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-            D3DResource = Native = BufferFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
+            D3DResource = Native = ResourceFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
         }
 
         /// <summary>

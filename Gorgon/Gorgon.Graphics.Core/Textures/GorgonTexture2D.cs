@@ -515,37 +515,8 @@ namespace Gorgon.Graphics.Core
                 MipLevels = MipLevels
             };
 
-            if (image == null)
-            {
-                D3DResource = new D3D11.Texture2D1(Graphics.D3DDevice, tex2DDesc)
-                {
-                    DebugName = $"{Name}[{TextureID}]_ID3D11Texture2D1"
-                };
-                return;
-            }
-
-            // Upload the data to the texture.
-            var dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, MipLevels) * ArrayCount];
-
-            unsafe
-            {
-                for (int arrayIndex = 0; arrayIndex < ArrayCount; ++arrayIndex)
-                {
-                    for (int mipIndex = 0; mipIndex < MipLevels; ++mipIndex)
-                    {
-                        int boxIndex = mipIndex + (arrayIndex * MipLevels);
-                        IGorgonImageBuffer buffer = image.Buffers[mipIndex, arrayIndex];
-                        dataBoxes[boxIndex] = new DX.DataBox(new IntPtr((void*)buffer.Data), buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
-                    }
-                }
-            }
-
-            D3DResource = new D3D11.Texture2D1(Graphics.D3DDevice, tex2DDesc, dataBoxes)
-            {
-                DebugName = $"{Name}[{TextureID}]_ID3D11Texture2D1"
-            };
+            D3DResource = ResourceFactory.Create(Graphics.D3DDevice, Name, TextureID, in tex2DDesc, image);
         }
-
 
         /// <summary>
         /// Function to copy this texture into another <see cref="GorgonTexture2D"/>.

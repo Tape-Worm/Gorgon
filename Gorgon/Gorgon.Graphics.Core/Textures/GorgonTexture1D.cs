@@ -359,35 +359,7 @@ namespace Gorgon.Graphics.Core
                 MipLevels = MipLevels
             };
 
-            if (image == null)
-            {
-                D3DResource = new D3D11.Texture1D(Graphics.D3DDevice, tex1DDesc)
-                {
-                    DebugName = $"{Name}[{TextureID}]_ID3D11Texture1D"
-                };
-                return;
-            }
-
-            // Upload the data to the texture.
-            var dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, MipLevels) * ArrayCount];
-
-            unsafe
-            {
-                for (int arrayIndex = 0; arrayIndex < ArrayCount; ++arrayIndex)
-                {
-                    for (int mipIndex = 0; mipIndex < MipLevels; ++mipIndex)
-                    {
-                        int boxIndex = mipIndex + (arrayIndex * MipLevels);
-                        IGorgonImageBuffer buffer = image.Buffers[mipIndex, arrayIndex];
-                        dataBoxes[boxIndex] = new DX.DataBox(new IntPtr((void*)buffer.Data), buffer.PitchInformation.RowPitch, buffer.PitchInformation.RowPitch);
-                    }
-                }
-            }
-
-            D3DResource = new D3D11.Texture1D(Graphics.D3DDevice, tex1DDesc, dataBoxes)
-            {
-                DebugName = $"{Name}[{TextureID}]_ID3D11Texture1D"
-            };
+            D3DResource = ResourceFactory.Create(Graphics.D3DDevice, Name, TextureID, in tex1DDesc, image);
         }
 
         /// <summary>

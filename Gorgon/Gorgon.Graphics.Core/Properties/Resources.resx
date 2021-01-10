@@ -142,7 +142,7 @@
     <value>The format for the view must not be [Unknown].</value>
   </data>
   <data name="GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT" xml:space="preserve">
-    <value>The format [{0}] is not compatiable or cannot be cast to [{1}].</value>
+    <value>The resource format is not compatiable or cannot be cast to [{0}].</value>
   </data>
   <data name="GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID" xml:space="preserve">
     <value>The array count for a cube texture must be a multiple of 6.</value>

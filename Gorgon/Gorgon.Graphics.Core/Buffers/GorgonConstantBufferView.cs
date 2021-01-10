@@ -72,7 +72,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the number of bytes to allocate for the buffer.
         /// </summary>
-        int IGorgonConstantBufferInfo.SizeInBytes => Buffer?.SizeInBytes ?? 0;
+        public int SizeInBytes => Buffer?.SizeInBytes ?? 0;
 
         /// <summary>
         /// Property to return the name of this object.

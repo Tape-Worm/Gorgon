@@ -212,53 +212,26 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to perform the creation of a specific kind of view.
-        /// </summary>
-        /// <returns>The view that was created.</returns>
-        private protected override D3D11.ResourceView OnCreateNativeView()
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>A shader resource view descriptor.</returns>
+        private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
         {
-            var desc = new D3D11.ShaderResourceViewDescription1
+            SrvDesc = new D3D11.ShaderResourceViewDescription1
             {
                 Format = (Format)Format,
                 Dimension = Texture.ArrayCount > 1
                                            ? D3D.ShaderResourceViewDimension.Texture1DArray
                                            : D3D.ShaderResourceViewDimension.Texture1D,
-                Texture1DArray =
-                           {
+                Texture1DArray = 
+                            {
                                MipLevels = MipCount,
                                MostDetailedMip = MipSlice,
                                FirstArraySlice = ArrayIndex,
                                ArraySize = ArrayCount
-                           }
+                            }
             };
 
-            try
-            {
-                Graphics.Log.Print($"Creating D3D11 1D texture shader resource view for {Texture.Name}.", LoggingLevel.Simple);
-
-                // Create our SRV.
-                Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-                {
-                    DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_1D"
-                };
-
-                Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}", LoggingLevel.Verbose);
-            }
-            catch (DX.SharpDXException sDXEx)
-            {
-                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-                                                            Texture.Format,
-                                                            Format));
-                }
-
-                throw;
-            }
-
-            return Native;
+            return ref SrvDesc;
         }
 
         /// <summary>

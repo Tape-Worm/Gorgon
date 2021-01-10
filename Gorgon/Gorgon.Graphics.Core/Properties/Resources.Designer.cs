@@ -1145,7 +1145,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format [{0}] is not compatiable or cannot be cast to [{1}]..
+        ///   Looks up a localized string similar to The resource format is not compatiable or cannot be cast to [{0}]..
         /// </summary>
         internal static string GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT {
             get {

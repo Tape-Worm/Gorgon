@@ -26,9 +26,8 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
-using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
+using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -140,16 +139,13 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to initialize the view.
-        /// </summary>
-        private protected override D3D11.ResourceView OnCreateNativeView()
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>A shader resource view descriptor.</returns>
+        private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
         {
-            Graphics.Log.Print($"Creating D3D11 buffer shader resource view for {Buffer.Name}.", LoggingLevel.Simple);
-
-            var desc = new D3D11.ShaderResourceViewDescription1
+            SrvDesc = new D3D11.ShaderResourceViewDescription1
             {
-                Format = (Format)Format,
+                Format = (DXGI.Format)Format,
                 Dimension = D3D.ShaderResourceViewDimension.ExtendedBuffer,
                 BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
                 {
@@ -159,16 +155,7 @@ namespace Gorgon.Graphics.Core
                 }
             };
 
-            // Create our SRV.
-            Native = new D3D11.ShaderResourceView1(Buffer.Graphics.D3DDevice, Buffer.D3DResource, desc)
-            {
-                DebugName = $"'{Buffer.Name}'_D3D11ShaderResourceView1_Buffer"
-            };
-
-            Graphics.Log.Print($"Shader Resource Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}",
-                               LoggingLevel.Verbose);
-
-            return Native;
+            return ref SrvDesc;
         }
         #endregion
 

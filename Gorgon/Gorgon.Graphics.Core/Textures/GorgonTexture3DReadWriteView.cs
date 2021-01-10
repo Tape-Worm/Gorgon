@@ -211,13 +211,11 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to perform the creation of a specific kind of view.
-        /// </summary>
-        /// <returns>The view that was created.</returns>
-        private protected override D3D11.ResourceView OnCreateNativeView()
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>The D3D11 UAV descriptor.</returns>
+        private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
         {
-            var desc = new D3D11.UnorderedAccessViewDescription1
+            UavDesc = new D3D11.UnorderedAccessViewDescription1
             {
                 Format = (Format)Format,
                 Dimension = D3D11.UnorderedAccessViewDimension.Texture3D,
@@ -229,33 +227,7 @@ namespace Gorgon.Graphics.Core
                                     }
             };
 
-            Graphics.Log.Print($"Creating 3D texture unordered access view for {Texture.Name}.", LoggingLevel.Verbose);
-
-            try
-            {
-                // Create our SRV.
-                Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                {
-                    DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_3D"
-                };
-
-                Graphics.Log.Print($"Unordered Access 3D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Starting depth slice: {StartDepthSlice}, Depth slice count: {DepthSliceCount}",
-                                   LoggingLevel.Verbose);
-            }
-            catch (DX.SharpDXException sDXEx)
-            {
-                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-                                                            Texture.Format,
-                                                            Format));
-                }
-
-                throw;
-            }
-
-            return Native;
+            return ref UavDesc;
         }
 
         /// <summary>

@@ -240,12 +240,11 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to retrieve the view description for a 2D texture.
-        /// </summary>
-        /// <param name="texture">Texture to build a view description for.</param>
-        /// <returns>The shader view description.</returns>
-        private D3D11.UnorderedAccessViewDescription1 GetDesc2D(GorgonTexture2D texture) => texture.ArrayCount == 1
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>The D3D11 UAV descriptor.</returns>        
+        private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
+        {
+            UavDesc = Texture.ArrayCount == 1
                        ? new D3D11.UnorderedAccessViewDescription1
                        {
                            Format = (Format)Format,
@@ -269,41 +268,7 @@ namespace Gorgon.Graphics.Core
                              }
                        };
 
-        /// <summary>
-        /// Function to perform the creation of a specific kind of view.
-        /// </summary>
-        /// <returns>The view that was created.</returns>
-        private protected override D3D11.ResourceView OnCreateNativeView()
-        {
-            D3D11.UnorderedAccessViewDescription1 desc = GetDesc2D(Texture);
-
-            Graphics.Log.Print($"Creating D3D11 2D texture unordered access view for {Texture.Name}.", LoggingLevel.Verbose);
-
-            try
-            {
-                // Create our SRV.
-                Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                {
-                    DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_2D"
-                };
-
-                Graphics.Log.Print($"Unordered Access 2D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
-                                   LoggingLevel.Verbose);
-            }
-            catch (DX.SharpDXException sDXEx)
-            {
-                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-                                                            Texture.Format,
-                                                            Format));
-                }
-
-                throw;
-            }
-
-            return Native;
+            return ref UavDesc;
         }
 
         /// <summary>
