@@ -222,6 +222,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Graphics.Wpf", "Gorg
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlassCube.WPF", "Examples\Gorgon.Graphics\GlassCube.WPF\GlassCube.WPF.csproj", "{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSTriangle", "Test\FSTriangle\FSTriangle.csproj", "{EAF6E474-7728-46FA-9BA0-62689DD4DC4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -544,6 +546,10 @@ Global
 		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAF6E474-7728-46FA-9BA0-62689DD4DC4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAF6E474-7728-46FA-9BA0-62689DD4DC4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAF6E474-7728-46FA-9BA0-62689DD4DC4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAF6E474-7728-46FA-9BA0-62689DD4DC4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
