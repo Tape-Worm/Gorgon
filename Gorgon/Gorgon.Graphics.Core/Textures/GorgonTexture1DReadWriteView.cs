@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -65,11 +65,6 @@ namespace Gorgon.Graphics.Core
     public sealed class GorgonTexture1DReadWriteView
         : GorgonReadWriteView, IGorgonTexture1DInfo, IGorgonImageInfo
     {
-        #region Variables.
-        // Rectangles used for clearing the view.
-        private RawRectangle[] _clearRects;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the type of image data.
@@ -372,25 +367,29 @@ namespace Gorgon.Graphics.Core
         /// If this method is called with a 3D texture bound to the view, and with regions specified, then the regions are ignored.
         /// </para>
         /// </remarks>
-        public void Clear(in GorgonColor color, DX.Rectangle[] rectangles)
+        public void Clear(in GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
         {
-            if ((rectangles == null) || (rectangles.Length == 0))
+            if (rectangles.IsEmpty)
             {
                 Clear(color.Red, color.Green, color.Blue, color.Alpha);
                 return;
             }
 
-            if ((_clearRects == null) || (_clearRects.Length < rectangles.Length))
-            {
-                _clearRects = new RawRectangle[rectangles.Length];
-            }
+            RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
 
-            for (int i = 0; i < rectangles.Length; ++i)
+            try
             {
-                _clearRects[i] = rectangles[i];
-            }
+                for (int i = 0; i < rectangles.Length; ++i)
+                {
+                    clearRects[i] = rectangles[i];
+                }
 
-            Resource.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), _clearRects, rectangles.Length);
+                Resource.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), clearRects, rectangles.Length);
+            }
+            finally
+            {
+                ArrayPool<RawRectangle>.Shared.Return(clearRects);
+            }
         }
 
         /// <summary>

@@ -35,6 +35,7 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
+using System.Buffers;
 
 namespace Gorgon.Graphics.Core
 {
@@ -56,11 +57,6 @@ namespace Gorgon.Graphics.Core
     public sealed class GorgonRenderTarget2DView
 		: GorgonRenderTargetView, IGorgonTexture2DInfo, IGorgonImageInfo
 	{
-		#region Variables.
-		// Clear rectangles.
-		private RawRectangle[] _clearRects;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the owner <see cref="RenderTargetFactory"/> for this texture.
@@ -432,30 +428,34 @@ namespace Gorgon.Graphics.Core
 		/// If the <paramref name="rectangles"/> parameter is <b>null</b>, or has a zero length, the entirety of the view is cleared.
 		/// </para>
 		/// </remarks>
-		public void Clear(in GorgonColor color, DX.Rectangle[] rectangles)
+		public void Clear(in GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
 		{
-			if ((rectangles == null) || (rectangles.Length == 0))
+			if (rectangles.IsEmpty)
 			{
 				Clear(color);
 				return;
 			}
 
-			if ((_clearRects == null) || (_clearRects.Length < rectangles.Length))
+			RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
+
+			try
 			{
-				_clearRects = new RawRectangle[rectangles.Length];
+				for (int i = 0; i < rectangles.Length; ++i)
+				{
+					clearRects[i] = rectangles[i];
+				}
+
+				Texture.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), clearRects, rectangles.Length);
+
+				ref GorgonGraphicsStatistics stats = ref Texture.Graphics.RwStatistics;
+				unchecked
+				{
+					++stats._clearCount;
+				}
 			}
-
-			for (int i = 0; i < rectangles.Length; ++i)
+			finally
 			{
-				_clearRects[i] = rectangles[i];
-			}
-
-			Texture.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), _clearRects, rectangles.Length);
-
-			ref GorgonGraphicsStatistics stats = ref Texture.Graphics.RwStatistics;
-			unchecked
-			{
-				++stats._clearCount;
+				ArrayPool<RawRectangle>.Shared.Return(clearRects);
 			}
 		}
 

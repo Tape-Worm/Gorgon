@@ -34,7 +34,7 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
-
+using System.Buffers;
 
 namespace Gorgon.Graphics.Core
 {
@@ -83,11 +83,6 @@ namespace Gorgon.Graphics.Core
 	public sealed class GorgonDepthStencil2DView
 		: GorgonResourceView, IGorgonTexture2DInfo, IGorgonImageInfo
 	{
-		#region Variables.
-		// Clear rectangles.
-		private RawRectangle[] _clearRects;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the native D3D depth/stencil view.
@@ -599,30 +594,35 @@ namespace Gorgon.Graphics.Core
 		/// ignored.
 		/// </para>
 		/// </remarks>
-		public void Clear(float depthValue, DX.Rectangle[] rectangles)
+		public void Clear(float depthValue, ReadOnlySpan<DX.Rectangle> rectangles)
 		{
-			if ((rectangles == null) || (rectangles.Length == 0) || (FormatInformation.HasStencil))
+			if ((rectangles.IsEmpty) || (FormatInformation.HasStencil))
 			{
 				Clear(depthValue, 0);
 				return;
 			}
 
-			if ((_clearRects == null) || (_clearRects.Length < rectangles.Length))
+
+			RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
+
+			try
 			{
-				_clearRects = new RawRectangle[rectangles.Length];
+				for (int i = 0; i < rectangles.Length; ++i)
+				{
+					clearRects[i] = rectangles[i];
+				}
+
+				Texture.Graphics.D3DDeviceContext.ClearView(Native, new DX.Color4(depthValue), clearRects, rectangles.Length);
+
+				ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
+				unchecked
+				{
+					++stats._clearCount;
+				}
 			}
-
-			for (int i = 0; i < rectangles.Length; ++i)
+			finally
 			{
-				_clearRects[i] = rectangles[i];
-			}
-
-			Texture.Graphics.D3DDeviceContext.ClearView(Native, new DX.Color4(depthValue), _clearRects, rectangles.Length);
-
-			ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
-			unchecked
-			{
-				++stats._clearCount;
+				ArrayPool<RawRectangle>.Shared.Return(clearRects);
 			}
 		}
 
