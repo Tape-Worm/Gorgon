@@ -32,6 +32,7 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using DX = SharpDX;
 using System.Runtime.CompilerServices;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Graphics
 {
@@ -76,10 +77,6 @@ namespace Gorgon.Graphics
         private readonly GorgonPipelineStateBuilder _fsPsoBuilder;
         // The allocator used to create/recycle draw calls.
         private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawCall>(128);
-        // Flag to indicate that the world/view/projection needs updating.
-        private bool _needsWvpUpdate = true;
-        // The bounds of the most recent target.
-        private DX.Rectangle? _targetBounds;
         // The default pipeline state for blitting.
         private GorgonPipelineState _blitPso;
         // The default pipeline state for fullscreen blitting.
@@ -88,6 +85,8 @@ namespace Gorgon.Graphics
         private readonly GorgonConstantBuffers _emptyPsConstants = new GorgonConstantBuffers();
         // The default texture.
         private GorgonTexture2DView _defaultTexture;
+        // The camera space for blitting the texture.
+        private readonly GorgonOrthoCamera _camera;
         #endregion
 
         #region Methods.
@@ -183,6 +182,9 @@ namespace Gorgon.Graphics
                                                                       Usage = ResourceUsage.Immutable,
                                                                       Binding = TextureBinding.ShaderResource
                                                                   }).GetShaderResourceView();
+
+                _graphics.RenderTargetChanged += Graphics_RenderTargetChanged;
+                _graphics.ViewportChanged += Graphics_RenderTargetChanged;
             }
             finally
             {
@@ -190,24 +192,35 @@ namespace Gorgon.Graphics
             }
         }
 
+        /// <summary>Handles the RenderTargetChanged event of the Graphics control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        private void Graphics_RenderTargetChanged(object sender, EventArgs e) => UpdateProjection();
+
         /// <summary>
         /// Function to update the projection data.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void UpdateProjection()
         {
-            if ((!_needsWvpUpdate)
-                || (_graphics.RenderTargets[0] == null))
+            if (_graphics.RenderTargets[0] == null)            
             {
                 return;
             }
 
-            GorgonRenderTargetView target = _graphics.RenderTargets[0];
+            var targetSize = new DX.Size2F(_graphics.RenderTargets[0].Width, _graphics.RenderTargets[0].Height);
 
-            MatrixFactory.CreateOrthographicOffCenterLH(0, target.Width, target.Height, 0, 0, 1.0f, out Matrix4x4 projectionMatrix);
+            if ((_camera.Changes == CameraChange.None) && (targetSize.Equals(_camera.ViewDimensions)))
+            {
+                return;
+            }
+
+            _camera.ViewDimensions = targetSize;
+            ref readonly Matrix4x4 projectionMatrix = ref _camera.GetProjectionMatrix();
             _wvpBuffer.Buffer.SetData(in projectionMatrix);
 
-            _targetBounds = new DX.Rectangle(0, 0, target.Width, target.Height);
-            _needsWvpUpdate = false;
+            // Since we only care about the projection matrix, we can disregard the view changes so we don't continuously repeat the projection calculations.
+            _camera.DiscardChanges();            
         }
 
         /// <summary>
@@ -404,16 +417,6 @@ namespace Gorgon.Graphics
                 texture = _defaultTexture;
             }
 
-            GorgonRenderTargetView currentView = _graphics.RenderTargets[0];
-
-            // We need to update the projection/view if the size of the target changes.
-            if ((_targetBounds == null)
-                || (currentView.Width != _targetBounds.Value.Width)
-                || (currentView.Height != _targetBounds.Value.Height))
-            {
-                _needsWvpUpdate = true;
-            }
-
             UpdateProjection();
 
             // Set to default states if not provided.
@@ -436,7 +439,7 @@ namespace Gorgon.Graphics
             {
                 pixelShaderConstants = _emptyPsConstants;
             }
-
+            
             GetDrawCall(texture, blendState, samplerState, pixelShader, pixelShaderConstants);
 
             // Calculate position on the texture.
@@ -478,6 +481,9 @@ namespace Gorgon.Graphics
         /// </summary>
         public void Dispose()
         {
+            _graphics.RenderTargetChanged -= Graphics_RenderTargetChanged;
+            _graphics.ViewportChanged -= Graphics_RenderTargetChanged;
+
             _defaultTexture?.Texture?.Dispose();
             _wvpBuffer?.Dispose();
             _vertexBufferBindings?[0].VertexBuffer?.Dispose();
@@ -500,6 +506,7 @@ namespace Gorgon.Graphics
             _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             _blitPsoBuilder = new GorgonPipelineStateBuilder(_graphics);
             _fsPsoBuilder = new GorgonPipelineStateBuilder(_graphics);
+            _camera = new GorgonOrthoCamera(_graphics, DX.Size2F.Empty, name: "Blitter camera");
         }
         #endregion
     }

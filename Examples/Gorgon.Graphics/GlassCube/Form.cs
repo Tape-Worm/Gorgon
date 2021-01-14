@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Numerics;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,6 +38,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Examples
 {
@@ -73,10 +75,8 @@ namespace Gorgon.Examples
         private GorgonDrawIndexCall _drawCall;
         // The cube to draw.
         private Cube _cube;
-        // The view matrix that acts as the camera.
-        private Matrix4x4 _viewMatrix;
-        // The projection matrix to transform from 3D space into 2D space.
-        private Matrix4x4 _projectionMatrix;
+        // The camera for viewing the cube.
+        private GorgonPerspectiveCamera _camera;
         // The rotation to apply to the cube, in degrees.
         private Vector3 _rotation;
         // The speed of rotation.
@@ -86,6 +86,19 @@ namespace Gorgon.Examples
         #endregion
 
         #region Methods.
+        /// <summary>Handles the Resize event of the AfterSwapChain control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
+        private void AfterSwapChain_Resize(object sender, SwapChainResizedEventArgs e)
+        {
+            if (_camera == null)
+            {
+                return;
+            }
+
+            _camera.ViewDimensions = e.Size.ToSize2F();
+        }
+
         /// <summary>
         /// Function to update the world/view/projection matrix.
         /// </summary>
@@ -96,12 +109,17 @@ namespace Gorgon.Examples
         /// model and project them into 2D space on your render target.
         /// </para>
         /// </remarks>
-        private void UpdateWVP(ref Matrix4x4 world)
+        private void UpdateWVP(in Matrix4x4 world)
         {
-            // Build our world/view/projection matrix to send to
+            // Get the view and projection from the camera.
+            // These values are cached and returned as read only references for performance.
+            ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
+            ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
+
+            // Build our world/vi ew/projection matrix to send to
             // the shader.
-            world.Multiply(in _viewMatrix, out Matrix4x4 temp);
-            temp.Multiply(in _projectionMatrix, out Matrix4x4 wvp);
+            world.Multiply(in viewMatrix, out Matrix4x4 temp);
+            temp.Multiply(in projMatrix, out Matrix4x4 wvp);
 
             // Direct 3D 11 requires that we transpose our matrix 
             // before sending it to the shader.
@@ -110,13 +128,6 @@ namespace Gorgon.Examples
             // Update the constant buffer.
             _wvpBuffer.Buffer.SetData(in wvp);
         }
-
-        /// <summary>
-        /// Function called after the swap chain is resized.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void AfterSwapChainResized(object sender, EventArgs eventArgs) => MatrixFactory.CreatePerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
 
         /// <summary>
 		/// Function to handle idle time for the application.
@@ -178,7 +189,7 @@ namespace Gorgon.Examples
             ref Matrix4x4 matrix = ref _cube.WorldMatrix;
 
             // Send our world matrix to the constant buffer so the vertex shader can update the vertices.
-            UpdateWVP(ref matrix);
+            UpdateWVP(in matrix);
 
             // And, as always, send the cube to the GPU for rendering.
             _graphics.Submit(_drawCall);
@@ -218,10 +229,12 @@ namespace Gorgon.Examples
             // Create our constant buffer so we can send our transformation information to the shader.
             _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in dummyMatrix, "GlassCube WVP Constant Buffer");
 
-            // Create a new projection matrix so we can transform from 3D to 2D space.
-            MatrixFactory.CreatePerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
             // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
-            MatrixFactory.CreateTranslation(new Vector3(0, 0, 1.5f), out _viewMatrix);
+            _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(ClientSize.Width, ClientSize.Height), 0.1f, 1000.0f, "GlassCube Camera")
+            {
+                Fov = 60.0f,
+                Position = new Vector3(0.0f, 0, 1.5f)                
+            };
 
             _cube = new Cube(_graphics, _inputLayout);
 
@@ -333,7 +346,8 @@ namespace Gorgon.Examples
                 // Register an event to tell us when the swap chain was resized.
                 // We need to do this in order to resize our projection matrix & viewport to match our client area.
                 // Also, when a swap chain is resized, it is unbound from the pipeline, and needs to be reassigned to the draw call.
-                _swap.SwapChainResized += AfterSwapChainResized;
+                _swap.SwapChainResized += AfterSwapChain_Resize;
+                ;
 
                 // Initialize the app.
                 Initialize();

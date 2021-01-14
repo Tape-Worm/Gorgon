@@ -24,7 +24,7 @@
         <TextBlock Text="WPF" Grid.ColumnSpan="2" Style="{DynamicResource WpfTextBlock}"/>
         
         <!-- This is where we'll see our cube being rendered -->
-        <Image Stretch="Fill" x:Name="D3DImage" Grid.ColumnSpan="2">
+        <Image Stretch="Fill" x:Name="D3DImage" Grid.ColumnSpan="2" SizeChanged="ClientArea_SizeChanged">
             <Image.Source>
                 <!-- We need to assign the D3D11Image type as an image source. This gives us access to the WPF surface. -->
                 <DXExtensions:D3D11Image />

@@ -140,5 +140,69 @@ namespace Gorgon.Graphics
         /// <param name="pt">The point to convert.</param>
         /// <returns>The equivalent 2D vector value.</returns>
         public static Vector2 ToVector2(this DX.Point pt) => new Vector2(pt.X, pt.Y);
+
+        /// <summary>
+        /// Function to transform a vector by a matrix.
+        /// </summary>
+        /// <param name="vector">The vector to transform.</param>
+        /// <param name="matrix">The matrix to apply.</param>
+        /// <param name="transformed">The resulting transformed vector.</param>
+        public static void Transform(this in Vector2 vector, in Matrix4x4 matrix, out Vector2 transformed) => transformed = Vector2.Transform(vector, matrix);
+
+        /// <summary>
+        /// Function to transform a vector by a matrix.
+        /// </summary>
+        /// <param name="vector">The vector to transform.</param>
+        /// <param name="matrix">The matrix to apply.</param>
+        /// <param name="transformed">The resulting transformed vector.</param>
+        public static void Transform(this in Vector3 vector, in Matrix4x4 matrix, out Vector3 transformed) => transformed = Vector3.Transform(vector, matrix);
+
+        /// <summary>
+        /// Function to transform a vector by a matrix.
+        /// </summary>
+        /// <param name="vector">The vector to transform.</param>
+        /// <param name="matrix">The matrix to apply.</param>
+        /// <param name="transformed">The resulting transformed vector.</param>
+        public static void Transform(this in Vector4 vector, in Matrix4x4 matrix, out Vector4 transformed) => transformed = Vector4.Transform(vector, matrix);
+
+        /// <summary>
+        /// Function to transform a vector by a quaternion.
+        /// </summary>
+        /// <param name="vector">The vector to transform.</param>
+        /// <param name="quaternion">The quaternion to apply.</param>
+        /// <param name="transformed">The resulting transformed vector.</param>
+        public static void Transform(this in Vector2 vector, in Quaternion quaternion, out Vector2 transformed) => transformed = Vector2.Transform(vector, quaternion);
+
+        /// <summary>
+        /// Function to transform a vector by a quaternion.
+        /// </summary>
+        /// <param name="vector">The vector to transform.</param>
+        /// <param name="quaternion">The quaternion to apply.</param>
+        /// <param name="transformed">The resulting transformed vector.</param>
+        public static void Transform(this in Vector3 vector, in Quaternion quaternion, out Vector3 transformed) => transformed = Vector3.Transform(vector, quaternion);
+
+        /// <summary>
+        /// Function to transform a vector by a quaternion.
+        /// </summary>
+        /// <param name="vector">The vector to transform.</param>
+        /// <param name="quaternion">The quaternion to apply.</param>
+        /// <param name="transformed">The resulting transformed vector.</param>
+        public static void Transform(this in Vector4 vector, in Quaternion quaternion, out Vector4 transformed) => transformed = Vector4.Transform(vector, quaternion);
+
+        /// <summary>
+        /// Function to transform a normal vector by a matrix.
+        /// </summary>
+        /// <param name="vector">The vector to transform.</param>
+        /// <param name="matrix">The matrix to apply.</param>
+        /// <param name="transformed">The resulting transformed vector.</param>
+        public static void TransformNormal(this in Vector2 vector, in Matrix4x4 matrix, out Vector2 transformed) => transformed = Vector2.TransformNormal(vector, matrix);
+
+        /// <summary>
+        /// Function to transform a normal vector by a matrix.
+        /// </summary>
+        /// <param name="vector">The vector to transform.</param>
+        /// <param name="matrix">The matrix to apply.</param>
+        /// <param name="transformed">The resulting transformed vector.</param>
+        public static void TransformNormal(this in Vector3 vector, in Matrix4x4 matrix, out Vector3 transformed) => transformed = Vector3.TransformNormal(vector, matrix);
     }
 }

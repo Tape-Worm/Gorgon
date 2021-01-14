@@ -518,6 +518,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A render target is required, but not set..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_RENDER_TARGET {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_RENDER_TARGET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Draw calls require a vertex shader..
         /// </summary>
         internal static string GORGFX_ERR_NO_VERTEX_SHADER {
@@ -1310,14 +1319,15 @@ namespace Gorgon.Graphics.Core.Properties {
         ///   float2 uv : TEXCOORD;
         ///};
         ///
-        ///// The transformation matrices (for vertex shader).
-        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///// A vertex for full screen triangle blit.
+        ///struct GorgonFullScreenVertex
         ///{
-        ///	float4x4 WorldViewProjection;
-        ///}
+        ///	float4 position : SV_POSITION;
+        ///	float2 uv : TEXCOORD;
+        ///};
         ///
-        ///// Our vertex shader for blitting textures.
-        ///GorgonBltVertex GorgonBltVertexShader [rest of string was truncated]&quot;;.
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjecti [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

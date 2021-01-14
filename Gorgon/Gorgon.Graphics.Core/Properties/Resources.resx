@@ -545,4 +545,7 @@ This application will now exit.</value>
   <data name="GORGFX_ERR_POINTER_NOT_DXGI_RESOURCE" xml:space="preserve">
     <value>The pointer is not a DXGI shared resource.</value>
   </data>
+  <data name="GORGFX_ERR_NO_RENDER_TARGET" xml:space="preserve">
+    <value>A render target is required, but not set.</value>
+  </data>
 </root>
