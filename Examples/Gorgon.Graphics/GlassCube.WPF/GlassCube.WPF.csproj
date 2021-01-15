@@ -53,6 +53,10 @@
     <ApplicationDefinition Include="App.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlassCube\Cube.cs" Link="Cube.cs" />
+    <Compile Include="..\GlassCube\GlassCubeVertex.cs" Link="GlassCubeVertex.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Microsoft.Wpf.Interop.DirectX">
       <HintPath>..\..\..\Dependencies\Microsoft.Wpf.Interop.DirectX\Microsoft.Wpf.Interop.DirectX.dll</HintPath>
     </Reference>

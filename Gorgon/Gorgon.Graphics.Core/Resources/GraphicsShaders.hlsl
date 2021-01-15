@@ -17,6 +17,12 @@ struct GorgonFullScreenVertex
 	float2 uv : TEXCOORD;
 };
 
+// A vertex for drawing debug lines.
+struct GorgonDebugLineVertex
+{
+	float4 position : SV_POSITION;
+};
+
 // The transformation matrices (for vertex shader).
 cbuffer GorgonBltWorldViewProjection : register(b0)
 {
@@ -63,3 +69,20 @@ float4 GorgonFullScreenPixelShader(GorgonFullScreenVertex vertex) : SV_Target
 
 	return result;
 }
+
+// The vertex shader for lines used in drawing debug data.
+GorgonDebugLineVertex GorgonDebugVertexShader(GorgonDebugLineVertex vertex)
+{
+	GorgonDebugLineVertex result;
+
+	result.position = mul(float4(vertex.position.xyz, 1.0f), WorldViewProjection);
+
+	return result;
+}
+
+// The pixel shader for lines used in drawing debug data.
+float4 GorgonDebugPixelShader(GorgonDebugLineVertex vertex) : SV_Target
+{
+	return float4(1, 0, 0, 1);
+}
+

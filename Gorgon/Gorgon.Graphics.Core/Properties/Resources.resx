@@ -548,4 +548,10 @@ This application will now exit.</value>
   <data name="GORGFX_ERR_NO_RENDER_TARGET" xml:space="preserve">
     <value>A render target is required, but not set.</value>
   </data>
+  <data name="GORGFX_TOSTR_AABB" xml:space="preserve">
+    <value>Axis Aligned Bounding Box.  Min: {0},{1},{2}, Max: {3}, {4}, {5}</value>
+  </data>
+  <data name="GORGFX_TOSTR_BOUNDING_SPHERE" xml:space="preserve">
+    <value>Bounding Sphere. Center: {0}, {1}, {2}, Radius: {3}</value>
+  </data>
 </root>

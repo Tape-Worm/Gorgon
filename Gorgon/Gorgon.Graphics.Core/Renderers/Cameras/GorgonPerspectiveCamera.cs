@@ -188,7 +188,7 @@ namespace Gorgon.Renderers.Cameras
             bool hasScale = (Changes & CameraChange.Scale) == CameraChange.Scale;
             bool hasRotation = (Changes & CameraChange.Rotation) == CameraChange.Rotation;
             bool hasTranslate = (Changes & CameraChange.Position) == CameraChange.Position;
-
+            
             if ((!hasScale) && (!hasRotation) && (!hasTranslate))
             {
                 return;
@@ -208,8 +208,6 @@ namespace Gorgon.Renderers.Cameras
             {
                 QuaternionFactory.CreateFromYawPitchRoll(_angleY.ToRadians(), _angleX.ToRadians(), _angleZ.ToRadians(), out Quaternion quat);
                 MatrixFactory.CreateFromQuaternion(in quat, out _rotation);
-                
-                // We need to invert the matrix in order to apply the correct transformation to the world data.
                 _rotation.Transpose(out _rotation);
                 Changes &= ~CameraChange.Rotation;
             }
@@ -217,7 +215,7 @@ namespace Gorgon.Renderers.Cameras
             // Translate it.
             if (hasTranslate)
             {
-                MatrixFactory.CreateTranslation(new Vector3(-_position.X, -_position.Y, _position.Z), out _translate);
+                MatrixFactory.CreateTranslation(new Vector3(-_position.X, -_position.Y, -_position.Z), out _translate);                
                 Changes &= ~CameraChange.Position;
             }
 

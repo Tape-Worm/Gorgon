@@ -85,8 +85,6 @@ namespace Gorgon.Examples
         private GorgonPerspectiveCamera _camera;
         // The rotation to apply to the cube, in degrees.
         private Vector3 _rotation;
-        // The speed of rotation.
-        private Vector3 _rotationSpeed = new Vector3(1, 1, 1);
         // The current time.
         private float _accumulator;
         // The timer used for updating the text block.
@@ -143,6 +141,10 @@ namespace Gorgon.Examples
 		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
 		private bool Idle()
         {
+            int jitter1 = GorgonRandom.RandomInt32(1, 3);
+            int jitter2 = GorgonRandom.RandomInt32(1, 3);
+            int jitter3 = GorgonRandom.RandomInt32(1, 3);
+
             if ((BlockFps.IsVisible) && (_timer.Milliseconds > 500))
             {
                 BlockFps.Text = $"FPS: {GorgonTiming.AverageFPS:0.0} Frame Delta: {GorgonTiming.AverageDelta * 1000: 0.0##} msec.";
@@ -162,9 +164,9 @@ namespace Gorgon.Examples
             while (_accumulator >= TargetDelta)
             {
                 // Spin the cube.
-                _rotation.X += GorgonRandom.RandomSingle(45, 90) * TargetDelta * (_rotationSpeed.X.FastSin());
-                _rotation.Y += GorgonRandom.RandomSingle(45, 90) * TargetDelta * (_rotationSpeed.Y.FastSin());
-                _rotation.Z += GorgonRandom.RandomSingle(45, 90) * TargetDelta * (_rotationSpeed.Z.FastSin());
+                _rotation.X += 25 * TargetDelta;
+                _rotation.Y += 25 * TargetDelta;
+                _rotation.Z += 25 * TargetDelta;
 
                 if (_rotation.X >= 360.0f)
                 {
@@ -181,33 +183,21 @@ namespace Gorgon.Examples
                     _rotation.Z -= 360.0f;
                 }
 
-                _rotationSpeed.X += TargetDelta / 6f;
-                _rotationSpeed.Y += TargetDelta / 6f;
-                _rotationSpeed.Z += TargetDelta / 6f;
-
-                if (_rotationSpeed.X > 6.28319f)
+                if (_drawCall == _drawCallPixel)
                 {
-                    _rotationSpeed.X = 0;
+                    _cube.RotateXYZ(((int)_rotation.X / jitter1) * jitter1,
+                                    ((int)_rotation.Y / jitter2) * jitter2,
+                                    ((int)_rotation.Z / jitter3) * jitter3);
                 }
-
-                if (_rotationSpeed.Y > 6.28319f)
+                else
                 {
-                    _rotationSpeed.Y = 0;
+                    _cube.RotateXYZ(_rotation.X, _rotation.Y, _rotation.Z);
                 }
-
-                if (_rotationSpeed.Z > 6.28319f)
-                {
-                    _rotationSpeed.Z = 0;
-                }
-
-                _cube.RotateXYZ(_rotation.X, _rotation.Y, _rotation.Z);
                 _accumulator -= TargetDelta;
             }
 
-            ref readonly Matrix4x4 matrix = ref _cube.WorldMatrix;
-
             // Send our world matrix to the constant buffer so the vertex shader can update the vertices.
-            UpdateWVP(in matrix);
+            UpdateWVP(in _cube.WorldMatrix);
 
             // And, as always, send the cube to the GPU for rendering.
             _graphics.Submit(_drawCall);
@@ -250,7 +240,7 @@ namespace Gorgon.Examples
             _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F((float)D3DImage.RenderSize.Width, (float)D3DImage.RenderSize.Height), 0.1f, 1000.0f, "GlassCube Camera")
             {
                 Fov = 60.0f,
-                Position = new Vector3(0.0f, 0, 1.5f)
+                Position = new Vector3(0.0f, 0, -1.5f)
             };
 
             _cube = new Cube(_graphics, _inputLayout);
