@@ -42,6 +42,11 @@ namespace Gorgon.Renderers.Data
     {
         #region Variables.
         /// <summary>
+        /// An empty instance of the Axis Aligned Bounding Box.
+        /// </summary>
+        public static readonly GorgonAABB Empty = default;
+
+        /// <summary>
         /// Property to set or return the minimum bounding area.
         /// </summary>
         public readonly Vector3 Min;
@@ -53,6 +58,11 @@ namespace Gorgon.Renderers.Data
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the center of the bounding box.
+        /// </summary>
+        public Vector3 Center => (Min + Max) * 0.5f;
+
         /// <summary>
         /// Property to return the left extent.
         /// </summary>
@@ -141,7 +151,7 @@ namespace Gorgon.Renderers.Data
         /// <summary>
         /// Property to return whether the AABB is empty or not.
         /// </summary>
-        public bool IsEmpty => (Width == 0) || (Height == 0) || (Depth == 0);
+        public bool IsEmpty => (Width.EqualsEpsilon(0)) && (Height.EqualsEpsilon(0)) && (Depth.EqualsEpsilon(0));
 
         /// <summary>
         /// Property to return each of the 8 corners for the AABB.
@@ -242,6 +252,44 @@ namespace Gorgon.Renderers.Data
             max.Z += a9.Max(b9);
 
             result = new GorgonAABB(min, max);
+        }
+
+        /// <summary>
+        /// Function to union two Axis Aligned Bounding Boxes together.
+        /// </summary>
+        /// <param name="aabb1">The first axis aligned bounding box.</param>
+        /// <param name="aabb2">The second axis aligned bounding box.</param>
+        /// <param name="result">The unioned axis aligned bounding box.</param>
+        public static void Union(in GorgonAABB aabb1, in GorgonAABB aabb2, out GorgonAABB result)
+        {
+            var min = new Vector3(aabb1.Min.X.Min(aabb2.Min.X), aabb1.Min.Y.Min(aabb2.Min.Y), aabb1.Min.Z.Min(aabb2.Min.Z));
+            var max = new Vector3(aabb1.Max.X.Max(aabb2.Max.X), aabb1.Max.Y.Max(aabb2.Max.Y), aabb1.Min.Z.Max(aabb2.Max.Z));
+            result = new GorgonAABB(min, max);
+        }
+
+        /// <summary>
+        /// Function to intersect two Axis Aligned Bounding Boxes.
+        /// </summary>
+        /// <param name="aabb1">The first axis aligned bounding box.</param>
+        /// <param name="aabb2">The second axis aligned bounding box.</param>
+        /// <param name="result">The intersection of both bounding boxes.</param>
+        public static void Intersect(in GorgonAABB aabb1, in GorgonAABB aabb2, out GorgonAABB result)
+        {
+            float left = aabb2.Left.Max(aabb1.Left);
+            float top = aabb2.Top.Max(aabb1.Top);
+            float front = aabb2.Front.Max(aabb1.Front);
+
+            float right = aabb2.Right.Min(aabb1.Right);
+            float bottom = aabb2.Bottom.Min(aabb1.Bottom);
+            float back = aabb2.Back.Min(aabb1.Back);
+
+            if ((right < left) || (bottom < top) || (back < front))
+            {
+                result = default;
+                return;
+            }
+            
+            result = new GorgonAABB(left, top, front, right, bottom, back);
         }
 
         /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>

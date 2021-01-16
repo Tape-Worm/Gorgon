@@ -144,7 +144,7 @@ cbuffer WorldViewProjection : register(b0)
 struct GlassCubeVertex
 {
    float4 position : SV_POSITION;
-   float2 uv : TEX_COORD;
+   float2 uv : TEXCOORD;
 };
 
 

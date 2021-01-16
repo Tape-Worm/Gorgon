@@ -29,6 +29,7 @@ using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples
 {
@@ -132,43 +133,43 @@ namespace Gorgon.Examples
         /// <param name="inputLayout">The input layout describing how a vertex is laid out.</param>
         public Cube(GorgonGraphics graphics, GorgonInputLayout inputLayout)
         {
-            GlassCubeVertex[] vertices =
+            GorgonVertexPosUv[] vertices =
             {
 			    // Front face.
-			    new GlassCubeVertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
-                new GlassCubeVertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
+			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
+                new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Right face.
-			    new GlassCubeVertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
-                new GlassCubeVertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
+			    new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(0, 0)),
+                new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Back face.
-			    new GlassCubeVertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
-                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
+			    new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Left face.
-			    new GlassCubeVertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
-                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
+			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Top face.
-			    new GlassCubeVertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
-                new GlassCubeVertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
+			    new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0, 0)),
+                new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(1.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(0.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1.0f, 0.0f)),
 
 			    // Bottom face.
-			    new GlassCubeVertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0, 0)),
-                new GlassCubeVertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
-                new GlassCubeVertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 0.0f))
+			    new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(0, 0)),
+                new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0.0f, 1.0f)),
+                new GorgonVertexPosUv(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(1.0f, 0.0f))
             };
 
             ushort[] indices =
@@ -183,7 +184,7 @@ namespace Gorgon.Examples
 
             // Create our index buffer and vertex buffer and populate with our cube data.
             using (var indexPtr = GorgonNativeBuffer<ushort>.Pin(indices))
-            using (var vertexPtr = GorgonNativeBuffer<GlassCubeVertex>.Pin(vertices))
+            using (var vertexPtr = GorgonNativeBuffer<GorgonVertexPosUv>.Pin(vertices))
             {
                 IndexBuffer = new GorgonIndexBuffer(graphics,
                                                     new GorgonIndexBufferInfo("GlassCube Index Buffer")
@@ -196,11 +197,11 @@ namespace Gorgon.Examples
 
                 VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
                 {
-                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GlassCubeVertex>(graphics,
+                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
                                                                        new GorgonVertexBufferInfo("GlassCube Vertex Buffer")
                                                                        {
                                                                            Usage = ResourceUsage.Immutable,
-                                                                           SizeInBytes = vertices.Length * GlassCubeVertex.SizeInBytes,                                                                           
+                                                                           SizeInBytes = vertices.Length * GorgonVertexPosUv.SizeInBytes,                                                                           
                                                                        },
                                                                        vertexPtr.ToSpan())
                 };

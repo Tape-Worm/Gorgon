@@ -26,6 +26,7 @@
 
 using System.Numerics;
 using Gorgon.Core;
+using Gorgon.Math;
 using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Renderers.Data
@@ -38,6 +39,11 @@ namespace Gorgon.Renderers.Data
     {
         #region Variables.
         /// <summary>
+        /// An empty instance of the bounding sphere.
+        /// </summary>
+        public static readonly GorgonBoundingSphere Empty = default;
+
+        /// <summary>
         /// The center of the sphere.
         /// </summary>
         public readonly Vector3 Center;
@@ -45,6 +51,13 @@ namespace Gorgon.Renderers.Data
         /// The radius of the sphere.
         /// </summary>
         public readonly float Radius;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return whether this bounding sphere is empty or not.
+        /// </summary>
+        public bool IsEmpty => Radius.EqualsEpsilon(0);
         #endregion
 
         #region Methods.
@@ -89,7 +102,7 @@ namespace Gorgon.Renderers.Data
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if both instances are not equal, <b>false</b> if they are.</returns>
         public static bool operator !=(in GorgonBoundingSphere left, in GorgonBoundingSphere right) => !left.Equals(in right);
-
+        
         /// <summary>Deconstructs this instance.</summary>
         /// <param name="center">The center of the sphere.</param>
         /// <param name="radius">The radius of the sphere.</param>

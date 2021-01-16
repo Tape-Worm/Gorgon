@@ -12,6 +12,7 @@ using Gorgon.Timing;
 using Gorgon.Graphics.Wpf;
 using Gorgon.Core;
 using Gorgon.Renderers.Cameras;
+using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples
 {
@@ -227,7 +228,7 @@ namespace Gorgon.Examples
             _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Properties.Resources.GlassCubeShaders, "GlassCubePS");
 
             // Create the input layout for a cube vertex.
-            _inputLayout = GorgonInputLayout.CreateUsingType<GlassCubeVertex>(_graphics, _vertexShader);
+            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
 
             // We use this as our initial world transform.
             // Since it's an identity, it will put the cube in the default orientation defined by the vertices.

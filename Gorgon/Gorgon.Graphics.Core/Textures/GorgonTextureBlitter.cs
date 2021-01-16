@@ -33,6 +33,7 @@ using Gorgon.Math;
 using DX = SharpDX;
 using System.Runtime.CompilerServices;
 using Gorgon.Renderers.Cameras;
+using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Graphics
 {
@@ -46,7 +47,7 @@ namespace Gorgon.Graphics
         // The graphics interface that owns this instance.
         private readonly GorgonGraphics _graphics;
         // The vertices used to blit the texture.
-        private readonly BltVertex[] _vertices = new BltVertex[4];
+        private readonly GorgonVertexPosColorUv[] _vertices = new GorgonVertexPosColorUv[4];
         // The default vertex shader for blitting the texture.
         private GorgonVertexShader _blitVertexShader;
         // The default pixel shader for blitting the texture.
@@ -130,14 +131,14 @@ namespace Gorgon.Graphics
                                                                                 "GorgonFullScreenPixelShader",
                                                                                 GorgonGraphics.IsDebugEnabled);
 
-                _inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _blitVertexShader);
+                _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosColorUv>(_graphics, _blitVertexShader);
 
                 _vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
                 {
-                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<BltVertex>(_graphics, new GorgonVertexBufferInfo("Gorgon Blitter Vertex Buffer")
+                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosColorUv>(_graphics, new GorgonVertexBufferInfo("Gorgon Blitter Vertex Buffer")
                     {
                         Binding = VertexIndexBufferBinding.None,
-                        SizeInBytes = BltVertex.Size * 4,
+                        SizeInBytes = GorgonVertexPosColorUv.SizeInBytes * 4,
                         Usage = ResourceUsage.Dynamic
                     })
                 };
@@ -446,33 +447,33 @@ namespace Gorgon.Graphics
             DX.RectangleF region = texture.Texture.ToTexel(sourceRegion ?? new DX.Rectangle(0, 0, texture.Width, texture.Height));
 
             // Update the vertices.
-            _vertices[0] = new BltVertex
+            _vertices[0] = new GorgonVertexPosColorUv
             {
                 Position = new Vector4(destRect.X, destRect.Y, 0, 1.0f),
-                Uv = new Vector2(region.Left, region.Top),
+                UV = new Vector2(region.Left, region.Top),
                 Color = actualColor
             };
-            _vertices[1] = new BltVertex
+            _vertices[1] = new GorgonVertexPosColorUv
             {
                 Position = new Vector4(destRect.Right, destRect.Y, 0, 1.0f),
-                Uv = new Vector2(region.Right, region.Top),
+                UV = new Vector2(region.Right, region.Top),
                 Color = actualColor
             };
-            _vertices[2] = new BltVertex
+            _vertices[2] = new GorgonVertexPosColorUv
             {
                 Position = new Vector4(destRect.X, destRect.Bottom, 0, 1.0f),
-                Uv = new Vector2(region.Left, region.Bottom),
+                UV = new Vector2(region.Left, region.Bottom),
                 Color = actualColor
             };
-            _vertices[3] = new BltVertex
+            _vertices[3] = new GorgonVertexPosColorUv
             {
                 Position = new Vector4(destRect.Right, destRect.Bottom, 0, 1.0f),
-                Uv = new Vector2(region.Right, region.Bottom),
+                UV = new Vector2(region.Right, region.Bottom),
                 Color = actualColor
             };
 
             // Copy to the vertex buffer.
-            _vertexBufferBindings[0].VertexBuffer.SetData<BltVertex>(_vertices);
+            _vertexBufferBindings[0].VertexBuffer.SetData<GorgonVertexPosColorUv>(_vertices);
             _graphics.Submit(_blitDraw);
         }
 
