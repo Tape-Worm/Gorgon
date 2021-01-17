@@ -582,6 +582,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The query &apos;{0}&apos; has not been initialized..
+        /// </summary>
+        internal static string GORGFX_ERR_QUERY_NOT_INITIALIZED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_QUERY_NOT_INITIALIZED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This texture type cannot be used as a render target..
         /// </summary>
         internal static string GORGFX_ERR_RENDER_TARGET_NOT_SUPPORTED {
@@ -1298,6 +1307,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Timestamp Frequency: {0}, Is Disjointed: {1}.
+        /// </summary>
+        internal static string GORGFX_TOSTR_TIMESTAMP_DISJOINT {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_TIMESTAMP_DISJOINT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unordered access view binding.  Offset: {0}, ReadWriteView Resource: {1}.
         /// </summary>
         internal static string GORGFX_TOSTR_UAV_BINDING {
@@ -1344,8 +1362,10 @@ namespace Gorgon.Graphics.Core.Properties {
         ///	float2 uv : TEXCOORD;
         ///};
         ///
-        ///// The transformation matrices (for vertex shader).
-        ///cbuffer GorgonBltWorldViewProjecti [rest of string was truncated]&quot;;.
+        ///// A vertex for drawing debug lines.
+        ///struct GorgonDebugLineVertex
+        ///{
+        ///	float4 position [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

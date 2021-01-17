@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;

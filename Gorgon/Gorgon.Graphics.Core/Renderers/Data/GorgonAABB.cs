@@ -29,7 +29,6 @@ using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Graphics.Core.Properties;
-using System.Diagnostics;
 
 namespace Gorgon.Renderers.Data
 {

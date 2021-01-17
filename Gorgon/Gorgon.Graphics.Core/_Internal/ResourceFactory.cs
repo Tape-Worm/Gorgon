@@ -26,8 +26,6 @@
 
 using System;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
-using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Graphics.Imaging;
 
@@ -38,6 +36,18 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     internal static class ResourceFactory
     {
+        /// <summary>
+        /// Function to create a Direct 3D Query.
+        /// </summary>
+        /// <param name="device">The Direct 3D device used to create the query.</param>
+        /// <param name="name">The name of the query.</param>
+        /// <param name="desc">The description of the query.</param>
+        /// <returns>A new Direct 3D query.</returns>
+        public static D3D11.Query CreateQuery(D3D11.Device5 device, string name, in D3D11.QueryDescription desc) => new D3D11.Query(device, desc)
+        {
+            DebugName = name
+        };
+
         /// <summary>
         /// Function to create a Direct 3D buffer.
         /// </summary>

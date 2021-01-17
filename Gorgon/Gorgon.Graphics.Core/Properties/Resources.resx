@@ -554,4 +554,10 @@ This application will now exit.</value>
   <data name="GORGFX_TOSTR_BOUNDING_SPHERE" xml:space="preserve">
     <value>Bounding Sphere. Center: {0}, {1}, {2}, Radius: {3}</value>
   </data>
+  <data name="GORGFX_ERR_QUERY_NOT_INITIALIZED" xml:space="preserve">
+    <value>The query '{0}' has not been initialized.</value>
+  </data>
+  <data name="GORGFX_TOSTR_TIMESTAMP_DISJOINT" xml:space="preserve">
+    <value>Timestamp Frequency: {0}, Is Disjointed: {1}</value>
+  </data>
 </root>
