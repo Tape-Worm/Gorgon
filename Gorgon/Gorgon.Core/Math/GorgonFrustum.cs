@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Collections;
 
-namespace Gorgon.Renderers.Data
+namespace Gorgon.Math
 {
     /// <summary>
     /// The identifiers for the frustum planes.
@@ -100,25 +100,6 @@ namespace Gorgon.Renderers.Data
         /// Bottom left far corner.
         /// </summary>
         BottomLeftFar = 7
-    }
-
-    /// <summary>
-    /// A result indicating whether a bounding area is completely inside the view, partially inside, or not at all in the view.
-    /// </summary>
-    public enum IntersectionResult
-    {
-        /// <summary>
-        /// Area is outside of the view.
-        /// </summary>
-        Outside = 0,
-        /// <summary>
-        /// Area is completely within the view.
-        /// </summary>
-        Full = 1,
-        /// <summary>
-        /// Area is partially inside the view.
-        /// </summary>
-        Partial = 2
     }
 
     /// <summary>

@@ -26,10 +26,9 @@
 
 using System.Numerics;
 using Gorgon.Core;
-using Gorgon.Math;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Properties;
 
-namespace Gorgon.Renderers.Data
+namespace Gorgon.Math
 {
     /// <summary>
     /// A bounding sphere used to determine the extent of an object in spherical space.
@@ -63,7 +62,7 @@ namespace Gorgon.Renderers.Data
         #region Methods.
         /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
-        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_BOUNDING_SPHERE, Center.X, Center.Y, Center.Z, Radius);
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_BOUNDING_SPHERE, Center.X, Center.Y, Center.Z, Radius);
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>

@@ -203,24 +203,7 @@ namespace Gorgon.Renderers.Cameras
                 Changes &= ~CameraChange.Position;
             }
 
-            // Combine.
-            Matrix4x4 temp;
-
-            if (hasRotation)
-            {
-                _rotation.Multiply(in _scale, out temp);
-            }
-            else
-            {
-                temp = _scale;
-            }
-
-            if (!hasTranslate)
-            {
-                viewMatrix = temp;
-                return;
-            }
-
+            _rotation.Multiply(in _scale, out Matrix4x4 temp);
             _translate.Multiply(in temp, out viewMatrix);
         }
         #endregion

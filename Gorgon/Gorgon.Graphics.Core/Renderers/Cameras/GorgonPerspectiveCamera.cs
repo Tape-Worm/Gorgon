@@ -51,20 +51,12 @@ namespace Gorgon.Renderers.Cameras
         #region Variables.
         // The rotation matrix.
         private Matrix4x4 _rotation = Matrix4x4.Identity;
-        // The scaling matrix.
-        private Matrix4x4 _scale = Matrix4x4.Identity;
         // The translation matrix.
         private Matrix4x4 _translate = Matrix4x4.Identity;
         // The position of the camera.
         private Vector3 _position;
-        // Scale.
-        private Vector3 _zoom = new Vector3(1.0f);
-        // Angle of rotation on the X axis.
-        private float _angleX;
-        // Angle of rotation on the Y axis.
-        private float _angleY;
-        // Angle of rotation on the Z axis.
-        private float _angleZ;
+        // The quaternion representing the rotation of the camera.
+        private Quaternion _rotationQuat;
         // The field of view for the camera.
         private float _fov = 75.0f;
         #endregion
@@ -107,74 +99,20 @@ namespace Gorgon.Renderers.Cameras
         }
 
         /// <summary>
-        /// Property to set or return the pitch in degrees.
+        /// Property to set or return the quaternion used for rotation.
         /// </summary>
-        public float PitchAngle
+        public Quaternion Rotation
         {
-            get => _angleX;
+            get => _rotationQuat;
             set
             {
-                if (_angleX == value)
+                if (value == _rotationQuat)
                 {
                     return;
                 }
 
-                _angleX = value;
+                _rotationQuat = value;
                 Changes |= CameraChange.View | CameraChange.Rotation;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the yaw in degrees.
-        /// </summary>
-        public float YawAngle
-        {
-            get => _angleY;
-            set
-            {
-                if (_angleY == value)
-                {
-                    return;
-                }
-
-                _angleY = value;
-                Changes |= CameraChange.View | CameraChange.Rotation;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the roll in degrees.
-        /// </summary>
-        public float RollAngle
-        {
-            get => _angleZ;
-            set
-            {
-                if (_angleZ == value)
-                {
-                    return;
-                }
-
-                _angleZ = value;
-                Changes |= CameraChange.View | CameraChange.Rotation;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the zoom for the camera.
-        /// </summary>
-        public Vector3 Zoom
-        {
-            get => _zoom;
-            set
-            {
-                if (value == _zoom)
-                {
-                    return;
-                }
-
-                _zoom = value;
-                Changes |= CameraChange.View | CameraChange.Scale;
             }
         }
         #endregion
@@ -185,29 +123,18 @@ namespace Gorgon.Renderers.Cameras
         /// </summary>
         protected override void UpdateViewMatrix(ref Matrix4x4 viewMatrix)
         {            
-            bool hasScale = (Changes & CameraChange.Scale) == CameraChange.Scale;
             bool hasRotation = (Changes & CameraChange.Rotation) == CameraChange.Rotation;
             bool hasTranslate = (Changes & CameraChange.Position) == CameraChange.Position;
             
-            if ((!hasScale) && (!hasRotation) && (!hasTranslate))
+            if ((!hasRotation) && (!hasTranslate))
             {
                 return;
             }
 
-            // Scale it.
-            if (hasScale)                
-            {
-                _scale.M11 = _zoom.X;
-                _scale.M22 = _zoom.Y;
-                _scale.M33 = _zoom.Z;
-                Changes &= ~CameraChange.Scale;
-            }
-
             // Rotate it.
             if (hasRotation)
-            {
-                QuaternionFactory.CreateFromYawPitchRoll(_angleY.ToRadians(), _angleX.ToRadians(), _angleZ.ToRadians(), out Quaternion quat);
-                MatrixFactory.CreateFromQuaternion(in quat, out _rotation);
+            {                
+                MatrixFactory.CreateFromQuaternion(in _rotationQuat, out _rotation);
                 _rotation.Transpose(out _rotation);
                 Changes &= ~CameraChange.Rotation;
             }
@@ -219,31 +146,68 @@ namespace Gorgon.Renderers.Cameras
                 Changes &= ~CameraChange.Position;
             }
 
-            // Combine.
-            Matrix4x4 temp;
-
-            if (hasRotation)
-            {
-                _rotation.Multiply(in _scale, out temp);
-            }
-            else
-            {
-                temp = _scale;
-            }
-
-            if (!hasTranslate)
-            {
-                viewMatrix = temp;
-                return;
-            }
-
-            _translate.Multiply(in temp, out viewMatrix);
+            _translate.Multiply(in _rotation, out viewMatrix);
         }
 
         /// <summary>Function to update the projection matrix.</summary>
         /// <param name="projectionMatrix">The instance of the matrix to update.</param>
         protected override void UpdateProjectionMatrix(ref Matrix4x4 projectionMatrix) 
             => MatrixFactory.CreatePerspectiveFovLH(_fov.ToRadians(), (float)TargetWidth / TargetHeight, MinimumDepth, MaximumDepth, out projectionMatrix);
+
+        /// <summary>
+        /// Function to rotate the camera using euler angles.
+        /// </summary>
+        /// <param name="yaw">The yaw of the camera, in degrees.</param>
+        /// <param name="pitch">The pitch of the camera, in degrees.</param>
+        /// <param name="roll">The roll of the camera, in degrees.</param>
+        public void RotateEuler(float yaw, float pitch, float roll)
+        {
+            QuaternionFactory.CreateFromYawPitchRoll(yaw.ToRadians(), pitch.ToRadians(), roll.ToRadians(), out _rotationQuat);
+            Changes |= CameraChange.View | CameraChange.Rotation;
+        }
+
+        /// <summary>
+        /// Function to rotate the camera around the specified axes.
+        /// </summary>
+        /// <param name="axis">The axes to rotate around.</param>
+        /// <param name="angle">The angle of rotation, in degrees.</param>
+        public void RotateAxis(in Vector3 axis, float angle)
+        {            
+            QuaternionFactory.CreateFromAxisAngle(in axis, angle.ToRadians(), out _rotationQuat);
+            _rotationQuat = Quaternion.Conjugate(_rotationQuat);
+            Changes |= CameraChange.View | CameraChange.Rotation;
+        }
+
+        /// <summary>
+        /// Function to set the camera rotation using a rotation matrix.
+        /// </summary>
+        /// <param name="rotation">The matrix used for rotation.</param>
+        public void AssignRotationMatrix(in Matrix4x4 rotation)
+        {
+            QuaternionFactory.CreateFromRotationMatrix(in rotation, out _rotationQuat);
+            _rotationQuat = Quaternion.Conjugate(_rotationQuat);
+            Changes |= CameraChange.View | CameraChange.Rotation;
+        }
+
+        /// <summary>
+        /// Function to point the camera at a point in space.
+        /// </summary>
+        /// <param name="target">The point in space to look at.</param>
+        /// <param name="upVector">[Optional] The up vector for the camera.</param>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="upVector"/> parameter is <b>null</b>, then a default positive unit vector is used on the Y axis (0, 1, 0).
+        /// </para>
+        /// </remarks>
+        public void LookAt(in Vector3 target, in Vector3? upVector = null)
+        {
+            Vector3 up = upVector ?? Vector3.UnitY;
+
+            MatrixFactory.CreateLookAtLH(in _position, in target, in up, out Matrix4x4 tempMatrix);
+            tempMatrix.CreateQuaternion(out _rotationQuat);
+            _rotationQuat = Quaternion.Conjugate(_rotationQuat);
+            Changes |= CameraChange.View | CameraChange.Rotation;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -256,7 +220,7 @@ namespace Gorgon.Renderers.Cameras
         /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
         /// <param name="name">[Optional] The name of the camera.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-        public GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.0f, float maximumDepth = 1.0f, string name = null)
+        public GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
             : base(graphics, viewDimensions, minDepth, maximumDepth, name)
         {
         }

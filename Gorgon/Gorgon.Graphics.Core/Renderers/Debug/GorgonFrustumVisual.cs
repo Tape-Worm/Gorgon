@@ -30,6 +30,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Data;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
 
 namespace Gorgon.Renderers.Debug
 {

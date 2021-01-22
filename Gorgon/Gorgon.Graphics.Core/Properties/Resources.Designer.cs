@@ -1253,24 +1253,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Axis Aligned Bounding Box.  Min: {0},{1},{2}, Max: {3}, {4}, {5}.
-        /// </summary>
-        internal static string GORGFX_TOSTR_AABB {
-            get {
-                return ResourceManager.GetString("GORGFX_TOSTR_AABB", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Bounding Sphere. Center: {0}, {1}, {2}, Radius: {3}.
-        /// </summary>
-        internal static string GORGFX_TOSTR_BOUNDING_SPHERE {
-            get {
-                return ResourceManager.GetString("GORGFX_TOSTR_BOUNDING_SPHERE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Multisampling count: {0}, quality: {1}..
         /// </summary>
         internal static string GORGFX_TOSTR_MULTISAMPLEINFO {

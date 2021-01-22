@@ -28,9 +28,9 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Math;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Properties;
 
-namespace Gorgon.Renderers.Data
+namespace Gorgon.Math
 {
     /// <summary>
     /// An axis-aligned bounding box used to determine the extents of a volume.
@@ -293,7 +293,7 @@ namespace Gorgon.Renderers.Data
 
         /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
-        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_AABB, Min.X, Min.Y, Min.Z, Max.X, Max.Y, Max.Z);
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_AABB, Min.X, Min.Y, Min.Z, Max.X, Max.Y, Max.Z);
 
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
