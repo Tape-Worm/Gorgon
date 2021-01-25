@@ -8,10 +8,10 @@ name: 3.1.$(Rev:r).$(DayOfYear)
 trigger:
   branches:
     include:
-      - develop
+      - v3_2
 
 jobs:
-  - job: 'develop'
+  - job: 'v3_2'
     pool:
       vmImage: 'windows-2019'
 
@@ -162,18 +162,3 @@ jobs:
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: develop_drop
-
-# Index sources and publish symbols
-# Index your source code and publish symbols to a file share or Azure Artifacts symbol server
-      - task: PublishSymbols@2
-        inputs:
-          SymbolsFolder: '$(Build.SourcesDirectory)'
-          SearchPattern: |              
-              **/bin/**/Gorgon*.pdb
-              !**/Examples/**
-          IndexSources: true
-          PublishSymbols: true
-          SymbolServerType: 'teamServices'                    
-          DetailedLog: true
-          TreatNotIndexedAsWarning: false
-          SymbolsArtifactName: 'Gorgon_Symbols_$(BuildConfiguration)'
