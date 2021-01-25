@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Linq;
@@ -102,7 +101,7 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="fontInfo">The information used to generate the font.</param>
         /// <param name="externalFonts">The external fonts provided by an application.</param>
         /// <returns>A new <see cref="GdiFontData"/> object.</returns>
-        public static GdiFontData GetFontData(System.Drawing.Graphics graphics, IGorgonFontInfo fontInfo, IEnumerable<PrivateFontCollection> externalFonts)
+        public static GdiFontData GetFontData(System.Drawing.Graphics graphics, IGorgonFontInfo fontInfo, PrivateFontCollection externalFonts)
         {
             var result = new GdiFontData();
 
@@ -125,8 +124,8 @@ namespace Gorgon.Graphics.Fonts
                     break;
             }
 
-            FontFamily fontFamily = (externalFonts != null ? (externalFonts.SelectMany(item => item.Families).Concat(FontFamily.Families)) : FontFamily.Families)
-                .FirstOrDefault(item => string.Equals(fontInfo.FontFamilyName, item.Name, StringComparison.InvariantCultureIgnoreCase));
+            FontFamily fontFamily = (externalFonts != null ? externalFonts.Families.Concat(FontFamily.Families) : FontFamily.Families)
+                                    .FirstOrDefault(item => string.Equals(fontInfo.FontFamilyName, item.Name, StringComparison.InvariantCultureIgnoreCase));
 
             // If we cannot locate the font family by name, then fall back.
             if (fontFamily == null)

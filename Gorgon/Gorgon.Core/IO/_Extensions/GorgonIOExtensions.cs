@@ -32,6 +32,7 @@ using System.Linq;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Math;
+using Gorgon.Memory;
 using Gorgon.Properties;
 
 namespace Gorgon.IO
@@ -67,7 +68,8 @@ namespace Gorgon.IO
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            byte[] readBuffer = ArrayPool<byte>.Shared.Rent(buffer.Length);
+            ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
+            byte[] readBuffer = pool.Rent(buffer.Length);
             
             try
             {
@@ -80,7 +82,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(readBuffer);
+                pool.Return(readBuffer);
             }
         }
 
@@ -97,7 +99,8 @@ namespace Gorgon.IO
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(buffer.Length);
+            ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
+            byte[] writeBuffer = pool.Rent(buffer.Length);
 
             try
             {
@@ -106,7 +109,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(writeBuffer);
+                pool.Return(writeBuffer);
             }
         }
 
@@ -139,7 +142,7 @@ namespace Gorgon.IO
                 return 0;
             }
 
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            byte[] buffer = GorgonArrayPool<byte>.SharedTiny.Rent(bufferSize);
 
             try
             {
@@ -147,7 +150,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(buffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(buffer);
             }
         }
 
@@ -422,8 +425,8 @@ namespace Gorgon.IO
             // Find the number of bytes required for 4096 characters.
             int maxByteCount = encoding.GetMaxByteCount(4096);
             int maxCharCount = encoding.GetMaxCharCount(maxByteCount);
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(maxByteCount);
-            char[] charBuffer = ArrayPool<char>.Shared.Rent(maxCharCount);
+            byte[] buffer = GorgonArrayPool<byte>.SharedTiny.Rent(maxByteCount);
+            char[] charBuffer = GorgonArrayPool<char>.SharedTiny.Rent(maxCharCount);
 
             try
             {
@@ -467,8 +470,8 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(buffer);
-                ArrayPool<char>.Shared.Return(charBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(buffer);
+                GorgonArrayPool<char>.SharedTiny.Return(charBuffer);
             }
         }
 

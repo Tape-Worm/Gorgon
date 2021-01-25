@@ -34,6 +34,7 @@ using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.Input.Properties;
+using Gorgon.Memory;
 
 namespace Gorgon.Native
 {
@@ -472,7 +473,8 @@ namespace Gorgon.Native
                     return Array.Empty<RAWINPUTDEVICELIST>();
                 }
 
-                RAWINPUTDEVICELIST[] deviceList = ArrayPool<RAWINPUTDEVICELIST>.Shared.Rent(deviceCount);
+                ArrayPool<RAWINPUTDEVICELIST> pool = GorgonArrayPool<RAWINPUTDEVICELIST>.GetBestPool(deviceCount);
+                RAWINPUTDEVICELIST[] deviceList = pool.Rent(deviceCount);
 
                 try
                 {
@@ -489,7 +491,7 @@ namespace Gorgon.Native
                 }
                 finally
                 {
-                    ArrayPool<RAWINPUTDEVICELIST>.Shared.Return(deviceList);
+                    pool.Return(deviceList);
                 }
             }
         }

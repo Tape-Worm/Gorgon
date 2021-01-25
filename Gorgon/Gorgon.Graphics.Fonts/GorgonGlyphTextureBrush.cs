@@ -27,7 +27,6 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Threading;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
@@ -84,11 +83,6 @@ namespace Gorgon.Graphics.Fonts
     public class GorgonGlyphTextureBrush
         : GorgonGlyphBrush, IDisposable
     {
-        #region Variables.
-        // The image used for the texture brush.
-        private IGorgonImage _image;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the type of brush.
@@ -121,8 +115,8 @@ namespace Gorgon.Graphics.Fonts
         /// </summary>
         public IGorgonImage Image
         {
-            get => _image;
-            private set => _image = value;
+            get;
+            private set;
         }
         #endregion
 
@@ -182,13 +176,23 @@ namespace Gorgon.Graphics.Fonts
             }
 
             Bitmap brushBitmap = null;
+            IGorgonImage image = Image;
 
             try
             {
                 // Clone the image data and convert it into a GDI+ compatible bitmap so we can use it as a brush.
-                brushBitmap = Image.Buffers[0].ToBitmap();
+                if (image.FormatInfo.IsCompressed)
+                {
+                    // If the image data is compressed, convert it back into standard 32 bit RGBA format, GDI+ doesn't 
+                    // work with block compression.
+                    image = Image.Clone()
+                                 .Decompress()
+                                 .EndUpdate();
+                }
 
-                var textureRect = new RectangleF(0, 0, Image.Width, Image.Height);
+                brushBitmap = image.Buffers[0].ToBitmap();
+
+                var textureRect = new RectangleF(0, 0, image.Width, image.Height);
                 var imageRect = new RectangleF(TextureRegion.X * textureRect.Width,
                                                TextureRegion.Y * textureRect.Height,
                                                TextureRegion.Width * textureRect.Width,
@@ -208,25 +212,24 @@ namespace Gorgon.Graphics.Fonts
             }
             finally
             {
+                if (image != Image)
+                {
+                    image.Dispose();
+                }
                 brushBitmap?.Dispose();
             }
         }
 
         /// <summary>Function to clone an object.</summary>
         /// <returns>The cloned object.</returns>
-        public override GorgonGlyphBrush Clone() => new GorgonGlyphTextureBrush(Image)
-        {
+        public override GorgonGlyphBrush Clone() => new GorgonGlyphTextureBrush(Image) // The image is cloned in the constructor.
+        {            
             WrapMode = WrapMode,
             TextureRegion = TextureRegion
         };
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            IGorgonImage image = Interlocked.Exchange(ref _image, null);
-            image?.Dispose();
-        }
-
+        public void Dispose() => Image?.Dispose();
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -260,7 +263,7 @@ namespace Gorgon.Graphics.Fonts
         #endregion
 
         #region Constructor
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Graphics.Fonts.GorgonGlyphTextureBrush"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="GorgonGlyphTextureBrush"/> class.</summary>
         internal GorgonGlyphTextureBrush() => TextureRegion = new DX.RectangleF(0, 0, 1, 1);
 
         /// <summary>
@@ -269,7 +272,8 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="textureImage">The image to use as a texture.</param>
         /// <remarks>
         /// <para>
-        /// The image format for the brush must be R8G8B8A8_UNorm, R8G8B8A8_UNorm_SRgb, B8G8R8A8_UNorm, or B8G8R8A8_UNorm_SRgb and must be a 2D image.
+        /// The image format for the brush must be <see cref="BufferFormat.R8G8B8A8_UNorm"/>, <see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/>, <see cref="BufferFormat.B8G8R8A8_UNorm"/>, 
+        /// <see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/>, or one of the compressed formats (e.g. BC3, BC7, etc..) and must be a 2D image.
         /// </para>
         /// <para>
         /// A copy of the <paramref name="textureImage"/> is stored in this object instead of a direct reference to the original image.
@@ -287,7 +291,8 @@ namespace Gorgon.Graphics.Fonts
             if ((textureImage.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
                 && (textureImage.Format != BufferFormat.R8G8B8A8_UNorm)
                 && (textureImage.Format != BufferFormat.B8G8R8A8_UNorm)
-                && (textureImage.Format != BufferFormat.B8G8R8A8_UNorm_SRgb))
+                && (textureImage.Format != BufferFormat.B8G8R8A8_UNorm_SRgb)
+                && (!textureImage.FormatInfo.IsCompressed))
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, textureImage.Format), nameof(textureImage));
             }

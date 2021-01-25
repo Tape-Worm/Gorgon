@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj" />
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

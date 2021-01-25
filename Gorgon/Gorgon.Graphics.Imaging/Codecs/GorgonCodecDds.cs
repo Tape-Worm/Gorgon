@@ -112,6 +112,7 @@ using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Memory;
 using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -700,7 +701,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 if (((srcFormat == DdsConversionFlags.Palette) || (srcFormat == DdsConversionFlags.A8P8)) && ((palette == null) || (actualPalette.Length != 256)))
                 {
                     // Create an empty palette if we didn't supply one.
-                    actualPalette = ArrayPool<uint>.Shared.Rent(256);
+                    actualPalette = GorgonArrayPool<uint>.SharedTiny.Rent(256);
                 }
 
                 unsafe
@@ -854,7 +855,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }
             finally
             {
-                ArrayPool<uint>.Shared.Return(actualPalette);
+                GorgonArrayPool<uint>.SharedTiny.Return(actualPalette);
             }
         }
 

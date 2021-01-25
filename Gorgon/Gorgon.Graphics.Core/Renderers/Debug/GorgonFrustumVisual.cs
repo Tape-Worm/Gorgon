@@ -27,7 +27,6 @@
 using System;
 using System.Numerics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers.Data;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;

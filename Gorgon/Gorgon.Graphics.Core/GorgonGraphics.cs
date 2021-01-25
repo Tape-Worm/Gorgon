@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -33,6 +32,7 @@ using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Memory;
 using Gorgon.Native;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
@@ -735,7 +735,7 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencil2DView depthStencil = null)
         {
-            GorgonRenderTargetView[] renderTargets = ArrayPool<GorgonRenderTargetView>.Shared.Rent(1);
+            GorgonRenderTargetView[] renderTargets = GorgonArrayPool<GorgonRenderTargetView>.SharedTiny.Rent(1);
 
             try
             {
@@ -744,7 +744,7 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                ArrayPool<GorgonRenderTargetView>.Shared.Return(renderTargets);
+                GorgonArrayPool<GorgonRenderTargetView>.SharedTiny.Return(renderTargets);
             }
         }
 
@@ -839,7 +839,7 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetScissorRect(DX.Rectangle rect)
         {
-            DX.Rectangle[] rects = ArrayPool<DX.Rectangle>.Shared.Rent(1);
+            DX.Rectangle[] rects = GorgonArrayPool<DX.Rectangle>.SharedTiny.Rent(1);
 
             try
             {
@@ -848,7 +848,7 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                ArrayPool<DX.Rectangle>.Shared.Return(rects);
+                GorgonArrayPool<DX.Rectangle>.SharedTiny.Return(rects);
             }
         }
 
@@ -894,7 +894,7 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetViewport(DX.ViewportF viewport)
         {
-            DX.ViewportF[] viewports = ArrayPool<DX.ViewportF>.Shared.Rent(1);
+            DX.ViewportF[] viewports = GorgonArrayPool<DX.ViewportF>.SharedTiny.Rent(1);
 
             try
             {
@@ -903,7 +903,7 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                ArrayPool<DX.ViewportF>.Shared.Return(viewports);
+                GorgonArrayPool<DX.ViewportF>.SharedTiny.Return(viewports);
             }
         }
 

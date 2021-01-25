@@ -25,13 +25,13 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
+using Gorgon.Memory;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
@@ -375,7 +375,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
+            RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
 
             try
             {
@@ -388,7 +388,7 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                ArrayPool<RawRectangle>.Shared.Return(clearRects);
+                GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects);
             }
         }
 

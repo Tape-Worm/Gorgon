@@ -25,16 +25,19 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -260,7 +263,7 @@ namespace Gorgon.Graphics.Fonts
             {
 
                 return ((_fontCache.TryGetValue(fontInfo.Name, out GorgonFont result))
-                        && (!IsFontDifferent(fontInfo, result.Info)));
+                        && (!IsFontDifferent(fontInfo, result)));
             }
         }
 
@@ -311,15 +314,25 @@ namespace Gorgon.Graphics.Fonts
 
             var currentFonts = new HashSet<string>(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
 
-            byte[] data = new byte[size.Value];
-            stream.Read(data, 0, data.Length);            
+            byte[] data = null;
+            ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(size.Value);
 
-            unsafe
+            try
             {
-                fixed (byte* ptr = data)
-                {                    
-                    _externalFonts.AddMemoryFont(new IntPtr(ptr), data.Length);
+                data = pool.Rent(size.Value);
+                stream.Read(data, 0, size.Value);
+
+                unsafe
+                {
+                    fixed (byte* ptr = data)
+                    {
+                        _externalFonts.AddMemoryFont(new IntPtr(ptr), size.Value);
+                    }
                 }
+            }
+            finally
+            {
+                pool.Return(data);
             }
 
             return GetExternalFontFamily(currentFonts);
@@ -394,10 +407,9 @@ namespace Gorgon.Graphics.Fonts
 
             lock (_syncLock)
             {
-
                 // Check the cache for a font with the same name.
                 if ((_fontCache.TryGetValue(fontInfo.Name, out GorgonFont result))
-                    && (!IsFontDifferent(fontInfo, result.Info)))
+                    && (!IsFontDifferent(fontInfo, result)))
                 {
                     return result;
                 }
@@ -426,15 +438,86 @@ namespace Gorgon.Graphics.Fonts
                     throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Convert.ToInt32(fontInfo.DefaultCharacter)));
                 }
 
-                // Destroy the previous font if one exists with the same name.
-                result?.Dispose();
-
                 // If not found, then create a new font and cache it.
                 _fontCache[fontInfo.Name] = result = new GorgonFont(fontInfo.Name, this, fontInfo);
-                result.GenerateFont(new[] { _externalFonts });
+                result.GenerateFont(_externalFonts);
 
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Function to asynchronously return or create a new <see cref="GorgonFont"/>.
+        /// </summary>
+        /// <param name="fontInfo">The information used to create the font.</param>
+        /// <returns>A new or existing <see cref="GorgonFont"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> or 
+        /// <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown if the <see cref="IGorgonFontInfo.Characters"/> list does not contain the <see cref="IGorgonFontInfo.DefaultCharacter"/> character.</para>
+        /// <para>-or-</para>
+        /// <para>A font with the same name was already created by the factory, but does not have the same parameters.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to display text (or symbols) on the screen.  
+        /// Kerning information (the proper spacing for a glyph), advances, etc... are all included for the glyphs with font.
+        /// </para>
+        /// <para>
+        /// The <see cref="IGorgonNamedObject.Name"/> value on the <paramref name="fontInfo"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the
+        /// font family name in the <paramref name="fontInfo"/> parameter, however it is best practice to indicate the font family name in the name for ease of use. By default, this parameter is set to the
+        /// font family, height and unit of measure.
+        /// </para>
+        /// <para>
+        /// If a font with the same name was previously created by this factory, then that font will be returned if the <paramref name="fontInfo"/> is the same as the cached version. If the font was not 
+        /// found by its name, then a new font will be created. Otherwise, if a cached font with the same name exists, but its <see cref="IGorgonFontInfo"/> is different from the <paramref name="fontInfo"/> 
+        /// passed in, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public async Task<GorgonFont> GetFontAsync(IGorgonFontInfo fontInfo)
+        {
+            if (fontInfo == null)
+            {
+                throw new ArgumentNullException(nameof(fontInfo));
+            }
+
+            // Check the cache for a font with the same name.
+            if ((_fontCache.TryGetValue(fontInfo.Name, out GorgonFont result))
+                && (!IsFontDifferent(fontInfo, result)))
+            {
+                return result;
+            }
+
+            if (result != null)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_EXISTS, fontInfo.Name), nameof(fontInfo));
+            }
+
+            if ((fontInfo.TextureWidth > Graphics.VideoAdapter.MaxTextureWidth)
+                || (fontInfo.TextureHeight > Graphics.VideoAdapter.MaxTextureHeight))
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_TEXTURE_SIZE_TOO_LARGE,
+                                                            fontInfo.TextureWidth,
+                                                            fontInfo.TextureHeight),
+                                            nameof(fontInfo));
+            }
+
+            if (!fontInfo.Characters.Contains(fontInfo.DefaultCharacter))
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_DOES_NOT_EXIST, fontInfo.DefaultCharacter));
+            }
+
+            if (Convert.ToInt32(fontInfo.DefaultCharacter) < 32)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Convert.ToInt32(fontInfo.DefaultCharacter)));
+            }
+
+            // If not found, then create a new font and cache it.
+            _fontCache[fontInfo.Name] = result = new GorgonFont(fontInfo.Name, this, fontInfo);
+            await result.GenerateFontAsync(_externalFonts);
+
+            return result;
         }
 
         /// <summary>
@@ -463,27 +546,27 @@ namespace Gorgon.Graphics.Fonts
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         public GorgonFontFactory(GorgonGraphics graphics)
         {
+            // Generates the default font for the factory.
+            GorgonFont GenerateDefaultFont()
+            {
+                // Create the default font.
+                var result = new GorgonFont("Gorgon_Font_Default_SegoeUI_9pt",
+                                            this,
+                                            new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points)
+                                            {
+                                                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+                                                FontStyle = FontStyle.Bold,
+                                                OutlineSize = 0,
+                                                Compression = FontTextureCompression.Fast
+                                            });
+
+                result.GenerateFont(_externalFonts);
+
+                return result;
+            }
+
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-            _defaultFont = new Lazy<GorgonFont>(() =>
-                                                {
-                                                    // Create the default font.
-                                                    var result = new GorgonFont("Gorgon_Font_Default_SegoeUI_9pt",
-                                                                                this,
-                                                                                new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points)
-                                                                                {
-                                                                                    AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-                                                                                    FontStyle = FontStyle.Bold,
-                                                                                    OutlineSize = 0
-                                                                                });
-
-                                                    result.GenerateFont(new[]
-                                                                        {
-                                                                            _externalFonts
-                                                                        });
-
-                                                    return result;
-                                                },
-                                                true);
+            _defaultFont = new Lazy<GorgonFont>(GenerateDefaultFont, true);
         }
         #endregion
     }

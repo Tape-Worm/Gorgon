@@ -34,19 +34,19 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
-using System.Buffers;
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Defines options for using a depth/stencil view.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline.
-	/// </para>
-	/// </remarks>
-	[Flags]
+    /// <summary>
+    /// Defines options for using a depth/stencil view.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline.
+    /// </para>
+    /// </remarks>
+    [Flags]
 	public enum DepthStencilViewFlags
 	{
 		/// <summary>
@@ -603,7 +603,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 
-			RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
+			RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
 
 			try
 			{
@@ -622,7 +622,7 @@ namespace Gorgon.Graphics.Core
 			}
 			finally
 			{
-				ArrayPool<RawRectangle>.Shared.Return(clearRects);
+				GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects);
 			}
 		}
 

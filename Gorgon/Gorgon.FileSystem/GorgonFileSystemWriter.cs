@@ -36,6 +36,7 @@ using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
+using Gorgon.Memory;
 using Gorgon.PlugIns;
 
 namespace Gorgon.IO
@@ -109,6 +110,11 @@ namespace Gorgon.IO
     public class GorgonFileSystemWriter
         : GorgonPlugIn, IGorgonFileSystemWriter<FileStream>
     {
+        #region Constants.
+        // The maximum size for the working buffers.
+        private const int MaxBufferSize = 262_144;
+        #endregion
+
         #region Events.
         /// <summary>
         /// Event triggered when a virtual directory has been added to the file system.
@@ -1194,7 +1200,7 @@ namespace Gorgon.IO
             {
                 PrepareWriteArea();
 
-                _writeBuffer = ArrayPool<byte>.Shared.Rent(262144);
+                _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
                 var pathBuffer = new StringBuilder(1024);
                 var dirsCopied = new List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)>();
                 var filesCopied = new List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
@@ -1340,7 +1346,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
             }
         }
 
@@ -1406,7 +1412,7 @@ namespace Gorgon.IO
             {
                 PrepareWriteArea();
 
-                _writeBuffer = ArrayPool<byte>.Shared.Rent(262144);
+                _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
                 var pathBuffer = new StringBuilder(1024);
                 var dirsCopied = new List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)>();
                 var filesCopied = new List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
@@ -1525,7 +1531,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
             }
         }
 
@@ -1606,7 +1612,7 @@ namespace Gorgon.IO
             {
                 PrepareWriteArea();
 
-                _writeBuffer = ArrayPool<byte>.Shared.Rent(262144);
+                _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
                 var pathBuffer = new StringBuilder(1024);
                 var filesCopied = new List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
                 CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
@@ -1690,7 +1696,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
             }
         }
 
@@ -1765,7 +1771,7 @@ namespace Gorgon.IO
             {
                 PrepareWriteArea();
 
-                _writeBuffer = ArrayPool<byte>.Shared.Rent(262144);
+                _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
                 var pathBuffer = new StringBuilder(1024);
                 var filesCopied = new List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
                 CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
@@ -1855,7 +1861,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
             }
         }
 
@@ -1923,7 +1929,7 @@ namespace Gorgon.IO
 
             try
             {
-                _writeBuffer = ArrayPool<byte>.Shared.Rent(262144);
+                _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
                 var pathBuffer = new StringBuilder(1024);
                 CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
                 Action<string, double> progressCallback = options?.ProgressCallback;
@@ -1980,7 +1986,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
             }
         }
 
@@ -2040,7 +2046,7 @@ namespace Gorgon.IO
 
             try
             {
-                _writeBuffer = ArrayPool<byte>.Shared.Rent(262144);
+                _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
                 var pathBuffer = new StringBuilder(1024);
                 CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
                 Action<string, double> progressCallback = options?.ProgressCallback;
@@ -2131,7 +2137,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
             }
         }
 
@@ -2188,7 +2194,7 @@ namespace Gorgon.IO
             {
                 PrepareWriteArea();
 
-                _writeBuffer = ArrayPool<byte>.Shared.Rent(262144);
+                _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
                 var pathBuffer = new StringBuilder(1024);
                 var dirsCopied = new List<IGorgonVirtualDirectory>();
                 var filesCopied = new List<IGorgonVirtualFile>();
@@ -2377,7 +2383,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
             }
         }
 

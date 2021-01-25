@@ -27,7 +27,6 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
-using Gorgon.Math;
 using Gorgon.Properties;
 
 namespace Gorgon.Math

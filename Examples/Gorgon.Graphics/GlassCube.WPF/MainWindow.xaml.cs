@@ -4,13 +4,13 @@ using System.Windows;
 using System.Windows.Input;
 using System.Numerics;
 using DX = SharpDX;
-using Gorgon.Math;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Timing;
 using Gorgon.Graphics.Wpf;
 using Gorgon.Core;
+using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 
@@ -90,6 +90,10 @@ namespace Gorgon.Examples
         private float _accumulator;
         // The timer used for updating the text block.
         private IGorgonTimer _timer;
+        // The starting point for dragging.
+        private Point? _dragStart;        
+        // Flag to indicate that the window is being dragged.
+        private bool _isDragging;
         #endregion
 
         #region Methods.
@@ -376,6 +380,57 @@ namespace Gorgon.Examples
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void CheckTextureSmooth_Click(object sender, RoutedEventArgs e) => ChangeTextureSmoothing();
+
+        /// <summary>Handles the MouseLeftButtonDown event of the Window control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_isDragging)
+            {
+                return;
+            }
+
+            if (_dragStart == null)
+            {
+                _dragStart = PointToScreen(e.GetPosition(this));
+            }
+        }
+
+        /// <summary>Handles the MouseMove event of the Window control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+            if ((e.LeftButton != MouseButtonState.Pressed)
+                || (_dragStart == null))
+            {
+                return;
+            }
+
+            Point pos = PointToScreen(e.GetPosition(this));
+
+            if (!_isDragging)
+            {
+                var delta = new Point(pos.X - _dragStart.Value.X, pos.Y - _dragStart.Value.Y);
+
+                if ((delta.X.Abs() >= SystemParameters.MinimumHorizontalDragDistance * 2)
+                    || (delta.Y.Abs() >= SystemParameters.MinimumVerticalDragDistance * 2))
+                {
+                    _isDragging = true;
+                    DragMove();
+                }
+            }
+        }
+
+        /// <summary>Handles the MouseLeftButtonUp event of the Window control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs" /> instance containing the event data.</param>
+        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _isDragging = false;
+            _dragStart = null;
+        }
         #endregion
 
         #region Constructor.

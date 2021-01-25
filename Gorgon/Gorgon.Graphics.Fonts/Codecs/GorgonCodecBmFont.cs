@@ -26,17 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Gorgon.Core;
-using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts.Codecs
 {
@@ -68,16 +62,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
         private const string InfoLine = "info";
         // The line with common information.
         private const string CommonLine = "common";
-        // The line that contains texture information.
-        private const string PageLine = "page";
         // The line that contains the character count.
         private const string CharCountLine = "chars";
         // The line that contains glyph information.
         private const string CharLine = "char";
         // The line that contains the kerning count.
         private const string KerningCountLine = "kernings";
-        // The line that contains kerning information.
-        private const string KerningLine = "kerning";
         // The tag representing a count for characters or kernings.
         private const string CountTag = "count";
         // The tag representing the font family.
@@ -92,42 +82,16 @@ namespace Gorgon.Graphics.Fonts.Codecs
         private const string AaTag = "aa";
         // The tag that indicates the spacing between glyphs.
         private const string SpacingTag = "spacing";
-        // The tag that indicates the font line height.
-        private const string LineHeightTag = "lineHeight";
         // The tag that indicates the texture width.
         private const string ScaleWTag = "scaleW";
         // The tag that indicates the texture height.
         private const string ScaleHTag = "scaleH";
         // The tag that indicates the number of textures.
         private const string PagesTag = "pages";
-        // The tag that indicates the ID of the texture.
-        private const string PageIdTag = "id";
-        // The tag that indicates the name of the texture.
-        private const string PageFileTag = "file";
         // The tag that indicates the ID the character.
         private const string CharIdTag = "id";
-        // The tag that indicates the x coordinate of the character glyph on the texture, in pixels.
-        private const string CharXTag = "x";
-        // The tag that indicates the width of the character glyph on the texture, in pixels.
-        private const string CharWidthTag = "width";
-        // The tag that indicates the y coordinate of the character glyph on the texture, in pixels.
-        private const string CharYTag = "y";
-        // The tag that indicates the height of the character glyph on the texture, in pixels.
-        private const string CharHeightTag = "height";
-        // The tag that indicates the horizontal offset of the character glyph on the texture, in pixels.
-        private const string CharXOffsetTag = "xoffset";
-        // The tag that indicates the vertical offset of the character glyph on the texture, in pixels.
-        private const string CharYOffsetTag = "yoffset";
-        // The tag that indicates the advancement for the glyph.
-        private const string CharAdvanceTag = "xadvance";
-        // The tag that indicates the texture that the glyph uses.
-        private const string CharPageTag = "page";
-        // The tag that indicates the first character in a kerning pair.
-        private const string KernFirstTag = "first";
-        // The tag that indicates the second character in a kerning pair.
-        private const string KernSecondTag = "second";
-        // The tag that indicates the the amount of kerning to apply.
-        private const string KernAmountTag = "amount";
+        // The tag that indicates whether the font has an outline.
+        private const string OutlineTag = "outline";
         #endregion
 
         #region Properties.
@@ -158,7 +122,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <remarks>
         /// While the BmFont format does have the ability to store outlined characters, they are not usable by Gorgon's current outline glyph rendering at this time.
         /// </remarks>
-        public override bool SupportsFontOutlines => false;
+        public override bool SupportsFontOutlines => true;
 
         /// <summary>
         /// Property to return the friendly description of the codec.
@@ -177,25 +141,75 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="lineItems">The list of line items to parse.</param>
         /// <returns>A new dictionary containing the key/value pairs.</returns>
-        private static Dictionary<string, string> GetLineKeyValuePairs(string[] lineItems)
+        private static Dictionary<string, string> GetLineKeyValuePairs(string lineItems)
         {
             var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (string line in lineItems)
+            // Strip out identifier.
+            int keySep = lineItems.IndexOf(' ');
+
+            if ((keySep == -1) || (keySep == lineItems.Length - 1))
             {
-                if (string.IsNullOrWhiteSpace(line))
+                return result;
+            }
+
+            result[lineItems.Substring(0, keySep).Trim()] = string.Empty;
+            lineItems = lineItems.Substring(keySep + 1).Trim();
+
+            // Parse items.
+            while (lineItems.Length > 0)
+            {
+                int valueSep = lineItems.IndexOf('=');
+
+                if ((valueSep == -1) || (valueSep == lineItems.Length - 1))
                 {
-                    continue;
+                    break;
                 }
 
-                string[] keyValuePair = line.Split(new[]
-                                                {
-                                                    '='
-                                                },
-                                                StringSplitOptions.RemoveEmptyEntries);
+                string key = lineItems.Substring(0, valueSep).Trim();
+                string value = string.Empty;
+                
+                lineItems = lineItems.Substring(valueSep + 1).Trim();
 
-                // If there's no value, then use an empty string for that, otherwise, add as normal.
-                result.Add(keyValuePair[0], keyValuePair.Length == 1 ? string.Empty : keyValuePair[1]);
+                if (lineItems.Length == 0)
+                {
+                    break;
+                }
+
+                // We have a text field, parse it.
+                if (lineItems[0] == '"')
+                {
+                    int start = 0;
+
+                    while ((lineItems[++start] != '"') && (start < lineItems.Length))
+                    {
+                        value += lineItems[start];
+                    }
+
+                    if (start >= lineItems.Length)
+                    {
+                        break;
+                    }
+
+                    lineItems = lineItems.Substring(start + 1).Trim();
+                }
+                else
+                {
+                    int valueEndSep = lineItems.IndexOf(' ');
+
+                    if (valueEndSep != -1)
+                    {
+                        value = lineItems.Substring(0, valueEndSep).Trim();
+                        lineItems = lineItems.Substring(valueEndSep + 1).Trim();
+                    }
+                    else 
+                    {
+                        value = lineItems;
+                        lineItems = string.Empty;                        
+                    }                    
+                }
+
+                result[key] = value;
             }
 
             return result;
@@ -205,21 +219,15 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// Function to parse the info line in the file.
         /// </summary>
         /// <param name="line">The line containing the font info.</param>
-        /// <returns>A new <seealso cref="BmFontInfo"/> containing some of the font information.</returns>
-        private static BmFontInfo ParseInfoLine(string line)
+        /// <returns>A new <seealso cref="GorgonFontInfo"/> containing some of the font information.</returns>
+        private static GorgonFontInfo ParseInfoLine(string line)
         {
             if (string.IsNullOrWhiteSpace(line))
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
             }
 
-            string[] infoItems = line.Split(new[]
-                                            {
-                                                ' '
-                                            },
-                                            StringSplitOptions.RemoveEmptyEntries);
-
-            Dictionary<string, string> keyValues = GetLineKeyValuePairs(infoItems);
+            Dictionary<string, string> keyValues = GetLineKeyValuePairs(line);
 
             // Check for the "info" tag.
             if (!keyValues.ContainsKey(InfoLine))
@@ -234,6 +242,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
             string italic = keyValues[ItalicTag];
             string aa = keyValues[AaTag];
             string spacing = keyValues[SpacingTag];
+            string outline = keyValues[OutlineTag];
             FontStyle style = FontStyle.Normal;
 
             if ((string.Equals(bold, "1", StringComparison.OrdinalIgnoreCase))
@@ -250,15 +259,32 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 style = FontStyle.Bold;
             }
 
-            // Create with required settings.
-            var result = new BmFontInfo(face, Convert.ToSingle(size))
+            int packSpacing = 1;
+
+            if (spacing.Length > 0)
             {
-                PackingSpacing = spacing.Length > 0 ? Convert.ToInt32(spacing[0]) : 1,
+                string[] values = spacing.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                if (values.Length > 0)
+                {
+                    packSpacing = Convert.ToInt32(values[0]);
+                }
+            }
+
+            // Create with required settings.
+            var result = new GorgonFontInfo(face, Convert.ToSingle(size))
+            {
+                PackingSpacing = packSpacing,
                 FontStyle = style,
-                AntiAliasingMode =
-                                 (aa.Length > 0 && string.Equals(aa, "1", StringComparison.OrdinalIgnoreCase)) ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None,
-                DefaultCharacter = ' '
+                AntiAliasingMode = ((aa.Length > 0) && (string.Equals(aa, "1", StringComparison.OrdinalIgnoreCase))) ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None,
+                DefaultCharacter = ' ',
+                Brush = new GorgonGlyphSolidBrush(),                
             };
+
+            if (int.TryParse(outline, out int outlineSize))
+            {
+                result.OutlineColor1 = result.OutlineColor2 = GorgonColor.Black;
+                result.OutlineSize = outlineSize;
+            }
 
             return result;
         }
@@ -268,20 +294,15 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontInfo">The font information structure to populate.</param>
         /// <param name="line">The line containing the common info.</param>
-        private static void ParseCommonLine(BmFontInfo fontInfo, string line)
+        /// <param name="textureSkipCount">The number of texture lines to be skipped.</param>
+        private static void ParseCommonLine(GorgonFontInfo fontInfo, string line, out int textureSkipCount)
         {
             if (string.IsNullOrWhiteSpace(line))
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
             }
 
-            string[] infoItems = line.Split(new[]
-                                            {
-                                                ' '
-                                            },
-                                            StringSplitOptions.RemoveEmptyEntries);
-
-            Dictionary<string, string> keyValues = GetLineKeyValuePairs(infoItems);
+            Dictionary<string, string> keyValues = GetLineKeyValuePairs(line);
 
             // Check for the "info" tag.
             if (!keyValues.ContainsKey(CommonLine))
@@ -290,49 +311,25 @@ namespace Gorgon.Graphics.Fonts.Codecs
             }
 
             // Get supported tags.
-            string lineHeight = keyValues[LineHeightTag];
             string textureWidth = keyValues[ScaleWTag];
             string textureHeight = keyValues[ScaleHTag];
             string textureCount = keyValues[PagesTag];
 
-            fontInfo.LineHeight = Convert.ToSingle(lineHeight);
             fontInfo.TextureHeight = Convert.ToInt32(textureHeight);
             fontInfo.TextureWidth = Convert.ToInt32(textureWidth);
-            fontInfo.FontTextures = new string[Convert.ToInt32(textureCount)];
+            textureSkipCount = Convert.ToInt32(textureCount);
         }
 
         /// <summary>
-        /// Function to read the texture information from the font.
+        /// Function to skip the texture information from the font.
         /// </summary>
-        /// <param name="fontInfo">The font information to update.</param>
+        /// <param name="textureCount">The number of texture lines to skip.</param>
         /// <param name="reader">The reader that is reading the file data.</param>
-        private static void ParseTextures(BmFontInfo fontInfo, StreamReader reader)
+        private static void SkipTextures(StreamReader reader, int textureCount)
         {
-            for (int i = 0; i < fontInfo.FontTextures.Length; ++i)
+            for (int i = 0; i < textureCount; ++i)
             {
-                string line = reader.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
-                }
-
-                string[] lineItems = line.Split(new[]
-                                              {
-                                                  ' '
-                                              },
-                                              StringSplitOptions.RemoveEmptyEntries);
-                Dictionary<string, string> keyValues = GetLineKeyValuePairs(lineItems);
-
-                if (!keyValues.ContainsKey(PageLine))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
-                }
-
-                int id = Convert.ToInt32(keyValues[PageIdTag]);
-                string fileName = keyValues[PageFileTag].Trim('\"');
-
-                fontInfo.FontTextures[id] = fileName;
+                reader.ReadLine();
             }
         }
 
@@ -341,7 +338,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontInfo">The font information to update.</param>
         /// <param name="reader">The reader that is reading the file data.</param>
-        private static void ParseCharacters(BmFontInfo fontInfo, StreamReader reader)
+        private static void ParseCharacters(GorgonFontInfo fontInfo, StreamReader reader)
         {
             string countLine = reader.ReadLine();
             var characterList = new StringBuilder();
@@ -351,13 +348,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
             }
 
-            string[] lineItems = countLine.Split(new[]
-                                                 {
-                                                     ' '
-                                                 },
-                                                 StringSplitOptions.RemoveEmptyEntries);
-
-            Dictionary<string, string> keyValues = GetLineKeyValuePairs(lineItems);
+            Dictionary<string, string> keyValues = GetLineKeyValuePairs(countLine);
 
             if (!keyValues.ContainsKey(CharCountLine))
             {
@@ -376,30 +367,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
                 }
 
-                lineItems = line.Split(new[]
-                                       {
-                                           ' '
-                                       },
-                                       StringSplitOptions.RemoveEmptyEntries);
-
-                keyValues = GetLineKeyValuePairs(lineItems);
+                keyValues = GetLineKeyValuePairs(line);
 
                 if (!keyValues.ContainsKey(CharLine))
                 {
                     throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
                 }
 
-                char character = Convert.ToChar(Convert.ToInt32(keyValues[CharIdTag]));
-                characterList.Append(character);
-
-                fontInfo.GlyphRects[character] = new DX.Rectangle(Convert.ToInt32(keyValues[CharXTag]),
-                                                                  Convert.ToInt32(keyValues[CharYTag]),
-                                                                  Convert.ToInt32(keyValues[CharWidthTag]),
-                                                                  Convert.ToInt32(keyValues[CharHeightTag]));
-                fontInfo.GlyphOffsets[character] = new DX.Point(Convert.ToInt32(keyValues[CharXOffsetTag]), Convert.ToInt32(keyValues[CharYOffsetTag]));
-                fontInfo.CharacterAdvances[character] = Convert.ToInt32(keyValues[CharAdvanceTag]);
-                fontInfo.GlyphTextureIndices[character] = Convert.ToInt32(keyValues[CharPageTag]);
-
+                characterList.Append(Convert.ToChar(Convert.ToInt32(keyValues[CharIdTag])));
             }
 
             fontInfo.Characters = characterList.ToString();
@@ -410,7 +385,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontInfo">The font information to update.</param>
         /// <param name="reader">The reader that is reading the file data.</param>
-        private static void ParseKerning(BmFontInfo fontInfo, StreamReader reader)
+        private static void ParseKerning(GorgonFontInfo fontInfo, StreamReader reader)
         {
             if (reader.EndOfStream)
             {
@@ -426,13 +401,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 return;
             }
 
-            string[] lineItems = countLine.Split(new[]
-                                                 {
-                                                     ' '
-                                                 },
-                                                 StringSplitOptions.RemoveEmptyEntries);
-
-            Dictionary<string, string> keyValues = GetLineKeyValuePairs(lineItems);
+            Dictionary<string, string> keyValues = GetLineKeyValuePairs(countLine);
 
             if (!keyValues.ContainsKey(KerningCountLine))
             {
@@ -440,141 +409,18 @@ namespace Gorgon.Graphics.Fonts.Codecs
             }
 
             int count = Convert.ToInt32(keyValues[CountTag]);
+            fontInfo.UseKerningPairs = count >= 1;
 
-            if (count < 1)
+            if (!fontInfo.UseKerningPairs)
             {
-                fontInfo.UseKerningPairs = false;
                 return;
             }
 
-            fontInfo.UseKerningPairs = true;
-
-            // Iterate through the characters so we have enough info to build out glyph data.
+            // Skip these lines, we don't need them.
             for (int i = 0; i < count; ++i)
             {
-                string line = reader.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
-                }
-
-                lineItems = line.Split(new[]
-                                       {
-                                           ' '
-                                       },
-                                       StringSplitOptions.RemoveEmptyEntries);
-
-                keyValues = GetLineKeyValuePairs(lineItems);
-
-                if (!keyValues.ContainsKey(KerningLine))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
-                }
-
-                var pair = new GorgonKerningPair(Convert.ToChar(Convert.ToInt32(keyValues[KernFirstTag])), Convert.ToChar(Convert.ToInt32(keyValues[KernSecondTag])));
-                fontInfo.KerningPairs[pair] = Convert.ToInt32(keyValues[KernAmountTag]);
+                reader.ReadLine();
             }
-        }
-
-        /// <summary>
-        /// Function to retrieve the image codec based on the file name.
-        /// </summary>
-        /// <param name="fileNameExtension">The file name extension to evaluate.</param>
-        /// <returns>A new <seealso cref="IGorgonImageCodec"/> to read the file with.</returns>
-        private static IGorgonImageCodec GetImageCodec(string fileNameExtension)
-        {
-            if (!fileNameExtension.StartsWith(".", StringComparison.OrdinalIgnoreCase))
-            {
-                fileNameExtension = "." + fileNameExtension;
-            }
-
-            switch (fileNameExtension.ToUpperInvariant())
-            {
-                case ".DDS":
-                    return new GorgonCodecDds();
-                case ".PNG":
-                    return new GorgonCodecPng();
-                case ".TGA":
-                    return new GorgonCodecTga();
-                default:
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_FONT_TEXTURE_NOT_VALID, "*.dds\n*.png\n*.tga"));
-            }
-        }
-
-        /// <summary>
-        /// Function to read the textures for the font.
-        /// </summary>
-        /// <param name="filePath">The path to the font file.</param>
-        /// <param name="fontInfo">The information about the font.</param>
-        /// <returns>A list of textures.</returns>
-        private IReadOnlyList<GorgonTexture2D> ReadTextures(string filePath, BmFontInfo fontInfo)
-        {
-            var textures = new GorgonTexture2D[fontInfo.FontTextures.Length];
-            var directory = new DirectoryInfo(Path.GetDirectoryName(filePath).FormatDirectory(Path.DirectorySeparatorChar));
-
-            Debug.Assert(directory.Exists, "Font directory should exist, but does not.");
-
-            for (int i = 0; i < fontInfo.FontTextures.Length; ++i)
-            {
-                var fileInfo = new FileInfo(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar) + fontInfo.FontTextures[i].FormatFileName());
-
-                if (!fileInfo.Exists)
-                {
-                    throw new FileNotFoundException(string.Format(Resources.GORGFX_ERR_FONT_TEXTURE_FILE_NOT_FOUND, fileInfo.FullName));
-                }
-
-                IGorgonImageCodec codec = GetImageCodec(fileInfo.Extension);
-
-                using (IGorgonImage image = codec.FromFile(fileInfo.FullName))
-                {
-                    image.ToTexture2D(Factory.Graphics,
-                                      new GorgonTexture2DLoadOptions
-                                      {
-                                          Name = $"BmFont_Texture_{Guid.NewGuid():N}"
-                                      });
-
-                }
-            }
-
-            return textures;
-        }
-
-        /// <summary>
-        /// Function to build builds from the font information.
-        /// </summary>
-        /// <param name="textures">The list of textures loaded.</param>
-        /// <param name="fontInfo">The font information to retrieve glyph data from.</param>
-        /// <returns>A new list of glyphs.</returns>
-        private IReadOnlyList<GorgonGlyph> GetGlyphs(IReadOnlyList<GorgonTexture2D> textures, BmFontInfo fontInfo)
-        {
-            var glyphs = new List<GorgonGlyph>();
-
-            foreach (char character in fontInfo.Characters)
-            {
-                int advance = fontInfo.CharacterAdvances[character];
-
-                // Build a glyph that is not linked to a texture if it's whitespace.
-                if (char.IsWhiteSpace(character))
-                {
-                    glyphs.Add(CreateGlyph(character, advance));
-                    continue;
-                }
-
-                int textureIndex = fontInfo.GlyphTextureIndices[character];
-                GorgonTexture2D texture = textures[textureIndex];
-
-                DX.Rectangle glyphRectangle = fontInfo.GlyphRects[character];
-                DX.Point offset = fontInfo.GlyphOffsets[character];
-
-                GorgonGlyph glyph = CreateGlyph(character, advance);
-                glyph.Offset = offset;
-                glyph.UpdateTexture(texture, glyphRectangle, DX.Rectangle.Empty, 0);
-
-                glyphs.Add(glyph);
-            }
-
-            return glyphs;
         }
 
         /// <summary>
@@ -596,14 +442,32 @@ namespace Gorgon.Graphics.Fonts.Codecs
         {
             using (var reader = new StreamReader(stream, Encoding.ASCII, true, 80000, true))
             {
-                BmFontInfo result = ParseInfoLine(reader.ReadLine());
-                ParseCommonLine(result, reader.ReadLine());
-                ParseTextures(result, reader);
+                GorgonFontInfo result = ParseInfoLine(reader.ReadLine());
+                ParseCommonLine(result, reader.ReadLine(), out int textureLineSkip);
+                SkipTextures(reader, textureLineSkip);
                 ParseCharacters(result, reader);
                 ParseKerning(result, reader);
 
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Function to load the font data, with the specified size, from a stream.
+        /// </summary>
+        /// <param name="name">The name to assign to the font.</param>
+        /// <param name="stream">The stream containing the font data.</param>
+        /// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
+        protected override Task<GorgonFont> OnLoadFromStreamAsync(string name, Stream stream)
+        {
+            if (!(stream is FileStream fileStream))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM);
+            }
+
+            IGorgonFontInfo fontInfo = OnGetMetaData(fileStream);
+
+            return Factory.GetFontAsync(fontInfo);
         }
 
         /// <summary>
@@ -619,22 +483,9 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM);
             }
 
-            var fontInfo = (BmFontInfo)OnGetMetaData(fileStream);
+            IGorgonFontInfo fontInfo = OnGetMetaData(fileStream);
 
-            // Read in textures.
-            IReadOnlyList<GorgonTexture2D> textures = ReadTextures(fileStream.Name, fontInfo);
-            // Get glyphs
-            IReadOnlyList<GorgonGlyph> glyphs = GetGlyphs(textures, fontInfo);
-            // Get kerning pairs.
-            IReadOnlyDictionary<GorgonKerningPair, int> kerningPairs = null;
-
-            // If we're using kerning pairs, then copy the kerning pairs to a read only dictionary.
-            if (fontInfo.UseKerningPairs)
-            {
-                kerningPairs = fontInfo.KerningPairs.ToDictionary(k => k.Key, v => v.Value);
-            }
-
-            return BuildFont(new GorgonFontInfo(fontInfo), fontInfo.LineHeight, fontInfo.LineHeight, -1, -1, textures, glyphs, kerningPairs);
+            return Factory.GetFont(fontInfo);
         }
 
         /// <summary>
@@ -685,7 +536,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonCodecGorFont" /> class.
+        /// Initializes a new instance of the <see cref="GorgonCodecBmFont" /> class.
         /// </summary>
         /// <param name="factory">The font factory that holds cached font information.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>

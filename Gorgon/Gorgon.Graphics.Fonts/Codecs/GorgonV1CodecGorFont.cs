@@ -26,20 +26,21 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts.Codecs
 {
     /// <summary>
-    /// A font codec used to read/write font data using the standard Gorgon Font format.
+    /// A font codec used to read version 1.0 of the font data using the standard Gorgon Font format.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This codec will create binary font data using the native font file format for Gorgon. 
+    /// The version number of 1.0 does not represent the version of Gorgon, but the version of the format.
     /// </para>
     /// </remarks>
-    public sealed class GorgonCodecGorFont
+    public sealed class GorgonV1CodecGorFont
         : GorgonFontCodec
     {
         #region Constants.
@@ -71,7 +72,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <remarks>
         /// If this value is <b>false</b>, then the codec is effectively read only.
         /// </remarks>
-        public override bool CanEncode => true;
+        public override bool CanEncode => false;
 
         /// <summary>
         /// Property to return whether the codec supports fonts with outlines.
@@ -114,7 +115,6 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 UsePremultipliedTextures = reader.ReadValue<bool>(),
                 UseKerningPairs = reader.ReadBoolean()
             };
-            fontFile.CloseChunk();
 
             return info;
         }
@@ -124,52 +124,8 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontData">The font data to write.</param>
         /// <param name="stream">The stream to write into.</param>
-        /// <remarks>
-        /// <para>
-        /// Implementors must override this method to write out the font data in the expected format.
-        /// </para>
-        /// </remarks>
-        protected override void OnWriteFontData(GorgonFont fontData, Stream stream)
-        {
-            var fontFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
-            IGorgonFontInfo fontInfo = fontData.Info;
-
-            try
-            {
-                fontFile.Open();
-                
-                GorgonBinaryWriter writer = fontFile.OpenChunk(FontInfoChunk);
-
-                writer.Write(fontInfo.FontFamilyName);
-                writer.Write(fontInfo.Size);
-                writer.WriteValue(fontInfo.FontHeightMode);
-                writer.WriteValue(fontInfo.FontStyle);
-                writer.Write(fontInfo.DefaultCharacter);
-                writer.Write(string.Join(string.Empty, fontInfo.Characters));
-                writer.WriteValue(fontInfo.AntiAliasingMode);
-                writer.Write(fontInfo.OutlineColor1.ToARGB());
-                writer.Write(fontInfo.OutlineColor2.ToARGB());
-                writer.Write(fontInfo.OutlineSize);
-                writer.Write(fontInfo.PackingSpacing);
-                writer.Write(fontInfo.TextureWidth);
-                writer.Write(fontInfo.TextureHeight);
-                writer.Write(fontInfo.UsePremultipliedTextures);
-                writer.Write(fontInfo.UseKerningPairs);
-                fontFile.CloseChunk();
-
-                if (fontInfo.Brush != null)
-                {
-                    writer = fontFile.OpenChunk(BrushChunk);
-                    writer.Write((int)fontInfo.Brush.BrushType);
-                    fontInfo.Brush.WriteBrushData(writer);
-                    fontFile.CloseChunk();
-                }
-            }
-            finally
-            {
-                fontFile.Close();
-            }
-        }
+        /// <exception cref="NotSupportedException">This codec does not support writing.</exception>
+        protected override void OnWriteFontData(GorgonFont fontData, Stream stream) => throw new NotSupportedException();
 
         /// <summary>
         /// Function to read the meta data for font data within a stream.
@@ -196,6 +152,77 @@ namespace Gorgon.Graphics.Fonts.Codecs
             finally
             {
                 fontFile?.Close();
+            }
+        }
+
+        /// <summary>Function to load the font data, with the specified size, from a stream.</summary>
+        /// <param name="name">The name to assign to the font.</param>
+        /// <param name="stream">The stream containing the font data.</param>
+        /// <returns>A new , or, an existing font from the  cache.</returns>
+        /// <seealso cref="GorgonFont" />
+        /// <seealso cref="GorgonFontFactory" />
+        protected override async Task<GorgonFont> OnLoadFromStreamAsync(string name, Stream stream)
+        {
+            var fontFile = new GorgonChunkFileReader(stream,
+                                                     new[]
+                                                     {
+                                                         FileHeader.ChunkID()
+                                                     });
+            GorgonFontInfo fontInfo = null;
+
+            try
+            {
+                fontFile.Open();
+
+                fontInfo = GetFontInfo(fontFile, name);
+
+                // If the font is already loaded, then just reuse it.
+                if (Factory.HasFont(fontInfo))
+                {
+                    return Factory.GetFont(fontInfo);
+                }
+
+                GorgonBinaryReader reader = null;
+
+                if (fontFile.Chunks.Contains(BrushChunk))
+                {
+                    reader = fontFile.OpenChunk(BrushChunk);
+                    var brushType = (GlyphBrushType)reader.ReadInt32();
+
+                    switch (brushType)
+                    {
+                        case GlyphBrushType.Hatched:
+                            fontInfo.Brush = new GorgonGlyphHatchBrush();
+                            break;
+                        case GlyphBrushType.LinearGradient:
+                            fontInfo.Brush = new GorgonGlyphLinearGradientBrush();
+                            break;
+                        case GlyphBrushType.PathGradient:
+                            fontInfo.Brush = new GorgonGlyphPathGradientBrush();
+                            break;
+                        case GlyphBrushType.Texture:
+                            fontInfo.Brush = new GorgonGlyphTextureBrush();
+                            break;
+                        default:
+                            fontInfo.Brush = new GorgonGlyphSolidBrush();
+                            break;
+                    }
+
+                    fontInfo.Brush.ReadBrushData(reader);
+                    fontFile.CloseChunk();
+                }
+                else
+                {
+                    fontInfo.Brush = new GorgonGlyphSolidBrush();
+                }
+
+                return await Factory.GetFontAsync(fontInfo);
+            }
+            finally
+            {
+                var brush = fontInfo?.Brush as IDisposable;
+                brush?.Dispose();
+                fontFile.Close();
             }
         }
 
@@ -326,11 +353,11 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
+        /// Initializes a new instance of the <see cref="GorgonV1CodecGorFont"/> class.
         /// </summary>
         /// <param name="factory">The font factory that holds cached font information.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
-        public GorgonCodecGorFont(GorgonFontFactory factory)
+        public GorgonV1CodecGorFont(GorgonFontFactory factory)
             : base(factory) => CodecCommonExtensions = new[]
                                     {
                                         ".gorFont"

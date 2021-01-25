@@ -35,7 +35,7 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
-using System.Buffers;
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core
 {
@@ -436,7 +436,7 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
+			RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
 
 			try
 			{
@@ -455,7 +455,7 @@ namespace Gorgon.Graphics.Core
 			}
 			finally
 			{
-				ArrayPool<RawRectangle>.Shared.Return(clearRects);
+				GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects);
 			}
 		}
 

@@ -35,13 +35,11 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
 using Gorgon.Renderers.Cameras;
-using Gorgon.Renderers.Data;
-using Gorgon.Renderers.Debug;
 using Gorgon.Renderers.Geometry;
+using Gorgon.Graphics.Fonts.Codecs;
 
 namespace Gorgon.Examples
 {
