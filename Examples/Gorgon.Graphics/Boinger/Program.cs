@@ -29,13 +29,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
+using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
@@ -107,10 +109,8 @@ namespace Gorgon.Examples
         private static GorgonConstantBufferView _materialBuffer;
         // 2D interface for rendering our text.
         private static Gorgon2D _2D;
-        // Our view matrix.
-        private static DX.Matrix _viewMatrix = DX.Matrix.Identity;
-        // Our projection matrix.
-        private static DX.Matrix _projMatrix = DX.Matrix.Identity;
+        // The camera.
+        private static GorgonPerspectiveCamera _camera;
         // Our walls.
         private static Plane[] _planes;
         // Our sphere.
@@ -286,11 +286,13 @@ namespace Gorgon.Examples
         /// </remarks>
         private static void UpdateWVP(ref DX.Matrix world)
         {
-
             // Build our world/view/projection matrix to send to
             // the shader.
-            DX.Matrix.Multiply(ref world, ref _viewMatrix, out DX.Matrix temp);
-            DX.Matrix.Multiply(ref temp, ref _projMatrix, out DX.Matrix wvp);
+            ref DX.Matrix viewMatrix = ref _camera.GetViewMatrix();
+            ref DX.Matrix projMatrix = ref _camera.GetProjectionMatrix();
+
+            DX.Matrix.Multiply(ref world, ref viewMatrix, out DX.Matrix temp);
+            DX.Matrix.Multiply(ref temp, ref projMatrix, out DX.Matrix wvp);
 
             // Direct 3D 11 requires that we transpose our matrix 
             // before sending it to the shader.
@@ -446,7 +448,7 @@ namespace Gorgon.Examples
             // Create the vertex input layout.
             // We need to create a layout for our vertex type because the shader won't know how to interpret the data we're sending it otherwise.  
             // This is why we need a vertex shader before we even create the layout.
-            _inputLayout = GorgonInputLayout.CreateUsingType<BoingerVertex>(_graphics, _vertexShader);
+            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
 
             // Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
             // We also will generate mip-map levels for this image so that scaling the texture will look better. 
@@ -468,7 +470,7 @@ namespace Gorgon.Examples
                                                                        new GorgonConstantBufferInfo("WVPBuffer")
                                                                        {
                                                                            Usage = ResourceUsage.Dynamic,
-                                                                           SizeInBytes = DX.Matrix.SizeInBytes
+                                                                           SizeInBytes = Unsafe.SizeOf<DX.Matrix>()
                                                                        });
             // This one will hold our material information.
             _materialBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
@@ -520,16 +522,12 @@ namespace Gorgon.Examples
                                        .IndexBuffer(_sphere.IndexBuffer, 0, _sphere.IndexBuffer.IndexCount)
                                        .Build();
 
-            // Set up our view matrix.
-            // Move the camera (view matrix) back 2.2 units.  This will give us enough room to see what's
-            // going on.
-            DX.Matrix.Translation(0, 0, 2.2f, out _viewMatrix);
-
-            // Set up our projection matrix.
-            // This matrix is probably the cause of almost EVERY problem you'll ever run into in 3D programming. Basically we're telling the renderer that we 
-            // want to have a vertical FOV of 75 degrees, with the aspect ratio based on our form width and height.  The final values indicate how to 
-            // distribute Z values across depth (tip: it's not linear).
-            _projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 500.0f, 0.125f);
+            // Set up our camera.
+            _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 500.0f, 0.125f)
+            {
+                Fov = 75,
+                Position = new DX.Vector3(0, 0, -2.2f)
+            };
         }
 
         /// <summary>
@@ -655,7 +653,7 @@ namespace Gorgon.Examples
             // This is also the place to re-apply any custom viewports, or scissor rectangles.
 
             // Reset our projection matrix to match our new size.
-            _projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), e.Size.Width / (float)e.Size.Height, 500.0f, 0.125f);
+            _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
             BuildDepthBuffer(e.Size.Width, e.Size.Height);
             _graphics.SetDepthStencil(_depthBuffer);
         }

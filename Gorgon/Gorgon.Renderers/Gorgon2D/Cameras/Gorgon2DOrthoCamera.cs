@@ -51,15 +51,15 @@ namespace Gorgon.Renderers
         // Minimum depth value.
         private float _minDepth;
         // The raw projection matrix.
-        private DX.Matrix _projectionMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _projectionMatrix = Matrix4x4.Identity;
         // The raw view matrix.
-        private DX.Matrix _viewMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _viewMatrix = Matrix4x4.Identity;
         // The position of the camera.
-        private DX.Vector3 _position;
+        private Vector3 _position;
         // Scale.
-        private DX.Vector2 _zoom = new DX.Vector2(1.0f);
+        private Vector2 _zoom = new Vector2(1.0f);
         // Target position.
-        private DX.Vector2 _anchor = DX.Vector2.Zero;
+        private Vector2 _anchor = Vector2.Zero;
         // Angle of rotation.
         private float _angle;
         #endregion
@@ -95,7 +95,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the camera position.
         /// </summary>
-        public DX.Vector3 Position
+        public Vector3 Position
         {
             get => _position;
             set
@@ -136,7 +136,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the zoom for the camera.
         /// </summary>
-        public DX.Vector2 Zoom
+        public Vector2 Zoom
         {
             get => _zoom;
             set
@@ -157,7 +157,7 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This value is in relative coordinates. That is, 0,0 would be the upper left corner of the <see cref="ViewDimensions"/>, and 1,1 would be lower right corner of the <see cref="ViewDimensions"/>.
         /// </remarks>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => _anchor;
             set
@@ -180,9 +180,9 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the horizontal and vertical aspect ratio for the camera view area.
         /// </summary>
-        public DX.Vector2 AspectRatio => TargetWidth > TargetHeight
-                    ? new DX.Vector2((float)TargetWidth / TargetHeight, 1)
-                    : new DX.Vector2(1.0f, (float)TargetHeight / TargetWidth);
+        public Vector2 AspectRatio => TargetWidth > TargetHeight
+                    ? new Vector2((float)TargetWidth / TargetHeight, 1)
+                    : new Vector2(1.0f, (float)TargetHeight / TargetWidth);
 
         /// <summary>
         /// Property to set or return the projection view dimensions for the camera.
@@ -294,7 +294,7 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpdateViewMatrix()
         {
-            DX.Matrix center = DX.Matrix.Identity;  // Centering matrix.
+            Matrix4x4 center = Matrix4x4.Identity;  // Centering matrix.
 
             // Scale it.
             // ReSharper disable CompareOfFloatsByEqualityOperator
@@ -307,17 +307,17 @@ namespace Gorgon.Renderers
 
             if (_angle != 0.0f)
             {
-                DX.Matrix.RotationZ(_angle.ToRadians(), out DX.Matrix rotation);
+                Matrix4x4.RotationZ(_angle.ToRadians(), out Matrix4x4 rotation);
                 // This is the inversion of the rotation matrix.
                 // We need to invert the matrix in order to apply the correct transformation to the world data.
                 rotation.Transpose();
-                DX.Matrix.Multiply(ref rotation, ref center, out center);
+                Matrix4x4.Multiply(ref rotation, ref center, out center);
             }
             // ReSharper restore CompareOfFloatsByEqualityOperator
 
             // Pass in the inversion of the positioning.
-            DX.Matrix.Translation(-_position.X, -_position.Y, 0.0f, out DX.Matrix translation);
-            DX.Matrix.Multiply(ref translation, ref center, out _viewMatrix);
+            Matrix4x4.Translation(-_position.X, -_position.Y, 0.0f, out Matrix4x4 translation);
+            Matrix4x4.Multiply(ref translation, ref center, out _viewMatrix);
         }
 
         /// <summary>
@@ -329,7 +329,7 @@ namespace Gorgon.Renderers
         /// <remarks>Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform"/> is set to 
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
-        public void Project(ref DX.Vector3 screenPosition, out DX.Vector3 result, bool includeViewTransform = true) =>
+        public void Project(ref Vector3 screenPosition, out Vector3 result, bool includeViewTransform = true) =>
             Project(ref screenPosition, out result, new DX.Size2(TargetWidth, TargetHeight), includeViewTransform);
 
         /// <summary>
@@ -342,9 +342,9 @@ namespace Gorgon.Renderers
         /// <remarks>Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform"/> is set to 
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
-        public void Project(ref DX.Vector3 screenPosition, out DX.Vector3 result, DX.Size2 targetSize, bool includeViewTransform = true)
+        public void Project(ref Vector3 screenPosition, out Vector3 result, DX.Size2 targetSize, bool includeViewTransform = true)
         {
-            DX.Matrix transformMatrix;
+            Matrix4x4 transformMatrix;
 
             if (ViewChanged)
             {
@@ -361,27 +361,27 @@ namespace Gorgon.Renderers
 
             if (includeViewTransform)
             {
-                DX.Matrix.Multiply(ref _viewMatrix, ref _projectionMatrix, out DX.Matrix viewProjection);
-                DX.Matrix.Invert(ref viewProjection, out transformMatrix);
+                Matrix4x4.Multiply(ref _viewMatrix, ref _projectionMatrix, out Matrix4x4 viewProjection);
+                Matrix4x4.Invert(ref viewProjection, out transformMatrix);
             }
             else
             {
-                DX.Matrix.Invert(ref _projectionMatrix, out transformMatrix);
+                Matrix4x4.Invert(ref _projectionMatrix, out transformMatrix);
             }
 
             // Calculate relative position of our screen position.
-            var relativePosition = new DX.Vector2((2.0f * screenPosition.X / targetSize.Width) - 1.0f,
+            var relativePosition = new Vector2((2.0f * screenPosition.X / targetSize.Width) - 1.0f,
                                                1.0f - (screenPosition.Y / targetSize.Height * 2.0f));
 
             // Transform our screen position by our inverse matrix.
-            DX.Vector2.Transform(ref relativePosition, ref transformMatrix, out DX.Vector4 transformed);
+            Vector2.Transform(ref relativePosition, ref transformMatrix, out Vector4 transformed);
 
-            result = (DX.Vector3)transformed;
+            result = (Vector3)transformed;
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (transformed.W != 1.0f)
             {
-                DX.Vector3.Divide(ref result, transformed.W, out result);
+                Vector3.Divide(ref result, transformed.W, out result);
             }
         }
 
@@ -395,7 +395,7 @@ namespace Gorgon.Renderers
         /// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
-        public void Unproject(ref DX.Vector3 worldSpacePosition, out DX.Vector3 result, bool includeViewTransform = true) =>
+        public void Unproject(ref Vector3 worldSpacePosition, out Vector3 result, bool includeViewTransform = true) =>
             Unproject(ref worldSpacePosition, out result, new DX.Size2(TargetWidth, TargetHeight), includeViewTransform);
 
 
@@ -410,7 +410,7 @@ namespace Gorgon.Renderers
         /// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
-        public void Unproject(ref DX.Vector3 worldSpacePosition, out DX.Vector3 result, DX.Size2 targetSize, bool includeViewTransform = true)
+        public void Unproject(ref Vector3 worldSpacePosition, out Vector3 result, DX.Size2 targetSize, bool includeViewTransform = true)
         {
             if (ViewChanged)
             {
@@ -425,26 +425,26 @@ namespace Gorgon.Renderers
                 ProjectionChanged = true;
             }
 
-            DX.Matrix transformMatrix;
+            Matrix4x4 transformMatrix;
 
             if (includeViewTransform)
             {
-                DX.Matrix.Multiply(ref _viewMatrix, ref _projectionMatrix, out transformMatrix);
+                Matrix4x4.Multiply(ref _viewMatrix, ref _projectionMatrix, out transformMatrix);
             }
             else
             {
                 transformMatrix = _viewMatrix;
             }
 
-            DX.Vector3.Transform(ref worldSpacePosition, ref transformMatrix, out DX.Vector4 transform);
+            Vector3.Transform(ref worldSpacePosition, ref transformMatrix, out Vector4 transform);
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (transform.W != 1.0f)
             {
-                DX.Vector4.Divide(ref transform, transform.W, out transform);
+                Vector4.Divide(ref transform, transform.W, out transform);
             }
 
-            result = new DX.Vector3((transform.X + 1.0f) * 0.5f * targetSize.Width,
+            result = new Vector3((transform.X + 1.0f) * 0.5f * targetSize.Width,
                 (1.0f - transform.Y) * 0.5f * targetSize.Height, 0);
         }
 
@@ -462,9 +462,9 @@ namespace Gorgon.Renderers
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.
         /// </remarks>
-        public DX.Vector3 Project(DX.Vector3 screenPosition, DX.Size2 targetSize, bool includeViewTransform = true)
+        public Vector3 Project(Vector3 screenPosition, DX.Size2 targetSize, bool includeViewTransform = true)
         {
-            Project(ref screenPosition, out DX.Vector3 result, targetSize, includeViewTransform);
+            Project(ref screenPosition, out Vector3 result, targetSize, includeViewTransform);
 
             return result;
         }
@@ -482,9 +482,9 @@ namespace Gorgon.Renderers
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.
         /// </remarks>
-        public DX.Vector3 Project(DX.Vector3 screenPosition, bool includeViewTransform = true)
+        public Vector3 Project(Vector3 screenPosition, bool includeViewTransform = true)
         {
-            Project(ref screenPosition, out DX.Vector3 result, includeViewTransform);
+            Project(ref screenPosition, out Vector3 result, includeViewTransform);
 
             return result;
         }
@@ -498,9 +498,9 @@ namespace Gorgon.Renderers
         /// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
-        public DX.Vector3 Unproject(DX.Vector3 worldSpacePosition, bool includeViewTransform = true)
+        public Vector3 Unproject(Vector3 worldSpacePosition, bool includeViewTransform = true)
         {
-            Unproject(ref worldSpacePosition, out DX.Vector3 result, includeViewTransform);
+            Unproject(ref worldSpacePosition, out Vector3 result, includeViewTransform);
 
             return result;
         }
@@ -515,9 +515,9 @@ namespace Gorgon.Renderers
         /// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
         /// <b>true</b>, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to <b>false</b> only the projection will 
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
-        public DX.Vector3 Unproject(DX.Vector3 worldSpacePosition, DX.Size2 targetSize, bool includeViewTransform = true)
+        public Vector3 Unproject(Vector3 worldSpacePosition, DX.Size2 targetSize, bool includeViewTransform = true)
         {
-            Unproject(ref worldSpacePosition, out DX.Vector3 result, targetSize, includeViewTransform);
+            Unproject(ref worldSpacePosition, out Vector3 result, targetSize, includeViewTransform);
 
             return result;
         }
@@ -526,7 +526,7 @@ namespace Gorgon.Renderers
         /// Function to retrieve the view matrix for the camera.
         /// </summary>
         /// <param name="view">The view matrix.</param>
-        public void GetViewMatrix(out DX.Matrix view)
+        public void GetViewMatrix(out Matrix4x4 view)
         {
             if (ViewChanged)
             {
@@ -541,12 +541,12 @@ namespace Gorgon.Renderers
         /// Function to retrieve the projection matrix for the camera type.
         /// </summary>
         /// <param name="projection">The project matrix.</param>
-        public void GetProjectionMatrix(out DX.Matrix projection)
+        public void GetProjectionMatrix(out Matrix4x4 projection)
         {
             if (ProjectionChanged)
             {
-                var anchor = new DX.Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
-                DX.Matrix.OrthoOffCenterLH(-anchor.X,
+                var anchor = new Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
+                Matrix4x4.OrthoOffCenterLH(-anchor.X,
                                            ViewDimensions.Width - anchor.X,
                                            ViewDimensions.Height - anchor.Y,
                                            -anchor.Y,

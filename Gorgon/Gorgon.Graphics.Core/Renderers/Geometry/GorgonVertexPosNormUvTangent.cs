@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Geometry
 {
@@ -47,25 +47,25 @@ namespace Gorgon.Renderers.Geometry
         /// The position of the vertex.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public Vector4 Position;
+        public DX.Vector4 Position;
 
         /// <summary>
         /// The normal for the vertex.
         /// </summary>
         [InputElement(1, "NORMAL")]
-        public Vector3 Normal;
+        public DX.Vector3 Normal;
 
         /// <summary>
         /// The texture coordinate for the vertex.
         /// </summary>
         [InputElement(2, "TEXCOORD")]
-        public Vector2 UV;
+        public DX.Vector2 UV;
 
         /// <summary>
         /// The tangent vector.
         /// </summary>
         [InputElement(3, "TANGENT")]
-        public Vector4 Tangent;
+        public DX.Vector4 Tangent;
         #endregion
 
         #region Methods.
@@ -87,7 +87,7 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="normal">The normal.</param>
         /// <param name="uv">The texture coordinate.</param>
         /// <param name="tangent">The tangent.</param>
-        public void Deconstruct(out Vector4 position, out Vector3 normal, out Vector2 uv, out Vector4 tangent)
+        public void Deconstruct(out DX.Vector4 position, out DX.Vector3 normal, out DX.Vector2 uv, out DX.Vector4 tangent)
         {
             position = Position;
             normal = Normal;
@@ -102,9 +102,9 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="normal">The vertex normal.</param>
         /// <param name="uv">The texture coordinates.</param>
         /// <param name="tangent">The tangent for the vertex.</param>
-        public GorgonVertexPosNormUvTangent(Vector3 pos, Vector3 normal, Vector2 uv, Vector4 tangent)
+        public GorgonVertexPosNormUvTangent(DX.Vector3 pos, DX.Vector3 normal, DX.Vector2 uv, DX.Vector4 tangent)
         {
-            Position = new Vector4(pos, 1);
+            Position = new DX.Vector4(pos, 1);
             UV = uv;
             Normal = normal;
             Tangent = tangent;
@@ -115,7 +115,7 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="normal">The vertex normal.</param>
         /// <param name="uv">The texture coordinates.</param>
         /// <param name="tangent">The tangent for the vertex.</param>
-        public GorgonVertexPosNormUvTangent(Vector4 pos, Vector3 normal, Vector2 uv, Vector4 tangent)
+        public GorgonVertexPosNormUvTangent(DX.Vector4 pos, DX.Vector3 normal, DX.Vector2 uv, DX.Vector4 tangent)
         {
             Position = pos;
             UV = uv;

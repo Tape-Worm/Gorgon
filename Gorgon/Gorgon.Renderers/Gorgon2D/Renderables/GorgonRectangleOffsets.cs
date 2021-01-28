@@ -23,6 +23,7 @@
 // Created: February 8, 2017 7:22:29 PM
 // 
 #endregion
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -97,7 +98,7 @@ namespace Gorgon.Renderers
             get => _renderable.UpperLeftOffset;
             set
             {
-                if (_renderable.UpperLeftOffset.Equals(ref value))
+                if (_renderable.UpperLeftOffset == value)
                 {
                     return;
                 }
@@ -115,7 +116,7 @@ namespace Gorgon.Renderers
             get => _renderable.UpperRightOffset;
             set
             {
-                if (_renderable.UpperRightOffset.Equals(ref value))
+                if (_renderable.UpperRightOffset == value)
                 {
                     return;
                 }
@@ -133,7 +134,7 @@ namespace Gorgon.Renderers
             get => _renderable.LowerLeftOffset;
             set
             {
-                if (_renderable.LowerLeftOffset.Equals(ref value))
+                if (_renderable.LowerLeftOffset == value)
                 {
                     return;
                 }
@@ -151,7 +152,7 @@ namespace Gorgon.Renderers
             get => _renderable.LowerRightOffset;
             set
             {
-                if (_renderable.LowerRightOffset.Equals(ref value))
+                if (_renderable.LowerRightOffset == value)
                 {
                     return;
                 }
@@ -192,10 +193,10 @@ namespace Gorgon.Renderers
         /// <param name="offset">The offset to assign.</param>
         public void SetAll(DX.Vector3 offset)
         {
-            if ((offset.Equals(ref _renderable.LowerLeftOffset))
-                && (offset.Equals(ref _renderable.LowerRightOffset))
-                && (offset.Equals(ref _renderable.UpperRightOffset))
-                && (offset.Equals(ref _renderable.UpperLeftOffset)))
+            if ((offset == _renderable.LowerLeftOffset)
+                && (offset == _renderable.LowerRightOffset)
+                && (offset == _renderable.UpperRightOffset)
+                && (offset == _renderable.UpperLeftOffset))
             {
                 return;
             }

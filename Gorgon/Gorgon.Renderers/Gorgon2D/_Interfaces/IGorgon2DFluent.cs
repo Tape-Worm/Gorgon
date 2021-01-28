@@ -30,6 +30,7 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -73,7 +74,7 @@ namespace Gorgon.Renderers
         /// drawing items with the previous blend state.  
         /// </para>
         /// <para>
-        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="IGorgon2DCamera"/> object
+        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="GorgonCameraCommon"/> object
         /// that defines the projection and view of the scene being rendered. It is possible with this object to change the coordinate system, and to allow perspective rendering for a batch.
         /// </para>
         /// <para>
@@ -99,10 +100,10 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="Gorgon2DBatchState"/>
-        /// <seealso cref="IGorgon2DCamera"/>
+        /// <seealso cref="GorgonCameraCommon"/>
         /// <seealso cref="GorgonPolySprite"/>
         /// <seealso cref="GorgonGraphics"/>
-        IGorgon2DDrawingFluent Begin(Gorgon2DBatchState batchState = null, IGorgon2DCamera camera = null);
+        IGorgon2DDrawingFluent Begin(Gorgon2DBatchState batchState = null, GorgonCameraCommon camera = null);
 
         /// <summary>
         /// Function to perform an arbitrary update of any required logic prior to rendering.

@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
@@ -46,40 +45,20 @@ namespace Gorgon.Renderers.Cameras
     {
         #region Variables.
         // The rotation matrix.
-        private Matrix4x4 _rotation = Matrix4x4.Identity;
+        private DX.Matrix _rotation = DX.Matrix.Identity;
         // The scaling matrix.
-        private Matrix4x4 _scale = Matrix4x4.Identity;
+        private DX.Matrix _scale = DX.Matrix.Identity;
         // The translation matrix.
-        private Matrix4x4 _translate = Matrix4x4.Identity;
-        // The position of the camera.
-        private Vector3 _position;
+        private DX.Matrix _translate = DX.Matrix.Identity;
         // Scale.
-        private Vector2 _zoom = new Vector2(1.0f);
+        private DX.Vector2 _zoom = new DX.Vector2(1.0f);
         // Target position.
-        private Vector2 _anchor = Vector2.Zero;
+        private DX.Vector2 _anchor = DX.Vector2.Zero;
         // Angle of rotation on the Z axis.
         private float _angleZ;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to set or return the camera position.
-        /// </summary>
-        public Vector3 Position
-        {
-            get => _position;
-            set
-            {
-                if (value == _position)
-                {
-                    return;
-                }
-
-                _position = value;
-                Changes |= CameraChange.View | CameraChange.Position;
-            }
-        }
-
         /// <summary>
         /// Property to set or return the rotation on the Z axis, in degrees.
         /// </summary>
@@ -101,7 +80,7 @@ namespace Gorgon.Renderers.Cameras
         /// <summary>
         /// Property to set or return the zoom for the camera.
         /// </summary>
-        public Vector2 Zoom
+        public DX.Vector2 Zoom
         {
             get => _zoom;
             set
@@ -122,7 +101,7 @@ namespace Gorgon.Renderers.Cameras
         /// <remarks>
         /// This value is in relative coordinates. That is, 0,0 would be the upper left corner of the <see cref="GorgonCameraCommon.ViewDimensions"/>, and 1,1 would be lower right corner of the <see cref="GorgonCameraCommon.ViewDimensions"/>.
         /// </remarks>
-        public Vector2 Anchor
+        public DX.Vector2 Anchor
         {
             get => _anchor;
             set
@@ -144,29 +123,23 @@ namespace Gorgon.Renderers.Cameras
         /// This represents the boundaries of viewable space for the camera using its coordinate system. The upper left of the region corresponds with the upper left of the active render target at minimum 
         /// Z depth, and the lower right of the region corresponds with the lower right of the active render target at minimum Z depth.
         /// </remarks>
-        public DX.RectangleF ViewableRegion => new DX.RectangleF(-ViewDimensions.Width * _anchor.X, -ViewDimensions.Height * _anchor.Y, ViewDimensions.Width, ViewDimensions.Height);
+        public override DX.RectangleF ViewableRegion => new DX.RectangleF(-ViewDimensions.Width * _anchor.X, -ViewDimensions.Height * _anchor.Y, ViewDimensions.Width, ViewDimensions.Height);
         #endregion
 
         #region Methods.
         /// <summary>Function to update the projection matrix.</summary>
         /// <param name="projectionMatrix">The instance of the matrix to update.</param>
-        protected override void UpdateProjectionMatrix(ref Matrix4x4 projectionMatrix)
+        protected override void UpdateProjectionMatrix(ref DX.Matrix projectionMatrix)
         {
-            var anchor = new Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
-            MatrixFactory.CreateOrthographicOffCenterLH(-anchor.X,
-                                                        ViewDimensions.Width - anchor.X,
-                                                        ViewDimensions.Height - anchor.Y,
-                                                        -anchor.Y,
-                                                        MinimumDepth,
-                                                        MaximumDepth,
-                                                        out projectionMatrix);
+            var anchor = new DX.Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
+            DX.Matrix.OrthoOffCenterLH(-anchor.X, ViewDimensions.Width - anchor.X, ViewDimensions.Height - anchor.Y, -anchor.Y, MinimumDepth, MaximumDepth, out projectionMatrix);
         }
 
         /// <summary>
         /// Function to update the view matrix.
         /// </summary>
         /// <param name="viewMatrix">The instance of the matrix to update.</param>
-        protected override void UpdateViewMatrix(ref Matrix4x4 viewMatrix)
+        protected override void UpdateViewMatrix(ref DX.Matrix viewMatrix)
         {
             bool hasTranslate = (Changes & CameraChange.Position) == CameraChange.Position;
             bool hasScale = (Changes & CameraChange.Scale) == CameraChange.Scale;
@@ -189,22 +162,22 @@ namespace Gorgon.Renderers.Cameras
             // Rotate it.
             if (hasRotation)
             {
-                MatrixFactory.CreateRotationZ(_angleZ.ToRadians(), out _rotation);
-                
+                DX.Matrix.RotationZ(_angleZ.ToRadians(), out _rotation);
+
                 // We need to invert the matrix in order to apply the correct transformation to the world data.
-                _rotation.Transpose(out _rotation);
+                DX.Matrix.Transpose(ref _rotation, out _rotation);
                 Changes &= ~CameraChange.Rotation;
             }
 
             // Translate it.
             if (hasTranslate)
             {
-                MatrixFactory.CreateTranslation(new Vector3(-_position.X, -_position.Y, 0.0f), out _translate);
+                DX.Matrix.Translation(-PositionRef.X, -PositionRef.Y, 0.0f, out _translate);
                 Changes &= ~CameraChange.Position;
             }
 
-            _rotation.Multiply(in _scale, out Matrix4x4 temp);
-            _translate.Multiply(in temp, out viewMatrix);
+            DX.Matrix.Multiply(ref _rotation, ref _scale, out DX.Matrix temp);
+            DX.Matrix.Multiply(ref _translate, ref temp, out viewMatrix);
         }
         #endregion
 

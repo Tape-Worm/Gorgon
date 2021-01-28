@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -58,7 +59,7 @@ namespace Gorgon.Renderers
             /// <summary>
             /// Property to return the size of a texel.
             /// </summary>
-            public DX.Vector2 TexelSize => (DX.Vector2)_texelThreshold;
+            public DX.Vector2 TexelSize => new DX.Vector2(_texelThreshold.X, _texelThreshold.Y);
 
             /// <summary>
             /// Property to return the threshold for the effect.
@@ -268,7 +269,7 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 

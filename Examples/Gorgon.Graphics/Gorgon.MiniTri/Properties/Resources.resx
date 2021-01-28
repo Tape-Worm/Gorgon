@@ -123,7 +123,7 @@
 // This is a combination of a World transform (the position, scale and rotation of a vertex mesh), View transform (the camera position, 
 // scale, and rotation), and the Projection transform (transforms 3D space into 2D space).
 // 
-// This is a 4x4 SharpMatrix4x4 on the C# side, and is transferred via a constant buffer.
+// This is a 4x4 SharpDX.Matrix on the C# side, and is transferred via a constant buffer.
 cbuffer WorldViewProjection : register(b0)
 {
 	float4x4 WVP;

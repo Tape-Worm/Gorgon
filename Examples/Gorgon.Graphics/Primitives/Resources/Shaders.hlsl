@@ -24,7 +24,7 @@ cbuffer Material : register(b2)
 {
 	float4 albedo;
 	float2 uvOffset;
-	float specularPower;
+	float matSpecularPower;
 }
 
 // Camera data.
@@ -40,11 +40,10 @@ cbuffer Light : register(b1)
 {
 	struct LightData
 	{
-		float3 LightColor;
-		float3 SpecularColor;
-		float3 LightPosition;
-		float  SpecularPower;
-		float  Attenuation;
+		float4 LightPosition;
+		float4 LightDirection;
+		float4 LightAttributes;
+		float4 LightColor;
 	} lights[8];
 }
 
@@ -104,26 +103,29 @@ float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 	{
 		LightData light = lights[i];
 
-		if (light.Attenuation <= 0.0f)
-		{
+		float specularPower = light.LightAttributes.x;
+		float attenuation = light.LightAttributes.z;
+
+		if (attenuation <= 0.0f)
+		{			
 			continue;
 		}
 
 		float3 lightDirection = normalize(vertex.worldPos - light.LightPosition);
-		float diffuse = saturate(dot(normal, -lightDirection)) * (light.Attenuation / dot(light.LightPosition - vertex.worldPos, light.LightPosition - vertex.worldPos));
+		float diffuse = saturate(dot(normal, -lightDirection)) * clamp(attenuation / length(light.LightPosition - vertex.worldPos), 0, 1);
 
 		output += float3(textureColor.rgb * float3(1, 1, 1) * light.LightColor.rgb * diffuse * 0.6); // Use light diffuse vector as intensity multiplier
-
-		if ((specularPower > 0) && (light.SpecularPower >= 1.0f))
+				
+		if ((matSpecularPower > 0) && (specularPower >= 1.0f))
 		{
 			// Using Blinn half angle modification for performance over correctness
 			float3 h = normalize(normalize(CameraPosition - vertex.worldPos) - lightDirection);
-			float specLighting = pow(saturate(dot(h, normal)), light.SpecularPower);
-			output = output + (light.SpecularColor * specLighting * 0.5 * spec.r * specularPower);
+			float specLighting = pow(saturate(dot(normal, h)), specularPower);
+			output = output + (specLighting * 0.5 * spec.r * matSpecularPower);
 		}
-	}
+	}	
 
-	return float4(saturate(float3(0.392157f * 0.25f, 0.584314f * 0.25f, 0.929412f * 0.25f) + output), textureColor.a);
+	return float4(saturate(float3(0.392157f * 0.025f, 0.584314f * 0.025f, 0.929412f * 0.025f) + output), textureColor.a);	
 }
 
 // Our bump mapped pixel shader that will render the bump mapped texture.
@@ -137,7 +139,7 @@ float4 PrimPSWaterBump(VertexOut vertex) : SV_Target
 		
 	float3 spec = 0; 
 	
-	if (specularPower > 0)
+	if (matSpecularPower > 0)
 	{
 		spec = _specTexture.Sample(_specSampler, scaledUv + uvOffset).xyz;
 		spec += 2.0f * _specTexture.Sample(_specSampler, scaledUv + uvOffset * 0.5f).xyz;
@@ -154,7 +156,7 @@ float4 PrimPSBump(VertexOut vertex) : SV_Target
 	float3 normal = normalize(vertex.normal + (bumpAmount.x * vertex.tangent + bumpAmount.y * vertex.bitangent));
 	float3 spec = 0;
 
-	if (specularPower > 0)
+	if (matSpecularPower > 0)
 	{
 		spec = _specTexture.Sample(_specSampler, vertex.uv).xyz;
 	}

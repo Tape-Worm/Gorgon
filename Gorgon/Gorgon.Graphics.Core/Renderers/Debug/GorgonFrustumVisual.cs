@@ -25,16 +25,16 @@
 #endregion
 
 using System;
-using System.Numerics;
-using Gorgon.Graphics.Core;
 using System.Runtime.CompilerServices;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
+using Gorgon.Memory;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Debug
 {
     /// <summary>
-    /// Provides a visual wireframe box to display a <see cref="GorgonFrustum"/> for debug purposes.
+    /// Provides a visual wireframe box to display a frustum for debug purposes.
     /// </summary>
     public class GorgonFrustumVisual
         : IGorgonGraphicsObject, IDisposable
@@ -51,7 +51,7 @@ namespace Gorgon.Renderers.Debug
         // The constant buffer.
         private GorgonConstantBufferView _constantBuffer;
         // The vertices that make up the box.
-        private readonly Vector3[] _lineVertices = new Vector3[24];
+        private readonly DX.Vector3[] _lineVertices = new DX.Vector3[24];
         // The vertex shader.
         private GorgonVertexShader _vertexShader;
         // The pixel shader.
@@ -74,15 +74,15 @@ namespace Gorgon.Renderers.Debug
         {
             var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo("Frustum Visual VertexBuffer")
             {
-                SizeInBytes = _lineVertices.Length * Unsafe.SizeOf<Vector3>(),
+                SizeInBytes = _lineVertices.Length * Unsafe.SizeOf<DX.Vector3>(),
                 Usage = ResourceUsage.Dynamic
             });
 
-            _vertexBuffer = new GorgonVertexBufferBinding(vertexBuffer, Unsafe.SizeOf<Vector3>());
+            _vertexBuffer = new GorgonVertexBufferBinding(vertexBuffer, Unsafe.SizeOf<DX.Vector3>());
 
             _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Frustum Visual ConstantBufer")
             {
-                SizeInBytes = Unsafe.SizeOf<Matrix4x4>(),
+                SizeInBytes = Unsafe.SizeOf<DX.Matrix>(),
                 Usage = ResourceUsage.Dynamic
             });
 
@@ -111,39 +111,53 @@ namespace Gorgon.Renderers.Debug
         /// Function to build the frustum visual.
         /// </summary>
         /// <param name="frustum">The frustum to visualize.</param>
-        private void BuildBox(GorgonFrustum frustum)
+        private void BuildBox(ref DX.BoundingFrustum frustum)
         {
-            // Left            
-            _lineVertices[0] = frustum.Corners[FrustumCorner.TopLeftNear];
-            _lineVertices[1] = frustum.Corners[FrustumCorner.TopLeftFar];
-            _lineVertices[2] = frustum.Corners[FrustumCorner.TopLeftFar];
-            _lineVertices[3] = frustum.Corners[FrustumCorner.BottomLeftFar];
-            _lineVertices[4] = frustum.Corners[FrustumCorner.BottomLeftFar];
-            _lineVertices[5] = frustum.Corners[FrustumCorner.BottomLeftNear];
-            _lineVertices[6] = frustum.Corners[FrustumCorner.BottomLeftNear];
-            _lineVertices[7] = frustum.Corners[FrustumCorner.TopLeftNear];
+            DX.Vector3[] corners = GorgonArrayPool<DX.Vector3>.SharedTiny.Rent(8);
+                        
+            try
+            {
+                // 0 - Near, right, bottom
+                // 1 - Near, right, top
+                // 2 - Near, left, top
+                // 3 - Near, left, bottom
+                // 4 - Far, right, bottom
+                // 5 - Far, right, top
+                // 6 - Far, left, top
+                // 7 - Far, left, bottom
 
-            // Right
-            _lineVertices[8] = frustum.Corners[FrustumCorner.TopRightNear];
-            _lineVertices[9] = frustum.Corners[FrustumCorner.TopRightFar];
-            _lineVertices[10] = frustum.Corners[FrustumCorner.TopRightFar];
-            _lineVertices[11] = frustum.Corners[FrustumCorner.BottomRightFar];
-            _lineVertices[12] = frustum.Corners[FrustumCorner.BottomRightFar];
-            _lineVertices[13] = frustum.Corners[FrustumCorner.BottomRightNear];
-            _lineVertices[14] = frustum.Corners[FrustumCorner.BottomRightNear];
-            _lineVertices[15] = frustum.Corners[FrustumCorner.TopRightNear];
+                frustum.GetCorners(corners);
 
-            // Bottom
-            _lineVertices[16] = frustum.Corners[FrustumCorner.TopLeftNear];            
-            _lineVertices[17] = frustum.Corners[FrustumCorner.TopRightNear];
-            _lineVertices[18] = frustum.Corners[FrustumCorner.TopLeftFar];
-            _lineVertices[19] = frustum.Corners[FrustumCorner.TopRightFar];
+                // Left            
+                _lineVertices[0] = corners[2]; 
+                _lineVertices[2] = _lineVertices[1] = corners[6];
+                _lineVertices[4] = _lineVertices[3] = corners[7]; 
+                _lineVertices[6] = _lineVertices[5] = corners[3];
+                _lineVertices[7] = _lineVertices[0];
 
-            // Top
-            _lineVertices[20] = frustum.Corners[FrustumCorner.BottomLeftNear];
-            _lineVertices[21] = frustum.Corners[FrustumCorner.BottomRightNear];
-            _lineVertices[22] = frustum.Corners[FrustumCorner.BottomLeftFar];
-            _lineVertices[23] = frustum.Corners[FrustumCorner.BottomRightFar];
+                // Right
+                _lineVertices[8] = corners[1];
+                _lineVertices[10] = _lineVertices[9] = corners[5];
+                _lineVertices[12] = _lineVertices[11] = corners[4];
+                _lineVertices[14] = _lineVertices[13] = corners[0];                
+                _lineVertices[15] = _lineVertices[8];
+
+                // Bottom
+                _lineVertices[16] = corners[7];
+                _lineVertices[17] = corners[4];
+                _lineVertices[18] = corners[3];
+                _lineVertices[19] = corners[0];
+
+                // Top
+                _lineVertices[20] = corners[6];
+                _lineVertices[21] = corners[5];
+                _lineVertices[22] = corners[2];
+                _lineVertices[23] = corners[1];
+            }
+            finally
+            {
+                GorgonArrayPool<DX.Vector3>.SharedTiny.Return(corners);
+            }
         }
 
         /// <summary>
@@ -152,15 +166,16 @@ namespace Gorgon.Renderers.Debug
         /// <param name="frustum">The frustum to visualize.</param>
         /// <param name="viewMatrix">The current view matrix.</param>
         /// <param name="projectionMatrix">The current projection matrix.</param>
-        public void Draw(GorgonFrustum frustum, in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix)
+        public void Draw(DX.BoundingFrustum frustum, ref DX.Matrix viewMatrix, ref DX.Matrix projectionMatrix)
         {
-            BuildBox(frustum);
+            BuildBox(ref frustum);
 
-            _vertexBuffer.VertexBuffer.SetData<Vector3>(_lineVertices);
+            _vertexBuffer.VertexBuffer.SetData<DX.Vector3>(_lineVertices);
+
+            DX.Matrix.Multiply(ref projectionMatrix, ref viewMatrix, out DX.Matrix viewProj);
+            DX.Matrix.Transpose(ref viewProj, out viewProj);
             
-            viewMatrix.Multiply(in projectionMatrix, out Matrix4x4 viewProj);
-            viewProj.Transpose(out viewProj);
-            _constantBuffer.Buffer.SetData(in viewProj);
+            _constantBuffer.Buffer.SetData(ref viewProj);
 
             Graphics.Submit(_drawCall);
         }

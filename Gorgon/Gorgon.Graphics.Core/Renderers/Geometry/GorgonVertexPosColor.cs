@@ -24,11 +24,11 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Geometry
 {
@@ -48,7 +48,7 @@ namespace Gorgon.Renderers.Geometry
         /// The position of the vertex.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public Vector4 Position;
+        public DX.Vector4 Position;
 
         /// <summary>
         /// The texture coordinate for the vertex.
@@ -74,7 +74,7 @@ namespace Gorgon.Renderers.Geometry
         /// <summary>Deconstructs this instance into a tuple.</summary>
         /// <param name="position">The position.</param>
         /// <param name="color">The color.</param>
-        public void Deconstruct(out Vector4 position, out GorgonColor color)
+        public void Deconstruct(out DX.Vector4 position, out GorgonColor color)
         {
             position = Position;
             color = Color;
@@ -85,16 +85,16 @@ namespace Gorgon.Renderers.Geometry
         /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosColor" /> struct.</summary>
         /// <param name="pos">The position.</param>
         /// <param name="color">The diffuse color for the vertex.</param>
-        public GorgonVertexPosColor(Vector3 pos, GorgonColor color)
+        public GorgonVertexPosColor(DX.Vector3 pos, GorgonColor color)
         {
-            Position = new Vector4(pos, 1);            
+            Position = new DX.Vector4(pos, 1);            
             Color = color;
         }
 
         /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosColor" /> struct.</summary>
         /// <param name="pos">The position.</param>
         /// <param name="color">The diffuse color for the vertex.</param>
-        public GorgonVertexPosColor(Vector4 pos, GorgonColor color)
+        public GorgonVertexPosColor(DX.Vector4 pos, GorgonColor color)
         {
             Position = pos;            
             Color = color;

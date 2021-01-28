@@ -266,7 +266,8 @@ namespace Gorgon.IO
                                                                             .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
+                        DX.Vector3 val = binReader.ReadValue<DX.Vector3>();
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new DX.Vector2(val.X, val.Y)));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -282,7 +283,8 @@ namespace Gorgon.IO
                                                                             .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
+                        DX.Vector3 val = binReader.ReadValue<DX.Vector3>();
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new DX.Vector2(val.X, val.Y)));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -314,7 +316,8 @@ namespace Gorgon.IO
                                                                             .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
+                        DX.Vector3 val = binReader.ReadValue<DX.Vector3>();
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new DX.Vector2(val.X, val.Y)));
                     }
                     track.EndEdit();
                     reader.CloseChunk();

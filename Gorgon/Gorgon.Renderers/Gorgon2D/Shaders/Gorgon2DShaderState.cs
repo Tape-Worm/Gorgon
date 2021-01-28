@@ -26,6 +26,7 @@
 
 using Gorgon.Collections;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Renderers
 {
@@ -36,7 +37,7 @@ namespace Gorgon.Renderers
     /// <remarks>
     /// <para>
     /// This provides state information wrapped around shaders based on <see cref="GorgonShader"/>. These states are used for passing shader programs and related states to the 
-    /// <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/>.
+    /// <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonPipelineState"/>

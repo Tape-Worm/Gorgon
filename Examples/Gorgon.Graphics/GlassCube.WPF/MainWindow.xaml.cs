@@ -1,18 +1,43 @@
-﻿using System;
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2021 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: January 30, 2021 10:36:37 PM
+// 
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
-using System.Numerics;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Timing;
-using Gorgon.Graphics.Wpf;
 using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Graphics.Wpf;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
+using Gorgon.Timing;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -85,7 +110,7 @@ namespace Gorgon.Examples
         // The camera for viewing the cube.
         private GorgonPerspectiveCamera _camera;
         // The rotation to apply to the cube, in degrees.
-        private Vector3 _rotation;
+        private DX.Vector3 _rotation;
         // The current time.
         private float _accumulator;
         // The timer used for updating the text block.
@@ -120,24 +145,24 @@ namespace Gorgon.Examples
         /// model and project them into 2D space on your render target.
         /// </para>
         /// </remarks>
-        private void UpdateWVP(in Matrix4x4 world)
+        private void UpdateWVP(ref DX.Matrix world)
         {
             // Get the view and projection from the camera.
             // These values are cached and returned as read only references for performance.
-            ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
-            ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
+            ref DX.Matrix viewMatrix = ref _camera.GetViewMatrix();
+            ref DX.Matrix projMatrix = ref _camera.GetProjectionMatrix();
 
             // Build our world/vi ew/projection matrix to send to
             // the shader.
-            world.Multiply(in viewMatrix, out Matrix4x4 temp);
-            temp.Multiply(in projMatrix, out Matrix4x4 wvp);
+            DX.Matrix.Multiply(ref world, ref viewMatrix, out DX.Matrix temp);
+            DX.Matrix.Multiply(ref temp, ref projMatrix, out DX.Matrix wvp);
 
             // Direct 3D 11 requires that we transpose our matrix 
             // before sending it to the shader.
-            wvp.Transpose(out wvp);
+            DX.Matrix.Transpose(ref wvp, out wvp);
 
             // Update the constant buffer.
-            _wvpBuffer.Buffer.SetData(in wvp);
+            _wvpBuffer.Buffer.SetData(ref wvp);
         }
 
         /// <summary>
@@ -202,7 +227,7 @@ namespace Gorgon.Examples
             }
 
             // Send our world matrix to the constant buffer so the vertex shader can update the vertices.
-            UpdateWVP(in _cube.WorldMatrix);
+            UpdateWVP(ref _cube.WorldMatrix);
 
             // And, as always, send the cube to the GPU for rendering.
             _graphics.Submit(_drawCall);
@@ -234,18 +259,17 @@ namespace Gorgon.Examples
             // Create the input layout for a cube vertex.
             _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
 
-            // We use this as our initial world transform.
-            // Since it's an identity, it will put the cube in the default orientation defined by the vertices.
-            Matrix4x4 dummyMatrix = Matrix4x4.Identity;
-
             // Create our constant buffer so we can send our transformation information to the shader.
-            _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in dummyMatrix, "GlassCube WVP Constant Buffer");
+            _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo("GlassCube WVP Constant Buffer")
+            {
+                SizeInBytes = DX.Matrix.SizeInBytes                
+            });
 
             // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
             _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F((float)D3DImage.RenderSize.Width, (float)D3DImage.RenderSize.Height), 0.1f, 1000.0f, "GlassCube Camera")
             {
                 Fov = 60.0f,
-                Position = new Vector3(0.0f, 0, -1.5f)
+                Position = new DX.Vector3(0.0f, 0, -1.5f)
             };
 
             _cube = new Cube(_graphics, _inputLayout);

@@ -25,11 +25,13 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -203,7 +205,7 @@ namespace Gorgon.Renderers
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
         /// <seealso cref="PassContinuationState" />
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             DX.Vector2 intensity = FullScreen ? new DX.Vector2((Intensity * 16) * (1.0f / output.Width), (Intensity * 16) * (1.0f / output.Height))
                 : new DX.Vector2(Intensity * 0.05f, 0);
@@ -225,9 +227,9 @@ namespace Gorgon.Renderers
                 Width = 3
             }))
             {
-                image.ImageData.ReadAs<int>(0) = GorgonColor.RedPure.ToABGR();
-                image.ImageData.ReadAs<int>(4) = GorgonColor.BluePure.ToABGR();
-                image.ImageData.ReadAs<int>(8) = GorgonColor.GreenPure.ToABGR();
+                image.ImageData.AsRef<int>(0) = GorgonColor.RedPure.ToABGR();
+                image.ImageData.AsRef<int>(4) = GorgonColor.BluePure.ToABGR();
+                image.ImageData.AsRef<int>(8) = GorgonColor.GreenPure.ToABGR();
 
                 _defaultLut = GorgonTexture1DView.CreateTexture(Graphics, new GorgonTexture1DInfo("Default Spectral LUT")
                 {
@@ -242,7 +244,7 @@ namespace Gorgon.Renderers
 
             _settings = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Chromatic Aberration Settings Buffer")
             {
-                SizeInBytes = DX.Vector4.SizeInBytes,
+                SizeInBytes = Unsafe.SizeOf<DX.Vector4>(),
                 Usage = ResourceUsage.Default
             });
         }

@@ -30,7 +30,7 @@ using DX = SharpDX;
 namespace Gorgon.Animation
 {
     /// <summary>
-    /// An animation key frame for a SharpDX <c>Vector3</c> type.
+    /// An animation key frame for a SharpDX <c>DX.Vector3</c> type.
     /// </summary>
     /// <remarks>
     /// <para>

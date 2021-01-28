@@ -25,16 +25,16 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
-using DX = SharpDX;
-using BCnEncode = BCnEncoder.Encoder;
+using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.UI;
-using Gorgon.Core;
+using BCnEncode = BCnEncoder.Encoder;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging
 {

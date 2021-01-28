@@ -25,15 +25,14 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using DX = SharpDX;
-using System.Runtime.CompilerServices;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {
@@ -147,7 +146,7 @@ namespace Gorgon.Graphics
                                                                            new GorgonConstantBufferInfo("Gorgon Blitter WVP Buffer")
                                                                            {
                                                                                Usage = ResourceUsage.Dynamic,
-                                                                               SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
+                                                                               SizeInBytes = Unsafe.SizeOf<DX.Matrix>()
                                                                            });
 
 
@@ -217,8 +216,8 @@ namespace Gorgon.Graphics
             }
 
             _camera.ViewDimensions = targetSize;
-            ref readonly Matrix4x4 projectionMatrix = ref _camera.GetProjectionMatrix();
-            _wvpBuffer.Buffer.SetData(in projectionMatrix);
+            ref DX.Matrix projectionMatrix = ref _camera.GetProjectionMatrix();
+            _wvpBuffer.Buffer.SetData(ref projectionMatrix);
 
             // Since we only care about the projection matrix, we can disregard the view changes so we don't continuously repeat the projection calculations.
             _camera.DiscardChanges();            
@@ -449,26 +448,26 @@ namespace Gorgon.Graphics
             // Update the vertices.
             _vertices[0] = new GorgonVertexPosColorUv
             {
-                Position = new Vector4(destRect.X, destRect.Y, 0, 1.0f),
-                UV = new Vector2(region.Left, region.Top),
+                Position = new DX.Vector4(destRect.X, destRect.Y, 0, 1.0f),
+                UV = new DX.Vector2(region.Left, region.Top),
                 Color = actualColor
             };
             _vertices[1] = new GorgonVertexPosColorUv
             {
-                Position = new Vector4(destRect.Right, destRect.Y, 0, 1.0f),
-                UV = new Vector2(region.Right, region.Top),
+                Position = new DX.Vector4(destRect.Right, destRect.Y, 0, 1.0f),
+                UV = new DX.Vector2(region.Right, region.Top),
                 Color = actualColor
             };
             _vertices[2] = new GorgonVertexPosColorUv
             {
-                Position = new Vector4(destRect.X, destRect.Bottom, 0, 1.0f),
-                UV = new Vector2(region.Left, region.Bottom),
+                Position = new DX.Vector4(destRect.X, destRect.Bottom, 0, 1.0f),
+                UV = new DX.Vector2(region.Left, region.Bottom),
                 Color = actualColor
             };
             _vertices[3] = new GorgonVertexPosColorUv
             {
-                Position = new Vector4(destRect.Right, destRect.Bottom, 0, 1.0f),
-                UV = new Vector2(region.Right, region.Bottom),
+                Position = new DX.Vector4(destRect.Right, destRect.Bottom, 0, 1.0f),
+                UV = new DX.Vector2(region.Right, region.Bottom),
                 Color = actualColor
             };
 

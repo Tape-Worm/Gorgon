@@ -129,7 +129,7 @@ namespace Gorgon.Examples
             if (_crawlText != null)
             {
                 _crawlText.LayoutArea = new DX.Size2F(_crawlRtv.Width, _crawlRtv.Height);
-                _crawlText.Text = _crawlText.Font.WordWrap(Resources.CrawlText, _crawlRtv.Width - 50);
+                _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);
             }
         }
 
@@ -228,7 +228,7 @@ namespace Gorgon.Examples
                     AllowColorCodes = true
                 };
                                 
-                _crawlText.Text = _crawlText.Font.WordWrap(Resources.CrawlText, _crawlRtv.Width - 50);
+                _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);
                 _crawlPosition = new DX.Vector2(0, _crawlRtv.Height);
 
                 window.IsLoaded = true;

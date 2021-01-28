@@ -34,6 +34,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using Newtonsoft.Json;
 using DX = SharpDX;
@@ -47,9 +48,6 @@ namespace Gorgon.Renderers
         : IDisposable
     {
         #region Variables.
-        // The angle of rotation, in degrees.
-        private float _angle;
-
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
         internal PolySpriteRenderable Renderable = new PolySpriteRenderable
@@ -150,7 +148,7 @@ namespace Gorgon.Renderers
         /// </summary>
         public DX.Vector2 TextureOffset
         {
-            get => (DX.Vector2)Renderable.TextureTransform;
+            get => new DX.Vector2(Renderable.TextureTransform.X, Renderable.TextureTransform.Y);
             set
             {
                 if ((Renderable.TextureTransform.X == value.X)
@@ -230,7 +228,7 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public DX.Vector2 Position
         {
-            get => Renderable.Bounds.TopLeft;
+            get => new DX.Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
@@ -353,22 +351,15 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public float Angle
         {
-            get => _angle;
+            get => Renderable.AngleDegs;
             set
             {
-                if (_angle == value)
+                if (Renderable.AngleDegs == value)
                 {
                     return;
                 }
 
-                _angle = value;
-                float rads = value.ToRadians();
-                Renderable.AngleRads = rads;
-                Renderable.AngleSin = rads.FastSin();
-                Renderable.AngleCos = rads.FastCos();
-
-
-
+                Renderable.AngleDegs = value;
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -488,10 +479,10 @@ namespace Gorgon.Renderers
         /// <![CDATA[
         ///     // These define the corners of a rectangle.
         ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
-        ///     vertices[0] = new GorgonPolySpriteVertex(new Vector2(0, 0), ...);
-        ///     vertices[1] = new GorgonPolySpriteVertex(new Vector2(30, 00), ...);
-        ///     vertices[2] = new GorgonPolySpriteVertex(new Vector2(0, 30), ...);
-        ///     vertices[3] = new GorgonPolySpriteVertex(new Vector2(30, 30), ...);
+        ///     vertices[0] = new GorgonPolySpriteVertex(new DX.Vector2(0, 0), ...);
+        ///     vertices[1] = new GorgonPolySpriteVertex(new DX.Vector2(30, 00), ...);
+        ///     vertices[2] = new GorgonPolySpriteVertex(new DX.Vector2(0, 30), ...);
+        ///     vertices[3] = new GorgonPolySpriteVertex(new DX.Vector2(30, 30), ...);
         ///     
         ///     // To order the vertices so they'll render correctly:
         ///     int[] indices = new indices[6]; // We define 6 indices because the rect is made of 2 triangles, with 3 vertices each (we reuse some vertices for efficiency).
@@ -563,10 +554,10 @@ namespace Gorgon.Renderers
         /// <![CDATA[
         ///     // These define the corners of a rectangle.
         ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
-        ///     vertices[0] = new GorgonPolySpriteVertex(new Vector2(0, 0), ...);
-        ///     vertices[1] = new GorgonPolySpriteVertex(new Vector2(30, 00), ...);
-        ///     vertices[2] = new GorgonPolySpriteVertex(new Vector2(0, 30), ...);
-        ///     vertices[3] = new GorgonPolySpriteVertex(new Vector2(30, 30), ...);
+        ///     vertices[0] = new GorgonPolySpriteVertex(new DX.Vector2(0, 0), ...);
+        ///     vertices[1] = new GorgonPolySpriteVertex(new DX.Vector2(30, 00), ...);
+        ///     vertices[2] = new GorgonPolySpriteVertex(new DX.Vector2(0, 30), ...);
+        ///     vertices[3] = new GorgonPolySpriteVertex(new DX.Vector2(30, 30), ...);
         ///     
         ///     // To order the vertices so they'll render correctly:
         ///     int[] indices = new indices[6]; // We define 6 indices because the rect is made of 2 triangles, with 3 vertices each (we reuse some vertices for efficiency).
@@ -662,31 +653,20 @@ namespace Gorgon.Renderers
             newSprite.Bounds = new DX.RectangleF(0, 0, maxX - minX, maxY - minY);
 
             // Split the polygon hull into triangles.            
-            GorgonNativeBuffer<Gorgon2DVertex> vertexData = newSprite.Renderable.Vertices.ToNativeBuffer();
-            GorgonNativeBuffer<int> indexData = newSprite.RwIndices.ToNativeBuffer();
-
-            try
+            newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo
             {
-                newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo
-                {
-                    Binding = VertexIndexBufferBinding.None,
-                    Use16BitIndices = false,
-                    IndexCount = indexData.Length,
-                    Usage = ResourceUsage.Immutable
-                }, indexData);
+                Binding = VertexIndexBufferBinding.None,
+                Use16BitIndices = false,
+                IndexCount = newSprite.RwIndices.Length,
+                Usage = ResourceUsage.Immutable
+            }, newSprite.RwIndices);
 
-                newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(graphics, new GorgonVertexBufferInfo
-                {
-                    Usage = ResourceUsage.Immutable,
-                    Binding = VertexIndexBufferBinding.None,
-                    SizeInBytes = vertexData.SizeInBytes
-                }, vertexData);                
-            }
-            finally
+            newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(graphics, new GorgonVertexBufferInfo
             {
-                vertexData?.Dispose();
-                indexData?.Dispose();
-            }
+                Usage = ResourceUsage.Immutable,
+                Binding = VertexIndexBufferBinding.None,
+                SizeInBytes = newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes
+            }, newSprite.Renderable.Vertices);                
 
             return newSprite;
         }

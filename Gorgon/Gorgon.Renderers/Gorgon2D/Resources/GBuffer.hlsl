@@ -15,7 +15,6 @@ struct GorgonLitVertex
     float3 uv : TEXCOORD;
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
-    float3 worldPos : WORLDPOS;
 };
 
 // The output for the GBuffer targets.
@@ -40,7 +39,6 @@ GorgonLitVertex GorgonVertexShaderGBuffer(GorgonSpriteVertex vertex)
 {
     GorgonLitVertex output;
 	
-	output.worldPos = vertex.position.xyz;
 	output.position = mul(ViewProjection, vertex.position);
 	output.uv = vertex.uv.xyz;
 	output.color = vertex.color;

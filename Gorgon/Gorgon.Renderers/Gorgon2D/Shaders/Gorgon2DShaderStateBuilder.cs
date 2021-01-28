@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Memory;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 
 namespace Gorgon.Renderers
@@ -43,7 +43,7 @@ namespace Gorgon.Renderers
     /// <remarks>
     /// <para>
     /// This builder creates shader states for state information wrapped around shaders based on <see cref="GorgonShader"/>. States built by this type are used for passing shader programs and related states 
-    /// to the <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/>.
+    /// to the <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonPipelineState"/>

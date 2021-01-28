@@ -28,11 +28,11 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Collections;
-using Gorgon.Math;
 using Gorgon.Diagnostics;
+using Gorgon.Math;
+using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {

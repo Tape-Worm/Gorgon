@@ -268,7 +268,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonConstantBuffer"/>
-        public static GorgonConstantBufferView CreateConstantBuffer<T>(GorgonGraphics graphics, in T value, string name = null, ResourceUsage usage = ResourceUsage.Default, int firstElement = 0, int elementCount = 0)
+        public static GorgonConstantBufferView CreateConstantBuffer<T>(GorgonGraphics graphics, ref T value, string name = null, ResourceUsage usage = ResourceUsage.Default, int firstElement = 0, int elementCount = 0)
             where T : unmanaged
         {
             if (graphics == null)
@@ -281,7 +281,7 @@ namespace Gorgon.Graphics.Core
                 Usage = usage,
                 SizeInBytes = Unsafe.SizeOf<T>()
             });
-            buffer.SetData(in value);
+            buffer.SetData(ref value);
             GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);
             view._ownsBuffer = true;
             return view;

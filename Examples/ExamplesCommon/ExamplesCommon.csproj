@@ -47,8 +47,12 @@
     <None Include="..\NoRules.ruleset" Link="NoRules.ruleset" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj" />
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj" />
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

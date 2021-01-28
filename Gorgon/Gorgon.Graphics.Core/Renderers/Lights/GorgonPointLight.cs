@@ -25,24 +25,26 @@
 #endregion
 
 using System;
-using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Data;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Lights
 {
     /// <summary>
     /// Point light properties for passing to a GPU lighting shader.
     /// </summary>
-	public abstract class GorgonPointLight
+	public sealed class GorgonPointLight
         : GorgonLightCommon, IGorgonNamedObject, IEquatable<GorgonPointLight>
     {
         #region Variables.
         // The position for a point light.
-        private Vector3 _position;
+        private DX.Vector3 _position;
         // The attenuation of a point light.
         private float _attenuation = float.MaxValue.Sqrt();
+        // The GPU data for the light.
+        private GorgonGpuLightData _lightData;
         #endregion
 
         #region Properties.
@@ -54,7 +56,7 @@ namespace Gorgon.Renderers.Lights
         /// <summary>
         /// Property to set or return the position for the light.
         /// </summary>
-        public Vector3 Position
+        public DX.Vector3 Position
         {
             get => _position;
             set
@@ -116,16 +118,16 @@ namespace Gorgon.Renderers.Lights
         /// <summary>
         /// Function to return data that can be updated to the GPU for use in shaders.
         /// </summary>
-        /// <returns>A <see cref="GorgonGpuLightData"/> structure useful for passing to shaders.</returns>
+        /// <returns>A reference to the data to send to the GPU.</returns>
         public override ref readonly GorgonGpuLightData GetGpuData()
         {
             if (IsUpdated)
             {
-                GpuLightData = new GorgonGpuLightData(Position, LightType, Vector3.Zero, Color, SpecularEnabled, SpecularPower, Intensity, Attenuation);
+                _lightData = new GorgonGpuLightData(Position, LightType, DX.Vector3.Zero, Color, SpecularEnabled, SpecularPower, Intensity, Attenuation);
                 IsUpdated = false;
             }
 
-            return ref GpuLightData;
+            return ref _lightData;
         }
         #endregion
 

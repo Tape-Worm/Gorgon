@@ -26,11 +26,11 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging
 {

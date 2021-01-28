@@ -25,14 +25,14 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
-using DX = SharpDX;
-using Gorgon.Properties;
+using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.Math;
-using System.IO;
-using System.Runtime.InteropServices;
+using Gorgon.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Native
 {

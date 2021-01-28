@@ -28,8 +28,8 @@ using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using DX = SharpDX;
 using SharpDX.DXGI;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {

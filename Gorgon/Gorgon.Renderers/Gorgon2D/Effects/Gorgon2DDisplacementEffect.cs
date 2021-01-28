@@ -24,11 +24,13 @@
 // 
 #endregion
 
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -137,7 +139,7 @@ namespace Gorgon.Renderers
                                                                                         GorgonConstantBufferInfo("Gorgon2DDisplacementEffect Constant Buffer")
                                                                                         {
                                                                                             Usage = ResourceUsage.Dynamic,
-                                                                                            SizeInBytes = DX.Vector4.SizeInBytes
+                                                                                            SizeInBytes = Unsafe.SizeOf<DX.Vector4>()
                                                                                         });
 
             _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");
@@ -195,7 +197,7 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             if (passIndex == 0)
             {
@@ -264,7 +266,7 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        public void Begin(GorgonTexture2DView backgroundTexture, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        public void Begin(GorgonTexture2DView backgroundTexture, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             backgroundTexture.ValidateObject(nameof(backgroundTexture));
 

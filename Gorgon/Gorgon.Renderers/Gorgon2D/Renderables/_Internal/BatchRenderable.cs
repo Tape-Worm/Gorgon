@@ -24,9 +24,11 @@
 // 
 #endregion
 
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -135,19 +137,9 @@ namespace Gorgon.Renderers
         public DX.Vector2 Scale = DX.Vector2.One;
 
         /// <summary>
-        /// Property to set or return the angle of rotation in radians.
+        /// Property to set or return the angle of rotation in degrees.
         /// </summary>
-        public float AngleRads;
-
-        /// <summary>
-        /// Property to set or return cached the sine for the rotation angle.
-        /// </summary>
-        public float AngleSin;
-
-        /// <summary>
-        /// Property to set or return cached the cosine for the rotation angle.
-        /// </summary>
-        public float AngleCos;
+        public float AngleDegs;
 
         /// <summary>
         /// Property to set or return which index within a texture array to use.
@@ -214,5 +206,27 @@ namespace Gorgon.Renderers
         /// The type of primitive.
         /// </summary>
         public PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
+
+        /// <summary>
+        /// Function to determine if the states of the two renderables match for rendering.
+        /// </summary>
+        /// <param name="left">The left state to compare.</param>
+        /// <param name="right">The right state to compare.</param>
+        /// <returns><b>true</b> if the states are the same, or <b>false</b> if not.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool AreStatesSame(BatchRenderable left, BatchRenderable right)
+        {
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if ((left == right) && (left.StateChanged))
+            {
+                return false;
+            }
+
+            return (left.PrimitiveType == right.PrimitiveType)
+                   && (left.Texture == right.Texture)
+                   && (left.TextureSampler == right.TextureSampler)
+                   && (AlphaTestData.Equals(in left.AlphaTestData, in right.AlphaTestData));
+#pragma warning restore IDE0046 // Convert to conditional expression
+        }
     }
 }

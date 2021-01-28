@@ -26,13 +26,13 @@
 
 using System;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Input.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Timing;
+using DX = SharpDX;
 
 namespace Gorgon.Input
 {

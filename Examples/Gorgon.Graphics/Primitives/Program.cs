@@ -37,6 +37,9 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
+using Gorgon.Renderers.Geometry;
+using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
@@ -53,7 +56,7 @@ namespace Gorgon.Examples
         // The main application window.
         private static FormMain _window;
         // Camera.
-        private static Camera _camera;
+        private static GorgonPerspectiveCamera _camera;
         // Rotation value.
         private static float _objRotation;
         // Rotation value.
@@ -162,8 +165,6 @@ namespace Gorgon.Examples
 		private static void ProcessKeys()
         {
             DX.Vector3 cameraDir = DX.Vector3.Zero;
-            DX.Vector3 lookAt = _camera.LookAt;
-            lookAt.Normalize();
 
             if (_keyboard.KeyStates[Keys.Left] == GI.KeyState.Down)
             {
@@ -214,13 +215,39 @@ namespace Gorgon.Examples
                 cameraDir.Y = -2.0f * GorgonTiming.Delta;
             }
 
+            _camera.RotateEuler(_cameraRotation.Y, _cameraRotation.X, _cameraRotation.Z);
+
+            DX.Vector3 pos = _sphere.Position;
+            DX.Quaternion camRotationQ = _camera.Rotation;
+            DX.Matrix.RotationQuaternion(ref camRotationQ, out DX.Matrix camRotation);
+            DX.Vector3 unitZ = DX.Vector3.UnitZ;
+            DX.Vector3.Transform(ref unitZ, ref camRotation, out DX.Vector3 forward);
+            DX.Vector3 right;
+
+            if (!_lock)
+            {
+                DX.Vector3 unitX = DX.Vector3.UnitX;
+                DX.Vector3.Transform(ref unitX, ref camRotation, out right);
+            }
+            else
+            {                
+                DX.Vector3.Transform(ref pos, ref camRotation, out right);
+            }
+            var up = DX.Vector3.Cross(forward, right);
+
+            right = DX.Vector3.Multiply(right, cameraDir.X);
+            _camera.Position = DX.Vector3.Add(_camera.Position, right);
+
+            forward = DX.Vector3.Multiply(forward, cameraDir.Z);
+            _camera.Position = DX.Vector3.Add(_camera.Position, forward);
+
+            up = DX.Vector3.Multiply(up, cameraDir.Y);
+            _camera.Position = DX.Vector3.Add(_camera.Position, up);
+
             if (_lock)
             {
-                _camera.Target(_sphere.Position);
+                _camera.LookAt(ref pos);
             }
-
-            _camera.Rotation = _cameraRotation;
-            _camera.Move(ref cameraDir);
         }
 
         /// <summary>
@@ -263,7 +290,11 @@ namespace Gorgon.Examples
             }
 
             _lock = !_lock;
-            _camera.Target(_lock ? (DX.Vector3?)_sphere.Position : null);
+            if (_lock)
+            {
+                DX.Vector3 spherePos = _sphere.Position;
+                _camera.LookAt(ref spherePos);
+            }
         }
 
         /// <summary>
@@ -298,7 +329,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="GI.GorgonMouseEventArgs" /> instance containing the event data.</param>
         private static void RawMouse_MouseMove(object sender, GI.GorgonMouseEventArgs e)
         {
-            Point delta = e.RelativePosition;
+            DX.Point delta = e.RelativePosition;
             _cameraRotation.X += delta.Y.Sign() * (_sensitivity);
             _cameraRotation.Y += delta.X.Sign() * (_sensitivity);
         }
@@ -440,23 +471,23 @@ namespace Gorgon.Examples
         {
             var fnU = new DX.Vector3(0.5f, 1.0f, 0);
             var fnV = new DX.Vector3(1.0f, 1.0f, 0);
-            DX.Vector3.Cross(ref fnU, ref fnV, out DX.Vector3 faceNormal);
-            faceNormal.Normalize();
+            var faceNormal = DX.Vector3.Cross(fnU, fnV);
+            faceNormal = DX.Vector3.Normalize(faceNormal);
 
             _triangle = new Triangle(_graphics,
-                                     new Vertex3D
+                                     new GorgonVertexPosNormUvTangent
                                      {
                                          Position = new DX.Vector4(-12.5f, -1.5f, 12.5f, 1),
                                          Normal = faceNormal,
                                          UV = new DX.Vector2(0, 1.0f)
                                      },
-                                     new Vertex3D
+                                     new GorgonVertexPosNormUvTangent
                                      {
                                          Position = new DX.Vector4(0, 24.5f, 12.5f, 1),
                                          Normal = faceNormal,
                                          UV = new DX.Vector2(0.5f, 0.0f)
                                      },
-                                     new Vertex3D
+                                     new GorgonVertexPosNormUvTangent
                                      {
                                          Position = new DX.Vector4(12.5f, -1.5f, 12.5f, 1),
                                          Normal = faceNormal,
@@ -568,28 +599,27 @@ namespace Gorgon.Examples
         /// </summary>
 	    private static void BuildLights()
         {
-            _renderer.Lights[0] = new Light
+            _renderer.Lights[0] = new GorgonPointLight
             {
-                LightPosition = new DX.Vector3(1.0f, 1.0f, -1.0f),
-                SpecularPower = 256.0f
+                Position = new DX.Vector3(1.0f, 2.0f, -3.0f),
+                SpecularPower = 256.0f,
+                Attenuation = 2.5f
             };
 
-            _renderer.Lights[1] = new Light
+            _renderer.Lights[1] = new GorgonPointLight
             {
-                LightPosition = new DX.Vector3(-5.0f, 5.0f, 8.0f),
-                LightColor = Color.Yellow,
-                SpecularColor = Color.Yellow,
-                SpecularPower = 2048.0f,
-                Attenuation = 10.0f
+                Position = new DX.Vector3(-5.0f, 5.0f, 4.5f),
+                Color = Color.Yellow,
+                SpecularPower = 1024.0f,
+                Attenuation = 2.75f
             };
 
-            _renderer.Lights[2] = new Light
+            _renderer.Lights[2] = new GorgonPointLight
             {
-                LightPosition = new DX.Vector3(5.0f, 3.0f, 10.0f),
-                LightColor = Color.Red,
-                SpecularColor = Color.Red,
+                Position = new DX.Vector3(5.0f, 6.25f, 9.5f),
+                Color = Color.Red,                
                 SpecularPower = 0.0f,
-                Attenuation = 16.0f
+                Attenuation = 6.0f
             };
         }
 
@@ -636,11 +666,9 @@ namespace Gorgon.Examples
 
                 BuildMeshes();
 
-                _renderer.Camera = _camera = new Camera
+                _renderer.Camera = _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swapChain.Width, _swapChain.Height))
                 {
-                    Fov = 75.0f,
-                    ViewWidth = _swapChain.Width,
-                    ViewHeight = _swapChain.Height
+                    Fov = 75.0f
                 };
 
                 _input = new GI.GorgonRawInput(_window);
@@ -660,8 +688,7 @@ namespace Gorgon.Examples
                 // When we resize, update the projection and viewport to match our client size.
                 _swapChain.SwapChainResized += (sender, args) =>
                                                     {
-                                                        _camera.ViewWidth = args.Size.Width;
-                                                        _camera.ViewHeight = args.Size.Height;
+                                                        _camera.ViewDimensions = args.Size.ToSize2F();
 
                                                         BuildDepthBuffer(args.Size.Width, args.Size.Height);
 

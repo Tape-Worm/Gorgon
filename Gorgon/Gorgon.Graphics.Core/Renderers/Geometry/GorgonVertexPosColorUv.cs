@@ -24,11 +24,11 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Geometry
 {
@@ -48,7 +48,7 @@ namespace Gorgon.Renderers.Geometry
         /// The position of the vertex.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public Vector4 Position;
+        public DX.Vector4 Position;
 
         /// <summary>
         /// The color of the vertex.
@@ -60,7 +60,7 @@ namespace Gorgon.Renderers.Geometry
         /// The texture coordinate for the vertex.
         /// </summary>
         [InputElement(1, "TEXCOORD")]
-        public Vector2 UV;
+        public DX.Vector2 UV;
         #endregion
 
         #region Methods.
@@ -81,7 +81,7 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="position">The position.</param>
         /// <param name="color">The color.</param>
         /// <param name="uv">The texture coordinate.</param>
-        public void Deconstruct(out Vector4 position, out GorgonColor color, out Vector2 uv)
+        public void Deconstruct(out DX.Vector4 position, out GorgonColor color, out DX.Vector2 uv)
         {
             position = Position;
             color = Color;
@@ -94,9 +94,9 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="pos">The position.</param>
         /// <param name="color">The diffuse color for the vertex.</param>
         /// <param name="uv">The texture coordinates.</param>
-        public GorgonVertexPosColorUv(Vector3 pos, GorgonColor color, Vector2 uv)
+        public GorgonVertexPosColorUv(DX.Vector3 pos, GorgonColor color, DX.Vector2 uv)
         {
-            Position = new Vector4(pos, 1);
+            Position = new DX.Vector4(pos, 1);
             UV = uv;            
             Color = color;
         }
@@ -105,7 +105,7 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="pos">The position.</param>
         /// <param name="color">The diffuse color for the vertex.</param>
         /// <param name="uv">The texture coordinates.</param>
-        public GorgonVertexPosColorUv(Vector4 pos, GorgonColor color, Vector2 uv)
+        public GorgonVertexPosColorUv(DX.Vector4 pos, GorgonColor color, DX.Vector2 uv)
         {
             Position = pos;
             UV = uv;

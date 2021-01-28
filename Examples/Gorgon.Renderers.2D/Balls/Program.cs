@@ -47,10 +47,10 @@ using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
 namespace Gorgon.Examples
 {
-	/// <summary>
-	/// Main class for the application.
-	/// </summary>
-	static class Program
+    /// <summary>
+    /// Main class for the application.
+    /// </summary>
+    static class Program
 	{
 		// Maximum FPS for our ball simulation.
 		private const float MaxSimulationFPS = 1 / 60.0f;
@@ -72,7 +72,7 @@ namespace Gorgon.Examples
 		// Ball sprite.		
 		private static GorgonSprite _ball;
 		// Our list of balls.
-		private static IList<Ball> _ballList;
+		private static Ball[] _ballList;
 		// Number of balls.
 		private static int _ballCount;
 		// Our accumulator for running at a fixed frame rate.
@@ -135,8 +135,8 @@ namespace Gorgon.Examples
 		/// <param name="ballCount">Ball count to add to the total ball count.</param>
 		private static void GenerateBalls(int ballCount)
 		{
-			float halfWidth = _mainScreen.Width / 2.0f;
-			float halfHeight = _mainScreen.Height / 2.0f;
+			float halfWidth = _mainScreen.Width * 0.5f;
+			float halfHeight = _mainScreen.Height * 0.5f;
 			int start = _ballCount;
 
 			_ballCount += ballCount;
@@ -161,9 +161,9 @@ namespace Gorgon.Examples
 			{
 				var ball = new Ball
 				{
-					Position = new DX.Vector2(halfWidth - (_ball.Size.Width / 2.0f), halfHeight - (_ball.Size.Height / 2.0f)),
+					Position = new DX.Vector2(halfWidth - (_ball.Size.Width * 0.5f), halfHeight - (_ball.Size.Height * 0.5f)),
 					PositionDelta = new DX.Vector2((GorgonRandom.RandomSingle() * _mainScreen.Width) - (halfWidth),
-														   (GorgonRandom.RandomSingle() * _mainScreen.Height) - (halfHeight)),
+												   (GorgonRandom.RandomSingle() * _mainScreen.Height) - (halfHeight)),
 					Scale = 1.0f,
 					ScaleDelta = (GorgonRandom.RandomSingle() * 2.0f) - 1.0f,
 					Rotation = 0,
@@ -184,13 +184,16 @@ namespace Gorgon.Examples
 		/// <param name="frameTime">Frame delta time.</param>
 		private static void Transform(float frameTime)
 		{
+			int screenWidth = _mainScreen.Width;
+			int screenHeight = _mainScreen.Height;
+
 			// Transform balls.
 			for (int i = 0; i < _ballCount; i++)
 			{
 				Ball currentBall = _ballList[i];
 
-				DX.Vector2.Multiply(ref currentBall.PositionDelta, frameTime, out DX.Vector2 scaledDelta);
-				DX.Vector2.Add(ref currentBall.Position, ref scaledDelta, out currentBall.Position);
+				DX.Vector2.Multiply(ref currentBall.PositionDelta, frameTime, out DX.Vector2 scaleData);
+				DX.Vector2.Add(ref currentBall.Position, ref scaleData, out currentBall.Position);
 				currentBall.Scale += currentBall.ScaleDelta * frameTime;
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
 				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
@@ -206,13 +209,13 @@ namespace Gorgon.Examples
 				}
 
 				// Adjust position.
-				if ((currentBall.Position.X > _mainScreen.Width) || (currentBall.Position.X < 0))
+				if ((currentBall.Position.X > screenWidth) || (currentBall.Position.X < 0))
 				{
 					currentBall.PositionDelta.X = -currentBall.PositionDelta.X;
 					currentBall.RotationDelta = -currentBall.RotationDelta;
 				}
 
-				if ((currentBall.Position.Y > _mainScreen.Height) || (currentBall.Position.Y < 0))
+				if ((currentBall.Position.Y > screenHeight) || (currentBall.Position.Y < 0))
 				{
 					currentBall.PositionDelta.Y = -currentBall.PositionDelta.Y;
 					currentBall.RotationDelta = -currentBall.RotationDelta;
@@ -245,8 +248,7 @@ namespace Gorgon.Examples
 
 				currentBall.Opacity = 0.0f;
 				currentBall.Checkered = !currentBall.Checkered;
-				currentBall.Color = Color.FromArgb(255, GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255),
-					GorgonRandom.RandomInt32(0, 255));
+				currentBall.Color = Color.FromArgb(255, GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255));
 				currentBall.OpacityDelta = GorgonRandom.RandomSingle() * 0.5f;
 			}
 		}
@@ -259,7 +261,7 @@ namespace Gorgon.Examples
 			// Draw background.
 			for (int y = 0; y < _mainScreen.Height; y += (int)_wall.Size.Height)
 			{
-				for (int x = 0; x < _mainScreen.Width; x += (int)_wall.Size.Height)
+				for (int x = 0; x < _mainScreen.Width; x += (int)_wall.Size.Width)
 				{
 					_wall.Color = Color.White;
 					_wall.Position = new DX.Vector2(x, y);
@@ -553,13 +555,8 @@ namespace Gorgon.Examples
 				_statsTexture = GorgonTexture2DView.CreateTexture(_graphics,
 																  new GorgonTexture2DInfo("Stats Render Target")
 																  {
-																	  Width = (int)_ballFont
-																				   .MeasureText(string.Format(Resources.FPSLine,
-																											  999999,
-																											  999999.999,
-																											  _ballCount,
-																											  9999),
-																								true).Width,
+																	  Width = (int)string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount, 9999)
+																						 .MeasureText(_ballFont, true).Width,
 																	  Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
 																	  Format = BufferFormat.R8G8B8A8_UNorm,
 																	  Binding = TextureBinding.RenderTarget

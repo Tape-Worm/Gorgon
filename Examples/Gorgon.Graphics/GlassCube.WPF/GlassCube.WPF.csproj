@@ -92,7 +92,7 @@
     <None Include="..\..\app.manifest" Link="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xaml" />

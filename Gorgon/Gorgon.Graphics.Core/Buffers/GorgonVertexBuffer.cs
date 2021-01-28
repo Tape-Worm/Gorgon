@@ -56,8 +56,8 @@ namespace Gorgon.Graphics.Core
     /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
     /// struct MyVertex
     /// {
-    ///		public Vector4 Position;
-    ///		public Vector4 Color;
+    ///		public DX.Vector4 Position;
+    ///		public DX.Vector4 Color;
     /// }
     /// 
     /// GorgonGraphics graphics;
@@ -179,36 +179,6 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to validate the bindings for a given buffer.
-        /// </summary>
-        /// <param name="usage">The usage flags for the buffer.</param>
-        /// <param name="binding">The bindings to apply to the buffer, pass <b>null</b> to skip usage and binding check.</param>
-        internal static void ValidateBufferBindings(ResourceUsage usage, VertexIndexBufferBinding binding)
-        {
-            switch (usage)
-            {
-                case ResourceUsage.Dynamic:
-                case ResourceUsage.Immutable:
-                    if ((binding & VertexIndexBufferBinding.StreamOut) == VertexIndexBufferBinding.StreamOut)
-                    {
-                        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NO_SO, usage));
-                    }
-
-                    if ((binding & VertexIndexBufferBinding.UnorderedAccess) == VertexIndexBufferBinding.UnorderedAccess)
-                    {
-                        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NO_UAV, usage));
-                    }
-                    break;
-                case ResourceUsage.Staging:
-                    if (binding != VertexIndexBufferBinding.None)
-                    {
-                        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_STAGING_CANNOT_BE_BOUND_TO_GPU, binding));
-                    }
-                    break;
-            }
-        }
-
-        /// <summary>
         /// Function to initialize the buffer data.
         /// </summary>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
@@ -250,6 +220,98 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <returns>The staging buffer to retrieve.</returns>
         protected override GorgonBufferCommon GetStagingInternal() => GetStaging();
+
+        /// <summary>
+        /// Function to validate the bindings for a given buffer.
+        /// </summary>
+        /// <param name="usage">The usage flags for the buffer.</param>
+        /// <param name="binding">The bindings to apply to the buffer, pass <b>null</b> to skip usage and binding check.</param>
+        internal static void ValidateBufferBindings(ResourceUsage usage, VertexIndexBufferBinding binding)
+        {
+            switch (usage)
+            {
+                case ResourceUsage.Dynamic:
+                case ResourceUsage.Immutable:
+                    if ((binding & VertexIndexBufferBinding.StreamOut) == VertexIndexBufferBinding.StreamOut)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NO_SO, usage));
+                    }
+
+                    if ((binding & VertexIndexBufferBinding.UnorderedAccess) == VertexIndexBufferBinding.UnorderedAccess)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NO_UAV, usage));
+                    }
+                    break;
+                case ResourceUsage.Staging:
+                    if (binding != VertexIndexBufferBinding.None)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_STAGING_CANNOT_BE_BOUND_TO_GPU, binding));
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Function to create a new vertex buffer that is to be filled with a known vertex type.
+        /// </summary>
+        /// <typeparam name="T">The type of vertex data to send to the vertex buffer. Must be an unmanaged type.</typeparam>
+        /// <param name="graphics">The graphics interface used to create the vertex buffer.</param>
+        /// <param name="info">Information about the vertex buffer.</param>
+        /// <param name="initialData">[Optional] A read only span used to populate the vertex buffer.</param>
+        /// <returns>A new <see cref="GorgonVertexBuffer"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown if the size of the data in <paramref name="initialData"/> is too large for the buffer.</exception>
+        /// <remarks>
+        /// <para>
+        /// This factory method is used to create a vertex buffer using a known type of data, and, optionally, fill it with data. This avoids the need to convert the data to byte data when initializing 
+        /// from the constructor.
+        /// </para>
+        /// <para>
+        /// If the <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> property in the <paramref name="info"/> is less than 1, then the method will create a vertex buffer that is the exact size needed 
+        /// to fit the <paramref name="initialData"/>. If <paramref name="initialData"/> is omitted and the size is less than 1, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public static GorgonVertexBuffer Create<T>(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default)
+            where T : unmanaged            
+        {
+            if (graphics == null)
+            {
+                throw new ArgumentNullException(nameof(graphics));
+            }
+
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+
+            if (initialData.IsEmpty)
+            {
+                return new GorgonVertexBuffer(graphics, info);
+            }
+
+            unsafe
+            {                
+                int size = initialData.Length * sizeof(T);                
+
+                if (info.SizeInBytes < 1)
+                {
+                    info = new GorgonVertexBufferInfo(info)
+                    {
+                        SizeInBytes = size
+                    };
+                }
+
+                if (size > info.SizeInBytes)
+                {
+                    throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, size), nameof(initialData));
+                }
+
+                fixed (void* ptr = &initialData[0])
+                {
+                    return new GorgonVertexBuffer(graphics, info, new ReadOnlySpan<byte>(ptr, initialData.Length * sizeof(T)));
+                }
+            }
+        }
 
         /// <summary>
         /// Function to retrieve a copy of this buffer as a staging resource.

@@ -28,8 +28,8 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Gorgon.Math;
 using Gorgon.Graphics;
+using Gorgon.Math;
 
 namespace Gorgon.UI
 {

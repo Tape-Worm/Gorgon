@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
@@ -171,12 +172,13 @@ namespace Gorgon.Renderers
         /// Function to assign a single color to all corners.
         /// </summary>
         /// <param name="color">The color to assign.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetAll(in GorgonColor color)
         {
-            if ((_renderable.LowerLeftColor.Equals(in color))
-                && (_renderable.LowerRightColor.Equals(in color))
-                && (_renderable.UpperLeftColor.Equals(in color))
-                && (_renderable.UpperRightColor.Equals(in color)))
+            if ((GorgonColor.Equals(in _renderable.LowerLeftColor, in color))
+                && (GorgonColor.Equals(in _renderable.LowerRightColor, in color))
+                && (GorgonColor.Equals(in _renderable.UpperLeftColor, in color))
+                && (GorgonColor.Equals(in _renderable.UpperRightColor, in color)))
             {
                 return;
             }

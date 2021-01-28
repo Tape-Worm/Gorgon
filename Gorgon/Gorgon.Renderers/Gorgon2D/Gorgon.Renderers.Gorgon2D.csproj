@@ -31,6 +31,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\Gorgon.Renderers.Gorgon2D.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\Gorgon.Renderers.Gorgon2D.XML</DocumentationFile>
@@ -38,6 +39,40 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Cameras\_Interfaces\**" />
+    <EmbeddedResource Remove="Cameras\_Interfaces\**" />
+    <None Remove="Cameras\_Interfaces\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Cameras\Gorgon2DOrthoCamera.cs" />
+    <Compile Remove="Cameras\Gorgon2DPerspectiveCamera.cs" />
+    <Compile Remove="Effects\Gorgon2DLight.cs" />
+    <Compile Remove="Gorgon2DVertex.cs" />
+    <Compile Remove="Renderables\_Internal\BatchRenderableStateEqualityComparer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\BasicSprite.hlsl" />
+    <None Remove="Resources\black_2x2.png" />
+    <None Remove="Resources\ChromaticAberration.hlsl" />
+    <None Remove="Resources\FilmGrain.hlsl" />
+    <None Remove="Resources\GBuffer.hlsl" />
+    <None Remove="Resources\HdrBloom.hlsl" />
+    <None Remove="Resources\Lighting.hlsl" />
+    <None Remove="Resources\normal_2x2.png" />
+    <None Remove="Resources\White_2x2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\BasicSprite.hlsl" />
+    <EmbeddedResource Include="Resources\black_2x2.png" />
+    <EmbeddedResource Include="Resources\ChromaticAberration.hlsl" />
+    <EmbeddedResource Include="Resources\FilmGrain.hlsl" />
+    <EmbeddedResource Include="Resources\GBuffer.hlsl" />
+    <EmbeddedResource Include="Resources\HdrBloom.hlsl" />
+    <EmbeddedResource Include="Resources\Lighting.hlsl" />
+    <EmbeddedResource Include="Resources\normal_2x2.png" />
+    <EmbeddedResource Include="Resources\White_2x2.png" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\g.png">
       <Pack>True</Pack>
@@ -54,6 +89,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

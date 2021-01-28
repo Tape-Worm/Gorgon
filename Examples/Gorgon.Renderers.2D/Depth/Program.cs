@@ -381,12 +381,10 @@ namespace Gorgon.Examples
 
             // Load our packed file system plug in.
             _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
-            _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll");
-            IGorgonPlugInService plugIns = new GorgonMefPlugInService(_assemblyCache);
 
             // Load the file system containing our application data (sprites, images, etc...)
-            IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(plugIns, GorgonApplication.Log);
-            IGorgonFileSystemProvider provider = providerFactory.CreateProvider("Gorgon.IO.GorPack.GorPackProvider");
+            IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_assemblyCache, GorgonApplication.Log);
+            IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"), "Gorgon.IO.GorPack.GorPackProvider");
             IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
 
             // We can load the editor file system directly.

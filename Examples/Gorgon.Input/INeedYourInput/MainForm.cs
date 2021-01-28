@@ -26,17 +26,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Examples.Properties;
+using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
@@ -44,8 +46,6 @@ using Gorgon.UI;
 using DX = SharpDX;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
-using Gorgon.Input;
-using System.Diagnostics;
 
 namespace Gorgon.Examples
 {
@@ -185,9 +185,10 @@ namespace Gorgon.Examples
                     if (_counter == -1)
                     {
                         // Clip the mouse cursor to our client area.
-                        Cursor.Clip = _mouse.PositionConstraint = RectangleToScreen(ClientRectangle);
+                        Rectangle screenRect = Cursor.Clip = RectangleToScreen(ClientRectangle);
+                        _mouse.PositionConstraint = new DX.Rectangle(screenRect.Left, screenRect.Top, screenRect.Width, screenRect.Height);
                         // Set the position to the current mouse position.
-                        _mouse.Position = Cursor.Position;
+                        _mouse.Position = new DX.Point(Cursor.Position.X, Cursor.Position.Y);
 
                         _input.RegisterDevice(_mouse);
                         _useWinFormsInput = false;
@@ -275,7 +276,7 @@ namespace Gorgon.Examples
                 buttons |= GorgonMouseButtons.Right;
             }
 
-            MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, e.Location, e.Delta, Point.Empty, e.Delta, 0, false));
+            MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new DX.Point(e.Location.X, e.Location.Y), e.Delta, DX.Point.Zero, e.Delta, 0, false));
         }
 
         /// <summary>
@@ -303,7 +304,26 @@ namespace Gorgon.Examples
                 buttons |= GorgonMouseButtons.Right;
             }
 
-            MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, e.Location, e.Delta, Point.Empty, e.Delta, 0, false));
+            MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new DX.Point(e.Location.X, e.Location.Y), e.Delta, DX.Point.Zero, e.Delta, 0, false));
+        }
+
+        /// <summary>
+        /// Function called when the mouse wheel is rotated.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="GorgonMouseEventArgs"/> instance containing the event data.</param>
+        private void Mouse_MouseWheelMove(object sender, GorgonMouseEventArgs e)
+        {
+            _radius += e.WheelDelta.Sign();
+
+            if (_radius < 2.0f)
+            {
+                _radius = 2.0f;
+            }
+            if (_radius > 10.0f)
+            {
+                _radius = 10.0f;
+            }
         }
 
         /// <summary>
@@ -319,7 +339,8 @@ namespace Gorgon.Examples
             }
 
             Color drawColor = Color.Black;      // Drawing color.
-            Point position = _useWinFormsInput ? e.Position : PointToClient(e.Position);
+            var mousePos = new Point(e.Position.X, e.Position.Y);
+            Point position = _useWinFormsInput ? mousePos : PointToClient(mousePos);
 
             if (e.Buttons == GorgonMouseButtons.None)
             {
@@ -395,7 +416,7 @@ namespace Gorgon.Examples
         private bool Gorgon_Idle()
         {
             // Cursor position.
-            Point mousePosition = PointToClient(!_useWinFormsInput ? _mouse.Position : Cursor.Position);
+            Point mousePosition = PointToClient(!_useWinFormsInput ? new Point(_mouse.Position.X, _mouse.Position.Y) : Cursor.Position);
             var cursorPosition = new DX.Vector2(mousePosition.X, mousePosition.Y);
 
             if (!_useWinFormsInput)
@@ -415,12 +436,23 @@ namespace Gorgon.Examples
 
                 GorgonRange xAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.XAxis].Range;
                 GorgonRange yAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.YAxis].Range;
+                GorgonRange throttleRange = GorgonRange.Empty;
+
+                if (_joystick.Info.AxisInfo.TryGetValue(GamingDeviceAxis.Throttle, out GorgonGamingDeviceAxisInfo info))
+                {
+                    throttleRange = info.Range;
+                }
 
                 // Adjust position to match screen coordinates.
                 cursorPosition = new DX.Vector2(_joystick.Axis[GamingDeviceAxis.XAxis].Value - xAxisRange.Minimum,
                                              _joystick.Axis[GamingDeviceAxis.YAxis].Value - yAxisRange.Minimum);
                 cursorPosition.X = cursorPosition.X / (xAxisRange.Range + 1) * _screen.Width;
                 cursorPosition.Y = _screen.Height - (cursorPosition.Y / (yAxisRange.Range + 1) * _screen.Height);
+
+                if (throttleRange.Range != 0)
+                {
+                    _radius = ((1.0f - (_joystick.Axis[GamingDeviceAxis.Throttle].Value / (float)throttleRange.Range)) * 8) + 2;
+                }
             }
 
 
@@ -588,16 +620,13 @@ namespace Gorgon.Examples
                 IGorgonPlugInService plugInService = new GorgonMefPlugInService(_assemblyCache);
 
                 // Create the factory to retrieve gaming device drivers.
-                var factory = new GorgonGamingDeviceDriverFactory(plugInService);
+                var factory = new GorgonGamingDeviceDriverFactory(_assemblyCache);
 
                 // Create the raw input interface.
                 _input = new GorgonRawInput(this, GorgonApplication.Log);
 
                 // Get available gaming device driver plug ins.
-                _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.DirectInput.dll");
-                _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
-
-                _drivers = factory.LoadAllDrivers();
+                _drivers = factory.LoadAllDrivers(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll"));
 
                 _joystickList = new List<IGorgonGamingDevice>();
 
@@ -611,7 +640,7 @@ namespace Gorgon.Examples
                         IGorgonGamingDevice device = driver.CreateGamingDevice(info);
 
                         // Turn off dead zones for this example.
-                        foreach (GorgonGamingDeviceAxis axis in device.Axis)
+                        foreach (IGorgonGamingDeviceAxis axis in device.Axis)
                         {
                             axis.DeadZone = GorgonRange.Empty;
                         }
@@ -701,22 +730,10 @@ namespace Gorgon.Examples
                 Cursor = Cursors.Cross;
                 _mouse.MouseButtonDown += MouseInput;
                 _mouse.MouseMove += MouseInput;
-                _mouse.MouseWheelMove += (sender, args) =>
-                                         {
-                                             _radius += args.WheelDelta.Sign();
-
-                                             if (_radius < 2.0f)
-                                             {
-                                                 _radius = 2.0f;
-                                             }
-                                             if (_radius > 10.0f)
-                                             {
-                                                 _radius = 10.0f;
-                                             }
-                                         };
+                _mouse.MouseWheelMove += Mouse_MouseWheelMove;
 
                 // Set the mouse position.
-                _mouse.Position = new Point(ClientSize.Width / 2, ClientSize.Height / 2);
+                _mouse.Position = new DX.Point(ClientSize.Width / 2, ClientSize.Height / 2);
 
                 _noBlending = _blendBuilder.BlendState(GorgonBlendState.NoBlending)
                                                .Build();

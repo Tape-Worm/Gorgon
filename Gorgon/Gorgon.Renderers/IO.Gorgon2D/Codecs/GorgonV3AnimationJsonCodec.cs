@@ -33,8 +33,8 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 using Newtonsoft.Json;
+using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -363,7 +363,7 @@ namespace Gorgon.IO
                     }
 
                     GorgonKeyVector3 vec3 = converter.ReadJson(reader, vec3Type, null, false, null);
-                    keys.Add(new GorgonKeyVector2(vec3.Time, (DX.Vector2)vec3.Value));
+                    keys.Add(new GorgonKeyVector2(vec3.Time, new DX.Vector2(vec3.Value.X, vec3.Value.Y)));
                 }
 
                 return keys;

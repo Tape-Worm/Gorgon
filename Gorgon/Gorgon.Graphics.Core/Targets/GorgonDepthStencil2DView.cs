@@ -29,12 +29,11 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using System.Numerics;
-using SharpDX.DXGI;
+using Gorgon.Memory;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
-using Gorgon.Memory;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -305,7 +304,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.DepthStencilViewDescription
 				{
-					Format = (Format)Format,
+					Format = (DXGI.Format)Format,
 					Dimension = isMultisampled
 									? D3D11.DepthStencilViewDimension.Texture2DMultisampledArray
 									: D3D11.DepthStencilViewDimension.Texture2DArray,
@@ -320,7 +319,7 @@ namespace Gorgon.Graphics.Core
 
             return new D3D11.DepthStencilViewDescription
 			{
-				Format = (Format)Format,
+				Format = (DXGI.Format)Format,
 				Dimension = isMultisampled
 								? D3D11.DepthStencilViewDimension.Texture2DMultisampled
 								: D3D11.DepthStencilViewDimension.Texture2D,
@@ -470,12 +469,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="pixelVector">The pixel size to convert.</param>
 		/// <returns>A 2D vector containing the texel space coordinates.</returns>
-		public Vector2 ToTexel(Vector2 pixelVector)
+		public DX.Vector2 ToTexel(DX.Vector2 pixelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new Vector2(pixelVector.X / width, pixelVector.Y / height);
+			return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
 		}
 
 		/// <summary>
@@ -483,12 +482,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texelVector">The texel size to convert.</param>
 		/// <returns>A 2D vector containing the pixel space coordinates.</returns>
-		public Vector2 ToPixel(Vector2 texelVector)
+		public DX.Vector2 ToPixel(DX.Vector2 texelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new Vector2(texelVector.X * width, texelVector.Y * height);
+			return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
 		}
 
 		/// <summary>

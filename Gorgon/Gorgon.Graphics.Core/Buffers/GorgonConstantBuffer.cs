@@ -55,8 +55,8 @@ namespace Gorgon.Graphics.Core
     /// <pre>
     /// cbuffer ViewMatrix : register(b0)
     /// {
-    ///	   Vector3 viewMatrix;
-    ///    Vector3 other;
+    ///	   DX.Vector3 viewMatrix;
+    ///    DX.Vector3 other;
     /// }
     /// </pre>
     /// This binds a matrix used for the view to constant buffer slot 0. Note that the register slot name starts with a <b>b</b>.
@@ -66,13 +66,13 @@ namespace Gorgon.Graphics.Core
     /// For example, to update a view matrix to shift to the right every frame:
     /// <code language="csharp">
     /// <![CDATA[
-    /// Vector3 _lastPosition;
+    /// DX.Vector3 _lastPosition;
     /// GorgonConstantBuffer _viewMatrixBuffer;		// This is created elsewhere with a size of 64 bytes to hold a Matrix.
     /// 
     /// void IdleMethod()
     /// {
     ///		// Move 2 units to the right every second.
-    ///		_lastPosition = new Vector3(_lastPosition.X + 2 * GorgonTiming.Delta, 0, -2.0f);
+    ///		_lastPosition = new DX.Vector3(_lastPosition.X + 2 * GorgonTiming.Delta, 0, -2.0f);
     ///		Matrix viewMatrix = Matrix.Identity;
     /// 
     ///		// Adjust the matrix to perform the translation.
@@ -258,10 +258,10 @@ namespace Gorgon.Graphics.Core
         public GorgonConstantBuffer GetStaging()
         {
             var buffer = new GorgonConstantBuffer(Graphics,
-                                                                   new GorgonConstantBufferInfo(_info, $"{Name}_Staging")
-                                                                   {
-                                                                       Usage = ResourceUsage.Staging
-                                                                   });
+                                                    new GorgonConstantBufferInfo(_info, $"{Name}_Staging")
+                                                    {
+                                                        Usage = ResourceUsage.Staging
+                                                    });
 
             CopyTo(buffer);
 

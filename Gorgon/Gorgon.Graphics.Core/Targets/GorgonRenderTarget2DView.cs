@@ -25,17 +25,16 @@
 #endregion
 
 using System;
-using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using SharpDX.DXGI;
-using SharpDX.Mathematics.Interop;
-using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Memory;
+using SharpDX.Mathematics.Interop;
+using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -248,7 +247,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.RenderTargetViewDescription1
 				{
-					Format = (Format)Format,
+					Format = (DXGI.Format)Format,
 					Dimension = isMultisampled
 						? D3D11.RenderTargetViewDimension.Texture2DMultisampledArray
 						: D3D11.RenderTargetViewDimension.Texture2DArray,
@@ -265,7 +264,7 @@ namespace Gorgon.Graphics.Core
 
             return new D3D11.RenderTargetViewDescription1
 			{
-				Format = (Format)Format,
+				Format = (DXGI.Format)Format,
 				Dimension = isMultisampled
 					? D3D11.RenderTargetViewDimension.Texture2DMultisampled
 					: D3D11.RenderTargetViewDimension.Texture2D,
@@ -319,7 +318,7 @@ namespace Gorgon.Graphics.Core
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has a usage of <see cref="ResourceUsage.Staging"/>.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown if the texture <see cref="Format"/> is not typeless, and the <see cref="Binding"/> is set to <see cref="TextureBinding.DepthStencil"/>.</para>
+		/// <para>Thrown if the texture <see cref="GorgonRenderTargetView.Format"/> is not typeless, and the <see cref="Binding"/> is set to <see cref="TextureBinding.DepthStencil"/>.</para>
 		/// <para></para>
 		/// </exception>
 		/// <remarks>
@@ -393,12 +392,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="pixelVector">The pixel size to convert.</param>
 		/// <returns>A 2D vector containing the texel space coordinates.</returns>
-		public Vector2 ToTexel(Vector2 pixelVector)
+		public DX.Vector2 ToTexel(DX.Vector2 pixelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new Vector2(pixelVector.X / width, pixelVector.Y / height);
+			return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
 		}
 
 		/// <summary>
@@ -406,12 +405,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texelVector">The texel size to convert.</param>
 		/// <returns>A 2D vector containing the pixel space coordinates.</returns>
-		public Vector2 ToPixel(Vector2 texelVector)
+		public DX.Vector2 ToPixel(DX.Vector2 texelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new Vector2(texelVector.X * width, texelVector.Y * height);
+			return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
 		}
 
 		/// <summary>

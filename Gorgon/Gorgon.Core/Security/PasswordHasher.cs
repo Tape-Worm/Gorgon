@@ -30,15 +30,15 @@ using Gorgon.Core;
 
 namespace Gorgon.Security
 {
-	/// <summary>
-	/// Provides functionality for hashing and salting password strings.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This class provides functionality to create hashed and salted passwords using an SHA1 hash algorithm.
-	/// </para>
-	/// </remarks>
-	public static class PasswordHasher
+    /// <summary>
+    /// Provides functionality for hashing and salting password strings.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This class provides functionality to create hashed and salted passwords using an SHA1 hash algorithm.
+    /// </para>
+    /// </remarks>
+    public static class PasswordHasher
 	{
 		#region Constants.
 		// The number of iterations to use when hashing (for key stretching).

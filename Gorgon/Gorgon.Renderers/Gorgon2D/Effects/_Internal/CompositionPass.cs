@@ -28,6 +28,7 @@ using System;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Renderers
 {
@@ -59,7 +60,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the camera for rendering without an effect.
         /// </summary>
-        public IGorgon2DCamera Camera
+        public GorgonCameraCommon Camera
         {
             get;
             set;

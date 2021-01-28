@@ -36,6 +36,7 @@ using Gorgon.Math;
 using Gorgon.UI;
 using DX = SharpDX;
 
+
 namespace Gorgon.Renderers
 {
     /// <summary>
@@ -73,8 +74,6 @@ namespace Gorgon.Renderers
     public class GorgonTextSprite
     {
         #region Variables.
-        // The angle of rotation, in degrees.
-        private float _angle;
         // The text to render.
         private string _text;
         // Text with embedded codes.
@@ -421,17 +420,18 @@ namespace Gorgon.Renderers
         /// </summary>
         public DX.Vector2 Position
         {
-            get => Renderable.Bounds.TopLeft;
+            get => new DX.Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
-                if ((Renderable.Bounds.X == value.X)
-                    && (Renderable.Bounds.Y == value.Y))
+                ref DX.RectangleF bounds = ref Renderable.Bounds;
+
+                if ((bounds.Left == value.X)
+                    && (bounds.Top == value.Y))
                 {
                     return;
                 }
 
-                Renderable.Bounds.X = value.X;
-                Renderable.Bounds.Y = value.Y;
+                bounds = new DX.RectangleF(value.X, value.Y, bounds.Width, bounds.Height);
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -531,18 +531,15 @@ namespace Gorgon.Renderers
         /// </summary>
         public float Angle
         {
-            get => _angle;
+            get => Renderable.AngleDegs;
             set
             {
-                if (_angle == value)
+                if (Renderable.AngleDegs == value)
                 {
                     return;
                 }
 
-                _angle = value;
-                Renderable.AngleRads = _angle.ToRadians();
-                Renderable.AngleSin = Renderable.AngleRads.Sin();
-                Renderable.AngleCos = Renderable.AngleRads.Cos();
+                Renderable.AngleDegs = value;
             }
         }
 
@@ -594,7 +591,7 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpdateBounds()
         {
-            DX.Size2F size = Renderable.Font.MeasureText(_formattedText.ToString(),
+            DX.Size2F size = _formattedText.ToString().MeasureText(Renderable.Font,
                                                          DrawMode != TextDrawMode.GlyphsOnly,
                                                          Renderable.TabSpaceCount,
                                                          Renderable.LineSpaceMultiplier);

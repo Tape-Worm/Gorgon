@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Interop;
-using Microsoft.Wpf.Interop.DirectX;
-using Gorgon.Core;
-using Gorgon.Math;
-using System.Windows.Media;
-using Gorgon.Timing;
-using System.Windows.Controls;
-using Gorgon.Graphics.Wpf.Properties;
-using Gorgon.Graphics.Core;
 using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Interop;
+using System.Windows.Media;
+using Gorgon.Core;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Wpf.Properties;
+using Gorgon.Math;
+using Gorgon.Timing;
+using Microsoft.Wpf.Interop.DirectX;
 
 namespace Gorgon.Graphics.Wpf
 {

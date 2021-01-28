@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Native;
-using WIC = SharpDX.WIC;
 using BCn = BCnEncoder.Encoder;
+using WIC = SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging
 {

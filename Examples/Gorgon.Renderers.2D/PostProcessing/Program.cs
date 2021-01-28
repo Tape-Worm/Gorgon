@@ -33,6 +33,7 @@ using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
@@ -232,7 +233,7 @@ namespace Gorgon.Examples
                 }
 
                 _buttons[i] = new Button(_compositor[i]);
-                DX.Size2F size = _renderer.DefaultFont.MeasureText(_buttons[i].Text, false);
+                DX.Size2F size = _buttons[i].Text.MeasureText(_renderer.DefaultFont, false);
                 maxWidth = maxWidth.Max(size.Width);
                 _buttons[i].Bounds = new DX.RectangleF(0, position.Y, 0, size.Height);
                 position = new DX.Vector2(0, position.Y + size.Height + 2);

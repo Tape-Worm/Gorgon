@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Geometry
 {
@@ -47,13 +47,13 @@ namespace Gorgon.Renderers.Geometry
         /// The position of the vertex.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public Vector4 Position;
+        public DX.Vector4 Position;
 
         /// <summary>
         /// The texture coordinate for the vertex.
         /// </summary>
         [InputElement(1, "TEXCOORD")]
-        public Vector2 UV;
+        public DX.Vector2 UV;
         #endregion
 
         #region Methods.
@@ -73,7 +73,7 @@ namespace Gorgon.Renderers.Geometry
         /// <summary>Deconstructs this instance into a tuple.</summary>
         /// <param name="position">The position.</param>
         /// <param name="uv">The texture coordinate.</param>
-        public void Deconstruct(out Vector4 position, out Vector2 uv)
+        public void Deconstruct(out DX.Vector4 position, out DX.Vector2 uv)
         {
             position = Position;
             uv = UV;
@@ -84,16 +84,16 @@ namespace Gorgon.Renderers.Geometry
         /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosUv" /> struct.</summary>
         /// <param name="pos">The position.</param>
         /// <param name="uv">The texture coordinates.</param>
-        public GorgonVertexPosUv(Vector3 pos, Vector2 uv)
+        public GorgonVertexPosUv(DX.Vector3 pos, DX.Vector2 uv)
         {
-            Position = new Vector4(pos, 1);
+            Position = new DX.Vector4(pos, 1);
             UV = uv;
         }
 
         /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosUv" /> struct.</summary>
         /// <param name="pos">The position.</param>
         /// <param name="uv">The texture coordinates.</param>
-        public GorgonVertexPosUv(Vector4 pos, Vector2 uv)
+        public GorgonVertexPosUv(DX.Vector4 pos, DX.Vector2 uv)
         {
             Position = pos;
             UV = uv;

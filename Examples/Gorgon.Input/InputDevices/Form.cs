@@ -27,14 +27,14 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
 using Gorgon.Math;
-using Gorgon.UI;
-using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 using Gorgon.Timing;
+using Gorgon.UI;
+using DX = SharpDX;
+using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 // ReSharper disable All
 
 namespace Gorgon.Examples

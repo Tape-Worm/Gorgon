@@ -556,8 +556,7 @@ namespace Gorgon.Graphics.Fonts
                                             {
                                                 AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                                                 FontStyle = FontStyle.Bold,
-                                                OutlineSize = 0,
-                                                Compression = FontTextureCompression.Fast
+                                                OutlineSize = 0
                                             });
 
                 result.GenerateFont(_externalFonts);

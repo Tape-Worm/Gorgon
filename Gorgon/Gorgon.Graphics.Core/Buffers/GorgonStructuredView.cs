@@ -26,8 +26,8 @@
 
 using Gorgon.Core;
 using D3D = SharpDX.Direct3D;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {

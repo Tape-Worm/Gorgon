@@ -32,11 +32,10 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using GorgonTriangulator;
 using DX = SharpDX;
-
 
 namespace Gorgon.Renderers
 {
@@ -504,36 +503,27 @@ namespace Gorgon.Renderers
             _triangulator.EnsureWindingOrder(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
 
             // Split the polygon hull into triangles.
-            (GorgonNativeBuffer<int> indices, DX.RectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
-            GorgonNativeBuffer<Gorgon2DVertex> vertexData = newSprite.Renderable.Vertices.ToNativeBuffer();
+            (int[] indices, DX.RectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);            
 
-            try
+            newSprite.RwIndices = indices;
+
+            newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(Graphics, new GorgonIndexBufferInfo
             {
-                newSprite.RwIndices = indices.ToArray();
+                Binding = VertexIndexBufferBinding.None,
+                Use16BitIndices = false,
+                IndexCount = indices.Length,
+                Usage = ResourceUsage.Immutable
+            }, indices);
 
-                newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(Graphics, new GorgonIndexBufferInfo
-                {
-                    Binding = VertexIndexBufferBinding.None,
-                    Use16BitIndices = false,
-                    IndexCount = indices.Length,
-                    Usage = ResourceUsage.Immutable
-                }, indices);
-
-                newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(Graphics, new GorgonVertexBufferInfo
-                {
-                    Usage = ResourceUsage.Immutable,
-                    Binding = VertexIndexBufferBinding.None,
-                    SizeInBytes = vertexData.SizeInBytes
-                }, vertexData);
-                newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
-                newSprite.Renderable.IndexCount = indices.Length;
-                newSprite.Bounds = new DX.RectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
-            }
-            finally
+            newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics, new GorgonVertexBufferInfo
             {
-                vertexData?.Dispose();
-                indices?.Dispose();
-            }
+                Usage = ResourceUsage.Immutable,
+                Binding = VertexIndexBufferBinding.None,
+                SizeInBytes = newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes
+            }, newSprite.Renderable.Vertices);
+            newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
+            newSprite.Renderable.IndexCount = indices.Length;
+            newSprite.Bounds = new DX.RectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
 
             return newSprite;
         }

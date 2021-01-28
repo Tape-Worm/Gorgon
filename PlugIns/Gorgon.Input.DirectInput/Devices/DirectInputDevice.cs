@@ -31,8 +31,8 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Input.DirectInput.Properties;
 using Gorgon.UI;
-using DX = SharpDX;
 using DI = SharpDX.DirectInput;
+using DX = SharpDX;
 
 namespace Gorgon.Input.DirectInput
 {

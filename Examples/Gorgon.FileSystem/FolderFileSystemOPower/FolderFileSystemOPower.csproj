@@ -50,11 +50,15 @@
     <None Include="..\..\NoRules.ruleset" Link="NoRules.ruleset" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj" />
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj" />
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

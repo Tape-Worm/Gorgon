@@ -23,9 +23,11 @@
 // Created: Sunday, December 30, 2012 2:35:20 PM
 // 
 #endregion
+
 using System;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -71,7 +73,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the vertices for our object.
         /// </summary>
-        protected BoingerVertex[] Vertices
+        protected GorgonVertexPosUv[] Vertices
         {
             get;
             set;
@@ -198,20 +200,20 @@ namespace Gorgon.Examples
 
             if (_isScaleChanged)
             {
-                _scaleMatrix.ScaleVector = Scale;
+                _scaleMatrix.M11 = Scale.X;
+                _scaleMatrix.M22 = Scale.Y;
+                _scaleMatrix.M33 = Scale.Z;
             }
 
             if (_isRotationChanged)
             {
-                // Quaternion for rotation.
-
                 // Convert degrees to radians.
                 var rotRads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
 
+                // DX.Quaternion for rotation.
                 DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
                 DX.Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);
             }
-
 
             // Build our world matrix.
             DX.Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out DX.Matrix temp);

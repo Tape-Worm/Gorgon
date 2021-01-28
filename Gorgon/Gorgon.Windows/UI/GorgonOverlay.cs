@@ -29,9 +29,9 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Gorgon.Math;
 using Gorgon.Collections;
 using Gorgon.Graphics;
+using Gorgon.Math;
 
 namespace Gorgon.UI
 {

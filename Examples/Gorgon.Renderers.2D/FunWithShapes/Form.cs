@@ -94,7 +94,6 @@ namespace Gorgon.Examples
                 var startPosition = new DX.Vector2(sin + _halfSize.Width, cos + _halfSize.Height);
                 var endPosition = new DX.Vector2((cos * (GorgonRandom.RandomSingle(_halfSize.Width * 0.82f))) + startPosition.X, (sin * (GorgonRandom.RandomSingle(_halfSize.Height * 0.82f))) + startPosition.Y);
                 _renderer.DrawLine(startPosition.X, startPosition.Y, endPosition.X, endPosition.Y, paintColor);
-                //Gorgon.Screen.Line(sin + _halfWidth, cos + _halfHeight, cos * (RandomValue * _halfWidth), sin * (RandomValue * _halfHeight), paintColor);
             }
 
             // Draw a filled circle.
@@ -105,7 +104,8 @@ namespace Gorgon.Examples
             // Draw some circles in the filled circle (sunspots). 
             for (int x = 0; x < 25; x++)
             {
-                float radius = GorgonRandom.RandomSingle(5.0f);
+                //float radius = GorgonRandom.RandomSingle(5.0f);
+                float radius = 4;
                 var spotPosition = new DX.Vector2((GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Width - (_halfSize.Height / 4.0f)),
                                                          (GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Height - (_halfSize.Height / 4.0f)));
                 _renderer.DrawEllipse(new DX.RectangleF(spotPosition.X - (radius * 0.5f),
@@ -114,16 +114,16 @@ namespace Gorgon.Examples
                                                         radius),
                                       Color.Black);
             }
-
+            
             // Draw some black bars.
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height / 6.0f), Color.Black);
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, _screen.Height - (_screen.Height / 6.0f), _screen.Width, _screen.Height / 6.0f), Color.Black);
 
-            // Tell the renderer that we're done drawing so we can actually render the shapes.
+            // Tell the renderer that we're done drawing so we can actually render the shapes.            
             _renderer.End();
 
             GorgonExample.DrawStatsAndLogo(_renderer);
-
+            
             // Always call this when done or you won't see anything.
             _screen.Present(1);
         }

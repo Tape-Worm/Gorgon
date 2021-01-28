@@ -30,13 +30,15 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-/*using Gorgon.Renderers;*/
+using Gorgon.Renderers;
+using Gorgon.Timing;
 using Gorgon.UI;
 using Drawing = System.Drawing;
 using DX = SharpDX;
@@ -206,7 +208,6 @@ namespace Gorgon.Examples
             ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex), GorgonApplication.Log);
         }
 
-        /*
         /// <summary>
         /// Function to draw the statistics and the logo for the example.
         /// </summary>
@@ -228,7 +229,7 @@ namespace Gorgon.Examples
             _statsText.Length = 0;            
             _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2} ({3} triangles)", GorgonTiming.AverageFPS, GorgonTiming.Delta, stats.DrawCallCount, stats.TriangleCount);
 
-            DX.Size2F measure = _statsFont.MeasureText(_statsText.ToString(), true);
+            DX.Size2F measure = _statsText.ToString().MeasureText(_statsFont, true);
             var statsRegion = new DX.RectangleF(0, 0, currentRtv.Width, measure.Height + 4);
             var logoRegion = new DX.RectangleF(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
 
@@ -243,7 +244,7 @@ namespace Gorgon.Examples
                     r.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
 
                     // Draw FPS text.
-                    r.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColor.White);
+                    r.DrawString(_statsText.ToString(), DX.Vector2.One, _statsFont, GorgonColor.White);
                 })
                 .DrawFilledRectangle(logoRegion, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1))
                 .End();
@@ -270,7 +271,7 @@ namespace Gorgon.Examples
             _statsText.Length = 0;
             _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2} ({3} triangles)", GorgonTiming.AverageFPS, GorgonTiming.Delta, stats.DrawCallCount, stats.TriangleCount);
 
-            DX.Size2F measure = _statsFont.MeasureText(_statsText.ToString(), true);
+            DX.Size2F measure = _statsText.ToString().MeasureText(_statsFont, true);
             var statsRegion = new DX.RectangleF(0, 0, currentRtv.Width, measure.Height + 4);
             var logoRegion = new DX.RectangleF(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
 
@@ -285,14 +286,14 @@ namespace Gorgon.Examples
                 renderer.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
 
                 // Draw FPS text.
-                renderer.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColor.White);
+                renderer.DrawString(_statsText.ToString(), DX.Vector2.One, _statsFont, GorgonColor.White);
             }
 
             // Draw logo.
             renderer.DrawFilledRectangle(logoRegion, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1));
 
             renderer.End();
-        }*/
+        }
 
         /// <summary>
         /// Function to force the resources for the application to unload.
@@ -332,9 +333,7 @@ namespace Gorgon.Examples
                 OutlineColor2 = GorgonColor.Black,
                 OutlineSize = 2,
                 TextureWidth = 512,
-                TextureHeight = 256,
-                UsePremultipliedTextures = true,
-                Compression = FontTextureCompression.Fast
+                TextureHeight = 256
             });
             
             using (var stream = new MemoryStream(Resources.Gorgon_Logo_Small))

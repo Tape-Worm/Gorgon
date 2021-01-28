@@ -5,17 +5,17 @@
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
 using System;
-using SharpDX;
+using DX = SharpDX;
 
 namespace GorgonTriangulator
 {
     internal struct Vertex
         : IEquatable<Vertex>
     {
-        public readonly Vector2 Position;
+        public readonly DX.Vector2 Position;
         public readonly int Index;
 
-        public Vertex(Vector2 position, int index)
+        public Vertex(DX.Vector2 position, int index)
         {
             Position = position;
             Index = index;

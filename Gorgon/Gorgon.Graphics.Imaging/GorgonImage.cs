@@ -27,11 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using BCnDecode = BCnEncoder.Decoder;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
+using BCnDecode = BCnEncoder.Decoder;
 
 namespace Gorgon.Graphics.Imaging
 {

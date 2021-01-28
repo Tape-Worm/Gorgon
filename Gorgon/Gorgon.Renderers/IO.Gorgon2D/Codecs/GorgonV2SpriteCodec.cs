@@ -466,11 +466,11 @@ namespace Gorgon.IO
 
                 reader.Begin(FileHeader);
                 reader.Begin(SpriteDataChunk);
-                reader.SkipBytes(DX.Vector2.SizeInBytes
+                reader.SkipBytes(Unsafe.SizeOf<DX.Vector2>()
                                  + Unsafe.SizeOf<DX.Size2F>()
                                  + (sizeof(bool) * 2)
                                  + (GorgonColor.SizeInBytes * 4)
-                                 + (DX.Vector2.SizeInBytes * 4));
+                                 + (Unsafe.SizeOf<DX.Vector2>() * 4));
                 reader.End();
 
                 // Read rendering information.

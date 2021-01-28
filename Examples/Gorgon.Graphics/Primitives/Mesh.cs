@@ -27,7 +27,7 @@
 using System;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -109,6 +109,14 @@ namespace Gorgon.Examples
             protected set;
         }
 
+        /// <summary>
+        /// Property to return the axis aligned bounding box for the mesh.
+        /// </summary>
+        public DX.BoundingBox Aabb
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to set or return whether writing to the depth buffer is enabled or not.
@@ -122,11 +130,36 @@ namespace Gorgon.Examples
 
         #region Methods.
         /// <summary>
+        /// Function to update the axis aligned bounding box for the mesh.
+        /// </summary>
+        /// <param name="vertexData">The vertices in the mesh.</param>
+        protected void UpdateAabb(GorgonVertexPosNormUvTangent[] vertexData)
+        {
+            float minX = float.MaxValue, minY = float.MaxValue, minZ = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue, maxZ = float.MinValue;
+
+            for (int i = 0; i < vertexData.Length; ++i)
+            {
+                ref readonly DX.Vector4 pos = ref vertexData[i].Position;
+
+                minX = minX.Min(pos.X);
+                minY = minY.Min(pos.Y);
+                minZ = minZ.Min(pos.Z);
+
+                maxX = maxX.Max(pos.X);
+                maxY = maxY.Max(pos.Y);
+                maxZ = maxZ.Max(pos.Z);
+            }
+
+            Aabb = new DX.BoundingBox(new DX.Vector3(minX, minY, minZ), new DX.Vector3(maxX, maxY, maxZ));
+        }
+
+        /// <summary>
         /// Function to calculate tangent information for bump mapping.
         /// </summary>
         /// <param name="vertexData">Buffer holding the vertices.</param>
         /// <param name="indexData">Buffer holding the indices.</param>
-        protected void CalculateTangents(GorgonNativeBuffer<Vertex3D> vertexData, GorgonNativeBuffer<int> indexData)
+        protected void CalculateTangents(GorgonVertexPosNormUvTangent[] vertexData, int[] indexData)
         {
             var biTanData = new DX.Vector3[VertexCount];
             var tanData = new DX.Vector3[VertexCount];
@@ -146,16 +179,15 @@ namespace Gorgon.Examples
                 int index2 = indexData[indexOffset++];
                 int index3 = indexData[indexOffset++];
 
-                Vertex3D vertex1 = vertexData[index1];
-                Vertex3D vertex2 = vertexData[index2];
-                Vertex3D vertex3 = vertexData[index3];
+                GorgonVertexPosNormUvTangent vertex1 = vertexData[index1];
+                GorgonVertexPosNormUvTangent vertex2 = vertexData[index2];
+                GorgonVertexPosNormUvTangent vertex3 = vertexData[index3];
 
-                DX.Vector4.Subtract(ref vertex2.Position, ref vertex1.Position, out DX.Vector4 deltaPos1);
+                var deltaPos1 = DX.Vector4.Subtract(vertex2.Position, vertex1.Position);
+                var deltaPos2 = DX.Vector4.Subtract(vertex3.Position, vertex1.Position);
 
-                DX.Vector4.Subtract(ref vertex3.Position, ref vertex1.Position, out DX.Vector4 deltaPos2);
-
-                DX.Vector2.Subtract(ref vertex2.UV, ref vertex1.UV, out DX.Vector2 deltaUV1);
-                DX.Vector2.Subtract(ref vertex3.UV, ref vertex1.UV, out DX.Vector2 deltaUV2);
+                var deltaUV1 = DX.Vector2.Subtract(vertex2.UV, vertex1.UV);
+                var deltaUV2 = DX.Vector2.Subtract(vertex3.UV, vertex1.UV);
 
                 float denom = ((deltaUV1.X * deltaUV2.Y) - (deltaUV1.Y * deltaUV2.X));
                 float r = 0.0f;
@@ -173,29 +205,28 @@ namespace Gorgon.Examples
                                             ((deltaUV1.X * deltaPos2.Y) - (deltaUV2.X * deltaPos1.Y)) * r,
                                             ((deltaUV1.X * deltaPos2.Z) - (deltaUV2.X * deltaPos1.Z)) * r);
 
-                DX.Vector3.Add(ref tanData[index1], ref tangent, out tanData[index1]);
-                DX.Vector3.Add(ref tanData[index2], ref tangent, out tanData[index2]);
-                DX.Vector3.Add(ref tanData[index3], ref tangent, out tanData[index3]);
+                tanData[index1] = DX.Vector3.Add(tanData[index1], tangent);
+                tanData[index2] = DX.Vector3.Add(tanData[index2], tangent);
+                tanData[index3] = DX.Vector3.Add(tanData[index3], tangent);
 
-                DX.Vector3.Add(ref biTanData[index1], ref biTangent, out biTanData[index1]);
-                DX.Vector3.Add(ref biTanData[index2], ref biTangent, out biTanData[index2]);
-                DX.Vector3.Add(ref biTanData[index3], ref biTangent, out biTanData[index3]);
+                biTanData[index1] = DX.Vector3.Add(biTanData[index1], biTangent);
+                biTanData[index2] = DX.Vector3.Add(biTanData[index2], biTangent);
+                biTanData[index3] = DX.Vector3.Add(biTanData[index3], biTangent);
             }
 
             for (int i = 0; i < VertexCount; ++i)
             {
-                Vertex3D vertex = vertexData[i];
+                GorgonVertexPosNormUvTangent vertex = vertexData[i];
 
+                float dot = DX.Vector3.Dot(vertex.Normal, tanData[i]);
+                var tangent = DX.Vector3.Multiply(vertex.Normal, dot);
+                tangent = DX.Vector3.Subtract(tanData[i], tangent);
+                tangent = DX.Vector3.Normalize(tangent);
 
-                DX.Vector3.Dot(ref vertex.Normal, ref tanData[i], out float dot);
-                DX.Vector3.Multiply(ref vertex.Normal, dot, out DX.Vector3 tangent);
-                DX.Vector3.Subtract(ref tanData[i], ref tangent, out tangent);
-                DX.Vector3.Normalize(ref tangent, out tangent);
+                var cross = DX.Vector3.Cross(vertex.Normal, tanData[i]);
+                dot = DX.Vector3.Dot(cross, biTanData[i]);
 
-                DX.Vector3.Cross(ref vertex.Normal, ref tanData[i], out DX.Vector3 cross);
-                DX.Vector3.Dot(ref cross, ref biTanData[i], out dot);
-
-                vertexData[i] = new Vertex3D
+                vertexData[i] = new GorgonVertexPosNormUvTangent
                 {
                     Position = vertex.Position,
                     Normal = vertex.Normal,

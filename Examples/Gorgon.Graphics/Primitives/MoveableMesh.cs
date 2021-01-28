@@ -129,8 +129,7 @@ namespace Gorgon.Examples
 
                 if (_needsRotTransform)
                 {
-                    var rads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
-                    DX.Matrix.RotationYawPitchRoll(rads.Y, rads.X, rads.Z, out _rotMatrix);
+                    DX.Matrix.RotationYawPitchRoll(_rotation.Y.ToRadians(), _rotation.X.ToRadians(), _rotation.Z.ToRadians(), out _rotMatrix);
                     _needsRotTransform = false;
                 }
 
@@ -139,7 +138,6 @@ namespace Gorgon.Examples
                     DX.Matrix.Scaling(ref _scale, out _scaleMatrix);
                     _needsSclTransform = false;
                 }
-
 
                 DX.Matrix.Multiply(ref _rotMatrix, ref _scaleMatrix, out _world);
                 DX.Matrix.Multiply(ref _world, ref _posMatrix, out _world);

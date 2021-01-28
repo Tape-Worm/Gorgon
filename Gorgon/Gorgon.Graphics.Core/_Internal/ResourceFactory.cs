@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Graphics.Imaging;
+using D3D11 = SharpDX.Direct3D11;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {

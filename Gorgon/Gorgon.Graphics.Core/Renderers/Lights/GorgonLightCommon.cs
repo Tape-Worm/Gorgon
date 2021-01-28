@@ -38,13 +38,17 @@ namespace Gorgon.Renderers.Lights
     public enum LightType
     {
         /// <summary>
+        /// Light is disabled.
+        /// </summary>
+        Disabled = 0,
+        /// <summary>
         /// A point light.
         /// </summary>
-        Point = 0,
+        Point = 1,
         /// <summary>
         /// A directional light.
         /// </summary>
-        Directional = 1
+        Directional = 2
     }
 
     /// <summary>
@@ -54,8 +58,6 @@ namespace Gorgon.Renderers.Lights
         : IGorgonNamedObject
     {
         #region Variables.
-        // The GPU data for the light.
-        private GorgonGpuLightData _lightData;
         // The color for a light.
         private GorgonColor _color = GorgonColor.White;
         // Flag to indicate whether the specular reflection is enabled.
@@ -67,11 +69,6 @@ namespace Gorgon.Renderers.Lights
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the GPU light data.
-        /// </summary>
-        protected ref GorgonGpuLightData GpuLightData => ref _lightData;
-
         /// <summary>
         /// Property to return whether the light was updated or not.
         /// </summary>
@@ -174,7 +171,7 @@ namespace Gorgon.Renderers.Lights
         /// <summary>
         /// Function to return data that can be updated to the GPU for use in shaders.
         /// </summary>
-        /// <returns>A <see cref="GorgonGpuLightData"/> structure useful for passing to shaders.</returns>
+        /// <returns>A reference to the data to send to the GPU.</returns>
         public abstract ref readonly GorgonGpuLightData GetGpuData();
         #endregion
 

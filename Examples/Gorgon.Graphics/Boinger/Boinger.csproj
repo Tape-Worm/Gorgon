@@ -42,6 +42,14 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\Shader.hlsl" />
+    <None Remove="Resources\Texture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Shader.hlsl" />
+    <EmbeddedResource Include="Resources\Texture.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\..\Gorgon\g.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -54,6 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

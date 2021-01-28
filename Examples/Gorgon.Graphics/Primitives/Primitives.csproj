@@ -42,6 +42,33 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Camera.cs" />
+    <Compile Remove="Light.cs" />
+    <Compile Remove="Vertex3D.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\earthbump1k_NRM.dds" />
+    <None Remove="Resources\earthcloudmap.png" />
+    <None Remove="Resources\earthmap1k.jpg" />
+    <None Remove="Resources\earthspec1k.jpg" />
+    <None Remove="Resources\normalmap.png" />
+    <None Remove="Resources\Rain_Height_NRM.dds" />
+    <None Remove="Resources\Rain_Height_SPEC.dds" />
+    <None Remove="Resources\Shaders.hlsl" />
+    <None Remove="Resources\UV.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\earthbump1k_NRM.dds" />
+    <EmbeddedResource Include="Resources\earthcloudmap.png" />
+    <EmbeddedResource Include="Resources\earthmap1k.jpg" />
+    <EmbeddedResource Include="Resources\earthspec1k.jpg" />
+    <EmbeddedResource Include="Resources\normalmap.png" />
+    <EmbeddedResource Include="Resources\Rain_Height_NRM.dds" />
+    <EmbeddedResource Include="Resources\Rain_Height_SPEC.dds" />
+    <EmbeddedResource Include="Resources\Shaders.hlsl" />
+    <EmbeddedResource Include="Resources\UV.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\..\Gorgon\g.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -55,6 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />

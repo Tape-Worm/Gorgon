@@ -26,10 +26,12 @@
 
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -560,7 +562,7 @@ namespace Gorgon.Renderers
         /// <param name="camera">The currently active camera.</param>
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             if ((_blurAmount.EqualsEpsilon(0)) || (_intensity.EqualsEpsilon(0)))
             {
@@ -635,7 +637,7 @@ namespace Gorgon.Renderers
             _settingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Bloom Settings Buffer");
             _textureSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Texture Settings Buffer")
             {
-                SizeInBytes = DX.Vector2.SizeInBytes,
+                SizeInBytes = Unsafe.SizeOf<DX.Vector2>(),
                 Usage = ResourceUsage.Dynamic
             });
 

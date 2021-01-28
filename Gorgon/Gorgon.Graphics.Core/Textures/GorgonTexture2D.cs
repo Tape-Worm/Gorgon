@@ -30,16 +30,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -1570,21 +1569,21 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="texelCoordinates">The texel coordinates to convert.</param>
         /// <returns>The pixel coordinates.</returns>
-        public DX.Point ToPixel(Vector2 texelCoordinates) => new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height));
+        public DX.Point ToPixel(DX.Vector2 texelCoordinates) => new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height));
 
         /// <summary>
         /// Function to convert a pixel coordinate into a texel coordinate.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
         /// <returns>The texel coordinates.</returns>
-        public Vector2 ToTexel(DX.Point pixelCoordinates) => new Vector2(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height);
+        public DX.Vector2 ToTexel(DX.Point pixelCoordinates) => new DX.Vector2(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height);
 
         /// <summary>
         /// Function to convert a pixel coordinate into a texel coordinate.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
         /// <returns>The texel coordinates.</returns>
-        public Vector2 ToTexel(Vector2 pixelCoordinates) => new Vector2(pixelCoordinates.X / Width, pixelCoordinates.Y / Height);
+        public DX.Vector2 ToTexel(DX.Vector2 pixelCoordinates) => new DX.Vector2(pixelCoordinates.X / Width, pixelCoordinates.Y / Height);
 
         /// <summary>
         /// Function to convert a texel size into a pixel size.

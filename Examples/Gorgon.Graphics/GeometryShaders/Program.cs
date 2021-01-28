@@ -29,9 +29,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
-using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -62,9 +61,9 @@ namespace Gorgon.Examples
         // The application swap chain used to display our graphics.
         private static GorgonSwapChain _swap;
         // The projection matrix.
-        private static Matrix4x4 _projection = Matrix4x4.Identity;
+        private static DX.Matrix _projection = DX.Matrix.Identity;
         // The world matrix for moving our objects.
-        private static Matrix4x4 _worldMatrix = Matrix4x4.Identity;
+        private static DX.Matrix _worldMatrix = DX.Matrix.Identity;
         // A vertex shader that will generate our data to pass on to the geometry shader.
         private static GorgonVertexShader _bufferless;
         // Our vertex shader used to send data to the render target.
@@ -97,17 +96,17 @@ namespace Gorgon.Examples
         /// </summary>
         private static void UpdatedWorldProjection()
         {
-            // Update the animated offset for the center point.  We need to put this into a Vector4 because our data needs to be 
+            // Update the animated offset for the center point.  We need to put this into a DX.Vector4 because our data needs to be 
             // aligned to a 16 byte boundary for constant buffers.
-            var offset = new Vector4(_heightOffset, 0, 0, 0);
+            var offset = new DX.Vector4(_heightOffset, 0, 0, 0);
 
-            MatrixFactory.CreateRotationY(_angle.ToRadians(), out _worldMatrix);
-            _worldMatrix.SetRow(3, new Vector4(0, 0, 2.0f, 1.0f));
+            DX.Matrix.RotationY(_angle.ToRadians(), out _worldMatrix);
+            _worldMatrix.Row4 = new DX.Vector4(0, 0, 2.0f, 1.0f);
 
             // We've put our world matrix and center point offset inside of the same buffer since they're both updated once per
             // frame.
-            _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
-            _vsConstants.Buffer.SetData(in offset, 128, CopyMode.NoOverwrite);
+            _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);
+            _vsConstants.Buffer.SetData(ref offset, 128, CopyMode.NoOverwrite);
         }
 
         /// <summary>
@@ -130,8 +129,8 @@ namespace Gorgon.Examples
             _graphics.SetDepthStencil(_depthStencil);
 
             // When we resize, the projection matrix will go out of date, so we need to update our constant buffer with an updated projection.
-            MatrixFactory.CreatePerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
-            _vsConstants.Buffer.SetData(in _projection);
+            DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
+            _vsConstants.Buffer.SetData(ref _projection);
         }
 
         /// <summary>
@@ -289,14 +288,14 @@ namespace Gorgon.Examples
                 _pipeStateBuilder = new GorgonPipelineStateBuilder(_graphics);
 
                 // Create a constant buffer so we can adjust the positioning of the data.
-                MatrixFactory.CreatePerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
+                DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
                 _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
                                                                              new GorgonConstantBufferInfo("WorldProjection CBuffer")
                                                                              {
-                                                                                 SizeInBytes = (Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>()
+                                                                                 SizeInBytes = (Unsafe.SizeOf<DX.Matrix>() * 2) + Unsafe.SizeOf<DX.Vector4>()
                                                                              });
-                _vsConstants.Buffer.SetData(in _projection, copyMode: CopyMode.Discard);
-                _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
+                _vsConstants.Buffer.SetData(ref _projection, copyMode: CopyMode.Discard);
+                _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);
 
                 // Create a draw call so we actually have something we can draw.
                 _drawCall = _drawCallBuilder.VertexRange(0, 3)

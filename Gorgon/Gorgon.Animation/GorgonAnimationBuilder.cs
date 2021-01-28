@@ -49,7 +49,7 @@ namespace Gorgon.Animation
     /// </para>
     /// <para>
     /// When building an animation using this builder type the tracks are edited via one of the several Edit methods on the builder. Each edit method corresponds to the type of data for the track (e.g. 
-    /// Vector2, float, etc...) and takes the registration <see cref="GorgonTrackRegistration.TrackName"/> of the track to indicate which track (and object property) is being edited.
+    /// DX.Vector2, float, etc...) and takes the registration <see cref="GorgonTrackRegistration.TrackName"/> of the track to indicate which track (and object property) is being edited.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonTrackRegistration"/>

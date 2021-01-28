@@ -128,10 +128,11 @@ namespace Gorgon.Animation
             switch (track.InterpolationMode)
             {
                 case TrackInterpolationMode.Linear:
-                    DX.Vector2.Lerp(ref prev.Value, ref next.Value, deltaTime, out result);
+                    result = DX.Vector2.Lerp(prev.Value, next.Value, deltaTime);
                     break;
                 case TrackInterpolationMode.Spline:
-                    result = (DX.Vector2)track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    DX.Vector4 val = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    result = new DX.Vector2(val.X, val.Y);
                     break;
                 default:
                     result = prev.Value;
@@ -180,10 +181,11 @@ namespace Gorgon.Animation
             switch (track.InterpolationMode)
             {
                 case TrackInterpolationMode.Linear:
-                    DX.Vector3.Lerp(ref prev.Value, ref next.Value, deltaTime, out result);
+                    result = DX.Vector3.Lerp(prev.Value, next.Value, deltaTime);
                     break;
                 case TrackInterpolationMode.Spline:
-                    result = (DX.Vector3)track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    DX.Vector4 val = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    result = new DX.Vector3(val.X, val.Y, val.Z);
                     break;
                 default:
                     result = prev.Value;
@@ -232,7 +234,7 @@ namespace Gorgon.Animation
             switch (track.InterpolationMode)
             {
                 case TrackInterpolationMode.Linear:
-                    DX.Vector4.Lerp(ref prev.Value, ref next.Value, deltaTime, out result);
+                    result = DX.Vector4.Lerp(prev.Value, next.Value, deltaTime);
                     break;
                 case TrackInterpolationMode.Spline:
                     result = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);

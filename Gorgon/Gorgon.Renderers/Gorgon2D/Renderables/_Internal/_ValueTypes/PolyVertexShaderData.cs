@@ -29,14 +29,13 @@ using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using DX = SharpDX;
 
-
 namespace Gorgon.Renderers
 {
     /// <summary>
     /// Provides vertex shader data for polygon sprites.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    struct PolyVertexShaderData
+    internal struct PolyVertexShaderData
     {
         /// <summary>
         /// The size of the data structure, in bytes.

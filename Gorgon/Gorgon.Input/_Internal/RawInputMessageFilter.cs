@@ -27,9 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using DX = SharpDX;
 using System.Windows.Forms;
 using Gorgon.Input;
+using DX = SharpDX;
 
 
 namespace Gorgon.Native

@@ -191,9 +191,7 @@ namespace Gorgon.Input
             if (_filter.IsValueCreated)
             {
                 MessageFilterHook.RemoveFilter(_applicationWindow, _filter.Value);
-                _filter.Value.Dispose();
             }
-            _filter = null;
         }
 
         /// <summary>

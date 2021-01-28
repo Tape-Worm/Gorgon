@@ -27,11 +27,14 @@
 using System.Drawing;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
+    /// <summary>
+    /// A mesh representing a 2D plane.
+    /// </summary>
     internal class Plane
         : MoveableMesh
     {
@@ -49,7 +52,7 @@ namespace Gorgon.Examples
         /// <param name="textureCoordinates">The texture coordinates to apply to the plane.</param>
         /// <param name="columns">The number of columns to subdivide by.</param>
         /// <param name="rows">The number of rows to subdivide by.</param>
-        private void GetVertices(GorgonNativeBuffer<Vertex3D> buffer, DX.Vector2 size, RectangleF textureCoordinates, int columns, int rows)
+        private void GetVertices(GorgonVertexPosNormUvTangent[] buffer, DX.Vector2 size, RectangleF textureCoordinates, int columns, int rows)
         {
             float columnWidth = 1.0f / columns;
             float columnHeight = 1.0f / rows;
@@ -66,16 +69,14 @@ namespace Gorgon.Examples
                                                    ((y * columnHeight) - 0.5f) * size.Y,
                                                    0);
 
-                    DX.Vector3.TransformCoordinate(ref vertexPos, ref _orientation, out vertexPos);
+                    DX.Vector3.Transform(ref vertexPos, ref _orientation, out vertexPos);
 
-                    buffer[offset++] = new Vertex3D
+                    buffer[offset++] = new GorgonVertexPosNormUvTangent
                     {
-                        Position =
-                                               new DX.Vector4(vertexPos,
-                                                              1.0f),
+                        Position = new DX.Vector4(vertexPos, 1.0f),
                         Normal = vertexNormal,
                         UV = new DX.Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
-                                                               (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
+                                         (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
                     };
                 }
             }
@@ -87,7 +88,7 @@ namespace Gorgon.Examples
         /// <param name="buffer">Buffer to populate.</param>
         /// <param name="columns">Number of columns for the plane.</param>
         /// <param name="rows">Number of rows for the plane.</param>
-        private static void GetIndices(GorgonNativeBuffer<int> buffer, int columns, int rows)
+        private static void GetIndices(int[] buffer, int columns, int rows)
         {
             int offset = 0;
             int columnWrap = columns + 1;
@@ -134,31 +135,31 @@ namespace Gorgon.Examples
             DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
             DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
 
-            using (var vertexData = new GorgonNativeBuffer<Vertex3D>(VertexCount))
-            using (var indexData = new GorgonNativeBuffer<int>(IndexCount))
-            {
-                GetVertices(vertexData, size, textureCoordinates, columns, rows);
-                GetIndices(indexData, columns, rows);
+            var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
+            int[] indexData = new int[IndexCount];
 
-                CalculateTangents(vertexData, indexData);
+            GetVertices(vertexData, size, textureCoordinates, columns, rows);
+            GetIndices(indexData, columns, rows);
 
-                VertexBuffer = new GorgonVertexBuffer(graphics,
-                                                      new GorgonVertexBufferInfo("PlaneVB")
-                                                      {
-                                                          Usage = ResourceUsage.Immutable,
-                                                          SizeInBytes = vertexData.SizeInBytes
-                                                      },
-                                                      vertexData.Cast<byte>());
+            CalculateTangents(vertexData, indexData);
 
-                IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                    new GorgonIndexBufferInfo
-                                                    {
-                                                        Usage = ResourceUsage.Immutable,
-                                                        Use16BitIndices = false,
-                                                        IndexCount = IndexCount
-                                                    },
-                                                    indexData);
-            }
+            VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
+                                                                                   new GorgonVertexBufferInfo("PlaneVB")
+                                                                                   {
+                                                                                       Usage = ResourceUsage.Immutable
+                                                                                   },
+                                                                                   vertexData);
+
+            IndexBuffer = new GorgonIndexBuffer(graphics,
+                                                new GorgonIndexBufferInfo
+                                                {
+                                                    Usage = ResourceUsage.Immutable,
+                                                    Use16BitIndices = false,
+                                                    IndexCount = IndexCount
+                                                },
+                                                indexData);
+
+            UpdateAabb(vertexData);
         }
         #endregion
     }

@@ -34,6 +34,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -376,7 +377,7 @@ namespace Gorgon.Renderers
         /// </list>
         /// </para>
         /// </remarks>
-        public Gorgon2DCompositor RenderingPass(string name, Action<Gorgon2D, GorgonTexture2DView, GorgonRenderTargetView> renderMethod, Gorgon2DBatchState batchState = null, IGorgon2DCamera camera = null)
+        public Gorgon2DCompositor RenderingPass(string name, Action<Gorgon2D, GorgonTexture2DView, GorgonRenderTargetView> renderMethod, Gorgon2DBatchState batchState = null, GorgonCameraCommon camera = null)
         {
             if (name == null)
             {

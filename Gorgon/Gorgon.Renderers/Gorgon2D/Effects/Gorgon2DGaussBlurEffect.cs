@@ -31,6 +31,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -288,7 +289,7 @@ namespace Gorgon.Renderers
                 pointerOffset++;
             }
 
-            _blurBufferKernel.Buffer.SetData(_blurKernelData);
+            _blurBufferKernel.Buffer.SetData<float>(_blurKernelData.ToSpan());
             _needOffsetUpdate = false;
         }
 
@@ -492,7 +493,7 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             if (_blurRadius == 0)
             {

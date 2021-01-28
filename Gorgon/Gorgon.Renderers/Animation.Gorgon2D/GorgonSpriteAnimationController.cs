@@ -30,7 +30,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
-
 namespace Gorgon.Animation
 {
     /// <summary>
@@ -49,7 +48,7 @@ namespace Gorgon.Animation
     /// </para>
     /// <para>
     /// This controller type contains registrations for the tracks corresponding the many of the properties on a <see cref="GorgonSprite"/>. These registrations are available to the developer as static 
-    /// values on the class, and these should be used to identify the track name (e.g. <c>Builder.EditVector2(GorgonSpriteAnimationController.PositionTrack.TrackName);</c>.
+    /// values on the class, and these should be used to identify the track name (e.g. <c>Builder.EditDX.Vector2(GorgonSpriteAnimationController.PositionTrack.TrackName);</c>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonAnimationController{T}"/>
@@ -326,7 +325,7 @@ namespace Gorgon.Animation
         {
             if (track.ID == Position3DTrack.ID)
             {
-                animObject.Position = (DX.Vector2)value;
+                animObject.Position = new DX.Vector2(value.X, value.Y);
                 animObject.Depth = value.Z;
                 return;
             }

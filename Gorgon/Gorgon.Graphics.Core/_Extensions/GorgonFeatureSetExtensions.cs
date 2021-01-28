@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using D3D = SharpDX.Direct3D;
 using Gorgon.Graphics.Core.Properties;
+using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {

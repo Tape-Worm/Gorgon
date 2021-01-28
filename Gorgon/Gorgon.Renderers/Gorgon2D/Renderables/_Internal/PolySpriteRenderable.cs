@@ -32,7 +32,7 @@ namespace Gorgon.Renderers
     /// <summary>
     /// A renderable used by a polygon sprite.
     /// </summary>
-    class PolySpriteRenderable
+    internal class PolySpriteRenderable
         : BatchRenderable
     {
         /// <summary>

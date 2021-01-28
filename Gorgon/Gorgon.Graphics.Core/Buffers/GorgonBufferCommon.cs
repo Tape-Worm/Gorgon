@@ -455,8 +455,8 @@ namespace Gorgon.Graphics.Core
         /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
         /// struct MyVertex
         /// {
-        ///		public Vector4 Position;
-        ///		public Vector4 Color;
+        ///		public DX.Vector4 Position;
+        ///		public DX.Vector4 Color;
         /// }
         /// 
         /// GorgonGraphics graphics;
@@ -575,7 +575,7 @@ namespace Gorgon.Graphics.Core
         /// struct MyCBData
         /// {
         ///		public Matrix ConstantValue1;
-        ///		public Vector4 ConstantValue2;
+        ///		public DX.Vector4 ConstantValue2;
         /// }
         /// 
         /// GorgonGraphics graphics;
@@ -587,7 +587,7 @@ namespace Gorgon.Graphics.Core
         ///		_cbData = new MyCBData
         ///     {
         ///         ConstantValue1 = WorldMatrix,
-        ///         ConstantValue2 = AVector4
+        ///         ConstantValue2 = ADX.Vector4
         ///     };
         ///
         ///     // Create the constant buffer.
@@ -599,7 +599,7 @@ namespace Gorgon.Graphics.Core
         ///     _cbData = new MyCBData
         ///     {
         ///         ConstantValue1 = ProjectionMatrix,
-        ///         ConstantValue2 = Vector4.One
+        ///         ConstantValue2 = DX.Vector4.One
         ///     };
         ///
         ///     // Write these constants to the 2nd index.  
@@ -608,7 +608,7 @@ namespace Gorgon.Graphics.Core
         /// ]]>
         /// </code>
         /// </example>
-        public unsafe void SetData<T>(in T value, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+        public unsafe void SetData<T>(ref T value, int destOffset = 0, CopyMode copyMode = CopyMode.None)
             where T : unmanaged
         {
             // Actual byte offset in the buffer.
@@ -623,6 +623,86 @@ namespace Gorgon.Graphics.Core
                 SetDataPtr(valuePtr, typeSize, 1, destOffset, 1, Usage != ResourceUsage.Default, copyMode);
             }
         }
+
+        /// <summary>
+        /// Function to write a single value into the buffer.
+        /// </summary>
+        /// <typeparam name="T">The type of value, must be an unmanaged value type.</typeparam>
+        /// <param name="value">The value to write.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, from the beginning in the buffer to start writing into.</param>
+        /// <param name="copyMode">[Optional] Flags to indicate how to copy the data.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destOffset"/> parameter is less than zero.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="destOffset"/> + size of <typeparamref name="T"/> (in bytes) exceeds the size of the destination buffer.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will upload the specified <paramref name="value"/> to this buffer. The method will determine how to best upload the data depending on the <see cref="GorgonGraphicsResource.Usage"/> of the
+        /// buffer. For example, if the buffer has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Default"/>, then internally, this method will update to the GPU directly.
+        /// Otherwise, if it is <see cref="ResourceUsage.Dynamic"/>, or <see cref="ResourceUsage.Staging"/>, it will use a locking pattern which uses the CPU to write data to the buffer. The latter pattern 
+        /// is good if the buffer has to change one or more times per frame, otherwise, the former is better where the buffer is updated less than once per frame (i.e. Dynamic is good for multiple times 
+        /// per frame, Default is good for once per frame or less).
+        /// </para>
+        /// <para>
+        /// If the user supplies a <paramref name="destOffset"/> the data will be copied to the buffer at the offset provided by <paramref name="destOffset"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="copyMode"/> parameter defines how the copy will be performed. If the buffer has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or
+        /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the buffer are discarded before updating, if it is set to
+        /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
+        /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For buffers created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destOffset"/> 
+        /// parameter is ignored.
+        /// </para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        /// <example>
+        /// The following is an example showing how to upload data into a constant buffer using different techniques:
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// // Our constant buffer data.  A matrix and a 4 component vector.
+        /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
+        /// struct MyCBData
+        /// {
+        ///		public Matrix ConstantValue1;
+        ///		public DX.Vector4 ConstantValue2;
+        /// }
+        /// 
+        /// GorgonGraphics graphics;
+        /// MyCBData _cbData;
+        /// GorgonConstantBuffer _constantBuffer;
+        /// 
+        /// void InitializeConstantBuffer()
+        /// {
+        ///		_cbData = new MyCBData
+        ///     {
+        ///         ConstantValue1 = WorldMatrix,
+        ///         ConstantValue2 = ADX.Vector4
+        ///     };
+        ///
+        ///     // Create the constant buffer.
+        ///		_constantBuffer = new GorgonConstantBuffer(graphics, GorgonConstantBufferInfo.CreateFromType<MyCBData>(count: 4));
+        /// 
+        ///		// Copy our data to the constant buffer.
+        ///     _constantBuffer.SetData<MyCBData>(in _cbData);
+        ///
+        ///     _cbData = new MyCBData
+        ///     {
+        ///         ConstantValue1 = ProjectionMatrix,
+        ///         ConstantValue2 = DX.Vector4.One
+        ///     };
+        ///
+        ///     // Write these constants to the 2nd index.  
+        ///     _constantBuffer.SetData<MyCBData>(in _cbData, 2 * Unsafe.SizeOf<MyCBData>());
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public unsafe void SetData<T>(T value, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+            where T : unmanaged
+            => SetData(ref value, destOffset, copyMode);
 
         /// <summary>
         /// Function to return the contents of this buffer into an array.
@@ -668,8 +748,8 @@ namespace Gorgon.Graphics.Core
         /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
         /// struct MyVertex
         /// {
-        ///		public Vector4 Position;
-        ///		public Vector4 Color;
+        ///		public DX.Vector4 Position;
+        ///		public DX.Vector4 Color;
         /// }
         /// 
         /// GorgonGraphics graphics;
@@ -792,8 +872,8 @@ namespace Gorgon.Graphics.Core
         /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
         /// struct MyVertex
         /// {
-        ///		public Vector4 Position;
-        ///		public Vector4 Color;
+        ///		public DX.Vector4 Position;
+        ///		public DX.Vector4 Color;
         /// }
         /// 
         /// GorgonGraphics graphics;
@@ -902,8 +982,8 @@ namespace Gorgon.Graphics.Core
         /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
         /// struct MyVertex
         /// {
-        ///		public Vector4 Position;
-        ///		public Vector4 Color;
+        ///		public DX.Vector4 Position;
+        ///		public DX.Vector4 Color;
         /// }
         /// 
         /// GorgonGraphics graphics;

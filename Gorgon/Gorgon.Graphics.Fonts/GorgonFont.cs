@@ -30,13 +30,11 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Native;
 using DX = SharpDX;
@@ -59,8 +57,6 @@ namespace Gorgon.Graphics.Fonts
         : GorgonNamedObject, IGorgonFontInfo, IDisposable
     {
         #region Variables.
-        // A worker buffer for formatting the string.
-        private readonly StringBuilder _workBuffer = new StringBuilder(256);
         // The information used to generate the font.
         private readonly GorgonFontInfo _info;
         #endregion

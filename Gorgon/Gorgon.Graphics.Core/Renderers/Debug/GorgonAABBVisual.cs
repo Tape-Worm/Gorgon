@@ -25,16 +25,16 @@
 #endregion
 
 using System;
-using System.Numerics;
-using Gorgon.Graphics.Core;
 using System.Runtime.CompilerServices;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
+using Gorgon.Memory;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Debug
 {
     /// <summary>
-    /// Provides a visual wireframe box to display a <see cref="GorgonAABB"/> for debug purposes.
+    /// Provides a visual wireframe box to display a bounding box for debug purposes.
     /// </summary>
     public class GorgonAABBVisual
         : IGorgonGraphicsObject, IDisposable
@@ -51,7 +51,7 @@ namespace Gorgon.Renderers.Debug
         // The constant buffer.
         private GorgonConstantBufferView _constantBuffer;
         // The vertices that make up the box.
-        private readonly Vector3[] _lineVertices = new Vector3[24];
+        private readonly DX.Vector3[] _lineVertices = new DX.Vector3[24];
         // The vertex shader.
         private GorgonVertexShader _vertexShader;
         // The pixel shader.
@@ -74,15 +74,15 @@ namespace Gorgon.Renderers.Debug
         {
             var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo("AABB Visual VertexBuffer")
             {
-                SizeInBytes = _lineVertices.Length * Unsafe.SizeOf<Vector3>(),
+                SizeInBytes = _lineVertices.Length * Unsafe.SizeOf<DX.Vector3>(),
                 Usage = ResourceUsage.Dynamic
             });
 
-            _vertexBuffer = new GorgonVertexBufferBinding(vertexBuffer, Unsafe.SizeOf<Vector3>());
+            _vertexBuffer = new GorgonVertexBufferBinding(vertexBuffer, Unsafe.SizeOf<DX.Vector3>());
 
             _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("AABB Visual ConstantBufer")
             {
-                SizeInBytes = Unsafe.SizeOf<Matrix4x4>(),
+                SizeInBytes = Unsafe.SizeOf<DX.Matrix>(),
                 Usage = ResourceUsage.Dynamic
             });
 
@@ -111,39 +111,53 @@ namespace Gorgon.Renderers.Debug
         /// Function to build the AABB visual.
         /// </summary>
         /// <param name="aabb">The axis aligned bounding box to visualize.</param>
-        private void BuildBox(in GorgonAABB aabb)
+        private void BuildBox(ref DX.BoundingBox aabb)
         {
-            // Left
-            _lineVertices[0] = aabb.TopLeftFront;
-            _lineVertices[1] = aabb.TopLeftBack;
-            _lineVertices[2] = aabb.TopLeftBack;
-            _lineVertices[3] = aabb.BottomLeftBack;
-            _lineVertices[4] = aabb.BottomLeftBack;
-            _lineVertices[5] = aabb.BottomLeftFront;
-            _lineVertices[6] = aabb.BottomLeftFront;
-            _lineVertices[7] = aabb.TopLeftFront;
+            DX.Vector3[] corners = GorgonArrayPool<DX.Vector3>.SharedTiny.Rent(8);
 
-            // Right
-            _lineVertices[8] = aabb.TopRightFront;
-            _lineVertices[9] = aabb.TopRightBack;
-            _lineVertices[10] = aabb.TopRightBack;
-            _lineVertices[11] = aabb.BottomRightBack;
-            _lineVertices[12] = aabb.BottomRightBack;
-            _lineVertices[13] = aabb.BottomRightFront;
-            _lineVertices[14] = aabb.BottomRightFront;
-            _lineVertices[15] = aabb.TopRightFront;
+            try
+            {
+                // 0 - Min X, Max Y, Max Z
+                // 1 - Max X, Max Y, Max Z
+                // 2 - Max X, Min Y, Max Z
+                // 3 - Min X, Min Y, Max Z
+                // 4 - Min X, Max Y, Min Z
+                // 5 - Max X, Max Y, Min Z
+                // 6 - Max X, Min Y, Min Z
+                // 7 - Min X, Min Y, Min Z
 
-            // Bottom
-            _lineVertices[16] = aabb.TopLeftFront;            
-            _lineVertices[17] = aabb.TopRightFront;
-            _lineVertices[18] = aabb.TopLeftBack;
-            _lineVertices[19] = aabb.TopRightBack;
+                aabb.GetCorners(corners);
 
-            // Top
-            _lineVertices[20] = aabb.BottomLeftFront;
-            _lineVertices[21] = aabb.BottomRightFront;
-            _lineVertices[22] = aabb.BottomLeftBack;
-            _lineVertices[23] = aabb.BottomRightBack;
+                // Left
+                _lineVertices[0] = corners[7];
+                _lineVertices[2] = _lineVertices[1] = corners[3];
+                _lineVertices[4] = _lineVertices[3] = corners[0];
+                _lineVertices[6] = _lineVertices[5] = corners[4];                
+                _lineVertices[7] = _lineVertices[0];
+
+                // Right
+                _lineVertices[8] = corners[6];
+                _lineVertices[10] = _lineVertices[9] = corners[2];
+                _lineVertices[12] = _lineVertices[11] = corners[1];
+                _lineVertices[14] = _lineVertices[13] = corners[5];
+                _lineVertices[15] = _lineVertices[8];
+
+                // Bottom
+                _lineVertices[16] = corners[0];
+                _lineVertices[17] = corners[1];
+                _lineVertices[18] = corners[4];
+                _lineVertices[19] = corners[5];
+
+                // Top
+                _lineVertices[20] = corners[3];
+                _lineVertices[21] = corners[2];
+                _lineVertices[22] = corners[7];
+                _lineVertices[23] = corners[6];
+            }
+            finally
+            {
+                GorgonArrayPool<DX.Vector3>.SharedTiny.Return(corners);
+            }
         }
 
         /// <summary>
@@ -152,15 +166,15 @@ namespace Gorgon.Renderers.Debug
         /// <param name="aabb">The axis aligned bounding box to visualize.</param>
         /// <param name="viewMatrix">The current view matrix.</param>
         /// <param name="projectionMatrix">The current projection matrix.</param>
-        public void Draw(in GorgonAABB aabb, in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix)
+        public void Draw(ref DX.BoundingBox aabb, ref DX.Matrix viewMatrix, ref DX.Matrix projectionMatrix)
         {
-            BuildBox(in aabb);
+            BuildBox(ref aabb);
 
-            _vertexBuffer.VertexBuffer.SetData<Vector3>(_lineVertices);
-            
-            viewMatrix.Multiply(in projectionMatrix, out Matrix4x4 viewProj);
-            viewProj.Transpose(out viewProj);
-            _constantBuffer.Buffer.SetData(in viewProj);
+            _vertexBuffer.VertexBuffer.SetData<DX.Vector3>(_lineVertices);
+
+            DX.Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out DX.Matrix viewProj);
+            DX.Matrix.Transpose(ref viewProj, out viewProj);
+            _constantBuffer.Buffer.SetData(ref viewProj);
 
             Graphics.Submit(_drawCall);
         }

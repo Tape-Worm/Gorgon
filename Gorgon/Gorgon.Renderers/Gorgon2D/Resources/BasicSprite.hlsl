@@ -318,9 +318,9 @@ cbuffer GorgonDisplacementEffect : register(b1)
 }
 
 // The displacement shader encoder.
-float2 GorgonPixelShaderDisplacementEncoder(float2 uv)
+float2 GorgonPixelShaderDisplacementEncoder(float4 uv)
 {
-	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, uv);
+	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, uv.xyz / uv.w);
 
 	float4 basisX = offset.x >= 0.5f ? float4(offset.x, 0.0f, 0.0f, 0) : float4(0.0f, 0.0f, -offset.x, 0.0f);
 	float4 basisY = offset.y >= 0.5f ? float4(0.0f, offset.y, 0.0f, 0) : float4(0.0f, 0.0f, 0.0f, -offset.y);	
@@ -332,7 +332,7 @@ float2 GorgonPixelShaderDisplacementEncoder(float2 uv)
 // The displacement shader decoder.
 float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Target
 {	
-	float2 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv.xy);		
+	float2 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv);		
 	float4 color = SampleMainTexture(float4(vertex.uv.xy + offset.xy, vertex.uv.z, vertex.uv.w), vertex.color);	
 
 	REJECT_ALPHA(color.a);
@@ -462,7 +462,7 @@ float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
 // A pixel shader to sharpen the color on a texture.
 float4 GorgonPixelShaderEmboss(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float4 color = SampleMainTexture(vertex.uv, vertex.color);
 	float alpha = color.a;
 	float amount = 3.5f * sharpEmbossAmount;
 	float3 texelPosition;
@@ -572,7 +572,7 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 float4 GorgonPixelShaderSilhouettePixelShader(GorgonSpriteVertex vertex) : SV_Target
 {
 	float3 color = vertex.color.rgb;
-	float alpha = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy / vertex.uv.w, vertex.uv.z)).a * vertex.color.a;
+	float alpha = SampleMainTexture(vertex.uv, float(0, 0, 0, 1)) * vertex.color.a;
 		
 	REJECT_ALPHA(alpha);
 	

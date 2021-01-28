@@ -68,7 +68,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Writing", "Examples\Gorgon.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZipFileSystem", "Examples\Gorgon.FileSystem\ZipFileSystem\ZipFileSystem.csproj", "{13E8A005-B842-44C9-B5F5-EE2BA50ADB8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Fonts", "Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj", "{1DFB5973-950A-4B6E-84AF-953DE57C9213}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Graphics.Fonts", "Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj", "{1DFB5973-950A-4B6E-84AF-953DE57C9213}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeometryShaders", "Examples\Gorgon.Graphics\GeometryShaders\GeometryShaders.csproj", "{23CC5D47-3BAF-48C1-9CCD-ECACBE5BE818}"
 EndProject
@@ -84,7 +84,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamingDeviceDrivers", "Exam
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XInput", "Examples\Gorgon.Input\XInput\XInput.csproj", "{5993DBFF-AB76-435A-B52F-1A34CEFD5299}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boinger", "Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boinger", "Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvImageCodec", "Examples\Gorgon.Graphics\TvImageCodec\TvImageCodec.csproj", "{58398BDA-7076-410A-B73C-928E79EAE8A9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -93,19 +93,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvImageCodec", "Examples\Go
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodecPlugIn", "Examples\Gorgon.Graphics\CodecPlugIn\CodecPlugIn.csproj", "{9524F1F2-8260-4203-AF0A-5457053F6BEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primitives", "Examples\Gorgon.Graphics\Primitives\Primitives.csproj", "{834D4440-7007-49BF-8B2E-F35F19FF0D58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Primitives", "Examples\Gorgon.Graphics\Primitives\Primitives.csproj", "{834D4440-7007-49BF-8B2E-F35F19FF0D58}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComputeEngine", "Examples\Gorgon.Graphics\ComputeEngine\ComputeEngine.csproj", "{A74F93AD-12E3-4406-A571-D806B8D19C75}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SobelComputeEngine", "Examples\Gorgon.Graphics\SobelComputeEngine\SobelComputeEngine.csproj", "{111F8BBB-87E9-4FE0-9176-01CE36CC05B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Renderers.Gorgon2D", "Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj", "{4BB4EF41-1F32-4C50-BCBF-43C02F9600BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Renderers.Gorgon2D", "Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj", "{4BB4EF41-1F32-4C50-BCBF-43C02F9600BD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon2D", "Gorgon2D", "{324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Balls", "Examples\Gorgon.Renderers.2D\Balls\Balls.csproj", "{8A074000-EA1B-4D08-9B1D-A9369AA27544}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Balls", "Examples\Gorgon.Renderers.2D\Balls\Balls.csproj", "{8A074000-EA1B-4D08-9B1D-A9369AA27544}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INeedYourInput", "Examples\Gorgon.Input\INeedYourInput\INeedYourInput.csproj", "{0498130A-C954-434E-A02E-4E2733358717}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "INeedYourInput", "Examples\Gorgon.Input\INeedYourInput\INeedYourInput.csproj", "{0498130A-C954-434E-A02E-4E2733358717}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunWithShapes", "Examples\Gorgon.Renderers.2D\FunWithShapes\FunWithShapes.csproj", "{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}"
 EndProject
@@ -113,23 +113,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Effects", "Examples\Gorgon.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprites", "Examples\Gorgon.Renderers.2D\Sprites\Sprites.csproj", "{0BA16C6A-D278-4218-97D2-6A094185DC90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lights", "Examples\Gorgon.Renderers.2D\Lights\Lights.csproj", "{DDCECB25-AD3F-405C-BE3D-84EF027D1B70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lights", "Examples\Gorgon.Renderers.2D\Lights\Lights.csproj", "{DDCECB25-AD3F-405C-BE3D-84EF027D1B70}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostProcessing", "Examples\Gorgon.Renderers.2D\PostProcessing\PostProcessing.csproj", "{85B13540-CBB5-4CBD-8149-50762578A710}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolySprites", "Examples\Gorgon.Renderers.2D\PolySprites\PolySprites.csproj", "{41F1A64C-95E2-445A-B377-C4C9F2AB147C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.IO.Gorgon2D", "Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj", "{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.IO.Gorgon2D", "Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj", "{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderFileSystemOPower", "Examples\Gorgon.FileSystem\FolderFileSystemOPower\FolderFileSystemOPower.csproj", "{26EE1436-3763-446C-AEDA-1E03D76B7C58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FolderFileSystemOPower", "Examples\Gorgon.FileSystem\FolderFileSystemOPower\FolderFileSystemOPower.csproj", "{26EE1436-3763-446C-AEDA-1E03D76B7C58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BZipFileSystemOPower", "Examples\Gorgon.FileSystem\BZipFileSystemOPower\BZipFileSystemOPower.csproj", "{569A0F18-DFB1-4507-8DAE-26C1A7DBCEE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BZipFileSystemOPower", "Examples\Gorgon.FileSystem\BZipFileSystemOPower\BZipFileSystemOPower.csproj", "{569A0F18-DFB1-4507-8DAE-26C1A7DBCEE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fonts", "Examples\Gorgon.Graphics\Fonts\Fonts.csproj", "{E718D270-7490-48E1-A468-F754C2D7AD77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fonts", "Examples\Gorgon.Graphics\Fonts\Fonts.csproj", "{E718D270-7490-48E1-A468-F754C2D7AD77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Animation", "Gorgon\Gorgon.Animation\Gorgon.Animation.csproj", "{8CFA9634-9ED5-4D30-A9B1-6CBAE73AA1CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Animation", "Gorgon\Gorgon.Animation\Gorgon.Animation.csproj", "{8CFA9634-9ED5-4D30-A9B1-6CBAE73AA1CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Animation.Gorgon2D", "Gorgon\Gorgon.Renderers\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj", "{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Animation.Gorgon2D", "Gorgon\Gorgon.Renderers\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj", "{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Animation", "Examples\Gorgon.Renderers.2D\Animation\Animation.csproj", "{98A3C097-12D6-4ADE-BF52-D526E284D045}"
 EndProject

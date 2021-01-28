@@ -25,11 +25,13 @@
 #endregion
 
 using System;
-using DX = SharpDX;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using System.Threading;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -162,7 +164,7 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">The camera used to transform the lights to camera space.</param>
-        private void OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, IGorgon2DCamera camera)
+        private void OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, GorgonCameraCommon camera)
         {
             BeginRender(_target[0], blendState, depthStencilState, rasterState);
             BeginPass(0, _target[0], camera);
@@ -298,7 +300,7 @@ namespace Gorgon.Renderers
             _params = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo("GBuffer Parameters")
             {
                 Usage = ResourceUsage.Default,
-                SizeInBytes = DX.Vector4.SizeInBytes
+                SizeInBytes = Unsafe.SizeOf<DX.Vector4>()
             });
         }
 
@@ -353,7 +355,7 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        public void Begin(GorgonTexture2DView normal = null, GorgonTexture2DView specular = null, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        public void Begin(GorgonTexture2DView normal = null, GorgonTexture2DView specular = null, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             if ((_normalTexture != normal) || (_specularTexture != specular))
             {
@@ -387,7 +389,7 @@ namespace Gorgon.Renderers
         /// This method takes the texture of whatever is currently being rendered and uses an array index to index into the texture and retrieve the normal and specular map values.
         /// </para>
         /// </remarks>
-        public void Begin(int normalMapIndex, int specularMapIndex, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        public void Begin(int normalMapIndex, int specularMapIndex, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             if (!_initialized)
             {

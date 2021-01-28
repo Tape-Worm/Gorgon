@@ -61,15 +61,7 @@ namespace Gorgon.Renderers
             get;
             protected set;
         }
-
-        /// <summary>
-        /// Property to return the equality comparer for renderable object state.
-        /// </summary>
-        public BatchRenderableStateEqualityComparer RenderableStateComparer
-        {
-            get;
-        } = new BatchRenderableStateEqualityComparer();
-        #endregion
+        #endregion        
 
         #region Methods.
         /// <summary>
