@@ -46,6 +46,14 @@ namespace Gorgon.Editor.Rendering
         }
 
         /// <summary>
+        /// Property to return the blitter used to arbitrarily render a full texture.
+        /// </summary>
+        GorgonTextureBlitter Blitter
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the factory used to create fonts.
         /// </summary>
         GorgonFontFactory FontFactory

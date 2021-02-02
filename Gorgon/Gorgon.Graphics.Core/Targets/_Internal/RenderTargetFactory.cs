@@ -85,6 +85,11 @@ namespace Gorgon.Graphics.Core
         public int RentedCount => _rented.Count;
 
         /// <summary>
+        /// Property to return the number of free render targets available for rent.
+        /// </summary>
+        public int AvailableCount => _renderTargets.Count;
+
+        /// <summary>
         /// Property to return the total number of render targets available in the factory.
         /// </summary>
         public int TotalCount => _rented.Count + _renderTargets.Count;
@@ -97,14 +102,14 @@ namespace Gorgon.Graphics.Core
         /// This value applies only to newly created render targets via the <see cref="Rent"/> method. Any previously created targets will use whatever expiry time that was set previously.
         /// </para>
         /// <para>
-        /// The default value is 2.5 minutes.
+        /// The default value is 0.5 minutes.
         /// </para>
         /// </remarks>
         public double ExpiryTime
         {
             get;
             set;
-        } = 2.5;
+        } = 0.5;
         #endregion
 
         #region Methods.

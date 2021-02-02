@@ -67,7 +67,7 @@ namespace Gorgon.Examples
         // The 2D renderer interface for the application.
         private readonly Gorgon2D _renderer;
         // The plug in service for the application.
-        private readonly IGorgonPlugInService _plugIns;
+        private readonly GorgonMefPlugInCache _plugIns;
         // The file system where resources are kept.
         private IGorgonFileSystem _fileSystem;
         // The list of shaders.
@@ -254,7 +254,10 @@ namespace Gorgon.Examples
 
             _postProcess["Final Pass"] = finalPostProcess;
 
-            var deferredLighting = new Gorgon2DLightingEffect(_renderer);
+            var deferredLighting = new Gorgon2DLightingEffect(_renderer)
+            {
+                SpecularZDistance = -30
+            };
             var gbuffer = new Gorgon2DGBuffer(_renderer, 1280, 800);
             deferredLighting.AmbientColor = new GorgonColor(0.025f, 0.025f, 0.025f, 1.0f);
             _effects[nameof(bloom)] = bloom;
@@ -364,7 +367,8 @@ namespace Gorgon.Examples
         {
             // Load the file system containing our application data (sprites, images, etc...)
             IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugIns, GorgonApplication.Log);
-            IGorgonFileSystemProvider provider = providerFactory.CreateProvider("Gorgon.IO.GorPack.GorPackProvider");
+            IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"), 
+                                                                                "Gorgon.IO.GorPack.GorPackProvider");
             _fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
             _fileSystem.Mount(path);
 
@@ -438,7 +442,7 @@ namespace Gorgon.Examples
         /// <summary>Initializes a new instance of the <see cref="ResourceManagement"/> class.</summary>
         /// <param name="renderer">The renderer for the application.</param>
         /// <param name="plugIns>The plugin service used to load file system providers.</param>
-        public ResourceManagement(Gorgon2D renderer, IGorgonPlugInService plugIns)
+        public ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
         {
             _renderer = renderer;
             _graphics = renderer.Graphics;

@@ -33,6 +33,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Lights;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -86,13 +87,15 @@ namespace Gorgon.Examples
                 PostProcessGroup = "Final Pass",
                 Lights =
                 {
-                    new Light
+                    new Light(new GorgonPointLight
                     {
                         Attenuation = float.MaxValue.Sqrt(),
                         Color = GorgonColor.White,
                         SpecularPower = 6.0f,
-                        LocalLightPosition = new DX.Vector3(1200, -650, -1.0f),
                         Intensity = 13.07f
+                    })
+                    {
+                        LocalLightPosition = new DX.Vector3(1200, -650, -1.5f)
                     }
                 }
             };
@@ -133,16 +136,18 @@ namespace Gorgon.Examples
             };
 
             // Add an ambient light to the planet so we can see some details without a major light source.
-            planetLayer.Lights.Add(new Light
+            planetLayer.Lights.Add(new Light(new GorgonPointLight
             {
                 Attenuation = float.MaxValue.Sqrt(),
                 Color = GorgonColor.White,
                 SpecularPower = 0.0f,
-                Intensity = 0.3f,
+                Intensity = 0.37f
+            })
+            {
                 LocalLightPosition = new DX.Vector3(0, 0, -10000.0f),
                 Layers =
                 {
-                    planetLayer
+                    planetLayer 
                 }
             });
 
@@ -203,15 +208,14 @@ namespace Gorgon.Examples
                 PostProcessGroup = "Final Pass",
                 Lights =
                 {
-                    new Light
+                    new Light(new GorgonDirectionalLight
                     {
-                        Intensity = 0.25f,
-                        LightType = LightType.Directional,
+                        Intensity = 0.5f,                        
                         LightDirection = new DX.Vector3(1.0f, 0.0f, 0.7071068f),
                         SpecularEnabled = true,
-                        SpecularPower = 128,
+                        SpecularPower = 512.0f,
                         Color = GorgonColor.White,
-                    }
+                    })
                 }
             };
 

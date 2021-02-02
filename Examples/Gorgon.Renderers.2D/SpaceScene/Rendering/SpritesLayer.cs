@@ -117,7 +117,7 @@ namespace Gorgon.Examples
 
                 for (int i = 0; i < ActiveLights.Count; ++i)
                 {
-                    DeferredLighter.Lights.Add(ActiveLights[i]);
+                    DeferredLighter.Lights.Add(ActiveLights[i].LightData);
                 }
             }
 
@@ -177,7 +177,7 @@ namespace Gorgon.Examples
                             GBuffer.End();
                             if ((DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
                             {
-                                DeferredLighter.Render(GBuffer, rtv, Camera);
+                                DeferredLighter.Render(GBuffer, rtv);
                             }
                         }
                         Renderer.End();
@@ -190,7 +190,7 @@ namespace Gorgon.Examples
                             GBuffer.End();                            
                             if ((DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
                             {
-                                DeferredLighter.Render(GBuffer, rtv, Camera);
+                                DeferredLighter.Render(GBuffer, rtv);
                             }
                         }
                         Renderer.End();
@@ -215,7 +215,7 @@ namespace Gorgon.Examples
             GBuffer?.End();
             if ((wasLit) && (DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
             {
-                DeferredLighter.Render(GBuffer, rtv, Camera);
+                DeferredLighter.Render(GBuffer, rtv);
             }
             Renderer.End();
         }

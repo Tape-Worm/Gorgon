@@ -29,7 +29,9 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
@@ -42,7 +44,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 	{
 		#region Variables.
 		// The camera for viewing the scene.
-		private IGorgon2DCamera _camera;
+		private GorgonOrthoCamera _camera;
 		// The sprite used to display the texture.
 		private GorgonSprite _textureSprite;
 		// Inverted rendering.
@@ -86,7 +88,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 			ref readonly ProgressData prog = ref DataContext.ExtractTaskProgress;
 			string text = string.Format(Resources.GOREST_PROGRESS_SPR_GEN, prog.Current, prog.Total);
 
-			DX.Size2F textSize = Renderer.DefaultFont.MeasureText(text, false);
+			DX.Size2F textSize = text.MeasureText(Renderer.DefaultFont, false);
 			var pos = new DX.Vector2(MainRenderTarget.Width * 0.5f - textSize.Width * 0.5f, MainRenderTarget.Height * 0.5f - textSize.Height * 0.5f);
 
 			float percent = (float)prog.Current / prog.Total;
@@ -174,7 +176,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 		{
 			base.OnLoad();
 
-			_camera = new Gorgon2DOrthoCamera(Renderer, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
+			_camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
 			{
 				Anchor = new DX.Vector2(0.5f, 0.5f)
 			};

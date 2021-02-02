@@ -321,7 +321,7 @@ namespace Gorgon.Renderers
             }
             finally
             {
-                GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Return(lightData);
+                GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Return(lightData, true);
             }
         }
 

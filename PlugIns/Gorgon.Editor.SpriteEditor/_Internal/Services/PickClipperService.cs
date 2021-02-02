@@ -135,7 +135,7 @@ namespace Gorgon.Editor.SpriteEditor
             int location = (position.X * ImageData.FormatInformation.SizeInBytes) + (position.Y * ImageData.PitchInformation.RowPitch);
 
             // Grab the pixel at the location.
-            int pixel = ImageData.Data.ReadAs<int>(location);
+            int pixel = ImageData.Data.AsRef<int>(location);
 
             // Images should be in RGBA 32 bit format.  If they're not, then we'll get bad data.
             if (clipMask == ClipMask.Alpha)

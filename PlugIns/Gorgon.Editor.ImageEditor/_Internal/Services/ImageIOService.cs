@@ -289,26 +289,27 @@ namespace Gorgon.Editor.ImageEditor
                 result = _compressor.Compress(workFile, pixelFormat, image.MipCount);
 
                 // Convert to an uncompressed format if we aren't already in that format.
+                IGorgonImageUpdateFluent imageUpdate = image.BeginUpdate();
                 switch (pixelFormat)
                 {
                     case BufferFormat.BC5_SNorm when image.Format != BufferFormat.R8G8_SNorm:
-                        image.ConvertToFormat(BufferFormat.R8G8_SNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8G8_SNorm);
                         break;
                     case BufferFormat.BC5_Typeless when image.Format != BufferFormat.R8G8_UNorm:
                     case BufferFormat.BC5_UNorm when image.Format != BufferFormat.R8G8_UNorm:
-                        image.ConvertToFormat(BufferFormat.R8G8_UNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8G8_UNorm);
                         break;
                     case BufferFormat.BC6H_Sf16 when image.Format != BufferFormat.R16G16B16A16_Float:
                     case BufferFormat.BC6H_Typeless when image.Format != BufferFormat.R16G16B16A16_Float:
                     case BufferFormat.BC6H_Uf16 when image.Format != BufferFormat.R16G16B16A16_Float:
-                        image.ConvertToFormat(BufferFormat.R16G16B16A16_Float);
+                        imageUpdate.ConvertToFormat(BufferFormat.R16G16B16A16_Float);
                         break;
                     case BufferFormat.BC4_SNorm when image.Format != BufferFormat.R8G8_SNorm:
-                        image.ConvertToFormat(BufferFormat.R8_SNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8_SNorm);
                         break;
                     case BufferFormat.BC4_Typeless when image.Format != BufferFormat.R8G8_UNorm:
                     case BufferFormat.BC4_UNorm when image.Format != BufferFormat.R8G8_UNorm:
-                        image.ConvertToFormat(BufferFormat.R8_UNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8_UNorm);
                         break;
                     case BufferFormat.BC1_Typeless when image.Format != BufferFormat.R8G8B8A8_UNorm:
                     case BufferFormat.BC1_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
@@ -318,15 +319,17 @@ namespace Gorgon.Editor.ImageEditor
                     case BufferFormat.BC3_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
                     case BufferFormat.BC7_Typeless when image.Format != BufferFormat.R8G8B8A8_UNorm:
                     case BufferFormat.BC7_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
-                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
                         break;
                     case BufferFormat.BC1_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
                     case BufferFormat.BC2_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
                     case BufferFormat.BC3_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
                     case BufferFormat.BC7_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
-                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb);
                         break;
                 }
+
+                imageUpdate.EndUpdate();
 
                 if (result == null)
                 {
@@ -339,7 +342,9 @@ namespace Gorgon.Editor.ImageEditor
                 if (pixelFormat != image.Format)
                 {
                     _log.Print($"Image pixel format [{image.Format}] is different than requested format of [{pixelFormat}], converting...", LoggingLevel.Intermediate);
-                    image.ConvertToFormat(pixelFormat);
+                    image.BeginUpdate()
+                         .ConvertToFormat(pixelFormat)
+                         .EndUpdate();
                     _log.Print($"Converted image '{workFile.Name}' to pixel format: [{pixelFormat}].", LoggingLevel.Simple);
                 }
 
@@ -376,13 +381,18 @@ namespace Gorgon.Editor.ImageEditor
             // Create a thumbnail from the image.
             if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
             {
-                image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                image.BeginUpdate()
+                     .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                     .EndUpdate();
             }
             else
             {
                 if ((_noThumbImage.Width != size) || (_noThumbImage.Height != size))
                 {
-                    image = _noThumbImage.Clone().Resize((int)(size * dpi), (int)(size * dpi), 1, ImageFilter.Fant);
+                    image = _noThumbImage.Clone()
+                                         .BeginUpdate()
+                                         .Resize((int)(size * dpi), (int)(size * dpi), 1, ImageFilter.Fant)
+                                         .EndUpdate();
                 }
                 else
                 {
@@ -424,12 +434,15 @@ namespace Gorgon.Editor.ImageEditor
                 newWidth = (int)((size * aspect) * dpi);
             }
 
-            image.Resize(newWidth, newHeight, 1, ImageFilter.Fant);
+            IGorgonImageUpdateFluent imageUpdate = image.BeginUpdate();
+            imageUpdate.Resize(newWidth, newHeight, 1, ImageFilter.Fant);
 
             if (imageSize != size)
             {
-                image.Expand(imageSize, imageSize, 1, ImageExpandAnchor.Center);
+                imageUpdate.Expand(imageSize, imageSize, 1, ImageExpandAnchor.Center);
             }
+
+            imageUpdate.EndUpdate();
 
             return (image, workFile, originalInfo);
         }

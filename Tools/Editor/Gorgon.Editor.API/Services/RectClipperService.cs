@@ -33,6 +33,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.Services
@@ -73,7 +74,7 @@ namespace Gorgon.Editor.Services
         // The rectangle in screen coordinates.
         private DX.RectangleF _screenRect;
         // The camera for rendering.
-        private IGorgon2DCamera _camera;
+        private GorgonOrthoCamera _camera;
         // Flag to indicate that the rectangle should be clipped against the boundaries.
         private bool _clipBounds = true;
         #endregion
@@ -140,7 +141,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the camera being used.
         /// </summary>
-        public IGorgon2DCamera Camera
+        public GorgonOrthoCamera Camera
         {
             get => _camera;
             set

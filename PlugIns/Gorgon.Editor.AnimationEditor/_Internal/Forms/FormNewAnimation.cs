@@ -206,7 +206,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
                     {
-                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                        image.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate();
                     }
                     else
                     {
@@ -312,7 +312,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
                     {
-                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                        image.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate();
                     }
                     else
                     {

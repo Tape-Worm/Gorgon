@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -100,7 +101,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the camera to be used with this layer.
         /// </summary>
-        public IGorgon2DCamera Camera
+        public GorgonCameraCommon Camera
         {
             get;
             set;
@@ -123,7 +124,10 @@ namespace Gorgon.Examples
                     continue;
                 }
 
-                light.Position = new DX.Vector3(((DX.Vector2)light.LocalLightPosition + Offset) / ParallaxLevel, Lights[i].LocalLightPosition.Z);
+                if (light.PointLight != null)
+                {
+                    light.PointLight.Position = new DX.Vector3(((DX.Vector2)light.LocalLightPosition + Offset) / ParallaxLevel, Lights[i].LocalLightPosition.Z);
+                }
             }
         }
 

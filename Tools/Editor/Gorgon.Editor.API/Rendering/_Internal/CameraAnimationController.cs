@@ -28,7 +28,7 @@ using Gorgon.Animation;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using SharpDX;
 
 namespace Gorgon.Editor.Rendering
@@ -37,18 +37,18 @@ namespace Gorgon.Editor.Rendering
     /// Provides animation capability for camera actions.
     /// </summary>
     internal class CameraAnimationController<T>
-        : GorgonAnimationController<IGorgon2DCamera>
+        : GorgonAnimationController<GorgonOrthoCamera>
         where T : class, IVisualEditorContent
     {
         #region Variables.
         /// <summary>
         /// The track registration for the position.
         /// </summary>
-        public static readonly GorgonTrackRegistration PositionTrack = new GorgonTrackRegistration(nameof(IGorgon2DCamera.Position), null, AnimationTrackKeyType.Vector3);
+        public static readonly GorgonTrackRegistration PositionTrack = new GorgonTrackRegistration(nameof(GorgonOrthoCamera.Position), null, AnimationTrackKeyType.Vector3);
         /// <summary>
         /// The track registration for the scale..
         /// </summary>
-        public static readonly GorgonTrackRegistration ZoomTrack = new GorgonTrackRegistration(nameof(IGorgon2DCamera.Zoom), null, AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration ZoomTrack = new GorgonTrackRegistration(nameof(GorgonOrthoCamera.Zoom), null, AnimationTrackKeyType.Vector2);
 
         // The renderer that is animating.
         private readonly DefaultContentRenderer<T> _renderer;
@@ -59,7 +59,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnColorUpdate(GorgonTrackRegistration track, IGorgon2DCamera animObject, GorgonColor value)
+        protected override void OnColorUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, GorgonColor value)
         {
             // Not needed.
         }
@@ -68,7 +68,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnRectangleUpdate(GorgonTrackRegistration track, IGorgon2DCamera animObject, RectangleF value)
+        protected override void OnRectangleUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, RectangleF value)
         {
             // Not needed.
         }
@@ -77,7 +77,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnSingleValueUpdate(GorgonTrackRegistration track, IGorgon2DCamera animObject, float value)
+        protected override void OnSingleValueUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, float value)
         {
             // Not needed.
         }
@@ -88,7 +88,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="texture">The texture to switch to.</param>
         /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
         /// <param name="textureArrayIndex">The texture array index.</param>
-        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, IGorgon2DCamera animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
         {
             // Not needed.
         }
@@ -97,7 +97,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, IGorgon2DCamera animObject, Vector2 value)
+        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, Vector2 value)
         {
             if (track.ID != ZoomTrack.ID)
             {
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, IGorgon2DCamera animObject, Vector3 value)
+        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, Vector3 value)
         {
             if (track.ID != PositionTrack.ID)
             {
@@ -127,7 +127,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, IGorgon2DCamera animObject, Vector4 value)
+        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, Vector4 value)
         {
             // Not needed.
         }

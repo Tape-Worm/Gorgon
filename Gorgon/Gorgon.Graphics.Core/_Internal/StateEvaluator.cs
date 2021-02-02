@@ -443,7 +443,6 @@ namespace Gorgon.Graphics.Core
 		/// <param name="change">The type of change being evaluated.</param>
 		/// <param name="changes">The current set of changes to be updated.</param>
 		/// <param name="range">The unioned range of indices that have changed between the two arrays.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void CheckArray<T>(GorgonArray<T> left, GorgonArray<T> right, ResourceStateChanges change, ref ResourceStateChanges changes, ref (int start, int count) range)
 			where T : IEquatable<T>
 		{
@@ -652,26 +651,29 @@ namespace Gorgon.Graphics.Core
         /// <returns>A tuple indicating whether rtvs/dsv has been changed.</returns>
 		public (bool RtvsUpdated, bool DsvUpdated) GetRtvDsvChanges(ReadOnlySpan<GorgonRenderTargetView> targets, GorgonDepthStencil2DView depthStencil)
 		{			
-			if (targets.IsEmpty)
-			{
-				return (true, depthStencil != DepthStencil);
-			}
-
 			bool needsDepthStencilUpdate = depthStencil != DepthStencil;
 			bool needsRtvUpdate = false;
+			int length = targets.Length.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
 
-			for (int i = 0; i < targets.Length.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount); ++i)
+			for (int i = 0; i < D3D11.OutputMergerStage.SimultaneousRenderTargetCount; ++i)
 			{
-				GorgonRenderTargetView newRtv = targets[i];
-				GorgonRenderTargetView prevRtv = RenderTargets[i];
+				ref GorgonRenderTargetView prevRtv = ref RenderTargets[i];
+
+				if (i >= length)
+				{
+					prevRtv = null;
+					continue;
+				}
+
+				GorgonRenderTargetView newRtv = targets[i];				
 
 				if (newRtv == prevRtv)
 				{
 					continue;
 				}
 
-				RenderTargets[i] = newRtv;
-				needsRtvUpdate = true;
+				prevRtv = newRtv;
+				needsRtvUpdate = true;				
 			}
 
 			CheckRtvsForSrvHazards(RenderTargets, depthStencil);
@@ -691,19 +693,20 @@ namespace Gorgon.Graphics.Core
         /// <returns><b>true</b> if the view ports have changed, <b>false</b> if not.</returns>
 		public bool GetViewportChange(ReadOnlySpan<DX.ViewportF> viewports)
 		{
-			if (viewports.IsEmpty)
-			{
-				Array.Clear(Viewports, 0, Viewports.Length);
-				return true;
-			}
-
 			int length = viewports.Length.Min(Viewports.Length);
 			bool hasChanges = false;
 
-			for (int i = 0; i < length; ++i)
+			for (int i = 0; i < Viewports.Length; ++i)
 			{
-				DX.ViewportF newViewport = viewports[i];
 				ref DX.ViewportF viewport = ref Viewports[i];
+				if (i >= length)
+				{
+					viewport = default;
+					continue;
+				}
+
+				DX.ViewportF newViewport = viewports[i];
+				
 				if (viewports[i].Equals(ref viewport))
 				{
 					continue;
@@ -723,19 +726,21 @@ namespace Gorgon.Graphics.Core
 		/// <returns><b>true</b> if the scissor rectangles have changed, <b>false</b> if not.</returns>
 		public bool GetScissorRectChange(ReadOnlySpan<DX.Rectangle> scissors)
 		{
-			if (scissors.IsEmpty)
-			{
-				Array.Clear(Scissors, 0, Scissors.Length);
-				return true;
-			}
-
 			int length = scissors.Length.Min(Scissors.Length);
 			bool hasChanges = false;
 
-			for (int i = 0; i < length; ++i)
+			for (int i = 0; i < Scissors.Length; ++i)
 			{
-				DX.Rectangle newScissor = scissors[i];
 				ref DX.Rectangle scissor = ref Scissors[i];
+
+				if (i >= length)
+				{
+					scissor = default;
+					continue;
+				}
+
+				DX.Rectangle newScissor = scissors[i];
+				
 				if (newScissor.Equals(ref scissor))
 				{
 					continue;

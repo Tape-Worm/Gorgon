@@ -184,8 +184,7 @@ namespace Gorgon.Graphics.Imaging
             uint alpha = (uint)(alphaValue * 255.0f);
             uint min = (uint)(updateAlphaRange.Value.Minimum * 255.0f);
             uint max = (uint)(updateAlphaRange.Value.Maximum * 255.0f);
-            int pitch = PitchInformation.RowPitch / Width;
-
+            
             for (int y = region.Value.Top; y <= region.Value.Bottom; ++y)
             {
                 if (y < 0)
@@ -193,8 +192,8 @@ namespace Gorgon.Graphics.Imaging
                     continue;
                 }
 
-                GorgonPtr<byte> horzPtr = Data + region.Value.Left.Max(0) * FormatInformation.SizeInBytes;
-                ImageUtilities.SetAlphaScanline(in horzPtr, region.Value.Width * pitch, in horzPtr, region.Value.Width * pitch, Format, alpha, min, max);
+                GorgonPtr<byte> horzPtr = src + (region.Value.Left.Max(0) * FormatInformation.SizeInBytes);
+                ImageUtilities.SetAlphaScanline(in horzPtr, PitchInformation.RowPitch, in horzPtr, PitchInformation.RowPitch, Format, alpha, min, max);
                 src += PitchInformation.RowPitch;
             }
         }

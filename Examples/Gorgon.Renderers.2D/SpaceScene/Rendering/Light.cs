@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Lights;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -41,7 +42,6 @@ namespace Gorgon.Examples
     /// We wrap up the light object so we can filter out which layer gets lit.  Lights are applied to a scene, so whether a layer or layers get lit is up to the developer.
     /// </remarks>
     internal class Light
-        : Gorgon2DLight
     {
         /// <summary>
         /// Property to return the list of layers that this light is applied to.
@@ -52,6 +52,30 @@ namespace Gorgon.Examples
         } = new HashSet<Layer>();
 
         /// <summary>
+        /// Property to return the point light wrapped by this object.
+        /// </summary>
+        public GorgonPointLight PointLight
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the directional light wrapped by this object.
+        /// </summary>
+        public GorgonDirectionalLight DirectionalLight
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the common light data.
+        /// </summary>
+        public GorgonLightCommon LightData
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to set or return the local position for the light before transformation in layer space.
         /// </summary>
         public DX.Vector3 LocalLightPosition
@@ -59,5 +83,13 @@ namespace Gorgon.Examples
             get;
             set;
         }
+
+        /// <summary>Initializes a new instance of the <see cref="Light" /> class.</summary>
+        /// <param name="pointLight">The point light to wrap.</param>
+        public Light(GorgonPointLight pointLight) => LightData = PointLight = pointLight;
+
+        /// <summary>Initializes a new instance of the <see cref="Light" /> class.</summary>
+        /// <param name="dirLight">The directional light to wrap.</param>
+        public Light(GorgonDirectionalLight dirLight) => LightData = DirectionalLight = dirLight;
     }
 }

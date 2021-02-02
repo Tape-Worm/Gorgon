@@ -81,7 +81,7 @@ namespace Gorgon.Editor.ImageEditor
 
             if (string.IsNullOrWhiteSpace(exePath))
             {
-                _log.Print($"No executable found for files of type {workingFile.Extension}.", LoggingLevel.Verbose);
+                _log.Print($"[Warning] No executable found for files of type {workingFile.Extension}. Check to see if the UWP photo app hasn't messed with file registrations for '{workingFile.Extension}' files.", LoggingLevel.Verbose);
                 return null;
             }
 

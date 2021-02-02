@@ -169,13 +169,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public void Dispose()
         {
-            if (!_ownsBuffer)
+            GorgonConstantBuffer buffer = Interlocked.Exchange(ref _buffer, null);
+
+            if ((buffer == null) || (!_ownsBuffer))
             {
                 return;
             }
-
-            GorgonConstantBuffer buffer = Interlocked.Exchange(ref _buffer, null);
-            buffer?.Dispose();
+            
+            buffer.Dispose();
             _ownsBuffer = false;
         }
 

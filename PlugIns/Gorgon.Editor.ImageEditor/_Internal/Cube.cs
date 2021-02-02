@@ -168,27 +168,26 @@ namespace Gorgon.Editor.ImageEditor
             };
 
             // Create our index buffer and vertex buffer and populate with our cube data.
-            using (var indexPtr = GorgonNativeBuffer<ushort>.Pin(indices))
-            using (var vertexPtr = GorgonNativeBuffer<CubeVertex>.Pin(vertices))
-            {
-                IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                    new GorgonIndexBufferInfo("Volume Index Buffer")
-                                                    {
-                                                        Usage = ResourceUsage.Immutable,
-                                                        IndexCount = indices.Length,
-                                                        Use16BitIndices = true
-                                                    },
-                                                    indexPtr);
+            IndexBuffer = new GorgonIndexBuffer(graphics,
+                                                new GorgonIndexBufferInfo("Volume Index Buffer")
+                                                {
+                                                    Usage = ResourceUsage.Immutable,
+                                                    IndexCount = indices.Length,
+                                                    Use16BitIndices = true
+                                                },
+                                                indices);
 
-                VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
-                {
-                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer(graphics,
-                                                                                      vertices.Length,
-                                                                                      ResourceUsage.Immutable,
-                                                                                      initialData: vertexPtr,
-                                                                                      bufferName: "Volume Vertex Buffer")
-                };
-            }
+            VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
+            {
+                [0] = GorgonVertexBufferBinding.CreateVertexBuffer<CubeVertex>(graphics,
+                                                                    new GorgonVertexBufferInfo("Volume Vertex Buffer")
+                                                                    {
+                                                                        Binding = VertexIndexBufferBinding.None,
+                                                                        Usage = ResourceUsage.Immutable,
+                                                                        SizeInBytes = CubeVertex.SizeInBytes * vertices.Length
+                                                                    },
+                                                                    vertices)
+            };
         }
         #endregion
     }

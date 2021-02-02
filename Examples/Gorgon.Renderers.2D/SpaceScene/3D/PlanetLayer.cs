@@ -36,6 +36,9 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
+using Gorgon.Renderers.Data;
+using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
 using DX = SharpDX;
 
@@ -83,43 +86,6 @@ namespace Gorgon.Examples
             /// </summary>
             public float SpecularPower;
         }
-
-        /// <summary>
-        /// Data for a light to pass to the GPU.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, Size = 64, Pack = 4)]
-        private struct LightData
-        {
-            /// <summary>
-            /// Color of the light.
-            /// </summary>
-            public GorgonColor LightColor;
-
-            /// <summary>
-            /// Specular color for the light.
-            /// </summary>
-            public GorgonColor SpecularColor;
-
-            /// <summary>
-            /// Position of the light in world space.
-            /// </summary>
-            public DX.Vector3 LightPosition;
-
-            /// <summary>
-            /// Specular highlight power.
-            /// </summary>
-            public float SpecularPower;
-
-            /// <summary>
-            /// Attenuation falloff.
-            /// </summary>
-            public float Attenuation;
-
-            /// <summary>
-            /// The light intensity.
-            /// </summary>
-            public float Intensity;
-        }
         #endregion
 
         #region Variables.
@@ -146,7 +112,7 @@ namespace Gorgon.Examples
         // The draw call to render.
         private List<GorgonDrawIndexCall> _drawCalls;
         // The light data to send to the constant buffer.
-        private readonly LightData[] _lightData = new LightData[MaxLights];
+        private readonly GorgonGpuLightData[] _lightData = new GorgonGpuLightData[MaxLights];
         // The current view matrix, and projection matrix.  We'll pull these from our 2D camera.
         private DX.Matrix _viewMatrix;
         private DX.Matrix _projectionMatrix;
@@ -190,7 +156,7 @@ namespace Gorgon.Examples
                                                     new GorgonConstantBufferInfo("LightDataBuffer")
                                                     {
                                                         Usage = ResourceUsage.Default,
-                                                        SizeInBytes = Unsafe.SizeOf<LightData>() * MaxLights
+                                                        SizeInBytes = Unsafe.SizeOf<GorgonGpuLightData>() * MaxLights
                                                     });
         }
 
@@ -236,22 +202,8 @@ namespace Gorgon.Examples
         /// <summary>Function called to update items per frame on the layer.</summary>
         protected override void OnUpdate()
         {
-            if (Camera.NeedsUpdate)
-            {
-                if (Camera.ProjectionChanged)
-                {
-                    Camera.GetProjectionMatrix(out DX.Matrix projectionMatrix);
-                    SetProjection(ref projectionMatrix);
-                }
-
-                if (Camera.ViewChanged)
-                {
-                    Camera.GetViewMatrix(out DX.Matrix viewMatrix);
-                    SetView(ref viewMatrix);
-                }
-            }
-
-            Camera.GetViewMatrix(out DX.Matrix _);
+            SetProjection(ref Camera.GetProjectionMatrix());
+            SetView(ref Camera.GetViewMatrix());
 
             _drawPlanets.Clear();
 
@@ -316,20 +268,12 @@ namespace Gorgon.Examples
                     continue;
                 }
 
-                _lightData[i] = new LightData
-                {
-                    SpecularPower = light.SpecularPower,
-                    Attenuation = light.Attenuation,
-                    LightColor = light.Color,
-                    LightPosition = new DX.Vector3(light.Position.X, light.Position.Y, -light.Position.Z),
-                    SpecularColor = GorgonColor.White,
-                    Intensity = light.Intensity
-                };
+                _lightData[i] = light.LightData.GetGpuData();
             }
 
             if (ActiveLights.Count > 0)
             {
-                _lightBuffer.Buffer.SetData(_lightData);
+                _lightBuffer.Buffer.SetData<GorgonGpuLightData>(_lightData);
             }
 
             for (int i = 0; i < _drawPlanets.Count; ++i)
@@ -370,7 +314,7 @@ namespace Gorgon.Examples
                     // Create our vertex layout now.
                     if (_vertexLayout == null)
                     {
-                        _vertexLayout = _vertexLayout = GorgonInputLayout.CreateUsingType<Vertex3D>(_graphics, vertexShader);
+                        _vertexLayout = _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
                     }
 
                     // Set up a pipeline state for the mesh.
@@ -383,7 +327,7 @@ namespace Gorgon.Examples
                     _drawCallBuilder.Clear()
                                 .PipelineState(pipelineState)
                                 .IndexBuffer(layer.Mesh.IndexBuffer, 0, layer.Mesh.IndexCount)
-                                .VertexBuffer(_vertexLayout, new GorgonVertexBufferBinding(layer.Mesh.VertexBuffer, Vertex3D.Size))
+                                .VertexBuffer(_vertexLayout, new GorgonVertexBufferBinding(layer.Mesh.VertexBuffer, GorgonVertexPosNormUvTangent.SizeInBytes))
                                 .ConstantBuffer(ShaderType.Vertex, _viewProjectionBuffer)
                                 .ConstantBuffer(ShaderType.Vertex, _worldBuffer, 1)
                                 .ConstantBuffer(ShaderType.Pixel, _cameraBuffer)
@@ -421,7 +365,7 @@ namespace Gorgon.Examples
         {
             _viewMatrix = view;
             DX.Matrix.Multiply(ref _viewMatrix, ref _projectionMatrix, out _viewProjection);
-
+            DX.Matrix.Transpose(ref _viewProjection, out _viewProjection);
             _viewProjectionBuffer?.Buffer.SetData(ref _viewProjection);
 
             if (_cameraBuffer == null)
@@ -447,8 +391,8 @@ namespace Gorgon.Examples
         private void SetProjection(ref DX.Matrix projection)
         {
             _projectionMatrix = projection;
-            DX.Matrix.Multiply(ref _viewMatrix, ref _projectionMatrix, out _viewProjection);
-
+            DX.Matrix.Transpose(ref _viewProjection, out _viewProjection);
+            _viewProjection.Transpose();
             _viewProjectionBuffer?.Buffer.SetData(ref _viewProjection);
         }
 

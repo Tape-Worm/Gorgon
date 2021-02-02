@@ -113,6 +113,7 @@ namespace Gorgon.Editor.ImageEditor
             tv?.Dispose();
 
             PreviewTexture = null;
+            _blur.BlurRenderTargetsSize = new DX.Size2(256, 256);
         }
 
         /// <summary>
@@ -120,6 +121,8 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void CreateTexture()
         {
+            DestroyTexture();
+
             _texture = GorgonTexture2DView.CreateTexture(_graphics.Graphics, new GorgonTexture2DInfo
             {
                 Width = _workingImage.Width,

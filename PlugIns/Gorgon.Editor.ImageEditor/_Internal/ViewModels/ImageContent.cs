@@ -1115,8 +1115,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             if (ImageData.FormatInfo.IsCompressed)
             {
-                // Assume our block compressed format expands to R8G8B8A8
-                supportedFormats = BufferFormat.R8G8B8A8_UNorm.CanConvertToAny(supportedFormats);
+                // Assume our block compressed format expands to R8G8B8A8                
+                supportedFormats = ImageData.CanConvertToFormats(supportedFormats);                
 
                 // Do not provide block compressed formats if we can't convert them.
                 if (_imageIO.CanHandleBlockCompression)
@@ -1148,7 +1148,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     continue;
                 }
 
-                if ((!formatInfo.IsCompressed) && (!supportInfo.IsRenderTargetFormat))
+                if ((!formatInfo.IsCompressed) && (!supportInfo.IsRenderTargetFormat) && (format != BufferFormat.B4G4R4A4_UNorm))
                 {
                     continue;
                 }
@@ -1165,7 +1165,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <param name="format">The format to change to.</param>
         /// <returns><b>true</b> if the conversion can take place, <b>false</b> if not.</returns>
-        private bool CanConvertFormat(BufferFormat format) => format == BufferFormat.Unknown ? (CurrentPanel == null) && (CommandContext == null) : format != ImageData.Format;
+        private bool CanConvertFormat(BufferFormat format) => format == BufferFormat.Unknown ? (CurrentPanel == null) && (CommandContext == null) : format != CurrentPixelFormat;
 
         /// <summary>
         /// Function to create an undo cache file from the working file.
@@ -1267,7 +1267,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     HostServices.BusyService.SetBusy();
 
                     // Don't convert the same format.
-                    if (format == ImageData.Format)
+                    if (format == CurrentPixelFormat)
                     {
                         return Task.FromException(new InvalidCastException("Will not see me"));
                     }
@@ -1371,7 +1371,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         return;
                     }
 
-                    workImage.ConvertToFormat(convertFormat);
+                    workImage.BeginUpdate()
+                             .ConvertToFormat(convertFormat)
+                             .EndUpdate();
                 }
 
                 if ((!codec.SupportsMultipleFrames) && (ArrayCount > 1))
@@ -1625,8 +1627,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                                 || (DimensionSettings.Height > ImageData.Height))
                             {
 
-                                ImageData.Expand(DimensionSettings.Width, DimensionSettings.Height, DepthCount,
-                                    (ImageExpandAnchor)DimensionSettings.CropAlignment);
+                                ImageData.BeginUpdate()
+                                         .Expand(DimensionSettings.Width, DimensionSettings.Height, DepthCount, (ImageExpandAnchor)DimensionSettings.CropAlignment)
+                                         .EndUpdate();
                             }
 
                             if ((DimensionSettings.Width <= ImageData.Width)
@@ -1843,7 +1846,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         int mipCount = MipMapSettings.MipLevels;
                         int currentMip = CurrentMipLevel.Min(mipCount - 1).Max(0);
 
-                        ImageData.GenerateMipMaps(mipCount, MipMapSettings.MipFilter);
+                        ImageData.BeginUpdate()
+                                 .GenerateMipMaps(mipCount, MipMapSettings.MipFilter)
+                                 .EndUpdate();
 
                         CurrentMipLevel = currentMip;
                     }
@@ -2117,18 +2122,21 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         return;
                     }
 
-                    workImage.ConvertToFormat(BufferFormat.B8G8R8A8_UNorm);
+                    workImage.BeginUpdate()
+                             .ConvertToFormat(BufferFormat.B8G8R8A8_UNorm)
+                             .EndUpdate();
                 }
 
                 // Finally, write out the image data so the external image editor can have at it.
                 string fileName = $"{File.Name}_extern_edit.png";
                 workImageFile = _imageIO.SaveImageFile(fileName, workImage, workImage.Format, codec);
-
+                                
                 workImage.Dispose();
 
                 // Launch the editor.
                 if (!_externalEditor.EditImage(workImageFile))
                 {
+
                     return;
                 }
 
@@ -2146,7 +2154,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         return;
                     }
 
-                    workImage.ConvertToFormat(ImageData.Format);
+                    workImage.BeginUpdate()
+                             .ConvertToFormat(ImageData.Format)
+                             .EndUpdate();
                 }
 
                 CropOrResizeSettings.ImportFileDirectory = null;
@@ -2228,7 +2238,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     (importImage, _, _) = _imageIO.LoadImageFile(imageStream, $"/Import/Import_{importItem.FromFile.Name}_{Guid.NewGuid():N}");
                 }
 
-                importImage.ConvertToFormat(ImageData.Format);
+                importImage.BeginUpdate()
+                           .ConvertToFormat(ImageData.Format)
+                           .EndUpdate();
             });
             
             ImportImageData(Path.GetFileName(importItem.OriginalFilePath), importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
@@ -2673,7 +2685,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     redoArgs.UndoFile = undoFile;
                     NotifyPropertyChanging(nameof(ImageData));
+                    IGorgonImage oldImage = ImageData;
                     ImageData = newImage;
+                    oldImage?.Dispose();
                     NotifyPropertyChanged(nameof(ImageData));
                     ContentState = ContentState.Modified;
 
@@ -2751,14 +2765,18 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 {
                     await Task.Run(() =>
                     {
+                        IGorgonImageUpdateFluent imageUpdate = ImageData.BeginUpdate();
+
                         if (isPremultiplied)
                         {
-                            ImageData.ConvertToPremultipliedAlpha();
+                            imageUpdate.ConvertToPremultipliedAlpha();
                         }
                         else
                         {
-                            ImageData.ConvertFromPremultipedAlpha();
+                            imageUpdate.ConvertFromPremultipedAlpha();
                         }
+
+                        imageUpdate.EndUpdate();
                     });
 
                     IsPremultiplied = isPremultiplied;

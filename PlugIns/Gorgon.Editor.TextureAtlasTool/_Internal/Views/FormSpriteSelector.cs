@@ -34,6 +34,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
@@ -220,7 +221,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
             else
             {
-                DX.Size2F size = _graphicsContext.Renderer2D.DefaultFont.MeasureText(Resources.GORTAG_TEXT_SELECT_SPRITE, false);
+                DX.Size2F size = Resources.GORTAG_TEXT_SELECT_SPRITE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
                 _graphicsContext.Renderer2D.DrawString(Resources.GORTAG_TEXT_SELECT_SPRITE, 
                                                         new DX.Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
                                                         color: GorgonColor.White);

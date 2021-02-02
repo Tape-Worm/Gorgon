@@ -36,6 +36,7 @@ using System.Threading;
 using Gorgon.Editor.Services;
 using System.Buffers;
 using Gorgon.Math;
+using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Editor.AnimationEditor
 {

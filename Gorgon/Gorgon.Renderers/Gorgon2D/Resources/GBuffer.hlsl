@@ -12,7 +12,7 @@ struct GorgonLitVertex
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
-    float3 uv : TEXCOORD;
+    float4 uv : TEXCOORD;
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
 };
@@ -40,7 +40,7 @@ GorgonLitVertex GorgonVertexShaderGBuffer(GorgonSpriteVertex vertex)
     GorgonLitVertex output;
 	
 	output.position = mul(ViewProjection, vertex.position);
-	output.uv = vertex.uv.xyz;
+	output.uv = vertex.uv;
 	output.color = vertex.color;
 
 	// We encode our rotation cosine and sine in our vertex data so that we don't need to perform the calculation more than needed.
@@ -58,22 +58,24 @@ GorgonGBufferOutput GorgonPixelShaderGBuffer(GorgonLitVertex vertex) : SV_Target
 {	
 	GorgonGBufferOutput result;
 
-	result.Diffuse = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float3 texCoords = float3(vertex.uv.xy / vertex.uv.w, vertex.uv.z);
+
+	result.Diffuse = _gorgonTexture.Sample(_gorgonSampler, texCoords) * vertex.color;
 	
 	REJECT_ALPHA(result.Diffuse.a);    	
 
     // Transform normals. If we rotate, the normals in the normal map need to be adjusted.
 #ifdef USE_ARRAY
-	float3 bump = normalize((_gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, _arrayIndices.x)).xyz * 2.0f) - 1.0f);	
+	float3 bump = normalize((_gorgonTexture.Sample(_gorgonSampler, float3(texCoords.xy, _arrayIndices.x)).xyz * 2.0f) - 1.0f);	
 #else
-    float3 bump = normalize((_normalTexture.Sample(_normalSampler, vertex.uv.xy).xyz * 2.0f) - 1.0f);
+    float3 bump = normalize((_normalTexture.Sample(_normalSampler, texCoords.xy).xyz * 2.0f) - 1.0f);
 #endif
     result.Normal = float4((normalize(float3(0, 0, bump.z) + (bump.x * vertex.tangent + bump.y * vertex.bitangent)) + 1.0f) * 0.5f, 1.0f);
 
 #ifdef USE_ARRAY
-	result.Specular = _arrayIndices.y < 0 ? float4(0, 0, 0, 0) : _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, _arrayIndices.y));
+	result.Specular = _arrayIndices.y < 0 ? float4(0, 0, 0, 0) : _gorgonTexture.Sample(_gorgonSampler, float3(texCoords.xy, _arrayIndices.y));
 #else
-    result.Specular = _specularTexture.Sample(_specularSampler, vertex.uv.xy);
+    result.Specular = _specularTexture.Sample(_specularSampler, texCoords.xy);
 #endif
 
 	return result;

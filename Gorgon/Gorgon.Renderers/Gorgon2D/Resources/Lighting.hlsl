@@ -114,7 +114,7 @@ float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
     result = float3(color.rgb * diffuseAmount * light.Color.rgb * light.Attributes.y);
 
     if (specularEnabled != 0)
-    {
+    {        
         result += diffuseAmount * GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
     }
 
@@ -146,9 +146,9 @@ float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
     result = float3(color.rgb * diffuseAmount * light.Color.rgb * light.Attributes.y);
 	
     if (specularEnabled != 0)
-    {
+    {        
 		// Oddly enough, if we don't normalize Direction, our specular shows up correctly, and if we do normalize it, it gets weird at 0x0.
-        result += diffuseAmount * GetSpecularValue(uv, light.Direction.xyz, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
+        result += diffuseAmount * GetSpecularValue(uv, -light.Direction, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
     }
     
     return saturate(float4(result + (color.rgb * _ambientColor.rgb), color.a));
@@ -193,7 +193,7 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
             case 1:
                 // Point lights.
                 color = PointLight(vertex, light);
-                result = float4(result.rgb + color.rgb, color.a);
+                result = float4(result.rgb + color.rgb, color.a);                
                 break;
             case 2:
                 // Directional lights.

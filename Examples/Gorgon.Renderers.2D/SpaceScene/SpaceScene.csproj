@@ -42,11 +42,16 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\Shaders3D.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\..\Gorgon.Graphics\Primitives\MoveableMesh.cs" Link="3D\MoveableMesh.cs" />
     <Compile Include="..\..\Gorgon.Graphics\Primitives\Mesh.cs" Link="3D\Mesh.cs" />
     <Compile Include="..\..\Gorgon.Graphics\Primitives\MeshMaterial.cs" Link="3D\MeshMaterial.cs" />
-    <Compile Include="..\..\Gorgon.Graphics\Primitives\Vertex3D.cs" Link="3D\Vertex3D.cs" />
     <Compile Include="..\..\Gorgon.Graphics\Primitives\IcoSphere.cs" Link="3D\IcoSphere.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Shaders3D.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Gorgon\g.png">

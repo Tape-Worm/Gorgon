@@ -39,13 +39,11 @@ namespace Gorgon.Editor.UI
     {
         #region Variables.
         // The form to display for the wait panel.
-        private FormWait _waitForm;   
+        private readonly GorgonWaitOverlay _waitForm;   
         // The view model to hook into.
         private IViewModel _viewModel;
         // The form to parent the wait panel.
-        private readonly Form _appForm;
-        // The synchronization context for synchronizing to the main thread.
-        private readonly SynchronizationContext _syncContext;
+        private readonly Control _appForm;
         #endregion
 
         #region Methods.
@@ -68,29 +66,8 @@ namespace Gorgon.Editor.UI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ViewModel_WaitPanelDeactivated(object sender, EventArgs e)
         {
-            void HideForm(object _)
-            {
-                if (!_waitForm.Visible)
-                {
-                    return;
-                }
-
-                _appForm.Enabled = true;
-                _waitForm.Hide();
-
-                _appForm.BringToFront();
-                _appForm.Activate();
-            }
-
-            if (_syncContext != SynchronizationContext.Current)
-            {
-                _syncContext.Send(HideForm, null);
-
-            }
-            else
-            {
-                HideForm(null);
-            }
+            _appForm.Enabled = true;
+            _waitForm.Hide();
         }
 
         /// <summary>Views the model wait panel activated.</summary>
@@ -98,47 +75,11 @@ namespace Gorgon.Editor.UI
         /// <param name="e">The e.</param>
         private void ViewModel_WaitPanelActivated(object sender, WaitPanelActivateArgs e)
         {
-            void ShowSync(object _)
+            if (!_waitForm.IsActive)
             {
-                _waitForm.Wait.WaitMessage = e.Message;
-
-                if (!string.IsNullOrWhiteSpace(e.Title))
-                {
-                    _waitForm.Wait.WaitTitle = e.Title;
-                }
-
-                if (_waitForm.Visible)
-                {
-                    return;
-                }
-
                 _appForm.Enabled = false;
-                _waitForm.Show(_appForm);
-                _waitForm.BringToFront();
-                _waitForm.Invalidate();
+                _waitForm.Show(_appForm, e.Title, e.Message);
             }
-
-            if (_syncContext != SynchronizationContext.Current)
-            {
-                _syncContext.Post(ShowSync, null);
-            }
-            else
-            {
-                ShowSync(null);
-            }
-        }
-
-        /// <summary>
-        /// Function to bring the wait panel to the top of the z-order.
-        /// </summary>
-        public void BringToFront()
-        {
-            if (!_waitForm.Visible)
-            {
-                return;
-            }
-
-            _waitForm.BringToFront();
         }
 
         /// <summary>
@@ -161,23 +102,20 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {            
-            SetDataContext(null);
-            FormWait wait =Interlocked.Exchange(ref _waitForm, null);            
-            wait?.Dispose();
-        }
+        public void Dispose() => UnassignEvents();
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="WaitPanelDisplay"/> class.</summary>
         /// <param name="appForm">The application form that will be the parent to the wait panel.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appForm"/> parameter is <b>null</b>.</exception>
-        public WaitPanelDisplay(Form appForm)
+        public WaitPanelDisplay(Control appForm)
         {
             _appForm = appForm ?? throw new ArgumentNullException(nameof(appForm));
-            _syncContext = SynchronizationContext.Current;
-            _waitForm = new FormWait();
+            _waitForm = new GorgonWaitOverlay
+            {
+                OverlayColor = Graphics.GorgonColor.Black
+            };
         }
         #endregion       
     }

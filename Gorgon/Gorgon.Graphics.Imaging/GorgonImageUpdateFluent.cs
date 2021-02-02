@@ -96,6 +96,39 @@ namespace Gorgon.Graphics.Imaging
 
         #region Methods.
         /// <summary>
+        /// Function to perform image format conversion.
+        /// </summary>
+        /// <param name="format">The format to convert into.</param>
+        /// <param name="dithering">The type of dithering to apply.</param>
+        private void PerformFormatConversion(BufferFormat format, ImageDithering dithering)
+        {
+            if (format == Format)
+            {
+                return;
+            }
+
+            // If we've asked for 4 bit per channel BGRA, then we have to convert the base image to B8R8G8A8,and then convert manually (no support in WIC).
+            if (format == BufferFormat.B4G4R4A4_UNorm)
+            {
+                ConvertToB4G4R4A4(dithering);
+                return;
+            }
+
+            // If we're currently using B4G4R4A4, then manually convert (no support in WIC).
+            if (Format == BufferFormat.B4G4R4A4_UNorm)
+            {
+                ConvertFromB4G4R4A4(format);
+                return;
+            }
+
+            var destInfo = new GorgonFormatInfo(format);
+
+            GorgonImage newImage = _wic.ConvertToFormat(this, format, dithering, FormatInfo.IsSRgb, destInfo.IsSRgb);
+
+            UpdateImagePtr(ref newImage);
+        }
+
+        /// <summary>
         /// Function to update the image data for this image with the image data from another image.
         /// </summary>
         /// <param name="newImage">The new image containing the image data to take ownership of.</param>
@@ -233,9 +266,7 @@ namespace Gorgon.Graphics.Imaging
             // If the destination format is not R8G8B8A8 or B8G8R8A8, then we need to do more conversion.
             if (destFormat != Format)
             {
-                BeginUpdate()
-                .ConvertToFormat(Format, ImageDithering.None)
-                .EndUpdate();
+                PerformFormatConversion(destFormat, ImageDithering.None);
             }
 
             return this;
@@ -661,33 +692,7 @@ namespace Gorgon.Graphics.Imaging
                 throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format));
             }
 
-            void DoConvertToFormat()
-            {
-                if (format == Format)
-                {
-                    return;
-                }
-
-                // If we've asked for 4 bit per channel BGRA, then we have to convert the base image to B8R8G8A8,and then convert manually (no support in WIC).
-                if (format == BufferFormat.B4G4R4A4_UNorm)
-                {
-                    ConvertToB4G4R4A4(dithering);
-                    return;
-                }
-
-                // If we're currently using B4G4R4A4, then manually convert (no support in WIC).
-                if (Format == BufferFormat.B4G4R4A4_UNorm)
-                {
-                    ConvertFromB4G4R4A4(format);
-                    return;
-                }
-
-                var destInfo = new GorgonFormatInfo(format);
-
-                GorgonImage newImage = _wic.ConvertToFormat(this, format, dithering, FormatInfo.IsSRgb, destInfo.IsSRgb);
-
-                UpdateImagePtr(ref newImage);
-            }
+            void DoConvertToFormat() => PerformFormatConversion(format, dithering);
 
             _commands.Enqueue(DoConvertToFormat);
             return this;
@@ -947,21 +952,26 @@ namespace Gorgon.Graphics.Imaging
         /// <returns>The original interface for the image that was updated.</returns>
         IGorgonImage IGorgonImageUpdateFinalize.EndUpdate(bool cancel)
         {
-            while (_commands.Count > 0)
+            try
             {
-                _commands.TryDequeue(out Action command);
-
-                if (!cancel)
+                while (_commands.Count > 0)
                 {
-                    command();
+                    _commands.TryDequeue(out Action command);
+
+                    if (!cancel)
+                    {
+                        command();
+                    }
                 }
             }
+            finally
+            {
+                _isEditing = false;
 
-            // Get rid of our little helper when we're done.
-            WicUtilities wic = Interlocked.Exchange(ref _wic, null);
-            wic?.Dispose();
-
-            _isEditing = false;
+                // Get rid of our little helper when we're done.
+                WicUtilities wic = Interlocked.Exchange(ref _wic, null);
+                wic?.Dispose();
+            }
             return this;
         }
         #endregion

@@ -182,7 +182,7 @@ namespace Gorgon.Editor.ImageEditor
                         
             _selectionRect.Draw(_cubeScreenBounds[selectedImage]);
 
-            var offset = new DX.Vector2(0, _axisFont.MeasureLine("+X", true).Height);
+            var offset = new DX.Vector2(0, "+X".MeasureLine(_axisFont, true).Height);
 
             Renderer.DrawString("+X", _cubeScreenBounds[0].BottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
             Renderer.DrawString("-X", _cubeScreenBounds[1].BottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));

@@ -771,15 +771,6 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
-        /// Function to ensure that the wait panel stays on top if it is active.
-        /// </summary>
-        private void KeepWaitPanelOnTop()
-        {
-            _waitForm.BringToFront();
-            _progressForm.BringToFront();
-        }
-
-        /// <summary>
         /// Function to navigate to the project view control.
         /// </summary>
         /// <param name="dataContext">The data context to use.</param>
@@ -791,7 +782,6 @@ namespace Gorgon.Editor
             Text = DataContext.Text;
 
             PanelWorkSpace.BringToFront();
-            KeepWaitPanelOnTop();
 
             if (PanelProject.DataContext != dataContext?.CurrentProject)
             {
@@ -829,8 +819,6 @@ namespace Gorgon.Editor
             PanelWorkSpace.Visible = false;
 
             Stage.BringToFront();
-
-            KeepWaitPanelOnTop();
         }
 
         /// <summary>

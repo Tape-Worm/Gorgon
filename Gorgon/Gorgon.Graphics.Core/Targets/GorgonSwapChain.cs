@@ -1252,7 +1252,10 @@ namespace Gorgon.Graphics.Core
                 Graphics.SetRenderTargets(_previousViews, prevDepthStencil);
 
                 // Remove all items from the list so we don't hang on to them.
-                Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
+                for (int i = prevTargetRange.FirstIndex; i < prevTargetRange.TargetCount + prevTargetRange.FirstIndex; ++i)
+                {
+                    _previousViews[i] = null;
+                }
 
                 if (!GorgonGraphics.IsDebugEnabled)
                 {

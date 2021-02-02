@@ -81,7 +81,7 @@ namespace Gorgon.Renderers.Data
         internal GorgonGpuLightData(DX.Vector3 position, LightType lightType, DX.Vector3 direction, GorgonColor color, bool specularEnabled, float specularPower, float intensity, float attenuation)
         {
             Position = new DX.Vector4(position.X, position.Y, -position.Z, (int)lightType);
-            LightDirection = new DX.Vector4(direction, 0);
+            LightDirection = new DX.Vector4(-direction.X, -direction.Y, direction.Z, 0);
             LightColor = color;
             LightAttributes = new DX.Vector4(specularPower, intensity, attenuation, specularEnabled ? 1 : 0);
         }

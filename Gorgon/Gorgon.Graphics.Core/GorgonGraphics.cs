@@ -34,6 +34,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
 using Gorgon.Native;
+using Gorgon.Timing;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -178,6 +179,9 @@ namespace Gorgon.Graphics.Core
         private PipelineStateCache _pipelineStateCache;
         // The cache used to hold sampler states.
         private SamplerCache _samplerCache;
+
+        // The timer used to trigger a clean up of cached render targets.
+        private readonly GorgonTimerQpc _rtExpireTimer = new GorgonTimerQpc();
         #endregion
 
         #region Properties.
@@ -567,6 +571,13 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetDrawStates(D3DState state, in GorgonColor factor, int blendSampleMask, int depthStencilReference)
         {
+            // Before we draw, flush any expired render targets that are cached in the system.
+            if ((_rtExpireTimer.Seconds > 30) && (_rtvFactory.AvailableCount > 0))
+            {
+                _rtvFactory.ExpireTargets();
+                _rtExpireTimer.Reset();
+            }
+
             PipelineStateChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, in factor, blendSampleMask, depthStencilReference);
             _stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, in factor, blendSampleMask, depthStencilReference);
 
