@@ -39,13 +39,11 @@ cbuffer Light : register(b1)
 {
 	struct LightData
 	{
-		float3 LightColor;
-		float3 SpecularColor;
-		float3 LightPosition;
-		float  SpecularPower;
-		float  Attenuation;
-		float  Intensity;
-	} lights[MAX_LIGHTS];
+		float4 LightPosition;
+		float4 LightDirection;
+		float4 LightAttributes;
+		float4 LightColor;
+	} lights[8];
 }
 
 // Our vertex.
@@ -91,38 +89,40 @@ VertexOut PrimVS(PrimVertex vertex)
 // Function to perform blinn/phong lighting.
 float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 {
-	float4 textureColor = _texture.Sample(_sampler, vertex.uv) * matAlbedo;	
+	float4 textureColor = _texture.Sample(_sampler, vertex.uv) * matAlbedo;
 	float3 output = float3(0, 0, 0);
 
-	normal = normalize(normal);
-	
+	clip(textureColor.a < 0.02f ? -1 : 1);
+
 	for (int i = 0; i < MAX_LIGHTS; ++i)
 	{
 		LightData light = lights[i];
 
-		if (light.Attenuation <= 0.0f)
-		{
+		float lightSpecularPower = light.LightAttributes.x;
+		float intensity = light.LightAttributes.y;
+		float attenuation = light.LightAttributes.z;
+		bool specEnabled = bool(light.LightAttributes.w);
+
+		if (attenuation <= 0.0f)
+		{			
 			continue;
 		}
 
-		float3 lightRange = light.LightPosition - vertex.worldPos;
-		float3 lightDirection = normalize(lightRange);
-		float distance = length(lightRange);		
+		float3 lightDirection = normalize(vertex.worldPos - light.LightPosition);
+		float diffuse = saturate(dot(normal, -lightDirection)) * clamp(attenuation / length(light.LightPosition - vertex.worldPos), 0, 1);
+
+		output += float3(textureColor.rgb * light.LightColor.rgb * diffuse * intensity); // Use light diffuse vector as intensity multiplier
 				
-		float attenuation = clamp(light.Attenuation / distance, 0, 1);
-		float diffuse = saturate(dot(normal, lightDirection)) * attenuation * attenuation;
-
-		output += float3(textureColor.rgb * light.LightColor.rgb * diffuse * light.Intensity);
-		
-		if ((specularPower > 0) && (light.SpecularPower > 0.0f))
+		if (specEnabled)
 		{
-			float3 h = normalize(-normalize(vertex.worldPos - light.LightPosition) + normalize(vertex.worldPos - CameraPosition));
-			float specLighting = pow(saturate(dot(normal, h)), light.SpecularPower);
-			output = output + (diffuse * (light.SpecularColor * specLighting * spec.r * specularPower));
+			// Using Blinn half angle modification for performance over correctness
+			float3 h = normalize(normalize(CameraPosition - vertex.worldPos) - lightDirection);
+			float specLighting = pow(saturate(dot(normal, h)), lightSpecularPower);
+			output = output + (specLighting * spec.r * specularPower);
 		}
-	}
+	}	
 
-	return float4(output, textureColor.a);
+	return float4(output, textureColor.a);	
 }
 
 // Lit pixel shader with no bump mapping

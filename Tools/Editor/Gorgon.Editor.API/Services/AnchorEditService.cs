@@ -31,6 +31,7 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.Services
@@ -74,7 +75,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the camera for the renderer.
         /// </summary>
-        public IGorgon2DCamera Camera
+        public GorgonCameraCommon Camera
         {
             get;
             set;

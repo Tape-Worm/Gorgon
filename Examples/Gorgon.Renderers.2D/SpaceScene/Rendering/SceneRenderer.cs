@@ -34,6 +34,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Timing;
 using DX = SharpDX;
 
@@ -53,7 +54,7 @@ namespace Gorgon.Examples
         // The resource manager.
         private readonly ResourceManagement _resources;
         // The camera used for rendering.
-        private readonly IGorgon2DCamera _camera;
+        private readonly GorgonOrthoCamera _camera;
         // The screen buffer.
         private GorgonRenderTarget2DView _screen;
         // The list of layers to render.
@@ -142,7 +143,7 @@ namespace Gorgon.Examples
                 }
 
                 FlipToScreen(sceneSrv);
-            }
+            }            
             else
             {
                 for (int i = 0; i < _postProcessGroups.Count; ++i)
@@ -273,7 +274,7 @@ namespace Gorgon.Examples
         /// <param name="resources">The resources.</param>
         /// <param name="screen">The main render target for the scene.</param>
         /// <param name="camera">The camera for the scene.</param>
-        public SceneRenderer(Gorgon2D renderer, ResourceManagement resources, GorgonRenderTarget2DView screen, LayerCamera layerController, IGorgon2DCamera camera)
+        public SceneRenderer(Gorgon2D renderer, ResourceManagement resources, GorgonRenderTarget2DView screen, LayerCamera layerController, GorgonOrthoCamera camera)
         {
             _graphics = renderer.Graphics;
             _renderer = renderer;

@@ -79,7 +79,7 @@ namespace Gorgon.Examples
                 case FontFace.Papyrus:
                     _textSprite.Font = _papyrus;
 
-                    if (_textSprite.Color == _papyrus.Info.OutlineColor1)
+                    if (_textSprite.Color == _papyrus.OutlineColor1)
                     {
                         // Reset to white if our outline color matches our text color.
                         // If we fail to do this, the text will be unreadable.
@@ -91,7 +91,7 @@ namespace Gorgon.Examples
                     break;
             }
 
-            _textSprite.Text = _textSprite.Font.WordWrap(DataContext.Text, RenderRegion.Width);           
+            _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);           
             
         }
 
@@ -146,13 +146,13 @@ namespace Gorgon.Examples
                     break;
                 case nameof(ITextContent.Text):
                     // If we alter the text on the view model, reflect that here now.
-                    _textSprite.Text = _textSprite.Font.WordWrap(DataContext.Text, RenderRegion.Width);
+                    _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);
                     break;
                 case nameof(ITextContent.Color):
                     // If we change the color on the view model, then update our text sprite color.
                     _textSprite.Color = DataContext.Color;
 
-                    if (_textSprite.Color == _papyrus.Info.OutlineColor1)
+                    if (_textSprite.Color == _papyrus.OutlineColor1)
                     {
                         // Reset to white if our outline color matches our text color.
                         // If we fail to do this, the text will be unreadable.

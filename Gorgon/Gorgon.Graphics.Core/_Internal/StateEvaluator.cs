@@ -88,6 +88,9 @@ namespace Gorgon.Graphics.Core
 			VsConstantBuffers = new GorgonConstantBuffers(),
 			VsSamplers = new GorgonSamplerStates()
 		};
+
+		// The previous number of RTVs assigned.
+		private int _prevRtvCount = 0;
 		#endregion
 
 		#region Properties.
@@ -659,8 +662,9 @@ namespace Gorgon.Graphics.Core
 
 			bool needsDepthStencilUpdate = depthStencil != DepthStencil;
 			bool needsRtvUpdate = false;
+			int count = 0;
 
-			for (int i = 0; i < targets.Length.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount); ++i)
+			for (int i = 0; i < targets.Length.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount); ++i, ++count)
 			{
 				GorgonRenderTargetView newRtv = targets[i];
 				GorgonRenderTargetView prevRtv = RenderTargets[i];
@@ -671,7 +675,13 @@ namespace Gorgon.Graphics.Core
 				}
 
 				RenderTargets[i] = newRtv;
-				needsRtvUpdate = true;
+				needsRtvUpdate = true;				
+			}
+
+			if (_prevRtvCount != count)
+			{
+				Array.Clear(RenderTargets, _prevRtvCount, RenderTargets.Length - _prevRtvCount);
+				_prevRtvCount = count;
 			}
 
 			CheckRtvsForSrvHazards(RenderTargets, depthStencil);

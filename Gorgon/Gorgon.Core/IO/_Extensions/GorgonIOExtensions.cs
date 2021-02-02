@@ -105,7 +105,7 @@ namespace Gorgon.IO
             try
             {
                 buffer.CopyTo(writeBuffer);
-                stream.Write(writeBuffer, 0, writeBuffer.Length);
+                stream.Write(writeBuffer, 0, buffer.Length);
             }
             finally
             {
@@ -135,7 +135,7 @@ namespace Gorgon.IO
         /// exceeds 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 
         /// </para>
         /// </remarks>
-        public static int CopyToStream(this Stream stream, Stream destination, int count, int bufferSize = 81920)
+        public static int CopyToStream(this Stream stream, Stream destination, int count, int bufferSize = 131072)
         {
             if (stream.Length <= stream.Position)
             {
@@ -219,13 +219,13 @@ namespace Gorgon.IO
                 return 0;
             }
 
-            int bufferSize = buffer.Length;
+            int bufferSize = buffer.Length.Min(count);
             int result = 0;
             int bytesRead;
 
             while ((count > 0) && ((bytesRead = stream.Read(buffer, 0, count.Min(bufferSize))) != 0))
             {
-                destination.Write(buffer);
+                destination.Write(buffer.AsSpan(0, bytesRead));
                 result += bytesRead;
                 count -= bytesRead;
             }

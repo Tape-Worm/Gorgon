@@ -39,6 +39,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Input;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using Gorgon.UI;
 using DX = SharpDX;
 
@@ -213,7 +214,7 @@ namespace Gorgon.Examples
         {
             // This is our camera used to map our objects into relative space.
             // Because it's an Ortho camera, it doesn't really know how to handle aspect ratios, so we'll have to adjust for the current ratio.
-            var camera = new Gorgon2DOrthoCamera(_renderer, new DX.Size2F(2, 2), 0.1f, 5000)
+            var camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(2, 2), 0.1f, 5000)
             {
                 Anchor = new DX.Vector2(0.5f, 0.5f)
             };
@@ -290,12 +291,7 @@ namespace Gorgon.Examples
                 // Load our packed file system plug in.
                 window.UpdateStatus("Loading plugins...");
 
-                IGorgonPlugInService plugIns = await Task.Run(() =>
-                {
-                    _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
-                    _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll");
-                    return new GorgonMefPlugInService(_assemblyCache);
-                });
+                _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
                 window.UpdateStatus("Initializing graphics...");
 
@@ -347,7 +343,7 @@ namespace Gorgon.Examples
                 // Now for the fun stuff, load our asset resources. We can load this data by mounting a directory (which I did while developing), or use a packed file.
                 //
                 // The resource manager will hold all the data we need for the scene. Including 3D meshes, post processing effects, etc... 
-                _resources = new ResourceManagement(_renderer, plugIns);
+                _resources = new ResourceManagement(_renderer, _assemblyCache);
                 _resources.Load(Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "SpaceScene.gorPack"));
 
                 window.UpdateStatus("Loading resources...");

@@ -307,14 +307,13 @@ namespace Gorgon.Renderers.Cameras
         /// Function to retrieve the view matrix for the camera.
         /// </summary>
         /// <returns>A read only reference to the view matrix.</returns>        
-        /// <exception cref="GorgonException">Thrown if the <see cref="Target"/> is <b>null</b> and no render target was set in the first element of <see cref="GorgonGraphics.RenderTargets"/>.</exception>
         public ref DX.Matrix GetViewMatrix()
         {
             GorgonRenderTargetView target = GetTarget();
 
             if (target == null)
             {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_NO_RENDER_TARGET);
+                return ref _viewMatrix;
             }
 
             if ((Changes & CameraChange.View) == CameraChange.View)
@@ -330,14 +329,13 @@ namespace Gorgon.Renderers.Cameras
         /// Function to retrieve the projection matrix for the camera type.
         /// </summary>
         /// <returns>A read only reference to the projection matrix.</returns>
-        /// <exception cref="GorgonException">Thrown if the <see cref="Target"/> is <b>null</b> and no render target was set in the first element of <see cref="GorgonGraphics.RenderTargets"/>.</exception>
         public ref DX.Matrix GetProjectionMatrix()
         {
             GorgonRenderTargetView target = GetTarget();
 
             if (target == null)
             {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_NO_RENDER_TARGET);
+                return ref _projectionMatrix;
             }
 
             if ((Changes & CameraChange.Projection) == CameraChange.Projection)

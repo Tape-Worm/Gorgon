@@ -35,6 +35,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
+using Gorgon.Native;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
@@ -79,8 +80,8 @@ namespace Gorgon.Editor.Services
             {
                 for (int x = bounds.X; x < bounds.Right; ++x)
                 {
-                    // The last byte of the pixel should be the alpha (we force conversion to R8G8B8A8).
-                    int value = imageData.Data.ReadAs<int>((y * imageData.PitchInformation.RowPitch) + (x * pixelSize));
+                    // The last byte of the pixel should be the alpha (we force conversion to R8G8B8A8).                    
+                    int value = imageData.Data.AsRef<int>((y * imageData.PitchInformation.RowPitch) + (x * pixelSize));
                     if (color != value)
                     {
                         return false;
@@ -179,12 +180,12 @@ namespace Gorgon.Editor.Services
             if ((imageData.FormatInfo.IsSRgb)
                 && (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb)))
             {
-                await Task.Run(() => imageData.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb));
+                await Task.Run(() => imageData.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb).EndUpdate());
                 return imageData;
             }
             else if (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
             {
-                await Task.Run(() => imageData.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
+                await Task.Run(() => imageData.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate());
                 return imageData;
             }
 

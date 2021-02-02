@@ -91,15 +91,14 @@ namespace Gorgon.Examples
             // The Gorgon packed file provider plug in dll.
             const string gorPackDll = "Gorgon.FileSystem.GorPack.dll";
             // The name of the Gorgon packed file plugin.
-            const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";
+            const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";            
 
             // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
             // and get rid of the plugin stuff since we won't need it again.
             _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
-            _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
+            IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(_assemblyCache);
 
-            var plugIns = new GorgonMefPlugInService(_assemblyCache);
-            return plugIns.GetPlugIn<GorgonFileSystemProvider>(gorPackPlugInName);
+            return factory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, gorPackDll), gorPackPlugInName);
         }
 
         /// <summary>
@@ -108,6 +107,9 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
+            // Tell the graphics API that we want to render to the "screen" swap chain.
+            _graphics.SetRenderTarget(_screen.RenderTargetView);
+
             _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
             var scale = new DX.Vector2(_screen.Width / (float)Settings.Default.Resolution.Width, 
