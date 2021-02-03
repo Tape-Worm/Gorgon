@@ -104,7 +104,7 @@ namespace Gorgon.Editor.Views
                     UpdateImageTexture(DataContext.PreviewImage);
                     break;
                 case nameof(IContentPreview.Title):
-                    _titleText.Text = _titleFont.WordWrap(DataContext.Title, _swapChain.Width);
+                    _titleText.Text = DataContext.Title.WordWrap(_titleFont, _swapChain.Width);
                     RenderImage();
                     break;
             }
@@ -231,7 +231,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            _titleText.Text = _titleFont.WordWrap(dataContext.Title, ClientSize.Width);
+            _titleText.Text = dataContext.Title.WordWrap(_titleFont, ClientSize.Width);
             UpdateImageTexture(dataContext.PreviewImage);
         }
 
