@@ -534,7 +534,7 @@ namespace Gorgon.Editor.Services
 
             GetActiveHandle();
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 8))
+            if (_activeHandleIndex is (-1) or > 8)
             {
                 return false;
             }
@@ -563,7 +563,7 @@ namespace Gorgon.Editor.Services
             _localMousePosition = mouseArgs.CameraSpacePosition;
             GetActiveHandle();
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 8))
+            if (_activeHandleIndex is (-1) or > 8)
             {
                 return false;
             }
@@ -617,7 +617,7 @@ namespace Gorgon.Editor.Services
         {
             GetActiveHandle();
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 8))
+            if (_activeHandleIndex is (-1) or > 8)
             {
                 return false;
             }

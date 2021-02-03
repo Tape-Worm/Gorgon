@@ -183,7 +183,7 @@ namespace Gorgon.Editor.UI
 
 			ToolStrip strip = e.Item.GetCurrentParent();
 
-			if (!(strip is ToolStripDropDown))
+			if (strip is not ToolStripDropDown)
 			{
 				if (e.Item.AutoSize)
 				{
@@ -220,7 +220,7 @@ namespace Gorgon.Editor.UI
         /// <param name="e">A <see cref="ToolStripItemRenderEventArgs"/> that contains the event data.</param>
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
 		{
-			if (!(e.Item is ToolStripMenuItem))
+			if (e.Item is not ToolStripMenuItem)
 			{
 				base.OnRenderItemBackground(e);
 				return;

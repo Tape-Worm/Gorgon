@@ -171,8 +171,7 @@ namespace Gorgon.Editor.Services
         {
             IGorgonImage imageData = data.Texture.Texture.ToImage();
 
-            if ((imageData.Format == BufferFormat.R8G8B8A8_UNorm)
-                || (imageData.Format == BufferFormat.R8G8B8A8_UNorm_SRgb))
+            if (imageData.Format is BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb)
             {
                 return imageData;
             }

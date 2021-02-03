@@ -2,7 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>
@@ -48,11 +49,12 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Krypton.Ribbon.Lite">
-      <Version>5.500.2008</Version>
+      <Version>5.550.2101</Version>
     </PackageReference>
     <PackageReference Include="Krypton.Toolkit.Lite">
-      <Version>5.500.2008</Version>
+      <Version>5.550.2101</Version>
     </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Gorgon\g.png">
@@ -68,9 +70,7 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
+
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>

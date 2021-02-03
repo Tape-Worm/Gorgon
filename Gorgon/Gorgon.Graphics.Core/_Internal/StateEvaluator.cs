@@ -680,7 +680,7 @@ namespace Gorgon.Graphics.Core
 
 			if (_prevRtvCount != count)
 			{
-				Array.Clear(RenderTargets, _prevRtvCount, RenderTargets.Length - _prevRtvCount);
+				Array.Clear(RenderTargets, count, RenderTargets.Length - count);
 				_prevRtvCount = count;
 			}
 

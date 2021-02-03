@@ -107,17 +107,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Balls", "Examples\Gorgon.Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "INeedYourInput", "Examples\Gorgon.Input\INeedYourInput\INeedYourInput.csproj", "{0498130A-C954-434E-A02E-4E2733358717}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunWithShapes", "Examples\Gorgon.Renderers.2D\FunWithShapes\FunWithShapes.csproj", "{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunWithShapes", "Examples\Gorgon.Renderers.2D\FunWithShapes\FunWithShapes.csproj", "{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Effects", "Examples\Gorgon.Renderers.2D\Effects\Effects.csproj", "{7689F725-74BF-4C71-87A0-60F225688C5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Effects", "Examples\Gorgon.Renderers.2D\Effects\Effects.csproj", "{7689F725-74BF-4C71-87A0-60F225688C5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprites", "Examples\Gorgon.Renderers.2D\Sprites\Sprites.csproj", "{0BA16C6A-D278-4218-97D2-6A094185DC90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sprites", "Examples\Gorgon.Renderers.2D\Sprites\Sprites.csproj", "{0BA16C6A-D278-4218-97D2-6A094185DC90}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lights", "Examples\Gorgon.Renderers.2D\Lights\Lights.csproj", "{DDCECB25-AD3F-405C-BE3D-84EF027D1B70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostProcessing", "Examples\Gorgon.Renderers.2D\PostProcessing\PostProcessing.csproj", "{85B13540-CBB5-4CBD-8149-50762578A710}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostProcessing", "Examples\Gorgon.Renderers.2D\PostProcessing\PostProcessing.csproj", "{85B13540-CBB5-4CBD-8149-50762578A710}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolySprites", "Examples\Gorgon.Renderers.2D\PolySprites\PolySprites.csproj", "{41F1A64C-95E2-445A-B377-C4C9F2AB147C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PolySprites", "Examples\Gorgon.Renderers.2D\PolySprites\PolySprites.csproj", "{41F1A64C-95E2-445A-B377-C4C9F2AB147C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.IO.Gorgon2D", "Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj", "{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}"
 EndProject
@@ -131,19 +131,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Animation", "Gorgon\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Animation.Gorgon2D", "Gorgon\Gorgon.Renderers\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj", "{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Animation", "Examples\Gorgon.Renderers.2D\Animation\Animation.csproj", "{98A3C097-12D6-4ADE-BF52-D526E284D045}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Animation", "Examples\Gorgon.Renderers.2D\Animation\Animation.csproj", "{98A3C097-12D6-4ADE-BF52-D526E284D045}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{631CC385-E5ED-4B16-A563-E264B6691DA8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExamplesCommon", "Examples\ExamplesCommon\ExamplesCommon.csproj", "{9DC4EEA9-C32A-4FEA-8A52-9CD0AC8AD8AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiveMeSomeControl", "Examples\Gorgon.Renderers.2D\GiveMeSomeControl\GiveMeSomeControl.csproj", "{6085F98B-EC32-47AD-9318-FF42C5AF131D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GiveMeSomeControl", "Examples\Gorgon.Renderers.2D\GiveMeSomeControl\GiveMeSomeControl.csproj", "{6085F98B-EC32-47AD-9318-FF42C5AF131D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheShadowGn0s", "Examples\Gorgon.Renderers.2D\TheShadowGn0s\TheShadowGn0s.csproj", "{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheShadowGn0s", "Examples\Gorgon.Renderers.2D\TheShadowGn0s\TheShadowGn0s.csproj", "{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.API", "Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj", "{695A6554-789A-4D5A-9DE1-21FB621F6A8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.API", "Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj", "{695A6554-789A-4D5A-9DE1-21FB621F6A8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor", "Tools\Editor\Gorgon.Editor\Gorgon.Editor.csproj", "{4FFFE2C0-D871-40B6-A60B-282F1359D1A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor", "Tools\Editor\Gorgon.Editor\Gorgon.Editor.csproj", "{4FFFE2C0-D871-40B6-A60B-282F1359D1A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.GorPackWriter", "PlugIns\Gorgon.Editor.GorPackWriter\Gorgon.Editor.GorPackWriter.csproj", "{64114F20-4785-4A70-BA38-BD307202213A}"
 EndProject
@@ -174,13 +174,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.TextureAtlasT
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Depth", "Examples\Gorgon.Renderers.2D\Depth\Depth.csproj", "{CA2C267B-4ECC-4758-8AFC-4F60CE94986C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Depth", "Examples\Gorgon.Renderers.2D\Depth\Depth.csproj", "{CA2C267B-4ECC-4758-8AFC-4F60CE94986C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceScene", "Examples\Gorgon.Renderers.2D\SpaceScene\SpaceScene.csproj", "{DA326050-B5F2-47F6-BA6B-11EED65FD5B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpaceScene", "Examples\Gorgon.Renderers.2D\SpaceScene\SpaceScene.csproj", "{DA326050-B5F2-47F6-BA6B-11EED65FD5B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentInterface", "Examples\Gorgon.Renderers.2D\FluentInterface\FluentInterface.csproj", "{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentInterface", "Examples\Gorgon.Renderers.2D\FluentInterface\FluentInterface.csproj", "{3AC09A65-F30F-4F37-ADCF-CFF7A858F5FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crawl", "Examples\Gorgon.Renderers.2D\Crawl\Crawl.csproj", "{6DF3E598-1ED7-4451-9B9F-49675B5C07C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crawl", "Examples\Gorgon.Renderers.2D\Crawl\Crawl.csproj", "{6DF3E598-1ED7-4451-9B9F-49675B5C07C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.AnimationEditor", "PlugIns\Gorgon.Editor.AnimationEditor\Gorgon.Editor.AnimationEditor.csproj", "{62AC77E7-B73D-4004-B0BB-1AB2CC263137}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -189,14 +189,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.AnimationEdit
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Editor", "Gorgon.Editor", "{B770B900-800E-47B4-A397-65808037A296}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.FileSystem", "Examples\Gorgon.Editor\Gorgon.Editor.FileSystem\Gorgon.Editor.FileSystem.csproj", "{24C30ABC-81BF-487D-98FB-8267A0411B61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.FileSystem", "Examples\Gorgon.Editor\Gorgon.Editor.FileSystem\Gorgon.Editor.FileSystem.csproj", "{24C30ABC-81BF-487D-98FB-8267A0411B61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextViewerContentExample", "Examples\Gorgon.Editor\TextViewer_Content_Plugin\TextViewerContentExample.csproj", "{F253E1C8-A8E9-4405-AC47-0E959A037AA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextViewerContentExample", "Examples\Gorgon.Editor\TextViewer_Content_Plugin\TextViewerContentExample.csproj", "{F253E1C8-A8E9-4405-AC47-0E959A037AA3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Particles", "Examples\Gorgon.Renderers.2D\Particles\Particles.csproj", "{4EB38809-FAB9-47AC-93C5-B577901F1B3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Particles", "Examples\Gorgon.Renderers.2D\Particles\Particles.csproj", "{4EB38809-FAB9-47AC-93C5-B577901F1B3E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.ImageSplitTool", "PlugIns\Gorgon.Editor.ImageSplitTool\Gorgon.Editor.ImageSplitTool.csproj", "{45418E1D-D303-47EA-BAFE-F69FB9A13BFE}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -217,10 +217,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{5A7D31B0-3DCD-46AB-8980-98E5985E44F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCnEncoder", "Dependencies\BCnEncoder.NET\BCnEnc.Net\BCnEncoder.csproj", "{428E3CBC-348D-4DE9-8CF3-728445E986BB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Graphics.Wpf", "Gorgon\Gorgon.Graphics.Wpf\Gorgon.Graphics.Wpf.csproj", "{27DCCBD4-6C5A-4E35-81BD-C4254D430322}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlassCube.WPF", "Examples\Gorgon.Graphics\GlassCube.WPF\GlassCube.WPF.csproj", "{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -536,14 +532,6 @@ Global
 		{428E3CBC-348D-4DE9-8CF3-728445E986BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{428E3CBC-348D-4DE9-8CF3-728445E986BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{428E3CBC-348D-4DE9-8CF3-728445E986BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{27DCCBD4-6C5A-4E35-81BD-C4254D430322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{27DCCBD4-6C5A-4E35-81BD-C4254D430322}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{27DCCBD4-6C5A-4E35-81BD-C4254D430322}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{27DCCBD4-6C5A-4E35-81BD-C4254D430322}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -622,7 +610,6 @@ Global
 		{0352D073-8FB9-42D0-9A41-B49B5611352E} = {838F5E4C-79E1-4D2E-9554-3345214D2426}
 		{3DA6AAE8-D596-455F-B4A5-0DCF7223E921} = {838F5E4C-79E1-4D2E-9554-3345214D2426}
 		{428E3CBC-348D-4DE9-8CF3-728445E986BB} = {5A7D31B0-3DCD-46AB-8980-98E5985E44F2}
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}
