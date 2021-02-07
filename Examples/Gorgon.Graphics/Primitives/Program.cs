@@ -400,6 +400,12 @@ namespace Gorgon.Examples
 	    private static void LoadTextures()
         {
             // Load standard images from the resource section.
+            _renderer.TextureCache["Black"] = Resources.black_2x2.ToTexture2D(_graphics,
+                                                                              new GorgonTexture2DLoadOptions
+                                                                              {
+                                                                                  Name = "Black"
+                                                                              }).GetShaderResourceView();
+
             _renderer.TextureCache["UV"] = Resources.UV.ToTexture2D(_graphics,
                                                                     new GorgonTexture2DLoadOptions
                                                                     {
@@ -537,7 +543,8 @@ namespace Gorgon.Examples
                             Textures =
                             {
                                 [0] = "UV",
-                                [1] = "GorgonNormalMap"
+                                [1] = "GorgonNormalMap",
+                                [2] = "Black"
                             }
                         }
             };
@@ -629,7 +636,7 @@ namespace Gorgon.Examples
         private static void Initialize()
         {
             GorgonExample.ShowStatistics = false;
-            _window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Primitives");
+            _window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Primitives");
 
             try
             {

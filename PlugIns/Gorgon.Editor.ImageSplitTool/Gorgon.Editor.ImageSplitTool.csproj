@@ -64,6 +64,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Tools&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Tools&quot;&#xD;&#xA;" />
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)PlugIns\Tools&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)PlugIns\Tools&quot;&#xD;&#xA;" />
   </Target>
 </Project>

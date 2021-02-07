@@ -29,7 +29,6 @@ using System.IO;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
 
@@ -67,41 +66,12 @@ namespace Gorgon.Examples
 
         #region Methods.
         /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="resourceItem"/> parameter is <b>null</b> or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-        {
-            string path = Settings.Default.ResourceLocation;
-
-            if (string.IsNullOrEmpty(resourceItem))
-            {
-                throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
-            }
-
-            path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-            // If this is a directory, then sanitize it as such.
-            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                // Otherwise, format the file name.
-                path += resourceItem.FormatFileName();
-            }
-
-            // Ensure that we have an absolute path.
-            return Path.GetFullPath(path);
-        }
-
-        /// <summary>
         /// The main entry point for the application.
         /// </summary>
         private static void Main()
         {
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+
             _log = new GorgonTextFileLog("FolderFileSystem", "Tape_Worm");
             _log.LogStart();
 
@@ -125,7 +95,7 @@ namespace Gorgon.Examples
                 // would load files from the system into memory when mounting a 
                 // directory.  While this version only loads directory and file 
                 // information when mounting.  This is considerably more efficient.
-                string physicalPath = GetResourcePath(@"FolderSystem\");
+                string physicalPath = GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName;
                 _fileSystem.Mount(physicalPath);
 
                 Console.ForegroundColor = ConsoleColor.White;

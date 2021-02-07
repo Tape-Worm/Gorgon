@@ -206,7 +206,7 @@ namespace Graphics.Examples
 
             try
             {
-                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
                 // Load the custom codec.
                 if (!LoadCodec())

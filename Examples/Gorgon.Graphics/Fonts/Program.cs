@@ -362,7 +362,7 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);            
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);            
 
             // Use a callback so we can use async.
             async void OnLoad(object sender, EventArgs e)
@@ -389,8 +389,8 @@ namespace Gorgon.Examples
                                                     form,
                                                     new GorgonSwapChainInfo("Gorgon2D Effects Example Swap Chain")
                                                     {
-                                                        Width = Settings.Default.Resolution.Width,
-                                                        Height = Settings.Default.Resolution.Height,
+                                                        Width = ExampleConfig.Default.Resolution.Width,
+                                                        Height = ExampleConfig.Default.Resolution.Height,
                                                         Format = BufferFormat.R8G8B8A8_UNorm
                                                     });
 
@@ -425,7 +425,7 @@ namespace Gorgon.Examples
                 }
             }
 
-            return GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Fonts", OnLoad);
+            return GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Fonts", OnLoad);
         }
 
         /// <summary>

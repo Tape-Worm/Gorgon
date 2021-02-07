@@ -67,6 +67,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="REM Editor copy&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Content&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\Content&quot;" />
+    <Exec Command="REM Editor copy&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)PlugIns\Content&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)Content&quot;" />
   </Target>
 </Project>

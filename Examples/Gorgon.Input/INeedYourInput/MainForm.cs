@@ -611,7 +611,7 @@ namespace Gorgon.Examples
             try
             {
                 Debug.Assert(IsHandleCreated, "No handle");
-                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
                 // Load the assembly.
                 _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
@@ -653,19 +653,19 @@ namespace Gorgon.Examples
                 _mouse = new GorgonRawMouse();
 
                 // Create the graphics interface.
-                ClientSize = Settings.Default.Resolution;
+                ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
 
                 IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
                 _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
                 _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo("INeedYourInput Swapchain")
                 {
-                    Width = Settings.Default.Resolution.Width,
-                    Height = Settings.Default.Resolution.Height,
+                    Width = ExampleConfig.Default.Resolution.Width,
+                    Height = ExampleConfig.Default.Resolution.Height,
                     Format = BufferFormat.R8G8B8A8_UNorm
                 });
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 
-                if (!Settings.Default.IsWindowed)
+                if (!ExampleConfig.Default.IsWindowed)
                 {
                     _screen.EnterFullScreen();
                 }

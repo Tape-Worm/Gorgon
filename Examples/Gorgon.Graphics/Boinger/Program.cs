@@ -336,7 +336,7 @@ namespace Gorgon.Examples
             int selectedDeviceIndex = 0;
             IGorgonVideoAdapterInfo selectedDevice = null;
 
-            _selectedVideoMode = new GorgonVideoMode(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
+            _selectedVideoMode = new GorgonVideoMode(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
 
             while (selectedDeviceIndex < deviceList.Count)
             {
@@ -410,22 +410,22 @@ namespace Gorgon.Examples
                                         {
                                             // Set up for 32 bit RGBA normalized display.
                                             Format = BufferFormat.R8G8B8A8_UNorm,
-                                            Width = Settings.Default.Resolution.Width,
-                                            Height = Settings.Default.Resolution.Height
+                                            Width = ExampleConfig.Default.Resolution.Width,
+                                            Height = ExampleConfig.Default.Resolution.Height
                                         });
 
             // Build the depth buffer for our swap chain.
             BuildDepthBuffer(_swap.Width, _swap.Height);
 
 
-            if (!Settings.Default.IsWindowed)
+            if (!ExampleConfig.Default.IsWindowed)
             {
                 // Get the output for the main window.
                 var currentScreen = Screen.FromControl(_mainForm);
                 IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
 
                 // If we've asked for full screen mode, then locate the correct video mode and set us up.
-                _selectedVideoMode = new GorgonVideoMode(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
+                _selectedVideoMode = new GorgonVideoMode(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
                 _swap.EnterFullScreen(in _selectedVideoMode, output);
             }
 
@@ -538,7 +538,7 @@ namespace Gorgon.Examples
             try
             {
                 // Create our form.
-                _mainForm = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Boinger");
+                _mainForm = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Boinger");
 
                 // Add a keybinding to switch to full screen or windowed.
                 _mainForm.KeyDown += MainForm_KeyDown;

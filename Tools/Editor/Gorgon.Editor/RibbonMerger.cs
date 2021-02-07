@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using ComponentFactory.Krypton.Ribbon;
+using Krypton.Ribbon;
 using Gorgon.Math;
 
 namespace Gorgon.Editor

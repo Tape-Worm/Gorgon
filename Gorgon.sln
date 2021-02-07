@@ -145,14 +145,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.API", "Tools\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor", "Tools\Editor\Gorgon.Editor\Gorgon.Editor.csproj", "{4FFFE2C0-D871-40B6-A60B-282F1359D1A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.GorPackWriter", "PlugIns\Gorgon.Editor.GorPackWriter\Gorgon.Editor.GorPackWriter.csproj", "{64114F20-4785-4A70-BA38-BD307202213A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.GorPackWriter", "PlugIns\Gorgon.Editor.GorPackWriter\Gorgon.Editor.GorPackWriter.csproj", "{64114F20-4785-4A70-BA38-BD307202213A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.ImageEditor", "PlugIns\Gorgon.Editor.ImageEditor\Gorgon.Editor.ImageEditor.csproj", "{5FC5FC9D-977B-479D-B7E6-86334065F0B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.ImageEditor", "PlugIns\Gorgon.Editor.ImageEditor\Gorgon.Editor.ImageEditor.csproj", "{5FC5FC9D-977B-479D-B7E6-86334065F0B1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.SpriteEditor", "PlugIns\Gorgon.Editor.SpriteEditor\Gorgon.Editor.SpriteEditor.csproj", "{31046A27-D175-4DA6-B768-891D2DBEBF39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.SpriteEditor", "PlugIns\Gorgon.Editor.SpriteEditor\Gorgon.Editor.SpriteEditor.csproj", "{31046A27-D175-4DA6-B768-891D2DBEBF39}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
@@ -164,12 +164,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Examples\NoRules.ruleset = Examples\NoRules.ruleset
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.ExtractSpriteTool", "PlugIns\Gorgon.Editor.ExtractSpriteTool\Gorgon.Editor.ExtractSpriteTool.csproj", "{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.ExtractSpriteTool", "PlugIns\Gorgon.Editor.ExtractSpriteTool\Gorgon.Editor.ExtractSpriteTool.csproj", "{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.TextureAtlasTool", "PlugIns\Gorgon.Editor.TextureAtlasTool\Gorgon.Editor.TextureAtlasTool.csproj", "{4C14D439-5508-4320-A164-7D4180680546}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.TextureAtlasTool", "PlugIns\Gorgon.Editor.TextureAtlasTool\Gorgon.Editor.TextureAtlasTool.csproj", "{4C14D439-5508-4320-A164-7D4180680546}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
@@ -182,7 +182,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentInterface", "Examples
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crawl", "Examples\Gorgon.Renderers.2D\Crawl\Crawl.csproj", "{6DF3E598-1ED7-4451-9B9F-49675B5C07C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.AnimationEditor", "PlugIns\Gorgon.Editor.AnimationEditor\Gorgon.Editor.AnimationEditor.csproj", "{62AC77E7-B73D-4004-B0BB-1AB2CC263137}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.AnimationEditor", "PlugIns\Gorgon.Editor.AnimationEditor\Gorgon.Editor.AnimationEditor.csproj", "{62AC77E7-B73D-4004-B0BB-1AB2CC263137}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
@@ -198,12 +198,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextViewerContentExample", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Particles", "Examples\Gorgon.Renderers.2D\Particles\Particles.csproj", "{4EB38809-FAB9-47AC-93C5-B577901F1B3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.ImageSplitTool", "PlugIns\Gorgon.Editor.ImageSplitTool\Gorgon.Editor.ImageSplitTool.csproj", "{45418E1D-D303-47EA-BAFE-F69FB9A13BFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.ImageSplitTool", "PlugIns\Gorgon.Editor.ImageSplitTool\Gorgon.Editor.ImageSplitTool.csproj", "{45418E1D-D303-47EA-BAFE-F69FB9A13BFE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.ImageAtlasTool", "PlugIns\Gorgon.Editor.ImageAtlasTool\Gorgon.Editor.ImageAtlasTool.csproj", "{8E09187C-F82A-450B-971F-D1EF14FA10F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.ImageAtlasTool", "PlugIns\Gorgon.Editor.ImageAtlasTool\Gorgon.Editor.ImageAtlasTool.csproj", "{8E09187C-F82A-450B-971F-D1EF14FA10F8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FFFE2C0-D871-40B6-A60B-282F1359D1A9} = {4FFFE2C0-D871-40B6-A60B-282F1359D1A9}
 	EndProjectSection

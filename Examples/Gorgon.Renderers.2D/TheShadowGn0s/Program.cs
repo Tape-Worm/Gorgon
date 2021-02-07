@@ -244,10 +244,10 @@ ESC - Quit.";
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
             GorgonExample.ShowStatistics = false;
 
-            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "The Shadow Gn0s");
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "The Shadow Gn0s");
 
             try
             {
@@ -264,8 +264,8 @@ ESC - Quit.";
                 // Create our "screen".
                 _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo("TheShadowGn0s Screen Swap chain")
                 {
-                    Width = Settings.Default.Resolution.Width,
-                    Height = Settings.Default.Resolution.Height,
+                    Width = ExampleConfig.Default.Resolution.Width,
+                    Height = ExampleConfig.Default.Resolution.Height,
                     Format = BufferFormat.R8G8B8A8_UNorm
                 });
 

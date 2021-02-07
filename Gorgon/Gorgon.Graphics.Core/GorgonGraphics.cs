@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonInstancedCall"/>
     /// <seealso cref="GorgonInstancedIndexCall"/>
     public sealed class GorgonGraphics
-        : IDisposable
+        : IGorgonNativeResource, IDisposable
     {
         #region Events.
         /// <summary>
@@ -371,6 +371,19 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </remarks>
         public IGorgonRenderTargetFactory TemporaryTargets => _rtvFactory;
+
+        /// <summary>
+        /// Property to return the native handle for the underlying resource object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The property can be used to interoperate with functionality that require direct access to Direct 3D objects.
+        /// </para>
+        /// <para>
+        /// The returned pointer represents the Direct3D device object used by Gorgon.
+        /// </para>
+        /// </remarks>        
+        IntPtr IGorgonNativeResource.Handle => D3DDevice.NativePointer;
         #endregion
 
         #region Methods.

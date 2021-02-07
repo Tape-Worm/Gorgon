@@ -97,4 +97,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="$(SolutionDir)ResourceCommentCleaner.exe $(ProjectDir)Properties\" />
+  </Target>
 </Project>

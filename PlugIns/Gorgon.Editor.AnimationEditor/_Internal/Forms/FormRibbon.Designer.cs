@@ -41,49 +41,49 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRibbon));
-            this.RibbonAnimationContent = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
-            this.ContextKeyEditor = new ComponentFactory.Krypton.Ribbon.KryptonRibbonContext();
-            this.TabAnimation = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
-            this.GroupAnimationFile = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupTriple1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonNewAnimation = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonSaveAnimation = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.GroupAnimationEdit = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.LineAnimationUndoRedo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonAnimationUndo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonAnimationRedo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.GroupAnimation = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupTriple6 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonAnimationProperties = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator6 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.LineGroupBgImage = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonAnimationLoadBack = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonAnimationClearBack = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.LineGroupAnimation = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonAnimationSprite = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.CheckAnimationLoop = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.GroupTrack = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupTriple4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.CheckAnimationEditTrack = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator4 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.kryptonRibbonGroupTriple3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonAddTrack = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupLines3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonRemoveTrack = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonAnimationClear = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.GroupPreview = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonAnimPlay = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonAnimStop = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonPrevKey = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonNextKey = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonFirstKey = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonLastKey = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.LinesZoom2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonZoomAnimation = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.RibbonAnimationContent = new Krypton.Ribbon.KryptonRibbon();
+            this.ContextKeyEditor = new Krypton.Ribbon.KryptonRibbonContext();
+            this.TabAnimation = new Krypton.Ribbon.KryptonRibbonTab();
+            this.GroupAnimationFile = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple1 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonNewAnimation = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonSaveAnimation = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupAnimationEdit = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.LineAnimationUndoRedo = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonAnimationUndo = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonAnimationRedo = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupAnimation = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple6 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonAnimationProperties = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator6 = new Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.LineGroupBgImage = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonAnimationLoadBack = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonAnimationClearBack = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.LineGroupAnimation = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonAnimationSprite = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.CheckAnimationLoop = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupTrack = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple4 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.CheckAnimationEditTrack = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator4 = new Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.kryptonRibbonGroupTriple3 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonAddTrack = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupLines3 = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonRemoveTrack = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonAnimationClear = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupPreview = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple2 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonAnimPlay = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonAnimStop = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator3 = new Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.kryptonRibbonGroupLines1 = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonPrevKey = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonNextKey = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFirstKey = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonLastKey = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator1 = new Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.LinesZoom2 = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonZoomAnimation = new Krypton.Ribbon.KryptonRibbonGroupButton();
             this.MenuZoom = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ItemZoomToWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
@@ -97,27 +97,27 @@
             this.Item1600Percent = new System.Windows.Forms.ToolStripMenuItem();
             this.Item3200Percent = new System.Windows.Forms.ToolStripMenuItem();
             this.Item6400Percent = new System.Windows.Forms.ToolStripMenuItem();
-            this.TabKeyEditor = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
-            this.GroupKeyEditorAnimation = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupTriple5 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonAnimationGoBack = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.GroupAnimationKeys = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.TripleGroupKeyframes = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonAnimationSetKeyframe = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.LineGroupKeyframes = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonAnimationRemoveKeyframes = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonAnimationClearKeyframes = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.GroupAnimationKeyEdit = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.TripleGroupAnimationEditPaste = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
-            this.ButtonAnimationPaste = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.LineGroupAnimationCopyCut = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonAnimationCopy = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonAnimationCut = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.kryptonRibbonGroupSeparator5 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
-            this.LineAnimationKeyUndoRedo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.ButtonAnimationKeyUndo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.ButtonAnimationKeyRedo = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.TabKeyEditor = new Krypton.Ribbon.KryptonRibbonTab();
+            this.GroupKeyEditorAnimation = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple5 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonAnimationGoBack = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupAnimationKeys = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.TripleGroupKeyframes = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonAnimationSetKeyframe = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator2 = new Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.LineGroupKeyframes = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonAnimationRemoveKeyframes = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonAnimationClearKeyframes = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupAnimationKeyEdit = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.TripleGroupAnimationEditPaste = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonAnimationPaste = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.LineGroupAnimationCopyCut = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonAnimationCopy = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonAnimationCut = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator5 = new Krypton.Ribbon.KryptonRibbonGroupSeparator();
+            this.LineAnimationKeyUndoRedo = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonAnimationKeyUndo = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonAnimationKeyRedo = new Krypton.Ribbon.KryptonRibbonGroupButton();
             ((System.ComponentModel.ISupportInitialize)(this.RibbonAnimationContent)).BeginInit();
             this.MenuZoom.SuspendLayout();
             this.SuspendLayout();
@@ -127,9 +127,9 @@
             this.RibbonAnimationContent.AllowFormIntegrate = true;
             this.RibbonAnimationContent.InDesignHelperMode = true;
             this.RibbonAnimationContent.Name = "RibbonAnimationContent";
-            this.RibbonAnimationContent.RibbonContexts.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonContext[] {
+            this.RibbonAnimationContent.RibbonContexts.AddRange(new Krypton.Ribbon.KryptonRibbonContext[] {
             this.ContextKeyEditor});
-            this.RibbonAnimationContent.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
+            this.RibbonAnimationContent.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabAnimation,
             this.TabKeyEditor});
             this.RibbonAnimationContent.SelectedTab = this.TabKeyEditor;
@@ -144,7 +144,7 @@
             // 
             // TabAnimation
             // 
-            this.TabAnimation.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
+            this.TabAnimation.Groups.AddRange(new Krypton.Ribbon.KryptonRibbonGroup[] {
             this.GroupAnimationFile,
             this.GroupAnimationEdit,
             this.GroupAnimation,
@@ -157,17 +157,17 @@
             // 
             this.GroupAnimationFile.AllowCollapsed = false;
             this.GroupAnimationFile.DialogBoxLauncher = false;
-            this.GroupAnimationFile.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupAnimationFile.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple1});
             this.GroupAnimationFile.KeyTipGroup = "F";
             this.GroupAnimationFile.TextLine1 = "File";
             // 
             // kryptonRibbonGroupTriple1
             // 
-            this.kryptonRibbonGroupTriple1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupTriple1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonNewAnimation,
             this.ButtonSaveAnimation});
-            this.kryptonRibbonGroupTriple1.MinimumSize = ComponentFactory.Krypton.Ribbon.GroupItemSize.Large;
+            this.kryptonRibbonGroupTriple1.MinimumSize = Krypton.Ribbon.GroupItemSize.Large;
             // 
             // ButtonNewAnimation
             // 
@@ -199,14 +199,14 @@
             // 
             this.GroupAnimationEdit.AllowCollapsed = false;
             this.GroupAnimationEdit.DialogBoxLauncher = false;
-            this.GroupAnimationEdit.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupAnimationEdit.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.LineAnimationUndoRedo});
             this.GroupAnimationEdit.KeyTipGroup = "E";
             this.GroupAnimationEdit.TextLine1 = "Edit";
             // 
             // LineAnimationUndoRedo
             // 
-            this.LineAnimationUndoRedo.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.LineAnimationUndoRedo.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationUndo,
             this.ButtonAnimationRedo});
             // 
@@ -236,7 +236,7 @@
             // 
             this.GroupAnimation.AllowCollapsed = false;
             this.GroupAnimation.DialogBoxLauncher = false;
-            this.GroupAnimation.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupAnimation.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple6,
             this.kryptonRibbonGroupSeparator6,
             this.LineGroupBgImage,
@@ -246,7 +246,7 @@
             // 
             // kryptonRibbonGroupTriple6
             // 
-            this.kryptonRibbonGroupTriple6.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupTriple6.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationProperties});
             // 
             // ButtonAnimationProperties
@@ -263,7 +263,7 @@
             // 
             // LineGroupBgImage
             // 
-            this.LineGroupBgImage.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.LineGroupBgImage.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationLoadBack,
             this.ButtonAnimationClearBack});
             // 
@@ -295,7 +295,7 @@
             // 
             // LineGroupAnimation
             // 
-            this.LineGroupAnimation.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.LineGroupAnimation.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationSprite,
             this.CheckAnimationLoop});
             // 
@@ -314,7 +314,7 @@
             // 
             // CheckAnimationLoop
             // 
-            this.CheckAnimationLoop.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.CheckAnimationLoop.ButtonType = Krypton.Ribbon.GroupButtonType.Check;
             this.CheckAnimationLoop.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.anim_loop_48x48;
             this.CheckAnimationLoop.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.anim_loop_16x16;
             this.CheckAnimationLoop.KeyTip = "L";
@@ -329,7 +329,7 @@
             // 
             this.GroupTrack.AllowCollapsed = false;
             this.GroupTrack.DialogBoxLauncher = false;
-            this.GroupTrack.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupTrack.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple4,
             this.kryptonRibbonGroupSeparator4,
             this.kryptonRibbonGroupTriple3,
@@ -339,12 +339,12 @@
             // 
             // kryptonRibbonGroupTriple4
             // 
-            this.kryptonRibbonGroupTriple4.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupTriple4.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.CheckAnimationEditTrack});
             // 
             // CheckAnimationEditTrack
             // 
-            this.CheckAnimationEditTrack.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.CheckAnimationEditTrack.ButtonType = Krypton.Ribbon.GroupButtonType.Check;
             this.CheckAnimationEditTrack.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.edit_track_48x48;
             this.CheckAnimationEditTrack.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.edit_track_16x16;
             this.CheckAnimationEditTrack.KeyTip = "E";
@@ -357,7 +357,7 @@
             // 
             // kryptonRibbonGroupTriple3
             // 
-            this.kryptonRibbonGroupTriple3.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupTriple3.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAddTrack});
             // 
             // ButtonAddTrack
@@ -374,7 +374,7 @@
             // 
             // kryptonRibbonGroupLines3
             // 
-            this.kryptonRibbonGroupLines3.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupLines3.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonRemoveTrack,
             this.ButtonAnimationClear});
             // 
@@ -403,7 +403,7 @@
             // 
             this.GroupPreview.AllowCollapsed = false;
             this.GroupPreview.DialogBoxLauncher = false;
-            this.GroupPreview.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupPreview.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple2,
             this.kryptonRibbonGroupSeparator3,
             this.kryptonRibbonGroupLines1,
@@ -414,7 +414,7 @@
             // 
             // kryptonRibbonGroupTriple2
             // 
-            this.kryptonRibbonGroupTriple2.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupTriple2.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimPlay,
             this.ButtonAnimStop});
             // 
@@ -443,7 +443,7 @@
             // 
             // kryptonRibbonGroupLines1
             // 
-            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupLines1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonPrevKey,
             this.ButtonNextKey,
             this.ButtonFirstKey,
@@ -495,12 +495,12 @@
             // 
             // LinesZoom2
             // 
-            this.LinesZoom2.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.LinesZoom2.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonZoomAnimation});
             // 
             // ButtonZoomAnimation
             // 
-            this.ButtonZoomAnimation.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.DropDown;
+            this.ButtonZoomAnimation.ButtonType = Krypton.Ribbon.GroupButtonType.DropDown;
             this.ButtonZoomAnimation.ContextMenuStrip = this.MenuZoom;
             this.ButtonZoomAnimation.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.zoom_48x48;
             this.ButtonZoomAnimation.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.zoom_16x16;
@@ -637,7 +637,7 @@
             // TabKeyEditor
             // 
             this.TabKeyEditor.ContextName = "ContextKeyEditor";
-            this.TabKeyEditor.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
+            this.TabKeyEditor.Groups.AddRange(new Krypton.Ribbon.KryptonRibbonGroup[] {
             this.GroupKeyEditorAnimation,
             this.GroupAnimationKeys,
             this.GroupAnimationKeyEdit});
@@ -648,15 +648,15 @@
             // 
             this.GroupKeyEditorAnimation.AllowCollapsed = false;
             this.GroupKeyEditorAnimation.DialogBoxLauncher = false;
-            this.GroupKeyEditorAnimation.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupKeyEditorAnimation.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple5});
             this.GroupKeyEditorAnimation.KeyTipGroup = "D";
             this.GroupKeyEditorAnimation.TextLine1 = "Editor";
             // 
             // kryptonRibbonGroupTriple5
             // 
-            this.kryptonRibbonGroupTriple5.ItemAlignment = ComponentFactory.Krypton.Ribbon.RibbonItemAlignment.Center;
-            this.kryptonRibbonGroupTriple5.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupTriple5.ItemAlignment = Krypton.Ribbon.RibbonItemAlignment.Center;
+            this.kryptonRibbonGroupTriple5.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationGoBack});
             // 
             // ButtonAnimationGoBack
@@ -672,7 +672,7 @@
             // 
             this.GroupAnimationKeys.AllowCollapsed = false;
             this.GroupAnimationKeys.DialogBoxLauncher = false;
-            this.GroupAnimationKeys.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupAnimationKeys.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.TripleGroupKeyframes,
             this.kryptonRibbonGroupSeparator2,
             this.LineGroupKeyframes});
@@ -681,7 +681,7 @@
             // 
             // TripleGroupKeyframes
             // 
-            this.TripleGroupKeyframes.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.TripleGroupKeyframes.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationSetKeyframe});
             // 
             // ButtonAnimationSetKeyframe
@@ -699,7 +699,7 @@
             // 
             // LineGroupKeyframes
             // 
-            this.LineGroupKeyframes.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.LineGroupKeyframes.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationRemoveKeyframes,
             this.ButtonAnimationClearKeyframes});
             // 
@@ -732,7 +732,7 @@
             // 
             this.GroupAnimationKeyEdit.AllowCollapsed = false;
             this.GroupAnimationKeyEdit.DialogBoxLauncher = false;
-            this.GroupAnimationKeyEdit.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.GroupAnimationKeyEdit.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.TripleGroupAnimationEditPaste,
             this.LineGroupAnimationCopyCut,
             this.kryptonRibbonGroupSeparator5,
@@ -742,7 +742,7 @@
             // 
             // TripleGroupAnimationEditPaste
             // 
-            this.TripleGroupAnimationEditPaste.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.TripleGroupAnimationEditPaste.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationPaste});
             // 
             // ButtonAnimationPaste
@@ -758,7 +758,7 @@
             // 
             // LineGroupAnimationCopyCut
             // 
-            this.LineGroupAnimationCopyCut.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.LineGroupAnimationCopyCut.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationCopy,
             this.ButtonAnimationCut});
             // 
@@ -787,7 +787,7 @@
             // 
             // LineAnimationKeyUndoRedo
             // 
-            this.LineAnimationKeyUndoRedo.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.LineAnimationKeyUndoRedo.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.ButtonAnimationKeyUndo,
             this.ButtonAnimationKeyRedo});
             // 
@@ -830,18 +830,18 @@
         }
 
         #endregion
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab TabAnimation;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupAnimationFile;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonSaveAnimation;
-        internal ComponentFactory.Krypton.Ribbon.KryptonRibbon RibbonAnimationContent;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupAnimationEdit;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LineAnimationUndoRedo;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationUndo;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationRedo;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonNewAnimation;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupTrack;
-        internal ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonZoomAnimation;
+        private Krypton.Ribbon.KryptonRibbonTab TabAnimation;
+        private Krypton.Ribbon.KryptonRibbonGroup GroupAnimationFile;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonSaveAnimation;
+        internal Krypton.Ribbon.KryptonRibbon RibbonAnimationContent;
+        private Krypton.Ribbon.KryptonRibbonGroup GroupAnimationEdit;
+        private Krypton.Ribbon.KryptonRibbonGroupLines LineAnimationUndoRedo;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationUndo;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationRedo;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonNewAnimation;
+        private Krypton.Ribbon.KryptonRibbonGroup GroupTrack;
+        internal Krypton.Ribbon.KryptonRibbonGroupButton ButtonZoomAnimation;
         private System.Windows.Forms.ContextMenuStrip MenuZoom;
         private System.Windows.Forms.ToolStripMenuItem ItemZoomToWindow;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
@@ -855,57 +855,57 @@
         private System.Windows.Forms.ToolStripMenuItem Item1600Percent;
         private System.Windows.Forms.ToolStripMenuItem Item3200Percent;
         private System.Windows.Forms.ToolStripMenuItem Item6400Percent;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupPreview;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimPlay;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimStop;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonPrevKey;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonNextKey;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFirstKey;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonLastKey;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple3;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAddTrack;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines3;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonRemoveTrack;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple TripleGroupAnimationEditPaste;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationPaste;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LineGroupAnimationCopyCut;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationCut;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationCopy;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LinesZoom2;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationClear;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton CheckAnimationEditTrack;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator4;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton CheckAnimationLoop;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationLoadBack;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationClearBack;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupAnimation;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LineGroupBgImage;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple6;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationProperties;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator6;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LineGroupAnimation;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationSprite;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab TabKeyEditor;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupAnimationKeyEdit;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator5;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LineAnimationKeyUndoRedo;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationKeyUndo;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationKeyRedo;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonContext ContextKeyEditor;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupAnimationKeys;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple TripleGroupKeyframes;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationSetKeyframe;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator2;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines LineGroupKeyframes;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationRemoveKeyframes;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationClearKeyframes;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupKeyEditorAnimation;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple5;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationGoBack;
+        private Krypton.Ribbon.KryptonRibbonGroup GroupPreview;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimPlay;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimStop;
+        private Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonPrevKey;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonNextKey;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonFirstKey;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonLastKey;
+        private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator3;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple3;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAddTrack;
+        private Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines3;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonRemoveTrack;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple TripleGroupAnimationEditPaste;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationPaste;
+        private Krypton.Ribbon.KryptonRibbonGroupLines LineGroupAnimationCopyCut;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationCut;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationCopy;
+        private Krypton.Ribbon.KryptonRibbonGroupLines LinesZoom2;
+        private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationClear;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple4;
+        private Krypton.Ribbon.KryptonRibbonGroupButton CheckAnimationEditTrack;
+        private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator4;
+        private Krypton.Ribbon.KryptonRibbonGroupButton CheckAnimationLoop;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationLoadBack;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationClearBack;
+        private Krypton.Ribbon.KryptonRibbonGroup GroupAnimation;
+        private Krypton.Ribbon.KryptonRibbonGroupLines LineGroupBgImage;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple6;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationProperties;
+        private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator6;
+        private Krypton.Ribbon.KryptonRibbonGroupLines LineGroupAnimation;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationSprite;
+        private Krypton.Ribbon.KryptonRibbonTab TabKeyEditor;
+        private Krypton.Ribbon.KryptonRibbonGroup GroupAnimationKeyEdit;
+        private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator5;
+        private Krypton.Ribbon.KryptonRibbonGroupLines LineAnimationKeyUndoRedo;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationKeyUndo;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationKeyRedo;
+        private Krypton.Ribbon.KryptonRibbonContext ContextKeyEditor;
+        private Krypton.Ribbon.KryptonRibbonGroup GroupAnimationKeys;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple TripleGroupKeyframes;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationSetKeyframe;
+        private Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator2;
+        private Krypton.Ribbon.KryptonRibbonGroupLines LineGroupKeyframes;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationRemoveKeyframes;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationClearKeyframes;
+        private Krypton.Ribbon.KryptonRibbonGroup GroupKeyEditorAnimation;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple5;
+        private Krypton.Ribbon.KryptonRibbonGroupButton ButtonAnimationGoBack;
     }
 }

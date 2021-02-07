@@ -30,7 +30,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Linq;
-using ComponentFactory.Krypton.Ribbon;
+using Krypton.Ribbon;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
