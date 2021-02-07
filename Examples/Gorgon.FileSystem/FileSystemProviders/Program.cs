@@ -30,7 +30,6 @@ using System.IO;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Examples.Properties;
 using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
 
@@ -80,7 +79,7 @@ namespace Gorgon.Examples
         {
             get
             {
-                string path = Settings.Default.PlugInLocation;
+                string path = ExampleConfig.Default.PlugInLocation;
 
                 if (path.Contains("{0}"))
                 {
@@ -114,7 +113,7 @@ namespace Gorgon.Examples
             // Get all the providers.
             // We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
             // this example, we'll get everything we've got.
-            _providers = providerFactory.CreateProviders(Path.Combine(PlugInPath, "Gorgon.FileSystem.*"));
+            _providers = providerFactory.CreateProviders(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.*.dll"));
 
             return _providers.Count;
         }
@@ -124,6 +123,8 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Main()
         {
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+
             _log = new GorgonTextFileLog("FileSystemProviders", "Tape_Worm");
             _log.LogStart();
 

@@ -49,7 +49,7 @@ namespace Gorgon.Examples
 
             try
             {
-                GorgonApplication.Run(new FormMain());
+                GorgonApplication.Run(new Main());
             }
             catch(Exception ex)
             {

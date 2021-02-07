@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -46,7 +47,7 @@ namespace Gorgon.Graphics.Core
     /// A texture used to project an image onto a graphic primitive such as a triangle.
     /// </summary>
     public sealed class GorgonTexture2D
-        : GorgonGraphicsResource, IGorgonTexture2DInfo, IGorgonTextureResource
+        : GorgonGraphicsResource, IGorgonTexture2DInfo, IGorgonTextureResource, IGorgonSharedResource
     {
         #region Constants.
         /// <summary>
@@ -78,6 +79,8 @@ namespace Gorgon.Graphics.Core
                                                                                  BufferFormat.R24G8_Typeless,
                                                                                  BufferFormat.R32G8X24_Typeless
                                                                              };
+        // The shared resource for this texture.
+        private DXGI.Resource _sharedResource;
         #endregion
 
         #region Properties.
@@ -215,6 +218,12 @@ namespace Gorgon.Graphics.Core
         /// Property to return the name of this object.
         /// </summary>
         public override string Name => _info.Name;
+
+        /// <summary>Property to return whether this texture can be shared with other graphics interfaces.</summary>
+        /// <remarks>
+        /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
+        /// </remarks>
+        public bool Shared =>_info.Shared;
         #endregion
 
         #region Methods.
@@ -500,6 +509,18 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_TEXTURE_MULTISAMPLED);
             }
 
+            D3D11.ResourceOptionFlags options = D3D11.ResourceOptionFlags.None;
+
+            if (IsCubeMap)
+            {
+                options |= D3D11.ResourceOptionFlags.TextureCube;
+            }
+
+            if (Shared)
+            {
+                options |= D3D11.ResourceOptionFlags.Shared;
+            }
+            
             var tex2DDesc = new D3D11.Texture2DDescription1
             {
                 Format = (DXGI.Format)Format,
@@ -509,7 +530,7 @@ namespace Gorgon.Graphics.Core
                 Usage = (D3D11.ResourceUsage)Usage,
                 BindFlags = (D3D11.BindFlags)Binding,
                 CpuAccessFlags = cpuFlags,
-                OptionFlags = IsCubeMap ? D3D11.ResourceOptionFlags.TextureCube : D3D11.ResourceOptionFlags.None,
+                OptionFlags = options,
                 SampleDescription = MultisampleInfo.ToSampleDesc(),
                 MipLevels = MipLevels
             };
@@ -631,6 +652,43 @@ namespace Gorgon.Graphics.Core
                                         info.Format,
                                         info.MipLevels,
                                         info.IsCubeMap);
+
+        /// <summary>
+        /// Function to retrieve the shared resource handle for this texture.
+        /// </summary>
+        /// <returns>A pointer representing a handle for sharing the texture data with other interfaces.</returns>
+        /// <exception cref="GorgonException">Thrown if the shared texture could not be created.</exception>
+        /// <remarks>
+        /// <para>
+        /// This is used to retrieve a handle to the shared resource that allows applications to share the texture with other APIs (e.g. Direct 2D). 
+        /// </para>
+        /// <para>
+        /// To retrieve the shared resource handle, the texture must have set the <see cref="IGorgonTexture2DInfo.Shared"/> property on <see cref="GorgonTexture2DInfo"/> to <b>true</b>, otherwise the 
+        /// method will throw an exception.
+        /// </para>
+        /// </remarks>        
+        IntPtr IGorgonSharedResource.GetSharedHandle()
+        {
+            if (!Shared)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_SHARED_RES, Name));
+            }
+
+            if (_sharedResource != null)
+            {
+                return _sharedResource.SharedHandle;
+            }
+            
+            DXGI.Resource resource = D3DResource.QueryInterface<DXGI.Resource>();
+
+            if (resource == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHARED_RES_NOT_AVAILABLE, Name));
+            }
+
+            Interlocked.Exchange(ref _sharedResource, resource);
+            return resource.SharedHandle;
+        }
 
         /// <summary>
         /// Function to copy this texture into a <see cref="GorgonTexture1D"/>.
@@ -2227,6 +2285,9 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
+            DXGI.Resource sharedRes = Interlocked.Exchange(ref _sharedResource, null);
+            sharedRes?.Dispose();
+
             // Destroy all cached views.
             Dictionary<TextureViewKey, GorgonTexture2DView> cachedSrvs = Interlocked.Exchange(ref _cachedSrvs, null);
             Dictionary<TextureViewKey, GorgonRenderTarget2DView> cachedRtvs = Interlocked.Exchange(ref _cachedRtvs, null);
@@ -2291,14 +2352,14 @@ namespace Gorgon.Graphics.Core
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_POINTER_NOT_COM_OBJECT);
                 }
 
-                DXGI.Resource resource = com.QueryInterface<DXGI.Resource>();
+                _sharedResource = com.QueryInterface<DXGI.Resource>();
 
-                if (resource == null)
+                if (_sharedResource == null)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_POINTER_NOT_DXGI_RESOURCE);
                 }
 
-                D3DResource = graphics.D3DDevice.OpenSharedResource<D3D11.Resource>(resource.SharedHandle);
+                D3DResource = graphics.D3DDevice.OpenSharedResource<D3D11.Resource>(_sharedResource.SharedHandle);
 
                 if (D3DResource == null)
                 {
@@ -2329,7 +2390,7 @@ namespace Gorgon.Graphics.Core
                 MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
                 Binding = (TextureBinding)desc.BindFlags
             };
-
+            
             FormatInformation = new GorgonFormatInfo(Format);
             TextureID = Interlocked.Increment(ref _textureID);
             SizeInBytes = CalculateSizeInBytes(_info);

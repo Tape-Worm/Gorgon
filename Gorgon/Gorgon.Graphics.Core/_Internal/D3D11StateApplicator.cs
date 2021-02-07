@@ -237,7 +237,6 @@ namespace Gorgon.Graphics.Core
 		/// Function to bind an index buffer resource to the pipeline.
 		/// </summary>
 		/// <param name="indexBuffer">The index buffer to bind.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void BindIndexBuffer(GorgonIndexBuffer indexBuffer)
 		{
 			D3D11.Buffer native = indexBuffer?.Native;
@@ -250,7 +249,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="streamOutBindings">The bindings to bind to the pipeline.</param>
         /// <param name="indices">The indices that were modified.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void BindStreamOutBuffers(GorgonStreamOutBindings streamOutBindings, in (int Start, int Count) indices)
 		{
 			if ((indices.Count <= 0) || (_setStreamOutTargets == null))
@@ -279,7 +277,6 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="uavs">The unordered access views to bind.</param>
 		/// <param name="indices">The indices that were modified.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void BindCsUavs(GorgonReadWriteViewBindings uavs, in (int Start, int Count) indices)
 		{
 			if ((uavs == null) || (indices.Count == 0))
@@ -312,7 +309,6 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="uavs">The unordered access views to bind.</param>
 		/// <param name="indices">The indices that were modified.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void BindUavs(GorgonReadWriteViewBindings uavs, in (int Start, int Count) indices)
 		{
 			if ((uavs == null) || (indices.Count == 0) || (_setUavs == null))
@@ -348,7 +344,6 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="vertexBufferBindings">The bindings to bind to the pipeline.</param>
 		/// <param name="indices">The indices that were modified.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void BindVertexBuffers(GorgonVertexBufferBindings vertexBufferBindings, in (int Start, int Count) indices)
 		{
 			if (indices.Count <= 0)

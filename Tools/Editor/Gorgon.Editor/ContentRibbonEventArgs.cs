@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using ComponentFactory.Krypton.Ribbon;
+using Krypton.Ribbon;
 
 namespace Gorgon.Editor
 {

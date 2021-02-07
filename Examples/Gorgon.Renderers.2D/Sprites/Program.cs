@@ -178,10 +178,10 @@ namespace Gorgon.Examples
         /// <returns>The form that will display our graphical scene.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Create the window, and size it to our resolution.
-            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Sprites");
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Sprites");
 
             try
             {
@@ -200,8 +200,8 @@ namespace Gorgon.Examples
                                               window,
                                               new GorgonSwapChainInfo("Gorgon2D Sprites Example Swap Chain")
                                               {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
+                                                  Width = ExampleConfig.Default.Resolution.Width,
+                                                  Height = ExampleConfig.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
                 _screen.SwapChainResized += Screen_AfterSwapChainResized;

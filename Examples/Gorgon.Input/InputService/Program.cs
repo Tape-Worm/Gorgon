@@ -80,7 +80,7 @@ namespace Gorgon.Examples
         /// <returns>A list of gaming device driver plug ins.</returns>
         private static IReadOnlyList<IGorgonGamingDeviceDriver> GetGamingDeviceDrivers()
         {
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.InputPlugInPath);
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
             // Create a plug in assembly cache for our input assemblies.
             _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);

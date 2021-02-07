@@ -201,6 +201,16 @@ namespace Gorgon.Graphics.Core
             get;
             set;
         }
+
+        /// <summary>Property to return whether this texture can be shared with other graphics interfaces.</summary>
+        /// <remarks>
+        /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
+        /// </remarks>
+        public bool Shared
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -221,6 +231,7 @@ namespace Gorgon.Graphics.Core
             MultisampleInfo = info.MultisampleInfo;
             Usage = info.Usage;
             Width = info.Width;
+            Shared = info.Shared;
         }
         #endregion
 

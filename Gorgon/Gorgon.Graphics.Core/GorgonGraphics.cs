@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonInstancedCall"/>
     /// <seealso cref="GorgonInstancedIndexCall"/>
     public sealed class GorgonGraphics
-        : IDisposable
+        : IGorgonNativeResource, IDisposable
     {
         #region Events.
         /// <summary>
@@ -371,6 +371,19 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </remarks>
         public IGorgonRenderTargetFactory TemporaryTargets => _rtvFactory;
+
+        /// <summary>
+        /// Property to return the native handle for the underlying resource object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The property can be used to interoperate with functionality that require direct access to Direct 3D objects.
+        /// </para>
+        /// <para>
+        /// The returned pointer represents the Direct3D device object used by Gorgon.
+        /// </para>
+        /// </remarks>        
+        IntPtr IGorgonNativeResource.Handle => D3DDevice.NativePointer;
         #endregion
 
         #region Methods.
@@ -481,7 +494,6 @@ namespace Gorgon.Graphics.Core
         /// Function to fire the <see cref="ViewportChanging"/> event.
         /// </summary>
         /// <returns><b>true</b> to continue, <b>false</b> to cancel.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnViewportChanging()
         {
             CancelEventHandler cancelHandler = ViewportChanging;
@@ -502,7 +514,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="rtvsUpdated"><b>true</b> if the rtvs needed updating, <b>false</b> if not.</param>
         /// <returns><b>true</b> if the user will continue with the change, <b>false</b> if not.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnRenderTargetChanging(bool rtvsUpdated)
         {
             if (!rtvsUpdated)
@@ -526,7 +537,6 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function called when the render target(s) have changed.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void OnRenderTargetChanged() => RenderTargetChanged?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
@@ -534,7 +544,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="dsvUpdated"><b>true</b> if the dsv needed updating, <b>false</b> if not.</param>
         /// <returns><b>true</b> if the user will continue with the change, <b>false</b> if not.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnDepthStencilChanging(bool dsvUpdated)
         {
             if (!dsvUpdated)
@@ -649,7 +658,6 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearState(bool flush = false)
         {
             // Reset state on the device context.
@@ -976,7 +984,6 @@ namespace Gorgon.Graphics.Core
         /// This will destroy any previously cached pipeline states and sampler states.
         /// </para>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearStateCache()
         {
             if (D3DDeviceContext != null)

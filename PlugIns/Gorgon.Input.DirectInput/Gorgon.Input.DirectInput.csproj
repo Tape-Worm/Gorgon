@@ -78,6 +78,6 @@ This assembly contains a plug in that will use Microsoft DirectInput to allow ac
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;&#xD;&#xA;copy &quot;$(TargetDir)SharpDX*.dll&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;" />
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)&quot; $(TargetFileName) $(TargetName).pdb SharpDX*.dll /Z&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0" />
   </Target>
 </Project>

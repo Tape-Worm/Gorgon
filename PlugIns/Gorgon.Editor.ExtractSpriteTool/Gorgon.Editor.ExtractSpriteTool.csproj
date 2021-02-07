@@ -67,6 +67,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Tools&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Tools&quot;&#xD;&#xA;copy &quot;$(TargetDir)WinFormsColor.dll&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\Tools&quot;" />
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)PlugIns\Tools&quot; $(TargetFileName) $(TargetName).pdb WinFormsColor.dll&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0&#xD;&#xA;" />
   </Target>
 </Project>

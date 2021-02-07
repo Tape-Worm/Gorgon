@@ -356,7 +356,7 @@ namespace Gorgon.Examples
 
             try
             {
-                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
                 // Create the assembly cache.
                 _assemblies = new GorgonMefPlugInCache(GorgonApplication.Log);

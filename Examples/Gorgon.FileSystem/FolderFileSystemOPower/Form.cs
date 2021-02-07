@@ -32,7 +32,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
@@ -258,11 +257,11 @@ namespace Gorgon.Examples
         /// </summary>
         private void Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Resize and center the screen.
             var screen = Screen.FromHandle(Handle);
-            ClientSize = Settings.Default.Resolution;
+            ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
             Location = new Point(screen.Bounds.Left + (screen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
                                  screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
@@ -288,7 +287,7 @@ namespace Gorgon.Examples
                                               Format = BufferFormat.R8G8B8A8_UNorm
                                           });
 
-            if (!Settings.Default.IsWindowed)
+            if (!ExampleConfig.Default.IsWindowed)
             {
                 // Go full screen by using borderless windowed mode.
                 _screen.EnterFullScreen();

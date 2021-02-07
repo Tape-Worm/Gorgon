@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Gorgon.Core;
+using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -154,7 +155,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     public abstract class GorgonGraphicsResource
-        : IGorgonNamedObject, IGorgonGraphicsObject, IDisposable
+        : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonNativeResource, IDisposable
     {
         #region Variables.
         // Custom application data.
@@ -180,6 +181,14 @@ namespace Gorgon.Graphics.Core
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the native handle for the underlying resource object.
+        /// </summary>
+        /// <remarks>
+        /// The property can be used to interoperate with functionality that require direct access to Direct 3D objects.
+        /// </remarks>
+        IntPtr IGorgonNativeResource.Handle => _resource?.NativePointer ?? IntPtr.Zero;
 
         /// <summary>
         /// Property to return whether or not the resource is disposed.

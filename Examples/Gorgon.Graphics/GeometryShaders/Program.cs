@@ -199,7 +199,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Build the form so we can actually show something.
             _mainForm = GorgonExample.Initialize(new DX.Size2(1280, 800), "Geometry Shaders");

@@ -105,7 +105,7 @@ namespace Gorgon.Examples
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
 		public static string GetResourcePath(string resourceItem)
 		{
-			string path = Settings.Default.ResourceLocation;
+			string path = ExampleConfig.Default.ResourceLocation;
 
 			if (string.IsNullOrEmpty(resourceItem))
 			{
@@ -406,7 +406,7 @@ namespace Gorgon.Examples
 		{
 			GorgonExample.ShowStatistics = false;
 
-			_window = GorgonExample.Initialize(new DX.Size2(Settings.Default.ScreenWidth, Settings.Default.ScreenHeight), "Balls");
+			_window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Balls");
 
 			try
 			{
@@ -427,8 +427,8 @@ namespace Gorgon.Examples
 												  _window,
 												  new GorgonSwapChainInfo("Main Screen")
 												  {
-													  Width = Settings.Default.ScreenWidth,
-													  Height = Settings.Default.ScreenHeight,
+													  Width = ExampleConfig.Default.Resolution.Width,
+													  Height = ExampleConfig.Default.Resolution.Height,
 													  Format = BufferFormat.R8G8B8A8_UNorm
 												  });
 
@@ -474,8 +474,8 @@ namespace Gorgon.Examples
 				_ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
 																		  new GorgonTexture2DInfo("Ball Target")
 																		  {
-																			  Width = Settings.Default.ScreenWidth,
-																			  Height = Settings.Default.ScreenHeight,
+																			  Width = ExampleConfig.Default.Resolution.Width,
+																			  Height = ExampleConfig.Default.Resolution.Height,
 																			  Format = BufferFormat.R8G8B8A8_UNorm
 																		  });
 				_ballTargetView = _ballTarget.GetShaderResourceView();
@@ -515,15 +515,15 @@ namespace Gorgon.Examples
 
 														 DX.Size2 newTargetSize;
 														 newTargetSize.Width =
-															 (int)((512.0f * (args.Size.Width / (float)Settings.Default.ScreenWidth)).Min(512));
+															 (int)((512.0f * (args.Size.Width / (float)ExampleConfig.Default.Resolution.Width)).Min(512));
 														 newTargetSize.Height =
-															 (int)((512.0f * (args.Size.Height / (float)Settings.Default.ScreenHeight)).Min(512));
+															 (int)((512.0f * (args.Size.Height / (float)ExampleConfig.Default.Resolution.Height)).Min(512));
 
 														 _blur.BlurRenderTargetsSize = newTargetSize;
 													 };
 
 				// Generate the ball list.
-				GenerateBalls(Settings.Default.BallCount);
+				GenerateBalls(1024);
 
 				// Assign event handlers.
 				_window.KeyDown += Form_KeyDown;

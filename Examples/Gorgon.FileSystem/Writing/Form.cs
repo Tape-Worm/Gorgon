@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using System.Text;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
 
@@ -181,7 +180,7 @@ namespace Gorgon.Examples
 		/// Function to update the information label.
 		/// </summary>
 		private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
-                                 ? $"Using original text from {GorgonExample.GetResourcePath(@"FolderSystem\").FullName.Ellipses(100, true)}"
+                                 ? $"Using original text from {GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)}"
                                  : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
 
         /// <summary>
@@ -189,7 +188,7 @@ namespace Gorgon.Examples
         /// </summary>
         private void LoadText()
         {
-            DirectoryInfo physicalPath = GorgonExample.GetResourcePath(@"FolderSystem\");
+            DirectoryInfo physicalPath = GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\");
 
             // Unload the mounted files.
             _writer.Unmount();
@@ -235,8 +234,8 @@ namespace Gorgon.Examples
 
             try
             {
-                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
-                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
                 // Create our virtual file system.
                 _fileSystem = new GorgonFileSystem(Program.Log);
@@ -244,7 +243,7 @@ namespace Gorgon.Examples
 
                 LoadText();
 
-                labelFileSystem.Text = $"{GorgonExample.GetResourcePath(@"FolderSystem\").FullName.Ellipses(100, true)} mounted as '/'.";
+                labelFileSystem.Text = $"{GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)} mounted as '/'.";
                 labelWriteLocation.Text = $"{Program.WriteDirectory.FullName.Ellipses(100, true)} mounted as '/'";
             }
             catch (Exception ex)

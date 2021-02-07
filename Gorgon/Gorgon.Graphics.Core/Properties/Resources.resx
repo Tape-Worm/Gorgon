@@ -554,4 +554,12 @@ This application will now exit.</value>
   <data name="GORGFX_TOSTR_TIMESTAMP_DISJOINT" xml:space="preserve">
     <value>Timestamp Frequency: {0}, Is Disjointed: {1}</value>
   </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_SHARED_RES" xml:space="preserve">
+    <value>Cannot create a shared resource for the texture '{0}'. 
+
+Textures must be configured to share their data when they are first created.</value>
+  </data>
+  <data name="GORGFX_ERR_SHARED_RES_NOT_AVAILABLE" xml:space="preserve">
+    <value>The shared resource could not be created for the texture '{0}'.</value>
+  </data>
 </root>
