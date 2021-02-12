@@ -171,7 +171,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnInitialize()
         {
-            _posterizeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon 2D Posterize Effect Constant Buffer");
+            _posterizeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Gorgon 2D Posterize Effect Constant Buffer");
             _posterizeShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderPosterize");
         }
 
@@ -220,7 +220,7 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            _posterizeBuffer.Buffer.SetData(ref _settings);
+            _posterizeBuffer.Buffer.SetData(in _settings);
             _isUpdated = false;
         }
         /// <summary>

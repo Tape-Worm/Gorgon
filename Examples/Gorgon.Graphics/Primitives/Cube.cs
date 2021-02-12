@@ -25,11 +25,11 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Drawing;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -41,7 +41,7 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // Initial orientation.
-        private DX.Matrix _orientation;
+        private Matrix4x4 _orientation;
         #endregion
 
         #region Methods.
@@ -56,39 +56,39 @@ namespace Gorgon.Examples
         /// <param name="textureCoordinates">The texture coordinates to apply to the plane.</param>
         /// <param name="columns">The number of columns to subdivide by.</param>
         /// <param name="rows">The number of rows to subdivide by.</param>
-        private void GetVertices(Span<GorgonVertexPosNormUvTangent> buffer, int vertexOffset, DX.Vector3 up, DX.Vector3 normal, DX.Vector3 size, RectangleF textureCoordinates, int columns, int rows)
+        private void GetVertices(Span<GorgonVertexPosNormUvTangent> buffer, int vertexOffset, Vector3 up, Vector3 normal, Vector3 size, RectangleF textureCoordinates, int columns, int rows)
         {
             float columnWidth = 1.0f / columns;
             float columnHeight = 1.0f / rows;
-            DX.Matrix rotation = DX.Matrix.Identity;
+            Matrix4x4 rotation = Matrix4x4.Identity;
 
-            DX.Vector3.Cross(ref normal, ref up, out DX.Vector3 orientVector);
-            DX.Vector3.Multiply(ref normal, 0.5f, out DX.Vector3 translate);
+            var orientVector = Vector3.Cross(normal, up);
+            var translate = Vector3.Multiply(normal, 0.5f);
 
-            rotation.Row1 = new DX.Vector4(orientVector, 0);
-            rotation.Row2 = new DX.Vector4(up, 0);
-            rotation.Row3 = new DX.Vector4(normal, 0);
-            rotation.Row4 = new DX.Vector4(translate, 1);
+            rotation.SetRow(0, new Vector4(orientVector, 0));
+            rotation.SetRow(1, new Vector4(up, 0));
+            rotation.SetRow(2, new Vector4(normal, 0));
+            rotation.SetRow(3, new Vector4(translate, 1));
 
-            DX.Vector3.Transform(ref normal, ref _orientation, out DX.Vector3 transformNormal);
-            transformNormal = DX.Vector3.Normalize(transformNormal);
+            var transformNormal = Vector3.Transform(normal, _orientation);
+            transformNormal = Vector3.Normalize(transformNormal);
 
             for (int y = 0; y <= rows; ++y)
             {
                 for (int x = 0; x <= columns; ++x)
                 {
-                    var vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
+                    var vertexPos = new Vector3(((x * columnWidth) - 0.5f) * size.X,
                                                 ((y * columnHeight) - 0.5f) * size.Y,
                                                 0);
 
-                    DX.Vector3.Transform(ref vertexPos, ref rotation, out vertexPos);
-                    DX.Vector3.Transform(ref vertexPos, ref _orientation, out vertexPos);
+                    vertexPos = Vector3.Transform(vertexPos, rotation);
+                    vertexPos = Vector3.Transform(vertexPos, _orientation);
 
                     buffer[vertexOffset++] = new GorgonVertexPosNormUvTangent
                     {
-                        Position = new DX.Vector4(vertexPos, 1.0f),
+                        Position = new Vector4(vertexPos, 1.0f),
                         Normal = transformNormal,
-                        UV = new DX.Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
+                        UV = new Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
                                                                      (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
                     };
                 }
@@ -133,7 +133,7 @@ namespace Gorgon.Examples
         /// <param name="angle">The initial orientation of the cube, in degrees.</param>
         /// <param name="columnsPerFace">The number of columns per face.</param>
         /// <param name="rowsPerFace">The number of rows per face.</param>
-        public Cube(GorgonGraphics graphics, DX.Vector3 size, RectangleF textureCoordinates, DX.Vector3 angle, int columnsPerFace = 1, int rowsPerFace = 1)
+        public Cube(GorgonGraphics graphics, Vector3 size, RectangleF textureCoordinates, Vector3 angle, int columnsPerFace = 1, int rowsPerFace = 1)
             : base(graphics)
         {
             PrimitiveType = PrimitiveType.TriangleList;
@@ -143,24 +143,24 @@ namespace Gorgon.Examples
             IndexCount = faceIndexCount * 6;
             TriangleCount = IndexCount / 3;
 
-            DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
-            DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
+            var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+            _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
             var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
             int[] indexData = new int[IndexCount];
 
             // Front.
-            GetVertices(vertexData, 0, DX.Vector3.UnitY, -DX.Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
+            GetVertices(vertexData, 0, Vector3.UnitY, -Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
             // Bottom.
-            GetVertices(vertexData, faceVertexCount, -DX.Vector3.UnitZ, -DX.Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
+            GetVertices(vertexData, faceVertexCount, -Vector3.UnitZ, -Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
             // Back.
-            GetVertices(vertexData, faceVertexCount * 2, DX.Vector3.UnitY, DX.Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
+            GetVertices(vertexData, faceVertexCount * 2, Vector3.UnitY, Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
             // Top.
-            GetVertices(vertexData, faceVertexCount * 3, DX.Vector3.UnitZ, DX.Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
+            GetVertices(vertexData, faceVertexCount * 3, Vector3.UnitZ, Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
             // Left.
-            GetVertices(vertexData, faceVertexCount * 4, DX.Vector3.UnitY, -DX.Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
+            GetVertices(vertexData, faceVertexCount * 4, Vector3.UnitY, -Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
             // Right
-            GetVertices(vertexData, faceVertexCount * 5, DX.Vector3.UnitY, DX.Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
+            GetVertices(vertexData, faceVertexCount * 5, Vector3.UnitY, Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
 
             GetIndices(indexData, 0, 0, columnsPerFace, rowsPerFace);
             GetIndices(indexData, faceIndexCount, faceVertexCount, columnsPerFace, rowsPerFace);

@@ -25,11 +25,11 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using Gorgon.Editor.Rendering;
@@ -103,7 +103,7 @@ namespace Gorgon.Editor.UI.Views
                 if (Renderer != null)
                 {
                     Renderer.CanPanHorizontally = value;
-                    Renderer.SetOffset(DX.Vector2.Zero);
+                    Renderer.SetOffset(Vector2.Zero);
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace Gorgon.Editor.UI.Views
                 if (Renderer != null)
                 {
                     Renderer.CanPanVertically = value;
-                    Renderer.SetOffset(DX.Vector2.Zero);
+                    Renderer.SetOffset(Vector2.Zero);
                 }
             }
         }
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            Renderer.SetOffset(new DX.Vector2(ScrollHorizontal.Value, ScrollVertical.Value));
+            Renderer.SetOffset(new Vector2(ScrollHorizontal.Value, ScrollVertical.Value));
             Renderer.Render();
         }
 
@@ -213,7 +213,7 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            Renderer.SetOffset(new DX.Vector2(ScrollHorizontal.Value, ScrollVertical.Value));
+            Renderer.SetOffset(new Vector2(ScrollHorizontal.Value, ScrollVertical.Value));
             Renderer.Render();
         }
 
@@ -540,7 +540,7 @@ namespace Gorgon.Editor.UI.Views
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_CONTENT_RENDERER_NOT_FOUND, name), nameof(name));
             }
 
-            DX.Vector2? offset = null;
+            Vector2? offset = null;
             ZoomLevels zoomLevel = ZoomLevels.ToWindow;
 
             // Blow away any temporary resources registered to the renderer.
@@ -568,7 +568,7 @@ namespace Gorgon.Editor.UI.Views
 
             if ((resetZoom) || (offset == null))
             {                
-                Renderer.MoveTo(new DX.Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f), -1);
+                Renderer.MoveTo(new Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f), -1);
             }
             else
             {

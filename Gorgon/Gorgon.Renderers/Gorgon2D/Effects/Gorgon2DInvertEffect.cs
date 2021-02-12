@@ -66,7 +66,7 @@ namespace Gorgon.Renderers
                 }
 
                 _invertAlpha = value;
-                _invertBuffer?.Buffer.SetData(ref _invertAlpha);
+                _invertBuffer?.Buffer.SetData(in _invertAlpha);
             }
         }
         #endregion
@@ -108,7 +108,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnInitialize()
         {
-            _invertBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _invertAlpha, "Gorgon2DInvertEffect Constant Buffer");
+            _invertBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _invertAlpha, "Gorgon2DInvertEffect Constant Buffer");
             _invertShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderInvert");
         }
 

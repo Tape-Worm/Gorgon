@@ -24,8 +24,9 @@
 // 
 #endregion
 
-using Gorgon.Math;
+using System.Numerics;
 using DX = SharpDX;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics
 {
@@ -65,7 +66,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent vector value.</returns>
-        public static DX.Vector2 ToVector2(this DX.Size2F size) => new DX.Vector2(size.Width, size.Height);
+        public static Vector2 ToVector2(this DX.Size2F size) => new Vector2(size.Width, size.Height);
 
         /// <summary>
         /// Function to convert a size into an integer size.
@@ -100,6 +101,6 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent vector value.</returns>
-        public static DX.Vector2 ToVector2(this DX.Size2 size) => new DX.Vector2(size.Width, size.Height);
+        public static Vector2 ToVector2(this DX.Size2 size) => new Vector2(size.Width, size.Height);
     }
 }

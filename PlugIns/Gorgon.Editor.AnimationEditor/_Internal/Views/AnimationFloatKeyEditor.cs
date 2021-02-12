@@ -25,11 +25,11 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -89,7 +89,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DataContext.Value = new DX.Vector4((float)NumericValue1.Value.Round(NumericValue1.DecimalPlaces), DataContext.Value.Y, DataContext.Value.Z, DataContext.Value.W);
+            DataContext.Value = new Vector4((float)NumericValue1.Value.Round(NumericValue1.DecimalPlaces), DataContext.Value.Y, DataContext.Value.Z, DataContext.Value.W);
         }
 
         /// <summary>Handles the ValueChanged event of the NumericValue2 control.</summary>
@@ -102,7 +102,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DataContext.Value = new DX.Vector4(DataContext.Value.X, (float)NumericValue2.Value.Round(NumericValue2.DecimalPlaces), DataContext.Value.Z, DataContext.Value.W);
+            DataContext.Value = new Vector4(DataContext.Value.X, (float)NumericValue2.Value.Round(NumericValue2.DecimalPlaces), DataContext.Value.Z, DataContext.Value.W);
         }
 
         /// <summary>Handles the ValueChanged event of the NumericValue3 control.</summary>
@@ -115,7 +115,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DataContext.Value = new DX.Vector4(DataContext.Value.X, DataContext.Value.Y, (float)NumericValue3.Value.Round(NumericValue3.DecimalPlaces), DataContext.Value.W);
+            DataContext.Value = new Vector4(DataContext.Value.X, DataContext.Value.Y, (float)NumericValue3.Value.Round(NumericValue3.DecimalPlaces), DataContext.Value.W);
         }
 
         /// <summary>Handles the ValueChanged event of the NumericValue4 control.</summary>
@@ -128,7 +128,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DataContext.Value = new DX.Vector4(DataContext.Value.X, DataContext.Value.Y, DataContext.Value.Z, (float)NumericValue4.Value.Round(NumericValue4.DecimalPlaces));
+            DataContext.Value = new Vector4(DataContext.Value.X, DataContext.Value.Y, DataContext.Value.Z, (float)NumericValue4.Value.Round(NumericValue4.DecimalPlaces));
         }
 
         /// <summary>

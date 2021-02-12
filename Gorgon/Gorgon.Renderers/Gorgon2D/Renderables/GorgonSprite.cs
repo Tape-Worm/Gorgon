@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -43,7 +44,7 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The absolute anchor position.
-        private DX.Vector2 _absoluteAnchor;
+        private Vector2 _absoluteAnchor;
 #pragma warning disable IDE0032 // Use auto property
         // The colors for the sprite corners.
         private readonly GorgonRectangleColors _cornerColors;
@@ -152,9 +153,9 @@ namespace Gorgon.Renderers
         /// Property to set or return the position of the sprite.
         /// </summary>
         [JsonIgnore]
-        public DX.Vector2 Position
+        public Vector2 Position
         {
-            get => new DX.Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
+            get => new Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
@@ -194,19 +195,19 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This value is a relative value where 0, 0 means the upper left of the sprite, and 1, 1 means the lower right.
         /// </remarks>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => Renderable.Anchor;
             set
             {
-                ref DX.Vector2 anchor = ref Renderable.Anchor;
+                ref Vector2 anchor = ref Renderable.Anchor;
                 if ((anchor.X == value.X)
                     && (anchor.Y == value.Y))
                 {
                     return;
                 }
 
-                ref DX.Vector2 absAnchor = ref _absoluteAnchor;
+                ref Vector2 absAnchor = ref _absoluteAnchor;
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
 
                 anchor = value;
@@ -224,19 +225,19 @@ namespace Gorgon.Renderers
         /// Unlike the <see cref="Anchor"/> property, this value is absolute from the upper left corner of the sprite to the lower right corner.
         /// </remarks>
         [JsonIgnore]
-        public DX.Vector2 AbsoluteAnchor
+        public Vector2 AbsoluteAnchor
         {
             get => _absoluteAnchor;
             set
             {
-                ref DX.Vector2 absAnchor = ref _absoluteAnchor;
+                ref Vector2 absAnchor = ref _absoluteAnchor;
                 if ((absAnchor.X == value.X)
                     && (absAnchor.Y == value.Y))
                 {
                     return;
                 }
 
-                ref DX.Vector2 anchor = ref Renderable.Anchor;
+                ref Vector2 anchor = ref Renderable.Anchor;
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
                 
                 absAnchor = value;
@@ -324,15 +325,15 @@ namespace Gorgon.Renderers
             get
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
-                scale = new DX.Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+                ref Vector2 scale = ref Renderable.Scale;
+                scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -341,12 +342,12 @@ namespace Gorgon.Renderers
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
         [JsonIgnore]
-        public DX.Vector2 Scale
+        public Vector2 Scale
         {
             get => Renderable.Scale;
             set
             {
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 if ((scale.X == value.X)
                     && (scale.Y == value.Y))
                 {

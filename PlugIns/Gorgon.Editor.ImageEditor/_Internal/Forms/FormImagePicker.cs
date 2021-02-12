@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -233,40 +233,40 @@ namespace Gorgon.Editor.ImageEditor
             switch (DataContext.CropResizeSettings.CurrentAlignment)
             {
                 case Alignment.UpperLeft:
-                    _previewSprite.Position = new DX.Vector2(x, y);
-                    _previewSprite.AbsoluteAnchor = DX.Vector2.Zero;
+                    _previewSprite.Position = new Vector2(x, y);
+                    _previewSprite.AbsoluteAnchor = Vector2.Zero;
                     break;
                 case Alignment.UpperCenter:
-                    _previewSprite.Position = new DX.Vector2(x + (width * 0.5f), y);
-                    _previewSprite.Anchor = new DX.Vector2(0.5f, 0);
+                    _previewSprite.Position = new Vector2(x + (width * 0.5f), y);
+                    _previewSprite.Anchor = new Vector2(0.5f, 0);
                     break;
                 case Alignment.UpperRight:
-                    _previewSprite.Position = new DX.Vector2(x + width, y);
-                    _previewSprite.Anchor = new DX.Vector2(1, 0);
+                    _previewSprite.Position = new Vector2(x + width, y);
+                    _previewSprite.Anchor = new Vector2(1, 0);
                     break;
                 case Alignment.CenterLeft:
-                    _previewSprite.Position = new DX.Vector2(x, y + (height * 0.5f));
-                    _previewSprite.Anchor = new DX.Vector2(0, 0.5f);
+                    _previewSprite.Position = new Vector2(x, y + (height * 0.5f));
+                    _previewSprite.Anchor = new Vector2(0, 0.5f);
                     break;
                 case Alignment.Center:
-                    _previewSprite.Position = new DX.Vector2(x + (width * 0.5f), y + (height * 0.5f));
-                    _previewSprite.Anchor = new DX.Vector2(0.5f, 0.5f);
+                    _previewSprite.Position = new Vector2(x + (width * 0.5f), y + (height * 0.5f));
+                    _previewSprite.Anchor = new Vector2(0.5f, 0.5f);
                     break;
                 case Alignment.CenterRight:
-                    _previewSprite.Position = new DX.Vector2(x + width, y + (height * 0.5f));
-                    _previewSprite.Anchor = new DX.Vector2(1, 0.5f);
+                    _previewSprite.Position = new Vector2(x + width, y + (height * 0.5f));
+                    _previewSprite.Anchor = new Vector2(1, 0.5f);
                     break;
                 case Alignment.LowerLeft:
-                    _previewSprite.Position = new DX.Vector2(x, y + height);
-                    _previewSprite.Anchor = new DX.Vector2(0, 1);
+                    _previewSprite.Position = new Vector2(x, y + height);
+                    _previewSprite.Anchor = new Vector2(0, 1);
                     break;
                 case Alignment.LowerCenter:
-                    _previewSprite.Position = new DX.Vector2(x + (width * 0.5f), y + height);
-                    _previewSprite.Anchor = new DX.Vector2(0.5f, 1);
+                    _previewSprite.Position = new Vector2(x + (width * 0.5f), y + height);
+                    _previewSprite.Anchor = new Vector2(0.5f, 1);
                     break;
                 case Alignment.LowerRight:
-                    _previewSprite.Position = new DX.Vector2(x + width, y + height);
-                    _previewSprite.Anchor = new DX.Vector2(1, 1);
+                    _previewSprite.Position = new Vector2(x + width, y + height);
+                    _previewSprite.Anchor = new Vector2(1, 1);
                     break;
             }
 
@@ -274,7 +274,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 case CropResizeMode.None:
                 case CropResizeMode.Crop:
-                    _previewSprite.Scale = new DX.Vector2(scale, scale);
+                    _previewSprite.Scale = new Vector2(scale, scale);
 
                     _previewSprite.TextureSampler = GorgonSamplerState.PointFiltering;
                     break;
@@ -293,8 +293,8 @@ namespace Gorgon.Editor.ImageEditor
 
                     if (!DataContext.CropResizeSettings.PreserveAspect)
                     {
-                        _previewSprite.Position = new DX.Vector2((int)x, (int)y);
-                        _previewSprite.Anchor = DX.Vector2.Zero;
+                        _previewSprite.Position = new Vector2((int)x, (int)y);
+                        _previewSprite.Anchor = Vector2.Zero;
                     }
                     _previewSprite.ScaledSize = new DX.Size2F((int)width, (int)height);
                     _previewSprite.TextureSampler = DataContext.CropResizeSettings.ImageFilter == ImageFilter.Point ? GorgonSamplerState.PointFiltering : GorgonSamplerState.Default;
@@ -343,7 +343,7 @@ namespace Gorgon.Editor.ImageEditor
 
             IGorgonImage image = DataContext.SourcePicker.SourceImage;
             Gorgon2D renderer = GraphicsContext.Renderer2D;
-            var halfClient = new DX.Vector2((PanelSourceImage.ClientSize.Width - 6) * 0.5f, (PanelSourceImage.ClientSize.Height - 6) * 0.5f);
+            var halfClient = new Vector2((PanelSourceImage.ClientSize.Width - 6) * 0.5f, (PanelSourceImage.ClientSize.Height - 6) * 0.5f);
             float scale = ((float)(PanelSourceImage.ClientSize.Width - 6) / DataContext.SourcePicker.MipWidth).Min((float)(PanelSourceImage.ClientSize.Height - 6) / DataContext.SourcePicker.MipHeight);
             float width = DataContext.SourcePicker.MipWidth * scale;
             float height = DataContext.SourcePicker.MipHeight * scale;
@@ -357,7 +357,7 @@ namespace Gorgon.Editor.ImageEditor
                 DepthSlice = image.ImageType == ImageType.Image3D ? (float)DataContext.SourcePicker.CurrentArrayIndexDepthSlice / DataContext.SourcePicker.MipDepth : 0,
                 MipLevel = DataContext.SourcePicker.CurrentMipLevel
             };
-            _textureParameters.Buffer.SetData(ref tParams);
+            _textureParameters.Buffer.SetData(in tParams);
 
             GraphicsContext.Graphics.SetRenderTarget(_sourceSwapchain.RenderTargetView);
 
@@ -398,7 +398,7 @@ namespace Gorgon.Editor.ImageEditor
             Gorgon2D renderer = GraphicsContext.Renderer2D;
             IGorgonImage image = DataContext.ImageData;
 
-            var halfClient = new DX.Vector2((PanelArrayDepth.ClientSize.Width - 6) * 0.5f, (PanelArrayDepth.ClientSize.Height - 6) * 0.5f);
+            var halfClient = new Vector2((PanelArrayDepth.ClientSize.Width - 6) * 0.5f, (PanelArrayDepth.ClientSize.Height - 6) * 0.5f);
             float scale = ((float)(PanelArrayDepth.ClientSize.Width - 6) / DataContext.MipWidth).Min((float)(PanelArrayDepth.ClientSize.Height - 6) / DataContext.MipHeight);
             float width = DataContext.MipWidth * scale;
             float height = DataContext.MipHeight * scale;
@@ -411,7 +411,7 @@ namespace Gorgon.Editor.ImageEditor
                 DepthSlice = image.ImageType == ImageType.Image3D ? (float)DataContext.CurrentArrayIndexDepthSlice / DataContext.MipDepth : 0,
                 MipLevel = DataContext.CurrentMipLevel
             };
-            _textureParameters.Buffer.SetData(ref tParams);
+            _textureParameters.Buffer.SetData(in tParams);
 
             GraphicsContext.Graphics.SetRenderTarget(_imageSwapChain.RenderTargetView);
 

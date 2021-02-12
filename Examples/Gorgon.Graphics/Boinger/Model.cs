@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -40,19 +40,19 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // Our world matrix.
-        private DX.Matrix _worldMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _worldMatrix = Matrix4x4.Identity;
         // Our position matrix.
-        private DX.Matrix _positionMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _positionMatrix = Matrix4x4.Identity;
         // Our scale matrix.
-        private DX.Matrix _scaleMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _scaleMatrix = Matrix4x4.Identity;
         // Our rotation matrix.
-        private DX.Matrix _rotationMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _rotationMatrix = Matrix4x4.Identity;
         // Our position.
-        private DX.Vector3 _position = DX.Vector3.Zero;
+        private Vector3 _position = Vector3.Zero;
         // Our scale.
-        private DX.Vector3 _scale = DX.Vector3.One;
+        private Vector3 _scale = Vector3.One;
         // Our rotation.
-        private DX.Vector3 _rotation = DX.Vector3.Zero;
+        private Vector3 _rotation = Vector3.Zero;
         // Flag to indicate that our position has been updated.	
         private bool _isPositionChanged;
         // Flag to indicate that our scale has been updated.
@@ -108,7 +108,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the world matrix for this model.
         /// </summary>
-        public ref DX.Matrix WorldMatrix
+        public ref readonly Matrix4x4 WorldMatrix
         {
             get
             {
@@ -129,7 +129,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the world position of the object.
         /// </summary>
-        public DX.Vector3 Position
+        public Vector3 Position
         {
             get => _position;
             set
@@ -147,7 +147,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the scale of the object.
         /// </summary>
-        public DX.Vector3 Scale
+        public Vector3 Scale
         {
             get => _scale;
             set
@@ -165,7 +165,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the rotation of the object, in degrees.
         /// </summary>
-        public DX.Vector3 Rotation
+        public Vector3 Rotation
         {
             get => _rotation;
             set
@@ -195,7 +195,7 @@ namespace Gorgon.Examples
 
             if (_isPositionChanged)
             {
-                _positionMatrix.TranslationVector = Position;
+                _positionMatrix.SetTranslation(Position);
             }
 
             if (_isScaleChanged)
@@ -208,16 +208,16 @@ namespace Gorgon.Examples
             if (_isRotationChanged)
             {
                 // Convert degrees to radians.
-                var rotRads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
+                var rotRads = new Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
 
-                // DX.Quaternion for rotation.
-                DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
-                DX.Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);
+                // Quaternion for rotation.
+                var quatRotation = Quaternion.CreateFromYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z);
+                _rotationMatrix = Matrix4x4.CreateFromQuaternion(quatRotation);
             }
 
             // Build our world matrix.
-            DX.Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out DX.Matrix temp);
-            DX.Matrix.Multiply(ref temp, ref _positionMatrix, out _worldMatrix);
+            var temp = Matrix4x4.Multiply(_scaleMatrix, _rotationMatrix);
+            _worldMatrix = Matrix4x4.Multiply(temp, _positionMatrix);
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace Gorgon.Examples
         /// <param name="inputLayout">The input layout of the vertices for the mesh contained within the model.</param>
         protected Model(GorgonInputLayout inputLayout)
         {
-            Scale = new DX.Vector3(1.0f);
+            Scale = new Vector3(1.0f);
             InputLayout = inputLayout;
             VertexBufferBindings = new GorgonVertexBufferBindings(InputLayout);
         }

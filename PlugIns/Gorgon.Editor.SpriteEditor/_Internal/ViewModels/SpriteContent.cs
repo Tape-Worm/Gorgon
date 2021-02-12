@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -76,11 +77,11 @@ namespace Gorgon.Editor.SpriteEditor
             /// <summary>
             /// The offsets of the sprite vertices.
             /// </summary>
-            public IReadOnlyList<DX.Vector3> VertexOffset;
+            public IReadOnlyList<Vector3> VertexOffset;
             /// <summary>
             /// The anchor position for the sprite.
             /// </summary>
-            public DX.Vector2 Anchor;
+            public Vector2 Anchor;
             /// <summary>
             /// The current sampler state.
             /// </summary>
@@ -261,7 +262,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return offsets for each vertex in the sprite.
         /// </summary>
-        public IReadOnlyList<DX.Vector3> VertexOffsets
+        public IReadOnlyList<Vector3> VertexOffsets
         {
             get => _sprite.CornerOffsets;
             private set
@@ -279,19 +280,19 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanging();
                 for (int i = 0; i < _sprite.CornerOffsets.Count; ++i)
                 {
-                    _sprite.CornerOffsets[i] = i >= value.Count ? DX.Vector3.Zero : value[i];
+                    _sprite.CornerOffsets[i] = i >= value.Count ? Vector3.Zero : value[i];
                 }
                 OnPropertyChanged();
             }
         }
 
         /// <summary>Property to return the anchor position for for the sprite.</summary>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => _sprite.Anchor;
             private set
             {
-                if (_sprite.Anchor.Equals(ref value))
+                if (_sprite.Anchor.Equals(value))
                 {
                     return;
                 }
@@ -411,7 +412,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the command used to apply the vertex offsets to the sprite.
         /// </summary>
-        public IEditorCommand<IReadOnlyList<DX.Vector3>> SetVertexOffsetsCommand
+        public IEditorCommand<IReadOnlyList<Vector3>> SetVertexOffsetsCommand
         {
             get;
         }
@@ -946,7 +947,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <returns><b>true</b> if the vertex offset changes can be comitted, <b>false</b> if not.</returns>
         private bool CanCommitVertexOffsets() => (CurrentPanel == null) 
-                                              && (!_sprite.CornerOffsets.Select(item => (DX.Vector2)item)
+                                              && (!_sprite.CornerOffsets.Select(item => new Vector2(item.X, item.Y))
                                                                         .SequenceEqual(SpriteVertexEditContext.Vertices));
 
         /// <summary>
@@ -954,7 +955,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void DoCommitVertexOffsets()
         {
-            bool SetVertices(IReadOnlyList<DX.Vector3> offsets)
+            bool SetVertices(IReadOnlyList<Vector3> offsets)
             {
                 try
                 {
@@ -989,7 +990,7 @@ namespace Gorgon.Editor.SpriteEditor
                 VertexOffset = _sprite.CornerOffsets.ToArray()
             };
 
-            DX.Vector3[] verts = SpriteVertexEditContext.Vertices.Select(item => (DX.Vector3)item).ToArray();
+            Vector3[] verts = SpriteVertexEditContext.Vertices.Select(item => new Vector3(item.X, item.Y, 0)).ToArray();
 
             var vtxRedoArgs = new SpriteUndoArgs
             {
@@ -1080,7 +1081,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void DoApplyPick()
         {
-            bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<DX.Vector3> vertexOffsets)
+            bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
             {
                 try
                 {
@@ -1125,7 +1126,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 TextureCoordinates = SpritePickContext.SpriteRectangle,
                 ArrayIndex = SpritePickContext.ArrayIndex,
-                VertexOffset = new DX.Vector3[_sprite.CornerOffsets.Count]
+                VertexOffset = new Vector3[_sprite.CornerOffsets.Count]
             };
 
             if (!SetTextureCoordinates(texCoordRedoArgs.TextureCoordinates, texCoordRedoArgs.ArrayIndex, texCoordRedoArgs.VertexOffset))
@@ -1158,7 +1159,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void DoApplyClip()
         {
-            bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<DX.Vector3> vertexOffsets)
+            bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
             {
                 try
                 {
@@ -1201,7 +1202,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 TextureCoordinates = SpriteClipContext.SpriteRectangle,
                 ArrayIndex = SpriteClipContext.ArrayIndex,
-                VertexOffset = new DX.Vector3[_sprite.CornerOffsets.Count]
+                VertexOffset = new Vector3[_sprite.CornerOffsets.Count]
             };
 
             if (!SetTextureCoordinates(texCoordRedoArgs.TextureCoordinates, texCoordRedoArgs.ArrayIndex, texCoordRedoArgs.VertexOffset))
@@ -1443,10 +1444,10 @@ namespace Gorgon.Editor.SpriteEditor
                 return false;
             }
 
-            var halfSprite = new DX.Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
-            DX.Vector2 anchorPosition = new DX.Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X, 
+            var halfSprite = new Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
+            Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X, 
                                                        _sprite.Anchor.Y * Size.Height - halfSprite.Y).Truncate();
-            return (!AnchorEditor.Anchor.Equals(ref anchorPosition));
+            return (!AnchorEditor.Anchor.Equals(anchorPosition));
         }
 
         /// <summary>
@@ -1454,9 +1455,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void DoCommitAnchorChange()
         {
-            var halfSprite = new DX.Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
+            var halfSprite = new Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
 
-            bool SetAnchor(DX.Vector2 anchor)
+            bool SetAnchor(Vector2 anchor)
             {
                 try
                 {
@@ -1493,7 +1494,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             var anchorRedoArgs = new SpriteUndoArgs
             {
-                Anchor = new DX.Vector2((AnchorEditor.Anchor.X + halfSprite.X) / Size.Width,
+                Anchor = new Vector2((AnchorEditor.Anchor.X + halfSprite.X) / Size.Width,
                                         (AnchorEditor.Anchor.Y + halfSprite.Y) / Size.Height)
             };
 

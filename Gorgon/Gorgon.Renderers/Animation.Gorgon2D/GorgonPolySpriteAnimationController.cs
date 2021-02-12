@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Animation.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -48,7 +49,7 @@ namespace Gorgon.Animation
     /// </para>
     /// <para>
     /// This controller type contains registrations for the tracks corresponding the many of the properties on a <see cref="GorgonPolySprite"/>. These registrations are available to the developer as static 
-    /// values on the class, and these should be used to identify the track name (e.g. <c>Builder.EditDX.Vector2(GorgonPolySpriteAnimationController.PositionTrack.TrackName);</c>.
+    /// values on the class, and these should be used to identify the track name (e.g. <c>Builder.EditVector2(GorgonPolySpriteAnimationController.PositionTrack.TrackName);</c>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonAnimationController{T}"/>
@@ -159,7 +160,7 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, DX.Vector2 value)
+        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, Vector2 value)
         {
             if (track.ID == PositionTrack.ID)
             {
@@ -213,8 +214,8 @@ namespace Gorgon.Animation
             }
 
             animObject.Texture = texture;
-            animObject.TextureOffset = new DX.Vector2(textureCoordinates.Left, textureCoordinates.Top);
-            animObject.TextureScale = new DX.Vector2(textureCoordinates.Right, textureCoordinates.Bottom);
+            animObject.TextureOffset = new Vector2(textureCoordinates.Left, textureCoordinates.Top);
+            animObject.TextureScale = new Vector2(textureCoordinates.Right, textureCoordinates.Bottom);
             animObject.TextureArrayIndex = textureArrayIndex;
         }
 
@@ -236,14 +237,14 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, DX.Vector3 value)
+        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, Vector3 value)
         {
             if (track.ID != Position3DTrack.ID)
             {
                 return;
             }
 
-            animObject.Position = new DX.Vector2(value.X, value.Y);
+            animObject.Position = new Vector2(value.X, value.Y);
             animObject.Depth = value.Z;
         }
 
@@ -251,7 +252,7 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, DX.Vector4 value)
+        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, GorgonPolySprite animObject, Vector4 value)
         {
             // Not needed for polygonal sprites.
         }

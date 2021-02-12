@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.IO;
 using System.Text;
 using Gorgon.Core;
@@ -35,7 +36,6 @@ using Gorgon.Renderers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -285,7 +285,7 @@ namespace Gorgon.IO
             result.Texture = workingSpriteData.Texture;
             result.TextureArrayIndex = workingSpriteData.TextureArrayIndex;
             result.TextureOffset = workingSpriteData.TextureOffset;
-            result.TextureScale = (workingSpriteData.TextureScale.X.EqualsEpsilon(0) || workingSpriteData.TextureScale.Y.EqualsEpsilon(0)) ? DX.Vector2.One : workingSpriteData.TextureScale;
+            result.TextureScale = (workingSpriteData.TextureScale.X.EqualsEpsilon(0) || workingSpriteData.TextureScale.Y.EqualsEpsilon(0)) ? Vector2.One : workingSpriteData.TextureScale;
             result.TextureSampler = workingSpriteData.TextureSampler;
 
             return result;

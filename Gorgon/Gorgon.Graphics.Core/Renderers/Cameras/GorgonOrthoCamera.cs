@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
@@ -45,15 +46,15 @@ namespace Gorgon.Renderers.Cameras
     {
         #region Variables.
         // The rotation matrix.
-        private DX.Matrix _rotation = DX.Matrix.Identity;
+        private Matrix4x4 _rotation = Matrix4x4.Identity;
         // The scaling matrix.
-        private DX.Matrix _scale = DX.Matrix.Identity;
+        private Matrix4x4 _scale = Matrix4x4.Identity;
         // The translation matrix.
-        private DX.Matrix _translate = DX.Matrix.Identity;
+        private Matrix4x4 _translate = Matrix4x4.Identity;
         // Scale.
-        private DX.Vector2 _zoom = new DX.Vector2(1.0f);
+        private Vector2 _zoom = new Vector2(1.0f);
         // Target position.
-        private DX.Vector2 _anchor = DX.Vector2.Zero;
+        private Vector2 _anchor = Vector2.Zero;
         // Angle of rotation on the Z axis.
         private float _angleZ;
         #endregion
@@ -80,7 +81,7 @@ namespace Gorgon.Renderers.Cameras
         /// <summary>
         /// Property to set or return the zoom for the camera.
         /// </summary>
-        public DX.Vector2 Zoom
+        public Vector2 Zoom
         {
             get => _zoom;
             set
@@ -101,7 +102,7 @@ namespace Gorgon.Renderers.Cameras
         /// <remarks>
         /// This value is in relative coordinates. That is, 0,0 would be the upper left corner of the <see cref="GorgonCameraCommon.ViewDimensions"/>, and 1,1 would be lower right corner of the <see cref="GorgonCameraCommon.ViewDimensions"/>.
         /// </remarks>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => _anchor;
             set
@@ -129,17 +130,31 @@ namespace Gorgon.Renderers.Cameras
         #region Methods.
         /// <summary>Function to update the projection matrix.</summary>
         /// <param name="projectionMatrix">The instance of the matrix to update.</param>
-        protected override void UpdateProjectionMatrix(ref DX.Matrix projectionMatrix)
+        protected override void UpdateProjectionMatrix(ref Matrix4x4 projectionMatrix)
         {
-            var anchor = new DX.Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
-            DX.Matrix.OrthoOffCenterLH(-anchor.X, ViewDimensions.Width - anchor.X, ViewDimensions.Height - anchor.Y, -anchor.Y, MinimumDepth, MaximumDepth, out projectionMatrix);
+            var anchor = new Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
+
+            float zRange = 1.0f / (MaximumDepth - MinimumDepth);
+
+            float left = -anchor.X;
+            float right = (ViewDimensions.Width - anchor.X);
+            float bottom = (ViewDimensions.Height - anchor.Y);
+            float top = -anchor.Y;
+
+            projectionMatrix = Matrix4x4.Identity;
+            projectionMatrix.M11 = 2.0f / (right - left);
+            projectionMatrix.M22 = 2.0f / (top - bottom);
+            projectionMatrix.M33 = zRange;
+            projectionMatrix.M41 = (left + right) / (left - right);
+            projectionMatrix.M42 = (top + bottom) / (bottom - top);
+            projectionMatrix.M43 = -MinimumDepth * zRange;
         }
 
         /// <summary>
         /// Function to update the view matrix.
         /// </summary>
         /// <param name="viewMatrix">The instance of the matrix to update.</param>
-        protected override void UpdateViewMatrix(ref DX.Matrix viewMatrix)
+        protected override void UpdateViewMatrix(ref Matrix4x4 viewMatrix)
         {
             bool hasTranslate = (Changes & CameraChange.Position) == CameraChange.Position;
             bool hasScale = (Changes & CameraChange.Scale) == CameraChange.Scale;
@@ -162,22 +177,22 @@ namespace Gorgon.Renderers.Cameras
             // Rotate it.
             if (hasRotation)
             {
-                DX.Matrix.RotationZ(_angleZ.ToRadians(), out _rotation);
+                _rotation = Matrix4x4.CreateRotationZ(_angleZ.ToRadians());
 
                 // We need to invert the matrix in order to apply the correct transformation to the world data.
-                DX.Matrix.Transpose(ref _rotation, out _rotation);
+                _rotation = Matrix4x4.Transpose(_rotation);
                 Changes &= ~CameraChange.Rotation;
             }
 
             // Translate it.
             if (hasTranslate)
             {
-                DX.Matrix.Translation(-PositionRef.X, -PositionRef.Y, 0.0f, out _translate);
+                _translate = Matrix4x4.CreateTranslation(-PositionRef.X, -PositionRef.Y, 0.0f);
                 Changes &= ~CameraChange.Position;
             }
 
-            DX.Matrix.Multiply(ref _rotation, ref _scale, out DX.Matrix temp);
-            DX.Matrix.Multiply(ref _translate, ref temp, out viewMatrix);
+            var temp = Matrix4x4.Multiply(_rotation, _scale);
+            viewMatrix = Matrix4x4.Multiply(_translate, temp);
         }
         #endregion
 

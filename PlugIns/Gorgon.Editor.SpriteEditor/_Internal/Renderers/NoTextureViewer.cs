@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.IO;
 using System.Linq;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -75,7 +76,7 @@ namespace Gorgon.Editor.SpriteEditor
             float newSize = RenderRegion.Width < RenderRegion.Height ? RenderRegion.Width : RenderRegion.Height;
             var size = new DX.Size2F(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));            
             var halfClient = new DX.Size2F(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
-            var pos = new DX.Vector2((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
+            var pos = new Vector2((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
 
             Renderer.Begin();
             Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColor.White, _noImage, new DX.RectangleF(0, 0, 1, 1));

@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
@@ -52,7 +52,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             get
             {
-                DX.Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
+                Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
 
                 return AlphaOnly ? new GorgonColor(0, 0, 0, values.X) : (GorgonColor)values;
             }
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 OnPropertyChanging();
                 NotifyPropertyChanging(nameof(IKeyValueEditor.Value));
-                WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new DX.Vector4(value.Alpha, 0, 0, 0) : (DX.Vector4)value);
+                WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new Vector4(value.Alpha, 0, 0, 0) : (Vector4)value);
                 OnPropertyChanged();
                 NotifyPropertyChanged(nameof(IKeyValueEditor.Value));
             }
@@ -95,13 +95,13 @@ namespace Gorgon.Editor.AnimationEditor
         }
 
         /// <summary>Property to set or return the value for the key frame.</summary>
-        DX.Vector4 IKeyValueEditor.Value
+        Vector4 IKeyValueEditor.Value
         {
             get
             {
-                DX.Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? DX.Vector4.One;
+                Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? Vector4.One;
 
-                return AlphaOnly ? new DX.Vector4(values.X, 0, 0, 0) : values;
+                return AlphaOnly ? new Vector4(values.X, 0, 0, 0) : values;
             }
             set
             {
@@ -110,15 +110,15 @@ namespace Gorgon.Editor.AnimationEditor
                     return;
                 }
 
-                DX.Vector4 colorValue = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? DX.Vector4.One;
-                if (colorValue.Equals(ref value))
+                Vector4 colorValue = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? Vector4.One;
+                if (colorValue.Equals(value))
                 {
                     return;
                 }
 
                 OnPropertyChanging();
                 NotifyPropertyChanging(nameof(NewColor));
-                WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new DX.Vector4(value.X, 0, 0, 0) : value);
+                WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new Vector4(value.X, 0, 0, 0) : value);
                 OnPropertyChanged();
                 NotifyPropertyChanged(nameof(NewColor));
             }

@@ -24,13 +24,13 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using Gorgon.IO;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -67,7 +67,7 @@ namespace Gorgon.Graphics.Fonts
         /// <summary>
         /// Property to return the points for the path to follow in the gradient fill.
         /// </summary>
-        public IList<DX.Vector2> Points
+        public IList<Vector2> Points
         {
             get;
         }
@@ -100,7 +100,7 @@ namespace Gorgon.Graphics.Fonts
         /// <summary>
         /// Property to set or return the center point position in the gradient.
         /// </summary>
-        public DX.Vector2 CenterPoint
+        public Vector2 CenterPoint
         {
             get;
             set;
@@ -109,7 +109,7 @@ namespace Gorgon.Graphics.Fonts
         /// <summary>
         /// Property to set or return the focus point for the gradient falloff.
         /// </summary>
-        public DX.Vector2 FocusScales
+        public Vector2 FocusScales
         {
             get;
             set;
@@ -190,7 +190,7 @@ namespace Gorgon.Graphics.Fonts
             Points.Clear();
             for (int i = 0; i < count; ++i)
             {
-                Points.Add(reader.ReadValue<DX.Vector2>());
+                Points.Add(reader.ReadValue<Vector2>());
             }
 
             BlendFactors.Clear();
@@ -208,8 +208,8 @@ namespace Gorgon.Graphics.Fonts
             }
 
             CenterColor = new GorgonColor(reader.ReadInt32());
-            CenterPoint = reader.ReadValue<DX.Vector2>();
-            FocusScales = reader.ReadValue<DX.Vector2>();
+            CenterPoint = reader.ReadValue<Vector2>();
+            FocusScales = reader.ReadValue<Vector2>();
 
             count = reader.ReadInt32();
             Interpolation.Clear();
@@ -352,7 +352,7 @@ namespace Gorgon.Graphics.Fonts
         /// </summary>
         public GorgonGlyphPathGradientBrush()
         {
-            Points = new List<DX.Vector2>();
+            Points = new List<Vector2>();
             BlendFactors = new List<float>();
             BlendPositions = new List<float>();
             Interpolation = new List<GorgonGlyphBrushInterpolator>();

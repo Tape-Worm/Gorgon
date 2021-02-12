@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -244,7 +245,7 @@ namespace Gorgon.Examples
                     r.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
 
                     // Draw FPS text.
-                    r.DrawString(_statsText.ToString(), DX.Vector2.One, _statsFont, GorgonColor.White);
+                    r.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColor.White);
                 })
                 .DrawFilledRectangle(logoRegion, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1))
                 .End();
@@ -286,7 +287,7 @@ namespace Gorgon.Examples
                 renderer.DrawLine(0, measure.Height + 4, currentRtv.Width, measure.Height + 4, GorgonColor.Black);
 
                 // Draw FPS text.
-                renderer.DrawString(_statsText.ToString(), DX.Vector2.One, _statsFont, GorgonColor.White);
+                renderer.DrawString(_statsText.ToString(), Vector2.One, _statsFont, GorgonColor.White);
             }
 
             // Draw logo.

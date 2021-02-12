@@ -25,12 +25,12 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -67,9 +67,9 @@ namespace Gorgon.Examples
         // The sprite used for our space ship.
         private static GorgonSprite _shipSprite;
         // The offset for the background texture coordinates.
-        private static DX.Vector2 _backgroundOffset;
+        private static Vector2 _backgroundOffset;
         // The random value for the background texture offset.
-        private static DX.Vector2? _randomOffset;
+        private static Vector2? _randomOffset;
         // The effect used for displacement.
         private static Gorgon2DDisplacementEffect _displacement;
         // Old film effect - to make it look like the pulp serial films from ye olden days.
@@ -105,7 +105,7 @@ namespace Gorgon.Examples
         {
             _postTarget1.Clear(GorgonColor.Black);
 
-            DX.Vector2 textureSize = _background.Texture.ToTexel(new DX.Vector2(_postTarget1.Width, _postTarget1.Height));
+            Vector2 textureSize = _background.Texture.ToTexel(new Vector2(_postTarget1.Width, _postTarget1.Height));
 
             // Blit the background texture.
             _graphics.SetRenderTarget(_postTarget1);
@@ -163,10 +163,10 @@ namespace Gorgon.Examples
 
             // Render as an old film effect.
             _oldFilm.Time = GorgonTiming.SecondsSinceStart * 2;
-            _oldFilm.ShakeOffset = DX.Vector2.Zero;
+            _oldFilm.ShakeOffset = Vector2.Zero;
             if (GorgonRandom.RandomInt32(0, 100) > 95)
             {
-                _oldFilm.ShakeOffset = new DX.Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
+                _oldFilm.ShakeOffset = new Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
             }
 
             _oldFilm.Render(_postView2, _postTarget1);
@@ -190,7 +190,7 @@ namespace Gorgon.Examples
             _renderer.Begin();
             if (_showHelp)
             {
-                _renderer.DrawString(HelpText, new DX.Vector2(0, 64), color: new GorgonColor(1.0f, 1.0f, 0));
+                _renderer.DrawString(HelpText, new Vector2(0, 64), color: new GorgonColor(1.0f, 1.0f, 0));
             }
             _renderer.End();
 
@@ -211,29 +211,29 @@ namespace Gorgon.Examples
         {
             if (_randomOffset == null)
             {
-                _randomOffset = new DX.Vector2(GorgonRandom.RandomSingle(_background.Width - _postTarget1.Width),
+                _randomOffset = new Vector2(GorgonRandom.RandomSingle(_background.Width - _postTarget1.Width),
                                                GorgonRandom.RandomSingle(_background.Height - _postTarget1.Height));
             }
 
             // If we're previously out of frame, then push back until we're in frame.
             if (_randomOffset.Value.X + _postTarget1.Width > _background.Width)
             {
-                _randomOffset = new DX.Vector2(_randomOffset.Value.X - _postTarget1.Width, _randomOffset.Value.Y);
+                _randomOffset = new Vector2(_randomOffset.Value.X - _postTarget1.Width, _randomOffset.Value.Y);
             }
 
             if (_randomOffset.Value.Y + _postTarget1.Height > _background.Height)
             {
-                _randomOffset = new DX.Vector2(_randomOffset.Value.X, _randomOffset.Value.Y - _postTarget1.Height);
+                _randomOffset = new Vector2(_randomOffset.Value.X, _randomOffset.Value.Y - _postTarget1.Height);
             }
 
             if (_randomOffset.Value.X < 0)
             {
-                _randomOffset = new DX.Vector2(0, _randomOffset.Value.Y);
+                _randomOffset = new Vector2(0, _randomOffset.Value.Y);
             }
 
             if (_randomOffset.Value.Y < 0)
             {
-                _randomOffset = new DX.Vector2(_randomOffset.Value.X, 0);
+                _randomOffset = new Vector2(_randomOffset.Value.X, 0);
             }
 
             // Convert to texels.
@@ -355,8 +355,8 @@ namespace Gorgon.Examples
                 {
                     Texture = _spaceShipTexture,
                     TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                    Anchor = new DX.Vector2(0.5f, 0.5f),
-                    Position = new DX.Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f),
+                    Anchor = new Vector2(0.5f, 0.5f),
+                    Position = new Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f),
                     Size = new DX.Size2F(_spaceShipTexture.Width, _spaceShipTexture.Height)
                 };
 
@@ -463,7 +463,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private static void Window_MouseMove(object sender, MouseEventArgs e) => _shipSprite.Position = new DX.Vector2(e.X, e.Y);
+        private static void Window_MouseMove(object sender, MouseEventArgs e) => _shipSprite.Position = new Vector2(e.X, e.Y);
 
         /// <summary>
         /// The main entry point for the application.

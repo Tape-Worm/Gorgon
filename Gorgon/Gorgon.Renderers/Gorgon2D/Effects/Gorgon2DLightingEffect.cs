@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -100,11 +101,11 @@ namespace Gorgon.Renderers
             /// <summary>
             /// Position for the light in screen space.
             /// </summary>
-            public DX.Vector4 CameraPosition;
+            public Vector4 CameraPosition;
             /// <summary>
             /// The texture array indices to use for the normal map, and specular map.
             /// </summary>
-            public DX.Vector4 ArrayIndices;
+            public Vector4 ArrayIndices;
         }
         #endregion
 
@@ -470,18 +471,18 @@ namespace Gorgon.Renderers
         /// <seealso cref="PassContinuationState"/>
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
-            var cameraPos = new DX.Vector4(output.Width * 0.5f, output.Height * 0.5f, SpecularZDistance, 0);
+            var cameraPos = new Vector4(output.Width * 0.5f, output.Height * 0.5f, SpecularZDistance, 0);
 
             // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
             // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.
             if (camera != null)
             {
-                cameraPos = new DX.Vector4(camera.Position, 0);
+                cameraPos = new Vector4(camera.Position, 0);
             }
 
             _effectData.CameraPosition = cameraPos;
 
-            _globalBuffer.Buffer.SetData(ref _effectData);
+            _globalBuffer.Buffer.SetData(in _effectData);
 
             return PassContinuationState.Continue;
         }
@@ -568,7 +569,7 @@ namespace Gorgon.Renderers
 
             if (!_usingArray)
             {
-                _effectData.ArrayIndices = new DX.Vector4(normalMapIndex, specularMapIndex, 0, 0);
+                _effectData.ArrayIndices = new Vector4(normalMapIndex, specularMapIndex, 0, 0);
                 Macros.Add(_arrayMacro);
                 _pixelLitShader?.Dispose();
                 _pixelLitShader = null;
@@ -603,7 +604,7 @@ namespace Gorgon.Renderers
 
             if ((_currentIndices.normalIndex != 1) || (_currentIndices.specIndex != 2))
             {
-                _effectData.ArrayIndices = new DX.Vector4(1, 2, 0, 0);
+                _effectData.ArrayIndices = new Vector4(1, 2, 0, 0);
                 _currentIndices = (1, 2);
             }
 
@@ -636,7 +637,7 @@ namespace Gorgon.Renderers
 
             if ((normalMapIndex != _currentIndices.normalIndex) || (specularMapIndex != _currentIndices.specIndex))
             {
-                _effectData.ArrayIndices = new DX.Vector4(normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1),
+                _effectData.ArrayIndices = new Vector4(normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1),
                                                           specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1), 0, 0);
                 _currentIndices = (normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1), specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1));
             }

@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using DX = SharpDX;
+using System.Numerics;
 
 namespace Gorgon.Animation
 {
     /// <summary>
-    /// An animation key frame for a SharpDX <c>DX.Vector2</c> type.
+    /// An animation key frame for a SharpDX <c>Vector2</c> type.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -47,7 +47,7 @@ namespace Gorgon.Animation
     {
         #region Variables.
         // The value for the key.
-        private DX.Vector2 _value;
+        private Vector2 _value;
         #endregion
 
         #region Properties.
@@ -63,7 +63,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to set or return the value for the key frame.
         /// </summary>
-        public ref DX.Vector2 Value => ref _value;
+        public ref Vector2 Value => ref _value;
 
         /// <summary>
         /// Property to return the type of data for this key frame.
@@ -71,7 +71,7 @@ namespace Gorgon.Animation
         public Type DataType
         {
             get;
-        } = typeof(DX.Vector2);
+        } = typeof(Vector2);
         #endregion
 
         #region Methods.
@@ -97,7 +97,7 @@ namespace Gorgon.Animation
         /// </summary>
         /// <param name="time">The time for the key frame.</param>
         /// <param name="value">The value to apply to the key frame.</param>
-        public GorgonKeyVector2(float time, DX.Vector2 value)
+        public GorgonKeyVector2(float time, Vector2 value)
         {
             Time = time;
             Value = value;

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -76,7 +76,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext.Offset = new DX.Vector2((float)NumericX.Value, (float)NumericY.Value);
+            DataContext.Offset = new Vector2((float)NumericX.Value, (float)NumericY.Value);
         }
 
         /// <summary>

@@ -25,11 +25,11 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext.Anchor = new DX.Vector2((float)NumericHorizontal.Value, DataContext.Anchor.Y);
+            DataContext.Anchor = new Vector2((float)NumericHorizontal.Value, DataContext.Anchor.Y);
             ValidateOk();
         }
 
@@ -96,7 +96,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            DataContext.Anchor = new DX.Vector2(DataContext.Anchor.X, (float)NumericVertical.Value);
+            DataContext.Anchor = new Vector2(DataContext.Anchor.X, (float)NumericVertical.Value);
             ValidateOk();
         }
 

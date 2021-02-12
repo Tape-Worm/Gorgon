@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Animation.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -48,7 +49,7 @@ namespace Gorgon.Animation
     /// </para>
     /// <para>
     /// This controller type contains registrations for the tracks corresponding the many of the properties on a <see cref="GorgonTextSprite"/>. These registrations are available to the developer as static 
-    /// values on the class, and these should be used to identify the track name (e.g. <c>Builder.EditDX.Vector2(GorgonTextSpriteAnimationController.PositionTrack.TrackName);</c>.
+    /// values on the class, and these should be used to identify the track name (e.g. <c>Builder.EditVector2(GorgonTextSpriteAnimationController.PositionTrack.TrackName);</c>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonAnimationController{T}"/>
@@ -137,7 +138,7 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, DX.Vector2 value)
+        protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, Vector2 value)
         {
             if (track.ID == PositionTrack.ID)
             {
@@ -169,14 +170,14 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, DX.Vector3 value)
+        protected override void OnVector3ValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, Vector3 value)
         {
             if (track.ID != Position3DTrack.ID)
             {
                 return;
             }
 
-            animObject.Position = new DX.Vector2(value.X, value.Y);
+            animObject.Position = new Vector2(value.X, value.Y);
             animObject.Depth = value.Z;                
         }
 
@@ -184,7 +185,7 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, DX.Vector4 value)
+        protected override void OnVector4ValueUpdate(GorgonTrackRegistration track, GorgonTextSprite animObject, Vector4 value)
         {
             // Not needed for text sprites.
         }

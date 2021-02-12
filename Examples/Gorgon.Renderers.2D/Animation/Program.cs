@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,7 +33,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -95,23 +95,23 @@ namespace Gorgon.Examples
             // Set up some scaling...            
             animBuilder.EditVector2("Scale")
                        .SetInterpolationMode(TrackInterpolationMode.Spline)
-                       .SetKey(new GorgonKeyVector2(0, new DX.Vector2(1, 1)))
-                       .SetKey(new GorgonKeyVector2(2, new DX.Vector2(0.5f, 0.5f)))
-                       .SetKey(new GorgonKeyVector2(4, new DX.Vector2(4.0f, 4.0f)))
-                       .SetKey(new GorgonKeyVector2(6, new DX.Vector2(1, 1)))
+                       .SetKey(new GorgonKeyVector2(0, new Vector2(1, 1)))
+                       .SetKey(new GorgonKeyVector2(2, new Vector2(0.5f, 0.5f)))
+                       .SetKey(new GorgonKeyVector2(4, new Vector2(4.0f, 4.0f)))
+                       .SetKey(new GorgonKeyVector2(6, new Vector2(1, 1)))
                        .EndEdit()
                        // Set up some positions...
                        .EditVector2("Position")
                        .SetInterpolationMode(TrackInterpolationMode.Spline)
-                       .SetKey(new GorgonKeyVector2(0, new DX.Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f)))
-                       .SetKey(new GorgonKeyVector2(2, new DX.Vector2(200, 220)))
-                       .SetKey(new GorgonKeyVector2(3, new DX.Vector2(_screen.Width - 2, 130)))
-                       .SetKey(new GorgonKeyVector2(4, new DX.Vector2(255, _screen.Height - _metal.Height)))
-                       .SetKey(new GorgonKeyVector2(5, new DX.Vector2(200, 180)))
-                       .SetKey(new GorgonKeyVector2(6, new DX.Vector2(180, 160)))
-                       .SetKey(new GorgonKeyVector2(7, new DX.Vector2(150, 180)))
-                       .SetKey(new GorgonKeyVector2(8, new DX.Vector2(150, 160)))
-                       .SetKey(new GorgonKeyVector2(9, new DX.Vector2(_screen.Width / 2, _screen.Height / 2)))
+                       .SetKey(new GorgonKeyVector2(0, new Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f)))
+                       .SetKey(new GorgonKeyVector2(2, new Vector2(200, 220)))
+                       .SetKey(new GorgonKeyVector2(3, new Vector2(_screen.Width - 2, 130)))
+                       .SetKey(new GorgonKeyVector2(4, new Vector2(255, _screen.Height - _metal.Height)))
+                       .SetKey(new GorgonKeyVector2(5, new Vector2(200, 180)))
+                       .SetKey(new GorgonKeyVector2(6, new Vector2(180, 160)))
+                       .SetKey(new GorgonKeyVector2(7, new Vector2(150, 180)))
+                       .SetKey(new GorgonKeyVector2(8, new Vector2(150, 160)))
+                       .SetKey(new GorgonKeyVector2(9, new Vector2(_screen.Width / 2, _screen.Height / 2)))
                        .EndEdit()
                        // Set up some colors...By changing the alpha, we can simulate a motion blur effect.
                        .EditColor("Color")
@@ -256,9 +256,9 @@ namespace Gorgon.Examples
                 _renderer = new Gorgon2D(_graphics);
                 _animatedSprite = new GorgonSprite
                 {
-                    Position = new DX.Vector2(_screen.Width / 2, _screen.Height / 2),
+                    Position = new Vector2(_screen.Width / 2, _screen.Height / 2),
                     Size = new DX.Size2F(_metal.Width, _metal.Height),
-                    Anchor = new DX.Vector2(0.5f, 0.5f)
+                    Anchor = new Vector2(0.5f, 0.5f)
                 };
 
                 MakeAn80sMusicVideo();

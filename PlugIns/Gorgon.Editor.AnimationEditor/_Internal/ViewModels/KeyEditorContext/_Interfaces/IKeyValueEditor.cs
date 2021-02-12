@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Renderers;
 
@@ -56,7 +56,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>
         /// Property to set or return the value for the key frame.
         /// </summary>
-        DX.Vector4 Value
+        Vector4 Value
         {
             get;
             set;

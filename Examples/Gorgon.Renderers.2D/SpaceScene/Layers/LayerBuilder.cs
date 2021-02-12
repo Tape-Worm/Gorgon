@@ -24,17 +24,12 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Lights;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -81,7 +76,7 @@ namespace Gorgon.Examples
                     new SpriteEntity("Sun")
                     {
                         Sprite = sunSprite,
-                        LocalPosition = new DX.Vector2(1200, -650)
+                        LocalPosition = new Vector2(1200, -650)
                     }
                 },
                 PostProcessGroup = "Final Pass",
@@ -95,7 +90,7 @@ namespace Gorgon.Examples
                         Intensity = 13.07f
                     })
                     {
-                        LocalLightPosition = new DX.Vector3(1200, -650, -1.5f)
+                        LocalLightPosition = new Vector3(1200, -650, -1.5f)
                     }
                 }
             };
@@ -130,7 +125,7 @@ namespace Gorgon.Examples
                         },
                     })
                     {
-                        Position = new DX.Vector3(-30, -15, 4.0f)
+                        Position = new Vector3(-30, -15, 4.0f)
                     }
                 }
             };
@@ -144,7 +139,7 @@ namespace Gorgon.Examples
                 Intensity = 0.37f
             })
             {
-                LocalLightPosition = new DX.Vector3(0, 0, -10000.0f),
+                LocalLightPosition = new Vector3(0, 0, -10000.0f),
                 Layers =
                 {
                     planetLayer 
@@ -193,7 +188,7 @@ namespace Gorgon.Examples
                         Sprite = resources.Sprites["/sprites/Fighter_Engine_F0"],
                         Color = new GorgonColor(GorgonColor.CyanPure, 0),
                         Rotation = -45.0f,
-                        Anchor = new DX.Vector2(0.5f, -1.5f),
+                        Anchor = new Vector2(0.5f, -1.5f),
                         Animation = resources.Animations["EngineGlow"]
                     },
                     new SpriteEntity("Fighter")
@@ -204,14 +199,14 @@ namespace Gorgon.Examples
                         IsLit = true
                     }
                 },
-                Offset = DX.Vector2.Zero,
+                Offset = Vector2.Zero,
                 PostProcessGroup = "Final Pass",
                 Lights =
                 {
                     new Light(new GorgonDirectionalLight
                     {
                         Intensity = 0.5f,                        
-                        LightDirection = new DX.Vector3(1.0f, 0.0f, 0.7071068f),
+                        LightDirection = new Vector3(1.0f, 0.0f, 0.7071068f),
                         SpecularEnabled = true,
                         SpecularPower = 512.0f,
                         Color = GorgonColor.White,

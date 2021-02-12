@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -341,7 +342,7 @@ namespace Gorgon.Renderers
         /// <param name="textureCoordinate">The texture coordinate to assign.</param>
         /// <returns>The fluent interface for this builder.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0, or equal to/greater than the <see cref="VertexCount"/>.</exception>
-        public GorgonPolySpriteBuilder TextureCoordinate(int index, DX.Vector2 textureCoordinate)
+        public GorgonPolySpriteBuilder TextureCoordinate(int index, Vector2 textureCoordinate)
         {
             if ((index < 0) || (index >= VertexCount))
             {
@@ -375,7 +376,7 @@ namespace Gorgon.Renderers
         /// <param name="textureOffset">The translation amount to apply to the UV coordinates of the vertices in the polygon sprite.</param>
         /// <param name="textureScale">The scale amount to apply to the UV coordinates of the vertices in the polygon sprite.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPolySpriteBuilder TextureTransform(DX.Vector2 textureOffset, DX.Vector2 textureScale)
+        public GorgonPolySpriteBuilder TextureTransform(Vector2 textureOffset, Vector2 textureScale)
         {
             _workingSprite.TextureOffset = textureOffset;
             _workingSprite.TextureScale = textureScale;
@@ -416,7 +417,7 @@ namespace Gorgon.Renderers
         /// This value is in relative unit coordinates.  For example, 0.5, 0.5 would mean the center of the sprite.
         /// </para>
         /// </remarks>
-        public GorgonPolySpriteBuilder Anchor(DX.Vector2 anchor)
+        public GorgonPolySpriteBuilder Anchor(Vector2 anchor)
         {
             _workingSprite.Anchor = anchor;
             return this;
@@ -428,7 +429,7 @@ namespace Gorgon.Renderers
         /// <param name="position">The position of the sprite.</param>
         /// <param name="depth">[Optional] A depth value for the sprite.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPolySpriteBuilder Position(DX.Vector2 position, float depth = 0)
+        public GorgonPolySpriteBuilder Position(Vector2 position, float depth = 0)
         {
             _workingSprite.Position = position;
             _workingSprite.Depth = depth;
@@ -440,7 +441,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="scale">The scale to assign to the polygon sprite.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPolySpriteBuilder Scale(DX.Vector2 scale)
+        public GorgonPolySpriteBuilder Scale(Vector2 scale)
         {
             _workingSprite.Scale = scale;
             return this;
@@ -537,16 +538,16 @@ namespace Gorgon.Renderers
             _workingSprite.RwVertices.Clear();
             _workingSprite.Renderable.ActualVertexCount = 0;
             _workingSprite.Renderable.IndexCount = 0;
-            _workingSprite.Position = DX.Vector2.Zero;
+            _workingSprite.Position = Vector2.Zero;
             _workingSprite.AlphaTest = GorgonRangeF.Empty;
-            _workingSprite.Anchor = DX.Vector2.Zero;
+            _workingSprite.Anchor = Vector2.Zero;
             _workingSprite.Angle = 0.0f;
             _workingSprite.Bounds = DX.RectangleF.Empty;
             _workingSprite.Color = GorgonColor.White;
             _workingSprite.Depth = 0.0f;
             _workingSprite.HorizontalFlip = false;
             _workingSprite.VerticalFlip = false;
-            _workingSprite.Scale = DX.Vector2.One;
+            _workingSprite.Scale = Vector2.One;
             _workingSprite.Texture = null;
             _workingSprite.TextureSampler = null;
             return this;

@@ -67,13 +67,13 @@ namespace Gorgon.Graphics.Core
     ///			<description><see cref="float"/></description>
     ///		</item>
     ///		<item>
-    ///			<description><c>DX.Vector2</c></description>
+    ///			<description><c>Vector2</c></description>
     ///		</item>
     ///		<item>
-    ///			<description><c>DX.Vector3</c></description>
+    ///			<description><c>Vector3</c></description>
     ///		</item>
     ///		<item>
-    ///			<description><c>DX.Vector4</c></description>
+    ///			<description><c>Vector4</c></description>
     ///		</item>
     ///		<item>
     ///			<description><see cref="GorgonColor"/></description>

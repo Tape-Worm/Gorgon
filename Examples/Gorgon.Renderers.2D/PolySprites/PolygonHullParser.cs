@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Globalization;
 using Gorgon.Graphics;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -71,7 +71,7 @@ namespace Gorgon.Examples
                 float.TryParse(components[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float u);
                 float.TryParse(components[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float v);
 
-                builder.AddVertex(new GorgonPolySpriteVertex(new DX.Vector2(x, y), GorgonColor.White, new DX.Vector2(u, v)));
+                builder.AddVertex(new GorgonPolySpriteVertex(new Vector2(x, y), GorgonColor.White, new Vector2(u, v)));
             }
         }
 
@@ -87,7 +87,7 @@ namespace Gorgon.Examples
 
             ParseString(polygonHull, builder);
 
-            return builder.Anchor(new DX.Vector2(0.5f, 0.5f))
+            return builder.Anchor(new Vector2(0.5f, 0.5f))
                           .Build();
         }
     }

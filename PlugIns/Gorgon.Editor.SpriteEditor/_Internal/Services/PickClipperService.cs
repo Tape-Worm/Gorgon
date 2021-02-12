@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -224,7 +225,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// If the position is not contained within this region, <b>null</b> will be returned signifying that no rectangular region could be found.
         /// </para>
         /// </remarks>
-        public DX.RectangleF? Pick(DX.Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
+        public DX.RectangleF? Pick(Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
         {
             if (ImageData == null)
             {
@@ -234,12 +235,12 @@ namespace Gorgon.Editor.SpriteEditor
             var imageBounds = new DX.RectangleF(0, 0, ImageData.Width, ImageData.Height);
 
             // If we clicked outside of the image, then there's nothing to click.
-            if (!imageBounds.Contains(imagePosition))
+            if (!imageBounds.Contains(imagePosition.X, imagePosition.Y))
             {
                 return null;
             }
 
-            var imagePoint = (DX.Point)imagePosition;
+            var imagePoint = imagePosition.ToPoint();
 
             // We clicked on an area that has the masking value under our cursor, so we can't build anything.
             // In this case, do not change the current rectangle.

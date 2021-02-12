@@ -25,12 +25,12 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -124,7 +124,7 @@ namespace Gorgon.Examples
 
             // Render the lit sprite.
             _lightEffect.Begin(2, 1, camera: _camera);
-            _logoSprite.Position = new DX.Vector2(0, 0);
+            _logoSprite.Position = new Vector2(0, 0);
 
             if (_lightEffect.RotateNormals)
             {
@@ -147,7 +147,7 @@ namespace Gorgon.Examples
                                  $"Light [c #{GorgonColor.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" + 
                                  $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColor.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]D[/c])\n" + 
                                  $"[c #{GorgonColor.CornFlowerBlue.ToHex()}]N[/c]ormal Rotation: {(_lightEffect.RotateNormals ? "Yes" : "No")}",
-                                 new DX.Vector2(0, 64));
+                                 new Vector2(0, 64));
             _renderer.End();
 
             GorgonExample.DrawStatsAndLogo(_renderer);
@@ -190,8 +190,8 @@ namespace Gorgon.Examples
 
                 _camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height))
                 {
-                    Anchor = new DX.Vector2(0.5f, 0.5f),
-                    Position = new DX.Vector3(0.0f, 0.0f, -70),
+                    Anchor = new Vector2(0.5f, 0.5f),
+                    Position = new Vector3(0.0f, 0.0f, -70),
                     AllowUpdateOnResize = false
                 };
 
@@ -227,7 +227,7 @@ namespace Gorgon.Examples
                     Texture = _backgroundLogoTexture,
                     Bounds = new DX.RectangleF(0, 0, _backgroundLogoTexture.Width, _backgroundLogoTexture.Height),
                     TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                    Anchor = new DX.Vector2(0.5f, 0.5f)
+                    Anchor = new Vector2(0.5f, 0.5f)
                 };
 
                 _torchSprite = new GorgonSprite
@@ -244,7 +244,7 @@ namespace Gorgon.Examples
                     Color = new GorgonColor(0.25f, 0.25f, 0.25f),
                     SpecularEnabled = true,
                     SpecularPower = 6.0f,
-                    Position = new DX.Vector3(0, 0, _camera.Position.Z)
+                    Position = new Vector3(0, 0, _camera.Position.Z)
                 };
 
                 // Create the effect that will light up our sprite(s).
@@ -260,7 +260,7 @@ namespace Gorgon.Examples
                     Color = GorgonColor.White,
                     Intensity = 0.075f,
                     SpecularEnabled = false,                    
-                    LightDirection = new DX.Vector3(0, 0, 1)
+                    LightDirection = new Vector3(0, 0, 1)
                 });
 
                 GorgonExample.LoadResources(_graphics);
@@ -300,25 +300,25 @@ namespace Gorgon.Examples
                 case Keys.Z:                     
                     _light.Position = 
                         !e.Shift
-                            ? new DX.Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z + 1.0f)
-                            : new DX.Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z - 1.0f);
+                            ? new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z + 1.0f)
+                            : new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z - 1.0f);
                     _lightEffect.SpecularZDistance = _light.Position.Z;
                     break;
                 case Keys.W:
-                    _camera.Position = new DX.Vector3(_camera.Position.X, _camera.Position.Y - 10, _camera.Position.Z);
-                    _light.Position = new DX.Vector3(cursor.X + _camera.ViewableRegion.X + _camera.Position.X, cursor.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
+                    _camera.Position = new Vector3(_camera.Position.X, _camera.Position.Y - 10, _camera.Position.Z);
+                    _light.Position = new Vector3(cursor.X + _camera.ViewableRegion.X + _camera.Position.X, cursor.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
                     break;
                 case Keys.S:
-                    _camera.Position = new DX.Vector3(_camera.Position.X, _camera.Position.Y + 10, _camera.Position.Z);
-                    _light.Position = new DX.Vector3(cursor.X + _camera.ViewableRegion.X + _camera.Position.X, cursor.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
+                    _camera.Position = new Vector3(_camera.Position.X, _camera.Position.Y + 10, _camera.Position.Z);
+                    _light.Position = new Vector3(cursor.X + _camera.ViewableRegion.X + _camera.Position.X, cursor.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
                     break;
                 case Keys.A:
-                    _camera.Position = new DX.Vector3(_camera.Position.X - 10, _camera.Position.Y, _camera.Position.Z);
-                    _light.Position = new DX.Vector3(cursor.X + _camera.ViewableRegion.X + _camera.Position.X, cursor.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
+                    _camera.Position = new Vector3(_camera.Position.X - 10, _camera.Position.Y, _camera.Position.Z);
+                    _light.Position = new Vector3(cursor.X + _camera.ViewableRegion.X + _camera.Position.X, cursor.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
                     break;
                 case Keys.D:
-                    _camera.Position = new DX.Vector3(_camera.Position.X + 10, _camera.Position.Y, _camera.Position.Z);
-                    _light.Position = new DX.Vector3(cursor.X + _camera.ViewableRegion.X + _camera.Position.X, cursor.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
+                    _camera.Position = new Vector3(_camera.Position.X + 10, _camera.Position.Y, _camera.Position.Z);
+                    _light.Position = new Vector3(cursor.X + _camera.ViewableRegion.X + _camera.Position.X, cursor.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
                     break;
             }
         }
@@ -345,8 +345,8 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private static void Window_MouseMove(object sender, MouseEventArgs e)
         {
-            _light.Position = new DX.Vector3(e.X + _camera.ViewableRegion.X + _camera.Position.X, e.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
-            _torchSprite.Position = new DX.Vector2(e.X - 11, e.Y - 23);
+            _light.Position = new Vector3(e.X + _camera.ViewableRegion.X + _camera.Position.X, e.Y + _camera.ViewableRegion.Top + _camera.Position.Y, _light.Position.Z);
+            _torchSprite.Position = new Vector2(e.X - 11, e.Y - 23);
         }
 
         /// <summary>

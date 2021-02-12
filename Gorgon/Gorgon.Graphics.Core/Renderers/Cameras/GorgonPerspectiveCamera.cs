@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
@@ -49,11 +50,11 @@ namespace Gorgon.Renderers.Cameras
     {
         #region Variables.
         // The rotation matrix.
-        private DX.Matrix _rotation = DX.Matrix.Identity;
+        private Matrix4x4 _rotation = Matrix4x4.Identity;
         // The translation matrix.
-        private DX.Matrix _translate = DX.Matrix.Identity;
+        private Matrix4x4 _translate = Matrix4x4.Identity;
         // The quaternion representing the rotation of the camera.
-        private DX.Quaternion _rotationQuat;
+        private Quaternion _rotationQuat;
         // The field of view for the camera.
         private float _fov = 75.0f;
         #endregion
@@ -80,7 +81,7 @@ namespace Gorgon.Renderers.Cameras
         /// <summary>
         /// Property to set or return the quaternion used for rotation.
         /// </summary>
-        public DX.Quaternion Rotation
+        public Quaternion Rotation
         {
             get => _rotationQuat;
             set
@@ -107,7 +108,7 @@ namespace Gorgon.Renderers.Cameras
         /// <summary>
         /// Function to update the view matrix.
         /// </summary>
-        protected override void UpdateViewMatrix(ref DX.Matrix viewMatrix)
+        protected override void UpdateViewMatrix(ref Matrix4x4 viewMatrix)
         {               
             bool hasRotation = (Changes & CameraChange.Rotation) == CameraChange.Rotation;
             bool hasTranslate = (Changes & CameraChange.Position) == CameraChange.Position;
@@ -121,26 +122,36 @@ namespace Gorgon.Renderers.Cameras
 
             // Rotate it.
             if (hasRotation)
-            {                
-                DX.Matrix.RotationQuaternion(ref _rotationQuat, out _rotation);
-                DX.Matrix.Transpose(ref _rotation, out _rotation);
+            {
+                _rotation = Matrix4x4.CreateFromQuaternion(_rotationQuat);
+                _rotation = Matrix4x4.Transpose(_rotation);
                 Changes &= ~CameraChange.Rotation;
             }
 
             // Translate it.
             if (hasTranslate)
             {
-                DX.Matrix.Translation(-PositionRef.X, -PositionRef.Y, -PositionRef.Z, out _translate);                
+                _translate = Matrix4x4.CreateTranslation(-PositionRef.X, -PositionRef.Y, -PositionRef.Z);
                 Changes &= ~CameraChange.Position;
             }
 
-            DX.Matrix.Multiply(ref _translate, ref _rotation, out viewMatrix);
+            viewMatrix = Matrix4x4.Multiply(_translate, _rotation);
         }
 
         /// <summary>Function to update the projection matrix.</summary>
         /// <param name="projectionMatrix">The instance of the matrix to update.</param>
-        protected override void UpdateProjectionMatrix(ref DX.Matrix projectionMatrix) 
-            => DX.Matrix.PerspectiveFovLH(_fov.ToRadians(), (float)TargetWidth / TargetHeight, MinimumDepth, MaximumDepth, out projectionMatrix);
+        protected override void UpdateProjectionMatrix(ref Matrix4x4 projectionMatrix)
+        {
+            float yScale = 1.0f / (_fov.ToRadians() * 0.5f).Tan();
+            float q = MaximumDepth / (MaximumDepth - MinimumDepth);
+
+            projectionMatrix = default;
+            projectionMatrix.M11 = yScale / AspectRatio.X;
+            projectionMatrix.M22 = yScale;
+            projectionMatrix.M33 = q;
+            projectionMatrix.M34 = 1.0f;
+            projectionMatrix.M43 = -q * MinimumDepth;
+        }
 
         /// <summary>
         /// Function to rotate the camera using euler angles.
@@ -150,7 +161,7 @@ namespace Gorgon.Renderers.Cameras
         /// <param name="roll">The roll of the camera, in degrees.</param>
         public void RotateEuler(float yaw, float pitch, float roll)
         {
-            DX.Quaternion.RotationYawPitchRoll(yaw.ToRadians(), pitch.ToRadians(), roll.ToRadians(), out _rotationQuat);
+            _rotationQuat = Quaternion.CreateFromYawPitchRoll(yaw.ToRadians(), pitch.ToRadians(), roll.ToRadians());
             Changes |= CameraChange.View | CameraChange.Rotation;
         }
 
@@ -159,10 +170,9 @@ namespace Gorgon.Renderers.Cameras
         /// </summary>
         /// <param name="axis">The axes to rotate around.</param>
         /// <param name="angle">The angle of rotation, in degrees.</param>
-        public void RotateAxis(ref DX.Vector3 axis, float angle)
-        {            
-            DX.Quaternion.RotationAxis(ref axis, angle.ToRadians(), out _rotationQuat);
-            DX.Quaternion.Conjugate(ref _rotationQuat, out _rotationQuat);
+        public void RotateAxis(ref Vector3 axis, float angle)
+        {
+            _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromAxisAngle(axis, angle.ToRadians()));
             Changes |= CameraChange.View | CameraChange.Rotation;
         }
 
@@ -170,10 +180,9 @@ namespace Gorgon.Renderers.Cameras
         /// Function to set the camera rotation using a rotation matrix.
         /// </summary>
         /// <param name="rotation">The matrix used for rotation.</param>
-        public void AssignRotationMatrix(ref DX.Matrix rotation)
+        public void AssignRotationMatrix(ref Matrix4x4 rotation)
         {
-            DX.Quaternion.RotationMatrix(ref rotation, out _rotationQuat);
-            DX.Quaternion.Conjugate(ref _rotationQuat, out _rotationQuat);
+            _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(rotation));
             Changes |= CameraChange.View | CameraChange.Rotation;
         }
 
@@ -187,13 +196,29 @@ namespace Gorgon.Renderers.Cameras
         /// If the <paramref name="upVector"/> parameter is <b>null</b>, then a default positive unit vector is used on the Y axis (0, 1, 0).
         /// </para>
         /// </remarks>
-        public void LookAt(ref DX.Vector3 target, DX.Vector3? upVector = null)
+        public void LookAt(Vector3 target, Vector3? upVector = null)
         {
-            DX.Vector3 up = upVector ?? DX.Vector3.UnitY;
+            Vector3 up = upVector ?? Vector3.UnitY;
 
-            DX.Matrix.LookAtLH(ref PositionRef, ref target, ref up, out DX.Matrix tempMatrix);
-            DX.Quaternion.RotationMatrix(ref tempMatrix, out _rotationQuat);
-            _rotationQuat = DX.Quaternion.Conjugate(_rotationQuat);
+            var zaxis = Vector3.Normalize(target - PositionRef);
+            var xaxis = Vector3.Normalize(Vector3.Cross(up, zaxis));
+            var yaxis = Vector3.Cross(zaxis, xaxis);
+            var lookMatrix = default(Matrix4x4);
+            lookMatrix.M11 = xaxis.X;
+            lookMatrix.M12 = yaxis.X;
+            lookMatrix.M13 = zaxis.X;
+            lookMatrix.M21 = xaxis.Y;
+            lookMatrix.M22 = yaxis.Y;
+            lookMatrix.M23 = zaxis.Y;
+            lookMatrix.M31 = xaxis.Z;
+            lookMatrix.M32 = yaxis.Z;
+            lookMatrix.M33 = zaxis.Z;
+            lookMatrix.M41 = -Vector3.Dot(xaxis, PositionRef);
+            lookMatrix.M42 = -Vector3.Dot(yaxis, PositionRef);
+            lookMatrix.M43 = -Vector3.Dot(zaxis, PositionRef);
+            lookMatrix.M44 = 1f;
+
+            _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(lookMatrix));            
             Changes |= CameraChange.View | CameraChange.Rotation;
         }
         #endregion

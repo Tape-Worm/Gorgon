@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Core;
@@ -372,7 +373,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the offset that can be used to simulate shaking.
         /// </summary>
-        public DX.Vector2 ShakeOffset
+        public Vector2 ShakeOffset
         {
             get;
             set;
@@ -448,8 +449,8 @@ namespace Gorgon.Renderers
                 SizeInBytes = 16
             });
 
-            _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");
-            _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
+            _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");
+            _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
 
             // Create pixel shader.
             _filmShader = CompileShader<GorgonPixelShader>(Resources.FilmGrain, "GorgonPixelShaderFilmGrain");
@@ -475,17 +476,17 @@ namespace Gorgon.Renderers
 
             if (_isScratchUpdated)
             {
-                _scratchBuffer.Buffer.SetData(ref _scratchSettings);
+                _scratchBuffer.Buffer.SetData(in _scratchSettings);
                 _isScratchUpdated = false;
             }
 
             if (_isSepiaUpdated)
             {
-                _sepiaBuffer.Buffer.SetData(ref _sepiaSettings);
+                _sepiaBuffer.Buffer.SetData(in _sepiaSettings);
                 _isSepiaUpdated = false;
             }
 
-            _timingBuffer.Buffer.SetData(ref _time);
+            _timingBuffer.Buffer.SetData(in _time);
         }
 
         /// <summary>
@@ -564,7 +565,7 @@ namespace Gorgon.Renderers
                 }
 
                 // Render dirt/hair lines.
-                var dirtStart = new DX.Vector2(GorgonRandom.RandomSingle(region.Left, region.Right),
+                var dirtStart = new Vector2(GorgonRandom.RandomSingle(region.Left, region.Right),
                                                GorgonRandom.RandomSingle(region.Top, region.Bottom));
 
                 float dirtWidth = GorgonRandom.RandomSingle(1.0f, 3.0f);

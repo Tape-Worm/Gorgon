@@ -57,7 +57,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         public static bool Equals(GorgonImageCodecDescription left, GorgonImageCodecDescription right) => string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>Returns the fully qualified type name of this instance.</summary>
-        /// <returns>A <see cref="System.String" /> containing a fully qualified type name.</returns>
+        /// <returns>A <see cref="string" /> containing a fully qualified type name.</returns>
         public override string ToString() => string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC_PLUGIN_DESC, Name, Description);
 
         /// <summary>Indicates whether this instance and a specified object are equal.</summary>

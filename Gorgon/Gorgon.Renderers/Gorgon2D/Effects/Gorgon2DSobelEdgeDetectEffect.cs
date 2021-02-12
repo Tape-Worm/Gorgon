@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -49,7 +50,7 @@ namespace Gorgon.Renderers
         private struct Settings
         {
             // Texel size and threshold.
-            private readonly DX.Vector4 _texelThreshold;
+            private readonly Vector4 _texelThreshold;
 
             /// <summary>
             /// Line color.
@@ -59,7 +60,7 @@ namespace Gorgon.Renderers
             /// <summary>
             /// Property to return the size of a texel.
             /// </summary>
-            public DX.Vector2 TexelSize => new DX.Vector2(_texelThreshold.X, _texelThreshold.Y);
+            public Vector2 TexelSize => new Vector2(_texelThreshold.X, _texelThreshold.Y);
 
             /// <summary>
             /// Property to return the threshold for the effect.
@@ -72,10 +73,10 @@ namespace Gorgon.Renderers
             /// <param name="linecolor">The linecolor.</param>
             /// <param name="texelSize">Size of the texel.</param>
             /// <param name="threshold">The threshold.</param>
-            public Settings(GorgonColor linecolor, DX.Vector2 texelSize, float threshold)
+            public Settings(GorgonColor linecolor, Vector2 texelSize, float threshold)
             {
                 LineColor = linecolor;
-                _texelThreshold = new DX.Vector4(texelSize, threshold, 0);
+                _texelThreshold = new Vector4(texelSize, threshold, 0);
             }
         }
         #endregion
@@ -131,7 +132,7 @@ namespace Gorgon.Renderers
                 }
 
                 _settings = new Settings(_settings.LineColor,
-                                         new DX.Vector2(_settings.TexelSize.X * value, _settings.TexelSize.Y * value),
+                                         new Vector2(_settings.TexelSize.X * value, _settings.TexelSize.Y * value),
                                          _settings.Threshold);
                 _lineThickness = value;
                 _isUpdated = true;
@@ -195,7 +196,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnInitialize()
         {
-            _sobelBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gogron 2D Sobel Edge Detect Filter Effect Constant Buffer");
+            _sobelBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Gogron 2D Sobel Edge Detect Filter Effect Constant Buffer");
             _sobelShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderSobelEdge");
         }
 
@@ -244,8 +245,8 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            _settings = new Settings(_settings.LineColor, new DX.Vector2((1.0f / _textureSize.Width) * LineThickness, (1.0f / _textureSize.Height) * LineThickness), _settings.Threshold);
-            _sobelBuffer.Buffer.SetData(ref _settings);
+            _settings = new Settings(_settings.LineColor, new Vector2((1.0f / _textureSize.Width) * LineThickness, (1.0f / _textureSize.Height) * LineThickness), _settings.Threshold);
+            _sobelBuffer.Buffer.SetData(in _settings);
             _isUpdated = false;
         }
 
@@ -330,7 +331,7 @@ namespace Gorgon.Renderers
         public Gorgon2DSobelEdgeDetectEffect(Gorgon2D renderer)
             : base(renderer, Resources.GOR2D_EFFECT_SOBEL, Resources.GOR2D_EFFECT_SOBEL_DESC, 1)
         {
-            _settings = new Settings(Color.Black, DX.Vector2.Zero, 0.75f);
+            _settings = new Settings(Color.Black, Vector2.Zero, 0.75f);
             Macros.Add(new GorgonShaderMacro("SOBEL_EDGE_EFFECT"));
         }
         #endregion

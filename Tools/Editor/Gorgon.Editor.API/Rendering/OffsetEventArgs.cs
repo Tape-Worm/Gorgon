@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using DX = SharpDX;
+using System.Numerics;
 
 namespace Gorgon.Editor.Rendering
 {
@@ -41,7 +41,7 @@ namespace Gorgon.Editor.Rendering
         /// <remarks>
         /// This value is in world space, relative to the <see cref="IContentRenderer.RenderRegion"/>.
         /// </remarks>
-        public DX.Vector2 Offset
+        public Vector2 Offset
         {
             get;
             internal set;

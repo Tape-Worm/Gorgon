@@ -304,6 +304,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A minimum of 8 elements must be available to retrieve the corners of the bounding box..
+        /// </summary>
+        internal static string GOR_ERR_NOT_ENOUGH_CORNERS {
+            get {
+                return ResourceManager.GetString("GOR_ERR_NOT_ENOUGH_CORNERS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The offset {0} + size {1} requested are larger than the array: {2}.
         /// </summary>
         internal static string GOR_ERR_OFFSET_AND_SIZE_ARE_LARGER_THAN_ARRAY {

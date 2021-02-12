@@ -25,21 +25,16 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Collections;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers;
-using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Geometry;
-using Gorgon.Timing;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -79,7 +74,7 @@ namespace Gorgon.Examples
             /// <summary>
             /// The offset of the texture.
             /// </summary>
-            public DX.Vector2 UVOffset;
+            public Vector2 UVOffset;
 
             /// <summary>
             /// The specular power for the texture.
@@ -114,10 +109,10 @@ namespace Gorgon.Examples
         // The light data to send to the constant buffer.
         private readonly GorgonGpuLightData[] _lightData = new GorgonGpuLightData[MaxLights];
         // The current view matrix, and projection matrix.  We'll pull these from our 2D camera.
-        private DX.Matrix _viewMatrix;
-        private DX.Matrix _projectionMatrix;
+        private Matrix4x4 _viewMatrix;
+        private Matrix4x4 _projectionMatrix;
         // A combination of both matrices. This is calculated on every frame update when the view/projection is updated.
-        private DX.Matrix _viewProjection;
+        private Matrix4x4 _viewProjection;
         // Flag to indicate that we can draw the planet or not.
         private readonly List<Planet> _drawPlanets = new List<Planet>();
         #endregion
@@ -138,19 +133,19 @@ namespace Gorgon.Examples
         /// </summary>
         private void BuildConstantBuffers()
         {
-            DX.Matrix worldMatrix = DX.Matrix.Identity;
-            DX.Vector3 cameraPos = _viewMatrix.TranslationVector;
+            Matrix4x4 worldMatrix = Matrix4x4.Identity;
+            Vector3 cameraPos = _viewMatrix.GetTranslation();
             var emptyMaterial = new Material
             {
                 Albedo = GorgonColor.White,
                 SpecularPower = 1.0f,
-                UVOffset = DX.Vector2.Zero
+                UVOffset = Vector2.Zero
             };
 
-            _viewProjectionBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref _viewProjection, "Projection/View Buffer", ResourceUsage.Dynamic);
-            _cameraBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref cameraPos, "CameraBuffer", ResourceUsage.Dynamic);
-            _worldBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref worldMatrix, "WorldBuffer", ResourceUsage.Dynamic);
-            _materialBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref emptyMaterial, "MaterialBuffer", ResourceUsage.Dynamic);
+            _viewProjectionBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in _viewProjection, "Projection/View Buffer", ResourceUsage.Dynamic);
+            _cameraBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in cameraPos, "CameraBuffer", ResourceUsage.Dynamic);
+            _worldBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in worldMatrix, "WorldBuffer", ResourceUsage.Dynamic);
+            _materialBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in emptyMaterial, "MaterialBuffer", ResourceUsage.Dynamic);
 
             _lightBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
                                                     new GorgonConstantBufferInfo("LightDataBuffer")
@@ -174,7 +169,7 @@ namespace Gorgon.Examples
                 SpecularPower = mesh.Material.SpecularPower
             };
 
-            _materialBuffer.Buffer.SetData(ref materialData);
+            _materialBuffer.Buffer.SetData(in materialData);
         }
 
         /// <summary>
@@ -183,10 +178,11 @@ namespace Gorgon.Examples
         /// <param name="mesh">The mesh to update.</param>
         private void UpdateMeshWorldMatrix(MoveableMesh mesh)
         {
-            DX.Vector2 position = (DX.Vector2)mesh.Position + Offset;
-            DX.Vector2 transformed = position;
+            Vector3 newPosition = mesh.Position + new Vector3(Offset, 0);
+            var position = new Vector2(newPosition.X, newPosition.Y);
+            Vector2 transformed = position;
 
-            mesh.Position = new DX.Vector3(transformed / ParallaxLevel, mesh.Position.Z);
+            mesh.Position = new Vector3(transformed / ParallaxLevel, mesh.Position.Z);
         }
 
         /// <summary>
@@ -196,14 +192,14 @@ namespace Gorgon.Examples
         private void UpdateWorldTransform(MoveableMesh mesh)
         {
             UpdateMeshWorldMatrix(mesh);
-            _worldBuffer.Buffer.SetData(ref mesh.WorldMatrix);
+            _worldBuffer.Buffer.SetData(in mesh.WorldMatrix);
         }
 
         /// <summary>Function called to update items per frame on the layer.</summary>
         protected override void OnUpdate()
         {
-            SetProjection(ref Camera.GetProjectionMatrix());
-            SetView(ref Camera.GetViewMatrix());
+            SetProjection(in Camera.GetProjectionMatrix());
+            SetView(in Camera.GetViewMatrix());
 
             _drawPlanets.Clear();
 
@@ -216,7 +212,7 @@ namespace Gorgon.Examples
                 for (int j = 0; j < planet.Layers.Count; ++j)
                 {
                     PlanetaryLayer layer = planet.Layers[j];
-                    DX.Vector3 originalPosition = layer.Mesh.Position;
+                    Vector3 originalPosition = layer.Mesh.Position;
 
                     UpdateMeshWorldMatrix(layer.Mesh);
 
@@ -361,20 +357,19 @@ namespace Gorgon.Examples
         /// "interesting" issues.  But since we're not making a complex scene here, just set it as-is.
         /// </para>
         /// </remarks>
-        private void SetView(ref DX.Matrix view)
+        private void SetView(in Matrix4x4 view)
         {
             _viewMatrix = view;
-            DX.Matrix.Multiply(ref _viewMatrix, ref _projectionMatrix, out _viewProjection);
-            DX.Matrix.Transpose(ref _viewProjection, out _viewProjection);
-            _viewProjectionBuffer?.Buffer.SetData(ref _viewProjection);
+            _viewProjection = Matrix4x4.Transpose(Matrix4x4.Multiply(_viewMatrix, _projectionMatrix));
+            _viewProjectionBuffer?.Buffer.SetData(in _viewProjection);
 
             if (_cameraBuffer == null)
             {
                 return;
             }
 
-            DX.Vector3 cameraPos = view.TranslationVector;
-            _cameraBuffer.Buffer.SetData(ref cameraPos);
+            Vector3 cameraPos = view.GetTranslation();
+            _cameraBuffer.Buffer.SetData(in cameraPos);
         }
 
         /// <summary>
@@ -388,12 +383,10 @@ namespace Gorgon.Examples
         /// "interesting" issues.  But since we're not making a complex scene here, just set it as-is.
         /// </para>
         /// </remarks>
-        private void SetProjection(ref DX.Matrix projection)
+        private void SetProjection(in Matrix4x4 projection)
         {
             _projectionMatrix = projection;
-            DX.Matrix.Transpose(ref _viewProjection, out _viewProjection);
-            _viewProjection.Transpose();
-            _viewProjectionBuffer?.Buffer.SetData(ref _viewProjection);
+            _viewProjectionBuffer?.Buffer.SetData(in _viewProjection);
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>

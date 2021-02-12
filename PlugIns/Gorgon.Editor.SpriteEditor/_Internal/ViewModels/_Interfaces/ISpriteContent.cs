@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -131,7 +132,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return offsets for each vertex in the sprite.
         /// </summary>
-        IReadOnlyList<DX.Vector3> VertexOffsets
+        IReadOnlyList<Vector3> VertexOffsets
         {
             get;
         }
@@ -139,7 +140,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the anchor position for for the sprite.
         /// </summary>
-        DX.Vector2 Anchor
+        Vector2 Anchor
         {
             get;
         }
@@ -219,7 +220,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the command used to apply the vertex offsets to the sprite.
         /// </summary>
-        IEditorCommand<IReadOnlyList<DX.Vector3>> SetVertexOffsetsCommand
+        IEditorCommand<IReadOnlyList<Vector3>> SetVertexOffsetsCommand
         {
             get;
         }

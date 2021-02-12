@@ -171,7 +171,7 @@ namespace Gorgon.Renderers
             }
 
             int value = _useDodge ? 1 : 0;
-            _burnDodgeBuffer.Buffer.SetData(ref value);
+            _burnDodgeBuffer.Buffer.SetData(in value);
             _isUpdated = false;
         }
 

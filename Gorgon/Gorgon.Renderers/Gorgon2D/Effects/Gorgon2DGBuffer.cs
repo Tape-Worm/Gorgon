@@ -25,13 +25,13 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -300,7 +300,7 @@ namespace Gorgon.Renderers
             _params = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo("GBuffer Parameters")
             {
                 Usage = ResourceUsage.Default,
-                SizeInBytes = Unsafe.SizeOf<DX.Vector4>()
+                SizeInBytes = Unsafe.SizeOf<Vector4>()
             });
         }
 
@@ -399,8 +399,8 @@ namespace Gorgon.Renderers
 
             if ((_indices.normalIndex != normalMapIndex) || (_indices.specularIndex != specularMapIndex))
             {
-                var gbufferParams = new DX.Vector4(normalMapIndex, specularMapIndex, 0, 0);
-                _params.Buffer.SetData(ref gbufferParams);
+                var gbufferParams = new Vector4(normalMapIndex, specularMapIndex, 0, 0);
+                _params.Buffer.SetData(in gbufferParams);
                 _indices = (normalMapIndex, specularMapIndex);
             }
 

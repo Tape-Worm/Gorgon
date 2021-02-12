@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Threading;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -40,7 +41,7 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The view * projection matrix.
-        private DX.Matrix _viewProjectionMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _viewProjectionMatrix = Matrix4x4.Identity;
         // The current camera that has had its data uploaded to the GPU.
         private GorgonCameraCommon _current;
         // The buffer for holding the camera GPU data.
@@ -87,8 +88,10 @@ namespace Gorgon.Renderers
             }
 
             // Build the view/projection matrix.
-            DX.Matrix.Multiply(ref camera.GetViewMatrix(), ref camera.GetProjectionMatrix(), out _viewProjectionMatrix);            
-            CameraBuffer.Buffer.SetData(ref _viewProjectionMatrix);
+            ref readonly Matrix4x4 viewMatrix = ref camera.GetViewMatrix();
+            ref readonly Matrix4x4 projMatrix = ref camera.GetProjectionMatrix();
+            _viewProjectionMatrix = Matrix4x4.Multiply(viewMatrix, projMatrix);            
+            CameraBuffer.Buffer.SetData(in _viewProjectionMatrix);
 
             _current = camera;
         }
@@ -112,7 +115,7 @@ namespace Gorgon.Renderers
         {
             Graphics = graphics;
             _cameraBuffer = GorgonConstantBufferView.CreateConstantBuffer(graphics,
-                                                                          ref _viewProjectionMatrix,
+                                                                          in _viewProjectionMatrix,
                                                                           "Gorgon 2D Camera Constant Buffer",
                                                                           ResourceUsage.Dynamic);
         }

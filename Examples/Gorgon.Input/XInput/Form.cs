@@ -32,7 +32,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Input;
 using Gorgon.PlugIns;
 using Gorgon.Timing;

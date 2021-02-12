@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Animation
 {
@@ -143,7 +143,7 @@ namespace Gorgon.Animation
             // Build the spline for the track.
             for (int i = 0; i < keyFrames.Count; ++i)
             {
-                _splineController.Points.Add(new DX.Vector4(keyFrames[i].Value, 0, 0, 1.0f));
+                _splineController.Points.Add(new Vector4(keyFrames[i].Value, 0, 0, 1.0f));
             }
 
             _splineController.UpdateTangents();

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
@@ -135,7 +136,7 @@ namespace Gorgon.Editor.SpriteEditor
             _sprite.TextureArrayIndex = DataContext.SpritePickContext.ArrayIndex;
             _sprite.TextureRegion = _sprite.Texture.ToTexel(DataContext.SpritePickContext.SpriteRectangle.ToRectangle());
             _sprite.Size = DataContext.SpritePickContext.SpriteRectangle.Size.Truncate();
-            _sprite.Position = new DX.Vector2(DataContext.SpritePickContext.SpriteRectangle.X - (RenderRegion.Width * 0.5f),
+            _sprite.Position = new Vector2(DataContext.SpritePickContext.SpriteRectangle.X - (RenderRegion.Width * 0.5f),
                                               DataContext.SpritePickContext.SpriteRectangle.Y - (RenderRegion.Height * 0.5f))
                                      .Truncate();
 
@@ -154,7 +155,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            var position = new DX.Vector2(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
+            var position = new Vector2(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
                                           args.CameraSpacePosition.Y + RenderRegion.Height * 0.5f);
 
             DX.RectangleF? newRect = _picker.Pick(position, DataContext.Settings.ClipMaskValue, DataContext.Settings.ClipMaskType);
@@ -176,10 +177,10 @@ namespace Gorgon.Editor.SpriteEditor
         {   
             base.OnMouseMove(args);
 
-            var position = new DX.Vector2(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
+            var position = new Vector2(args.CameraSpacePosition.X + RenderRegion.Width * 0.5f,
                                           args.CameraSpacePosition.Y + RenderRegion.Height * 0.5f);
 
-            if (RenderRegion.Contains(position))
+            if (RenderRegion.Contains(position.X, position.Y))
             {
                 Cursor.Current = Cursors.Hand;
             }
@@ -192,14 +193,14 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to draw the sprite.</summary>
         protected override void DrawSprite()
         {
-            var halfRegion = new DX.Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
+            var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
 
             // We'll need to draw the marching ants rectangle in standard client space. 
             // So, we can just get the camera to tell us where that is.
-            var spriteTopLeft = new DX.Vector3(_spriteRegion.TopLeft, 0);
-            var spriteBottomRight = new DX.Vector3(_spriteRegion.BottomRight, 0);            
-            Camera.Unproject(ref spriteTopLeft, out DX.Vector3 transformedTopLeft);
-            Camera.Unproject(ref spriteBottomRight, out DX.Vector3 transformedBottomRight);
+            var spriteTopLeft = new Vector3(_spriteRegion.Left, _spriteRegion.Top, 0);
+            var spriteBottomRight = new Vector3(_spriteRegion.Right, _spriteRegion.Bottom, 0);            
+            Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
+            Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 
             var marchAntsRect = new DX.RectangleF
             {
@@ -320,7 +321,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
-        public override void DefaultZoom() => MoveTo(DX.Vector2.Zero, ZoomLevels.ToWindow.GetScale());
+        public override void DefaultZoom() => MoveTo(Vector2.Zero, ZoomLevels.ToWindow.GetScale());
         #endregion
 
         #region Constructor/Finalizer.

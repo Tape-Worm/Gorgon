@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -220,7 +221,7 @@ namespace Gorgon.Graphics.Core
         /// for the underlying <see cref="Texture"/> is used.
         /// </para>
         /// </remarks>
-        public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates, int? mipLevel = null)
+        public (DX.Point, int) ToPixel(Vector3 texelCoordinates, int? mipLevel = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
@@ -249,20 +250,20 @@ namespace Gorgon.Graphics.Core
         /// for the underlying <see cref="Texture"/> is used.
         /// </para>
         /// </remarks>
-        public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null)
+        public Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
 
             if (mipLevel == null)
             {
-                return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
+                return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
+            return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
         }
 
         /// <summary>

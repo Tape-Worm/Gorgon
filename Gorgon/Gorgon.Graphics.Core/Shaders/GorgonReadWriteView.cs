@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
@@ -187,7 +188,7 @@ namespace Gorgon.Graphics.Core
         /// This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value in the vector.
         /// </para>
         /// </remarks>
-        public void Clear(DX.Vector4 values) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Mathematics.Interop.RawInt4((int)values.X, (int)values.Y, (int)values.Z, (int)values.W));
+        public void Clear(Vector4 values) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Mathematics.Interop.RawInt4((int)values.X, (int)values.Y, (int)values.Z, (int)values.W));
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

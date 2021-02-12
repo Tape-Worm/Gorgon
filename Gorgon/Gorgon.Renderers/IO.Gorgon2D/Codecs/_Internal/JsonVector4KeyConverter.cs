@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Animation;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -107,7 +107,7 @@ namespace Gorgon.IO
                 }
             }
 
-            return new GorgonKeyVector4(time, new DX.Vector4(x, y, z, w));
+            return new GorgonKeyVector4(time, new Vector4(x, y, z, w));
         }
     }
 }

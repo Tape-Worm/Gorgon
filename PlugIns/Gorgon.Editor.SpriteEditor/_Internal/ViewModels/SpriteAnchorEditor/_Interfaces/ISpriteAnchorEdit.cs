@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using Gorgon.Editor.UI;
 using DX = SharpDX;
@@ -66,7 +67,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the mid point of the sprite, based on its vertices.
         /// </summary>
-        DX.Vector2 MidPoint
+        Vector2 MidPoint
         {
             get;
         }
@@ -74,7 +75,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to set or return the boundaries of the sprite (vertices).
         /// </summary>
-        IReadOnlyList<DX.Vector2> SpriteBounds
+        IReadOnlyList<Vector2> SpriteBounds
         {
             get;
             set;
@@ -83,7 +84,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to set or return the anchor point.
         /// </summary>
-        DX.Vector2 Anchor
+        Vector2 Anchor
         {
             get;
             set;

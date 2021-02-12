@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using DX = SharpDX;
+using System.Numerics;
 
 namespace Gorgon.Editor.AnimationEditor
 {
@@ -38,7 +38,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>
         /// Property to return the previous position of the vertex.
         /// </summary>
-        public DX.Vector2 PreviousPosition
+        public Vector2 PreviousPosition
         {
             get;
         }
@@ -46,7 +46,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>
         /// Property to return the new position of the vertex.
         /// </summary>
-        public DX.Vector2 NewPosition
+        public Vector2 NewPosition
         {
             get;
         }
@@ -63,7 +63,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="vertexIndex">Index of the vertex being modified</param>
         /// <param name="oldPos">The old position for the vertex.</param>
         /// <param name="newPos">The new position for the vertex.</param>
-        public VertexChangedEventArgs(int vertexIndex, DX.Vector2 oldPos, DX.Vector2 newPos)
+        public VertexChangedEventArgs(int vertexIndex, Vector2 oldPos, Vector2 newPos)
         {
             VertexIndex = vertexIndex;
             PreviousPosition = oldPos;

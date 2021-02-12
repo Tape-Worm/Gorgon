@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,12 +34,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
-using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Timing;
@@ -94,7 +93,7 @@ namespace Gorgon.Examples
         // The icicle sprite.
         private static GorgonSprite _icicle;
         // The position of the guy.
-        private static DX.Vector2 _guyPosition;
+        private static Vector2 _guyPosition;
         // Up animation.
         private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new Dictionary<AnimationName, IGorgonAnimation>();
         // The animation controller.
@@ -117,7 +116,7 @@ namespace Gorgon.Examples
             {
                 for (int x = 0; x < _tileSize.Width + 1; x++)
                 {
-                    _snowTile.Position = new DX.Vector2(x * _snowTile.ScaledSize.Width, y * _snowTile.ScaledSize.Height);
+                    _snowTile.Position = new Vector2(x * _snowTile.ScaledSize.Width, y * _snowTile.ScaledSize.Height);
                     _renderer.DrawSprite(_snowTile);
                 }
             }
@@ -128,7 +127,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void DrawIcicle()
         {
-            _icicle.Position = new DX.Vector2(((_tileSize.Width - 2) / 2) * _snowTile.ScaledSize.Width, ((_tileSize.Height - 2) / 2) * _snowTile.ScaledSize.Height);
+            _icicle.Position = new Vector2(((_tileSize.Width - 2) / 2) * _snowTile.ScaledSize.Width, ((_tileSize.Height - 2) / 2) * _snowTile.ScaledSize.Height);
             _renderer.DrawSprite(_icicle);
         }
 
@@ -188,13 +187,13 @@ namespace Gorgon.Examples
                         // If we reach the extreme left of the screen (and we're off screen), then move to the right side and continue this animation.						
                         if (_guyPosition.Y < _icicle.Position.Y + _snowTile.ScaledSize.Height)
                         {
-                            _guyPosition = new DX.Vector2(_screen.Width + _guySprite.ScaledSize.Width * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Height / 2.0f);
+                            _guyPosition = new Vector2(_screen.Width + _guySprite.ScaledSize.Width * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Height / 2.0f);
                         }
                         else
                         {
                             // Otherwise, reset and start over.
                             _current = AnimationName.WalkUp;
-                            _guyPosition = new DX.Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height + _snowTile.ScaledSize.Height);
+                            _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height + _snowTile.ScaledSize.Height);
                         }
 
                         // Ensure that the guy's depth value is less than the icicle so he'll appear in front of it.
@@ -413,7 +412,7 @@ namespace Gorgon.Examples
                 GorgonSprite sprite = await loader.LoadSpriteAsync(file.FullPath);
 
                 // At super duper resolution, the example graphics would be really hard to see, so we'll scale them up.
-                sprite.Scale = new DX.Vector2((_screen.Width / (_screen.Height / 2)) * 2.0f);
+                sprite.Scale = new Vector2((_screen.Width / (_screen.Height / 2)) * 2.0f);
                 sprites[file.Name] = sprite;
             }
 
@@ -425,7 +424,7 @@ namespace Gorgon.Examples
 
             _guySprite = sprites["Guy_Up_0"];
             _guySprite.Depth = 0.1f;
-            _guyPosition = new DX.Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
+            _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
 
             BuildAnimations(sprites);
 

@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
+using System.Numerics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
@@ -83,7 +79,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the offset for the layer.
         /// </summary>
-        public DX.Vector2 Offset
+        public Vector2 Offset
         {
             get;
             set;
@@ -126,7 +122,8 @@ namespace Gorgon.Examples
 
                 if (light.PointLight != null)
                 {
-                    light.PointLight.Position = new DX.Vector3(((DX.Vector2)light.LocalLightPosition + Offset) / ParallaxLevel, Lights[i].LocalLightPosition.Z);
+                    Vector3 newPosition = (light.LocalLightPosition + new Vector3(Offset, 0)) / ParallaxLevel;
+                    light.PointLight.Position = new Vector3(new Vector2(newPosition.X, newPosition.Y), Lights[i].LocalLightPosition.Z);
                 }
             }
         }

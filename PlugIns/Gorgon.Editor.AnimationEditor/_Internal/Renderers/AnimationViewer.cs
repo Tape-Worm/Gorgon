@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
@@ -188,7 +189,7 @@ namespace Gorgon.Editor.AnimationEditor
                 sprite.TextureArrayIndex = DataContext.WorkingSprite.TextureArrayIndex;
                 sprite.TextureRegion = DataContext.WorkingSprite.TextureRegion;
 
-                DX.Vector4 defaultValue = DataContext.WorkingSprite.GetFloatValues(track.SpriteProperty);
+                Vector4 defaultValue = DataContext.WorkingSprite.GetFloatValues(track.SpriteProperty);
 
                 sprite.SetFloatValues(track.SpriteProperty, keyFrame == null ? defaultValue : keyFrame.FloatValue);
             }
@@ -433,7 +434,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         protected void DrawAnchorPoint()
         {
-            DX.Vector2 spriteAnchor = ToClient(new DX.Vector2(Sprite.Position.X - RenderRegion.Width * 0.5f,
+            Vector2 spriteAnchor = ToClient(new Vector2(Sprite.Position.X - RenderRegion.Width * 0.5f,
                                                               Sprite.Position.Y - RenderRegion.Height * 0.5f));
 
             Renderer.DrawEllipse(new DX.RectangleF(spriteAnchor.X - 4, spriteAnchor.Y - 4, 8, 8), GorgonColor.Black);
@@ -625,9 +626,9 @@ namespace Gorgon.Editor.AnimationEditor
 
             ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(spriteRegion);
 
-            var spritePosition = (DX.Vector2)Camera.Unproject(new DX.Vector3(spriteRegion.X + spriteRegion.Width * 0.5f, spriteRegion.Y + spriteRegion.Height * 0.5f, 0));
+            Vector3 spritePosition = Camera.Unproject(new Vector3(spriteRegion.X + spriteRegion.Width * 0.5f, spriteRegion.Y + spriteRegion.Height * 0.5f, 0));
 
-            MoveTo(spritePosition, spriteZoomLevel.GetScale());
+            MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
         }
 
         /// <summary>Releases unmanaged and - optionally - managed resources.</summary>

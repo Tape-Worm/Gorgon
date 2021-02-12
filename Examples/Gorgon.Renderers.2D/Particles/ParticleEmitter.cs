@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Numerics;
 using System.Linq;
-using System.Text;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using Gorgon.Math;
 using Gorgon.Core;
@@ -60,11 +57,11 @@ namespace Gorgon.Examples
             /// <summary>
             /// Position of the particle.
             /// </summary>
-            public DX.Vector2 Position;
+            public Vector2 Position;
             /// <summary>
             /// Velocity of the particle.
             /// </summary>
-            public DX.Vector2 Velocity;
+            public Vector2 Velocity;
             /// <summary>
             /// Gravity for the particle.
             /// </summary>
@@ -100,7 +97,7 @@ namespace Gorgon.Examples
             /// <summary>
             /// Delta change for the color.
             /// </summary>
-            public DX.Vector4 ColorDelta;
+            public Vector4 ColorDelta;
             /// <summary>
             /// Age of the particle.
             /// </summary>
@@ -140,11 +137,11 @@ namespace Gorgon.Examples
         // List of particles.
         private Particle[] _particles = null;
         // Previous position.
-        private DX.Vector2 _previousPosition;
+        private Vector2 _previousPosition;
         // The renderer used to draw the particle(s).
         private readonly Gorgon2D _renderer;
         // The position of the emitter.
-        private DX.Vector2 _position;
+        private Vector2 _position;
         // The number of particles that are still active.
         private int _aliveCount;
         // The fractional remainder for the particle allocation calculation.
@@ -231,7 +228,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the position of the emitter.
         /// </summary>
-        public ref DX.Vector2 Position => ref _position;
+        public ref Vector2 Position => ref _position;
 
         /// <summary>
         /// Property to set or return the sprite to use for the particle.
@@ -381,9 +378,9 @@ namespace Gorgon.Examples
 
                 if (particle.TerminalAge > 0.0f)
                 {
-                    DX.Vector2.Subtract(ref _position, ref _previousPosition, out DX.Vector2 posDelta);
-                    DX.Vector2.Multiply(ref posDelta, GorgonRandom.RandomSingle(), out DX.Vector2 posVar);
-                    DX.Vector2.Add(ref _previousPosition, ref posVar, out particle.Position);                    
+                    var posDelta = Vector2.Subtract(_position, _previousPosition);
+                    var posVar = Vector2.Multiply(posDelta, GorgonRandom.RandomSingle());
+                    particle.Position = Vector2.Add(_previousPosition, posVar);
                     particle.Position.X += GorgonRandom.RandomSingle(-2, 2);
                     particle.Position.Y += GorgonRandom.RandomSingle(-2, 2);
                     
@@ -391,12 +388,12 @@ namespace Gorgon.Examples
                     float angle = Direction.ToRadians() - pi2 + GorgonRandom.RandomSingle(0, spreadRad) - spreadRad * 0.5f;
                     if (Relative)
                     {
-                        DX.Vector2.Subtract(ref _previousPosition, ref _position, out DX.Vector2 diff);                        
+                        var diff = Vector2.Subtract(_previousPosition, _position);                        
                         angle += diff.Y.ATan(diff.X) + pi2;
                     }
 
-                    particle.Velocity = new DX.Vector2(angle.Cos(), angle.Sin());
-                    DX.Vector2.Multiply(ref particle.Velocity, GorgonRandom.RandomSingle(ParticleSpeedRange.Minimum, ParticleSpeedRange.Maximum), out particle.Velocity);
+                    particle.Velocity = new Vector2(angle.Cos(), angle.Sin());
+                    particle.Velocity = Vector2.Multiply(particle.Velocity, GorgonRandom.RandomSingle(ParticleSpeedRange.Minimum, ParticleSpeedRange.Maximum));
 
                     particle.Gravity = GorgonRandom.RandomSingle(ParticleGravityRange.Minimum, ParticleGravityRange.Maximum);
                     particle.RadialAcceleration = GorgonRandom.RandomSingle(RadialAccelerationRange.Minimum, RadialAccelerationRange.Maximum);
@@ -411,7 +408,7 @@ namespace Gorgon.Examples
 
                     particle.SizeDelta = (ParticleSizeRange.Maximum - particle.Size) / particle.TerminalAge;
                     particle.SpinDelta = (ParticleRotationRange.Maximum - particle.Spin) / particle.TerminalAge;
-                    particle.ColorDelta = new DX.Vector4((ColorRange.Maximum.Red - particle.Color.Red) / particle.TerminalAge,
+                    particle.ColorDelta = new Vector4((ColorRange.Maximum.Red - particle.Color.Red) / particle.TerminalAge,
                                                          (ColorRange.Maximum.Green - particle.Color.Green) / particle.TerminalAge,
                                                          (ColorRange.Maximum.Blue - particle.Color.Blue) / particle.TerminalAge,
                                                          (ColorRange.Maximum.Alpha - particle.Color.Alpha) / particle.TerminalAge);
@@ -435,18 +432,18 @@ namespace Gorgon.Examples
         /// <param name="y">Vertical position.</param>
         public void Move(float x, float y)
         {
-            var offset = new DX.Vector2(x, y);
-            
-            DX.Vector2.Subtract(ref offset, ref _position, out DX.Vector2 delta);
+            var offset = new Vector2(x, y);
+
+            var delta = Vector2.Subtract(offset, _position);
 
             for (int i = 0; i < _aliveCount; i++)
             {
                 Particle particle = _particles[i];
 
-                DX.Vector2.Add(ref particle.Position, ref delta, out particle.Position);
+                particle.Position = Vector2.Add(particle.Position, delta);
             }
 
-            DX.Vector2.Add(ref _previousPosition, ref delta, out _previousPosition);
+            _previousPosition = Vector2.Add(_previousPosition, delta);
             Position = offset;
         }
 
@@ -486,21 +483,20 @@ namespace Gorgon.Examples
                     continue;
                 }
 
-                DX.Vector2.Subtract(ref particle.Position, ref _position, out DX.Vector2 acceleration);
-                acceleration.Normalize();
+                var acceleration = Vector2.Normalize(Vector2.Subtract(particle.Position, _position));
 
-                var crossAcceleration = new DX.Vector2(-acceleration.Y, acceleration.X);                
+                var crossAcceleration = new Vector2(-acceleration.Y, acceleration.X);
 
-                DX.Vector2.Multiply(ref acceleration, particle.RadialAcceleration, out DX.Vector2 radialAcceleration);
-                DX.Vector2.Multiply(ref crossAcceleration, particle.TangentialAcceleration, out DX.Vector2 tangentAcceleration);
+                var radialAcceleration = Vector2.Multiply(acceleration, particle.RadialAcceleration);
+                var tangentAcceleration = Vector2.Multiply(crossAcceleration, particle.TangentialAcceleration);
 
-                DX.Vector2.Add(ref radialAcceleration, ref tangentAcceleration, out DX.Vector2 totalAccel);
-                DX.Vector2.Multiply(ref totalAccel, frameDelta, out DX.Vector2 finalAccel);
-                DX.Vector2.Add(ref particle.Velocity, ref finalAccel, out particle.Velocity);
+                var totalAccel = Vector2.Add(radialAcceleration, tangentAcceleration);
+                var finalAccel = Vector2.Multiply(totalAccel, frameDelta);
+                particle.Velocity = Vector2.Add(particle.Velocity, finalAccel);
                 particle.Velocity.Y += particle.Gravity * frameDelta;
 
-                DX.Vector2.Multiply(ref particle.Velocity, frameDelta, out DX.Vector2 finalVel);
-                DX.Vector2.Add(ref particle.Position, ref finalVel, out particle.Position);
+                var finalVel = Vector2.Multiply(particle.Velocity, frameDelta);
+                particle.Position = Vector2.Add(particle.Position, finalVel);
 
                 particle.Spin += particle.SpinDelta * frameDelta;
                 particle.Size += particle.SizeDelta * frameDelta;
@@ -538,7 +534,7 @@ namespace Gorgon.Examples
                 ParticleSprite.Color = particle.Color;
                 ParticleSprite.Position = particle.Position;
                 ParticleSprite.Angle = (particle.Spin * particle.Age).ToDegrees();
-                ParticleSprite.Scale = new DX.Vector2(particle.Size * EmitterScale);
+                ParticleSprite.Scale = new Vector2(particle.Size * EmitterScale);
                 _renderer.DrawSprite(ParticleSprite);
             }
         }
@@ -552,7 +548,7 @@ namespace Gorgon.Examples
         /// <param name="particleSprite">Sprite to use for the particle.</param>
         /// <param name="position">The initial position of the emitter.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="renderer"/>, or <paramref name="particleSprite"/> parameter is <b>null</b>.</exception>
-        public ParticleEmitter(Gorgon2D renderer, GorgonSprite particleSprite, DX.Vector2 position)
+        public ParticleEmitter(Gorgon2D renderer, GorgonSprite particleSprite, Vector2 position)
         {
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
             ParticleSprite = particleSprite ?? throw new ArgumentNullException(nameof(particleSprite));

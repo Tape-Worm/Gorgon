@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Linq;
 using System.Threading;
 using DX = SharpDX;
@@ -218,7 +219,7 @@ namespace Gorgon.Editor.Rendering
         /// <returns>The scaling factor to apply.</returns>
         protected float CalculateScaling(DX.Size2F size, DX.Size2F windowSize)
         {
-            var scaling = new DX.Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
+            var scaling = new Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
 
             return scaling.X.Min(scaling.Y);
         }

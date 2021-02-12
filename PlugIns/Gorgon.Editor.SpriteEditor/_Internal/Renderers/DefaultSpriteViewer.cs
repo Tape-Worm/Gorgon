@@ -25,6 +25,7 @@
 #endregion
 
 using System.Linq;
+using System.Numerics;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -116,7 +117,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DX.Rectangle spriteTextureLocation = DataContext.Texture.ToPixel(DataContext.TextureCoordinates);
 
-            _sprite.Position = new DX.Vector2(spriteTextureLocation.X + (int)(RenderRegion.Width * -0.5f), 
+            _sprite.Position = new Vector2(spriteTextureLocation.X + (int)(RenderRegion.Width * -0.5f), 
                                               spriteTextureLocation.Y + (int)(RenderRegion.Height * -0.5f));
             _sprite.Size = DataContext.Size;
 
@@ -222,16 +223,16 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to draw the sprite.</summary>
         protected override void DrawSprite()
         {
-            var halfRegion = new DX.Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
+            var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
 
             // We'll need to draw the marching ants rectangle in standard client space. 
             // So, we can just get the camera to tell us where that is.
-            var spriteTopLeft = new DX.Vector3(_spriteRegion.TopLeft, 0);
-            var spriteBottomRight = new DX.Vector3(_spriteRegion.BottomRight, 0);
-            var spriteAnchor = new DX.Vector3((DataContext.Anchor.X * DataContext.Size.Width) + _sprite.Position.X, _sprite.Position.Y + (DataContext.Anchor.Y * DataContext.Size.Height), 0);
-            Camera.Unproject(ref spriteTopLeft, out DX.Vector3 transformedTopLeft);
-            Camera.Unproject(ref spriteBottomRight, out DX.Vector3 transformedBottomRight);
-            Camera.Unproject(ref spriteAnchor, out DX.Vector3 transformedAnchor);
+            var spriteTopLeft = new Vector3(_spriteRegion.Left, _spriteRegion.Top, 0);
+            var spriteBottomRight = new Vector3(_spriteRegion.Right, _spriteRegion.Bottom, 0);
+            var spriteAnchor = new Vector3((DataContext.Anchor.X * DataContext.Size.Width) + _sprite.Position.X, _sprite.Position.Y + (DataContext.Anchor.Y * DataContext.Size.Height), 0);
+            Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
+            Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
+            Camera.Unproject(in spriteAnchor, out Vector3 transformedAnchor);
             var marchAntsRect = new DX.RectangleF
             {
                 Left = (int)transformedTopLeft.X,
@@ -281,10 +282,9 @@ namespace Gorgon.Editor.SpriteEditor
                         
             ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(_spriteRegion);
 
-            var spritePosition = (DX.Vector2)Camera.Unproject(new DX.Vector3(_spriteRegion.X + _spriteRegion.Width * 0.5f,
-                                                                             _spriteRegion.Y + _spriteRegion.Height * 0.5f, 0));
+            Vector3 spritePosition = Camera.Unproject(new Vector3(_spriteRegion.X + _spriteRegion.Width * 0.5f, _spriteRegion.Y + _spriteRegion.Height * 0.5f, 0));
 
-            MoveTo(spritePosition, spriteZoomLevel.GetScale());
+            MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
         }
         #endregion
 

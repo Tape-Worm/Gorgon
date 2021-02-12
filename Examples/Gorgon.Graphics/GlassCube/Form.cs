@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -38,6 +39,7 @@ using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
+using System.Runtime.CompilerServices;
 
 namespace Gorgon.Examples
 {
@@ -77,7 +79,7 @@ namespace Gorgon.Examples
         // The camera for viewing the cube.
         private GorgonPerspectiveCamera _camera;
         // The rotation to apply to the cube, in degrees.
-        private DX.Vector3 _rotation;
+        private Vector3 _rotation;
         // The current time.
         private float _accumulator;
         // The timer used for updating the text block.
@@ -108,24 +110,22 @@ namespace Gorgon.Examples
         /// model and project them into 2D space on your render target.
         /// </para>
         /// </remarks>
-        private void UpdateWVP(ref DX.Matrix world)
+        private void UpdateWVP(in Matrix4x4 world)
         {
             // Get the view and projection from the camera.
             // These values are cached and returned as read only references for performance.
-            ref DX.Matrix viewMatrix = ref _camera.GetViewMatrix();
-            ref DX.Matrix projMatrix = ref _camera.GetProjectionMatrix();
+            ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
+            ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
 
             // Build our world/vi ew/projection matrix to send to
             // the shader.
-            DX.Matrix.Multiply(ref world, ref viewMatrix, out DX.Matrix temp);
-            DX.Matrix.Multiply(ref temp, ref projMatrix, out DX.Matrix wvp);
-
+            var temp = Matrix4x4.Multiply(world, viewMatrix);
             // Direct 3D 11 requires that we transpose our matrix 
             // before sending it to the shader.
-            DX.Matrix.Transpose(ref wvp, out wvp);
+            var wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, projMatrix));
 
             // Update the constant buffer.
-            _wvpBuffer.Buffer.SetData(ref wvp);
+            _wvpBuffer.Buffer.SetData(in wvp);
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Gorgon.Examples
             }
 
             // Send our world matrix to the constant buffer so the vertex shader can update the vertices.
-            UpdateWVP(ref _cube.WorldMatrix);
+            UpdateWVP(in _cube.WorldMatrix);
 
             // And, as always, send the cube to the GPU for rendering.
             _graphics.Submit(_drawCall);
@@ -222,14 +222,14 @@ namespace Gorgon.Examples
             // Create our constant buffer so we can send our transformation information to the shader.
             _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo("GlassCube WVP Constant Buffer")
             {
-                SizeInBytes = DX.Matrix.SizeInBytes
+                SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
             });
 
             // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
             _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(ClientSize.Width, ClientSize.Height), 0.1f, 10.0f, "GlassCube Camera")
             {
                 Fov = 60.0f,
-                Position = new DX.Vector3(0.0f, 0.0f, -1.5f)                
+                Position = new Vector3(0.0f, 0.0f, -1.5f)                
             };
 
             _cube = new Cube(_graphics, _inputLayout);

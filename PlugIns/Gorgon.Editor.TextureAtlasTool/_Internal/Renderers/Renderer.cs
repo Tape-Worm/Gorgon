@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Graphics;
@@ -58,7 +59,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			Renderer.Begin(camera: _camera);
 			Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColor.White, 0.75f));
-			Renderer.DrawString(Resources.GORTAG_TEXT_NO_ATLAS, new DX.Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColor.Black);
+			Renderer.DrawString(Resources.GORTAG_TEXT_NO_ATLAS, new Vector2((int)(-textSize.Width * 0.5f), (int)(-textSize.Height * 0.5f)), color: GorgonColor.Black);
 			Renderer.End();
 		}
 
@@ -78,7 +79,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			float scale = CalculateScaling(new DX.Size2F(texture.Width + 8, texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
 			_textureSprite.Size = new DX.Size2F(scale * texture.Width, scale * texture.Height).Truncate();
-			_textureSprite.Position = new DX.Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
+			_textureSprite.Position = new Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
 
 			Renderer.Begin(camera: _camera);
 			_textureSprite.TextureArrayIndex = DataContext.PreviewArrayIndex;
@@ -98,7 +99,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			_camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
 			{
-				Anchor = new DX.Vector2(0.5f, 0.5f)
+				Anchor = new Vector2(0.5f, 0.5f)
 			};
 
 			GorgonTexture2DView texture = (DataContext.Atlas != null) && (DataContext.Atlas.Textures.Count > 0) ? DataContext.Atlas.Textures[0] : null;

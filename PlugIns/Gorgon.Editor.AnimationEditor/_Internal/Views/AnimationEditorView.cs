@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
@@ -359,7 +360,7 @@ namespace Gorgon.Editor.AnimationEditor
                 Texture = _anchorTexture,
                 Size = new DX.Size2F(_anchorTexture.Width, _anchorTexture.Height),
                 // Place the hotspot on rope hole at the top of the handle.
-                Anchor = new DX.Vector2(0.5f, 0.125f)
+                Anchor = new Vector2(0.5f, 0.125f)
             }, new DX.Rectangle
             {
                 Left = -context.Graphics.VideoAdapter.MaxTextureWidth / 2,

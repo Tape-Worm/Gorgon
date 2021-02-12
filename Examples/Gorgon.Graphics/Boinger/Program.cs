@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
@@ -137,7 +138,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void UpdateBall()
         {
-            DX.Vector3 position = _sphere.Position;
+            Vector3 position = _sphere.Position;
 
             if (_bounceV)
             {
@@ -189,7 +190,7 @@ namespace Gorgon.Examples
                 }
             }
 
-            _sphere.Rotation = new DX.Vector3(0, _rotate, -12.0f);
+            _sphere.Rotation = new Vector3(0, _rotate, -12.0f);
             _sphere.Position = position;
 
             _rotate += 90.0f * GorgonTiming.Delta * (_rotateSpeed.Sin() * 1.5f);
@@ -204,10 +205,10 @@ namespace Gorgon.Examples
         {
             // Send the transform for the model to the GPU so we can update its position and rotation.
             model.UpdateTransform();
-            UpdateWVP(ref model.WorldMatrix);
+            UpdateWVP(in model.WorldMatrix);
 
             GorgonColor color = model.Material.Diffuse;
-            _materialBuffer.Buffer.SetData(ref color, copyMode: CopyMode.Discard);
+            _materialBuffer.Buffer.SetData(in color, copyMode: CopyMode.Discard);
 
             GorgonDrawIndexCall drawCall = model == _sphere ? _drawCalls[2] : (model == _planes[0] ? _drawCalls[0] : _drawCalls[1]);
 
@@ -241,15 +242,15 @@ namespace Gorgon.Examples
             RenderModel(_sphere);
 
             // Remember the position and rotation so we can restore them later.
-            DX.Vector3 spherePosition = _sphere.Position;
-            DX.Vector3 sphereRotation = _sphere.Rotation;
+            Vector3 spherePosition = _sphere.Position;
+            Vector3 sphereRotation = _sphere.Rotation;
 
             // Offset the position of the ball so we can fake a shadow under the ball.
-            _sphere.Position = new DX.Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z + 0.5f);
+            _sphere.Position = new Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z + 0.5f);
             // Scale on the z-axis so the ball "shadow" has no real depth, and on the x & y to make it look slightly bigger.
-            _sphere.Scale = new DX.Vector3(1.155f, 1.155f, 0.001f);
+            _sphere.Scale = new Vector3(1.155f, 1.155f, 0.001f);
             // Reset the rotation so we don't rotate our flattened ball "shadow" (it'd look real weird if it rotated).
-            _sphere.Rotation = DX.Vector3.Zero;
+            _sphere.Rotation = Vector3.Zero;
             // Render as black with alpha of 0.5 to simulate a shadow.
             _sphere.Material.Diffuse = new GorgonColor(0, 0, 0, 0.5f);
 
@@ -259,7 +260,7 @@ namespace Gorgon.Examples
             // Restore our original positioning so we can render the ball in the correct place on the next frame.
             _sphere.Position = spherePosition;
             // Reset scale on the z-axis so the ball so it'll be normal for the next frame.
-            _sphere.Scale = DX.Vector3.One;
+            _sphere.Scale = Vector3.One;
             // Reset the rotation so it'll be in the correct place on the next frame.
             _sphere.Rotation = sphereRotation;
 
@@ -284,22 +285,22 @@ namespace Gorgon.Examples
         /// model and project them into 2D space on your render target.
         /// </para>
         /// </remarks>
-        private static void UpdateWVP(ref DX.Matrix world)
+        private static void UpdateWVP(in Matrix4x4 world)
         {
             // Build our world/view/projection matrix to send to
             // the shader.
-            ref DX.Matrix viewMatrix = ref _camera.GetViewMatrix();
-            ref DX.Matrix projMatrix = ref _camera.GetProjectionMatrix();
+            ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
+            ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
 
-            DX.Matrix.Multiply(ref world, ref viewMatrix, out DX.Matrix temp);
-            DX.Matrix.Multiply(ref temp, ref projMatrix, out DX.Matrix wvp);
+            var temp = Matrix4x4.Multiply(world, viewMatrix);
+            var wvp = Matrix4x4.Multiply(temp, projMatrix);
 
             // Direct 3D 11 requires that we transpose our matrix 
             // before sending it to the shader.
-            DX.Matrix.Transpose(ref wvp, out wvp);
+            wvp = Matrix4x4.Transpose(wvp);
 
             // Update the constant buffer.
-            _wvpBuffer.Buffer.SetData(ref wvp);
+            _wvpBuffer.Buffer.SetData(in wvp);
         }
 
         /// <summary>
@@ -470,7 +471,7 @@ namespace Gorgon.Examples
                                                                        new GorgonConstantBufferInfo("WVPBuffer")
                                                                        {
                                                                            Usage = ResourceUsage.Dynamic,
-                                                                           SizeInBytes = Unsafe.SizeOf<DX.Matrix>()
+                                                                           SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
                                                                        });
             // This one will hold our material information.
             _materialBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
@@ -480,7 +481,7 @@ namespace Gorgon.Examples
                                                                                 SizeInBytes = Unsafe.SizeOf<GorgonColor>()
                                                                             });
             GorgonColor defaultMaterialColor = GorgonColor.White;
-            _materialBuffer.Buffer.SetData(ref defaultMaterialColor);
+            _materialBuffer.Buffer.SetData(in defaultMaterialColor);
 
             GorgonExample.LoadResources(_graphics);
         }
@@ -526,7 +527,7 @@ namespace Gorgon.Examples
             _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 500.0f, 0.125f)
             {
                 Fov = 75,
-                Position = new DX.Vector3(0, 0, -2.2f)
+                Position = new Vector3(0, 0, -2.2f)
             };
         }
 
@@ -555,34 +556,34 @@ namespace Gorgon.Examples
                 // And here we set up the planes with a material, and initial positioning.
                 _planes = new[]
                           {
-                              new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+                              new Plane(_graphics, _inputLayout, new Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
                               {
                                   Material = new Material
                                              {
                                                  Diffuse = GorgonColor.White, Texture = _texture
                                              },
-                                  Position = new DX.Vector3(0, 0, 3.0f)
+                                  Position = new Vector3(0, 0, 3.0f)
                               },
-                              new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+                              new Plane(_graphics, _inputLayout, new Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
                               {
                                   Material = new Material
                                              {
                                                  Diffuse = GorgonColor.White, Texture = _texture
                                              },
-                                  Position = new DX.Vector3(0, -3.5f, 3.5f),
-                                  Rotation = new DX.Vector3(90.0f, 0, 0)
+                                  Position = new Vector3(0, -3.5f, 3.5f),
+                                  Rotation = new Vector3(90.0f, 0, 0)
                               }
                           };
 
                 // Create our sphere.
                 // Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
-                DX.Vector2 textureOffset = _texture.ToTexel(new DX.Vector2(516, 0));
+                Vector2 textureOffset = _texture.ToTexel(new Vector2(516, 0));
                 // This is to scale our texture coordinates because the actual image is much smaller (255x255) than the full texture (1024x512).
                 textureSize = _texture.ToTexel(new DX.Size2(255, 255));
                 // Give the sphere a place to live.
                 _sphere = new Sphere(_graphics, _inputLayout, 1.0f, textureOffset, textureSize)
                 {
-                    Position = new DX.Vector3(2.2f, 1.5f, 2.5f),
+                    Position = new Vector3(2.2f, 1.5f, 2.5f),
                     Material = new Material
                     {
                         Diffuse = GorgonColor.White,

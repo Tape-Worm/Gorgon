@@ -25,8 +25,8 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -42,7 +42,7 @@ namespace Gorgon.Renderers
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var v2 = (DX.Vector2)value;
+            var v2 = (Vector2)value;
             writer.WriteStartObject();
             writer.WritePropertyName("x");
             writer.WriteValue(v2.X);
@@ -62,19 +62,19 @@ namespace Gorgon.Renderers
             if ((reader.TokenType != JsonToken.StartObject)
                 || (!reader.Read()))
             {
-                return DX.Vector2.Zero;
+                return Vector2.Zero;
             }
 
             float x = (float)(reader.ReadAsDouble() ?? 0);
             if (!reader.Read())
             {
-                return new DX.Vector2(x, 0);
+                return new Vector2(x, 0);
             }
 
             float y = (float)(reader.ReadAsDouble() ?? 0);
             reader.Read();
 
-            return new DX.Vector2(x, y);
+            return new Vector2(x, y);
         }
 
         /// <summary>
@@ -84,6 +84,6 @@ namespace Gorgon.Renderers
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType) => (objectType == typeof(DX.Vector2));
+        public override bool CanConvert(Type objectType) => (objectType == typeof(Vector2));
     }
 }

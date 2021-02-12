@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
@@ -419,7 +419,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 TrackKeySelection selectedTrack = _content.Selected[0];
                 TrackKeySelection.KeySelection selectedKey = _content.Selected[0].SelectedKeys[0];
-                DX.Vector4? value = selectedKey.KeyFrame?.FloatValue ?? _contentServices.KeyProcessor.GetTrackFloatValues(selectedTrack.Track, selectedKey.TimeIndex, 
+                Vector4? value = selectedKey.KeyFrame?.FloatValue ?? _contentServices.KeyProcessor.GetTrackFloatValues(selectedTrack.Track, selectedKey.TimeIndex, 
                                                                                                                           _controller.CurrentAnimation, _content.WorkingSprite);
 
                 // Reset the track/key value.
@@ -502,7 +502,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="time">The time, in seconds, for the key frame.</param>
         /// <param name="floatValues">The floating point values to assign.</param>
         /// <returns>A new key frame if one does not exist, an updated key frame if it already exists, or <b>null</b> to indicate that no data is in the key frame slot.</returns>
-        private IKeyFrame SetFloatValuesKeyFrameData(ITrack track, float time, DX.Vector4? floatValues)
+        private IKeyFrame SetFloatValuesKeyFrameData(ITrack track, float time, Vector4? floatValues)
         {
             IKeyFrame result = null;
 
@@ -522,7 +522,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="selectedFiles">The files that were selected.</param>
         /// <param name="floatValues">The floating point values to assign.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private async Task SetKeyAsync(IReadOnlyList<IContentFile> selectedFiles, DX.Vector4? floatValues)
+        private async Task SetKeyAsync(IReadOnlyList<IContentFile> selectedFiles, Vector4? floatValues)
         {
             // Function to create the arguments for the undo/redo.
             SetKeyUndoRedoArgs CreateArgs() =>
@@ -542,7 +542,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
 
             // Function to assign the keys with the sprite files passed in, or from the list of keys passed in.
-            async Task SetAsync(List<TrackKeySelection.KeySelection> keys, IReadOnlyList<IContentFile> spriteFiles, DX.Vector4? newFloatValues)
+            async Task SetAsync(List<TrackKeySelection.KeySelection> keys, IReadOnlyList<IContentFile> spriteFiles, Vector4? newFloatValues)
             {
                 IKeyFrame[] keyFrames = null;
 
@@ -566,7 +566,7 @@ namespace Gorgon.Editor.AnimationEditor
                         switch (currentTrack.KeyType)
                         {
                             case AnimationTrackKeyType.Single when currentTrack.SpriteProperty == TrackSpriteProperty.Opacity:
-                                var opacity = new DX.Vector4(newFloatValues?.X ?? key.KeyFrame?.FloatValue.X ?? 1.0f, 0, 0, 0);
+                                var opacity = new Vector4(newFloatValues?.X ?? key.KeyFrame?.FloatValue.X ?? 1.0f, 0, 0, 0);
                                 keyFrames[key.KeyIndex] = SetFloatValuesKeyFrameData(currentTrack, key.TimeIndex, opacity);
                                 break;
                             case AnimationTrackKeyType.Single:
@@ -908,7 +908,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>        
         private async Task DoSetKeyAsync()
         {
-            DX.Vector4? floatValues = null;
+            Vector4? floatValues = null;
 
             try
             {

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,7 +35,6 @@ using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
@@ -67,7 +67,7 @@ namespace Gorgon.Examples
         // The text to render.
         private static GorgonTextSprite _crawlText;
         // The position of the crawl text.
-        private static DX.Vector2 _crawlPosition;
+        private static Vector2 _crawlPosition;
         #endregion
 
         #region Properties.
@@ -106,7 +106,7 @@ namespace Gorgon.Examples
             for (int i = 0; i < 1024; ++i)
             {
                 float brightness = GorgonRandom.RandomSingle(0.05f, 1.0f);
-                var pos = new DX.Vector2(GorgonRandom.RandomSingle(0, _spaceBackground.Width), GorgonRandom.RandomSingle(0, _spaceBackground.Height));
+                var pos = new Vector2(GorgonRandom.RandomSingle(0, _spaceBackground.Width), GorgonRandom.RandomSingle(0, _spaceBackground.Height));
                 _renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, 1, 1), new GorgonColor(brightness, brightness, brightness));
             }
 
@@ -119,10 +119,10 @@ namespace Gorgon.Examples
                 Texture = _crawl,
                 TextureRegion = new DX.RectangleF(0, 0, 1, 1),
                 Size = new DX.Size2F(_crawl.Width * 1.25f, _crawl.Height),
-                Position = new DX.Vector2(-_crawl.Width * 0.125f, 0)
+                Position = new Vector2(-_crawl.Width * 0.125f, 0)
             };
-            _crawlSprite.CornerOffsets.UpperLeft = new DX.Vector3(_crawl.Width * 0.55f - 16, _crawl.Height * 0.5f - 64, 0);
-            _crawlSprite.CornerOffsets.UpperRight = new DX.Vector3(-_crawl.Width * 0.55f + 16, _crawl.Height * 0.5f - 64, 0);
+            _crawlSprite.CornerOffsets.UpperLeft = new Vector3(_crawl.Width * 0.55f - 16, _crawl.Height * 0.5f - 64, 0);
+            _crawlSprite.CornerOffsets.UpperRight = new Vector3(-_crawl.Width * 0.55f + 16, _crawl.Height * 0.5f - 64, 0);
             _crawlSprite.CornerColors.UpperLeft = GorgonColor.BlackTransparent;
             _crawlSprite.CornerColors.UpperRight = GorgonColor.BlackTransparent;
 
@@ -139,12 +139,12 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
-            _crawlPosition = new DX.Vector2(0, _crawlPosition.Y - (_crawlRtv.Height * 0.025f * GorgonTiming.Delta));
+            _crawlPosition = new Vector2(0, _crawlPosition.Y - (_crawlRtv.Height * 0.025f * GorgonTiming.Delta));
 
             // Once the bottom of the text is past the 0 alpha point, flip it back to start over.
             if ((_crawlText.Size.Height + _crawlText.Position.Y) < _crawlRtv.Height * 0.35f)
             {
-                _crawlPosition = new DX.Vector2(0, _crawlRtv.Height);
+                _crawlPosition = new Vector2(0, _crawlRtv.Height);
             }
 
             // Render the text to the crawling render target.
@@ -229,7 +229,7 @@ namespace Gorgon.Examples
                 };
                                 
                 _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);
-                _crawlPosition = new DX.Vector2(0, _crawlRtv.Height);
+                _crawlPosition = new Vector2(0, _crawlRtv.Height);
 
                 window.IsLoaded = true;
 

@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Animation
 {
@@ -124,7 +124,7 @@ namespace Gorgon.Animation
                 return result;
             }
 
-            TrackKeyProcessor.TryUpdateVector4(this, timeIndex, out DX.Vector4 vec);
+            TrackKeyProcessor.TryUpdateVector4(this, timeIndex, out Vector4 vec);
 
             return new GorgonKeyVector4(timeIndex, vec);
         }

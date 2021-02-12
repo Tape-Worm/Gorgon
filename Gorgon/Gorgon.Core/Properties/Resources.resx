@@ -369,4 +369,7 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_RAY" xml:space="preserve">
     <value>Ray: Start ({0}, {1}, {2}) Direction ({3}, {4}, {5}).</value>
   </data>
+  <data name="GOR_ERR_NOT_ENOUGH_CORNERS" xml:space="preserve">
+    <value>A minimum of 8 elements must be available to retrieve the corners of the bounding box.</value>
+  </data>
 </root>

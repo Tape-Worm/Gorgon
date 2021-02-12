@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -418,9 +419,9 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the position of the sprite.
         /// </summary>
-        public DX.Vector2 Position
+        public Vector2 Position
         {
-            get => new DX.Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
+            get => new Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
@@ -460,12 +461,12 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This value is a relative value where 0, 0 means the upper left of the sprite, and 1, 1 means the lower right.
         /// </remarks>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => Renderable.Anchor;
             set
             {
-                ref DX.Vector2 anchor = ref Renderable.Anchor;
+                ref Vector2 anchor = ref Renderable.Anchor;
                 if ((anchor.X == value.X)
                     && (anchor.Y == value.Y))
                 {
@@ -494,14 +495,14 @@ namespace Gorgon.Renderers
             get
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
             }
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
-                scale = new DX.Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+                ref Vector2 scale = ref Renderable.Scale;
+                scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -509,12 +510,12 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
-        public DX.Vector2 Scale
+        public Vector2 Scale
         {
             get => Renderable.Scale;
             set
             {
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 if ((scale.X == value.X)
                     && (scale.Y == value.Y))
                 {

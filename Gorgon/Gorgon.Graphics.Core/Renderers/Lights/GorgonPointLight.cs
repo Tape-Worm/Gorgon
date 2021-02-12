@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Data;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Lights
 {
@@ -40,7 +40,7 @@ namespace Gorgon.Renderers.Lights
     {
         #region Variables.
         // The position for a point light.
-        private DX.Vector3 _position;
+        private Vector3 _position;
         // The attenuation of a point light.
         private float _attenuation = float.MaxValue.Sqrt();
         // The GPU data for the light.
@@ -56,7 +56,7 @@ namespace Gorgon.Renderers.Lights
         /// <summary>
         /// Property to set or return the position for the light.
         /// </summary>
-        public DX.Vector3 Position
+        public Vector3 Position
         {
             get => _position;
             set
@@ -123,7 +123,7 @@ namespace Gorgon.Renderers.Lights
         {
             if (IsUpdated)
             {
-                _lightData = new GorgonGpuLightData(Position, LightType, DX.Vector3.Zero, Color, SpecularEnabled, SpecularPower, Intensity, Attenuation);
+                _lightData = new GorgonGpuLightData(Position, LightType, Vector3.Zero, Color, SpecularEnabled, SpecularPower, Intensity, Attenuation);
                 IsUpdated = false;
             }
 

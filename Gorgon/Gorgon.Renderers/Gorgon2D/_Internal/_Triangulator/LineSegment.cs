@@ -5,7 +5,7 @@
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
 using Gorgon.Math;
-using DX = SharpDX;
+using System.Numerics;
 
 namespace GorgonTriangulator
 {
@@ -20,23 +20,23 @@ namespace GorgonTriangulator
             B = b;
         }
 
-        public float? IntersectsWithRay(DX.Vector2 origin, DX.Vector2 direction)
+        public float? IntersectsWithRay(Vector2 origin, Vector2 direction)
         {
             float largestDistance = (A.Position.X - origin.X).Max(B.Position.X - origin.X) * 2.0f;
             var raySegment = new LineSegment(new Vertex(origin, 0), new Vertex(origin + (direction * largestDistance), 0));
 
-            DX.Vector2? intersection = FindIntersection(this, raySegment);
+            Vector2? intersection = FindIntersection(this, raySegment);
             float? value = null;
 
             if (intersection != null)
             {
-                value = DX.Vector2.Distance(origin, intersection.Value);
+                value = Vector2.Distance(origin, intersection.Value);
             }
 
             return value;
         }
 
-        public static DX.Vector2? FindIntersection(LineSegment a, LineSegment b)
+        public static Vector2? FindIntersection(LineSegment a, LineSegment b)
         {
             float x1 = a.A.Position.X;
             float y1 = a.A.Position.Y;

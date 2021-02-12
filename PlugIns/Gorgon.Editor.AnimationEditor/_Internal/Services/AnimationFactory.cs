@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using DX = SharpDX;
@@ -82,7 +83,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
                 {
-                    keyBuilder.SetKey(new GorgonKeyVector2(keyFrame.Time, (DX.Vector2)keyFrame.FloatValue));
+                    keyBuilder.SetKey(new GorgonKeyVector2(keyFrame.Time, new Vector2(keyFrame.FloatValue.X, keyFrame.FloatValue.Y)));
                 }
 
                 keyBuilder.EndEdit();
@@ -104,7 +105,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
                 {
-                    keyBuilder.SetKey(new GorgonKeyVector3(keyFrame.Time, (DX.Vector3)keyFrame.FloatValue));
+                    keyBuilder.SetKey(new GorgonKeyVector3(keyFrame.Time, new Vector3(keyFrame.FloatValue.X, keyFrame.FloatValue.Y, keyFrame.FloatValue.Z)));
                 }
 
                 keyBuilder.EndEdit();

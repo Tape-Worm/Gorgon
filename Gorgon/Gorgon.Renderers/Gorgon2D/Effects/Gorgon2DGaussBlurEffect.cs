@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Globalization;
 using System.Threading;
 using Gorgon.Graphics;
@@ -275,7 +276,7 @@ namespace Gorgon.Renderers
         private void UpdateOffsets()
         {
             // This adjusts just how far from the texel the blurring can occur.
-            var unitSize = new DX.Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
+            var unitSize = new Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
 
             int pointerOffset = 0;
             int yOffset = (((_blurRadius) * 2) + 1);
@@ -503,11 +504,11 @@ namespace Gorgon.Renderers
             switch (passIndex)
             {
                 case 0:
-                    _blurBufferPass.Buffer.SetData(ref passIndex, copyMode: CopyMode.Discard);
+                    _blurBufferPass.Buffer.SetData(in passIndex, copyMode: CopyMode.Discard);
                     Graphics.SetRenderTarget(_hPass);
                     break;
                 case 1:
-                    _blurBufferPass.Buffer.SetData(ref passIndex, copyMode: CopyMode.Discard);
+                    _blurBufferPass.Buffer.SetData(in passIndex, copyMode: CopyMode.Discard);
                     Graphics.SetRenderTarget(_vPass);
                     break;
             }

@@ -97,7 +97,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <returns>The signed 16 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-        public Int16 ReadInt16()
+        public short ReadInt16()
         {
             ValidateAccess(false);
             return Reader.ReadInt16();
@@ -108,7 +108,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <returns>The unsigned 16 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-        public UInt16 ReadUInt16()
+        public ushort ReadUInt16()
         {
             ValidateAccess(false);
             return Reader.ReadUInt16();
@@ -119,7 +119,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <returns>The signed 32 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-        public Int32 ReadInt32()
+        public int ReadInt32()
         {
             ValidateAccess(false);
             return Reader.ReadInt32();
@@ -130,7 +130,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <returns>The unsigned 32 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-        public UInt32 ReadUInt32()
+        public uint ReadUInt32()
         {
             ValidateAccess(false);
             return Reader.ReadUInt32();
@@ -141,7 +141,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <returns>The signed 64 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-        public Int64 ReadInt64()
+        public long ReadInt64()
         {
             ValidateAccess(false);
             return Reader.ReadInt64();
@@ -152,7 +152,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <returns>The unsigned 64 bit integer in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-        public UInt64 ReadUInt64()
+        public ulong ReadUInt64()
         {
             ValidateAccess(false);
             return Reader.ReadUInt64();
@@ -163,7 +163,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <returns>The boolean value in the stream.</returns>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
-        public Boolean ReadBoolean()
+        public bool ReadBoolean()
         {
             ValidateAccess(false);
             return Reader.ReadBoolean();

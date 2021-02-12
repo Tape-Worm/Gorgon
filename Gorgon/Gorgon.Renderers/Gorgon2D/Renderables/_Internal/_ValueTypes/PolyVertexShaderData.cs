@@ -24,10 +24,10 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -45,7 +45,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// World matrix.
         /// </summary>
-        public DX.Matrix World;
+        public Matrix4x4 World;
         /// <summary>
         /// Color information.
         /// </summary>
@@ -53,11 +53,11 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Texture transformation data.
         /// </summary>
-        public DX.Vector4 TextureTransform;
+        public Vector4 TextureTransform;
         /// <summary>
         /// Flags used for flipping the texture and rotation values.
         /// </summary>
-        public DX.Vector4 MiscInfo;
+        public Vector4 MiscInfo;
         /// <summary>
         /// The texture array index to use.
         /// </summary>

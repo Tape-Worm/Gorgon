@@ -24,18 +24,13 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using DX = SharpDX;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using Gorgon.Graphics;
-using System.Windows.Forms;
 
 namespace Gorgon.Examples
 {
@@ -238,7 +233,7 @@ namespace Gorgon.Examples
             // changed to whatever the user desires, but by default it uses the render region width and height, and 0x0 is 
             // in the center of the region (hence why we are positioning the text at negstive values, which correspond to the
             // upper left coordinates of the render region).
-            _textSprite.Position = new DX.Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
+            _textSprite.Position = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
             _textSprite.LayoutArea = RenderRegion.Size;
 
             ChangeFont();
@@ -277,7 +272,7 @@ namespace Gorgon.Examples
             _textSprite = new GorgonTextSprite(_timesNewRoman)
             {
                 AllowColorCodes = true,
-                Position = new DX.Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f),
+                Position = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f),
                 LayoutArea = RenderRegion.Size,
                 Color = GorgonColor.Black,
                 TextureSampler = GorgonSamplerState.PointFiltering,
@@ -288,7 +283,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to set the view to a default zoom level.
         /// </summary>
-        public void DefaultZoom() => MoveTo(DX.Vector2.Zero, 1);
+        public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
         #endregion
 
         #region Constructor/Finalizer.

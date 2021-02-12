@@ -24,15 +24,11 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using SharpDX;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -57,7 +53,7 @@ namespace Gorgon.Examples
         /// <param name="texture">The texture to switch to.</param>
         /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
         /// <param name="textureArrayIndex">The texture array index.</param>
-        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, MoveableMesh animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, MoveableMesh animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
         {
         }
 
@@ -104,7 +100,7 @@ namespace Gorgon.Examples
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnRectangleUpdate(GorgonTrackRegistration track, MoveableMesh animObject, RectangleF value)
+        protected override void OnRectangleUpdate(GorgonTrackRegistration track, MoveableMesh animObject, DX.RectangleF value)
         {        
         }
 

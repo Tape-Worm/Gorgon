@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -33,7 +34,6 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
@@ -417,7 +417,7 @@ namespace Gorgon.Examples
         {
             // Cursor position.
             Point mousePosition = PointToClient(!_useWinFormsInput ? new Point(_mouse.Position.X, _mouse.Position.Y) : Cursor.Position);
-            var cursorPosition = new DX.Vector2(mousePosition.X, mousePosition.Y);
+            var cursorPosition = new Vector2(mousePosition.X, mousePosition.Y);
 
             if (!_useWinFormsInput)
             {
@@ -444,7 +444,7 @@ namespace Gorgon.Examples
                 }
 
                 // Adjust position to match screen coordinates.
-                cursorPosition = new DX.Vector2(_joystick.Axis[GamingDeviceAxis.XAxis].Value - xAxisRange.Minimum,
+                cursorPosition = new Vector2(_joystick.Axis[GamingDeviceAxis.XAxis].Value - xAxisRange.Minimum,
                                              _joystick.Axis[GamingDeviceAxis.YAxis].Value - yAxisRange.Minimum);
                 cursorPosition.X = cursorPosition.X / (xAxisRange.Range + 1) * _screen.Width;
                 cursorPosition.Y = _screen.Height - (cursorPosition.Y / (yAxisRange.Range + 1) * _screen.Height);

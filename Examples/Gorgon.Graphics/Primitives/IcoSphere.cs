@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -40,10 +41,10 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // Initial orientation.
-        private DX.Matrix _orientation;
+        private Matrix4x4 _orientation;
         // A list of previously performed splits.
         private readonly Dictionary<long, int> _cachedSplits = new Dictionary<long, int>();
-        private readonly List<DX.Vector3> _vertices = new List<DX.Vector3>();
+        private readonly List<Vector3> _vertices = new List<Vector3>();
         private int _index;
         #endregion
 
@@ -63,9 +64,9 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="pos">Position of the vertex.</param>
         /// <returns>The new index.</returns>
-        private int AddVertex(DX.Vector3 pos)
+        private int AddVertex(Vector3 pos)
         {            
-            _vertices.Add(DX.Vector3.Normalize(pos));
+            _vertices.Add(Vector3.Normalize(pos));
             return _index++;
         }
 
@@ -77,18 +78,18 @@ namespace Gorgon.Examples
         {
             float t = (1.0f + 5.0f.Sqrt()) * 0.5f;
 
-            AddVertex(new DX.Vector3(-1.0f, t, 0));
-            AddVertex(new DX.Vector3(1.0f, t, 0));
-            AddVertex(new DX.Vector3(-1.0f, -t, 0));
-            AddVertex(new DX.Vector3(1.0f, -t, 0));
-            AddVertex(new DX.Vector3(0, -1.0f, t));
-            AddVertex(new DX.Vector3(0, 1.0f, t));
-            AddVertex(new DX.Vector3(0, -1.0f, -t));
-            AddVertex(new DX.Vector3(0, 1.0f, -t));
-            AddVertex(new DX.Vector3(t, 0, -1.0f));
-            AddVertex(new DX.Vector3(t, 0, 1.0f));
-            AddVertex(new DX.Vector3(-t, 0, -1.0f));
-            AddVertex(new DX.Vector3(-t, 0, 1.0f));
+            AddVertex(new Vector3(-1.0f, t, 0));
+            AddVertex(new Vector3(1.0f, t, 0));
+            AddVertex(new Vector3(-1.0f, -t, 0));
+            AddVertex(new Vector3(1.0f, -t, 0));
+            AddVertex(new Vector3(0, -1.0f, t));
+            AddVertex(new Vector3(0, 1.0f, t));
+            AddVertex(new Vector3(0, -1.0f, -t));
+            AddVertex(new Vector3(0, 1.0f, -t));
+            AddVertex(new Vector3(t, 0, -1.0f));
+            AddVertex(new Vector3(t, 0, 1.0f));
+            AddVertex(new Vector3(-t, 0, -1.0f));
+            AddVertex(new Vector3(-t, 0, 1.0f));
         }
 
         /// <summary>
@@ -196,10 +197,10 @@ namespace Gorgon.Examples
                 return index;
             }
 
-            DX.Vector3 vertex1 = _vertices[index1];
-            DX.Vector3 vertex2 = _vertices[index2];
+            Vector3 vertex1 = _vertices[index1];
+            Vector3 vertex2 = _vertices[index2];
 
-            index = AddVertex(new DX.Vector3((vertex1.X + vertex2.X) * 0.5f,
+            index = AddVertex(new Vector3((vertex1.X + vertex2.X) * 0.5f,
                                           (vertex1.Y + vertex2.Y) * 0.5f,
                                           (vertex1.Z + vertex2.Z) * 0.5f));
             _cachedSplits.Add(key, index);
@@ -221,13 +222,13 @@ namespace Gorgon.Examples
             {
                 // see if the texture coordinates appear in counter-clockwise order.
                 // If so, the triangle needs to be rectified.
-                var v0 = new DX.Vector3(vertexList[indexList[i + 0]].UV, 0);
-                var v1 = new DX.Vector3(vertexList[indexList[i + 1]].UV, 0);
-                var v2 = new DX.Vector3(vertexList[indexList[i + 2]].UV, 0);
+                var v0 = new Vector3(vertexList[indexList[i + 0]].UV, 0);
+                var v1 = new Vector3(vertexList[indexList[i + 1]].UV, 0);
+                var v2 = new Vector3(vertexList[indexList[i + 2]].UV, 0);
 
-                var diff1 = DX.Vector3.Subtract(v0, v1);
-                var diff2 =DX.Vector3.Subtract(v2, v1);
-                var cross = DX.Vector3.Cross(diff1, diff2);
+                var diff1 = Vector3.Subtract(v0, v1);
+                var diff2 =Vector3.Subtract(v2, v1);
+                var cross = Vector3.Cross(diff1, diff2);
 
                 if (cross.Z <= 0)
                 {
@@ -253,7 +254,7 @@ namespace Gorgon.Examples
                         continue;
                     }
 
-                    DX.Vector2 UV = vertex.UV;
+                    Vector2 UV = vertex.UV;
 
                     UV.X -= 1;
                     vertex.UV = UV;
@@ -334,23 +335,22 @@ namespace Gorgon.Examples
             var vertexList = new List<GorgonVertexPosNormUvTangent>();
             var indexList = new List<int>();
 
-            foreach (DX.Vector3 vector in _vertices)
+            foreach (Vector3 vector in _vertices)
             {
-                DX.Vector3 position = vector;
-                DX.Vector3 normal = position;
-                DX.Vector2 uv = DX.Vector2.Zero;
+                Vector3 position = vector;
+                Vector3 normal = position;
+                Vector2 uv = Vector2.Zero;
 
                 uv.X = ((0.5f - (position.X.ATan(position.Z) * pi2Recip)) * textureCoordinates.Width) + textureCoordinates.X;
                 uv.Y = ((0.5f - (position.Y.ASin() * piRecip)) * textureCoordinates.Height) + textureCoordinates.Y;
 
-                DX.Vector3.Multiply(ref position, radius, out position);
-                DX.Vector3.Transform(ref position, ref _orientation, out position);
-                DX.Vector3.Transform(ref normal, ref _orientation, out normal);
-                DX.Vector3.Normalize(ref normal, out normal);
+                position = Vector3.Multiply(position, radius);
+                position = Vector3.Transform(position, _orientation);
+                normal = Vector3.Normalize(Vector3.Transform(normal, _orientation));
 
                 vertexList.Add(new GorgonVertexPosNormUvTangent
                 {
-                    Position = new DX.Vector4(position, 1.0f),
+                    Position = new Vector4(position, 1.0f),
                     Normal = normal,
                     UV = uv
                 });
@@ -413,13 +413,13 @@ namespace Gorgon.Examples
         /// <param name="textureCoordinates">The texture coordinates to apply to the sphere.</param>
         /// <param name="angle">The angle of rotation, in degrees.</param>
         /// <param name="subDivisions">The tessellation level for the sphere.</param>
-        public IcoSphere(GorgonGraphics graphics, float radius, DX.RectangleF textureCoordinates, DX.Vector3 angle, int subDivisions = 2)
+        public IcoSphere(GorgonGraphics graphics, float radius, DX.RectangleF textureCoordinates, Vector3 angle, int subDivisions = 2)
             : base(graphics)
         {
             Radius = radius;
-            PrimitiveType = PrimitiveType.TriangleList;            
-            DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
-            DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
+            PrimitiveType = PrimitiveType.TriangleList;
+            var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+            _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
             BuildSphere(graphics, radius * 0.5f, subDivisions, textureCoordinates);
         }

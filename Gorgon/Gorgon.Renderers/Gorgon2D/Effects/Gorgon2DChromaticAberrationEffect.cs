@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Diagnostics;
@@ -207,10 +208,10 @@ namespace Gorgon.Renderers
         /// <seealso cref="PassContinuationState" />
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
-            DX.Vector2 intensity = FullScreen ? new DX.Vector2((Intensity * 16) * (1.0f / output.Width), (Intensity * 16) * (1.0f / output.Height))
-                : new DX.Vector2(Intensity * 0.05f, 0);
-            var settings = new DX.Vector4(intensity, output.Width, output.Height);
-            _settings.Buffer.SetData(ref settings);
+            Vector2 intensity = FullScreen ? new Vector2((Intensity * 16) * (1.0f / output.Width), (Intensity * 16) * (1.0f / output.Height))
+                : new Vector2(Intensity * 0.05f, 0);
+            var settings = new Vector4(intensity, output.Width, output.Height);
+            _settings.Buffer.SetData(in settings);
 
             Graphics.SetRenderTarget(output);
 
@@ -244,7 +245,7 @@ namespace Gorgon.Renderers
 
             _settings = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Chromatic Aberration Settings Buffer")
             {
-                SizeInBytes = Unsafe.SizeOf<DX.Vector4>(),
+                SizeInBytes = Unsafe.SizeOf<Vector4>(),
                 Usage = ResourceUsage.Default
             });
         }

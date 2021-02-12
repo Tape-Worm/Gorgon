@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Renderers.Lights;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Data
 {
@@ -49,12 +49,12 @@ namespace Gorgon.Renderers.Data
         /// <remarks>
         /// XYZ = Position, W = Light type.
         /// </remarks>
-        public readonly DX.Vector4 Position;
+        public readonly Vector4 Position;
 
         /// <summary>
         /// The direction of a directonal light.
         /// </summary>
-        public readonly DX.Vector4 LightDirection;
+        public readonly Vector4 LightDirection;
 
         /// <summary>
         /// Extra attributes for the light.
@@ -62,7 +62,7 @@ namespace Gorgon.Renderers.Data
         /// <remarks>
         /// X = Specular Power, Y = Intensity, Z = Attenuation (point light only), W = Specular on/off
         /// </remarks>
-        public readonly DX.Vector4 LightAttributes;
+        public readonly Vector4 LightAttributes;
 
         /// <summary>
         /// The color for the light.
@@ -78,12 +78,12 @@ namespace Gorgon.Renderers.Data
         /// <param name="specularPower">The specular power.</param>
         /// <param name="intensity">The intensity.</param>
         /// <param name="attenuation">The attenuation.</param>
-        internal GorgonGpuLightData(DX.Vector3 position, LightType lightType, DX.Vector3 direction, GorgonColor color, bool specularEnabled, float specularPower, float intensity, float attenuation)
+        internal GorgonGpuLightData(Vector3 position, LightType lightType, Vector3 direction, GorgonColor color, bool specularEnabled, float specularPower, float intensity, float attenuation)
         {
-            Position = new DX.Vector4(position.X, position.Y, -position.Z, (int)lightType);
-            LightDirection = new DX.Vector4(-direction.X, -direction.Y, direction.Z, 0);
+            Position = new Vector4(position.X, position.Y, -position.Z, (int)lightType);
+            LightDirection = new Vector4(-direction.X, -direction.Y, direction.Z, 0);
             LightColor = color;
-            LightAttributes = new DX.Vector4(specularPower, intensity, attenuation, specularEnabled ? 1 : 0);
+            LightAttributes = new Vector4(specularPower, intensity, attenuation, specularEnabled ? 1 : 0);
         }
     }
 }

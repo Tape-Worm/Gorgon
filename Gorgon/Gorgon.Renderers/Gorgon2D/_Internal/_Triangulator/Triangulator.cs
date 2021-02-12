@@ -10,8 +10,11 @@ using System.Diagnostics;
 using System.Text;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
-using Gorgon.Renderers.Geometry;
+using Gorgon.Native;
+using Gorgon.Renderers;
+using System.Numerics;
 using DX = SharpDX;
+using Gorgon.Renderers.Geometry;
 
 namespace GorgonTriangulator
 {
@@ -78,7 +81,7 @@ namespace GorgonTriangulator
             //generate the cyclical list of vertices in the polygon
             for (int i = 0; i < inputVertices.Length; i++)
             {
-                _polygonVertices.AddLast(new Vertex(new DX.Vector2(inputVertices[i].Position.X, inputVertices[i].Position.Y), i));
+                _polygonVertices.AddLast(new Vertex(new Vector2(inputVertices[i].Position.X, inputVertices[i].Position.Y), i));
             }
 
             //categorize all of the vertices as convex, reflex, and ear
@@ -102,6 +105,7 @@ namespace GorgonTriangulator
 
             //add all of the triangle indices to the output array
             int[] outputIndices = new int[_triangles.Count * 3];
+
             //move the if statement out of the loop to prevent all the
             //redundant comparisons
             if (desiredWindingOrder == WindingOrder.CounterClockwise)
@@ -130,7 +134,7 @@ namespace GorgonTriangulator
             // Calculate bounds.
             for (int i = 0; i < inputVertices.Length; ++i)
             {
-                ref DX.Vector4 pos = ref inputVertices[i].Position;
+                ref Vector4 pos = ref inputVertices[i].Position;
 
                 minMax.Left = minMax.Left.Min(pos.X);
                 minMax.Top = minMax.Top.Min(pos.Y);
@@ -140,6 +144,167 @@ namespace GorgonTriangulator
 
             return (outputIndices, minMax);
         }
+
+        #region Not needed - Only works on concave polygons.
+        /*/// <summary>
+		/// Cuts a hole into a shape.
+		/// </summary>
+		/// <param name="shapeVerts">An array of vertices for the primary shape.</param>
+		/// <param name="holeVerts">An array of vertices for the hole to be cut. It is assumed that these vertices lie completely within the shape verts.</param>
+		/// <returns>The new array of vertices that can be passed to Triangulate to properly triangulate the shape with the hole.</returns>
+		public Vector2[] CutHoleInShape(Gorgon2DVertex[] shapeVerts, Vector2[] holeVerts)
+		{
+			Log("\nCutting hole into shape...");
+
+			//make sure the shape vertices are wound counter clockwise and the hole vertices clockwise
+			EnsureWindingOrder(shapeVerts, WindingOrder.CounterClockwise);
+			EnsureWindingOrder(holeVerts, WindingOrder.Clockwise);
+
+			//clear all of the lists
+			_polygonVertices.Clear();
+			_earVertices.Clear();
+			_convexVertices.Clear();
+			_reflexVertices.Clear();
+
+			//generate the cyclical list of vertices in the polygon
+			for (int i = 0; i < shapeVerts.Length; i++)
+				_polygonVertices.AddLast(new Vertex(shapeVerts[i], i));
+
+			CyclicalList<Vertex> holePolygon = new CyclicalList<Vertex>();
+			for (int i = 0; i < holeVerts.Length; i++)
+				holePolygon.Add(new Vertex(holeVerts[i], i + _polygonVertices.Count));
+
+#if DEBUG
+			StringBuilder vString = new StringBuilder();
+			foreach (Vertex v in _polygonVertices)
+				vString.Append($"{v}, ");
+			Log("Shape Vertices: {0}", vString);
+
+			vString = new StringBuilder();
+			foreach (Vertex v in holePolygon)
+				vString.Append($"{v}, ");
+			Log("Hole Vertices: {0}", vString);
+#endif
+
+			FindConvexAndReflexVertices();
+			FindEarVertices();
+
+			//find the hole vertex with the largest X value
+			Vertex rightMostHoleVertex = holePolygon[0];
+			foreach (Vertex v in holePolygon)
+				if (v.Position.X > rightMostHoleVertex.Position.X)
+					rightMostHoleVertex = v;
+
+			//construct a list of all line segments where at least one vertex
+			//is to the right of the rightmost hole vertex with one vertex
+			//above the hole vertex and one below
+			List<LineSegment> segmentsToTest = new List<LineSegment>();
+			for (int i = 0; i < _polygonVertices.Count; i++)
+			{
+				Vertex a = _polygonVertices[i].Value;
+				Vertex b = _polygonVertices[i + 1].Value;
+
+				if ((a.Position.X > rightMostHoleVertex.Position.X || b.Position.X > rightMostHoleVertex.Position.X) &&
+					((a.Position.Y >= rightMostHoleVertex.Position.Y && b.Position.Y <= rightMostHoleVertex.Position.Y) ||
+					(a.Position.Y <= rightMostHoleVertex.Position.Y && b.Position.Y >= rightMostHoleVertex.Position.Y)))
+					segmentsToTest.Add(new LineSegment(a, b));
+			}
+
+			//now we try to find the closest intersection point heading to the right from
+			//our hole vertex.
+			float? closestPoint = null;
+			LineSegment closestSegment = new LineSegment();
+			foreach (LineSegment segment in segmentsToTest)
+			{
+				float? intersection = segment.IntersectsWithRay(rightMostHoleVertex.Position, Vector2.UnitX);
+			    if (intersection == null)
+			    {
+			        continue;
+			    }
+
+			    if (closestPoint != null && !(closestPoint.Value > intersection.Value))
+			    {
+			        continue;
+			    }
+
+			    closestPoint = intersection;
+			    closestSegment = segment;
+			}
+
+			//if closestPoint is null, there were no collisions (likely from improper input data),
+			//but we'll just return without doing anything else
+			if (closestPoint == null)
+				return shapeVerts;
+
+			//otherwise we can find our mutually visible vertex to split the polygon
+			Vector2 I = rightMostHoleVertex.Position + Vector2.UnitX * closestPoint.Value;
+			Vertex P = (closestSegment.A.Position.X > closestSegment.B.Position.X) 
+				? closestSegment.A 
+				: closestSegment.B;
+
+			//construct triangle MIP
+			Triangle mip = new Triangle(rightMostHoleVertex, new Vertex(I, 1), P);
+
+			//see if any of the reflex vertices lie inside of the MIP triangle
+			List<Vertex> interiorReflexVertices = new List<Vertex>();
+			foreach (Vertex v in _reflexVertices)
+				if (mip.ContainsPoint(v))
+					interiorReflexVertices.Add(v);
+
+			//if there are any interior reflex vertices, find the one that, when connected
+			//to our rightMostHoleVertex, forms the line closest to Vector2.UnitX
+			if (interiorReflexVertices.Count > 0)
+			{
+				float closestDot = -1f;
+				foreach (Vertex v in interiorReflexVertices)
+				{
+					//compute the dot product of the vector against the UnitX
+					Vector2 d = Vector2.Normalize(v.Position - rightMostHoleVertex.Position);
+					float dot = Vector2.Dot(Vector2.UnitX, d);
+
+					//if this line is the closest we've found
+				    if (!(dot > closestDot))
+				    {
+				        continue;
+				    }
+
+				    //save the value and save the vertex as P
+				    closestDot = dot;
+				    P = v;
+				}
+			}
+            
+			//now we just form our output array by injecting the hole vertices into place
+			//we know we have to inject the hole into the main array after point P going from
+			//rightMostHoleVertex around and then back to P.
+			int mIndex = holePolygon.IndexOf(rightMostHoleVertex);
+			int injectPoint = _polygonVertices.IndexOf(P);
+
+			Log("Inserting hole at injection point {0} starting at hole vertex {1}.", 
+				P,
+				rightMostHoleVertex);
+			for (int i = mIndex; i <= mIndex + holePolygon.Count; i++)
+			{
+				Log("Inserting vertex {0} after vertex {1}.", holePolygon[i], _polygonVertices[injectPoint].Value);
+				_polygonVertices.AddAfter(_polygonVertices[injectPoint++], holePolygon[i]);
+			}
+			_polygonVertices.AddAfter(_polygonVertices[injectPoint], P);
+
+#if DEBUG
+			vString = new StringBuilder();
+			foreach (Vertex v in _polygonVertices)
+				vString.Append($"{v}, ");
+			Log("New Shape Vertices: {0}\n", vString);
+#endif
+
+			//finally we write out the new polygon vertices and return them out
+			Vector2[] newShapeVerts = new Vector2[_polygonVertices.Count];
+			for (int i = 0; i < _polygonVertices.Count; i++)
+				newShapeVerts[i] = _polygonVertices[i].Value.Position;
+
+			return newShapeVerts;
+		}*/
+        #endregion
 
         /// <summary>
         /// Ensures that a set of vertices are wound in a particular order, reversing them if necessary.
@@ -211,15 +376,15 @@ namespace GorgonTriangulator
         {
             int clockWiseCount = 0;
             int counterClockWiseCount = 0;
-            ref DX.Vector4 p1 = ref vertices[0].Position;
+            Vector4 p1 = vertices[0].Position;
 
             for (int i = 1; i < vertices.Length; i++)
             {
-                ref DX.Vector4 p2 = ref vertices[i].Position;
-                ref DX.Vector4 p3 = ref vertices[(i + 1) % vertices.Length].Position;
+                Vector4 p2 = vertices[i].Position;
+                Vector4 p3 = vertices[(i + 1) % vertices.Length].Position;
 
-                DX.Vector4.Subtract(ref p1, ref p2, out DX.Vector4 e1);
-                DX.Vector4.Subtract(ref p3, ref p2, out DX.Vector4 e2);
+                var e1 = Vector4.Subtract(p1, p2);
+                var e2 = Vector4.Subtract(p3, p2);
 
                 if ((e1.X * e2.Y) - (e1.Y * e2.X) >= 0)
                 {
@@ -391,11 +556,11 @@ namespace GorgonTriangulator
             Vertex p = _polygonVertices[_polygonVertices.IndexOf(c) - 1].Value;
             Vertex n = _polygonVertices[_polygonVertices.IndexOf(c) + 1].Value;
 
-            var d1 = DX.Vector2.Normalize(c.Position - p.Position);
-            var d2 = DX.Vector2.Normalize(n.Position - c.Position);
-            var n2 = new DX.Vector2(-d2.Y, d2.X);
+            var d1 = Vector2.Normalize(c.Position - p.Position);
+            var d2 = Vector2.Normalize(n.Position - c.Position);
+            var n2 = new Vector2(-d2.Y, d2.X);
 
-            return (DX.Vector2.Dot(d1, n2) <= 0f);
+            return (Vector2.Dot(d1, n2) <= 0f);
         }
 
         [Conditional("DEBUG")]

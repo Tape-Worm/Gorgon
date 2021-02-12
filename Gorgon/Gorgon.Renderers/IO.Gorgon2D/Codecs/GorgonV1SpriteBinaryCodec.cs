@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -237,17 +238,17 @@ namespace Gorgon.IO
             // that the texture was loaded safely, so we'll have to defer it until later.
             // Also, older versions used the size the determine the area on the texture to cover.  So use the size to
             // get the texture bounds.
-            var textureOffset = new DX.Vector2(reader.ReadSingle(), reader.ReadSingle());
+            var textureOffset = new Vector2(reader.ReadSingle(), reader.ReadSingle());
 
             // Read the anchor.
             // Gorgon v3 anchors are relative, so we need to convert them based on our sprite size.
-            sprite.Anchor = new DX.Vector2(reader.ReadSingle() / sprite.Size.Width, reader.ReadSingle() / sprite.Size.Height);
+            sprite.Anchor = new Vector2(reader.ReadSingle() / sprite.Size.Width, reader.ReadSingle() / sprite.Size.Height);
 
             // Get vertex offsets.
-            sprite.CornerOffsets.UpperLeft = new DX.Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
-            sprite.CornerOffsets.UpperRight = new DX.Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
-            sprite.CornerOffsets.LowerRight = new DX.Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
-            sprite.CornerOffsets.LowerLeft = new DX.Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
+            sprite.CornerOffsets.UpperLeft = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
+            sprite.CornerOffsets.UpperRight = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
+            sprite.CornerOffsets.LowerRight = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
+            sprite.CornerOffsets.LowerLeft = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
 
             // Get vertex colors.
             sprite.CornerColors.UpperLeft = new GorgonColor(reader.ReadInt32());

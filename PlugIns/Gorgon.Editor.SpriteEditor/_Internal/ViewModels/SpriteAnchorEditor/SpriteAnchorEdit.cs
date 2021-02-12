@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Editor.UI;
@@ -42,13 +43,13 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The anchor point.
-        private DX.Vector2 _anchor;
+        private Vector2 _anchor;
         // The boundaries for the anchor.
         private DX.Rectangle _bounds;
         // The boundaries of the sprite vertices.
-        private readonly DX.Vector2[] _spriteBounds = new DX.Vector2[4];
+        private readonly Vector2[] _spriteBounds = new Vector2[4];
         // The mid point of the sprite.
-        private DX.Vector2 _midPoint;
+        private Vector2 _midPoint;
         // Flag to indicate that preview scaling is active.
         private bool _previewScaling;
         // Flag to indicate that preview rotation is active.
@@ -112,23 +113,23 @@ namespace Gorgon.Editor.SpriteEditor
                 _bounds = value;
                 OnPropertyChanged();
 
-                Anchor = new DX.Vector2(_anchor.X.Min(_bounds.Right).Max(_bounds.Left), _anchor.Y.Min(_bounds.Bottom).Max(_bounds.Top));
+                Anchor = new Vector2(_anchor.X.Min(_bounds.Right).Max(_bounds.Left), _anchor.Y.Min(_bounds.Bottom).Max(_bounds.Top));
             }
         }
 
         /// <summary>Property to set or return the anchor point.</summary>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => _anchor;
             set
             {
-                if (_anchor.Equals(ref value))
+                if (_anchor.Equals(value))
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _anchor = new DX.Vector2(value.X.Min(_bounds.Right).Max(_bounds.Left), value.Y.Min(_bounds.Bottom).Max(_bounds.Top));
+                _anchor = new Vector2(value.X.Min(_bounds.Right).Max(_bounds.Left), value.Y.Min(_bounds.Bottom).Max(_bounds.Top));
                 OnPropertyChanged();
             }
         }
@@ -136,7 +137,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the mid point of the sprite, based on its vertices.
         /// </summary>
-        public DX.Vector2 MidPoint
+        public Vector2 MidPoint
         {
             get => _midPoint;
             private set
@@ -153,7 +154,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Property to set or return the boundaries of the sprite (vertices).</summary>
-        public IReadOnlyList<DX.Vector2> SpriteBounds
+        public IReadOnlyList<Vector2> SpriteBounds
         {
             get => _spriteBounds;
             set
@@ -182,7 +183,7 @@ namespace Gorgon.Editor.SpriteEditor
                     range.Bottom = value[i].Y.Max(range.Bottom);
                     _spriteBounds[i] = value[i].Truncate();
                 }
-                MidPoint = new DX.Vector2(range.Left + range.Width * 0.5f, range.Top + range.Height * 0.5f).Truncate();
+                MidPoint = new Vector2(range.Left + range.Width * 0.5f, range.Top + range.Height * 0.5f).Truncate();
                 OnPropertyChanged();                
             }
         }

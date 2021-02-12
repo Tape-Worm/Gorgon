@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -52,7 +53,7 @@ namespace Gorgon.Editor.Rendering
         // The texture to use for the selection overlay.
         private readonly Lazy<GorgonTexture2DView> _selectionTexture;
         // The offset of the texture within the selection rectangle.
-        private DX.Vector2 _selectionTextureOffset;
+        private Vector2 _selectionTextureOffset;
         #endregion
 
         #region Properties.
@@ -77,11 +78,11 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// Property to set or return the speed of the overlay animation.
         /// </summary>
-        public DX.Vector2 Speed
+        public Vector2 Speed
         {
             get;
             set;
-        } = new DX.Vector2(16, 16);
+        } = new Vector2(16, 16);
         #endregion
 
         #region Methods.
@@ -119,28 +120,28 @@ namespace Gorgon.Editor.Rendering
 
             _renderer.DrawRectangle(region, BorderColor);
 
-            _selectionTextureOffset = new DX.Vector2(_selectionTextureOffset.X - (GorgonTiming.Delta * Speed.X), _selectionTextureOffset.Y - (GorgonTiming.Delta * Speed.Y));
+            _selectionTextureOffset = new Vector2(_selectionTextureOffset.X - (GorgonTiming.Delta * Speed.X), _selectionTextureOffset.Y - (GorgonTiming.Delta * Speed.Y));
 
             float regionMin = region.Width.Max(region.Height) * 2;
 
             if (_selectionTextureOffset.X < -regionMin)
             {
-                _selectionTextureOffset = new DX.Vector2(-(regionMin + _selectionTextureOffset.X), _selectionTextureOffset.Y);
+                _selectionTextureOffset = new Vector2(-(regionMin + _selectionTextureOffset.X), _selectionTextureOffset.Y);
             }
 
             if (_selectionTextureOffset.Y < -regionMin)
             {
-                _selectionTextureOffset = new DX.Vector2(_selectionTextureOffset.X, -(regionMin + _selectionTextureOffset.Y));
+                _selectionTextureOffset = new Vector2(_selectionTextureOffset.X, -(regionMin + _selectionTextureOffset.Y));
             }
 
             if (_selectionTextureOffset.X > regionMin)
             {
-                _selectionTextureOffset = new DX.Vector2((_selectionTextureOffset.X - regionMin), _selectionTextureOffset.Y);
+                _selectionTextureOffset = new Vector2((_selectionTextureOffset.X - regionMin), _selectionTextureOffset.Y);
             }
 
             if (_selectionTextureOffset.Y > regionMin)
             {
-                _selectionTextureOffset = new DX.Vector2(_selectionTextureOffset.X, (_selectionTextureOffset.Y - regionMin));
+                _selectionTextureOffset = new Vector2(_selectionTextureOffset.X, (_selectionTextureOffset.Y - regionMin));
             }
         }
 

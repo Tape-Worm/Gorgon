@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -260,7 +261,7 @@ namespace Gorgon.Renderers
         /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColor.White"/> color is used.
         /// </para>
         /// </remarks>
-        IGorgon2DDrawingFluent DrawString(string text, DX.Vector2 position, GorgonFont font = null, GorgonColor? color = null);
+        IGorgon2DDrawingFluent DrawString(string text, Vector2 position, GorgonFont font = null, GorgonColor? color = null);
 
         /// <summary>
         /// Function to draw text.

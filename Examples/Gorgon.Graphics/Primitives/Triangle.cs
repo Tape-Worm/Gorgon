@@ -24,9 +24,9 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -52,9 +52,9 @@ namespace Gorgon.Examples
             IndexCount = 3;
             TriangleCount = 1;
 
-            point1.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
-            point2.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
-            point3.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
+            point1.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+            point2.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+            point3.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
 
             var points = new GorgonVertexPosNormUvTangent[3];
             int[] indices = new int[3];

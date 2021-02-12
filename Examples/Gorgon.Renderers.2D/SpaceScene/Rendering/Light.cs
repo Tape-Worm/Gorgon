@@ -24,14 +24,9 @@
 // 
 #endregion
 
-using System;
+using System.Numerics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Renderers;
 using Gorgon.Renderers.Lights;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -78,7 +73,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the local position for the light before transformation in layer space.
         /// </summary>
-        public DX.Vector3 LocalLightPosition
+        public Vector3 LocalLightPosition
         {
             get;
             set;

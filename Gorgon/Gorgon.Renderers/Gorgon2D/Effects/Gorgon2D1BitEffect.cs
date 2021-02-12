@@ -201,7 +201,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnInitialize()
         {
-            _1BitBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2D1BitEffect Constant Buffer");
+            _1BitBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Gorgon2D1BitEffect Constant Buffer");
             _shader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShader1Bit");
         }
 
@@ -223,7 +223,7 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            _1BitBuffer.Buffer.SetData(ref _settings);
+            _1BitBuffer.Buffer.SetData(in _settings);
             _isUpdated = false;
         }
 

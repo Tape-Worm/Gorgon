@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -34,7 +35,6 @@ using Gorgon.Graphics;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -363,7 +363,7 @@ namespace Gorgon.IO
                     }
 
                     GorgonKeyVector3 vec3 = converter.ReadJson(reader, vec3Type, null, false, null);
-                    keys.Add(new GorgonKeyVector2(vec3.Time, new DX.Vector2(vec3.Value.X, vec3.Value.Y)));
+                    keys.Add(new GorgonKeyVector2(vec3.Time, new Vector2(vec3.Value.X, vec3.Value.Y)));
                 }
 
                 return keys;

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -344,9 +345,9 @@ namespace Gorgon.IO
             reader.Begin(FileHeader);
             reader.Begin(SpriteDataChunk);
 
-            sprite.Anchor = reader.Read<DX.Vector2>();
+            sprite.Anchor = reader.Read<Vector2>();
             sprite.Size = reader.Read<DX.Size2F>();
-            sprite.Anchor = new DX.Vector2(sprite.Anchor.X / sprite.Size.Width, sprite.Anchor.Y / sprite.Size.Height);
+            sprite.Anchor = new Vector2(sprite.Anchor.X / sprite.Size.Width, sprite.Anchor.Y / sprite.Size.Height);
 
             sprite.HorizontalFlip = reader.ReadBoolean();
             sprite.VerticalFlip = reader.ReadBoolean();
@@ -358,10 +359,10 @@ namespace Gorgon.IO
             sprite.CornerColors.LowerRight = reader.Read<GorgonColor>();
 
             // Write vertex offsets.
-            sprite.CornerOffsets.UpperLeft = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
-            sprite.CornerOffsets.UpperRight = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
-            sprite.CornerOffsets.LowerLeft = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
-            sprite.CornerOffsets.LowerRight = new DX.Vector3(reader.Read<DX.Vector2>(), 0);
+            sprite.CornerOffsets.UpperLeft = new Vector3(reader.Read<Vector2>(), 0);
+            sprite.CornerOffsets.UpperRight = new Vector3(reader.Read<Vector2>(), 0);
+            sprite.CornerOffsets.LowerLeft = new Vector3(reader.Read<Vector2>(), 0);
+            sprite.CornerOffsets.LowerRight = new Vector3(reader.Read<Vector2>(), 0);
 
             reader.End();
 
@@ -466,11 +467,11 @@ namespace Gorgon.IO
 
                 reader.Begin(FileHeader);
                 reader.Begin(SpriteDataChunk);
-                reader.SkipBytes(Unsafe.SizeOf<DX.Vector2>()
+                reader.SkipBytes(Unsafe.SizeOf<Vector2>()
                                  + Unsafe.SizeOf<DX.Size2F>()
                                  + (sizeof(bool) * 2)
                                  + (GorgonColor.SizeInBytes * 4)
-                                 + (Unsafe.SizeOf<DX.Vector2>() * 4));
+                                 + (Unsafe.SizeOf<Vector2>() * 4));
                 reader.End();
 
                 // Read rendering information.

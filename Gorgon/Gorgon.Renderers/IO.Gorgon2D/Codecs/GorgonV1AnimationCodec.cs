@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -287,16 +288,16 @@ namespace Gorgon.IO
         /// <param name="reader">The reader containing the track data.</param>
         /// <param name="keyCount">The number of keys to read.</param>
         /// <returns>A list of track times and vector2 values.</returns>
-        private static IReadOnlyList<(float time, DX.Vector2 value)> ReadVec2(GorgonBinaryReader reader, int keyCount)
+        private static IReadOnlyList<(float time, Vector2 value)> ReadVec2(GorgonBinaryReader reader, int keyCount)
         {
-            var keys = new (float, DX.Vector2)[keyCount];
+            var keys = new (float, Vector2)[keyCount];
 
             for (int i = 0; i < keyCount; ++i)
             {
                 // Skip this, we don't need it.
                 reader.ReadString();
 
-                keys[i] = (reader.ReadSingle() / 1000.0f, reader.ReadValue<DX.Vector2>());
+                keys[i] = (reader.ReadSingle() / 1000.0f, reader.ReadValue<Vector2>());
             }
 
             return keys;
@@ -361,8 +362,8 @@ namespace Gorgon.IO
 
                 float time = reader.ReadSingle() / 1000.0f;
                 string name = reader.ReadString();
-                DX.Vector2 uvOffset = reader.ReadValue<DX.Vector2>();
-                DX.Vector2 uvSize = reader.ReadValue<DX.Vector2>();
+                Vector2 uvOffset = reader.ReadValue<Vector2>();
+                Vector2 uvSize = reader.ReadValue<Vector2>();
 
                 GorgonTexture2D texture = Graphics.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault();
                 GorgonTexture2DView view = texture?.GetShaderResourceView();
@@ -452,7 +453,7 @@ namespace Gorgon.IO
                     {
                         case "POSITION":
                             interpMode = (TrackInterpolationMode)reader.ReadInt32();
-                            IReadOnlyList<(float time, DX.Vector2 position)> positions = ReadVec2(reader, keyCount);
+                            IReadOnlyList<(float time, Vector2 position)> positions = ReadVec2(reader, keyCount);
                             if (positions.Count > 0)
                             {
                                 builder.EditVector2("Position")
@@ -463,7 +464,7 @@ namespace Gorgon.IO
                             break;
                         case "SCALE":
                             interpMode = (TrackInterpolationMode)reader.ReadInt32();
-                            IReadOnlyList<(float time, DX.Vector2 scale)> scales = ReadVec2(reader, keyCount);
+                            IReadOnlyList<(float time, Vector2 scale)> scales = ReadVec2(reader, keyCount);
                             if (scales.Count > 0)
                             {
                                 builder.EditVector2("Scale")
@@ -474,7 +475,7 @@ namespace Gorgon.IO
                             break;
                         case "SIZE":
                             interpMode = (TrackInterpolationMode)reader.ReadInt32();
-                            IReadOnlyList<(float time, DX.Vector2 sizes)> bounds = ReadVec2(reader, keyCount);
+                            IReadOnlyList<(float time, Vector2 sizes)> bounds = ReadVec2(reader, keyCount);
                             if (bounds.Count > 0)
                             {
                                 builder.EditVector2("Size")
@@ -535,7 +536,7 @@ namespace Gorgon.IO
                         case "SCALEDWIDTH":
                         case "SCALEDHEIGHT":
                             interpMode = (TrackInterpolationMode)reader.ReadInt32();
-                            IReadOnlyList<(float time, DX.Vector2 sizes)> scaledSize = ReadVec2(reader, keyCount);
+                            IReadOnlyList<(float time, Vector2 sizes)> scaledSize = ReadVec2(reader, keyCount);
                             if (scaledSize.Count > 0)
                             {
                                 builder.EditVector2("Size")
@@ -560,7 +561,7 @@ namespace Gorgon.IO
                             if (uniScales.Count > 0)
                             {
                                 builder.EditVector2("Scale")
-                                       .SetKeys(uniScales.Select(item => new GorgonKeyVector2(item.time, new DX.Vector2(item.scale))))
+                                       .SetKeys(uniScales.Select(item => new GorgonKeyVector2(item.time, new Vector2(item.scale))))
                                        .EndEdit();
                             }
                             break;
@@ -689,14 +690,14 @@ namespace Gorgon.IO
                         interpSet = true;
                     }
 
-                    DX.Vector2 position = reader.ReadValue<DX.Vector2>();
-                    DX.Vector2 scale = reader.ReadValue<DX.Vector2>();
+                    Vector2 position = reader.ReadValue<Vector2>();
+                    Vector2 scale = reader.ReadValue<Vector2>();
                     float angle = reader.ReadSingle();
                     // Skip the anchor, we're not animating that anymore.
-                    reader.ReadValue<DX.Vector2>();
-                    DX.Vector2 size = reader.ReadValue<DX.Vector2>();
+                    reader.ReadValue<Vector2>();
+                    Vector2 size = reader.ReadValue<Vector2>();
                     // This is an "image offset"... but honestly, I have no idea what it's used for.
-                    reader.ReadValue<DX.Vector2>();
+                    reader.ReadValue<Vector2>();
 
                     builder.EditVector2("Position")
                            .SetKey(new GorgonKeyVector2(time, position))
@@ -750,14 +751,14 @@ namespace Gorgon.IO
 
                     string imageName = reader.ReadString();
                     GorgonTexture2DView view = null;
-                    DX.Vector2 imageOffset = DX.Vector2.Zero;
-                    DX.Vector2 imageSize = DX.Vector2.One;
+                    Vector2 imageOffset = Vector2.Zero;
+                    Vector2 imageSize = Vector2.One;
                     var texCoords = new DX.RectangleF(imageOffset.X, imageOffset.Y, imageSize.X, imageSize.Y);
 
                     if (!string.IsNullOrWhiteSpace(imageName))
                     {
-                        imageOffset = reader.ReadValue<DX.Vector2>();
-                        imageSize = reader.ReadValue<DX.Vector2>();
+                        imageOffset = reader.ReadValue<Vector2>();
+                        imageSize = reader.ReadValue<Vector2>();
 
                         // Attempt to locate the image.
                         GorgonTexture2D texture = Renderer.Graphics.LocateResourcesByName<GorgonTexture2D>(imageName).FirstOrDefault();

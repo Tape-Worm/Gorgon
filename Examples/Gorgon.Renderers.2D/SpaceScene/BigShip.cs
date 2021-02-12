@@ -24,17 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
-using Gorgon.Input;
-using Gorgon.Math;
-using Gorgon.Timing;
-using DX = SharpDX;
+using System.Numerics;
 
 namespace Gorgon.Examples
 {
@@ -56,7 +46,7 @@ namespace Gorgon.Examples
         // The angle of rotation.
         private float _angle;
         // Position of the ship.
-        private DX.Vector2 _position;
+        private Vector2 _position;
         #endregion
 
         #region Properties.
@@ -76,7 +66,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the position of the ship, in space.
         /// </summary>
-        public DX.Vector2 Position
+        public Vector2 Position
         {
             get => _position;
             set

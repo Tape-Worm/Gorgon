@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Numerics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -81,11 +81,11 @@ namespace Gorgon.Examples
         // The keyboard input interface.
         private static GorgonRawKeyboard _keyboard;
         // The aspect ratio for the main render target view.
-        private static DX.Vector2 _mainRtvAspect = DX.Vector2.Zero;
+        private static Vector2 _mainRtvAspect = Vector2.Zero;
         // The base resolution for our display.  
         // This is used to ensure that the display area scales correctly when the window is resized.  We ensure that the sprites and whatnot remain at the same size no matter what the actual 
         // screen size is by locking our scale to a base of the resolution set here. 
-        private static readonly DX.Vector2 _baseResolution = new DX.Vector2(1920, 1080);
+        private static readonly Vector2 _baseResolution = new Vector2(1920, 1080);
         // The font used to draw the help text.
         private static GorgonFont _helpFont;
         // Text sprite for instructions.
@@ -153,7 +153,7 @@ namespace Gorgon.Examples
             var speedBar = new DX.RectangleF(speedRegion.X, speedRegion.Y, maxSpeed, speedRegion.Height);
             _renderer.DrawFilledRectangle(speedRegion, new GorgonColor(GorgonColor.Black, 0.5f));
             _renderer.DrawFilledRectangle(speedBar, new GorgonColor(GorgonColor.GreenPure * 0.85f, 0.3f));
-            _renderer.DrawString("Speed", new DX.Vector2(speedRegion.Left, speedRegion.Top - _helpFont.LineHeight + 5), _helpFont, GorgonColor.White);
+            _renderer.DrawString("Speed", new Vector2(speedRegion.Left, speedRegion.Top - _helpFont.LineHeight + 5), _helpFont, GorgonColor.White);
             _renderer.DrawRectangle(speedRegion, new GorgonColor(GorgonColor.White, 0.3f));
 
             _renderer.End();
@@ -216,7 +216,7 @@ namespace Gorgon.Examples
             // Because it's an Ortho camera, it doesn't really know how to handle aspect ratios, so we'll have to adjust for the current ratio.
             var camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(2, 2), 0.1f, 5000)
             {
-                Anchor = new DX.Vector2(0.5f, 0.5f)
+                Anchor = new Vector2(0.5f, 0.5f)
             };
             camera.AllowUpdateOnResize = false;    // Since we're using a custom coordinate set, we don't want to change it automatically when we resize the swap chain.
                                                    // That means we are responsible for any adjustments required on resize.
@@ -254,7 +254,7 @@ namespace Gorgon.Examples
             // Our player ship.  Since this one is linked to the layer camera controller, we can use our keyboard to move around the scene.
             _ship = new Ship(shipLayer)
             {
-                Position = new DX.Vector2(120.0f, 75.0f),
+                Position = new Vector2(120.0f, 75.0f),
                 Angle = -45.0f,
                 LayerController = controller
             };
@@ -263,7 +263,7 @@ namespace Gorgon.Examples
             // A secondary ship. Just here to look pretty.
             _shipDeux = new Ship(shipLayerDeux)
             {
-                Position = new DX.Vector2(120.3f, 74.8f),
+                Position = new Vector2(120.3f, 74.8f),
                 Angle = -78.0f,
                 Ai = new DummyAi()
             };
@@ -272,7 +272,7 @@ namespace Gorgon.Examples
             // Create a big ship for some scene variety.
             _bigShip = new BigShip(shipLayerDeux)
             {
-                Position = new DX.Vector2(120.3f, 74.5f),
+                Position = new Vector2(120.3f, 74.5f),
                 Angle = -80.0f
             };
             _bigShip.LoadResources();
@@ -327,7 +327,7 @@ namespace Gorgon.Examples
                     Binding = TextureBinding.ShaderResource
                 });
                 _mainSrv = _mainRtv.GetShaderResourceView();
-                _mainRtvAspect = _mainRtv.Width < _mainRtv.Height ? new DX.Vector2(1, (float)_mainRtv.Height / _mainRtv.Width) : new DX.Vector2((float)_mainRtv.Width / _mainRtv.Height, 1);
+                _mainRtvAspect = _mainRtv.Width < _mainRtv.Height ? new Vector2(1, (float)_mainRtv.Height / _mainRtv.Width) : new Vector2((float)_mainRtv.Width / _mainRtv.Height, 1);
 
                 // Initialize the renderer so that we are able to draw stuff.
                 _renderer = new Gorgon2D(_graphics);
@@ -364,7 +364,7 @@ namespace Gorgon.Examples
 
                 _textSprite = new GorgonTextSprite(_helpFont)
                 {
-                    Position = new DX.Vector2(0, 64),
+                    Position = new Vector2(0, 64),
                     DrawMode = TextDrawMode.OutlinedGlyphs,
                     Color = GorgonColor.YellowPure
                 };

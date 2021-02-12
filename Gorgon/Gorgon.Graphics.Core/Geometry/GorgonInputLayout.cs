@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -35,7 +36,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Reflection;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -87,13 +87,13 @@ namespace Gorgon.Graphics.Core
                     typeof(float), BufferFormat.R32_Float
                 },
                 {
-                    typeof(DX.Vector2), BufferFormat.R32G32_Float
+                    typeof(Vector2), BufferFormat.R32G32_Float
                 },
                 {
-                    typeof(DX.Vector3), BufferFormat.R32G32B32_Float
+                    typeof(Vector3), BufferFormat.R32G32B32_Float
                 },
                 {
-                    typeof(DX.Vector4), BufferFormat.R32G32B32A32_Float
+                    typeof(Vector4), BufferFormat.R32G32B32A32_Float
                 },
                 {
                     typeof(GorgonColor), BufferFormat.R32G32B32A32_Float
@@ -344,13 +344,13 @@ namespace Gorgon.Graphics.Core
         ///			<description><see cref="float"/></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>DX.Vector2</c></description>
+        ///			<description><c>Vector2</c></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>DX.Vector3</c></description>
+        ///			<description><c>Vector3</c></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>DX.Vector4</c></description>
+        ///			<description><c>Vector4</c></description>
         ///		</item>
         ///		<item>
         ///			<description><see cref="GorgonColor"/></description>
@@ -427,13 +427,13 @@ namespace Gorgon.Graphics.Core
         ///			<description><see cref="float"/></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>DX.Vector2</c></description>
+        ///			<description><c>Vector2</c></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>DX.Vector3</c></description>
+        ///			<description><c>Vector3</c></description>
         ///		</item>
         ///		<item>
-        ///			<description><c>DX.Vector4</c></description>
+        ///			<description><c>Vector4</c></description>
         ///		</item>
         ///		<item>
         ///			<description><see cref="GorgonColor"/></description>

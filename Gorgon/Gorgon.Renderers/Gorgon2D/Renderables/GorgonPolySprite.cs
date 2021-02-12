@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -52,8 +53,8 @@ namespace Gorgon.Renderers
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
         internal PolySpriteRenderable Renderable = new PolySpriteRenderable
         {
-            WorldMatrix = DX.Matrix.Identity,
-            TextureTransform = new DX.Vector4(0, 0, 1, 1)
+            WorldMatrix = Matrix4x4.Identity,
+            TextureTransform = new Vector4(0, 0, 1, 1)
         };
         #endregion
 
@@ -146,9 +147,9 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the offset to apply to a texture.
         /// </summary>
-        public DX.Vector2 TextureOffset
+        public Vector2 TextureOffset
         {
-            get => new DX.Vector2(Renderable.TextureTransform.X, Renderable.TextureTransform.Y);
+            get => new Vector2(Renderable.TextureTransform.X, Renderable.TextureTransform.Y);
             set
             {
                 if ((Renderable.TextureTransform.X == value.X)
@@ -157,7 +158,7 @@ namespace Gorgon.Renderers
                     return;
                 }
 
-                Renderable.TextureTransform = new DX.Vector4(value.X, value.Y, Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
+                Renderable.TextureTransform = new Vector4(value.X, value.Y, Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
                 Renderable.HasTextureChanges = true;
             }
         }
@@ -165,9 +166,9 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the scale to apply to a texture.
         /// </summary>
-        public DX.Vector2 TextureScale
+        public Vector2 TextureScale
         {
-            get => new DX.Vector2(Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
+            get => new Vector2(Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
             set
             {
                 if ((Renderable.TextureTransform.Z == value.X)
@@ -176,7 +177,7 @@ namespace Gorgon.Renderers
                     return;
                 }
 
-                Renderable.TextureTransform = new DX.Vector4(Renderable.TextureTransform.X, Renderable.TextureTransform.Y, value.X, value.Y);
+                Renderable.TextureTransform = new Vector4(Renderable.TextureTransform.X, Renderable.TextureTransform.Y, value.X, value.Y);
                 Renderable.HasTextureChanges = true;
             }
         }
@@ -226,9 +227,9 @@ namespace Gorgon.Renderers
         /// Property to set or return the position of the sprite.
         /// </summary>
         [JsonIgnore]
-        public DX.Vector2 Position
+        public Vector2 Position
         {
-            get => new DX.Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
+            get => new Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
@@ -270,12 +271,12 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This value is a relative value where 0, 0 means the upper left of the sprite, and 1, 1 means the lower right.
         /// </remarks>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => Renderable.Anchor;
             set
             {
-                ref DX.Vector2 anchor = ref Renderable.Anchor;
+                ref Vector2 anchor = ref Renderable.Anchor;
                 if ((anchor.X == value.X)
                     && (anchor.Y == value.Y))
                 {
@@ -307,15 +308,15 @@ namespace Gorgon.Renderers
             get
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
-                scale = new DX.Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+                ref Vector2 scale = ref Renderable.Scale;
+                scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -324,12 +325,12 @@ namespace Gorgon.Renderers
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
         [JsonIgnore]
-        public DX.Vector2 Scale
+        public Vector2 Scale
         {
             get => Renderable.Scale;
             set
             {
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 if ((scale.X == value.X)
                     && (scale.Y == value.Y))
                 {
@@ -338,7 +339,7 @@ namespace Gorgon.Renderers
 
                 scale = value;
 
-                ref DX.Matrix matrix = ref Renderable.WorldMatrix;
+                ref Matrix4x4 matrix = ref Renderable.WorldMatrix;
                 matrix.M11 = scale.X;
                 matrix.M22 = scale.Y;
                 Renderable.HasTransformChanges = true;
@@ -479,10 +480,10 @@ namespace Gorgon.Renderers
         /// <![CDATA[
         ///     // These define the corners of a rectangle.
         ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
-        ///     vertices[0] = new GorgonPolySpriteVertex(new DX.Vector2(0, 0), ...);
-        ///     vertices[1] = new GorgonPolySpriteVertex(new DX.Vector2(30, 00), ...);
-        ///     vertices[2] = new GorgonPolySpriteVertex(new DX.Vector2(0, 30), ...);
-        ///     vertices[3] = new GorgonPolySpriteVertex(new DX.Vector2(30, 30), ...);
+        ///     vertices[0] = new GorgonPolySpriteVertex(new Vector2(0, 0), ...);
+        ///     vertices[1] = new GorgonPolySpriteVertex(new Vector2(30, 00), ...);
+        ///     vertices[2] = new GorgonPolySpriteVertex(new Vector2(0, 30), ...);
+        ///     vertices[3] = new GorgonPolySpriteVertex(new Vector2(30, 30), ...);
         ///     
         ///     // To order the vertices so they'll render correctly:
         ///     int[] indices = new indices[6]; // We define 6 indices because the rect is made of 2 triangles, with 3 vertices each (we reuse some vertices for efficiency).
@@ -554,10 +555,10 @@ namespace Gorgon.Renderers
         /// <![CDATA[
         ///     // These define the corners of a rectangle.
         ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
-        ///     vertices[0] = new GorgonPolySpriteVertex(new DX.Vector2(0, 0), ...);
-        ///     vertices[1] = new GorgonPolySpriteVertex(new DX.Vector2(30, 00), ...);
-        ///     vertices[2] = new GorgonPolySpriteVertex(new DX.Vector2(0, 30), ...);
-        ///     vertices[3] = new GorgonPolySpriteVertex(new DX.Vector2(30, 30), ...);
+        ///     vertices[0] = new GorgonPolySpriteVertex(new Vector2(0, 0), ...);
+        ///     vertices[1] = new GorgonPolySpriteVertex(new Vector2(30, 00), ...);
+        ///     vertices[2] = new GorgonPolySpriteVertex(new Vector2(0, 30), ...);
+        ///     vertices[3] = new GorgonPolySpriteVertex(new Vector2(30, 30), ...);
         ///     
         ///     // To order the vertices so they'll render correctly:
         ///     int[] indices = new indices[6]; // We define 6 indices because the rect is made of 2 triangles, with 3 vertices each (we reuse some vertices for efficiency).

@@ -229,7 +229,7 @@ namespace Gorgon.Renderers
         protected override void OnInitialize()
         {
             _settings = new Settings(10.0f, 50.0f, 0.0f, 100.0f, WaveType.Horizontal);
-            _waveBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2DWaveEffect Constant Buffer", ResourceUsage.Dynamic);
+            _waveBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Gorgon2DWaveEffect Constant Buffer", ResourceUsage.Dynamic);
 
             Macros.Add(new GorgonShaderMacro("WAVE_EFFECT"));
             _waveShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderWaveEffect");
@@ -253,7 +253,7 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            _waveBuffer.Buffer.SetData(ref _settings);
+            _waveBuffer.Buffer.SetData(in _settings);
             _isUpdated = false;
         }
 

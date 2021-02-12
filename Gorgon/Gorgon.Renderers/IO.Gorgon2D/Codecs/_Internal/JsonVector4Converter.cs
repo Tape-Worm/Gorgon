@@ -25,8 +25,8 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -42,7 +42,7 @@ namespace Gorgon.Renderers
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var v4 = (DX.Vector4)value;
+            var v4 = (Vector4)value;
             writer.WriteStartObject();
             writer.WritePropertyName("x");
             writer.WriteValue(v4.X);
@@ -66,31 +66,31 @@ namespace Gorgon.Renderers
             if ((reader.TokenType != JsonToken.StartObject)
                 || (!reader.Read()))
             {
-                return DX.Vector4.Zero;
+                return Vector4.Zero;
             }
 
             float x = (float)(reader.ReadAsDouble() ?? 0);
             if (!reader.Read())
             {
-                return new DX.Vector4(x, 0, 0, 0);
+                return new Vector4(x, 0, 0, 0);
             }
 
             float y = (float)(reader.ReadAsDouble() ?? 0);
 
             if (!reader.Read())
             {
-                return new DX.Vector4(x, y, 0, 0);
+                return new Vector4(x, y, 0, 0);
             }
 
             float z = (float)(reader.ReadAsDouble() ?? 0);
             if (!reader.Read())
             {
-                return new DX.Vector4(x, y, z, 0);
+                return new Vector4(x, y, z, 0);
             }
 
             float w = (float)(reader.ReadAsDouble() ?? 0);
 
-            return new DX.Vector4(x, y, z, w);
+            return new Vector4(x, y, z, w);
         }
 
         /// <summary>
@@ -100,6 +100,6 @@ namespace Gorgon.Renderers
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType) => (objectType == typeof(DX.Vector4));
+        public override bool CanConvert(Type objectType) => (objectType == typeof(Vector4));
     }
 }

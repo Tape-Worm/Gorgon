@@ -152,7 +152,7 @@ namespace Gorgon.Editor.ImageEditor
                 MipLevel = DataContext.CurrentMipLevel
             };
 
-            _textureParameters.Buffer.SetData(ref p);
+            _textureParameters.Buffer.SetData(in p);
         }
 
         /// <summary>Releases unmanaged and - optionally - managed resources.</summary>

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
@@ -38,25 +39,25 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // Position of the triangle.
-        private DX.Vector3 _position = DX.Vector3.Zero;
+        private Vector3 _position = Vector3.Zero;
 
         // Angle of the triangle.
-        private DX.Vector3 _rotation = DX.Vector3.Zero;
+        private Vector3 _rotation = Vector3.Zero;
 
         // Scale of the triangle.
-        private DX.Vector3 _scale = new DX.Vector3(1);
+        private Vector3 _scale = new Vector3(1);
 
         // Cached position matrix.
-        private DX.Matrix _posMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _posMatrix = Matrix4x4.Identity;
 
         // Cached rotation matrix.
-        private DX.Matrix _rotMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _rotMatrix = Matrix4x4.Identity;
 
         // Cached scale matrix.
-        private DX.Matrix _scaleMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _scaleMatrix = Matrix4x4.Identity;
 
         // Cached world matrix.
-        private DX.Matrix _world = DX.Matrix.Identity;
+        private Matrix4x4 _world = Matrix4x4.Identity;
 
         // Flags to indicate that the object needs to update its transform.
         private bool _needsPosTransform;
@@ -70,7 +71,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the current position of the triangle.
         /// </summary>
-        public DX.Vector3 Position
+        public Vector3 Position
         {
             get => _position;
             set
@@ -84,7 +85,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the angle of rotation for the triangle (in degrees).
         /// </summary>
-        public DX.Vector3 Rotation
+        public Vector3 Rotation
         {
             get => _rotation;
             set
@@ -98,7 +99,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the scale of the transform.
         /// </summary>
-        public DX.Vector3 Scale
+        public Vector3 Scale
         {
             get => _scale;
             set
@@ -112,7 +113,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the world matrix for this triangle.
         /// </summary>
-        public ref DX.Matrix WorldMatrix
+        public ref readonly Matrix4x4 WorldMatrix
         {
             get
             {
@@ -123,24 +124,24 @@ namespace Gorgon.Examples
 
                 if (_needsPosTransform)
                 {
-                    DX.Matrix.Translation(ref _position, out _posMatrix);
+                    _posMatrix = Matrix4x4.CreateTranslation(_position);
                     _needsPosTransform = false;
                 }
 
                 if (_needsRotTransform)
                 {
-                    DX.Matrix.RotationYawPitchRoll(_rotation.Y.ToRadians(), _rotation.X.ToRadians(), _rotation.Z.ToRadians(), out _rotMatrix);
+                    _rotMatrix = Matrix4x4.CreateFromYawPitchRoll(_rotation.Y.ToRadians(), _rotation.X.ToRadians(), _rotation.Z.ToRadians());
                     _needsRotTransform = false;
                 }
 
                 if (_needsSclTransform)
                 {
-                    DX.Matrix.Scaling(ref _scale, out _scaleMatrix);
+                    _scaleMatrix = Matrix4x4.CreateScale(_scale);
                     _needsSclTransform = false;
                 }
 
-                DX.Matrix.Multiply(ref _rotMatrix, ref _scaleMatrix, out _world);
-                DX.Matrix.Multiply(ref _world, ref _posMatrix, out _world);
+                _world = Matrix4x4.Multiply(_rotMatrix, _scaleMatrix);
+                _world = Matrix4x4.Multiply(_world, _posMatrix);
 
                 return ref _world;
             }

@@ -24,9 +24,9 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -44,7 +44,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the position of the vertex in space.
         /// </summary>
-        public DX.Vector2 Position => new DX.Vector2(Vertex.Position.X, Vertex.Position.Y);
+        public Vector2 Position => new Vector2(Vertex.Position.X, Vertex.Position.Y);
 
         /// <summary>
         /// Property to return the color of the vertex.
@@ -58,10 +58,10 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the texture coordinate (in texel space).
         /// </summary>
-        public DX.Vector2 TextureCoordinate
+        public Vector2 TextureCoordinate
         {
-            get => new DX.Vector2(Vertex.UV.X, Vertex.UV.Y);
-            internal set => Vertex.UV = new DX.Vector4(value, Vertex.UV.Z, 0);
+            get => new Vector2(Vertex.UV.X, Vertex.UV.Y);
+            internal set => Vertex.UV = new Vector4(value, Vertex.UV.Z, 0);
         }
         #endregion
 
@@ -72,11 +72,11 @@ namespace Gorgon.Renderers
         /// <param name="position">The position of the vertex.</param>
         /// <param name="color">The color for the vertex.</param>
         /// <param name="textureCoordinate">The texture coordinates.</param>
-        public GorgonPolySpriteVertex(DX.Vector2 position, GorgonColor color, DX.Vector2 textureCoordinate) => Vertex = new Gorgon2DVertex
+        public GorgonPolySpriteVertex(Vector2 position, GorgonColor color, Vector2 textureCoordinate) => Vertex = new Gorgon2DVertex
         {
-            Position = new DX.Vector4(position, 0, 1.0f),
+            Position = new Vector4(position, 0, 1.0f),
             Color = color,
-            UV = new DX.Vector4(textureCoordinate, 0, 0)
+            UV = new Vector4(textureCoordinate, 0, 0)
         };
         #endregion
     }

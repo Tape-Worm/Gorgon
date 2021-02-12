@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,7 +48,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {
@@ -541,7 +541,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void UpdatePrimarySprite()
         {
-            DX.Vector2 position;
+            Vector2 position;
 
             if (PrimarySprite == null)
             {
@@ -550,11 +550,11 @@ namespace Gorgon.Editor.AnimationEditor
 
             if (BackgroundImage == null)
             {
-                position = new DX.Vector2((int)(Settings.DefaultResolution.Width * 0.5f), (int)(Settings.DefaultResolution.Height * 0.5f));
+                position = new Vector2((int)(Settings.DefaultResolution.Width * 0.5f), (int)(Settings.DefaultResolution.Height * 0.5f));
             }
             else
             {
-                position = new DX.Vector2((int)(BackgroundImage.Width * 0.5f), (int)(BackgroundImage.Height * 0.5f));
+                position = new Vector2((int)(BackgroundImage.Width * 0.5f), (int)(BackgroundImage.Height * 0.5f));
             }
 
             PrimarySprite.Position = position;

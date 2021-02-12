@@ -25,12 +25,12 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -65,7 +65,7 @@ namespace Gorgon.Examples
         // The texture for the ship and engine glow.
         private static GorgonTexture2DView _shipTexture;
         // A list of "star" positions, used to give us a sense of motion.
-        private static readonly DX.Vector2[] _stars = new DX.Vector2[100];
+        private static readonly Vector2[] _stars = new Vector2[100];
         // The ship sprite.
         private static GorgonSprite _ship;
         // The engine glow for the sprite.
@@ -94,12 +94,12 @@ namespace Gorgon.Examples
             _renderer
                 .Update(_ =>
                 {
-                    _background.Position = new DX.Vector2(_background.Position.X, _background.Position.Y + (0.3f * GorgonTiming.Delta));
+                    _background.Position = new Vector2(_background.Position.X, _background.Position.Y + (0.3f * GorgonTiming.Delta));
 
                     // Just wrap around if we hit the top of the background.
                     if (_background.Position.Y > _background.Bounds.Height)
                     {
-                        _background.Position = new DX.Vector2(_background.Position.X, _screen.Height);
+                        _background.Position = new Vector2(_background.Position.X, _screen.Height);
                     }
 
                     if (_floatLeft)
@@ -123,7 +123,7 @@ namespace Gorgon.Examples
                         _floatLeft = !_floatLeft;
                     }
 
-                    _ship.Position = new DX.Vector2((_screen.Width / 2) + _floatOffset, _screen.Height - 120);
+                    _ship.Position = new Vector2((_screen.Width / 2) + _floatOffset, _screen.Height - 120);
                 })
                 .Begin()
                     .DrawSprite(_background)
@@ -131,16 +131,16 @@ namespace Gorgon.Examples
                     {
                         // Our renderer interface is passed to this method so that we can call back into it for things like loops and such.
                         // Draw our "stars".
-                        ref DX.Vector2 star = ref _stars[i];
-                        star = new DX.Vector2(star.X, star.Y + (((i % 2) == 0 ? 0.3f : 0.4f) * GorgonTiming.Delta));
+                        ref Vector2 star = ref _stars[i];
+                        star = new Vector2(star.X, star.Y + (((i % 2) == 0 ? 0.3f : 0.4f) * GorgonTiming.Delta));
 
                         if (star.Y > 1.0f)
                         {
-                            star = new DX.Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle() * -1.0f);
+                            star = new Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle() * -1.0f);
                             return true;
                         }
 
-                        var position = new DX.Vector2(star.X * _screen.Width, star.Y * _screen.Height);
+                        var position = new Vector2(star.X * _screen.Width, star.Y * _screen.Height);
 
                         float starColorValue = GorgonRandom.RandomSingle(0.35f, 1.0f);
                         var starColor = new GorgonColor(starColorValue, starColorValue, starColorValue, 1.0f);
@@ -151,7 +151,7 @@ namespace Gorgon.Examples
                     })
                 .End()
                 .Begin(Gorgon2DBatchState.AdditiveBlend)
-                    .Update(_ => _engineGlow[_glowIndex].Position = new DX.Vector2(_ship.Bounds.Left - (_ship.Bounds.Width / 2) - 10, _ship.Position.Y - (_engineGlow[_glowIndex].Bounds.Height / 2.0f)))
+                    .Update(_ => _engineGlow[_glowIndex].Position = new Vector2(_ship.Bounds.Left - (_ship.Bounds.Width / 2) - 10, _ship.Position.Y - (_engineGlow[_glowIndex].Bounds.Height / 2.0f)))
                     .DrawSprite(_engineGlow[_glowIndex])
                 .End()
                 .Begin()
@@ -241,7 +241,7 @@ namespace Gorgon.Examples
                     Texture = _shipTexture,
                     // Calculate the ship texture coordinates.
                     TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(34, 10, 206, 369)),
-                    Anchor = new DX.Vector2(0.5f, 1.0f)
+                    Anchor = new Vector2(0.5f, 1.0f)
                 };
                 _engineGlow[0] = new GorgonSprite
                 {
@@ -271,14 +271,14 @@ namespace Gorgon.Examples
                                                              _spaceBackground.Width,
                                                              _spaceBackground.Height),
                     TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                    Anchor = new DX.Vector2(0.5f, 1.0f)
+                    Anchor = new Vector2(0.5f, 1.0f)
                 };
 
                 GorgonExample.LoadResources(_graphics);
 
                 for (int i = 0; i < _stars.Length; ++i)
                 {
-                    _stars[i] = new DX.Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
+                    _stars[i] = new Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
                 }
 
                 window.IsLoaded = true;
@@ -300,7 +300,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
         private static void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e) =>
             // We'll need to readjust the background scroller.
-            _background.Position = new DX.Vector2(_background.Position.X, e.Size.Height + (_background.Position.Y - e.OldSize.Height));
+            _background.Position = new Vector2(_background.Position.X, e.Size.Height + (_background.Position.Y - e.OldSize.Height));
 
         /// <summary>
         /// The main entry point for the application.

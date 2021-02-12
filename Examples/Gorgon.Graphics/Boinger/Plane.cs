@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
@@ -40,7 +41,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the size of the plane.
         /// </summary>
-        public DX.Vector2 Size
+        public Vector2 Size
         {
             get;
         }
@@ -54,7 +55,7 @@ namespace Gorgon.Examples
         /// <param name="inputLayout">The input layout for the vertices in this mesh.</param>
         /// <param name="size">The width and height of the plane.</param>
         /// <param name="textureCoordinates">Texture coordinates.</param>
-        public Plane(GorgonGraphics graphics, GorgonInputLayout inputLayout, DX.Vector2 size, DX.RectangleF textureCoordinates)
+        public Plane(GorgonGraphics graphics, GorgonInputLayout inputLayout, Vector2 size, DX.RectangleF textureCoordinates)
             : base(inputLayout)
         {
             Size = size;
@@ -62,10 +63,10 @@ namespace Gorgon.Examples
             // Create our vertices.
             Vertices = new[]
                        {
-                           new GorgonVertexPosUv(new DX.Vector3(-size.X, size.Y, 0.0f), new DX.Vector2(textureCoordinates.Left, textureCoordinates.Top)),
-                           new GorgonVertexPosUv(new DX.Vector3(size.X, size.Y, 0.0f), new DX.Vector2(textureCoordinates.Right, textureCoordinates.Top)),
-                           new GorgonVertexPosUv(new DX.Vector3(-size.X, -size.Y, 0.0f), new DX.Vector2(textureCoordinates.Left, textureCoordinates.Bottom)),
-                           new GorgonVertexPosUv(new DX.Vector3(size.X, -size.Y, 0.0f), new DX.Vector2(textureCoordinates.Right, textureCoordinates.Bottom))
+                           new GorgonVertexPosUv(new Vector3(-size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Top)),
+                           new GorgonVertexPosUv(new Vector3(size.X, size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Top)),
+                           new GorgonVertexPosUv(new Vector3(-size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Left, textureCoordinates.Bottom)),
+                           new GorgonVertexPosUv(new Vector3(size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Bottom))
                        };
 
             // Create our indices.

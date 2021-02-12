@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Linq;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
@@ -103,8 +104,8 @@ namespace Gorgon.Editor.SpriteEditor
             Sprite.TextureArrayIndex = DataContext.ArrayIndex;
             Sprite.TextureSampler = DataContext.IsPixellated ? GorgonSamplerState.PointFiltering : GorgonSamplerState.Default;
 
-            Sprite.Position = DX.Vector2.Zero;
-            Sprite.Anchor = new DX.Vector2(0.5f, 0.5f);
+            Sprite.Position = Vector2.Zero;
+            Sprite.Anchor = new Vector2(0.5f, 0.5f);
             Sprite.Size = DataContext.Size;
 
             SpriteRegion = Renderer.GetAABB(Sprite);
@@ -154,7 +155,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.DrawSprite();
 
-            var halfRegion = new DX.Vector2(DataContext.Texture.Width * -0.5f, DataContext.Texture.Height * -0.5f);
+            var halfRegion = new Vector2(DataContext.Texture.Width * -0.5f, DataContext.Texture.Height * -0.5f);
 
 
             Renderer.Begin(camera: Camera);
@@ -205,10 +206,9 @@ namespace Gorgon.Editor.SpriteEditor
 
             ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(zoomRect);
 
-            var spritePosition = (DX.Vector2)Camera.Unproject(new DX.Vector3(zoomRect.X + zoomRect.Width * 0.5f,
-                                                                             zoomRect.Y + zoomRect.Height * 0.5f, 0));
+            Vector3 spritePosition = Camera.Unproject(new Vector3(zoomRect.X + zoomRect.Width * 0.5f, zoomRect.Y + zoomRect.Height * 0.5f, 0));
 
-            ForceMoveTo(spritePosition, spriteZoomLevel.GetScale(), true);
+            ForceMoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale(), true);
         }
         #endregion
 

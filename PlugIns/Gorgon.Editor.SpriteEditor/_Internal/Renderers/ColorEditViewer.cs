@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
@@ -71,7 +72,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to retrieve the currently active handle.
         /// </summary>
         /// <param name="clientMousePos">Client mouse position.</param>
-        private void GetActiveHandle(DX.Vector2 clientMousePos)
+        private void GetActiveHandle(Vector2 clientMousePos)
         {
             _activeHandleIndex = -1;
 
@@ -86,7 +87,7 @@ namespace Gorgon.Editor.SpriteEditor
                     continue;
                 }
 
-                if (handle.Contains(clientMousePos))
+                if (handle.Contains(clientMousePos.X, clientMousePos.Y))
                 {
                     _activeHandleIndex = i;
                     mouseCursor = Cursors.Cross;
@@ -187,7 +188,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnMouseUp(args);
 
-            GetActiveHandle(args.ClientPosition);
+            GetActiveHandle(args.ClientPosition.ToVector2());
 
             for (int i = 0; i < _selected.Length; ++i)
             {
@@ -237,7 +238,7 @@ namespace Gorgon.Editor.SpriteEditor
         protected override void OnMouseMove(MouseArgs args)
         {
             base.OnMouseMove(args);
-            GetActiveHandle(args.ClientPosition);
+            GetActiveHandle(args.ClientPosition.ToVector2());
         }
 
         /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>
@@ -263,10 +264,10 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            var spriteTopLeft = new DX.Vector3(SpriteRegion.TopLeft, 0);
-            var spriteBottomRight = new DX.Vector3(SpriteRegion.BottomRight, 0);
-            Camera.Unproject(ref spriteTopLeft, out DX.Vector3 transformedTopLeft);
-            Camera.Unproject(ref spriteBottomRight, out DX.Vector3 transformedBottomRight);
+            var spriteTopLeft = new Vector3(SpriteRegion.Left, SpriteRegion.Top, 0);
+            var spriteBottomRight = new Vector3(SpriteRegion.Right, SpriteRegion.Bottom, 0);
+            Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
+            Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 
             var screenRect = new DX.RectangleF
             {

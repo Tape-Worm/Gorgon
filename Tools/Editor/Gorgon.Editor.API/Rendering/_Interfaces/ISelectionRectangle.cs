@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Graphics;
 using DX = SharpDX;
 
@@ -48,7 +49,7 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// Property to set or return the speed of the overlay animation.
         /// </summary>
-        DX.Vector2 Speed
+        Vector2 Speed
         {
             get;
             set;

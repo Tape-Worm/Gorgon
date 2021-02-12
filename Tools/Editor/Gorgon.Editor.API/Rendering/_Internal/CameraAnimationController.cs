@@ -24,12 +24,13 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
-using SharpDX;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering
 {
@@ -68,7 +69,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnRectangleUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, RectangleF value)
+        protected override void OnRectangleUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, DX.RectangleF value)
         {
             // Not needed.
         }
@@ -88,7 +89,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="texture">The texture to switch to.</param>
         /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
         /// <param name="textureArrayIndex">The texture array index.</param>
-        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, GorgonOrthoCamera animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
         {
             // Not needed.
         }

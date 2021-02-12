@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
@@ -47,17 +48,17 @@ namespace Gorgon.Editor.Services
         // The 2D renderer for the application.
         private readonly Gorgon2D _renderer;
         // The anchor position, in image coordinates.
-        private DX.Vector2 _anchorPosition;
+        private Vector2 _anchorPosition;
         // The start point of the drag operation.
-        private DX.Vector2 _dragStart;
+        private Vector2 _dragStart;
         // The current position of the icon when drag starts.
-        private DX.Vector2 _dragStartPosition;
+        private Vector2 _dragStartPosition;
         // The animation controller used to update the opacity of the icon over time.
         private readonly GorgonSpriteAnimationController _animController = new GorgonSpriteAnimationController();
         // The icon opacity animation.
         private readonly IGorgonAnimation _animation;
         // The current mouse position.
-        private DX.Vector2 _mousePosition;
+        private Vector2 _mousePosition;
         // The boundaries for the anchor point.
         private DX.Rectangle _bounds;
         // Flag to indicate that the mouse cursor is hidden.
@@ -89,12 +90,12 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>Property to set or return the position of the sprite anchor.</summary>
-        public DX.Vector2 AnchorPosition
+        public Vector2 AnchorPosition
         {
             get => _anchorPosition;
             set
             {
-                if (_anchorPosition.Equals(ref value))
+                if (_anchorPosition.Equals(value))
                 {
                     return;
                 }
@@ -104,7 +105,7 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>Property to set or return the center position of the sprite.</summary>
-        public DX.Vector2 CenterPosition
+        public Vector2 CenterPosition
         {
             get;
             set;
@@ -116,7 +117,7 @@ namespace Gorgon.Editor.Services
         /// Function to assign the anchor position.
         /// </summary>
         /// <param name="value">The value to assign to the anchor position.</param>
-        private void SetAnchorPosition(DX.Vector2 value)
+        private void SetAnchorPosition(Vector2 value)
         {
             _anchorPosition = value.Truncate();
 
@@ -140,7 +141,7 @@ namespace Gorgon.Editor.Services
             DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
             Cursor cursor = Cursors.Default;
 
-            if (iconBounds.Contains(_mousePosition))
+            if (iconBounds.Contains(_mousePosition.X, _mousePosition.Y))
             {
                 cursor = Cursors.Hand;
             }
@@ -164,10 +165,10 @@ namespace Gorgon.Editor.Services
                 _cursorHidden = false;
             }
 
-            _mousePosition = args.ClientPosition;
+            _mousePosition = args.ClientPosition.ToVector2();
             DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
 
-            if (!iconBounds.Contains(_mousePosition))
+            if (!iconBounds.Contains(_mousePosition.X, _mousePosition.Y))
             {
                 UpdateCursor();
                 return false;
@@ -188,7 +189,7 @@ namespace Gorgon.Editor.Services
         ///   <b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
         public bool MouseMove(MouseArgs args)
         {
-            _mousePosition = args.ClientPosition;
+            _mousePosition = args.ClientPosition.ToVector2();
             if (args.MouseButtons != MouseButtons.Left)
             {
                 if (_cursorHidden)
@@ -206,9 +207,9 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 
-            DX.Vector2 mouse = args.CameraSpacePosition;
-            DX.Vector2.Subtract(ref mouse, ref _dragStart, out DX.Vector2 dragDelta);
-            AnchorPosition = (new DX.Vector2(_dragStartPosition.X + dragDelta.X, _dragStartPosition.Y + dragDelta.Y)).Truncate();
+            Vector2 mouse = args.CameraSpacePosition;
+            var dragDelta = Vector2.Subtract(mouse, _dragStart);
+            AnchorPosition = (new Vector2(_dragStartPosition.X + dragDelta.X, _dragStartPosition.Y + dragDelta.Y)).Truncate();
 
             return true;
         }
@@ -259,31 +260,31 @@ namespace Gorgon.Editor.Services
             {
                 case Keys.NumPad8:
                 case Keys.Up:
-                    AnchorPosition = new DX.Vector2(AnchorPosition.X, AnchorPosition.Y - offset);
+                    AnchorPosition = new Vector2(AnchorPosition.X, AnchorPosition.Y - offset);
                     return true;
                 case Keys.NumPad2:
                 case Keys.Down:
-                    AnchorPosition = new DX.Vector2(AnchorPosition.X, AnchorPosition.Y + offset);
+                    AnchorPosition = new Vector2(AnchorPosition.X, AnchorPosition.Y + offset);
                     return true;
                 case Keys.NumPad4:
                 case Keys.Left:
-                    AnchorPosition = new DX.Vector2(AnchorPosition.X - offset, AnchorPosition.Y);
+                    AnchorPosition = new Vector2(AnchorPosition.X - offset, AnchorPosition.Y);
                     return true;
                 case Keys.NumPad6:
                 case Keys.Right:
-                    AnchorPosition = new DX.Vector2(AnchorPosition.X + offset, AnchorPosition.Y);
+                    AnchorPosition = new Vector2(AnchorPosition.X + offset, AnchorPosition.Y);
                     return true;
                 case Keys.NumPad7:
-                    AnchorPosition = new DX.Vector2(AnchorPosition.X - offset, AnchorPosition.Y - offset);
+                    AnchorPosition = new Vector2(AnchorPosition.X - offset, AnchorPosition.Y - offset);
                     return true;
                 case Keys.NumPad9:
-                    AnchorPosition = new DX.Vector2(AnchorPosition.X + offset, AnchorPosition.Y - offset);
+                    AnchorPosition = new Vector2(AnchorPosition.X + offset, AnchorPosition.Y - offset);
                     return true;
                 case Keys.NumPad1:
-                    AnchorPosition = new DX.Vector2(AnchorPosition.X - offset, AnchorPosition.Y + offset);
+                    AnchorPosition = new Vector2(AnchorPosition.X - offset, AnchorPosition.Y + offset);
                     return true;
                 case Keys.NumPad3:
-                    AnchorPosition = new DX.Vector2(AnchorPosition.X + offset, AnchorPosition.Y + offset);
+                    AnchorPosition = new Vector2(AnchorPosition.X + offset, AnchorPosition.Y + offset);
                     return true;
             }
 
@@ -293,7 +294,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to reset the anchor value.
         /// </summary>
-        public void Reset() => _anchorPosition = DX.Vector2.Zero;
+        public void Reset() => _anchorPosition = Vector2.Zero;
 
         /// <summary>Function to render the anchor UI.</summary>
         public void Render()
@@ -305,10 +306,10 @@ namespace Gorgon.Editor.Services
 
             UpdateCursor();
 
-            var position = (DX.Vector3)(AnchorPosition - CenterPosition);
-            DX.Vector3 screenAnchor = DX.Vector3.Zero;
-            Camera?.Unproject(ref position, out screenAnchor);
-            _anchorIcon.Position = ((DX.Vector2)screenAnchor).Truncate();
+            Vector2 position = AnchorPosition - CenterPosition;
+            Vector3 screenAnchor = default;
+            Camera?.Unproject(new Vector3(position.X, position.Y, 0), out screenAnchor);
+            _anchorIcon.Position = (new Vector2(screenAnchor.X, screenAnchor.Y)).Truncate();
 
             _renderer.DrawSprite(_anchorIcon);
             _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColor.Black);

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -720,7 +721,7 @@ namespace Gorgon.Editor.SpriteEditor
             _zoomLevel = zoom;
             UpdateZoomMenu();
 
-            ContentRenderer?.MoveTo(new DX.Vector2(ContentRenderer.ClientSize.Width * 0.5f, ContentRenderer.ClientSize.Height * 0.5f),
+            ContentRenderer?.MoveTo(new Vector2(ContentRenderer.ClientSize.Width * 0.5f, ContentRenderer.ClientSize.Height * 0.5f),
                                     _zoomLevel.GetScale());
         }
 

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Buffers;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -95,7 +96,7 @@ namespace Gorgon.Editor.SpriteEditor
                     }
                     else
                     {
-                        Sprite.Scale = DX.Vector2.One;
+                        Sprite.Scale = Vector2.One;
                     }
                     break;
                 case nameof(ISpriteAnchorEdit.Anchor):
@@ -168,10 +169,10 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnRenderBackground();
 
-            var spriteTopLeft = new DX.Vector3(SpriteRegion.TopLeft.X, SpriteRegion.TopLeft.Y, 0);
-            var spriteBottomRight = new DX.Vector3(SpriteRegion.BottomRight.X, SpriteRegion.BottomRight.Y, 0);
-            Camera.Unproject(ref spriteTopLeft, out DX.Vector3 transformedTopLeft);
-            Camera.Unproject(ref spriteBottomRight, out DX.Vector3 transformedBottomRight);
+            var spriteTopLeft = new Vector3(SpriteRegion.TopLeft.X, SpriteRegion.TopLeft.Y, 0);
+            var spriteBottomRight = new Vector3(SpriteRegion.BottomRight.X, SpriteRegion.BottomRight.Y, 0);
+            Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
+            Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 
             var bounds = new DX.RectangleF
             {
@@ -189,8 +190,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to draw the sprite.</summary>
         protected override void DrawSprite()
         {
-            var halfSize = new DX.Vector2(Sprite.Size.Width * 0.5f, Sprite.Size.Height * 0.5f);
-            Sprite.Anchor = new DX.Vector2((DataContext.AnchorEditor.Anchor.X + halfSize.X) / DataContext.Size.Width,
+            var halfSize = new Vector2(Sprite.Size.Width * 0.5f, Sprite.Size.Height * 0.5f);
+            Sprite.Anchor = new Vector2((DataContext.AnchorEditor.Anchor.X + halfSize.X) / DataContext.Size.Width,
                                            (DataContext.AnchorEditor.Anchor.Y + halfSize.Y) / DataContext.Size.Height);
             Sprite.Position = DataContext.AnchorEditor.Anchor;
 
@@ -210,26 +211,26 @@ namespace Gorgon.Editor.SpriteEditor
 
             _anchorService.Camera = Camera;
             RenderRegion = SpriteRegion;
-            var halfSize = new DX.Vector2(Sprite.Size.Width * 0.5f, Sprite.Size.Height * 0.5f);
-            DX.Vector2[] vertices = ArrayPool<DX.Vector2>.Shared.Rent(4);
-            vertices[0] = new DX.Vector2(Sprite.CornerOffsets.UpperLeft.X - halfSize.X, Sprite.CornerOffsets.UpperLeft.Y - halfSize.Y).Truncate();
-            vertices[1] = new DX.Vector2(Sprite.CornerOffsets.UpperRight.X + halfSize.X, Sprite.CornerOffsets.UpperRight.Y - halfSize.Y).Truncate();
-            vertices[2] = new DX.Vector2(Sprite.CornerOffsets.LowerRight.X + halfSize.X, Sprite.CornerOffsets.LowerRight.Y + halfSize.Y).Truncate();
-            vertices[3] = new DX.Vector2(Sprite.CornerOffsets.LowerLeft.X - halfSize.X, Sprite.CornerOffsets.LowerLeft.Y + halfSize.Y).Truncate();
+            var halfSize = new Vector2(Sprite.Size.Width * 0.5f, Sprite.Size.Height * 0.5f);
+            Vector2[] vertices = ArrayPool<Vector2>.Shared.Rent(4);
+            vertices[0] = new Vector2(Sprite.CornerOffsets.UpperLeft.X - halfSize.X, Sprite.CornerOffsets.UpperLeft.Y - halfSize.Y).Truncate();
+            vertices[1] = new Vector2(Sprite.CornerOffsets.UpperRight.X + halfSize.X, Sprite.CornerOffsets.UpperRight.Y - halfSize.Y).Truncate();
+            vertices[2] = new Vector2(Sprite.CornerOffsets.LowerRight.X + halfSize.X, Sprite.CornerOffsets.LowerRight.Y + halfSize.Y).Truncate();
+            vertices[3] = new Vector2(Sprite.CornerOffsets.LowerLeft.X - halfSize.X, Sprite.CornerOffsets.LowerLeft.Y + halfSize.Y).Truncate();
             DataContext.AnchorEditor.SpriteBounds = vertices;
-            ArrayPool<DX.Vector2>.Shared.Return(vertices);
+            ArrayPool<Vector2>.Shared.Return(vertices);
 
-            DataContext.AnchorEditor.Anchor = _anchorService.AnchorPosition = new DX.Vector2(DataContext.Size.Width * DataContext.Anchor.X - halfSize.X,
+            DataContext.AnchorEditor.Anchor = _anchorService.AnchorPosition = new Vector2(DataContext.Size.Width * DataContext.Anchor.X - halfSize.X,
                                                                                              DataContext.Size.Height * DataContext.Anchor.Y - halfSize.Y);
 
             var builder = new GorgonAnimationBuilder();
             _scaleRotateAnim = builder.EditVector2(GorgonSpriteAnimationController.ScaleTrack.TrackName)
                   .SetInterpolationMode(TrackInterpolationMode.Spline)
                   .Disabled()
-                  .SetKey(new GorgonKeyVector2(0, new DX.Vector2(1, 1)))
-                  .SetKey(new GorgonKeyVector2(2.5f, new DX.Vector2(0.25f, 0.25f)))
-                  .SetKey(new GorgonKeyVector2(5.0f, new DX.Vector2(2, 2)))
-                  .SetKey(new GorgonKeyVector2(10.0f, new DX.Vector2(1, 1)))
+                  .SetKey(new GorgonKeyVector2(0, new Vector2(1, 1)))
+                  .SetKey(new GorgonKeyVector2(2.5f, new Vector2(0.25f, 0.25f)))
+                  .SetKey(new GorgonKeyVector2(5.0f, new Vector2(2, 2)))
+                  .SetKey(new GorgonKeyVector2(10.0f, new Vector2(1, 1)))
                   .EndEdit()
                   .EditSingle(GorgonSpriteAnimationController.AngleTrack.TrackName)
                   .SetInterpolationMode(TrackInterpolationMode.Spline)

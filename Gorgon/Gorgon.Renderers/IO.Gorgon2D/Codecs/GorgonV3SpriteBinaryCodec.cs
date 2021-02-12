@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -148,7 +149,7 @@ namespace Gorgon.IO
                 reader.Open();
                 binReader = reader.OpenChunk(SpriteData);
                 sprite.Size = binReader.ReadValue<DX.Size2F>();
-                sprite.Anchor = binReader.ReadValue<DX.Vector2>();
+                sprite.Anchor = binReader.ReadValue<Vector2>();
 
                 // If we do not have alpha test information, then skip writing its data.
                 if (binReader.ReadBoolean())
@@ -157,10 +158,10 @@ namespace Gorgon.IO
                 }
 
                 // Write out corner data.
-                sprite.CornerOffsets.UpperLeft = binReader.ReadValue<DX.Vector3>();
-                sprite.CornerOffsets.UpperRight = binReader.ReadValue<DX.Vector3>();
-                sprite.CornerOffsets.LowerLeft = binReader.ReadValue<DX.Vector3>();
-                sprite.CornerOffsets.LowerRight = binReader.ReadValue<DX.Vector3>();
+                sprite.CornerOffsets.UpperLeft = binReader.ReadValue<Vector3>();
+                sprite.CornerOffsets.UpperRight = binReader.ReadValue<Vector3>();
+                sprite.CornerOffsets.LowerLeft = binReader.ReadValue<Vector3>();
+                sprite.CornerOffsets.LowerRight = binReader.ReadValue<Vector3>();
 
                 sprite.CornerColors.UpperLeft = binReader.ReadValue<GorgonColor>();
                 sprite.CornerColors.UpperRight = binReader.ReadValue<GorgonColor>();

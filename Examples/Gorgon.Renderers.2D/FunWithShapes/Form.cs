@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
@@ -91,8 +92,8 @@ namespace Gorgon.Examples
 
                 // Set up a random color.				
                 paintColor = Color.FromArgb((byte)GorgonRandom.RandomInt32(128, 255), GorgonRandom.RandomInt32(64, 255), GorgonRandom.RandomInt32(64, 255), 0);
-                var startPosition = new DX.Vector2(sin + _halfSize.Width, cos + _halfSize.Height);
-                var endPosition = new DX.Vector2((cos * (GorgonRandom.RandomSingle(_halfSize.Width * 0.82f))) + startPosition.X, (sin * (GorgonRandom.RandomSingle(_halfSize.Height * 0.82f))) + startPosition.Y);
+                var startPosition = new Vector2(sin + _halfSize.Width, cos + _halfSize.Height);
+                var endPosition = new Vector2((cos * (GorgonRandom.RandomSingle(_halfSize.Width * 0.82f))) + startPosition.X, (sin * (GorgonRandom.RandomSingle(_halfSize.Height * 0.82f))) + startPosition.Y);
                 _renderer.DrawLine(startPosition.X, startPosition.Y, endPosition.X, endPosition.Y, paintColor);
             }
 
@@ -106,7 +107,7 @@ namespace Gorgon.Examples
             {
                 //float radius = GorgonRandom.RandomSingle(5.0f);
                 float radius = 4;
-                var spotPosition = new DX.Vector2((GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Width - (_halfSize.Height / 4.0f)),
+                var spotPosition = new Vector2((GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Width - (_halfSize.Height / 4.0f)),
                                                          (GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Height - (_halfSize.Height / 4.0f)));
                 _renderer.DrawEllipse(new DX.RectangleF(spotPosition.X - (radius * 0.5f),
                                                         spotPosition.Y - (radius * 0.5f),

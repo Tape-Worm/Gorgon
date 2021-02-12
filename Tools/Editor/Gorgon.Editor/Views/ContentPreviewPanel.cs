@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -258,7 +259,7 @@ namespace Gorgon.Editor.Views
 
             _renderer.Begin();
 
-            var halfClient = new DX.Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f);
+            var halfClient = new Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f);
             float scale = ((float)ClientSize.Width / image.Width).Min((float)ClientSize.Height / image.Height);
             float width = image.Width * scale;
             float height = image.Height * scale;
@@ -268,7 +269,7 @@ namespace Gorgon.Editor.Views
             _renderer.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColor.White, image, new DX.RectangleF(0, 0, 1, 1));
 
             _titleText.LayoutArea = new DX.Size2F(_swapChain.Width, _titleText.Size.Height * 1.5f);
-            _titleText.Position = new DX.Vector2(0, _swapChain.Height - (_titleText.Size.Height * 1.5f).Min(_swapChain.Height * 0.25f));// _swapChain.Height - _titleText.Size.Height);
+            _titleText.Position = new Vector2(0, _swapChain.Height - (_titleText.Size.Height * 1.5f).Min(_swapChain.Height * 0.25f));// _swapChain.Height - _titleText.Size.Height);
 
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, _titleText.Position.Y, _swapChain.Width, _titleText.LayoutArea.Value.Height), new GorgonColor(0, 0, 0, 0.5f));
 

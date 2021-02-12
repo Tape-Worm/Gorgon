@@ -24,12 +24,9 @@
 // 
 #endregion
 
-using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using DX = SharpDX;
@@ -93,7 +90,7 @@ namespace Gorgon.Examples
             sprite.Depth = 0.1f;
             sprite.Position = entity.Position;
             sprite.Angle = entity.Rotation;
-            sprite.Scale = new DX.Vector2(entity.Scale);
+            sprite.Scale = new Vector2(entity.Scale);
             sprite.Anchor = entity.Anchor;
 
             Renderer.GetAABB(sprite, out DX.RectangleF bounds);
@@ -127,7 +124,7 @@ namespace Gorgon.Examples
             {
                 SpriteEntity sprite = Sprites[i];
 
-                DX.Vector2 transformed = sprite.LocalPosition + Offset;
+                Vector2 transformed = sprite.LocalPosition + Offset;
 
                 sprite.Position = transformed / ParallaxLevel;
 
@@ -205,7 +202,7 @@ namespace Gorgon.Examples
                 sprite.Depth = 0.1f;
                 sprite.Position = entity.Position;
                 sprite.Angle = entity.Rotation;
-                sprite.Scale = new DX.Vector2(entity.Scale);
+                sprite.Scale = new Vector2(entity.Scale);
                 sprite.Color = entity.Color;
                 sprite.Anchor = entity.Anchor;
 

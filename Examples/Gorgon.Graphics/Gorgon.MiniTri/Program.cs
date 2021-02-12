@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -34,6 +35,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.UI;
 using DX = SharpDX;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Examples
 {
@@ -126,9 +128,9 @@ namespace Gorgon.Examples
             // Define the points that make up our triangle.
             // We'll push it back half a unit along the Z-Axis so that we can see it.
             MiniTriVertex[] vertices = {
-                               new MiniTriVertex(new DX.Vector3(0, 0.5f, 1.0f), new GorgonColor(1, 0, 0)),
-                               new MiniTriVertex(new DX.Vector3(0.5f, -0.5f, 1.0f), new GorgonColor(0, 1, 0)),
-                               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1))
+                               new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), new GorgonColor(1, 0, 0)),
+                               new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), new GorgonColor(0, 1, 0)),
+                               new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1))
                            };
 
             // Create the vertex buffer.
@@ -152,18 +154,21 @@ namespace Gorgon.Examples
         /// <param name="window">The application window.</param>
         private static void CreateConstantBuffer(Form window)
         {
-            // Our projection matrix.
+            // Use a camera to build our projection matrix.
 
             // Build our projection matrix using a 65 degree field of view and an aspect ratio that matches our current window aspect ratio.
             // Note that we depth a depth range from 0.001f up to 1000.0f.  This provides a near and far plane for clipping.  
             // These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
             // linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-            DX.Matrix.PerspectiveFovLH(65.0f.ToRadians(), window.ClientSize.Width / (float)window.ClientSize.Height, 0.125f, 1000f, out DX.Matrix projectionMatrix);
+            var camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(window.ClientSize.Width, window.ClientSize.Height), 0.125f, 1000.0f)
+            {
+                Fov = 65.0f
+            };            
 
             // Create our constant buffer.
             //
             // The data we pass into here will apply the projection transformation to our vertex data so we can transform from 3D space into 2D space.
-            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref projectionMatrix, "MiniTri WVP Constant Buffer");
+            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in camera.GetProjectionMatrix(), "MiniTri WVP Constant Buffer");
         }
 
         /// <summary>

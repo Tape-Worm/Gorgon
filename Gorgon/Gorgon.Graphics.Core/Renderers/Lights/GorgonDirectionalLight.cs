@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Data;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Lights
 {
@@ -40,7 +40,7 @@ namespace Gorgon.Renderers.Lights
     {
         #region Variables.
         // The direction for a directional light.
-        private DX.Vector3 _lightDirection;
+        private Vector3 _lightDirection;
         // The GPU data for the light.
         private GorgonGpuLightData _lightData;
         #endregion
@@ -57,7 +57,7 @@ namespace Gorgon.Renderers.Lights
         /// <remarks>
         /// This property is ignored when the <see cref="LightType"/> property is set to <see cref="LightType.Point"/>.
         /// </remarks>
-        public DX.Vector3 LightDirection
+        public Vector3 LightDirection
         {
             get => _lightDirection;
             set
@@ -102,7 +102,7 @@ namespace Gorgon.Renderers.Lights
         {
             if (IsUpdated)
             {
-                _lightData = new GorgonGpuLightData(DX.Vector3.Zero, LightType, LightDirection, Color, SpecularEnabled, SpecularPower, Intensity, 0);
+                _lightData = new GorgonGpuLightData(Vector3.Zero, LightType, LightDirection, Color, SpecularEnabled, SpecularPower, Intensity, 0);
                 IsUpdated = false;
             }
 

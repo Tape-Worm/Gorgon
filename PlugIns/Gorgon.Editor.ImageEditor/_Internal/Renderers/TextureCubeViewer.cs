@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -124,7 +125,7 @@ namespace Gorgon.Editor.ImageEditor
 
             for (int i = 0; i < _cubeImageBounds.Length; ++i)
             {                
-                if (_cubeImageBounds[i].Contains(args.CameraSpacePosition))
+                if (_cubeImageBounds[i].Contains(args.CameraSpacePosition.X, args.CameraSpacePosition.Y))
                 {
                     DataContext.CurrentArrayIndex = cubeGroup + i;
                     return;
@@ -137,9 +138,9 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to draw the texture.</summary>
         protected override void DrawTexture()
         {
-            var tileSize = new DX.Vector2(DataContext.Width, DataContext.Height);
+            var tileSize = new Vector2(DataContext.Width, DataContext.Height);
             var bounds = new DX.RectangleF(-tileSize.X, -tileSize.Y * 0.5f, tileSize.X, tileSize.Y);
-            DX.Vector3 tileClient = Camera.Unproject((DX.Vector3)bounds.Location);
+            Vector3 tileClient = Camera.Unproject(new Vector3(bounds.Location.X, bounds.Location.Y, 0));
             var clientBounds = new DX.RectangleF(tileClient.X, tileClient.Y, tileSize.X * Camera.Zoom.X, tileSize.Y * Camera.Zoom.X);
             int cubeGroup = DataContext.CurrentArrayIndex / 6;
 
@@ -182,14 +183,20 @@ namespace Gorgon.Editor.ImageEditor
                         
             _selectionRect.Draw(_cubeScreenBounds[selectedImage]);
 
-            var offset = new DX.Vector2(0, "+X".MeasureLine(_axisFont, true).Height);
+            var offset = new Vector2(0, "+X".MeasureLine(_axisFont, true).Height);
 
-            Renderer.DrawString("+X", _cubeScreenBounds[0].BottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            Renderer.DrawString("-X", _cubeScreenBounds[1].BottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            Renderer.DrawString("+Y", _cubeScreenBounds[2].BottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            Renderer.DrawString("-Y", _cubeScreenBounds[3].BottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            Renderer.DrawString("+Z", _cubeScreenBounds[4].BottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
-            Renderer.DrawString("-Z", _cubeScreenBounds[5].BottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+            var bottomLeft = new Vector2(_cubeScreenBounds[0].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            Renderer.DrawString("+X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+            bottomLeft = new Vector2(_cubeScreenBounds[1].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            Renderer.DrawString("-X", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+            bottomLeft = new Vector2(_cubeScreenBounds[2].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            Renderer.DrawString("+Y", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+            bottomLeft = new Vector2(_cubeScreenBounds[3].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            Renderer.DrawString("-Y", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+            bottomLeft = new Vector2(_cubeScreenBounds[4].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            Renderer.DrawString("+Z", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
+            bottomLeft = new Vector2(_cubeScreenBounds[5].BottomLeft.X, _cubeScreenBounds[0].BottomLeft.Y);
+            Renderer.DrawString("-Z", bottomLeft - offset, _axisFont, new GorgonColor(GorgonColor.White, Opacity));
 
             Renderer.End();
         }

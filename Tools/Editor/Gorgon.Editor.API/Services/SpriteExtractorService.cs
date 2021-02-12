@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -35,7 +36,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
-using Gorgon.Native;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.Services
                         {
                             TextureArrayIndex = array + data.StartArrayIndex,
                             Texture = data.Texture,
-                            Anchor = DX.Vector2.Zero,
+                            Anchor = Vector2.Zero,
                             Size = new DX.Size2F(data.CellSize.Width, data.CellSize.Height),
                             TextureRegion = data.Texture.ToTexel(spriteRect),
                             TextureSampler = GorgonSamplerState.PointFiltering

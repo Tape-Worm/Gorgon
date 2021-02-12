@@ -25,17 +25,13 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using Gorgon.Timing;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -192,14 +188,14 @@ namespace Gorgon.Examples
                 return;
             }
 
-            DX.Vector2 aspect;
+            Vector2 aspect;
             if (_screen.Width > _screen.Height)
             {
-                aspect = new DX.Vector2((float)screen.Width / screen.Height, 1.0f);
+                aspect = new Vector2((float)screen.Width / screen.Height, 1.0f);
             }
             else
             {
-                aspect = new DX.Vector2(1, (float)screen.Height / screen.Width);
+                aspect = new Vector2(1, (float)screen.Height / screen.Width);
             }
 
             // Adjust the viewable area to match our aspect ratio.

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="animation">The currently active animation being edited.</param>
         /// <param name="workingSprite">The working sprite to update.</param>
         /// <returns>The floating point values at the specified time.</returns>
-        public DX.Vector4? GetTrackFloatValues(ITrack track, float time, IGorgonAnimation animation, GorgonSprite workingSprite)
+        public Vector4? GetTrackFloatValues(ITrack track, float time, IGorgonAnimation animation, GorgonSprite workingSprite)
         {            
             if ((animation == null) || (workingSprite == null))
             {
@@ -262,7 +262,7 @@ namespace Gorgon.Editor.AnimationEditor
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
 
-                    return new DX.Vector4(singleKey.Value, 0, 0, 0);
+                    return new Vector4(singleKey.Value, 0, 0, 0);
                 case AnimationTrackKeyType.Vector2:
                     if (!animation.Vector2Tracks.TryGetValue(track.Name, out IGorgonAnimationTrack<GorgonKeyVector2> v2Track))
                     {
@@ -276,7 +276,7 @@ namespace Gorgon.Editor.AnimationEditor
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
 
-                    return (DX.Vector4)v2Key.Value;
+                    return new Vector4(v2Key.Value.X, v2Key.Value.Y, 0, 0);
                 case AnimationTrackKeyType.Vector3:
                     if (!animation.Vector3Tracks.TryGetValue(track.Name, out IGorgonAnimationTrack<GorgonKeyVector3> v3Track))
                     {
@@ -290,7 +290,7 @@ namespace Gorgon.Editor.AnimationEditor
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
 
-                    return (DX.Vector4)v3Key.Value;
+                    return new Vector4(v3Key.Value.X, v3Key.Value.Y, v3Key.Value.Z, 0);
                 case AnimationTrackKeyType.Vector4:
                     if (!animation.Vector4Tracks.TryGetValue(track.Name, out IGorgonAnimationTrack<GorgonKeyVector4> v4Track))
                     {
@@ -318,7 +318,7 @@ namespace Gorgon.Editor.AnimationEditor
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
 
-                    return new DX.Vector4(rectKey.Value.Left, rectKey.Value.Top, rectKey.Value.Width, rectKey.Value.Height);
+                    return new Vector4(rectKey.Value.Left, rectKey.Value.Top, rectKey.Value.Width, rectKey.Value.Height);
                 case AnimationTrackKeyType.Color:
                     if (!animation.ColorTracks.TryGetValue(track.Name, out IGorgonAnimationTrack<GorgonKeyGorgonColor> colorTrack))
                     {

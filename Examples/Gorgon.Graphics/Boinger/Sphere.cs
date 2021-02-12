@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
@@ -61,7 +62,7 @@ namespace Gorgon.Examples
         public Sphere(GorgonGraphics graphics,
                       GorgonInputLayout inputLayout,
                       float radius,
-                      DX.Vector2 textureOffset,
+                      Vector2 textureOffset,
                       DX.Size2F textureScale,
                       int ringCount = 8,
                       int segmentCount = 16)
@@ -88,11 +89,11 @@ namespace Gorgon.Examples
             {
                 float angle = deltaRingAngle * ring;
                 float ringSin = angle.Sin();
-                var position = new DX.Vector3(0, angle.Cos() * radius, 0);
+                var position = new Vector3(0, angle.Cos() * radius, 0);
 
                 for (int segment = 0; segment <= segmentCount; segment++)
                 {
-                    var textureDelta = new DX.Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
+                    var textureDelta = new Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
                     float segmentAngle = deltaSegAngle * segment;
 
                     position.X = ringSin * segmentAngle.Sin() * radius;

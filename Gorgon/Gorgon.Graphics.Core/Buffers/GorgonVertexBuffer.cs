@@ -56,8 +56,8 @@ namespace Gorgon.Graphics.Core
     /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
     /// struct MyVertex
     /// {
-    ///		public DX.Vector4 Position;
-    ///		public DX.Vector4 Color;
+    ///		public Vector4 Position;
+    ///		public Vector4 Color;
     /// }
     /// 
     /// GorgonGraphics graphics;

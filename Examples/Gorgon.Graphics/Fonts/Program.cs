@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -251,7 +252,7 @@ namespace Gorgon.Examples
             _screen.RenderTargetView.Clear(_glowIndex != _fontIndex ? GorgonColor.CornFlowerBlue : new GorgonColor(0, 0, 0.2f));
 
             DX.Size2F textSize = _text.MeasureText(currentFont, false);
-            var position = new DX.Vector2((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
+            var position = new Vector2((int)((_screen.Width / 2.0f) - (textSize.Width / 2.0f)).Max(4.0f), (int)((_screen.Height / 2.0f) - (textSize.Height / 2.0f)).Max(100));
             _textSprite.Font = currentFont;
             _textSprite.Position = position;
 
@@ -271,7 +272,7 @@ namespace Gorgon.Examples
 
             // Draw the font identification.
             _renderer.Begin();
-            _renderer.DrawString($"Now displaying [c #FFFFE03F]'{currentFont.Name}'[/c]...", new DX.Vector2(4.0f, 64.0f));
+            _renderer.DrawString($"Now displaying [c #FFFFE03F]'{currentFont.Name}'[/c]...", new Vector2(4.0f, 64.0f));
             _renderer.DrawTextSprite(_textSprite);
             _renderer.End();
 

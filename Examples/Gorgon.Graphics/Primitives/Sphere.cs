@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Drawing;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -40,7 +40,7 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // Initial orientation.
-        private DX.Matrix _orientation;
+        private Matrix4x4 _orientation;
         #endregion
 
         #region Properties.
@@ -83,15 +83,14 @@ namespace Gorgon.Examples
 
                 for (int segment = 0; segment <= segmentCount; segment++)
                 {
-                    var textureDelta = new DX.Vector2(1.0f - (segment / (float)segmentCount), ring / (float)ringCount);
+                    var textureDelta = new Vector2(1.0f - (segment / (float)segmentCount), ring / (float)ringCount);
                     float segmentAngle = deltaSegAngle * segment;
 
-                    var position = new DX.Vector3(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
+                    var position = new Vector3(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
 
-                    DX.Vector3.Multiply(ref position, 2.0f, out DX.Vector3 normal);
-                    DX.Vector3.Transform(ref position, ref _orientation, out position);
-                    DX.Vector3.Transform(ref normal, ref _orientation, out normal);
-                    DX.Vector3.Normalize(ref normal, out normal);
+                    var normal = Vector3.Multiply(position, 2.0f);
+                    position = Vector3.Transform(position, _orientation);
+                    normal = Vector3.Normalize(Vector3.Transform(normal, _orientation));                    
 
                     // Create the vertex.
                     textureDelta.X *= textureCoordinates.Width;
@@ -101,7 +100,7 @@ namespace Gorgon.Examples
 
                     vertexData[vertexOffset++] = new GorgonVertexPosNormUvTangent
                     {
-                        Position = new DX.Vector4(position, 1.0f),
+                        Position = new Vector4(position, 1.0f),
                         UV = textureDelta,
                         Normal = normal
                     };
@@ -135,7 +134,7 @@ namespace Gorgon.Examples
         /// <param name="angle">The angle of rotation, in degrees.</param>
         /// <param name="ringCount">Number of rings in the sphere.</param>
         /// <param name="segmentCount">Number of segments in the sphere.</param>
-        public Sphere(GorgonGraphics graphics, float radius, RectangleF textureCoordinates, DX.Vector3 angle, int ringCount = 8, int segmentCount = 16)
+        public Sphere(GorgonGraphics graphics, float radius, RectangleF textureCoordinates, Vector3 angle, int ringCount = 8, int segmentCount = 16)
             : base(graphics)
         {
 
@@ -145,8 +144,8 @@ namespace Gorgon.Examples
             IndexCount = 6 * ringCount * (segmentCount + 1);
             TriangleCount = IndexCount / 3;
 
-            DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
-            DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
+            var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+            _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
             var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
             int[] indexData = new int[IndexCount];

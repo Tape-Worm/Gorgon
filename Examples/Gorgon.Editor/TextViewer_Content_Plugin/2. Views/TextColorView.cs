@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
-using Gorgon.Examples;
 using Gorgon.Graphics;
 
 namespace Gorgon.Examples

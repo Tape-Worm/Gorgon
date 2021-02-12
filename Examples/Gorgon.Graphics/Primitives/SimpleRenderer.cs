@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -32,14 +33,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Collections;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Lights;
-using DX = SharpDX;
+using Gorgon.Renderers;
 
 namespace Gorgon.Examples
 {
@@ -64,17 +64,17 @@ namespace Gorgon.Examples
             /// <summary>
             /// The view matrix.
             /// </summary>
-            public DX.Matrix View;
+            public Matrix4x4 View;
 
             /// <summary>
             /// The projection matrix.
             /// </summary>
-            public DX.Matrix Projection;
+            public Matrix4x4 Projection;
 
             /// <summary>
             /// The view * project matrix.
             /// </summary>
-            public DX.Matrix ViewProjection;
+            public Matrix4x4 ViewProjection;
         }
 
         /// <summary>
@@ -86,12 +86,12 @@ namespace Gorgon.Examples
             /// <summary>
             /// The albdeo color.
             /// </summary>
-            public DX.Vector4 Albedo;
+            public Vector4 Albedo;
 
             /// <summary>
             /// The offset of the texture.
             /// </summary>
-            public DX.Vector2 UVOffset;
+            public Vector2 UVOffset;
 
             /// <summary>
             /// The specular power for the texture.
@@ -128,7 +128,7 @@ namespace Gorgon.Examples
         // The builder used to create pipeline state.
         private readonly GorgonPipelineStateBuilder _stateBuilder;
         // The frustum for the camera.
-        private DX.BoundingFrustum _frustum;
+        private readonly GorgonBoundingFrustum _frustum = new GorgonBoundingFrustum();
         #endregion
 
         #region Properties.
@@ -321,14 +321,14 @@ namespace Gorgon.Examples
                                                     new GorgonConstantBufferInfo("WorldBuffer")
                                                     {
                                                         Usage = ResourceUsage.Dynamic,
-                                                        SizeInBytes = Unsafe.SizeOf<DX.Matrix>()
+                                                        SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
                                                     }).GetView();
 
             _cameraBuffer = new GorgonConstantBuffer(_graphics,
                                                      new GorgonConstantBufferInfo("CameraBuffer")
                                                      {
                                                          Usage = ResourceUsage.Dynamic,
-                                                         SizeInBytes = Unsafe.SizeOf<DX.Vector3>()
+                                                         SizeInBytes = Unsafe.SizeOf<Vector3>()
                                                      }).GetView();
 
             _materialBuffer = new GorgonConstantBuffer(_graphics,
@@ -348,22 +348,22 @@ namespace Gorgon.Examples
             // Initialize the constant buffers.
             var emptyViewProjection = new ViewProjectionData
             {
-                Projection = DX.Matrix.Identity,
-                View = DX.Matrix.Identity,
-                ViewProjection = DX.Matrix.Identity
+                Projection = Matrix4x4.Identity,
+                View = Matrix4x4.Identity,
+                ViewProjection = Matrix4x4.Identity
             };
-            DX.Matrix emptyWorld = DX.Matrix.Identity;
+            Matrix4x4 emptyWorld = Matrix4x4.Identity;
 
             var emptyMaterial = new Material
             {
                 SpecularPower = 1.0f,
-                UVOffset = DX.Vector2.Zero
+                UVOffset = Vector2.Zero
             };
 
-            _viewProjectionBuffer.Buffer.SetData(ref emptyViewProjection);
-            _worldBuffer.Buffer.SetData(ref emptyWorld);
-            _cameraBuffer.Buffer.SetData(DX.Vector3.Zero);
-            _materialBuffer.Buffer.SetData(ref emptyMaterial);
+            _viewProjectionBuffer.Buffer.SetData(in emptyViewProjection);
+            _worldBuffer.Buffer.SetData(in emptyWorld);
+            _cameraBuffer.Buffer.SetData(Vector3.Zero);
+            _materialBuffer.Buffer.SetData(in emptyMaterial);
         }
 
         /// <summary>
@@ -377,8 +377,10 @@ namespace Gorgon.Examples
                 UVOffset = material.TextureOffset,
                 SpecularPower = material.SpecularPower
             };
-            _materialBuffer.Buffer.SetData(ref materialData);
+            _materialBuffer.Buffer.SetData(in materialData);
         }
+
+        Gorgon.Renderers.Debug.GorgonAABBVisual v;
 
         /// <summary>
         /// Function to render the scene.
@@ -397,11 +399,11 @@ namespace Gorgon.Examples
             {
                 if ((Camera.Changes & CameraChange.View) == CameraChange.View)
                 {
-                    ref readonly DX.Matrix view = ref Camera.GetViewMatrix();
-                    DX.Vector3 translate = view.TranslationVector;
-                    var camPos = new DX.Vector3(-translate.X, -translate.Y, -translate.Z);
+                    ref readonly Matrix4x4 view = ref Camera.GetViewMatrix();
+                    Vector3 translate = view.GetTranslation();
+                    var camPos = new Vector3(-translate.X, -translate.Y, -translate.Z);
 
-                    _cameraBuffer.Buffer.SetData(ref camPos);
+                    _cameraBuffer.Buffer.SetData(in camPos);
                 }
 
                 var viewProjData = new ViewProjectionData
@@ -410,35 +412,40 @@ namespace Gorgon.Examples
                     View = Camera.GetViewMatrix()
                 };
 
-                DX.Matrix.Multiply(ref viewProjData.View, ref viewProjData.Projection, out viewProjData.ViewProjection);
+                viewProjData.ViewProjection = Matrix4x4.Multiply(viewProjData.View, viewProjData.Projection);
 
-                _viewProjectionBuffer.Buffer.SetData(ref viewProjData);
-                _frustum = new DX.BoundingFrustum(viewProjData.ViewProjection);
-            }            
+                _viewProjectionBuffer.Buffer.SetData(in viewProjData);
+                _frustum.Update(in viewProjData.ViewProjection);
+            }
+
+            if (v == null)
+            {
+                v = new Renderers.Debug.GorgonAABBVisual(_graphics);
+            }
 
             for (int i = 0; i < _drawCalls.Count; ++i)
             {
-                DX.BoundingBox aabb = _meshes[i].Aabb;
-                DX.BoundingBox worldaabb = default;
+                ref readonly GorgonBoundingBox aabb = ref _meshes[i].Aabb;
+                GorgonBoundingBox worldaabb = default;
 
                 if (_meshes[i] is MoveableMesh movableMesh)
                 {
-                    _worldBuffer.Buffer.SetData(ref movableMesh.WorldMatrix);
-                    aabb.Transform(ref movableMesh.WorldMatrix, out worldaabb);                    
+                    _worldBuffer.Buffer.SetData(in movableMesh.WorldMatrix);
+                    GorgonBoundingBox.Transform(in aabb, in movableMesh.WorldMatrix, out worldaabb);
                 }
 
                 UpdateMaterials(_meshes[i].Material);
                 
-                if (aabb.Size.IsZero)
+                if (aabb.IsEmpty)
                 {
                     _graphics.Submit(_drawCalls[i]);
                     continue;
                 }
 
-                _frustum.Intersects(ref worldaabb, out bool result);
-                if (result)
+                if (GorgonIntersections.FrustumIntersectsBox(_frustum, in worldaabb))
                 {
                     _graphics.Submit(_drawCalls[i]);
+                    v.Draw(in worldaabb, in Camera.GetViewMatrix(), in Camera.GetProjectionMatrix());
                 }
             }
         }

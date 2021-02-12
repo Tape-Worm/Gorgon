@@ -24,13 +24,10 @@
 // 
 #endregion
 
-using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Animation;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -46,7 +43,7 @@ namespace Gorgon.Examples
         // Animation controller for the entity.
         private readonly List<MeshAnimationController> _animController;
         // The world position of this entity.
-        private DX.Vector3 _position;
+        private Vector3 _position;
         #endregion
 
         #region Properties.
@@ -65,12 +62,12 @@ namespace Gorgon.Examples
         /// This example uses an orthographic camera and mixes 3D and 2D elements. Since orthographic cameras are constant Z, having a depth value won't resize the planet, but it will still record the 
         /// object as having a depth value.
         /// </remarks>
-        public ref DX.Vector3 Position => ref _position;
+        public ref Vector3 Position => ref _position;
 
         /// <summary>
         /// Property to set or return the rotation of the planet.
         /// </summary>
-        public DX.Vector3 Rotation
+        public Vector3 Rotation
         {
             get;
             set;
@@ -96,7 +93,7 @@ namespace Gorgon.Examples
                     mesh.Rotation = Rotation;
                 }
 
-                mesh.Position = new DX.Vector3(_position.X, _position.Y, depth);
+                mesh.Position = new Vector3(_position.X, _position.Y, depth);
                 mesh.Rotation = Rotation;
 
                 if ((animation != null) && (controller.State != AnimationState.Playing))

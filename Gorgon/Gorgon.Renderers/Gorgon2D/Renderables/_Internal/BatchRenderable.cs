@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -73,22 +74,22 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The offset of the upper left corner of the renderable.
         /// </summary>
-        public DX.Vector3 UpperLeftOffset;
+        public Vector3 UpperLeftOffset;
 
         /// <summary>
         /// The offset of the upper right corner of the renderable.
         /// </summary>
-        public DX.Vector3 UpperRightOffset;
+        public Vector3 UpperRightOffset;
 
         /// <summary>
         /// The offset of the lower left corner of the renderable.
         /// </summary>
-        public DX.Vector3 LowerLeftOffset;
+        public Vector3 LowerLeftOffset;
 
         /// <summary>
         /// The offset of the lower right corner of the renderable.
         /// </summary>
-        public DX.Vector3 LowerRightOffset;
+        public Vector3 LowerRightOffset;
 
         /// <summary>
         /// Property to set or return whether the object space information the vertices need updating or not.
@@ -121,7 +122,7 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This value is a relative value where 0, 0 means the upper left of the sprite, and 1, 1 means the lower right.
         /// </remarks>
-        public DX.Vector2 Anchor;
+        public Vector2 Anchor;
 
         /// <summary>
         /// Property to set or return the region of the texture to use when drawing the sprite.
@@ -134,7 +135,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
-        public DX.Vector2 Scale = DX.Vector2.One;
+        public Vector2 Scale = Vector2.One;
 
         /// <summary>
         /// Property to set or return the angle of rotation in degrees.
@@ -195,7 +196,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The bounding corners for a renderable.
         /// </summary>
-        public DX.Vector4 Corners;
+        public Vector4 Corners;
 
         /// <summary>
         /// The number of indices used by the renderable.

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -36,8 +36,6 @@ using Gorgon.Editor;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
@@ -182,8 +180,8 @@ namespace Gorgon.Examples
             IGorgonAnimation planetRotation = builder
                 .Clear()
                 .EditVector3("Rotation")
-                .SetKey(new GorgonKeyVector3(0, new DX.Vector3(0, 0, 180)))
-                .SetKey(new GorgonKeyVector3(600, new DX.Vector3(0, 360, 180)))
+                .SetKey(new GorgonKeyVector3(0, new Vector3(0, 0, 180)))
+                .SetKey(new GorgonKeyVector3(600, new Vector3(0, 360, 180)))
                 .SetInterpolationMode(TrackInterpolationMode.Linear)
                 .EndEdit()
                 .Build("PlanetRotation");
@@ -194,9 +192,9 @@ namespace Gorgon.Examples
             IGorgonAnimation cloudRotation = builder
                 .Clear()
                 .EditVector3("Rotation")
-                .SetKey(new GorgonKeyVector3(0, new DX.Vector3(0, 0, 180)))
-                .SetKey(new GorgonKeyVector3(600, new DX.Vector3(100, 180, 180)))
-                .SetKey(new GorgonKeyVector3(1200, new DX.Vector3(0, 360, 180)))
+                .SetKey(new GorgonKeyVector3(0, new Vector3(0, 0, 180)))
+                .SetKey(new GorgonKeyVector3(600, new Vector3(100, 180, 180)))
+                .SetKey(new GorgonKeyVector3(1200, new Vector3(0, 360, 180)))
                 .SetInterpolationMode(TrackInterpolationMode.Linear)
                 .EndEdit()                
                 .Build("CloudRotation");
@@ -281,11 +279,11 @@ namespace Gorgon.Examples
             var earthSphere = new IcoSphere(_graphics,
                                             3.0f,
                                             new DX.RectangleF(0, 0, 1, 1),
-                                            DX.Vector3.Zero,
+                                            Vector3.Zero,
                                             3)
             {
-                Rotation = new DX.Vector3(0, 45.0f, 0),     // Start off with a 45 degree rotation on the Y axis so we can see our textures a little better on startup.
-                Position = DX.Vector3.Zero,                 // Set our translation to nothing for now, our "planet" type will handle positioning.
+                Rotation = new Vector3(0, 45.0f, 0),     // Start off with a 45 degree rotation on the Y axis so we can see our textures a little better on startup.
+                Position = Vector3.Zero,                 // Set our translation to nothing for now, our "planet" type will handle positioning.
                 Material =
                 {
                     SpecularPower = 0.0f,
@@ -306,10 +304,10 @@ namespace Gorgon.Examples
             var earthCloudSphere = new IcoSphere(_graphics,
                                                  3.01f,
                                                  new DX.RectangleF(0, 0, 1, 1),
-                                                 DX.Vector3.Zero,
+                                                 Vector3.Zero,
                                                  3)
             {
-                Position = new DX.Vector3(0, 0, -0.2f),     // Offset the clouds. If we render at the same place in Ortho camera mode, then it'll just overwrite, offsetting like this
+                Position = new Vector3(0, 0, -0.2f),     // Offset the clouds. If we render at the same place in Ortho camera mode, then it'll just overwrite, offsetting like this
                 Material =									// ensures that the clouds appear on top.
                 {
                     SpecularPower = 0,

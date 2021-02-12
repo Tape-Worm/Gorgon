@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Linq;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
@@ -109,7 +110,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            _instructions.Position = new DX.Vector2(0, 0);
+            _instructions.Position = new Vector2(0, 0);
 
             Renderer.Begin();
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, ClientSize.Height - _textSize.Height, ClientSize.Width, _textSize.Height), new GorgonColor(GorgonColor.Black, 0.65f));

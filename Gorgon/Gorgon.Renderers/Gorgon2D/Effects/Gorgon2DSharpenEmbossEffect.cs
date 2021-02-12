@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -184,9 +185,9 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            var settings = new DX.Vector3(1.0f / _textureSize.Width, 1.0f / _textureSize.Height, _amount);
+            var settings = new Vector3(1.0f / _textureSize.Width, 1.0f / _textureSize.Height, _amount);
 
-            _sharpenEmbossBuffer.Buffer.SetData(ref settings);
+            _sharpenEmbossBuffer.Buffer.SetData(in settings);
             _isUpdated = false;
         }
 

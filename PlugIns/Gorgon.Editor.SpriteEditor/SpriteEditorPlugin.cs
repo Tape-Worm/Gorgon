@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -261,20 +262,20 @@ namespace Gorgon.Editor.SpriteEditor
 
                     if (bounds.Width > bounds.Height)
                     {
-                        sprite.Scale = new DX.Vector2(rtv.Width / (bounds.Width.Max(1)));
+                        sprite.Scale = new Vector2(rtv.Width / (bounds.Width.Max(1)));
                         bgSize = rtv.Width;
                     }
                     else
                     {
-                        sprite.Scale = new DX.Vector2(rtv.Height / (bounds.Height.Max(1)));
+                        sprite.Scale = new Vector2(rtv.Height / (bounds.Height.Max(1)));
                         bgSize = rtv.Height;
                     }
 
                     // If our bounding box is not the same width/height as the sprite definition, then we've likely changed the offsets of the vertices.
                     // To display this accurately, we need to find the anchor point for the center of the AABB.
-                    sprite.Anchor = new DX.Vector2((bounds.Left + bounds.Width * 0.5f) / sprite.Size.Width, 
+                    sprite.Anchor = new Vector2((bounds.Left + bounds.Width * 0.5f) / sprite.Size.Width, 
                                                    (bounds.Top + bounds.Height * 0.5f) / sprite.Size.Height);
-                    sprite.Position = new DX.Vector2(rtv.Width * 0.5f, rtv.Height * 0.5f);
+                    sprite.Position = new Vector2(rtv.Width * 0.5f, rtv.Height * 0.5f);
 
                     prevRtv = HostContentServices.GraphicsContext.Graphics.RenderTargets[0];
                     HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
@@ -623,7 +624,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 var sprite = new GorgonSprite
                 {
-                    Anchor = new DX.Vector2(0.5f, 0.5f),
+                    Anchor = new Vector2(0.5f, 0.5f),
                     Size = size
                 };
 
@@ -748,7 +749,7 @@ namespace Gorgon.Editor.SpriteEditor
                 const float maxSize = 256;
 
                 // Get rid of the anchor prior to retrieving the AABB, we'll be recalculating it anyway.
-                sprite.Anchor = DX.Vector2.Zero;
+                sprite.Anchor = Vector2.Zero;
                 DX.RectangleF bounds = HostContentServices.GraphicsContext.Renderer2D.GetAABB(sprite);
                 float scale = (maxSize / bounds.Width).Min(maxSize / bounds.Height);
                 RenderThumbnail(ref thumbnailImage, sprite, scale, bounds);

@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Geometry
 {
@@ -48,7 +48,7 @@ namespace Gorgon.Renderers.Geometry
         /// Position of the vertex.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public DX.Vector4 Position;
+        public Vector4 Position;
         /// <summary>
         /// Color of the vertex.
         /// </summary>
@@ -66,12 +66,12 @@ namespace Gorgon.Renderers.Geometry
         /// </para>
         /// </remarks>
         [InputElement(2, "TEXCOORD")]
-        public DX.Vector4 UV;
+        public Vector4 UV;
         /// <summary>
         /// The Cosine and Sine for the angle of rotation.
         /// </summary>
         [InputElement(3, "ANGLE")]
-        public DX.Vector2 Angle;
+        public Vector2 Angle;
         #endregion
 
         #region Methods.
@@ -93,7 +93,7 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="color">The color.</param>
         /// <param name="uv">The texture coordinates.</param>
         /// <param name="angle">The angle.</param>
-        public void Deconstruct(out DX.Vector4 position, out GorgonColor color, out DX.Vector4 uv, out DX.Vector2 angle)
+        public void Deconstruct(out Vector4 position, out GorgonColor color, out Vector4 uv, out Vector2 angle)
         {
             position = Position;
             color = Color;
@@ -108,9 +108,9 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="color">The color.</param>
         /// <param name="uv">The texture coordinates.</param>
         /// <param name="angle">The angle expressed as the cosine (x) and sine (y) of the angle.</param>
-        public Gorgon2DVertex(DX.Vector2 pos, GorgonColor color, DX.Vector4 uv, DX.Vector2 angle)
+        public Gorgon2DVertex(Vector2 pos, GorgonColor color, Vector4 uv, Vector2 angle)
         {
-            Position = new DX.Vector4(pos, 0, 1);
+            Position = new Vector4(pos, 0, 1);
             Color = color;
             UV = uv;
             Angle = angle;
@@ -121,9 +121,9 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="color">The color.</param>
         /// <param name="uv">The texture coordinates.</param>
         /// <param name="angle">The angle expressed as the cosine (x) and sine (y) of the angle.</param>
-        public Gorgon2DVertex(DX.Vector3 pos, GorgonColor color, DX.Vector4 uv, DX.Vector2 angle)
+        public Gorgon2DVertex(Vector3 pos, GorgonColor color, Vector4 uv, Vector2 angle)
         {
-            Position = new DX.Vector4(pos, 1);
+            Position = new Vector4(pos, 1);
             Color = color;
             UV = uv;
             Angle = angle;
@@ -134,7 +134,7 @@ namespace Gorgon.Renderers.Geometry
         /// <param name="color">The color.</param>
         /// <param name="uv">The texture coordinates.</param>
         /// <param name="angle">The angle expressed as the cosine (x) and sine (y) of the angle.</param>
-        public Gorgon2DVertex(DX.Vector4 pos, GorgonColor color, DX.Vector4 uv, DX.Vector2 angle)
+        public Gorgon2DVertex(Vector4 pos, GorgonColor color, Vector4 uv, Vector2 angle)
         {
             Position = pos;
             Color = color;

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
@@ -145,7 +146,7 @@ namespace Gorgon.Animation
             // Build the spline for the track.
             for (int i = 0; i < keyFrames.Count; ++i)
             {
-                _splineController.Points.Add(new DX.Vector4(keyFrames[i].Value.X,
+                _splineController.Points.Add(new Vector4(keyFrames[i].Value.X,
                                                             keyFrames[i].Value.Y,
                                                             keyFrames[i].Value.Width,
                                                             keyFrames[i].Value.Height));

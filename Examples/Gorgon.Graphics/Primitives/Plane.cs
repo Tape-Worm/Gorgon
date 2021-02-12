@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Drawing;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -40,7 +40,7 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // Initial orientation.
-        private DX.Matrix _orientation;
+        private Matrix4x4 _orientation;
         #endregion
 
         #region Methods.
@@ -52,30 +52,30 @@ namespace Gorgon.Examples
         /// <param name="textureCoordinates">The texture coordinates to apply to the plane.</param>
         /// <param name="columns">The number of columns to subdivide by.</param>
         /// <param name="rows">The number of rows to subdivide by.</param>
-        private void GetVertices(GorgonVertexPosNormUvTangent[] buffer, DX.Vector2 size, RectangleF textureCoordinates, int columns, int rows)
+        private void GetVertices(GorgonVertexPosNormUvTangent[] buffer, Vector2 size, RectangleF textureCoordinates, int columns, int rows)
         {
             float columnWidth = 1.0f / columns;
             float columnHeight = 1.0f / rows;
             int offset = 0;
 
-            DX.Vector3 vertexNormal = -DX.Vector3.UnitZ;
-            DX.Vector3.TransformNormal(ref vertexNormal, ref _orientation, out vertexNormal);
+            Vector3 vertexNormal = -Vector3.UnitZ;
+            vertexNormal = Vector3.TransformNormal(vertexNormal, _orientation);
 
             for (int y = 0; y <= rows; ++y)
             {
                 for (int x = 0; x <= columns; ++x)
                 {
-                    var vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
+                    var vertexPos = new Vector3(((x * columnWidth) - 0.5f) * size.X,
                                                    ((y * columnHeight) - 0.5f) * size.Y,
                                                    0);
 
-                    DX.Vector3.Transform(ref vertexPos, ref _orientation, out vertexPos);
+                    vertexPos = Vector3.Transform(vertexPos, _orientation);
 
                     buffer[offset++] = new GorgonVertexPosNormUvTangent
                     {
-                        Position = new DX.Vector4(vertexPos, 1.0f),
+                        Position = new Vector4(vertexPos, 1.0f),
                         Normal = vertexNormal,
-                        UV = new DX.Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
+                        UV = new Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
                                          (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
                     };
                 }
@@ -124,7 +124,7 @@ namespace Gorgon.Examples
         /// <param name="angle">The initial orientation, in degrees.</param>
         /// <param name="columns">The number of columns to subdivide by.</param>
         /// <param name="rows">The number of rows to subdivide by.</param>
-        public Plane(GorgonGraphics graphics, DX.Vector2 size, RectangleF textureCoordinates, DX.Vector3 angle, int columns = 1, int rows = 1)
+        public Plane(GorgonGraphics graphics, Vector2 size, RectangleF textureCoordinates, Vector3 angle, int columns = 1, int rows = 1)
             : base(graphics)
         {
             PrimitiveType = PrimitiveType.TriangleStrip;
@@ -132,8 +132,8 @@ namespace Gorgon.Examples
             IndexCount = ((columns * rows) * 6) + (rows - 1);
             TriangleCount = (IndexCount - (rows - 1)) / 3;
 
-            DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
-            DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
+            var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+            _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
             var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
             int[] indexData = new int[IndexCount];

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -107,8 +108,8 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DX.Vector2 vertexDelta = (e.NewPosition - e.PreviousPosition).Truncate();
-            DataContext.KeyEditor.CurrentEditor.Value += new DX.Vector4(vertexDelta.X / _vertexEditSprite.Scale.X, vertexDelta.Y / _vertexEditSprite.Scale.Y, 0, 0);
+            Vector2 vertexDelta = (e.NewPosition - e.PreviousPosition).Truncate();
+            DataContext.KeyEditor.CurrentEditor.Value += new Vector4(vertexDelta.X / _vertexEditSprite.Scale.X, vertexDelta.Y / _vertexEditSprite.Scale.Y, 0, 0);
 
             UpdateVertexEditorSprite(true);
         }
@@ -118,17 +119,17 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void AnchorEdit_AnchorChanged(object sender, EventArgs e)
         {
-            var offset = new DX.Vector2((_anchorEdit.AnchorPosition.X + Sprite.ScaledSize.Width * 0.5f) / Sprite.ScaledSize.Width,
+            var offset = new Vector2((_anchorEdit.AnchorPosition.X + Sprite.ScaledSize.Width * 0.5f) / Sprite.ScaledSize.Width,
                                         (_anchorEdit.AnchorPosition.Y + Sprite.ScaledSize.Height * 0.5f) / Sprite.ScaledSize.Height);
 
             switch (SelectedTrackID)
             {
                 case TrackSpriteProperty.AnchorAbsolute:
-                    DataContext.KeyEditor.CurrentEditor.Value = new DX.Vector4(offset.X * Sprite.Size.Width * 0.5f,
+                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4(offset.X * Sprite.Size.Width * 0.5f,
                                                                                offset.Y * Sprite.Size.Height * 0.5f, 0, 0);
                     break;
                 case TrackSpriteProperty.Anchor:
-                    DataContext.KeyEditor.CurrentEditor.Value = new DX.Vector4(offset, 0, 0);
+                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4(offset, 0, 0);
                     break;
             }
         }
@@ -141,11 +142,11 @@ namespace Gorgon.Editor.AnimationEditor
             switch (SelectedTrackID)
             {
                 case TrackSpriteProperty.Position:
-                    DX.Vector2 offset = new DX.Vector2(Sprite.Anchor.X * _clipper.Rectangle.Width, Sprite.Anchor.Y * _clipper.Rectangle.Height).Truncate();
-                    DataContext.KeyEditor.CurrentEditor.Value = new DX.Vector4(_clipper.Rectangle.X + offset.X, _clipper.Rectangle.Y + offset.Y, 0, 0);
+                    Vector2 offset = new Vector2(Sprite.Anchor.X * _clipper.Rectangle.Width, Sprite.Anchor.Y * _clipper.Rectangle.Height).Truncate();
+                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4(_clipper.Rectangle.X + offset.X, _clipper.Rectangle.Y + offset.Y, 0, 0);
                     break;
                 case TrackSpriteProperty.Size:
-                    DataContext.KeyEditor.CurrentEditor.Value = new DX.Vector4(_clipper.Rectangle.Width, _clipper.Rectangle.Height, 0, 0);
+                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4(_clipper.Rectangle.Width, _clipper.Rectangle.Height, 0, 0);
                     break;
             }
         }
@@ -188,7 +189,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             GorgonRenderTargetView oldTarget;
 
-            DX.Vector2[] vertices = null;
+            Vector2[] vertices = null;
 
             oldTarget = Graphics.RenderTargets[0];
 
@@ -200,18 +201,18 @@ namespace Gorgon.Editor.AnimationEditor
 
                 DX.RectangleF bounds = Renderer.GetAABB(_vertexEditSprite);
                 ref readonly Gorgon2DVertex[] spriteVertices = ref Renderer.GetVertices(_vertexEditSprite);
-                vertices = ArrayPool<DX.Vector2>.Shared.Rent(4);
+                vertices = ArrayPool<Vector2>.Shared.Rent(4);
 
                 if (oldTarget != MainRenderTarget)
                 {
                     Graphics.SetRenderTarget(MainRenderTarget);
                 }
 
-                var halfRegion = new DX.Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
-                vertices[0] = new DX.Vector2(spriteVertices[0].Position.X - halfRegion.X, spriteVertices[0].Position.Y - halfRegion.Y);
-                vertices[1] = new DX.Vector2(spriteVertices[1].Position.X - halfRegion.X, spriteVertices[1].Position.Y - halfRegion.Y);
-                vertices[2] = new DX.Vector2(spriteVertices[3].Position.X - halfRegion.X, spriteVertices[3].Position.Y - halfRegion.Y);
-                vertices[3] = new DX.Vector2(spriteVertices[2].Position.X - halfRegion.X, spriteVertices[2].Position.Y - halfRegion.Y);
+                var halfRegion = new Vector2(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+                vertices[0] = new Vector2(spriteVertices[0].Position.X - halfRegion.X, spriteVertices[0].Position.Y - halfRegion.Y);
+                vertices[1] = new Vector2(spriteVertices[1].Position.X - halfRegion.X, spriteVertices[1].Position.Y - halfRegion.Y);
+                vertices[2] = new Vector2(spriteVertices[3].Position.X - halfRegion.X, spriteVertices[3].Position.Y - halfRegion.Y);
+                vertices[3] = new Vector2(spriteVertices[2].Position.X - halfRegion.X, spriteVertices[2].Position.Y - halfRegion.Y);
 
                 _vertexEditor.Vertices = vertices;
 
@@ -226,7 +227,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 if (vertices != null)
                 {
-                    ArrayPool<DX.Vector2>.Shared.Return(vertices);
+                    ArrayPool<Vector2>.Shared.Return(vertices);
                 }
                 EnableEvents();
             }
@@ -269,7 +270,7 @@ namespace Gorgon.Editor.AnimationEditor
                 _vertexEditSprite.Angle = 0;
                 _vertexEditSprite.Color = new GorgonColor(GorgonColor.Black, 0.85f);
                 // Flip the scale to positive.
-                _vertexEditSprite.Scale = new DX.Vector2(Sprite.Scale.X.Abs(), Sprite.Scale.Y.Abs());
+                _vertexEditSprite.Scale = new Vector2(Sprite.Scale.X.Abs(), Sprite.Scale.Y.Abs());
                 return;
             }
 
@@ -292,17 +293,17 @@ namespace Gorgon.Editor.AnimationEditor
                 DisableEvents();
                 try
                 {
-                    var spritePos = new DX.Vector2(Sprite.Position.X - RenderRegion.Width * 0.5f, Sprite.Position.Y - RenderRegion.Height * 0.5f);
-                    DX.Vector2 anchorPos = DX.Vector2.Zero;
+                    var spritePos = new Vector2(Sprite.Position.X - RenderRegion.Width * 0.5f, Sprite.Position.Y - RenderRegion.Height * 0.5f);
+                    Vector2 anchorPos = Vector2.Zero;
 
                     switch (SelectedTrackID)
                     {
                         case TrackSpriteProperty.Anchor:
-                            anchorPos = new DX.Vector2(DataContext.KeyEditor.CurrentEditor.Value.X * Sprite.Size.Width - Sprite.Size.Width * 0.5f,
+                            anchorPos = new Vector2(DataContext.KeyEditor.CurrentEditor.Value.X * Sprite.Size.Width - Sprite.Size.Width * 0.5f,
                                                        DataContext.KeyEditor.CurrentEditor.Value.Y * Sprite.Size.Height - Sprite.Size.Height * 0.5f);
                             break;
                         case TrackSpriteProperty.AnchorAbsolute:
-                            anchorPos = new DX.Vector2(DataContext.KeyEditor.CurrentEditor.Value.X - Sprite.Size.Width * 0.5f,
+                            anchorPos = new Vector2(DataContext.KeyEditor.CurrentEditor.Value.X - Sprite.Size.Width * 0.5f,
                                                        DataContext.KeyEditor.CurrentEditor.Value.Y - Sprite.Size.Height * 0.5f);
                             break;
                         case TrackSpriteProperty.UpperLeft:
@@ -318,7 +319,7 @@ namespace Gorgon.Editor.AnimationEditor
                             return;
                     }
 
-                    DX.Vector2.Subtract(ref anchorPos, ref spritePos, out DX.Vector2 center);
+                    var center = Vector2.Subtract(anchorPos, spritePos);
 
                     _anchorEdit.AnchorPosition = anchorPos;
                     _anchorEdit.CenterPosition = center;

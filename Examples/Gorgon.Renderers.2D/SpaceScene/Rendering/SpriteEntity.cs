@@ -24,17 +24,12 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -69,7 +64,7 @@ namespace Gorgon.Examples
         /// <remarks>
         /// This is the position of the entity in camera space, after transformation.
         /// </remarks>
-        public DX.Vector2 Position
+        public Vector2 Position
         {
             get;
             set;
@@ -81,7 +76,7 @@ namespace Gorgon.Examples
         /// <remarks>
         /// This is the position of the entity in world space, prior to transformation.
         /// </remarks>
-        public DX.Vector2 LocalPosition
+        public Vector2 LocalPosition
         {
             get;
             set;
@@ -99,11 +94,11 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the anchor point for the entity.
         /// </summary>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get;
             set;
-        } = new DX.Vector2(0.5f, 0.5f);
+        } = new Vector2(0.5f, 0.5f);
 
         /// <summary>
         /// Property to set or return the color of the sprite.

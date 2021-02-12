@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Linq;
 using System.IO;
 using DX = SharpDX;
@@ -140,7 +141,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 _oldFilm.DirtRegion = null;
                 _oldFilm.Time = GorgonTiming.SecondsSinceStart;
-                _oldFilm.ShakeOffset = new DX.Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
+                _oldFilm.ShakeOffset = new Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
 
                 if (_stripAnimCount < 30)
                 {

@@ -24,10 +24,10 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -41,14 +41,14 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The horizontal and vertical position of the point.
         /// </summary>
-        public readonly DX.Vector2 Position;
+        public readonly Vector2 Position;
         /// <summary>
         /// The texture coordinate, in texels, to map to the point. 
         /// </summary>
         /// <remarks>
         /// If no texture is assigned to the triangle, this member is ignored.
         /// </remarks>
-        public readonly DX.Vector2 TextureCoordinate;
+        public readonly Vector2 TextureCoordinate;
         /// <summary>
         /// The texture array index to map to the point.
         /// </summary>
@@ -124,11 +124,11 @@ namespace Gorgon.Renderers
         /// <param name="color">The color of the triangle pint.</param>
         /// <param name="textureCoordinate">[Optional] The texture coordinate to map to the point.</param>
         /// <param name="textureArrayIndex">[Optional] The index in a texture array to map to the point.</param>
-        public GorgonTriangleVertex(DX.Vector2 position, GorgonColor color, DX.Vector2? textureCoordinate = null, int textureArrayIndex = 0)
+        public GorgonTriangleVertex(Vector2 position, GorgonColor color, Vector2? textureCoordinate = null, int textureArrayIndex = 0)
         {
             Position = position;
             Color = color;
-            TextureCoordinate = textureCoordinate ?? DX.Vector2.Zero;
+            TextureCoordinate = textureCoordinate ?? Vector2.Zero;
             TextureArrayIndex = textureArrayIndex;
         }
         #endregion

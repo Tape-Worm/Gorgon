@@ -25,8 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Numerics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -34,10 +33,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
@@ -112,11 +109,11 @@ namespace Gorgon.Examples
 
             _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
-            var scale = new DX.Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width, 
+            var scale = new Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width, 
                                        _screen.Height / (float)ExampleConfig.Default.Resolution.Height);
 
-            _dudeBro.Position = new DX.Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
-            _dudeBroReflect.Position = new DX.Vector2(_dudeBro.Position.X, _dudeBro.Position.Y + _dudeBro.ScaledSize.Height + 3);
+            _dudeBro.Position = new Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
+            _dudeBroReflect.Position = new Vector2(_dudeBro.Position.X, _dudeBro.Position.Y + _dudeBro.ScaledSize.Height + 3);
 
             // Copy the texture coordinates from the animated sprite, this way we can mirror the animation in our reflection without
             // having to set up a separate controller.
@@ -224,7 +221,7 @@ namespace Gorgon.Examples
                 _backGround = (await _contentLoader.LoadTextureAsync("/nature_settings_simple_landscape_1.dds"))?.GetShaderResourceView();
 
                 // This sprite is kinda small, so we'll need to update its scale.
-                _dudeBroReflect.Scale = _dudeBro.Scale = new DX.Vector2(8, 8);
+                _dudeBroReflect.Scale = _dudeBro.Scale = new Vector2(8, 8);
                 _dudeBroReflect.VerticalFlip = true;
 
                 // Now that we have a sprite, and an animation to play against, we can set up the animation controller to play the 

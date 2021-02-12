@@ -25,12 +25,12 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
@@ -72,9 +72,9 @@ namespace Gorgon.Examples
         // The controller for the animation on the right.
         private GorgonSpriteAnimationController _controllerRight;
         // The scale of the left sprite.
-        private DX.Vector2 _scale = new DX.Vector2(2, 2);
+        private Vector2 _scale = new Vector2(2, 2);
         // The original size of the left panel.
-        private DX.Vector2 _originalSize;
+        private Vector2 _originalSize;
         #endregion
 
         #region Methods.
@@ -90,7 +90,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            _scale = new DX.Vector2((GroupControl1.ClientSize.Width / _originalSize.X) * 2, (GroupControl1.ClientSize.Width / _originalSize.X) * 2);
+            _scale = new Vector2((GroupControl1.ClientSize.Width / _originalSize.X) * 2, (GroupControl1.ClientSize.Width / _originalSize.X) * 2);
         }
 
         /// <summary>
@@ -195,13 +195,13 @@ namespace Gorgon.Examples
 
             _torusLeft = new GorgonSprite
             {
-                Anchor = new DX.Vector2(0.5f, 0.5f),
+                Anchor = new Vector2(0.5f, 0.5f),
                 Size = new DX.Size2F(64, 64),
                 TextureSampler = GorgonSamplerState.PointFiltering
             };
             _torusRight = new GorgonSprite
             {
-                Anchor = new DX.Vector2(0.5f, 0.5f),
+                Anchor = new Vector2(0.5f, 0.5f),
                 Size = new DX.Size2F(64, 64),
                 TextureSampler = GorgonSamplerState.PointFiltering
             };
@@ -235,7 +235,7 @@ namespace Gorgon.Examples
 
             _renderer.Begin();
             _torusLeft.Scale = _scale;
-            _torusLeft.Position = new DX.Vector2(_leftPanel.Width / 2.0f, _leftPanel.Height / 2.0f);
+            _torusLeft.Position = new Vector2(_leftPanel.Width / 2.0f, _leftPanel.Height / 2.0f);
             _renderer.DrawSprite(_torusLeft);
             _renderer.End();
 
@@ -244,33 +244,33 @@ namespace Gorgon.Examples
             _graphics.SetRenderTarget(_rightPanel.RenderTargetView);
 
             _renderer.Begin();
-            _torusLeft.Scale = DX.Vector2.One;
+            _torusLeft.Scale = Vector2.One;
 
             _torusRight.Color = GorgonColor.RedPure;
-            _torusRight.Position = new DX.Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) - 64);
+            _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) - 64);
             _renderer.DrawSprite(_torusRight);
 
             _torusRight.Color = GorgonColor.GreenPure;
-            _torusRight.Position = new DX.Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) - 64);
+            _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) - 64);
             _renderer.DrawSprite(_torusRight);
 
             _torusRight.Color = GorgonColor.BluePure;
-            _torusRight.Position = new DX.Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) + 64);
+            _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) + 64);
             _renderer.DrawSprite(_torusRight);
 
             _torusRight.Color = GorgonColor.White;
-            _torusRight.Position = new DX.Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) + 64);
+            _torusRight.Position = new Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) + 64);
             _renderer.DrawSprite(_torusRight);
 
-            _renderer.DrawString("\u2190Drag me!", new DX.Vector2(0, _rightPanel.Height / 4.0f), _appFont, GorgonColor.White);
+            _renderer.DrawString("\u2190Drag me!", new Vector2(0, _rightPanel.Height / 4.0f), _appFont, GorgonColor.White);
 
             if (_controllerRight.State != AnimationState.Playing)
             {
-                _renderer.DrawString("Speed: Stopped", new DX.Vector2(0, 64), _appFont, GorgonColor.White);
+                _renderer.DrawString("Speed: Stopped", new Vector2(0, 64), _appFont, GorgonColor.White);
             }
             else
             {
-                _renderer.DrawString($"Speed: {TrackSpeed.Value / 5.0f:0.0#}", new DX.Vector2(0, 64), _appFont, GorgonColor.White);
+                _renderer.DrawString($"Speed: {TrackSpeed.Value / 5.0f:0.0#}", new Vector2(0, 64), _appFont, GorgonColor.White);
             }
 
             _renderer.End();
@@ -326,7 +326,7 @@ namespace Gorgon.Examples
 
                 Initialize();
 
-                _originalSize = new DX.Vector2(GroupControl1.ClientSize.Width, GroupControl2.ClientSize.Height);
+                _originalSize = new Vector2(GroupControl1.ClientSize.Width, GroupControl2.ClientSize.Height);
 
                 GorgonApplication.IdleMethod = Idle;
             }

@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Input;
 using Gorgon.PlugIns;
 using Gorgon.UI;

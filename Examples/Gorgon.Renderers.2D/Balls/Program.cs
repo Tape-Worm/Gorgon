@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -161,8 +162,8 @@ namespace Gorgon.Examples
 			{
 				var ball = new Ball
 				{
-					Position = new DX.Vector2(halfWidth - (_ball.Size.Width * 0.5f), halfHeight - (_ball.Size.Height * 0.5f)),
-					PositionDelta = new DX.Vector2((GorgonRandom.RandomSingle() * _mainScreen.Width) - (halfWidth),
+					Position = new Vector2(halfWidth - (_ball.Size.Width * 0.5f), halfHeight - (_ball.Size.Height * 0.5f)),
+					PositionDelta = new Vector2((GorgonRandom.RandomSingle() * _mainScreen.Width) - (halfWidth),
 												   (GorgonRandom.RandomSingle() * _mainScreen.Height) - (halfHeight)),
 					Scale = 1.0f,
 					ScaleDelta = (GorgonRandom.RandomSingle() * 2.0f) - 1.0f,
@@ -192,8 +193,8 @@ namespace Gorgon.Examples
 			{
 				Ball currentBall = _ballList[i];
 
-				DX.Vector2.Multiply(ref currentBall.PositionDelta, frameTime, out DX.Vector2 scaleData);
-				DX.Vector2.Add(ref currentBall.Position, ref scaleData, out currentBall.Position);
+				var scaleData = Vector2.Multiply(currentBall.PositionDelta, frameTime);
+				currentBall.Position = Vector2.Add(currentBall.Position, scaleData);
 				currentBall.Scale += currentBall.ScaleDelta * frameTime;
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
 				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
@@ -264,7 +265,7 @@ namespace Gorgon.Examples
 				for (int x = 0; x < _mainScreen.Width; x += (int)_wall.Size.Width)
 				{
 					_wall.Color = Color.White;
-					_wall.Position = new DX.Vector2(x, y);
+					_wall.Position = new Vector2(x, y);
 					_2D.DrawSprite(_wall);
 				}
 			}
@@ -283,9 +284,9 @@ namespace Gorgon.Examples
 				_ball.Angle = ball.Rotation;
 				_ball.Position = ball.Position;
 				_ball.Color = new GorgonColor(ball.Color, ball.Opacity);
-				_ball.Scale = new DX.Vector2(ball.Scale, ball.Scale);
+				_ball.Scale = new Vector2(ball.Scale, ball.Scale);
 
-				DX.Vector2 offset = ball.Checkered ? new DX.Vector2(0.5f, 0) : new DX.Vector2(0, 0.5f);
+				Vector2 offset = ball.Checkered ? new Vector2(0.5f, 0) : new Vector2(0, 0.5f);
 				_ball.TextureRegion = new DX.RectangleF(offset.X, offset.Y, _ball.TextureRegion.Width, _ball.TextureRegion.Height);
 
 				_2D.DrawSprite(_ball);
@@ -336,7 +337,7 @@ namespace Gorgon.Examples
 									GorgonColor.White,
 									_statsTexture,
 									new DX.RectangleF(0, 0, 1, 1));
-			_2D.DrawString(_fpsText.ToString(), new DX.Vector2(3.0f, 0), _ballFont);
+			_2D.DrawString(_fpsText.ToString(), new Vector2(3.0f, 0), _ballFont);
 			_2D.End();
 		}
 
@@ -467,7 +468,7 @@ namespace Gorgon.Examples
 					Size = new DX.Size2F(64, 64),
 					Texture = _ballTexture,
 					TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f),
-					Anchor = new DX.Vector2(0.5f, 0.5f)
+					Anchor = new Vector2(0.5f, 0.5f)
 				};
 
 				// Create the ball render target.
@@ -579,7 +580,7 @@ namespace Gorgon.Examples
 																	 _graphics.VideoAdapter.Memory.Video.FormatMemory()))
 				{
 					Color = Color.Yellow,
-					Position = new DX.Vector2(3, (_statsTexture.Height + 8.0f).FastFloor()),
+					Position = new Vector2(3, (_statsTexture.Height + 8.0f).FastFloor()),
 					DrawMode = TextDrawMode.OutlinedGlyphs
 				};
 

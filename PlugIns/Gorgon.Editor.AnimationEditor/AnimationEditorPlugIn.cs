@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -939,7 +940,7 @@ namespace Gorgon.Editor.AnimationEditor
         IKeyFrame IViewModelFactory.CreateKeyFrame(float time, AnimationTrackKeyType dataType)
         {
             var result = new KeyFrame();
-            result.Initialize(new KeyFrameParameters(time, dataType, DX.Vector4.Zero, HostContentServices));
+            result.Initialize(new KeyFrameParameters(time, dataType, Vector4.Zero, HostContentServices));
             return result;
         }
 
@@ -961,7 +962,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="dataType">The type of data in the key frame.</param>
         /// <param name="floatValue">The floating point data to assign.</param>
         /// <returns>A new key frame view model with the specified data.</returns>
-        IKeyFrame IViewModelFactory.CreateKeyFrame(float time, AnimationTrackKeyType dataType, DX.Vector4 floatValue)
+        IKeyFrame IViewModelFactory.CreateKeyFrame(float time, AnimationTrackKeyType dataType, Vector4 floatValue)
         {
             var result = new KeyFrame();
             result.Initialize(new KeyFrameParameters(time, dataType, floatValue, HostContentServices));
@@ -1188,7 +1189,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 if (primarySprite?.PrimarySprite != null)
                 {
-                    primarySprite.PrimarySprite.Position = new DX.Vector2((int)(size.Width * 0.5f), (int)(size.Height * 0.5f));
+                    primarySprite.PrimarySprite.Position = new Vector2((int)(size.Width * 0.5f), (int)(size.Height * 0.5f));
                 }
 
                 // Load the sprite now. 

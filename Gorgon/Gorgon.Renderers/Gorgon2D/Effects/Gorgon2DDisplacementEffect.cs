@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
@@ -139,7 +140,7 @@ namespace Gorgon.Renderers
                                                                                         GorgonConstantBufferInfo("Gorgon2DDisplacementEffect Constant Buffer")
                                                                                         {
                                                                                             Usage = ResourceUsage.Dynamic,
-                                                                                            SizeInBytes = Unsafe.SizeOf<DX.Vector4>()
+                                                                                            SizeInBytes = Unsafe.SizeOf<Vector4>()
                                                                                         });
 
             _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");
@@ -179,8 +180,8 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            var settings = new DX.Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, 0);
-            _displacementSettingsBuffer.Buffer.SetData(ref settings);
+            var settings = new Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, 0);
+            _displacementSettingsBuffer.Buffer.SetData(in settings);
             _isUpdated = false;
         }
 
