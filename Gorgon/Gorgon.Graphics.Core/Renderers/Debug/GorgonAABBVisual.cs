@@ -42,8 +42,9 @@ namespace Gorgon.Renderers.Debug
         : IGorgonGraphicsObject, IDisposable
     {
         #region Variables.        
-        // The builder used to build draw calls.
+        // The builders used to build draw calls.
         private readonly GorgonDrawCallBuilder _builder = new GorgonDrawCallBuilder();
+        private GorgonPipelineStateBuilder _psoBuilder;
         // The draw call to submit to the graphics interface.
         private GorgonDrawCall _drawCall;
         // The layout of the vertices.
@@ -69,6 +70,25 @@ namespace Gorgon.Renderers.Debug
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to build the draw call.
+        /// </summary>
+        /// <param name="depthStencilState">The depth/stencil state to apply.</param>
+        private void BuildDrawCall(GorgonDepthStencilState depthStencilState)
+        {
+            _drawCall = _builder.ConstantBuffer(ShaderType.Vertex, _constantBuffer)
+                                .VertexBuffer(_inputLayout, _vertexBuffer)
+                                .VertexRange(0, _lineVertices.Length)
+                                .PipelineState(_psoBuilder.VertexShader(_vertexShader)
+                                                         .PixelShader(_pixelShader)
+                                                         .RasterState(GorgonRasterState.NoCulling)
+                                                         .PrimitiveType(PrimitiveType.LineList)
+                                                         .DepthStencilState(depthStencilState)
+                                                         .Build())
+                                .Build();
+
+        }
+
         /// <summary>
         /// Function to initialize the visual.
         /// </summary>
@@ -96,17 +116,9 @@ namespace Gorgon.Renderers.Debug
                 new GorgonInputElement("SV_POSITION", Gorgon.Graphics.BufferFormat.R32G32B32_Float, 0)
             });
 
-            var psoBuilder = new GorgonPipelineStateBuilder(Graphics);
+            _psoBuilder = new GorgonPipelineStateBuilder(Graphics);
 
-            _drawCall = _builder.ConstantBuffer(ShaderType.Vertex, _constantBuffer)
-                                .VertexBuffer(_inputLayout, _vertexBuffer)
-                                .VertexRange(0, _lineVertices.Length)
-                                .PipelineState(psoBuilder.VertexShader(_vertexShader)
-                                                         .PixelShader(_pixelShader)
-                                                         .RasterState(GorgonRasterState.NoCulling)
-                                                         .PrimitiveType(PrimitiveType.LineList)
-                                                         .Build())
-                                .Build();
+            BuildDrawCall(null);
         }
 
         /// <summary>
@@ -148,8 +160,14 @@ namespace Gorgon.Renderers.Debug
         /// <param name="aabb">The axis aligned bounding box to visualize.</param>
         /// <param name="viewMatrix">The current view matrix.</param>
         /// <param name="projectionMatrix">The current projection matrix.</param>
-        public void Draw(in GorgonBoundingBox aabb, in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix)
+        /// <param name="depthStencilState">[Optional] The depth/stencil state to apply when drawing.</param>
+        public void Draw(in GorgonBoundingBox aabb, in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix, GorgonDepthStencilState depthStencilState = null)
         {
+            if ((_drawCall != null) && (_drawCall.PipelineState.DepthStencilState != depthStencilState))
+            {
+                BuildDrawCall(depthStencilState);
+            }
+
             BuildBox(in aabb);
 
             _vertexBuffer.VertexBuffer.SetData<Vector3>(_lineVertices);

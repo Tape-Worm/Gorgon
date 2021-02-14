@@ -245,6 +245,36 @@ namespace Gorgon.Examples
             up = Vector3.Multiply(up, cameraDir.Y);
             _camera.Position = Vector3.Add(_camera.Position, up);
 
+            if (_camera.Position.X < -10.5f)
+            {
+                _camera.Position = new Vector3(-10.5f, _camera.Position.Y, _camera.Position.Z);
+            }
+
+            if (_camera.Position.X > 10.5f)
+            {
+                _camera.Position = new Vector3(10.5f, _camera.Position.Y, _camera.Position.Z);
+            }
+
+            if (_camera.Position.Y < -1.35f)
+            {
+                _camera.Position = new Vector3(_camera.Position.X, -1.35f, _camera.Position.Z);
+            }
+
+            if (_camera.Position.Y > 25.0f)
+            {
+                _camera.Position = new Vector3(_camera.Position.X, 25.0f, _camera.Position.Z);
+            }
+
+            if (_camera.Position.Z > 13.25f)
+            {
+                _camera.Position = new Vector3(_camera.Position.X, _camera.Position.Y, 13.25f);
+            }
+
+            if (_camera.Position.Z < -10.5f)
+            {
+                _camera.Position = new Vector3(_camera.Position.X, _camera.Position.Y, -10.5f);
+            }
+
             if (_lock)
             {
                 _camera.LookAt(pos);
@@ -285,6 +315,11 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="GI.GorgonKeyboardEventArgs" /> instance containing the event data.</param>
         private static void Keyboard_KeyDown(object sender, GI.GorgonKeyboardEventArgs e)
         {
+            if (e.Key == Keys.B)
+            {
+                _renderer.ShowAABB = !_renderer.ShowAABB;
+            }
+
             if (e.Key != Keys.L)
             {
                 return;

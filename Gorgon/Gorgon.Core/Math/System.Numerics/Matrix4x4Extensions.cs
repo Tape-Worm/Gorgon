@@ -25,6 +25,7 @@
 #endregion
 
 using System.Runtime.CompilerServices;
+using Gorgon.Math;
 
 namespace System.Numerics
 {
@@ -263,6 +264,36 @@ namespace System.Numerics
                 default:
                     throw new ArgumentOutOfRangeException(nameof(columnIndex));
             }
+        }
+
+        /// <summary>
+        /// Function to retrieve a matrix with absolute values.
+        /// </summary>
+        /// <param name="matrix">The matrix to evaluate.</param>
+        /// <param name="absMatrix">The matrix with absolute values.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Abs(this in Matrix4x4 matrix, out Matrix4x4 absMatrix)
+        {
+            absMatrix = default;
+            absMatrix.M11 = matrix.M11.Abs();
+            absMatrix.M12 = matrix.M12.Abs();
+            absMatrix.M13 = matrix.M13.Abs();
+            absMatrix.M14 = matrix.M14.Abs();
+
+            absMatrix.M21 = matrix.M21.Abs();
+            absMatrix.M22 = matrix.M22.Abs();
+            absMatrix.M23 = matrix.M23.Abs();
+            absMatrix.M24 = matrix.M24.Abs();
+
+            absMatrix.M31 = matrix.M31.Abs();
+            absMatrix.M32 = matrix.M32.Abs();
+            absMatrix.M33 = matrix.M33.Abs();
+            absMatrix.M34 = matrix.M34.Abs();
+
+            absMatrix.M41 = matrix.M41.Abs();
+            absMatrix.M42 = matrix.M42.Abs();
+            absMatrix.M43 = matrix.M43.Abs();
+            absMatrix.M44 = matrix.M44.Abs();
         }
     }
 }

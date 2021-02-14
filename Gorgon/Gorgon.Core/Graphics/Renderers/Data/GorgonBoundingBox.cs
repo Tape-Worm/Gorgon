@@ -319,64 +319,13 @@ namespace Gorgon.Renderers.Data
         /// <param name="result">The new transformed axis aligned bounding box.</param>
         public static void Transform(in GorgonBoundingBox aabb, in Matrix4x4 worldMatrix, out GorgonBoundingBox result)
         {
-            Matrix4x4 rot;
-            rot.M11 = worldMatrix.M11;
-            rot.M12 = worldMatrix.M12;
-            rot.M13 = worldMatrix.M13;
-            rot.M21 = worldMatrix.M21;
-            rot.M22 = worldMatrix.M22;
-            rot.M23 = worldMatrix.M23;
-            rot.M31 = worldMatrix.M31;
-            rot.M32 = worldMatrix.M32;
-            rot.M33 = worldMatrix.M33;
+            var extent = Vector3.Subtract(aabb.Maximum, aabb.Center);
+            worldMatrix.Abs(out Matrix4x4 absMatrix);
 
-            Vector3 max = worldMatrix.GetTranslation();
-            Vector3 min = worldMatrix.GetTranslation();
+            var newCenter = Vector3.Transform(aabb.Center, worldMatrix);
+            var newExtent = Vector3.TransformNormal(extent, absMatrix);
 
-            float a1 = rot.M11 * aabb.Minimum.X;
-            float b1 = rot.M11 * aabb.Maximum.X;
-            float a2 = rot.M12 * aabb.Minimum.Y;
-            float b2 = rot.M12 * aabb.Maximum.Y;
-            float a3 = rot.M13 * aabb.Minimum.Z;
-            float b3 = rot.M13 * aabb.Maximum.Z;
-            float a4 = rot.M21 * aabb.Minimum.X;
-            float b4 = rot.M21 * aabb.Maximum.X;
-            float a5 = rot.M22 * aabb.Minimum.Y;
-            float b5 = rot.M22 * aabb.Maximum.Y;
-            float a6 = rot.M23 * aabb.Minimum.Z;
-            float b6 = rot.M23 * aabb.Maximum.Z;
-            float a7 = rot.M31 * aabb.Minimum.X;
-            float b7 = rot.M31 * aabb.Maximum.X;
-            float a8 = rot.M32 * aabb.Minimum.Y;
-            float b8 = rot.M32 * aabb.Maximum.Y;
-            float a9 = rot.M33 * aabb.Minimum.Z;
-            float b9 = rot.M33 * aabb.Maximum.Z;
-
-            min.X += a1.Min(b1);
-            min.X += a4.Min(b4);
-            min.X += a7.Min(b7);
-
-            max.X += a1.Max(b1);
-            max.X += a4.Max(b4);
-            max.X += a7.Max(b7);
-
-            min.Y += a2.Min(b2);
-            min.Y += a5.Min(b5);
-            min.Y += a8.Min(b8);
-
-            max.Y += a2.Max(b2);
-            max.Y += a5.Max(b5);
-            max.Y += a8.Max(b8);
-
-            min.Z += a3.Min(b3);
-            min.Z += a6.Min(b6);
-            min.Z += a9.Min(b9);
-
-            max.Z += a3.Max(b3);
-            max.Z += a6.Max(b6);
-            max.Z += a9.Max(b9);
-
-            result = new GorgonBoundingBox(min, max);
+            result = new GorgonBoundingBox(Vector3.Subtract(newCenter, newExtent), Vector3.Add(newCenter, newExtent));
         }
 
         /// <summary>

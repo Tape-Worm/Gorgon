@@ -40,6 +40,7 @@ using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Lights;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Debug;
 
 namespace Gorgon.Examples
 {
@@ -129,6 +130,8 @@ namespace Gorgon.Examples
         private readonly GorgonPipelineStateBuilder _stateBuilder;
         // The frustum for the camera.
         private readonly GorgonBoundingFrustum _frustum = new GorgonBoundingFrustum();
+        // The visual for AABBs.
+        private readonly GorgonAABBVisual _aabbVisual;
         #endregion
 
         #region Properties.
@@ -168,6 +171,15 @@ namespace Gorgon.Examples
         public Dictionary<string, GorgonTexture2DView> TextureCache
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to show the axis aligned bounding boxes for the objects.
+        /// </summary>
+        public bool ShowAABB
+        {
+            get;
+            set;
         }
         #endregion
 
@@ -378,9 +390,7 @@ namespace Gorgon.Examples
                 SpecularPower = material.SpecularPower
             };
             _materialBuffer.Buffer.SetData(in materialData);
-        }
-
-        Gorgon.Renderers.Debug.GorgonAABBVisual v;
+        }        
 
         /// <summary>
         /// Function to render the scene.
@@ -418,11 +428,6 @@ namespace Gorgon.Examples
                 _frustum.Update(in viewProjData.ViewProjection);
             }
 
-            if (v == null)
-            {
-                v = new Renderers.Debug.GorgonAABBVisual(_graphics);
-            }
-
             for (int i = 0; i < _drawCalls.Count; ++i)
             {
                 ref readonly GorgonBoundingBox aabb = ref _meshes[i].Aabb;
@@ -445,7 +450,11 @@ namespace Gorgon.Examples
                 if (GorgonIntersections.FrustumIntersectsBox(_frustum, in worldaabb))
                 {
                     _graphics.Submit(_drawCalls[i]);
-                    v.Draw(in worldaabb, in Camera.GetViewMatrix(), in Camera.GetProjectionMatrix());
+
+                    if (ShowAABB)
+                    {
+                        _aabbVisual.Draw(in worldaabb, in Camera.GetViewMatrix(), in Camera.GetProjectionMatrix(), GorgonDepthStencilState.DepthEnabled);
+                    }
                 }
             }
         }
@@ -483,6 +492,7 @@ namespace Gorgon.Examples
         {
             _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
+            _aabbVisual = new GorgonAABBVisual(_graphics);
             _drawBuilder = new GorgonDrawIndexCallBuilder();
             _stateBuilder = new GorgonPipelineStateBuilder(_graphics);
             var sampleBuilder = new GorgonSamplerStateBuilder(_graphics);
