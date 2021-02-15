@@ -336,7 +336,6 @@ namespace Gorgon.Graphics.Core
 		/// Function to check the resources to ensure they're not bound on output and input at the same time.
 		/// </summary>
 		/// <param name="state">The state that will be assigned.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void CheckHazards(D3DState state)
 		{
 			CheckVertexBufferStreamOut(state.VertexBuffers, state.StreamOutBindings);

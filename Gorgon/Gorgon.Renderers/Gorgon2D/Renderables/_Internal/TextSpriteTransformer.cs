@@ -50,7 +50,6 @@ namespace Gorgon.Renderers
         /// <param name="layoutSize">The layout region size.</param>
         /// <param name="lineLength">Length of the line, in pixels.</param>
         /// <param name="textHeight">The height of the text block being rendered.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void GetTextAlignmentExtents(ref Vector2 leftTop, Alignment alignment, ref DX.Size2F layoutSize, float lineLength, float textHeight)
         {
             int calc;
@@ -106,7 +105,6 @@ namespace Gorgon.Renderers
         /// <param name="bounds">The bounds of the renderable.</param>
         /// <param name="anchor">The anchor point for the renderable.</param>
         /// <param name="corners">The corners of the sprite.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void BuildRenderable(ref DX.RectangleF bounds, ref Vector2 anchor, ref Vector4 corners)
         {
             if (anchor.Equals(Vector2.Zero))
@@ -129,7 +127,6 @@ namespace Gorgon.Renderers
         /// <param name="vertexOffset">The offset into the vertex array.</param>
         /// <param name="hasOutline"><b>true</b> if using the outlines in the font, <b>false</b> if not.</param>
         /// <param name="outlineTint">A color used to tint the </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void UpdateVertexColors(Gorgon2DVertex[] vertices,
                                                ref GorgonColor upperLeft,
                                                ref GorgonColor upperRight,
@@ -163,7 +160,6 @@ namespace Gorgon.Renderers
         /// <param name="textureRegion">The texture coordinates.</param>
         /// <param name="textureArrayIndex">The index into a texture array.</param>
         /// <param name="vertexOffset">The offset into the vertex array.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void UpdateTextureCoordinates(Gorgon2DVertex[] vertices,
                                                      ref DX.RectangleF textureRegion,
                                                      int textureArrayIndex,

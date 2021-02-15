@@ -494,7 +494,6 @@ namespace Gorgon.Graphics.Core
         /// Function to fire the <see cref="ViewportChanging"/> event.
         /// </summary>
         /// <returns><b>true</b> to continue, <b>false</b> to cancel.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnViewportChanging()
         {
             CancelEventHandler cancelHandler = ViewportChanging;
@@ -515,7 +514,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="rtvsUpdated"><b>true</b> if the rtvs needed updating, <b>false</b> if not.</param>
         /// <returns><b>true</b> if the user will continue with the change, <b>false</b> if not.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnRenderTargetChanging(bool rtvsUpdated)
         {
             if (!rtvsUpdated)
@@ -539,7 +537,6 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function called when the render target(s) have changed.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void OnRenderTargetChanged() => RenderTargetChanged?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
@@ -547,7 +544,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="dsvUpdated"><b>true</b> if the dsv needed updating, <b>false</b> if not.</param>
         /// <returns><b>true</b> if the user will continue with the change, <b>false</b> if not.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnDepthStencilChanging(bool dsvUpdated)
         {
             if (!dsvUpdated)
@@ -662,7 +658,6 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearState(bool flush = false)
         {
             // Reset state on the device context.
@@ -989,7 +984,6 @@ namespace Gorgon.Graphics.Core
         /// This will destroy any previously cached pipeline states and sampler states.
         /// </para>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearStateCache()
         {
             if (D3DDeviceContext != null)

@@ -44,7 +44,6 @@ namespace Gorgon.Renderers
         /// <param name="bounds">The bounds of the renderable.</param>
         /// <param name="anchor">The anchor point for the renderable.</param>
         /// <param name="corners">The corners of the renderable.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void BuildRenderable(ref DX.RectangleF bounds, ref Vector2 anchor, out Vector4 corners)
         {
             var vectorSize = new Vector2(bounds.Width, bounds.Height);
@@ -66,7 +65,6 @@ namespace Gorgon.Renderers
         /// <param name="upperRight">The color of the upper right corner.</param>
         /// <param name="lowerLeft">The color of the lower left corner.</param>
         /// <param name="lowerRight">The color of the lower right corner.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void UpdateVertexColors(Gorgon2DVertex[] vertices, ref GorgonColor upperLeft, ref GorgonColor upperRight, ref GorgonColor lowerLeft, ref GorgonColor lowerRight)
         {
             vertices[0].Color = upperLeft;
@@ -84,7 +82,6 @@ namespace Gorgon.Renderers
         /// <param name="horizontalFlip"><b>true</b> if the texture is flipped horizontally.</param>
         /// <param name="verticalFlip"><b>true</b> if the texture is flipped vertically.</param>
         /// <param name="perspectCorrect"><b>true</b> to apply perspective correction to sprites with corner offsets, <b>false</b> to use standard affine texturing.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void UpdateTextureCoordinates(Gorgon2DVertex[] vertices,
                                                      ref DX.RectangleF textureRegion,
                                                      int textureArrayIndex,

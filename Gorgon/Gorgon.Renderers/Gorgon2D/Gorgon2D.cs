@@ -278,24 +278,6 @@ namespace Gorgon.Renderers
             }
         }
 
-        /// <summary>Function to compare two renderable objects for equality.</summary>
-        /// <param name="lastRenderable">The previous renderable to pass through.</param>
-        /// <param name="currentRenderable">The second object to compare.</param>
-        /// <returns>
-        /// <see langword="true" /> if the specified objects are different; otherwise, <see langword="false" />.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool HasRenderableChanged(BatchRenderable lastRenderable, BatchRenderable currentRenderable)
-        {
-#pragma warning disable IDE0046 // Convert to conditional expression
-            if ((lastRenderable == null) && (currentRenderable == null))
-            {
-                return false;
-            }
-
-            return (lastRenderable == null) || (currentRenderable == null) || (!BatchRenderable.AreStatesSame(lastRenderable, currentRenderable));
-#pragma warning restore IDE0046 // Convert to conditional expression
-        }
-
         /// <summary>
         /// Function to check for changes in the batch state with the current poly sprite, and render the previous batch if necessary.
         /// </summary>
@@ -330,12 +312,10 @@ namespace Gorgon.Renderers
             if ((!flush) 
                 && (((useIndices) && (_currentDrawIndexCall != null)) || ((!useIndices) && (_currentDrawCall != null))))                
             {
-                bool renderableChanged = HasRenderableChanged(_lastRenderable, renderable);
-
-                if (!renderableChanged)
+                if ((_lastRenderable != null) && (renderable != null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))                    
                 {
                     return;
-                }                    
+                }
             }
             
             // Flush any pending draw calls.
