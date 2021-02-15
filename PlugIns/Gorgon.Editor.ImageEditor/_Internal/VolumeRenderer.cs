@@ -237,9 +237,9 @@ namespace Gorgon.Editor.ImageEditor
 
             // Draw the actual cube.
             _graphics.SetRenderTarget(currentRtv);
-            _graphics.SetViewport(ref _cubeView);
+            _graphics.SetViewport(_cubeView);
             _graphics.Submit(_cubeDirDrawCall);
-            _graphics.SetViewport(ref oldViewport);
+            _graphics.SetViewport(oldViewport);
         }
 
         /// <summary>

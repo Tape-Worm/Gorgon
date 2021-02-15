@@ -426,7 +426,9 @@ namespace Gorgon.Editor.ImageEditor
             {
                 if (imageToCopy.Format != _targetImage.Format)
                 {
-                    imageToCopy.ConvertToFormat(_targetImage.Format);
+                    imageToCopy.BeginUpdate()
+                               .ConvertToFormat(_targetImage.Format)
+                               .EndUpdate();
                 }
 
                 var newSize = new DX.Size2(MipWidth, MipHeight);

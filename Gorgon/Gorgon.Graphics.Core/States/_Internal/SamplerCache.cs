@@ -54,7 +54,6 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to invalidate the cache data.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void InvalidateCache()
         {
             foreach (GorgonSamplerState sampler in _cachedSamplers)

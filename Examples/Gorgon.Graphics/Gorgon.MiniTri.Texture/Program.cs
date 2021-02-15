@@ -176,7 +176,7 @@ namespace Gorgon.Examples
         /// <returns>The application window.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Create our form and center on the primary monitor.
             FormMain window = GorgonExample.Initialize(new DX.Size2(1280, 800), "Gorgon MiniTri - Now with 100% more textures.");

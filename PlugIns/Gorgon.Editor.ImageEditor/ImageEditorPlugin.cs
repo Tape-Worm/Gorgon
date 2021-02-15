@@ -139,7 +139,7 @@ namespace Gorgon.Editor.ImageEditor
                     GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);
                     rtv.Clear(GorgonColor.BlackTransparent);
                     HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
-                    HostContentServices.GraphicsContext.Graphics.DrawTexture(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
+                    HostContentServices.GraphicsContext.Blitter.Blit(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
                     HostContentServices.GraphicsContext.Graphics.SetRenderTarget(null);
 
                     image?.Dispose();

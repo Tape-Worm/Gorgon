@@ -167,7 +167,9 @@ namespace Gorgon.Editor.ImageEditor
         public void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment)
         {
             DX.Point startLoc = GetAnchorStart(new DX.Size2(cropImage.Width, cropImage.Height), ref destSize, alignment);
-            cropImage.Crop(new DX.Rectangle(startLoc.X, startLoc.Y, destSize.Width, destSize.Height), cropImage.Depth);
+            cropImage.BeginUpdate()
+                     .Crop(new DX.Rectangle(startLoc.X, startLoc.Y, destSize.Width, destSize.Height), cropImage.Depth)
+                     .EndUpdate();
         }
 
         /// <summary>Function to resize the image to fit within the width and height specified.</summary>
@@ -183,7 +185,9 @@ namespace Gorgon.Editor.ImageEditor
                 newSize = new DX.Size2((int)(resizeImage.Width * imageScale), (int)(resizeImage.Height * imageScale));
             }
 
-            resizeImage.Resize(newSize.Width, newSize.Height, resizeImage.Depth, filter);
+            resizeImage.BeginUpdate()
+                       .Resize(newSize.Width, newSize.Height, resizeImage.Depth, filter)
+                       .EndUpdate();
         }
 
         /// <summary>

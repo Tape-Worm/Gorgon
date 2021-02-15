@@ -500,7 +500,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to force a refresh of the specified file preview.
         /// </summary>
         /// <param name="filePath">The path to the file to refresh.</param>
-        private void RefreshFilePreview(string filePath)
+        private async void RefreshFilePreview(string filePath)
         {
             if (!_settings.ShowContentPreview)
             {
@@ -509,7 +509,7 @@ namespace Gorgon.Editor.ViewModels
 
             if ((ContentPreviewer.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
             {
-                ContentPreviewer.RefreshPreviewCommand.Execute(filePath);
+                await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(filePath);
             }
         }
 
@@ -668,7 +668,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Create a new instance of an undo service. Undo services are separate between content types, thus we need to create new instances.
                 IUndoService undoService = new UndoService(HostServices.Log);
-
+                
                 // Create a content object.                
                 IEditorContent content = await plugIn.OpenContentAsync(file, _contentFileManager, _projectData, undoService);
 

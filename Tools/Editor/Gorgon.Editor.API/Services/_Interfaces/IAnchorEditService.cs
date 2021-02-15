@@ -73,7 +73,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the camera for the renderer.
         /// </summary>
-        GorgonCameraCommon Camera
+        GorgonOrthoCamera Camera
         {
             get;
             set;

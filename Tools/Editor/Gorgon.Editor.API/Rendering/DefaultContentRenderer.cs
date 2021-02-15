@@ -208,7 +208,7 @@ namespace Gorgon.Editor.Rendering
         /// Plug in developers can override this property and return their own camera if necessary.
         /// </para>
         /// </remarks>
-        protected virtual GorgonCameraCommon Camera => _camera;
+        protected virtual GorgonOrthoCamera Camera => _camera;
         
         /// <summary>
         /// Property to return the primary render target.

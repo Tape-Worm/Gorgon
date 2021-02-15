@@ -55,7 +55,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the camera being used.
         /// </summary>
-        GorgonCameraCommon Camera
+        GorgonOrthoCamera Camera
         {
             get;
             set;

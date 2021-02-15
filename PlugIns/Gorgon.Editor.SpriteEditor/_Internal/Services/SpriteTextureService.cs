@@ -148,12 +148,12 @@ namespace Gorgon.Editor.SpriteEditor
             if ((imageData.FormatInfo.IsSRgb)
                 && (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb)))
             {
-                await Task.Run(() => imageData.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb));
+                await Task.Run(() => imageData.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb).EndUpdate());
                 return imageData;
             }
             else if (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
             {
-                await Task.Run(() => imageData.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
+                await Task.Run(() => imageData.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate());
                 return imageData;
             }
 

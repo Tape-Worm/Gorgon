@@ -257,8 +257,7 @@ namespace Gorgon.UI
             {
                 Location = parent.PointToScreen(new Point(0, 0)),
                 Size = parent.ClientSize,
-                BackColor = OverlayColor,
-                Opacity = TransparencyPercent / 100.0
+                BackColor = OverlayColor
             };
 
             _parent = new WeakReference<Control>(parent);
@@ -289,8 +288,9 @@ namespace Gorgon.UI
                 parentForm.Move += ParentForm_Move;
                 parentForm.Layout += ParentForm_Layout;
             }
-
+                                    
             _overlayForm.Show(parentForm ?? parent);
+            _overlayForm.Opacity = TransparencyPercent / 100.0;
 
             return _overlayForm;
         }

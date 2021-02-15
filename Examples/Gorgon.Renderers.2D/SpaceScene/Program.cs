@@ -285,8 +285,8 @@ namespace Gorgon.Examples
         {
             try
             {
-                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
-                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
                 // Load our packed file system plug in.
                 window.UpdateStatus("Loading plugins...");
@@ -312,8 +312,8 @@ namespace Gorgon.Examples
                                               window,
                                               new GorgonSwapChainInfo("Gorgon2D Space Scene Example")
                                               {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
+                                                  Width = ExampleConfig.Default.Resolution.Width,
+                                                  Height = ExampleConfig.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
 
@@ -397,7 +397,7 @@ namespace Gorgon.Examples
                 WindowsFormsSynchronizationContext.AutoInstall = false;
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
-                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Space Scene",
+                FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Space Scene",
                     async (sender, _) => await InitializeAsync(sender as FormMain));
 
                 GorgonApplication.Run(window);

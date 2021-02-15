@@ -231,6 +231,11 @@ namespace Gorgon.Graphics.Core
         /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
         /// </summary>
         public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
+
+        /// <summary>
+        /// Property to return whether the resource used by this view can be shared or not.
+        /// </summary>
+        public bool Shared => Texture.Shared;
         #endregion
 
         #region Methods.

@@ -83,8 +83,8 @@ namespace Gorgon.Editor.AnimationEditor
                 LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height),                
             };
 
-            _instructions.Text = _font.WordWrap(Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN, ClientSize.Width);
-            _textSize = _font.MeasureText(_instructions.Text, true, wordWrapWidth: ClientSize.Width);
+            _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
+            _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
         }
 
         /// <summary>Function called when the view has been resized.</summary>
@@ -93,8 +93,8 @@ namespace Gorgon.Editor.AnimationEditor
         {
             _instructions.LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height);
 
-            _instructions.Text = _font.WordWrap(Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN, ClientSize.Width);
-            _textSize = _font.MeasureText(_instructions.Text, true, wordWrapWidth: ClientSize.Width);
+            _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
+            _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
 
             base.OnResizeEnd();
         }

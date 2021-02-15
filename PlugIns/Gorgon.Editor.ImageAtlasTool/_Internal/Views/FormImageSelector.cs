@@ -38,6 +38,7 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
 using DX = SharpDX;
+using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Editor.ImageAtlasTool
 {
@@ -236,7 +237,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             }
             else
             {
-                DX.Size2F size = _graphicsContext.Renderer2D.DefaultFont.MeasureText(Resources.GORIAG_TEXT_SELECT_IMAGE, false);
+                DX.Size2F size = Resources.GORIAG_TEXT_SELECT_IMAGE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
                 _graphicsContext.Renderer2D.DrawString(Resources.GORIAG_TEXT_SELECT_IMAGE, 
                                                         new DX.Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
                                                         color: GorgonColor.White);

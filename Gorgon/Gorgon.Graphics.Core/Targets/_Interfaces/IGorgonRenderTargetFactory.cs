@@ -60,6 +60,14 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Property to return the number of free render targets available for rent.
+        /// </summary>
+        int AvailableCount
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the total number of render targets available in the factory.
         /// </summary>
         int TotalCount

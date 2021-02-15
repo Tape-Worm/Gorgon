@@ -28,7 +28,9 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.TextureAtlasTool
@@ -41,7 +43,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 	{
 		#region Variables.
 		// The camera used to render.
-		private IGorgon2DCamera _camera;
+		private GorgonOrthoCamera _camera;
 		// The sprite used to display the texture.
 		private GorgonSprite _textureSprite;
 		#endregion
@@ -52,7 +54,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		/// </summary>
 		private void DrawMessage()
 		{
-			DX.Size2F textSize = Renderer.DefaultFont.MeasureText(Resources.GORTAG_TEXT_NO_ATLAS, false);
+			DX.Size2F textSize = Resources.GORTAG_TEXT_NO_ATLAS.MeasureText(Renderer.DefaultFont, false);
 
 			Renderer.Begin(camera: _camera);
 			Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColor.White, 0.75f));
@@ -94,7 +96,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		{
 			base.OnLoad();
 
-			_camera = new Gorgon2DOrthoCamera(Renderer, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
+			_camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
 			{
 				Anchor = new DX.Vector2(0.5f, 0.5f)
 			};

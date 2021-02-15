@@ -32,6 +32,7 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
@@ -67,7 +68,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The original position of the handle being dragged.
         private DX.Vector2 _dragHandlePos;
         // The camera used to render the UI.
-        private IGorgon2DCamera _camera;
+        private GorgonOrthoCamera _camera;
         #endregion
 
         #region Events.
@@ -105,7 +106,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>
         /// Property to set or return the camera being used.
         /// </summary>
-        public IGorgon2DCamera Camera
+        public GorgonOrthoCamera Camera
         {
             get => _camera;
             set

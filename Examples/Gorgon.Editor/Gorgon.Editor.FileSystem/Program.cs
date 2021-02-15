@@ -112,8 +112,8 @@ namespace Gorgon.Examples
 
             _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
-            var scale = new DX.Vector2(_screen.Width / (float)Settings.Default.Resolution.Width, 
-                                       _screen.Height / (float)Settings.Default.Resolution.Height);
+            var scale = new DX.Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width, 
+                                       _screen.Height / (float)ExampleConfig.Default.Resolution.Height);
 
             _dudeBro.Position = new DX.Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
             _dudeBroReflect.Position = new DX.Vector2(_dudeBro.Position.X, _dudeBro.Position.Y + _dudeBro.ScaledSize.Height + 3);
@@ -144,8 +144,8 @@ namespace Gorgon.Examples
         /// </summary>
         private static async Task InitializeAsync(FormMain window)
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
             try
             {
@@ -175,8 +175,8 @@ namespace Gorgon.Examples
                                               window,
                                               new GorgonSwapChainInfo("Gorgon2D Gorgon.Editor Example Swap Chain")
                                               {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
+                                                  Width = ExampleConfig.Default.Resolution.Width,
+                                                  Height = ExampleConfig.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
                 
@@ -257,7 +257,7 @@ namespace Gorgon.Examples
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
                 // Create the window, and size it to our resolution.
-                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), 
+                FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), 
                                                            "Gorgon.Editor.FileSystem - Loading content from an editor file system example.",
                                                            async (sender, _) => await InitializeAsync(sender as FormMain));
 

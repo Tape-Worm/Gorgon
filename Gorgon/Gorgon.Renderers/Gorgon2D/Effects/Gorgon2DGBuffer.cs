@@ -151,7 +151,7 @@ namespace Gorgon.Renderers
                 _target[i]?.Dispose();
             }
 
-            GBufferTexture = Specular = Normal = Diffuse = null;            
+            GBufferTexture = Specular = Normal = Diffuse = null;                        
             Array.Clear(_target, 0, _target.Length);
             
             _gbuffer?.Dispose();

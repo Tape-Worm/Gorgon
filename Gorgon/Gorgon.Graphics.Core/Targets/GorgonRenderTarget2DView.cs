@@ -231,15 +231,20 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
 		/// </summary>
 		public override TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
-        #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the view description.
-        /// </summary>
-        /// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
-        /// <returns>The view description.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
+		/// <summary>
+		/// Property to return whether the resource used by this view can be shared or not.
+		/// </summary>
+		public bool Shared => Texture.Shared;
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the view description.
+		/// </summary>
+		/// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
+		/// <returns>The view description.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         private D3D11.RenderTargetViewDescription1 GetDesc2D(bool isMultisampled)
 		{
             // Set up for arrayed and multisampled texture.

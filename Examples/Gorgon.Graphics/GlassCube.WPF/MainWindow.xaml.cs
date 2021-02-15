@@ -307,7 +307,7 @@ namespace Gorgon.Examples
         {
             try
             {
-                GorgonExample.ResourceBaseDirectory = new System.IO.DirectoryInfo(Properties.Settings.Default.ResourceLocation);                
+                GorgonExample.ResourceBaseDirectory = new System.IO.DirectoryInfo(ExampleConfig.Default.ResourceLocation);                
 
                 // Initialize Gorgon as we have in the other examples.
                 // Find out which devices we have installed in the system.

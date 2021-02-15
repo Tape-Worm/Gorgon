@@ -27,14 +27,13 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.

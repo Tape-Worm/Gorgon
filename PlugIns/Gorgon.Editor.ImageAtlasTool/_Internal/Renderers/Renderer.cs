@@ -30,6 +30,8 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using DX = SharpDX;
+using Gorgon.Renderers.Cameras;
+using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Editor.ImageAtlasTool
 {
@@ -41,7 +43,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 	{
 		#region Variables.
 		// The camera used to render.
-		private IGorgon2DCamera _camera;
+		private GorgonOrthoCamera _camera;
 		// The texture to display.
 		private GorgonTexture2DView _texture;
 		// The sprite used to display the texture.
@@ -77,7 +79,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		/// </summary>
 		private void DrawMessage()
 		{
-			DX.Size2F textSize = Renderer.DefaultFont.MeasureText(Resources.GORIAG_TEXT_NO_ATLAS, false);
+			DX.Size2F textSize = Resources.GORIAG_TEXT_NO_ATLAS.MeasureText(Renderer.DefaultFont, false);
 
 			Renderer.Begin(camera: _camera);
 			Renderer.DrawFilledRectangle(new DX.RectangleF(-MainRenderTarget.Width * 0.5f, -MainRenderTarget.Height * 0.5f, MainRenderTarget.Width, MainRenderTarget.Height), new GorgonColor(GorgonColor.White, 0.75f));
@@ -91,7 +93,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		private void DrawImage()
 		{
 			string text = DataContext.CurrentImage.file?.Name ?? string.Empty;
-			DX.Size2F textSize = Renderer.DefaultFont.MeasureText(text, false);
+			DX.Size2F textSize = text.MeasureText(Renderer.DefaultFont, false);
 
 			float scale = CalculateScaling(new DX.Size2F(_texture.Width + 8, _texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
             DX.Size2F size = new DX.Size2F(scale * _texture.Width, scale * _texture.Height).Truncate();
@@ -193,7 +195,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		{
 			base.OnLoad();
 
-			_camera = new Gorgon2DOrthoCamera(Renderer, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
+			_camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
 			{
 				Anchor = new DX.Vector2(0.5f, 0.5f)
 			};

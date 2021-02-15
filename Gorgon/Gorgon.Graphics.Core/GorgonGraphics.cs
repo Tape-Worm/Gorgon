@@ -34,6 +34,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
 using Gorgon.Native;
+using Gorgon.Timing;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -106,7 +107,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonInstancedCall"/>
     /// <seealso cref="GorgonInstancedIndexCall"/>
     public sealed class GorgonGraphics
-        : IDisposable
+        : IGorgonNativeResource, IDisposable
     {
         #region Events.
         /// <summary>
@@ -178,6 +179,9 @@ namespace Gorgon.Graphics.Core
         private PipelineStateCache _pipelineStateCache;
         // The cache used to hold sampler states.
         private SamplerCache _samplerCache;
+
+        // The timer used to trigger a clean up of cached render targets.
+        private readonly GorgonTimerQpc _rtExpireTimer = new GorgonTimerQpc();
         #endregion
 
         #region Properties.
@@ -367,6 +371,19 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </remarks>
         public IGorgonRenderTargetFactory TemporaryTargets => _rtvFactory;
+
+        /// <summary>
+        /// Property to return the native handle for the underlying resource object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The property can be used to interoperate with functionality that require direct access to Direct 3D objects.
+        /// </para>
+        /// <para>
+        /// The returned pointer represents the Direct3D device object used by Gorgon.
+        /// </para>
+        /// </remarks>        
+        IntPtr IGorgonNativeResource.Handle => D3DDevice.NativePointer;
         #endregion
 
         #region Methods.
@@ -477,7 +494,6 @@ namespace Gorgon.Graphics.Core
         /// Function to fire the <see cref="ViewportChanging"/> event.
         /// </summary>
         /// <returns><b>true</b> to continue, <b>false</b> to cancel.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnViewportChanging()
         {
             CancelEventHandler cancelHandler = ViewportChanging;
@@ -498,7 +514,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="rtvsUpdated"><b>true</b> if the rtvs needed updating, <b>false</b> if not.</param>
         /// <returns><b>true</b> if the user will continue with the change, <b>false</b> if not.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnRenderTargetChanging(bool rtvsUpdated)
         {
             if (!rtvsUpdated)
@@ -522,7 +537,6 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function called when the render target(s) have changed.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void OnRenderTargetChanged() => RenderTargetChanged?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
@@ -530,7 +544,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="dsvUpdated"><b>true</b> if the dsv needed updating, <b>false</b> if not.</param>
         /// <returns><b>true</b> if the user will continue with the change, <b>false</b> if not.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool OnDepthStencilChanging(bool dsvUpdated)
         {
             if (!dsvUpdated)
@@ -567,6 +580,13 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetDrawStates(D3DState state, in GorgonColor factor, int blendSampleMask, int depthStencilReference)
         {
+            // Before we draw, flush any expired render targets that are cached in the system.
+            if ((_rtExpireTimer.Seconds > 30) && (_rtvFactory.AvailableCount > 0))
+            {
+                _rtvFactory.ExpireTargets();
+                _rtExpireTimer.Reset();
+            }
+
             PipelineStateChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, in factor, blendSampleMask, depthStencilReference);
             _stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, in factor, blendSampleMask, depthStencilReference);
 
@@ -638,7 +658,6 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearState(bool flush = false)
         {
             // Reset state on the device context.
@@ -965,7 +984,6 @@ namespace Gorgon.Graphics.Core
         /// This will destroy any previously cached pipeline states and sampler states.
         /// </para>
         /// </remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearStateCache()
         {
             if (D3DDeviceContext != null)

@@ -35,6 +35,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
@@ -77,7 +78,7 @@ namespace Gorgon.Editor.SpriteEditor
         // The currently selected vertex.
         private int _selectedVertexIndex = -1;
         // The camera used to render the UI.
-        private IGorgon2DCamera _camera;
+        private GorgonOrthoCamera _camera;
         #endregion
 
         #region Events.
@@ -173,7 +174,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to set or return the camera being used.
         /// </summary>
-        public IGorgon2DCamera Camera
+        public GorgonOrthoCamera Camera
         {
             get => _camera;
             set

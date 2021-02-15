@@ -43,7 +43,7 @@ namespace Gorgon.Editor.UI
         // The form to display for the progress panel.
         private readonly GorgonProgressOverlay _progressForm;
         // The application form that will be the parent of the panel.
-        private readonly Form _appForm;
+        private readonly Control _appForm;
         // The view model to hook into.
         private IViewModel _viewModel;
         // The timer used to control the rate of updates to the progress panel.
@@ -70,7 +70,11 @@ namespace Gorgon.Editor.UI
         /// <summary>Handles the ProgressDeactivated event of the ViewModel control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ViewModel_ProgressDeactivated(object sender, EventArgs e) => _progressForm.Hide();
+        private void ViewModel_ProgressDeactivated(object sender, EventArgs e)
+        {
+            _appForm.Enabled = true;
+            _progressForm.Hide();
+        }
 
         /// <summary>Views the model progress updated.</summary>
         /// <param name="sender">The sender.</param>
@@ -88,6 +92,7 @@ namespace Gorgon.Editor.UI
 
             if (!_progressForm.IsActive)
             {
+                _appForm.Enabled = false;
                 _progressForm.Show(_appForm, e.Title, e.Message, e.CancelAction, e.IsMarquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous);
             }
                         
@@ -121,10 +126,13 @@ namespace Gorgon.Editor.UI
         /// <summary>Initializes a new instance of the <see cref="ProgressPanelDisplay"/> class.</summary>
         /// <param name="appForm">The application form that will be the parent to the wait panel.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appForm"/> parameter is <b>null</b>.</exception>
-        public ProgressPanelDisplay(Form appForm)
+        public ProgressPanelDisplay(Control appForm)
         {
             _appForm = appForm ?? throw new ArgumentNullException(nameof(appForm));
-            _progressForm = new GorgonProgressOverlay();
+            _progressForm = new GorgonProgressOverlay
+            {
+                OverlayColor = Graphics.GorgonColor.Black
+            };
             _progressTimer = new GorgonTimerQpc();
         }        
         #endregion

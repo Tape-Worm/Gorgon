@@ -43,7 +43,7 @@ namespace Gorgon.Editor.UI
         // The view model to hook into.
         private IViewModel _viewModel;
         // The form to parent the wait panel.
-        private readonly Form _appForm;
+        private readonly Control _appForm;
         #endregion
 
         #region Methods.
@@ -64,7 +64,11 @@ namespace Gorgon.Editor.UI
         /// <summary>Handles the WaitPanelDeactivated event of the ViewModel control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ViewModel_WaitPanelDeactivated(object sender, EventArgs e) => _waitForm.Hide();
+        private void ViewModel_WaitPanelDeactivated(object sender, EventArgs e)
+        {
+            _appForm.Enabled = true;
+            _waitForm.Hide();
+        }
 
         /// <summary>Views the model wait panel activated.</summary>
         /// <param name="sender">The sender.</param>
@@ -73,6 +77,7 @@ namespace Gorgon.Editor.UI
         {
             if (!_waitForm.IsActive)
             {
+                _appForm.Enabled = false;
                 _waitForm.Show(_appForm, e.Title, e.Message);
             }
         }
@@ -104,10 +109,13 @@ namespace Gorgon.Editor.UI
         /// <summary>Initializes a new instance of the <see cref="WaitPanelDisplay"/> class.</summary>
         /// <param name="appForm">The application form that will be the parent to the wait panel.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appForm"/> parameter is <b>null</b>.</exception>
-        public WaitPanelDisplay(Form appForm)
+        public WaitPanelDisplay(Control appForm)
         {
-            _appForm = appForm ?? throw new ArgumentNullException(nameof(appForm));            
-            _waitForm = new GorgonWaitOverlay();
+            _appForm = appForm ?? throw new ArgumentNullException(nameof(appForm));
+            _waitForm = new GorgonWaitOverlay
+            {
+                OverlayColor = Graphics.GorgonColor.Black
+            };
         }
         #endregion       
     }

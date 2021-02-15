@@ -75,6 +75,7 @@ namespace Gorgon.Editor.SpriteEditor
                 
                 _manualRectEditor.Dispose();
                 _manualVertexEditor.Dispose();
+                _anchorTexture?.Dispose();
 
                 _ribbonForm?.Dispose();
             }
