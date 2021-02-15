@@ -78,7 +78,6 @@
       <Version>5.0.1</Version>
     </PackageReference>
     <PackageReference Include="System.Memory" Version="4.5.4" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Reflection.Context" Version="5.0.0" />
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
