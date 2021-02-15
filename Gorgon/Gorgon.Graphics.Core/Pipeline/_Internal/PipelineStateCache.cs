@@ -113,7 +113,6 @@ namespace Gorgon.Graphics.Core
         /// <param name="depthStencilState">An existing depth/stencil state to use.</param>
         /// <param name="rasterState">An existing rasterizer state to use.</param>
         /// <returns>A new <see cref="GorgonPipelineState"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void InitializePipelineState(GorgonPipelineState pipelineState,
                                              D3D11.BlendState1 blendState,
                                              D3D11.DepthStencilState depthStencilState,

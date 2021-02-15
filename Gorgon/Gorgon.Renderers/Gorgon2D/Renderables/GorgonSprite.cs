@@ -320,14 +320,12 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public DX.Size2F ScaledSize
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
                 ref DX.Vector2 scale = ref Renderable.Scale;
                 return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
