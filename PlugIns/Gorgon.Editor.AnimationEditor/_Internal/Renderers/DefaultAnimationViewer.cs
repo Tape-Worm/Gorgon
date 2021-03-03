@@ -124,7 +124,7 @@ namespace Gorgon.Editor.AnimationEditor
             Renderer.DrawSprite(Sprite);
             Renderer.End();
 
-            if ((DataContext?.UpdateAnimationPreviewCommand == null) || (!DataContext.UpdateAnimationPreviewCommand.CanExecute(null)))
+            if ((DataContext?.UpdateAnimationPreviewCommand is null) || (!DataContext.UpdateAnimationPreviewCommand.CanExecute(null)))
             {
                 return;
             }
@@ -137,7 +137,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (Sprite == null)
+            if (Sprite is null)
             {
                 return;
             }

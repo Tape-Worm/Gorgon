@@ -85,16 +85,16 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_GotFocus(object sender, EventArgs e)
         {
-            if ((_overlayForm == null)
-                || (_parentForm == null)
-                || (_parent == null)
+            if ((_overlayForm is null)
+                || (_parentForm is null)
+                || (_parent is null)
                 || (!_parentForm.TryGetTarget(out Form parentForm))
                 || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
 
-            if (parentForm.ActiveControl == null)
+            if (parentForm.ActiveControl is null)
             {
                 return;
             }
@@ -124,7 +124,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ParentForm_Layout(object sender, LayoutEventArgs e)
         {
-            if ((_overlayForm == null) || (_parentForm == null) || (!_parentForm.TryGetTarget(out Form form)))
+            if ((_overlayForm is null) || (_parentForm is null) || (!_parentForm.TryGetTarget(out Form form)))
             {
                 return;
             }
@@ -150,7 +150,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_EnabledChanged(object sender, EventArgs e)
         {
-            if ((_overlayForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)))
+            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
@@ -168,7 +168,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_VisibleChanged(object sender, EventArgs e)
         {
-            if ((_overlayForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)))
+            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
@@ -186,7 +186,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_Layout(object sender, LayoutEventArgs e)
         {
-            if ((_overlayForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)))
+            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
@@ -205,7 +205,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ParentForm_Move(object sender, EventArgs e)
         {
-            if ((_overlayForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)))
+            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
@@ -223,7 +223,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void OverlayForm_Activated(object sender, EventArgs e)
         {
-            if ((_parentForm == null) || (_parent == null) || (!_parentForm.TryGetTarget(out Form form)))
+            if ((_parentForm is null) || (_parent is null) || (!_parentForm.TryGetTarget(out Form form)))
             {
                 return;
             }

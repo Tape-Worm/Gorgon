@@ -117,7 +117,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             AnimationImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<AnimationImportSettings>(SettingsFilename);
 
-            if (settings == null)
+            if (settings is null)
             {
                 settings = new AnimationImportSettings();
             }

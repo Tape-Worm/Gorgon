@@ -121,7 +121,7 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                if (value == null)
+                if (value is null)
                 {
                     OnPropertyChanging();
                     Array.Clear(_vertices, 0, _vertices.Length);

@@ -63,7 +63,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return whether or not the object is disposed.
         /// </summary>
-        public bool IsDisposed => Resource == null;
+        public bool IsDisposed => Resource is null;
 
         /// <summary>
         /// Property to return the resource bound to the view.
@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Core
             D3D11.ResourceView view = Interlocked.Exchange(ref _view, null);
             GorgonGraphicsResource resource = Interlocked.Exchange(ref _resource, null);
 
-            if ((view == null) && (resource == null))
+            if ((view is null) && (resource is null))
             {
                 return;
             }
@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public bool Equals(GorgonResourceView other)
         {
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }

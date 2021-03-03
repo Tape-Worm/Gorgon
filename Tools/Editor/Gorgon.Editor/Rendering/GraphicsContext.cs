@@ -94,7 +94,7 @@ namespace Gorgon.Editor.Rendering
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="swapChain"/> parameter is <b>null</b>.</exception>
         public void ReturnSwapPresenter(ref GorgonSwapChain swapChain)
         {
-            if (swapChain == null)
+            if (swapChain is null)
             {
                 throw new ArgumentNullException(nameof(swapChain));
             }
@@ -128,7 +128,7 @@ namespace Gorgon.Editor.Rendering
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
         public GorgonSwapChain LeaseSwapPresenter(Control control)
         {
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }

@@ -64,7 +64,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     CellsDragEvent = null;
                     return;
@@ -74,7 +74,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -235,7 +235,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             base.OnPaint(e);
 
-            if ((string.IsNullOrWhiteSpace(NoDataMessage)) || (Rows == null) || (Font == null) || (Rows.Count != 0))
+            if ((string.IsNullOrWhiteSpace(NoDataMessage)) || (Rows is null) || (Font is null) || (Rows.Count != 0))
             {
                 return;
             }

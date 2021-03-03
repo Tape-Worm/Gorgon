@@ -152,7 +152,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
         public GorgonStreamOutCallBuilder VertexBuffer(GorgonInputLayout layout, in GorgonVertexBufferBinding binding)
         {
-            if (_workerCall.D3DState.VertexBuffers == null)
+            if (_workerCall.D3DState.VertexBuffers is null)
             {
                 _workerCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             }
@@ -291,12 +291,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonStreamOutCall Build(IGorgonAllocator<GorgonStreamOutCall> allocator)
         {
-            GorgonStreamOutCall final = allocator == null ? new GorgonStreamOutCall() : allocator.Allocate();
+            GorgonStreamOutCall final = allocator is null ? new GorgonStreamOutCall() : allocator.Allocate();
             final.SetupConstantBuffers();
             final.SetupSamplers();
             final.SetupViews();
 
-            if (final.D3DState.VertexBuffers == null)
+            if (final.D3DState.VertexBuffers is null)
             {
                 final.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             }
@@ -318,7 +318,7 @@ namespace Gorgon.Graphics.Core
 
             final.PipelineState = _workerCall.PipelineState;
 
-            return final.PipelineState.VertexShader == null
+            return final.PipelineState.VertexShader is null
                 ? throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER)
                 : final;
         }
@@ -337,7 +337,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public GorgonStreamOutCallBuilder ResetTo(GorgonStreamOutCall drawCall = null)
         {
-            if (drawCall == null)
+            if (drawCall is null)
             {
                 return Clear();
             }

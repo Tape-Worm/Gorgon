@@ -58,7 +58,7 @@ namespace Gorgon.Graphics.Core
         {
             foreach (GorgonPipelineState state in _cachedPipelineStates)
             {
-                if (state == null)
+                if (state is null)
                 {
                     break;
                 }
@@ -122,12 +122,12 @@ namespace Gorgon.Graphics.Core
             pipelineState.D3DBlendState = blendState;
             pipelineState.D3DDepthStencilState = depthStencilState;
 
-            if ((rasterState == null) && (pipelineState.RasterState != null))
+            if ((rasterState is null) && (pipelineState.RasterState != null))
             {
                 pipelineState.D3DRasterState = pipelineState.RasterState.GetD3D11RasterState(_device);
             }
 
-            if ((depthStencilState == null) && (pipelineState.DepthStencilState != null))
+            if ((depthStencilState is null) && (pipelineState.DepthStencilState != null))
             {
                 pipelineState.D3DDepthStencilState = pipelineState.DepthStencilState.GetD3D11DepthStencilState(_device);
             }
@@ -185,7 +185,7 @@ namespace Gorgon.Graphics.Core
                     GorgonPipelineState cachedState = _cachedPipelineStates[index];
 
                     // We haven't taken this slot yet.
-                    if (cachedState == null)
+                    if (cachedState is null)
                     {
                         break;
                     }

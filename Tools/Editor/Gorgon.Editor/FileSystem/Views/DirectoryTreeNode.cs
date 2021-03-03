@@ -96,7 +96,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -110,7 +110,7 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The data context to assign events on.</param>
         private void AssignEvents(IDirectory dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -123,7 +123,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void ResetDataContext()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -143,7 +143,7 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The data context to initialize from.</param>
         private void InitializeFromDataContext(IDirectory dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;

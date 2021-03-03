@@ -63,7 +63,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         public static int Read(this Stream stream, Span<byte> buffer)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -94,7 +94,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         public static void Write(this Stream stream, ReadOnlySpan<byte> buffer)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -179,7 +179,7 @@ namespace Gorgon.IO
         /// </remarks>
         public static int CopyToStream(this Stream stream, Stream destination, int count, byte[] buffer)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -189,7 +189,7 @@ namespace Gorgon.IO
                 throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
             }
 
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
@@ -199,7 +199,7 @@ namespace Gorgon.IO
                 throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
             }
 
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
@@ -276,7 +276,7 @@ namespace Gorgon.IO
                 return 0;
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -286,7 +286,7 @@ namespace Gorgon.IO
                 throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
-            if (encoding == null)
+            if (encoding is null)
             {
                 encoding = Encoding.UTF8;
             }
@@ -387,12 +387,12 @@ namespace Gorgon.IO
         {
             int stringLength = 0;
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (encoding == null)
+            if (encoding is null)
             {
                 encoding = Encoding.UTF8;
             }
@@ -455,7 +455,7 @@ namespace Gorgon.IO
                     }
 
                     // We'll need a bigger string. So allocate a string builder and use that.
-                    if (result == null)
+                    if (result is null)
                     {
                         // Try to max out the string builder size by the length of our string, in characters.
                         result = new StringBuilder(encoding.GetMaxCharCount(stringLength));
@@ -732,7 +732,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
         public static ulong ChunkID(this string chunkName)
         {
-            if (chunkName == null)
+            if (chunkName is null)
             {
                 throw new ArgumentNullException(nameof(chunkName));
             }

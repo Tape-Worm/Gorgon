@@ -263,7 +263,7 @@ namespace Gorgon.Examples
             {
                 Light light = ActiveLights[i];
 
-                if (light == null)
+                if (light is null)
                 {
                     continue;
                 }
@@ -312,7 +312,7 @@ namespace Gorgon.Examples
                     GorgonPixelShader pixelShader = _resources.PixelShaders[layer.Mesh.Material.PixelShader];
 
                     // Create our vertex layout now.
-                    if (_vertexLayout == null)
+                    if (_vertexLayout is null)
                     {
                         _vertexLayout = _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
                     }
@@ -368,7 +368,7 @@ namespace Gorgon.Examples
             DX.Matrix.Transpose(ref _viewProjection, out _viewProjection);
             _viewProjectionBuffer?.Buffer.SetData(ref _viewProjection);
 
-            if (_cameraBuffer == null)
+            if (_cameraBuffer is null)
             {
                 return;
             }

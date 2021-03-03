@@ -90,7 +90,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
         private void AfterSwapChain_Resize(object sender, SwapChainResizedEventArgs e)
         {
-            if (_camera == null)
+            if (_camera is null)
             {
                 return;
             }

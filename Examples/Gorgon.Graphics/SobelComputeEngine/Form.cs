@@ -157,7 +157,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TrackThreshold_ValueChanged(object sender, EventArgs e)
         {
-            if (_sourceTexture == null)
+            if (_sourceTexture is null)
             {
                 return;
             }

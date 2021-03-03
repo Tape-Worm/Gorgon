@@ -238,7 +238,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or greater than 15.</exception>
         public GorgonInputElement(string context, BufferFormat format, int offset, int index = 0, int slot = 0, bool instanced = false, int instanceCount = 0)
         {
-            if (context == null)
+            if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }

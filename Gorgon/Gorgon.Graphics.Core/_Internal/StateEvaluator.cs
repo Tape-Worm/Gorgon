@@ -118,7 +118,7 @@ namespace Gorgon.Graphics.Core
 				{
 					GorgonBufferCommon soBuffer = bindings[s].Buffer;
 
-					if (((soBuffer == null) || (soBuffer.BindFlags != D3D11.BindFlags.VertexBuffer))
+					if (((soBuffer is null) || (soBuffer.BindFlags != D3D11.BindFlags.VertexBuffer))
 						|| (soBuffer != state.IndexBuffer))
 					{
 						continue;
@@ -133,7 +133,7 @@ namespace Gorgon.Graphics.Core
 				}
 			}
 
-			if ((state.IndexBuffer == null) || ((state.IndexBuffer.BindFlags & D3D11.BindFlags.StreamOutput) != D3D11.BindFlags.StreamOutput))
+			if ((state.IndexBuffer is null) || ((state.IndexBuffer.BindFlags & D3D11.BindFlags.StreamOutput) != D3D11.BindFlags.StreamOutput))
 			{
 				return;
 			}
@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Core
 				{
 					GorgonBufferCommon vBuffer = vertexBuffers[v].VertexBuffer;
 
-					if (((vBuffer == null) || ((vBuffer.BindFlags & D3D11.BindFlags.StreamOutput) != D3D11.BindFlags.StreamOutput))
+					if (((vBuffer is null) || ((vBuffer.BindFlags & D3D11.BindFlags.StreamOutput) != D3D11.BindFlags.StreamOutput))
 						|| (soBuffer != vBuffer))
 					{
 						continue;
@@ -196,7 +196,7 @@ namespace Gorgon.Graphics.Core
 			{
 				GorgonBufferCommon soBuffer = streamOut[s].Buffer;
 
-				if ((soBuffer == null) || ((soBuffer.BindFlags & D3D11.BindFlags.VertexBuffer) != D3D11.BindFlags.VertexBuffer))
+				if ((soBuffer is null) || ((soBuffer.BindFlags & D3D11.BindFlags.VertexBuffer) != D3D11.BindFlags.VertexBuffer))
 				{
 					continue;
 				}
@@ -215,7 +215,7 @@ namespace Gorgon.Graphics.Core
 			{
 				GorgonBufferCommon soBuffer = streamOut[s].Buffer;
 
-				if ((soBuffer == null) || ((soBuffer.BindFlags & D3D11.BindFlags.VertexBuffer) != D3D11.BindFlags.VertexBuffer))
+				if ((soBuffer is null) || ((soBuffer.BindFlags & D3D11.BindFlags.VertexBuffer) != D3D11.BindFlags.VertexBuffer))
 				{
 					continue;
 				}
@@ -243,7 +243,7 @@ namespace Gorgon.Graphics.Core
 				{
 					GorgonGraphicsResource srvResource = srvs[s]?.Resource;
 
-					if ((srvResource == null) || ((srvResource.BindFlags & D3D11.BindFlags.DepthStencil) != D3D11.BindFlags.DepthStencil)
+					if ((srvResource is null) || ((srvResource.BindFlags & D3D11.BindFlags.DepthStencil) != D3D11.BindFlags.DepthStencil)
 						|| (srvResource != _graphics.DepthStencilView.Resource))
 					{
 						continue;
@@ -262,7 +262,7 @@ namespace Gorgon.Graphics.Core
 			{
 				GorgonGraphicsResource rtvResource = _graphics.RenderTargets[r]?.Resource;
 
-				if ((rtvResource == null) || ((rtvResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
+				if ((rtvResource is null) || ((rtvResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
 				{
 					continue;
 				}
@@ -271,7 +271,7 @@ namespace Gorgon.Graphics.Core
 				{
 					GorgonGraphicsResource srvResource = srvs[s]?.Resource;
 
-					if ((srvResource == null) 
+					if ((srvResource is null) 
 						|| ((srvResource.BindFlags & D3D11.BindFlags.RenderTarget) != D3D11.BindFlags.RenderTarget)
 						|| (srvResource != rtvResource))
 					{
@@ -306,7 +306,7 @@ namespace Gorgon.Graphics.Core
 			{
 				GorgonGraphicsResource uavResource = uavs[u].ReadWriteView?.Resource;
 
-				if ((uavResource == null) || ((uavResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
+				if ((uavResource is null) || ((uavResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
 				{
 					continue;
 				}
@@ -315,7 +315,7 @@ namespace Gorgon.Graphics.Core
 				{
 					GorgonGraphicsResource srvResource = srvs[s]?.Resource;
 
-					if ((srvResource == null)
+					if ((srvResource is null)
 						|| ((srvResource.BindFlags & D3D11.BindFlags.UnorderedAccess) != D3D11.BindFlags.UnorderedAccess)
 						|| (srvResource != uavResource))
 					{
@@ -373,7 +373,7 @@ namespace Gorgon.Graphics.Core
 
 			GorgonGraphicsResource depthResource = depth?.Resource;
 
-			if ((depthResource == null) || ((depthResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
+			if ((depthResource is null) || ((depthResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
 			{
 				return;
 			}
@@ -382,7 +382,7 @@ namespace Gorgon.Graphics.Core
 			{
 				GorgonGraphicsResource srv = srvs[s]?.Resource;
 
-				if ((srv == null) || ((srv.BindFlags & D3D11.BindFlags.DepthStencil) == D3D11.BindFlags.DepthStencil) || (srv != depthResource))
+				if ((srv is null) || ((srv.BindFlags & D3D11.BindFlags.DepthStencil) == D3D11.BindFlags.DepthStencil) || (srv != depthResource))
 				{
 					continue;
 				}
@@ -414,7 +414,7 @@ namespace Gorgon.Graphics.Core
 
 			GorgonGraphicsResource rtvResource = rtv?.Resource;			
 
-			if ((rtvResource == null) || ((rtvResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
+			if ((rtvResource is null) || ((rtvResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
 			{
 				return;
 			}
@@ -423,7 +423,7 @@ namespace Gorgon.Graphics.Core
 			{
 				GorgonGraphicsResource srv = srvs[s]?.Resource;
 
-				if ((srv == null) || ((srv.BindFlags & D3D11.BindFlags.RenderTarget) != D3D11.BindFlags.RenderTarget) || (srv != rtvResource))
+				if ((srv is null) || ((srv.BindFlags & D3D11.BindFlags.RenderTarget) != D3D11.BindFlags.RenderTarget) || (srv != rtvResource))
 				{
 					continue;
 				}
@@ -486,7 +486,7 @@ namespace Gorgon.Graphics.Core
 				CheckDsvSrvsHazards(_prevResourceState.CsSrvs, depth, _graphics.D3DDeviceContext.ComputeShader);
 			}
 
-			if ((rtViews == null) || (rtViews.Length == 0))
+			if (rtViews.Length == 0)
 			{
 				return;
 			}
@@ -581,7 +581,7 @@ namespace Gorgon.Graphics.Core
 
 			CheckArray(_prevResourceState.ReadWriteViews, newState.ReadWriteViews, ResourceStateChanges.Uavs, ref result, ref _ranges.Uavs);
 
-			if ((newState.ComputeShader == null) && ((result & ResourceStateChanges.ComputeShader) != ResourceStateChanges.ComputeShader))
+			if ((newState.ComputeShader is null) && ((result & ResourceStateChanges.ComputeShader) != ResourceStateChanges.ComputeShader))
 			{
 				return _ranges;
 			}

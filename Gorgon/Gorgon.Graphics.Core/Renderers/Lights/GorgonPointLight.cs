@@ -148,7 +148,7 @@ namespace Gorgon.Renderers.Lights
         public GorgonPointLight(GorgonPointLight copy, string newName = null)
             : base(copy, newName)
         {
-            if (copy == null)
+            if (copy is null)
             {
                 throw new ArgumentNullException(nameof(copy));
             }

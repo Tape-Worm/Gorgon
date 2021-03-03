@@ -225,7 +225,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
             }
@@ -254,7 +254,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
             }
@@ -283,7 +283,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
             }
@@ -311,7 +311,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
             }
@@ -383,12 +383,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonTexture3D"/>
         public static GorgonTexture3DView CreateTexture(GorgonGraphics graphics, IGorgonTexture3DInfo info, IGorgonImage initialData = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
@@ -422,7 +422,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            GorgonTexture3D texture = initialData == null
+            GorgonTexture3D texture = initialData is null
                                           ? new GorgonTexture3D(graphics, newInfo)
                                           : initialData.ToTexture3D(graphics,
                                                                     new GorgonTextureLoadOptions
@@ -488,17 +488,17 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture3DView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -508,7 +508,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -571,12 +571,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture3DView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -586,7 +586,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }

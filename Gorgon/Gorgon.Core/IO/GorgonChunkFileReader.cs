@@ -271,7 +271,7 @@ namespace Gorgon.IO
         /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only.</exception>
         public static bool IsReadable(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -425,7 +425,7 @@ namespace Gorgon.IO
                 throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
             }
 
-            if (appSpecificIds == null)
+            if (appSpecificIds is null)
             {
                 throw new ArgumentNullException(nameof(appSpecificIds));
             }

@@ -224,7 +224,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the array index can be updated, <b>false</b> if not.</returns>
         private bool CanUpdateArrayIndex(int amount)
         {
-            if ((_spriteContent.Texture == null) || ((_spriteContent.CurrentPanel != null) && (_spriteContent.CurrentPanel != SpritePickMaskEditor)))
+            if ((_spriteContent.Texture is null) || ((_spriteContent.CurrentPanel != null) && (_spriteContent.CurrentPanel != SpritePickMaskEditor)))
             {
                 return false;
             }
@@ -261,7 +261,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the operation can be cancelled.
         /// </summary>
         /// <returns><b>true</b> if the operation can be cancelled, <b>false</b> if not.</returns>
-        private bool CanCancel() => (_spriteContent.CurrentPanel == null) || (_spriteContent.CurrentPanel == SpritePickMaskEditor);
+        private bool CanCancel() => (_spriteContent.CurrentPanel is null) || (_spriteContent.CurrentPanel == SpritePickMaskEditor);
 
         /// <summary>
         /// Function to cancel the clipping operation.
@@ -291,7 +291,7 @@ namespace Gorgon.Editor.SpriteEditor
                 IGorgonImage image = Interlocked.Exchange(ref _imageData, null);
                 image?.Dispose();
 
-                if (_spriteContent.Texture == null)
+                if (_spriteContent.Texture is null)
                 {
                     return;
                 }
@@ -311,7 +311,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the sprite picker mask color editor panel can be shown.
         /// </summary>
         /// <returns><b>true</b> if the color editor panel can be shown, <b>false</b> if not.</returns>
-        private bool CanShowPickMaskEditor() => (_spriteContent.Texture != null) && ((_spriteContent.CurrentPanel == null) || (_spriteContent.CurrentPanel == SpritePickMaskEditor));
+        private bool CanShowPickMaskEditor() => (_spriteContent.Texture != null) && ((_spriteContent.CurrentPanel is null) || (_spriteContent.CurrentPanel == SpritePickMaskEditor));
 
         /// <summary>
         /// Function to show or hide the sprite picker mask color editor.

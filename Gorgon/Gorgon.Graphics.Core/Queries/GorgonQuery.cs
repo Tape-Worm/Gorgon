@@ -202,7 +202,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            if (_d3dQuery == null)
+            if (_d3dQuery is null)
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_QUERY_NOT_INITIALIZED, Name));
             }

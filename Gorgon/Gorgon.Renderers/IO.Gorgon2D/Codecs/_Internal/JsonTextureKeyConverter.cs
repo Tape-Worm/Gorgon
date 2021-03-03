@@ -49,7 +49,7 @@ namespace Gorgon.IO
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, GorgonKeyTexture2D value, JsonSerializer serializer)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;
@@ -107,7 +107,7 @@ namespace Gorgon.IO
                         reader.Read();
                         texture = _textureConverter.ReadTexture(reader, out textureName);
 
-                        if ((texture == null) && (string.IsNullOrWhiteSpace(textureName)))
+                        if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                         {
                             return null;
                         }

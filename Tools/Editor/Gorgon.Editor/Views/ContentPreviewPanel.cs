@@ -119,7 +119,7 @@ namespace Gorgon.Editor.Views
             _previewTexture?.Dispose();
             _previewTexture = null;
 
-            if ((image == null) || (GraphicsContext == null) || (_swapChain == null))
+            if ((image is null) || (GraphicsContext is null) || (_swapChain is null))
             {
                 RenderImage();
                 return;
@@ -201,7 +201,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -225,7 +225,7 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeFromDataContext(IContentPreview dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void RenderImage()
         {
-            if ((IsDesignTime) || (_swapChain == null))
+            if ((IsDesignTime) || (_swapChain is null))
             {
                 return;
             }
@@ -325,7 +325,7 @@ namespace Gorgon.Editor.Views
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

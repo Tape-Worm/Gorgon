@@ -193,7 +193,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return whether or not the resource is disposed.
         /// </summary>
-        public bool IsDisposed => _resource == null;
+        public bool IsDisposed => _resource is null;
 
         /// <summary>
         /// Property to return the usage for the resource.
@@ -224,7 +224,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public EvictionPriority EvictionPriority
         {
-            get => D3DResource == null ? EvictionPriority.Minimum : (EvictionPriority)D3DResource.EvictionPriority;
+            get => D3DResource is null ? EvictionPriority.Minimum : (EvictionPriority)D3DResource.EvictionPriority;
             set
             {
                 if (D3DResource != null)
@@ -293,12 +293,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void SetApplicationData(Guid guid, object data)
         {
-            if (D3DResource == null)
+            if (D3DResource is null)
             {
                 return;
             }
 
-            if (data == null)
+            if (data is null)
             {
                 _appData.Remove(guid);
                 return;

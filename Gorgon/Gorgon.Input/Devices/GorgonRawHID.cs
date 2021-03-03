@@ -119,7 +119,7 @@ namespace Gorgon.Input
             {
                 lock (_syncLock)
                 {
-                    if (_preParsedData == null)
+                    if (_preParsedData is null)
                     {
                         _preParsedData = RawInputApi.GetPreparsedDeviceInfoData(Handle);
                     }

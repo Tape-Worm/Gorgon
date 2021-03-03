@@ -100,7 +100,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             bool saveAllFrames = EncodingOptions?.SaveAllFrames ?? true;
 
-            if ((settings == null)
+            if ((settings is null)
                 || (settings.ArrayCount < 2)
                 || (!saveAllFrames))
             {
@@ -142,7 +142,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IReadOnlyList<int> GetFrameDelays(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -178,7 +178,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IReadOnlyList<int> GetFrameDelays(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

@@ -69,7 +69,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// </summary>
         private void ValidateControls()
         {
-            if (DataContext?.Texture == null)
+            if (DataContext?.Texture is null)
             {
                 foreach (Control ctl in Controls)
                 {
@@ -93,7 +93,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void SkipColor_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SetEmptySpriteMaskColorCommand == null) || (!DataContext.SetEmptySpriteMaskColorCommand.CanExecute(null)))
+            if ((DataContext?.SetEmptySpriteMaskColorCommand is null) || (!DataContext.SetEmptySpriteMaskColorCommand.CanExecute(null)))
             {
                 return;
             }
@@ -106,7 +106,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericCellWidth_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -119,7 +119,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericCellHeight_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -132,7 +132,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericOffsetX_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -145,7 +145,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericOffsetY_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -158,7 +158,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericColumnCount_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -171,7 +171,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericRowCount_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -184,7 +184,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericArrayIndex_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -197,7 +197,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericArrayCount_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -210,7 +210,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonGenerate_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.GenerateSpritesCommand == null) || (!DataContext.GenerateSpritesCommand.CanExecute(null)))
+            if ((DataContext?.GenerateSpritesCommand is null) || (!DataContext.GenerateSpritesCommand.CanExecute(null)))
             {
                 return;
             }
@@ -238,7 +238,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         {
             var args = new SaveSpritesArgs();
 
-            if ((DataContext?.SaveSpritesCommand == null) || (!DataContext.SaveSpritesCommand.CanExecute(args)))
+            if ((DataContext?.SaveSpritesCommand is null) || (!DataContext.SaveSpritesCommand.CanExecute(args)))
             {
                 return;
             }
@@ -259,7 +259,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextSprite_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.NextPreviewSpriteCommand == null) || (!DataContext.NextPreviewSpriteCommand.CanExecute(null)))
+            if ((DataContext?.NextPreviewSpriteCommand is null) || (!DataContext.NextPreviewSpriteCommand.CanExecute(null)))
             {
                 return;
             }
@@ -273,7 +273,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevSprite_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.PrevPreviewSpriteCommand == null) || (!DataContext.PrevPreviewSpriteCommand.CanExecute(null)))
+            if ((DataContext?.PrevPreviewSpriteCommand is null) || (!DataContext.PrevPreviewSpriteCommand.CanExecute(null)))
             {
                 return;
             }
@@ -287,7 +287,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckPreviewSprites_CheckedChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -301,7 +301,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void CheckSkipEmpty_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -341,7 +341,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
         private void PanelRender_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -390,7 +390,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private void PanelRender_MouseWheel(object sender, MouseEventArgs e)
         {
-            if ((DataContext == null) || (DataContext.IsGenerating))
+            if ((DataContext is null) || (DataContext.IsGenerating))
             {
                 return;
             }
@@ -424,7 +424,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="dataContext">The current data context.</param>
         private void UpdateSpritePreviewLabel(IExtract dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 LabelSprite.Text = string.Format(Resources.GOREST_TEXT_SPRITE_PREVIEW, 0, 0);
                 return;
@@ -486,7 +486,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(IExtract dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 UpdateSpritePreviewLabel(null);
                 return;
@@ -521,7 +521,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         {
             base.OnResize(e);
 
-            if (Settings == null)
+            if (Settings is null)
             {
                 return;
             }

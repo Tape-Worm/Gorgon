@@ -110,7 +110,7 @@ namespace Gorgon.IO
         public override int GetHashCode()
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if ((Provider == null) || (PhysicalPath == null) || (MountLocation == null))
+            if ((Provider is null) || (PhysicalPath is null) || (MountLocation is null))
             {
                 return 0;
             }
@@ -148,12 +148,12 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
         internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation, bool isFakeMountPoint = false)
         {
-            if (physicalPath == null)
+            if (physicalPath is null)
             {
                 throw new ArgumentNullException(nameof(physicalPath));
             }
 
-            if (mountLocation == null)
+            if (mountLocation is null)
             {
                 throw new ArgumentNullException(nameof(mountLocation));
             }

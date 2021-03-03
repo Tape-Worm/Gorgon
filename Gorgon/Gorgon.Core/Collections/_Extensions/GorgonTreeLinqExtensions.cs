@@ -44,7 +44,7 @@ namespace Gorgon.Collections
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
         public static IEnumerable<T> TraverseDepthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
         {
-            if (children == null)
+            if (children is null)
             {
                 throw new ArgumentNullException(nameof(children));
             }
@@ -63,7 +63,7 @@ namespace Gorgon.Collections
 
                 IEnumerable<T> subChildren = getChildren?.Invoke(node);
 
-                if (subChildren == null)
+                if (subChildren is null)
                 {
                     continue;
                 }
@@ -85,7 +85,7 @@ namespace Gorgon.Collections
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
         public static IEnumerable<T> Traverse<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
         {
-            if (children == null)
+            if (children is null)
             {
                 throw new ArgumentNullException(nameof(children));
             }
@@ -104,7 +104,7 @@ namespace Gorgon.Collections
 
                 IEnumerable<T> subChildren = getChildren?.Invoke(node);
 
-                if (subChildren == null)
+                if (subChildren is null)
                 {
                     continue;
                 }

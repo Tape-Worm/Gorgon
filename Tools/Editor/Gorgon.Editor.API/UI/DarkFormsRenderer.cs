@@ -194,7 +194,7 @@ namespace Gorgon.Editor.UI
                         
 			TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, textColor, e.TextFormat);
 
-            if ((item == null) || (!item.CheckOnClick) || (item.Checked))
+            if ((item is null) || (!item.CheckOnClick) || (item.Checked))
             {
                 return;
             }

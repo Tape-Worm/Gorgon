@@ -74,7 +74,7 @@ namespace Gorgon.Editor.PlugIns
         /// <exception cref="ArgumentEmptyException">Thrownw hen the <paramref name="pluginAssemblyPath"/> is empty.</exception>
         public PlugInAssemblyState(string pluginAssemblyPath, string loadFailure, bool isManaged)
         {
-            if (pluginAssemblyPath == null)
+            if (pluginAssemblyPath is null)
             {
                 throw new ArgumentNullException(nameof(pluginAssemblyPath));
             }

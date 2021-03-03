@@ -131,7 +131,7 @@ namespace Gorgon.Graphics.Core
         public GorgonConstantBuffers(IReadOnlyList<GorgonConstantBufferView> bufferViews = null)
             : base(MaximumConstantBufferCount)
         {
-            if (bufferViews == null)
+            if (bufferViews is null)
             {
                 return;
             }

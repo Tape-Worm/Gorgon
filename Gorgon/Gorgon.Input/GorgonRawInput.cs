@@ -250,12 +250,12 @@ namespace Gorgon.Input
         /// </remarks>
         public void RegisterDevice(IGorgonMouse device, GorgonRawInputSettings? settings = null)
         {
-            if (device == null)
+            if (device is null)
             {
                 throw new ArgumentNullException(nameof(device));
             }
 
-            if (settings == null)
+            if (settings is null)
             {
                 settings = default(GorgonRawInputSettings);
             }
@@ -303,12 +303,12 @@ namespace Gorgon.Input
         /// </remarks>
         public void RegisterDevice(IGorgonKeyboard device, GorgonRawInputSettings? settings = null)
         {
-            if (device == null)
+            if (device is null)
             {
                 throw new ArgumentNullException(nameof(device));
             }
 
-            if (settings == null)
+            if (settings is null)
             {
                 settings = default(GorgonRawInputSettings);
             }
@@ -356,12 +356,12 @@ namespace Gorgon.Input
         /// </remarks>
         public void RegisterDevice(IGorgonRawHID device, GorgonRawInputSettings? settings = null)
         {
-            if (device == null)
+            if (device is null)
             {
                 throw new ArgumentNullException(nameof(device));
             }
 
-            if (settings == null)
+            if (settings is null)
             {
                 settings = default(GorgonRawInputSettings);
             }
@@ -400,7 +400,7 @@ namespace Gorgon.Input
         /// </remarks>
         public void UnregisterDevice(IGorgonMouse device)
         {
-            if (device == null)
+            if (device is null)
             {
                 throw new ArgumentNullException(nameof(device));
             }
@@ -432,7 +432,7 @@ namespace Gorgon.Input
         /// </remarks>
         public void UnregisterDevice(IGorgonKeyboard device)
         {
-            if (device == null)
+            if (device is null)
             {
                 throw new ArgumentNullException(nameof(device));
             }
@@ -464,7 +464,7 @@ namespace Gorgon.Input
         /// </remarks>
         public void UnregisterDevice(IGorgonRawHID device)
         {
-            if (device == null)
+            if (device is null)
             {
                 throw new ArgumentNullException(nameof(device));
             }
@@ -496,7 +496,7 @@ namespace Gorgon.Input
             {
                 RawMouseInfo info = GetDeviceInfo<RawMouseInfo>(ref devices[i]);
 
-                if (info == null)
+                if (info is null)
                 {
                     _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
                     continue;
@@ -523,7 +523,7 @@ namespace Gorgon.Input
             {
                 RawKeyboardInfo info = GetDeviceInfo<RawKeyboardInfo>(ref devices[i]);
 
-                if (info == null)
+                if (info is null)
                 {
                     _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
                     continue;
@@ -550,7 +550,7 @@ namespace Gorgon.Input
             {
                 GorgonRawHIDInfo info = GetDeviceInfo<GorgonRawHIDInfo>(ref devices[i]);
 
-                if (info == null)
+                if (info is null)
                 {
                     _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
                     continue;

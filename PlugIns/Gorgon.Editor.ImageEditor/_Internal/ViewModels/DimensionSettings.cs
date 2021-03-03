@@ -368,7 +368,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (image == null)
+                if (image is null)
                 {
                     MaxDepthOrArrayIndices = MaxMipLevels = MaxHeight = MaxWidth = int.MaxValue;
                     ArrayIndexStep = DepthSlicesOrArrayIndices = MipLevels = Height = Width = 1;

@@ -53,7 +53,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     ToggleManualInputEvent = null;
                     return;
@@ -63,7 +63,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }

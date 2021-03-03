@@ -58,7 +58,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		{
 			_texture?.Dispose();
 
-			if (DataContext?.CurrentImage.image == null)
+			if (DataContext?.CurrentImage.image is null)
 			{
 				return;
 			}
@@ -147,7 +147,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		{            
 			OnRenderBackground();
 
-			if ((DataContext.Atlas == null) || (DataContext.Atlas.Textures.Count == 0))
+			if ((DataContext.Atlas is null) || (DataContext.Atlas.Textures.Count == 0))
 			{
 				if (_texture != null)
 				{

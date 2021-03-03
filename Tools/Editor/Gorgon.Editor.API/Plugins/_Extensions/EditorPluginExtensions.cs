@@ -71,7 +71,7 @@ namespace Gorgon.Editor.PlugIns
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyFiles" /> parameter is <b>null</b></exception>
         public static IReadOnlyList<PlugInAssemblyState> ValidateAndLoadAssemblies(this GorgonMefPlugInCache pluginCache, IEnumerable<string> pluginAssemblyFiles, IGorgonLog log)
         {
-            if (pluginAssemblyFiles == null)
+            if (pluginAssemblyFiles is null)
             {
                 throw new ArgumentNullException(nameof(pluginAssemblyFiles));
             }

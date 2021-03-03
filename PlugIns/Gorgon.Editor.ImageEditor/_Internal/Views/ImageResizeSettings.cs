@@ -58,7 +58,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             ValidateOk();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 RadioCrop.Enabled = RadioResize.Enabled = LabelImageFilter.Enabled =
                     ComboImageFilter.Enabled = CheckPreserveAspect.Enabled = LabelAnchor.Enabled =
@@ -79,7 +79,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckPreserveAspect_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -92,7 +92,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ComboImageFilter_SelectedValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -105,7 +105,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void RadioCrop_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -127,7 +127,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void RadioResize_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -159,7 +159,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void AlignmentPicker_AlignmentChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -172,7 +172,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -201,7 +201,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateLabels(ICropResizeSettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 LabelDesc.Text = string.Format(Resources.GORIMG_RESIZE_CROP_DESC, string.Empty);
                 LabelImportImageName.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_CROP_IMPORT_NAME, string.Empty);
@@ -228,7 +228,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeFromDataContext(ICropResizeSettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -256,7 +256,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnCancel();
 
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 return;
             }
@@ -269,7 +269,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnSubmit();
 
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
             {
                 return;
             }
@@ -319,7 +319,7 @@ namespace Gorgon.Editor.ImageEditor
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

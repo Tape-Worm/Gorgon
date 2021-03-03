@@ -381,7 +381,7 @@ namespace Gorgon.Renderers
             set
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (value == null)
+                if (value is null)
                 {
                     if (Renderable.AlphaTestData.IsEnabled == 0)
                     {
@@ -606,17 +606,17 @@ namespace Gorgon.Renderers
             float maxX = float.MinValue;
             float maxY = float.MinValue;
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (vertices == null)
+            if (vertices is null)
             {
                 throw new ArgumentNullException(nameof(vertices));
             }
 
-            if (indices == null)
+            if (indices is null)
             {
                 throw new ArgumentNullException(nameof(indices));
             }

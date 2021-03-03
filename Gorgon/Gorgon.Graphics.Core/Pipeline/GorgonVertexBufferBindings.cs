@@ -144,7 +144,7 @@ namespace Gorgon.Graphics.Core
         {
             InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
 
-            if (bindings == null)
+            if (bindings is null)
             {
                 return;
             }

@@ -459,8 +459,8 @@ namespace Gorgon.Graphics.Fonts
                     outlinePlacement = GlyphPacker.Add(new Size(outlineRect.Width + packingSpace, outlineRect.Height + packingSpace));
                 }
 
-                if ((placement == null)
-                    || ((hasOutline) && (outlinePlacement == null) && (!outlineRect.IsEmpty)))
+                if ((placement is null)
+                    || ((hasOutline) && (outlinePlacement is null) && (!outlineRect.IsEmpty)))
                 {
                     ++index;
                     continue;
@@ -610,7 +610,7 @@ namespace Gorgon.Graphics.Fonts
 
                     RectangleF? hasCharacterRange = GetCharacterRange(ref updatedChar, tempBitmapGraphics);
 
-                    if (hasCharacterRange == null)
+                    if (hasCharacterRange is null)
                     {
                         continue;
                     }

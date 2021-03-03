@@ -165,7 +165,7 @@ namespace Gorgon.Examples
                         layers[j].Render();
                     }
 
-                    if (compositor == null)
+                    if (compositor is null)
                     {
                         FlipToScreen(sceneSrv);
                     }
@@ -187,7 +187,7 @@ namespace Gorgon.Examples
         {
             _screen = screen;
 
-            if (_screen == null)
+            if (_screen is null)
             {
                 return;
             }

@@ -807,7 +807,7 @@ namespace Gorgon.Graphics.Core
         {
             int typeSize = sizeof(T);
 
-            if (size == null)
+            if (size is null)
             {
                 size = SizeInBytes - sourceOffset;
             }
@@ -931,7 +931,7 @@ namespace Gorgon.Graphics.Core
         {
             int typeSize = sizeof(T);
 
-            if (size == null)
+            if (size is null)
             {
                 size = SizeInBytes - sourceOffset;
             }

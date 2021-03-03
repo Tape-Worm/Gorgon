@@ -107,11 +107,11 @@ namespace Gorgon.IO
 
             GorgonTexture2D texture = null;
             // Locate the texture resource.
-            if (overrideTexture == null)
+            if (overrideTexture is null)
             {
                 texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
-                if (texture == null)
+                if (texture is null)
                 {
                     return null;
                 }
@@ -278,7 +278,7 @@ namespace Gorgon.IO
                     binWriter.Close();
                 }
 
-                if (sprite.TextureSampler == null)
+                if (sprite.TextureSampler is null)
                 {
                     return;
                 }

@@ -428,7 +428,7 @@ namespace Gorgon.Input
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="deviceInfo"/> parameter is <b>null</b>.</exception>
         protected GorgonGamingDevice(IGorgonGamingDeviceInfo deviceInfo)
         {
-            if (deviceInfo == null)
+            if (deviceInfo is null)
             {
                 throw new ArgumentNullException(nameof(deviceInfo));
             }

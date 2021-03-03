@@ -342,7 +342,7 @@ namespace Gorgon.Examples
         /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         public override bool IsReadable(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -410,7 +410,7 @@ namespace Gorgon.Examples
         /// </remarks>
         public override IGorgonImageInfo GetMetaData(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

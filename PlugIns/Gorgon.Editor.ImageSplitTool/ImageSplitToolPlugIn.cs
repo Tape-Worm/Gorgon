@@ -204,7 +204,7 @@ namespace Gorgon.Editor.ImageSplitTool
             {
                 settings = HostToolServices.ToolPlugInService.ReadContentSettings<ImageSplitToolSettings>(typeof(ImageSplitToolPlugIn).FullName);
 
-                if (settings == null)
+                if (settings is null)
                 {                    
                     settings = new ImageSplitToolSettings();
                 }
@@ -271,12 +271,12 @@ namespace Gorgon.Editor.ImageSplitTool
         /// </remarks>
         protected override IToolPlugInRibbonButton OnGetToolButton()
         {
-            if (_button.ClickCallback == null)
+            if (_button.ClickCallback is null)
             {
                 _button.ClickCallback = ShowForm;
             }
             
-            if (_button.CanExecute == null)
+            if (_button.CanExecute is null)
             {
                 _button.CanExecute = CanShowForm;
             }

@@ -87,7 +87,7 @@ namespace Gorgon.Graphics.Core
         public GorgonShaderResourceViews(IReadOnlyList<GorgonShaderResourceView> bufferViews = null)
             : base(MaximumShaderResourceViewCount)
         {
-            if (bufferViews == null)
+            if (bufferViews is null)
             {
                 return;
             }

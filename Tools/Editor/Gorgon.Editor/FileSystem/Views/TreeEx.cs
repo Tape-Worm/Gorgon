@@ -218,14 +218,14 @@ namespace Gorgon.Editor.Views
         /// <param name="node">The node being renamed.</param>
         private void ShowRenameBox(TreeNode node)
         {
-            if (node == null)
+            if (node is null)
             {
                 return;
             }
 
             _renameNode = node;
 
-            if (_renameBox == null)
+            if (_renameBox is null)
             {
                 _renameBox = new TextBox
                 {
@@ -259,14 +259,14 @@ namespace Gorgon.Editor.Views
         /// <param name="cancel"><b>true</b> to cancel the renaming operation, <b>false</b> to continue it.</param>
         private void HideRenameBox(bool cancel)
         {
-            if ((_renameBox == null) || (!_renameBox.Visible))
+            if ((_renameBox is null) || (!_renameBox.Visible))
             {
                 return;
             }
 
             TreeNode node = Interlocked.Exchange(ref _renameNode, null);
 
-            if (node == null)
+            if (node is null)
             {
                 return;
             }
@@ -392,7 +392,7 @@ namespace Gorgon.Editor.Views
             TreeViewCancelEventArgs args = null;
             TreeViewHitTestInfo hit = HitTest(e.Location);
 
-            if ((SelectedNode != null) && (hit.Node == null))
+            if ((SelectedNode != null) && (hit.Node is null))
             {
                 args = new TreeViewCancelEventArgs(null, false, TreeViewAction.ByMouse);
                 OnBeforeSelect(args);
@@ -442,7 +442,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if (e.Node == null)
+            if (e.Node is null)
             {
                 e.DrawDefault = true;
                 return;
@@ -578,7 +578,7 @@ namespace Gorgon.Editor.Views
         {
             TreeNode node = SelectedNode;
 
-            if ((node == null) || (IsEditing))
+            if ((node is null) || (IsEditing))
             {
                 return;
             }

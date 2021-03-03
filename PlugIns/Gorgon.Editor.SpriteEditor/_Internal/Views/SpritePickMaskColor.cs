@@ -63,7 +63,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void RadioAlpha_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 TableAlphaOnly.Visible = RadioAlpha.Checked;
                 Picker.Visible = !RadioAlpha.Checked;
@@ -121,7 +121,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
         private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
         {
-            if ((DataContext == null) || (DataContext.ClipMaskValue.Equals(e.Color)))
+            if ((DataContext is null) || (DataContext.ClipMaskValue.Equals(e.Color)))
             {
                 return;
             }
@@ -135,7 +135,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -196,7 +196,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The data context to assign.</param>
         private void InitializeFromDataContext(ISpritePickMaskEditor dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -217,7 +217,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnSubmit();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -230,7 +230,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnCancel();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -283,7 +283,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

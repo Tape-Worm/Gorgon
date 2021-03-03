@@ -188,7 +188,7 @@ namespace Gorgon.Renderers.Lights
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <strong>null</strong>.</exception>
         protected GorgonLightCommon(GorgonLightCommon copy, string newName = null)
         {
-            if (copy == null)
+            if (copy is null)
             {
                 throw new ArgumentNullException(nameof(copy));
             }

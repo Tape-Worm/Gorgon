@@ -305,7 +305,7 @@ namespace Gorgon.Graphics.Imaging
         /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
         /// </para>
         /// </remarks>
-        public static int CalculateSizeInBytes(IGorgonImageInfo info, PitchFlags pitchFlags = PitchFlags.None) => info == null
+        public static int CalculateSizeInBytes(IGorgonImageInfo info, PitchFlags pitchFlags = PitchFlags.None) => info is null
                 ? 0
                 : CalculateSizeInBytes(info.ImageType,
                                   info.Width,
@@ -320,7 +320,7 @@ namespace Gorgon.Graphics.Imaging
         /// </summary>
         /// <param name="info">The <see cref="IGorgonImageInfo"/> used to describe the image.</param>
         /// <returns>The number of possible mip-map levels in the image.</returns>
-        public static int CalculateMaxMipCount(IGorgonImageInfo info) => info == null ? 0 : CalculateMaxMipCount(info.Width, info.Height, info.Depth);
+        public static int CalculateMaxMipCount(IGorgonImageInfo info) => info is null ? 0 : CalculateMaxMipCount(info.Width, info.Height, info.Depth);
 
         /// <summary>
         /// Function to return the maximum number of mip levels supported in for an image.
@@ -443,7 +443,7 @@ namespace Gorgon.Graphics.Imaging
         /// <returns>A list of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
         public IReadOnlyList<BufferFormat> CanConvertToFormats(IReadOnlyList<BufferFormat> destFormats)
         {
-            if ((destFormats == null)
+            if ((destFormats is null)
                 || (destFormats.Count == 0))
             {
                 return Array.Empty<BufferFormat>();
@@ -479,7 +479,7 @@ namespace Gorgon.Graphics.Imaging
         /// <seealso cref="IGorgonImageBuffer"/>
         public void Copy(IGorgonImage image)
         {
-            if (image == null)
+            if (image is null)
             {
                 throw new ArgumentNullException(nameof(image));
             }
@@ -696,7 +696,7 @@ namespace Gorgon.Graphics.Imaging
         /// </remarks>
         public GorgonImage(IGorgonImage source)
         {
-            if (source == null)
+            if (source is null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
@@ -731,7 +731,7 @@ namespace Gorgon.Graphics.Imaging
         /// </remarks>
         public GorgonImage(IGorgonImageInfo info, ReadOnlySpan<byte> data = default)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }

@@ -482,7 +482,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="image">The image used to initialize the texture.</param>
         private void Initialize(IGorgonImage image)
         {
-            if ((Usage == ResourceUsage.Immutable) && (image == null))
+            if ((Usage == ResourceUsage.Immutable) && (image is null))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE_REQUIRES_DATA, Name));
             }
@@ -644,7 +644,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">The <see cref="IGorgonTexture2DInfo"/> used to define a texture.</param>
         /// <returns>The number of bytes for the texture.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public static int CalculateSizeInBytes(IGorgonTexture2DInfo info) => info == null
+        public static int CalculateSizeInBytes(IGorgonTexture2DInfo info) => info is null
                 ? throw new ArgumentNullException(nameof(info))
                 : CalculateSizeInBytes(info.Width,
                                         info.Height,
@@ -681,7 +681,7 @@ namespace Gorgon.Graphics.Core
             
             DXGI.Resource resource = D3DResource.QueryInterface<DXGI.Resource>();
 
-            if (resource == null)
+            if (resource is null)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHARED_RES_NOT_AVAILABLE, Name));
             }
@@ -751,7 +751,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRange == null)
+            if (sourceRange is null)
             {
                 rect = new DX.Rectangle(0, sourceY, Width.Min(destinationTexture.Width).Max(1), 1);
             }
@@ -889,7 +889,7 @@ namespace Gorgon.Graphics.Core
             }
 
             // If we ask to copy the entire thing, and our texture has identical sizes and format, then just use the copy method.
-            if ((sourceRectangle == null) && (sourceArrayIndex == 0) && (sourceMipLevel == 0)
+            if ((sourceRectangle is null) && (sourceArrayIndex == 0) && (sourceMipLevel == 0)
                 && (destX == 0) && (destY == 0) && (destArrayIndex == 0) && (destMipLevel == 0)
                 && (destinationTexture.Width == Width) && (destinationTexture.Height == Height) && (destinationTexture.MipLevels == MipLevels)
                 && (destinationTexture.ArrayCount == ArrayCount) && (MultisampleInfo == destinationTexture.MultisampleInfo) &&
@@ -902,7 +902,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRectangle == null)
+            if (sourceRectangle is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
             }
@@ -1059,7 +1059,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRectangle == null)
+            if (sourceRectangle is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
             }
@@ -1534,7 +1534,7 @@ namespace Gorgon.Graphics.Core
                     Width = (Width >> mipLevel).Max(1),
                     Height = (Height >> mipLevel).Max(1),
                     Depth = 1,
-                    ArrayCount = arrayIndex == null ? 1 : ArrayCount - index,
+                    ArrayCount = arrayIndex is null ? 1 : ArrayCount - index,
                     MipCount = 1
                 });
 
@@ -2139,17 +2139,17 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture2D FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTexture2DLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -2159,7 +2159,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -2169,7 +2169,7 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -2231,12 +2231,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture2D FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTexture2DLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -2246,12 +2246,12 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -2347,28 +2347,28 @@ namespace Gorgon.Graphics.Core
 
             using (var com = new DX.ComObject(surface))
             {
-                if (com == null)
+                if (com is null)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_POINTER_NOT_COM_OBJECT);
                 }
 
                 _sharedResource = com.QueryInterface<DXGI.Resource>();
 
-                if (_sharedResource == null)
+                if (_sharedResource is null)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_POINTER_NOT_DXGI_RESOURCE);
                 }
 
                 D3DResource = graphics.D3DDevice.OpenSharedResource<D3D11.Resource>(_sharedResource.SharedHandle);
 
-                if (D3DResource == null)
+                if (D3DResource is null)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DXGI_RESOURCE_IS_NOT_D3D_RESOURCE);
                 }
 
                 using (D3D11.Texture2D texture = D3DResource.QueryInterface<D3D11.Texture2D>())
                 {
-                    if (texture == null)
+                    if (texture is null)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_D3D_RESOURCE_IS_NOT_2D_TEXTURE);
                     }
@@ -2453,7 +2453,7 @@ namespace Gorgon.Graphics.Core
             : base(graphics)
         {
             bool isCubeMap;
-            if (options.IsTextureCube == null)
+            if (options.IsTextureCube is null)
             {
                 isCubeMap = image.ImageType == ImageType.ImageCube;
             }

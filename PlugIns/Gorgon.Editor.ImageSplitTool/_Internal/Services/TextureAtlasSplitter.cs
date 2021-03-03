@@ -339,7 +339,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
                 IContentFile imageFile = _fileManager.GetFile(fileEntry.FullPath);
 
-                if (imageFile == null)
+                if (imageFile is null)
                 {
                     _log.Print($"WARNING: The image file '{imageFile.Path}' is missing!", LoggingLevel.Intermediate);
                     continue;

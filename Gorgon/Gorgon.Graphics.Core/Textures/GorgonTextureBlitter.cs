@@ -100,7 +100,7 @@ namespace Gorgon.Graphics.Core
                 if ((_blitVertexShader != null) || (Interlocked.Increment(ref _initializedFlag) > 1))
                 {
                     // Trap other threads until we're done initializing and then release them.
-                    while ((_blitVertexShader == null) && (_initializedFlag > 0))
+                    while ((_blitVertexShader is null) && (_initializedFlag > 0))
                     {
                         var wait = new SpinWait();
                         wait.SpinOnce();
@@ -202,7 +202,7 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void UpdateProjection()
         {
-            if (_graphics.RenderTargets[0] == null)            
+            if (_graphics.RenderTargets[0] is null)            
             {
                 return;
             }
@@ -312,22 +312,22 @@ namespace Gorgon.Graphics.Core
                 Initialize();
             }
 
-            if (_graphics.RenderTargets[0] == null)
+            if (_graphics.RenderTargets[0] is null)
             {
                 return;
             }
 
-            if (texture == null)
+            if (texture is null)
             {
                 texture = _defaultTexture;
             }
 
-            if (blendState == null)
+            if (blendState is null)
             {
                 blendState = GorgonBlendState.NoBlending;
             }
 
-            if (samplerState == null)
+            if (samplerState is null)
             {
                 samplerState = GorgonSamplerState.PointFiltering;
             }
@@ -405,13 +405,13 @@ namespace Gorgon.Graphics.Core
 
             GorgonColor actualColor = color ?? GorgonColor.White;
 
-            if ((_graphics.RenderTargets[0] == null)
+            if ((_graphics.RenderTargets[0] is null)
                 || (actualColor.Alpha.EqualsEpsilon(0)))
             {
                 return;
             }
 
-            if (texture == null)
+            if (texture is null)
             {
                 texture = _defaultTexture;
             }
@@ -419,22 +419,22 @@ namespace Gorgon.Graphics.Core
             UpdateProjection();
 
             // Set to default states if not provided.
-            if (blendState == null)
+            if (blendState is null)
             {
                 blendState = GorgonBlendState.NoBlending;
             }
 
-            if (pixelShader == null)
+            if (pixelShader is null)
             {
                 pixelShader = _blitPixelShader;
             }
 
-            if (samplerState == null)
+            if (samplerState is null)
             {
                 samplerState = GorgonSamplerState.Default;
             }
 
-            if (pixelShaderConstants == null)
+            if (pixelShaderConstants is null)
             {
                 pixelShaderConstants = _emptyPsConstants;
             }

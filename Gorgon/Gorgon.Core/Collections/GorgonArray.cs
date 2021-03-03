@@ -337,7 +337,7 @@ namespace Gorgon.Collections
         /// <param name="array">The one-dimensional <see cref="Array" /> that is the destination of the elements copied from <see cref="ICollection{T}" />. The <see cref="Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="array" /> is null.</exception>
+        /// <paramref name="array" /> == null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="arrayIndex" /> is less than 0.</exception>
         /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
@@ -346,7 +346,7 @@ namespace Gorgon.Collections
         /// <summary>Copies the elements of the <see cref="ICollection{T}" /> to an <see cref="Array" />, starting at a particular <see cref="Array" /> index.</summary>
         /// <param name="array">The one-dimensional <see cref="Array" /> that is the destination of the elements copied from <see cref="ICollection{T}" />. The <see cref="Array" /> must have zero-based indexing.</param>
         /// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="array" /> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="array" /> == null.</exception>
         public void CopyTo(GorgonArray<T> array, int destIndex = 0)
         {
             if (array == null)

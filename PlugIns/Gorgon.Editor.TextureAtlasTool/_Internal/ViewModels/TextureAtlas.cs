@@ -432,7 +432,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions = _atlasService.GetSpriteRegions(_sprites.Values);
 
-			if ((regions == null) || (regions.Count == 0))
+			if ((regions is null) || (regions.Count == 0))
 			{
 				HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_NO_ROOM);
 				return null;
@@ -440,7 +440,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			atlas = _atlasService.GenerateAtlas(regions, BufferFormat.R8G8B8A8_UNorm);
 
-			if ((atlas == null) || (atlas.Textures == null) || (atlas.Sprites == null) || (atlas.Textures.Count == 0))
+			if ((atlas is null) || (atlas.Textures is null) || (atlas.Sprites is null) || (atlas.Textures.Count == 0))
 			{
 				HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_GEN_ATLAS);
 				return null;
@@ -460,7 +460,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			void UnloadAtlasTextures()
 			{
-				if (atlas == null)
+				if (atlas is null)
 				{
 					return;
 				}
@@ -478,13 +478,13 @@ namespace Gorgon.Editor.TextureAtlasTool
 				Debug.Assert(_sprites.Count != 0, "No sprites were returned.");
 
 				// If any of the sprites returned are not linked to a texture, give the user a chance to fix the problem.
-				if (_sprites.Values.All(item => item.Texture == null))
+				if (_sprites.Values.All(item => item.Texture is null))
 				{
 					HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_NO_TEXTURES);
 					return;
 				}
 
-				if (_sprites.Values.Any(item => item.Texture == null))
+				if (_sprites.Values.Any(item => item.Texture is null))
 				{
 					HostServices.BusyService.SetIdle();
 					if (HostServices.MessageDisplay.ShowConfirmation(Resources.GORTAG_CONFIRM_SOME_NO_TEXTURE) == MessageResponse.No)
@@ -535,7 +535,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		/// <returns><b>true</b> if possible, <b>false</b> if not.</returns>
 		private bool CanNextPreview()
 		{
-			if ((Atlas?.Textures == null) || (Atlas.Textures.Count == 0))
+			if ((Atlas?.Textures is null) || (Atlas.Textures.Count == 0))
 			{
 				return false;
 			}
@@ -617,7 +617,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 			// Function to unload the textures from the atlas.
 			void UnloadTextures()
 			{
-				if ((atlas == null) || (atlas == Atlas))
+				if ((atlas is null) || (atlas == Atlas))
 				{
 					return;
 				}

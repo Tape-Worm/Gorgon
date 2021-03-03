@@ -68,7 +68,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		{            
 			OnRenderBackground();
 
-			if ((DataContext.Atlas == null) || (DataContext.Atlas.Textures.Count == 0))
+			if ((DataContext.Atlas is null) || (DataContext.Atlas.Textures.Count == 0))
 			{
 				DrawMessage();
 				return;

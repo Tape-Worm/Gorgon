@@ -65,7 +65,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to create the texture for the view.</summary>
         protected override void CreateTexture()
         {
-            if ((DataContext?.ImageData == null) || (DataContext.ImageType != ImageType.Image3D))
+            if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageType.Image3D))
             {
                 RenderRegion = DX.RectangleF.Empty;
                 return;

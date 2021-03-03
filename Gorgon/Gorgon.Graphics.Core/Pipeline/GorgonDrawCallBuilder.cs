@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected override GorgonDrawCall OnCreate(IGorgonAllocator<GorgonDrawCall> allocator) => allocator == null ? new GorgonDrawCall() : allocator.Allocate();
+        protected override GorgonDrawCall OnCreate(IGorgonAllocator<GorgonDrawCall> allocator) => allocator is null ? new GorgonDrawCall() : allocator.Allocate();
 
         /// <summary>
         /// Function to reset the properties of the draw call to the draw call passed in.

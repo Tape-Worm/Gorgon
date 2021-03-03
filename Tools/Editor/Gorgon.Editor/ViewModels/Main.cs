@@ -140,7 +140,7 @@ namespace Gorgon.Editor.ViewModels
                 NotifyPropertyChanged(nameof(Text));
                 NotifyPropertyChanged(nameof(ClipboardContext));
 
-                if (_currentProject == null)
+                if (_currentProject is null)
                 {
                     return;
                 }
@@ -156,7 +156,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the text for the caption.
         /// </summary>
-        public string Text => _currentProject == null ? Resources.GOREDIT_CAPTION_NO_FILE : string.Format(Resources.GOREDIT_CAPTION_FILE, _currentProject.ProjectTitle);
+        public string Text => _currentProject is null ? Resources.GOREDIT_CAPTION_NO_FILE : string.Format(Resources.GOREDIT_CAPTION_FILE, _currentProject.ProjectTitle);
 
         /// <summary>
         /// Property to return the current clipboard context.
@@ -196,7 +196,7 @@ namespace Gorgon.Editor.ViewModels
         private void SaveProjectMetaData(IProjectEditor project)
         {
             // Ensure that our metadata is up to date in the current project.
-            if ((project?.SaveProjectMetadataCommand == null) || (!project.SaveProjectMetadataCommand.CanExecute(null)))
+            if ((project?.SaveProjectMetadataCommand is null) || (!project.SaveProjectMetadataCommand.CanExecute(null)))
             {
                 return;
             }
@@ -415,7 +415,7 @@ namespace Gorgon.Editor.ViewModels
 
             project = await Task.Run(() => _projectManager.OpenProject(path));
 
-            if (project == null)
+            if (project is null)
             {
                 HostServices.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
                 return;
@@ -438,7 +438,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 projectEditor = await ImportProjectDataAsync(project);
 
-                if (projectEditor == null)
+                if (projectEditor is null)
                 {
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_IMPORT, "/"));
                     return;
@@ -528,7 +528,7 @@ namespace Gorgon.Editor.ViewModels
 
                 DirectoryInfo dir = _directoryLocator.GetDirectory(GetInitialProjectDirectory(), Resources.GOREDIT_CAPTION_SELECT_PROJECT_DIR);
 
-                if (dir== null)
+                if (dir is null)
                 {
                     return;
                 }
@@ -597,7 +597,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 DirectoryInfo path = _directoryLocator.GetDirectory(GetInitialProjectDirectory(), Resources.GOREDIT_CAPTION_OPEN_PROJECT);
 
-                if (path == null)
+                if (path is null)
                 {
                     return;
                 }

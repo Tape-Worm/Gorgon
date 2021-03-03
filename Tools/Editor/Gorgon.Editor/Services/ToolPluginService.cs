@@ -133,7 +133,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
         public void AddToolPlugIn(ToolPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -168,12 +168,12 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
         public void LoadToolPlugIns(GorgonMefPlugInCache pluginCache, string pluginDir)
         {
-            if (pluginCache == null)
+            if (pluginCache is null)
             {
                 throw new ArgumentNullException(nameof(pluginCache));
             }
 
-            if (pluginDir == null)
+            if (pluginDir is null)
             {
                 throw new ArgumentNullException(nameof(pluginDir));
             }
@@ -239,7 +239,7 @@ namespace Gorgon.Editor.Services
         /// <param name="plugin">The plugin to remove.</param>
         public void RemoveToolPlugIn(ToolPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -264,7 +264,7 @@ namespace Gorgon.Editor.Services
         public T ReadContentSettings<T>(string name, params JsonConverter[] converters)
             where T : class
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -299,7 +299,7 @@ namespace Gorgon.Editor.Services
         public void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters)
             where T : class
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -309,7 +309,7 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (contentSettings == null)
+            if (contentSettings is null)
             {
                 throw new ArgumentNullException(nameof(contentSettings));
             }

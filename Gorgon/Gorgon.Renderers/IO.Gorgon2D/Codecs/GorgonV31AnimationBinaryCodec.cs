@@ -184,7 +184,7 @@ namespace Gorgon.IO
 
                     binWriter.Write(key.Time);
 
-                    if ((key.Value == null) && (string.IsNullOrWhiteSpace(key.TextureName)))
+                    if ((key.Value is null) && (string.IsNullOrWhiteSpace(key.TextureName)))
                     {
                         binWriter.WriteValue<byte>(0);
                     }
@@ -306,14 +306,14 @@ namespace Gorgon.IO
                     {
                         texture = LoadTexture(binReader, out textureName);
 
-                        if ((texture == null) && (string.IsNullOrWhiteSpace(textureName)))
+                        if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                         {
                             Renderer.Log.Print("Attempted to load a texture from the data, but the texture was not in memory and the name is unknown.",
                                                  LoggingLevel.Verbose);
                         }
                     }
 
-                    if ((texture == null) && (hasTexture != 0))
+                    if ((texture is null) && (hasTexture != 0))
                     {
                         trackBuilder.SetKey(new GorgonKeyTexture2D(time, textureName, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
                     }

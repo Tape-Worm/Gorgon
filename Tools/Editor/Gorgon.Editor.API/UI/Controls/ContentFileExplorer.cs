@@ -261,7 +261,7 @@ namespace Gorgon.Editor.UI.Controls
 
             _icons.Clear();
 
-            if ((_entries == null) || (_entries.Count == 0))
+            if ((_entries is null) || (_entries.Count == 0))
             {
                 return;
             }
@@ -270,7 +270,7 @@ namespace Gorgon.Editor.UI.Controls
 
             foreach (ContentFileExplorerFileEntry file in files)
             {
-                if ((string.IsNullOrWhiteSpace(file.AssociationType)) || (_icons.ContainsKey(file.AssociationType)) || (file.FileIcon == null))
+                if ((string.IsNullOrWhiteSpace(file.AssociationType)) || (_icons.ContainsKey(file.AssociationType)) || (file.FileIcon is null))
                 {
                     continue;
                 }
@@ -284,7 +284,7 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         private void UnassignEvents()
         {
-            if (_entries == null)
+            if (_entries is null)
             {
                 return;
             }
@@ -311,7 +311,7 @@ namespace Gorgon.Editor.UI.Controls
             _fileRowsXref.Clear();
             _dirRowsXref.Clear();
 
-            if ((_entries == null) || (_entries.Count == 0))
+            if ((_entries is null) || (_entries.Count == 0))
             {
                 BuildIconCache();
                 LabelNoFiles.Visible = true;
@@ -586,7 +586,7 @@ namespace Gorgon.Editor.UI.Controls
 
             DataGridView.HitTestInfo hitTest = GridFiles.HitTest(mousePos.X, mousePos.Y);
 
-            if ((hitTest == null) || (hitTest.ColumnIndex != ColumnLocation.Index) || (hitTest.RowIndex < 0))
+            if ((hitTest is null) || (hitTest.ColumnIndex != ColumnLocation.Index) || (hitTest.RowIndex < 0))
             {
                 return;
             }
@@ -657,7 +657,7 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         private void SetCheckState()
         {
-            if ((_checkBoxHeader == null) || (!MultiSelect))
+            if ((_checkBoxHeader is null) || (!MultiSelect))
             {
                 return;
             }
@@ -738,7 +738,7 @@ namespace Gorgon.Editor.UI.Controls
                 }
             }
 
-            if (fileEntry == null)
+            if (fileEntry is null)
             {
                 return;
             }

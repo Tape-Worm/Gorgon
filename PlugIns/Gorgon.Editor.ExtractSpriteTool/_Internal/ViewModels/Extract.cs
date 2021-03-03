@@ -390,7 +390,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             {
                 GorgonColor? newColor = HostServices.ColorPicker.GetColor(_extractData.SkipColor);
 
-                if (newColor == null)
+                if (newColor is null)
                 {
                     return;
                 }
@@ -592,7 +592,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         protected async override Task<bool> OnCloseToolTaskAsync() 
         {
             // If we're executing a task, wait for it to finish.
-            if (_currentTask == null)
+            if (_currentTask is null)
             {
                 return true;
             }

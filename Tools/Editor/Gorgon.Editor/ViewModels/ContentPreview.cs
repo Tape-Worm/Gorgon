@@ -207,7 +207,7 @@ namespace Gorgon.Editor.ViewModels
                     _loadPreviewTask = null;
                 }
 
-                if (file?.Metadata?.ContentMetadata == null)
+                if (file?.Metadata?.ContentMetadata is null)
                 {
                     Title = string.Empty;
                     PreviewImage?.Dispose();
@@ -356,7 +356,7 @@ namespace Gorgon.Editor.ViewModels
                 IContentFile file = _contentFileManager.GetFile(filePath);
                 IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(_thumbnailPath);
 
-                if (thumbDirectory == null)
+                if (thumbDirectory is null)
                 {
                     thumbDirectory = _tempFileSystem.CreateDirectory(_thumbnailPath);
                 }
@@ -418,7 +418,7 @@ namespace Gorgon.Editor.ViewModels
         {
             IDirectory directory = _fileExplorer.SelectedDirectory;
 
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }
@@ -443,7 +443,7 @@ namespace Gorgon.Editor.ViewModels
 
             IDirectory directory = _fileExplorer.SelectedDirectory;
 
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }

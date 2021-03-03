@@ -213,7 +213,7 @@ namespace Gorgon.IO.Extensions
 
             IGorgonVirtualFile textureFile = fileSystem.GetFile(textureName);
 
-            if (textureFile == null)
+            if (textureFile is null)
             {
                 return (null, null, false);
             }
@@ -221,7 +221,7 @@ namespace Gorgon.IO.Extensions
             // Try to find a codec for the image file.
             codec = FindTextureCodec(textureFile, codecs);
 
-            return codec == null ? (null, null, false) : (codec, textureFile, false);
+            return codec is null ? (null, null, false) : (codec, textureFile, false);
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace Gorgon.IO.Extensions
         /// <returns>The updated texture loading options.</returns>
         private static GorgonTexture2DLoadOptions GetTextureOptions(string name, GorgonTexture2DLoadOptions options)
         {
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -306,19 +306,19 @@ namespace Gorgon.IO.Extensions
                                               IEnumerable<IGorgonSpriteCodec> spriteCodecs = null,
                                               IEnumerable<IGorgonImageCodec> imageCodecs = null)
         {
-            if (fileSystem == null)
+            if (fileSystem is null)
             {
                 throw new ArgumentNullException(nameof(fileSystem));
             }
 
             IGorgonVirtualFile file = fileSystem.GetFile(path);
 
-            if (file == null)
+            if (file is null)
             {
                 throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
             }
 
-            if ((imageCodecs == null) || (!imageCodecs.Any()))
+            if ((imageCodecs is null) || (!imageCodecs.Any()))
             {
                 // If we don't specify any codecs, then use the built in ones.
                 imageCodecs = new IGorgonImageCodec[]
@@ -337,7 +337,7 @@ namespace Gorgon.IO.Extensions
                 imageCodecs = imageCodecs.Where(item => item.CanDecode);
             }
 
-            if ((spriteCodecs == null) || (!spriteCodecs.Any()))
+            if ((spriteCodecs is null) || (!spriteCodecs.Any()))
             {
                 // Use all built-in codecs if we haven't asked for any.
                 spriteCodecs = new IGorgonSpriteCodec[]
@@ -370,7 +370,7 @@ namespace Gorgon.IO.Extensions
 
                 IGorgonSpriteCodec spriteCodec = GetSpriteCodec(spriteStream, spriteCodecs);
 
-                if (spriteCodec == null)
+                if (spriteCodec is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND, path));
                 }
@@ -469,19 +469,19 @@ namespace Gorgon.IO.Extensions
                                               IEnumerable<IGorgonPolySpriteCodec> spriteCodecs = null,
                                               IEnumerable<IGorgonImageCodec> imageCodecs = null)
         {
-            if (fileSystem == null)
+            if (fileSystem is null)
             {
                 throw new ArgumentNullException(nameof(fileSystem));
             }
 
             IGorgonVirtualFile file = fileSystem.GetFile(path);
 
-            if (file == null)
+            if (file is null)
             {
                 throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
             }
 
-            if ((imageCodecs == null) || (!imageCodecs.Any()))
+            if ((imageCodecs is null) || (!imageCodecs.Any()))
             {
                 // If we don't specify any codecs, then use the built in ones.
                 imageCodecs = new IGorgonImageCodec[]
@@ -500,7 +500,7 @@ namespace Gorgon.IO.Extensions
                 imageCodecs = imageCodecs.Where(item => item.CanDecode);
             }
 
-            if ((spriteCodecs == null) || (!spriteCodecs.Any()))
+            if ((spriteCodecs is null) || (!spriteCodecs.Any()))
             {
                 // Use all built-in codecs if we haven't asked for any.
                 spriteCodecs = new IGorgonPolySpriteCodec[]
@@ -530,7 +530,7 @@ namespace Gorgon.IO.Extensions
 
                 IGorgonPolySpriteCodec spriteCodec = GetPolySpriteCodec(spriteStream, spriteCodecs);
 
-                if (spriteCodec == null)
+                if (spriteCodec is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND, path));
                 }
@@ -629,19 +629,19 @@ namespace Gorgon.IO.Extensions
                                               IEnumerable<IGorgonAnimationCodec> animationCodecs = null,
                                               IEnumerable<IGorgonImageCodec> imageCodecs = null)
         {
-            if (fileSystem == null)
+            if (fileSystem is null)
             {
                 throw new ArgumentNullException(nameof(fileSystem));
             }
 
             IGorgonVirtualFile file = fileSystem.GetFile(path);
 
-            if (file == null)
+            if (file is null)
             {
                 throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
             }
 
-            if ((imageCodecs == null) || (!imageCodecs.Any()))
+            if ((imageCodecs is null) || (!imageCodecs.Any()))
             {
                 // If we don't specify any codecs, then use the built in ones.
                 imageCodecs = new IGorgonImageCodec[]
@@ -660,7 +660,7 @@ namespace Gorgon.IO.Extensions
                 imageCodecs = imageCodecs.Where(item => item.CanDecode);
             }
 
-            if ((animationCodecs == null) || (!animationCodecs.Any()))
+            if ((animationCodecs is null) || (!animationCodecs.Any()))
             {
                 // Use all built-in codecs if we haven't asked for any.
                 animationCodecs = new IGorgonAnimationCodec[]
@@ -694,7 +694,7 @@ namespace Gorgon.IO.Extensions
 
                 IGorgonAnimationCodec animationCodec = GetAnimationCodec(animStream, animationCodecs);
 
-                if (animationCodec == null)
+                if (animationCodec is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_ANIM_CODEC_FOUND, path));
                 }

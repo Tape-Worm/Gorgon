@@ -58,7 +58,7 @@ namespace Gorgon.IO
             // If we're loading directly from an editor file system folder, then check in the directory above the mount point.
             // The editor places all file system data in a directory called "fs", and the metadata is located in the directory above that, so 
             // we just need to find the mount point for the "fs" directory, and go up one.
-            if (jsonMetaDataFile == null)
+            if (jsonMetaDataFile is null)
             {
                 foreach (GorgonFileSystemMountPoint mountPoint in fileSystem.MountPoints.Where(item => item.PhysicalPath.EndsWith(Path.DirectorySeparatorChar + "fs" + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -69,7 +69,7 @@ namespace Gorgon.IO
                     }
                 }
 
-                if (externalProjectData == null)
+                if (externalProjectData is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
                 }
@@ -78,7 +78,7 @@ namespace Gorgon.IO
             int expectedVersion = Convert.ToInt32(CommonEditorConstants.EditorCurrentProjectVersion.Replace("GOREDIT", string.Empty));
             int fileVersion = int.MaxValue;
 
-            using (Stream stream = externalProjectData == null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
             using (var reader = new StreamReader(stream, Encoding.UTF8))
             using (var jsonReader = new JsonTextReader(reader))
             {
@@ -106,7 +106,7 @@ namespace Gorgon.IO
                 }
             }
 
-            using (Stream stream = externalProjectData == null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
             using (var reader = new StreamReader(stream, Encoding.UTF8))
             {
                 string jsonString = reader.ReadToEnd();
@@ -133,12 +133,12 @@ namespace Gorgon.IO
         /// <returns>The path to the file system object, relative to the root of the file system. Or, an empty string if the file system object is not on the path of the <paramref name="rootDirectory"/>.</returns>
         public static string ToFileSystemPath(this FileSystemInfo filesystemObject, DirectoryInfo rootDirectory, char pathSeparator = '/')
         {
-            if (filesystemObject == null)
+            if (filesystemObject is null)
             {
                 throw new ArgumentNullException(nameof(filesystemObject));
             }
 
-            if (rootDirectory == null)
+            if (rootDirectory is null)
             {
                 throw new ArgumentNullException(nameof(rootDirectory));
             }
@@ -199,12 +199,12 @@ namespace Gorgon.IO
         {
             var result = new List<IGorgonVirtualFile>();
 
-            if (fileSystem == null)
+            if (fileSystem is null)
             {
                 throw new ArgumentNullException(nameof(fileSystem));
             }
 
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -216,7 +216,7 @@ namespace Gorgon.IO
 
             IProjectMetadata metaData = fileSystem.GetMetadata();
 
-            if (metaData == null)
+            if (metaData is null)
             {
                 return result;
             }
@@ -231,7 +231,7 @@ namespace Gorgon.IO
 
             IGorgonVirtualDirectory directory = fileSystem.GetDirectory(path);
 
-            if (directory == null)
+            if (directory is null)
             {
                 throw new DirectoryNotFoundException();
             }
@@ -270,7 +270,7 @@ namespace Gorgon.IO
 
                 IReadOnlyDictionary<string, string> attributes = metaDataItem.Attributes;
 
-                if ((attributes == null)
+                if ((attributes is null)
                     || (attributes.Count == 0)
                     || (!attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string type))
                     || (!string.Equals(contentType, type, StringComparison.OrdinalIgnoreCase)))

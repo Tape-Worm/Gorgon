@@ -49,7 +49,7 @@ namespace Gorgon.IO
         /// <returns>The texture resource if found, or <b>null</b> if not.</returns>
         public static GorgonTexture2D Locate2DTextureByName(this GorgonGraphics graphics, string textureName, int width, int height, BufferFormat format, int arrayCount, int mipCount)
         {
-            if ((graphics == null) || (string.IsNullOrWhiteSpace(textureName)))
+            if ((graphics is null) || (string.IsNullOrWhiteSpace(textureName)))
             {
                 return null;
             }            

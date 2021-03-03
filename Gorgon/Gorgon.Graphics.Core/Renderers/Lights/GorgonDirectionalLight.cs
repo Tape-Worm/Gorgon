@@ -127,7 +127,7 @@ namespace Gorgon.Renderers.Lights
         public GorgonDirectionalLight(GorgonDirectionalLight copy, string newName = null)
             : base(copy, newName)
         {
-            if (copy == null)
+            if (copy is null)
             {
                 throw new ArgumentNullException(nameof(copy));
             }

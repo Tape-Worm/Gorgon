@@ -405,7 +405,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         public bool CanOpenContent(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -453,12 +453,12 @@ namespace Gorgon.Editor.ImageEditor
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile" />, or the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
         public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken)
         {
-            if (contentFile == null)
+            if (contentFile is null)
             {
                 throw new ArgumentNullException(nameof(contentFile));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -479,7 +479,7 @@ namespace Gorgon.Editor.ImageEditor
             string fileDirectoryPath = Path.GetDirectoryName(filePath).FormatDirectory('/');
             IGorgonVirtualDirectory directory = TemporaryFileSystem.FileSystem.GetDirectory(fileDirectoryPath);
 
-            if (directory == null)
+            if (directory is null)
             {
                 directory = TemporaryFileSystem.CreateDirectory(fileDirectoryPath);
             }
@@ -488,7 +488,7 @@ namespace Gorgon.Editor.ImageEditor
 
             (IGorgonImage thumbImage, bool needsConversion) = await Task.Run(() => LoadThumbNailImage(pngCodec, filePath, contentFile, cancelToken));
 
-            if ((thumbImage == null) || (cancelToken.IsCancellationRequested))
+            if ((thumbImage is null) || (cancelToken.IsCancellationRequested))
             {
                 return null;
             }

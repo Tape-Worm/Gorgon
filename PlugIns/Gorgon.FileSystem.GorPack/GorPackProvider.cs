@@ -127,8 +127,8 @@ namespace Gorgon.IO.GorPack
                 string parentDirectoryPath = file.Parent?.Attribute("FullPath")?.Value;
 
                 // We need these nodes.
-                if ((fileNameNode == null) || (fileOffsetNode == null)
-                    || (fileSizeNode == null) || (fileDateNode == null)
+                if ((fileNameNode is null) || (fileOffsetNode is null)
+                    || (fileSizeNode is null) || (fileDateNode is null)
                     || ((string.IsNullOrWhiteSpace(fileNameNode.Value)) && (string.IsNullOrWhiteSpace(fileExtensionNode.Value)))
                     || (string.IsNullOrWhiteSpace(fileDateNode.Value))
                     || (string.IsNullOrWhiteSpace(parentDirectoryPath)))
@@ -147,7 +147,7 @@ namespace Gorgon.IO.GorPack
                     throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
                 }
 
-                if ((fileLastModNode == null) || (!DateTime.TryParse(fileLastModNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime lastModDate)))
+                if ((fileLastModNode is null) || (!DateTime.TryParse(fileLastModNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime lastModDate)))
                 {
                     lastModDate = fileDate;
                 }

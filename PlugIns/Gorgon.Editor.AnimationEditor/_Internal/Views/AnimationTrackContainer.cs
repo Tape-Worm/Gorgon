@@ -151,7 +151,7 @@ namespace Gorgon.Editor.AnimationEditor
                     case nameof(ITrack.KeyFrames):
                         row = GridTrackKeys.Rows.OfType<DataGridViewRow>().FirstOrDefault(item => item.Tag == track);
 
-                        if (row == null)
+                        if (row is null)
                         {
                             break;
                         }
@@ -167,7 +167,7 @@ namespace Gorgon.Editor.AnimationEditor
                     case nameof(ITrack.InterpolationMode):
                         row = GridTrackKeys.Rows.OfType<DataGridViewRow>().FirstOrDefault(item => item.Tag == track);
 
-                        if (row == null)
+                        if (row is null)
                         {
                             break;
                         }
@@ -211,12 +211,12 @@ namespace Gorgon.Editor.AnimationEditor
         {
             GridTrackKeys.Columns.Clear();
 
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
 
-            if (keyCount == null)
+            if (keyCount is null)
             {
                 keyCount = dataContext.MaxKeyCount;
             }
@@ -306,7 +306,7 @@ namespace Gorgon.Editor.AnimationEditor
                                    where gridTrack.ID == track.ID
                                    select gridRow).FirstOrDefault();
 
-            if (row == null)
+            if (row is null)
             {
                 return;
             }
@@ -325,7 +325,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="time">The current time in the animation.</param>
         private void AnimationTimeUpdated(float time)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -516,7 +516,7 @@ namespace Gorgon.Editor.AnimationEditor
             int colEnd = colStart + GridTrackKeys.DisplayedColumnCount(false) - 2;
             int rowStart = GridTrackKeys.FirstDisplayedScrollingRowIndex;
             int rowEnd = rowStart + GridTrackKeys.DisplayedRowCount(false);
-            if ((lastSelCell == null) 
+            if ((lastSelCell is null) 
                 || ((lastSelCell.RowIndex >= rowStart) && (lastSelCell.RowIndex <= rowEnd) && (lastSelCell.ColumnIndex >= colStart) && (lastSelCell.ColumnIndex <= colEnd)))
             {
                 return;
@@ -542,7 +542,7 @@ namespace Gorgon.Editor.AnimationEditor
                 var track = GridTrackKeys.Rows[e.RowIndex].Tag as ITrack;
                 TrackInterpolationMode value = GridTrackKeys.Rows[e.RowIndex].Cells[0].EditedFormattedValue.IfNull(string.Empty).GetTrackInterpolationMode();
 
-                if ((track?.SetInterpolationModeCommand == null) || (!track.SetInterpolationModeCommand.CanExecute(value)))
+                if ((track?.SetInterpolationModeCommand is null) || (!track.SetInterpolationModeCommand.CanExecute(value)))
                 {
                     return;
                 }
@@ -566,7 +566,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 IReadOnlyList<(int trackIndex, IReadOnlyList<int> keyIndices)> args = GetTrackKeySelectionIndices();
 
-                if ((DataContext?.SelectTrackAndKeysCommand == null) || (!DataContext.SelectTrackAndKeysCommand.CanExecute(args)))
+                if ((DataContext?.SelectTrackAndKeysCommand is null) || (!DataContext.SelectTrackAndKeysCommand.CanExecute(args)))
                 {
                     return;
                 }
@@ -609,7 +609,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="DataGridViewCellValueEventArgs"/> instance containing the event data.</param>
         private void GridTrackKeys_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (DataContext?.GetTrackKeyCommand == null)
+            if (DataContext?.GetTrackKeyCommand is null)
             {
                 return;
             }
@@ -639,19 +639,19 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private async void GridTrackKeys_DragDrop(object sender, DragEventArgs e)
         {
-            if ((DataContext?.KeyEditor == null) || (!e.Data.GetDataPresent(typeof(KeyFrameCopyMoveData))))
+            if ((DataContext?.KeyEditor is null) || (!e.Data.GetDataPresent(typeof(KeyFrameCopyMoveData))))
             {
                 return;
             }
 
             var data = (KeyFrameCopyMoveData)e.Data.GetData(typeof(KeyFrameCopyMoveData));
 
-            if (data?.KeyFrames == null)
+            if (data?.KeyFrames is null)
             {
                 return;
             }
 
-            if ((DataContext.KeyEditor.CopyMoveFramesCommand == null) || (!DataContext.KeyEditor.CopyMoveFramesCommand.CanExecute(data)))
+            if ((DataContext.KeyEditor.CopyMoveFramesCommand is null) || (!DataContext.KeyEditor.CopyMoveFramesCommand.CanExecute(data)))
             {
                 return;
             }
@@ -666,7 +666,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             e.Effect = DragDropEffects.None;
 
-            if (DataContext?.KeyEditor == null)
+            if (DataContext?.KeyEditor is null)
             {
                 return;
             }
@@ -690,21 +690,21 @@ namespace Gorgon.Editor.AnimationEditor
 
             DataGridView.HitTestInfo info = GridTrackKeys.HitTest(clientPos.X, clientPos.Y);
 
-            if (info == null)
+            if (info is null)
             {
                 return;
             }
 
             var data = (KeyFrameCopyMoveData)e.Data.GetData(typeof(KeyFrameCopyMoveData));
 
-            if (data?.KeyFrames == null)
+            if (data?.KeyFrames is null)
             {
                 return;
             }
 
             data.DestinationKeyIndex = info.ColumnIndex - 1;
 
-            if ((DataContext.KeyEditor.CopyMoveFramesCommand == null) || (!DataContext.KeyEditor.CopyMoveFramesCommand.CanExecute(data)))
+            if ((DataContext.KeyEditor.CopyMoveFramesCommand is null) || (!DataContext.KeyEditor.CopyMoveFramesCommand.CanExecute(data)))
             {
                 return;
             }
@@ -717,7 +717,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="CellsDragEventArgs"/> instance containing the event data.</param>
         private void GridTrackKeys_CellsDrag(object sender, CellsDragEventArgs e)
         {
-            if ((DataContext?.Selected == null) || (e.DraggedCells.Any(cell => cell.ColumnIndex == 0)))
+            if ((DataContext?.Selected is null) || (e.DraggedCells.Any(cell => cell.ColumnIndex == 0)))
             {
                 return;
             }
@@ -736,7 +736,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -765,7 +765,7 @@ namespace Gorgon.Editor.AnimationEditor
             GridTrackKeys.Rows.Clear();
             GridTrackKeys.Columns.Clear();
 
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -802,7 +802,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             ResetDataContext();
 
-            if (dataContext == null)
+            if (dataContext is null)
             {                
                 return;
             }
@@ -855,7 +855,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

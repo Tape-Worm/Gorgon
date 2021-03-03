@@ -139,7 +139,7 @@ namespace Gorgon.Graphics.Core
                                                               StringComparison comparisonType = StringComparison.CurrentCultureIgnoreCase)
             where T : GorgonGraphicsResource
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
@@ -182,7 +182,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         /// <seealso cref="GorgonGraphicsResource"/>
         public static IEnumerable<T> LocateResourcesByType<T>(this GorgonGraphics graphics)
-            where T : GorgonGraphicsResource => graphics == null
+            where T : GorgonGraphicsResource => graphics is null
                 ? throw new ArgumentNullException(nameof(graphics))
                 : graphics.GetDisposables()
                            .Select(item =>

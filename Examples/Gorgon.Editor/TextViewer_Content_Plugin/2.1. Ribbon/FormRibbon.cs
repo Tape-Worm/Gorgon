@@ -189,7 +189,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+            if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
             {
                 return;
             }
@@ -204,7 +204,7 @@ namespace Gorgon.Examples
         /// </summary>
         private void ValidateButtons()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -216,7 +216,7 @@ namespace Gorgon.Examples
             // view model to handle any complicated state evaluation logic and makes it such that the view stays unaware of 
             // the logic.
 
-            ButtonFont.Enabled = DataContext.CurrentPanel == null;
+            ButtonFont.Enabled = DataContext.CurrentPanel is null;
             ButtonChangeText.Enabled = DataContext.ChangeTextCommand?.CanExecute(null) ?? false;
             ButtonTextColor.Enabled = DataContext.ActivateTextColorCommand?.CanExecute(null) ?? false;
             ButtonSaveText.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
@@ -236,7 +236,7 @@ namespace Gorgon.Examples
             // Always unassign your view model events. Failure to do so can result in an event leak, causing the view to stay 
             // in memory for the lifetime of the application.
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -261,7 +261,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Font_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -299,7 +299,7 @@ namespace Gorgon.Examples
         {
             var item = (ToolStripMenuItem)sender;
 
-            if ((item.Tag == null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
+            if ((item.Tag is null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
             {
                 item.Checked = false;
                 return;
@@ -339,7 +339,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.ChangeTextCommand == null) || (!DataContext.ChangeTextCommand.CanExecute(null)))
+            if ((DataContext?.ChangeTextCommand is null) || (!DataContext.ChangeTextCommand.CanExecute(null)))
             {
                 return;
             }
@@ -355,7 +355,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.ActivateTextColorCommand == null) || (!DataContext.ActivateTextColorCommand.CanExecute(null)))
+            if ((DataContext?.ActivateTextColorCommand is null) || (!DataContext.ActivateTextColorCommand.CanExecute(null)))
             {
                 return;
             }
@@ -371,7 +371,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.UndoCommand == null) || (!DataContext.UndoCommand.CanExecute(null)))
+            if ((DataContext?.UndoCommand is null) || (!DataContext.UndoCommand.CanExecute(null)))
             {
                 return;
             }
@@ -387,7 +387,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.RedoCommand == null) || (!DataContext.RedoCommand.CanExecute(null)))
+            if ((DataContext?.RedoCommand is null) || (!DataContext.RedoCommand.CanExecute(null)))
             {
                 return;
             }
@@ -402,7 +402,7 @@ namespace Gorgon.Examples
         /// <param name="dataContext">The data context used to initialize.</param>
         private void InitializeFromDataContext(ITextContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -423,7 +423,7 @@ namespace Gorgon.Examples
             DataContext = dataContext;
             ValidateButtons();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

@@ -203,7 +203,7 @@ namespace Gorgon.Graphics.Imaging
         /// </remarks>
         public GorgonImageInfo(IGorgonImageInfo info, ImageType? imageType = null, BufferFormat? format = null)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }

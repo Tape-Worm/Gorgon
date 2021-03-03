@@ -235,7 +235,7 @@ namespace Gorgon.Editor.ImageEditor
                                                            RenderRegion.Width,
                                                            RenderRegion.Height),
                                         color,
-                                        DataContext.CurrentPanel == null ? _fxPreviewer.OriginalTexture : _fxPreviewer.PreviewTexture,
+                                        DataContext.CurrentPanel is null ? _fxPreviewer.OriginalTexture : _fxPreviewer.PreviewTexture,
                                         new DX.RectangleF(0, 0, 1, 1),
                                         DataContext.CurrentArrayIndex,
                                         textureSampler: GorgonSamplerState.PointFiltering);
@@ -245,7 +245,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to create the texture for display.</summary>
         protected override void CreateTexture()
         {
-            if (_fxPreviewer.PreviewTexture == null)
+            if (_fxPreviewer.PreviewTexture is null)
             {
                 return;
             }

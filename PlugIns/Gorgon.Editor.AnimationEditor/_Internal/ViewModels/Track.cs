@@ -143,7 +143,7 @@ namespace Gorgon.Editor.AnimationEditor
             get => _keyFrames;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = Array.Empty<IKeyFrame>();
                 }

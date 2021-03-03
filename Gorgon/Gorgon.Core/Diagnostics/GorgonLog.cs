@@ -191,7 +191,7 @@ namespace Gorgon.Diagnostics
             string branch = string.Empty; // Branching character.
             var exception = new StringBuilder(1024);
 
-            if ((ex == null)
+            if ((ex is null)
                 || (LogFilterLevel == LoggingLevel.NoLogging))
             {
                 return;
@@ -304,7 +304,7 @@ namespace Gorgon.Diagnostics
         /// <param name="lines">The lines to flush out</param>
         private void FlushLines(List<string> lines)
         {
-            if (lines == null)
+            if (lines is null)
             {
                 return;
             }
@@ -450,7 +450,7 @@ namespace Gorgon.Diagnostics
         /// </remarks>
         protected GorgonLog(string appName, Version version = null)
         {
-            if (appName == null)
+            if (appName is null)
             {
                 throw new ArgumentNullException(nameof(appName));
             }

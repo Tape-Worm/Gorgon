@@ -321,7 +321,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="image">The image used to initialize the texture.</param>
         private void Initialize(IGorgonImage image)
         {
-            if ((Usage == ResourceUsage.Immutable) && (image == null))
+            if ((Usage == ResourceUsage.Immutable) && (image is null))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE_REQUIRES_DATA, Name));
             }
@@ -432,7 +432,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">The <see cref="IGorgonTexture1DInfo"/> used to define a texture.</param>
         /// <returns>The number of bytes for the texture.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public static int CalculateSizeInBytes(IGorgonTexture1DInfo info) => info == null
+        public static int CalculateSizeInBytes(IGorgonTexture1DInfo info) => info is null
                 ? throw new ArgumentNullException(nameof(info))
                 : CalculateSizeInBytes(info.Width,
                                         info.ArrayCount,
@@ -496,7 +496,7 @@ namespace Gorgon.Graphics.Core
             }
 
             // Copy the entire thing
-            if ((sourceRange == null) && (sourceArrayIndex == 0) && (sourceMipLevel == 0) && (destX == 0) && (destArrayIndex == 0) && (destMipLevel == 0)
+            if ((sourceRange is null) && (sourceArrayIndex == 0) && (sourceMipLevel == 0) && (destX == 0) && (destArrayIndex == 0) && (destMipLevel == 0)
                 && (Width == destinationTexture.Width) && (destinationTexture.MipLevels == MipLevels) && (destinationTexture.ArrayCount == ArrayCount)
                 && ((Format == destinationTexture.Format) || (FormatInformation.Group == destinationTexture.FormatInformation.Group)))
             {
@@ -507,7 +507,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRange == null)
+            if (sourceRange is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
             }
@@ -647,7 +647,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRange == null)
+            if (sourceRange is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
             }
@@ -789,7 +789,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRange == null)
+            if (sourceRange is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), 1);
             }
@@ -1014,7 +1014,7 @@ namespace Gorgon.Graphics.Core
             int width = (Width >> destMipLevel).Max(1);
 
             // Clip the destination rectangle against our texture size.
-            DX.Rectangle destRange = destinationRange == null ? new DX.Rectangle(0, 0, width, 1) : new DX.Rectangle(destinationRange.Value.Minimum, 0, destinationRange.Value.Maximum, 1);
+            DX.Rectangle destRange = destinationRange is null ? new DX.Rectangle(0, 0, width, 1) : new DX.Rectangle(destinationRange.Value.Minimum, 0, destinationRange.Value.Maximum, 1);
             var maxRect = new DX.Rectangle(0, 0, width, 1);
             DX.Rectangle.Intersect(ref destRange, ref maxRect, out DX.Rectangle destBounds);
 
@@ -1126,7 +1126,7 @@ namespace Gorgon.Graphics.Core
                     Width = (Width >> mipLevel).Max(1),
                     Height = 1,
                     Depth = 1,
-                    ArrayCount = arrayIndex == null ? 1 : ArrayCount - index,
+                    ArrayCount = arrayIndex is null ? 1 : ArrayCount - index,
                     MipCount = 1
                 });
 
@@ -1486,17 +1486,17 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture1D FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -1506,7 +1506,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -1516,7 +1516,7 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -1578,12 +1578,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture1D FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -1593,12 +1593,12 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }

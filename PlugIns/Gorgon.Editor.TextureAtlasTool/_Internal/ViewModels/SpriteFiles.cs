@@ -85,7 +85,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             get => _selected;
             private set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = Array.Empty<ContentFileExplorerFileEntry>();
                 }
@@ -183,7 +183,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             {
                 IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(ThumbnailPath);
 
-                if (thumbDirectory == null)
+                if (thumbDirectory is null)
                 {
                     thumbDirectory = _tempFileSystem.CreateDirectory(ThumbnailPath);
                 }
@@ -205,7 +205,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                 PreviewImage?.Dispose();                
 
-                if ((files == null) || (files.Count == 0))
+                if ((files is null) || (files.Count == 0))
                 {
                     PreviewImage = null;
                     return;
@@ -213,7 +213,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                 IContentFile previewFile = files[files.Count - 1]?.File;
 
-                if (previewFile?.Metadata?.ContentMetadata == null)
+                if (previewFile?.Metadata?.ContentMetadata is null)
                 {
                     PreviewImage = null;
                     return;

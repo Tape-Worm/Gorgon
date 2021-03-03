@@ -138,7 +138,7 @@ namespace Gorgon.Input.DirectInput
 
             Lazy<DI.DirectInput> di = Interlocked.Exchange(ref _directInput, null);
 
-            if ((di == null) || (!di.IsValueCreated))
+            if ((di is null) || (!di.IsValueCreated))
             {
                 return;
             }

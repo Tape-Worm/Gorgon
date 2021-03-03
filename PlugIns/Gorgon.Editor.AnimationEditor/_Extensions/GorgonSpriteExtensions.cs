@@ -42,7 +42,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns>The floating point values.</returns>
         public static DX.Vector4 GetFloatValues(this GorgonSprite sprite, TrackSpriteProperty property)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 return DX.Vector4.Zero;
             }
@@ -96,7 +96,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="values">The values to assign.</param>
         public static void SetFloatValues(this GorgonSprite sprite, TrackSpriteProperty property, DX.Vector4 values)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 return;
             }

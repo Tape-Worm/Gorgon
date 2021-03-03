@@ -121,12 +121,12 @@ namespace GorgonLibrary.IO
         /// <param name="isWrite">TRUE if writing, FALSE if not.</param>
         protected void ValidateAccess(bool isWrite)
         {
-            if ((isWrite) && (Writer == null))
+            if ((isWrite) && (Writer is null))
             {
                 throw new IOException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY);
             }
 
-            if ((!isWrite) && (Reader == null))
+            if ((!isWrite) && (Reader is null))
             {
                 throw new IOException(Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
             }
@@ -163,7 +163,7 @@ namespace GorgonLibrary.IO
         /// </remarks>
         public void Begin(string chunkName)
         {
-            if (chunkName == null)
+            if (chunkName is null)
             {
                 throw new ArgumentNullException(nameof(chunkName));
             }
@@ -288,7 +288,7 @@ namespace GorgonLibrary.IO
         /// </exception>
         protected GorgonChunkedFormat(Stream stream, ChunkAccessMode accessMode)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

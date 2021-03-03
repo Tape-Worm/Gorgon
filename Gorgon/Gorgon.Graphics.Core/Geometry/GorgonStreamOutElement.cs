@@ -201,7 +201,7 @@ namespace Gorgon.Graphics.Core
         /// </exception>
         public GorgonStreamOutElement(string context, byte start, byte count, byte slot, int index = 0, int stream = 0)
         {
-            if (context == null)
+            if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }

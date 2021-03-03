@@ -80,7 +80,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
             {
                 IGorgonVirtualFile textureFile = _projectFileSystem.GetFile(textureName);
 
-                if (textureFile == null)
+                if (textureFile is null)
                 {
                     return null;
                 }
@@ -119,7 +119,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
 
                 // We couldn't load the file, so, let's try again without a file extension since we strip those.
                 int extensionDot = textureName.LastIndexOf('.');
-                if ((textureFile == null) && (extensionDot > 1))
+                if ((textureFile is null) && (extensionDot > 1))
                 {
                     textureName = textureName.Substring(0, extensionDot);
                     textureFile = LocateTextureFile(textureName);
@@ -216,7 +216,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
         {
             IGorgonVirtualDirectory directory = _tempFileSystem.FileSystem.GetDirectory(_tempDirPath);
 
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }

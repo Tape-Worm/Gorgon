@@ -485,7 +485,7 @@ namespace Gorgon.Examples
                 Button button = _buttons[i];
                 button.State = ButtonState.Normal;
 
-                if ((_dragButton == null) && (!button.Bounds.Contains(e.X, e.Y)))
+                if ((_dragButton is null) && (!button.Bounds.Contains(e.X, e.Y)))
                 {
                     continue;
                 }

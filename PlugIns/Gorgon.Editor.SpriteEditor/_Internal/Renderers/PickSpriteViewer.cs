@@ -149,7 +149,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnMouseDown(args);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -159,7 +159,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DX.RectangleF? newRect = _picker.Pick(position, DataContext.Settings.ClipMaskValue, DataContext.Settings.ClipMaskType);
 
-            if (newRect == null)
+            if (newRect is null)
             {
                 Cursor.Current = Cursors.Default;
                 return;

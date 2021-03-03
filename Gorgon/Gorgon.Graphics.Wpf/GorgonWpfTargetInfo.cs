@@ -63,7 +63,7 @@ namespace Gorgon.Graphics.Wpf
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonWpfTargetInfo(IGorgonWpfTargetInfo info, string newName = null)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }

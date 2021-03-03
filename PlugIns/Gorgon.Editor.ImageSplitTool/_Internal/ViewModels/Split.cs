@@ -110,7 +110,7 @@ namespace Gorgon.Editor.ImageSplitTool
             get => _settings.LastOutputDir;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = string.Empty;
                 }
@@ -141,7 +141,7 @@ namespace Gorgon.Editor.ImageSplitTool
             get => _selected;
             private set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = Array.Empty<ContentFileExplorerFileEntry>();
                 }
@@ -255,7 +255,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
                 IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(ThumbnailPath);
 
-                if (thumbDirectory == null)
+                if (thumbDirectory is null)
                 {
                     thumbDirectory = _tempFileSystem.CreateDirectory(ThumbnailPath);
                 }
@@ -279,7 +279,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
                 _previewImage?.Dispose();                
 
-                if ((files == null) || (files.Count == 0))
+                if ((files is null) || (files.Count == 0))
                 {
                     _previewImage = null;
                     NotifyPropertyChanged(nameof(PreviewImage));
@@ -288,7 +288,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
                 IContentFile previewFile = files[files.Count - 1]?.File;
 
-                if (previewFile == null)
+                if (previewFile is null)
                 {
                     _previewImage = null;
                     NotifyPropertyChanged(nameof(PreviewImage));
@@ -454,7 +454,7 @@ namespace Gorgon.Editor.ImageSplitTool
         {
             try
             {
-                if (_splitCancelSource == null)
+                if (_splitCancelSource is null)
                 {
                     return;
                 }

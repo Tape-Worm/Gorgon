@@ -61,7 +61,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="Gorgon.Editor.UI.Controls.ColorChangedEventArgs"/> instance containing the event data.</param>
         private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -88,7 +88,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -159,7 +159,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The data context to assign.</param>
         private void InitializeFromDataContext(ISpriteColorEdit dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -184,7 +184,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnSubmit();
 
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
             {
                 return;
             }
@@ -197,7 +197,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnCancel();
 
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 return;
             }
@@ -234,7 +234,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

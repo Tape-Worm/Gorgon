@@ -141,7 +141,7 @@ namespace Gorgon.Editor.Metadata
         public ProjectItemMetadata(ProjectItemMetadata metadata)
             : this()
         {
-            if (metadata == null)
+            if (metadata is null)
             {
                 throw new ArgumentNullException(nameof(metadata));
             }

@@ -96,12 +96,12 @@ namespace Gorgon.Editor.UI
         /// </remarks>
         public static void AssignViewModel(IViewModel viewModel, Control control)
         {
-            if (viewModel == null)
+            if (viewModel is null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }
@@ -110,7 +110,7 @@ namespace Gorgon.Editor.UI
             Type controlType = control.GetType();
             Type controlInterface = controlType.GetInterface(dataContextType.FullName);
 
-            if (controlInterface == null)
+            if (controlInterface is null)
             {
                 return;
             }
@@ -126,7 +126,7 @@ namespace Gorgon.Editor.UI
         /// <returns><b>true</b> if registered, <b>false</b> if not.</returns>
         public static bool IsRegistered(IViewModel viewModel)
         {
-            if (viewModel == null)
+            if (viewModel is null)
             {
                 return false;
             }
@@ -161,7 +161,7 @@ namespace Gorgon.Editor.UI
         public static T CreateView<T>(IViewModel viewModel)
             where T : Control
         {
-            if (viewModel == null)
+            if (viewModel is null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
@@ -178,7 +178,7 @@ namespace Gorgon.Editor.UI
 
             Type interfaceType = interfaces.FirstOrDefault(item => _viewBuilders.ContainsKey(item.AssemblyQualifiedName));
 
-            return interfaceType == null
+            return interfaceType is null
                 ? throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY, typeName))
                 : (T)_viewBuilders[interfaceType.AssemblyQualifiedName]();
         }

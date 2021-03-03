@@ -84,7 +84,7 @@ namespace Gorgon.IO
         /// </remarks>
         public IGorgonAnimationCodec CreateCodec(string codec, Gorgon2D renderer)
         {
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }

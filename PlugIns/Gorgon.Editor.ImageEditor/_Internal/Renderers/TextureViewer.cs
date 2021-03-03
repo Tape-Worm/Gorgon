@@ -141,7 +141,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void UpdateTextureParameters()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -165,7 +165,7 @@ namespace Gorgon.Editor.ImageEditor
                 GorgonPixelShader shader = Interlocked.Exchange(ref _imageShader, null);
                 GorgonConstantBufferView cBuffer = Interlocked.Exchange(ref _textureParameters, null);
 
-                if (shader == null)
+                if (shader is null)
                 {
                     return;
                 }

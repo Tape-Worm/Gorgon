@@ -467,7 +467,7 @@ namespace Gorgon.Renderers
             output.ValidateObject(nameof(output));
             index.ValidateRange(nameof(index), 0, PassCount);
 
-            if (_currentEffect == null)
+            if (_currentEffect is null)
             {
                 throw new GorgonException(GorgonResult.NotInitialized, Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_NOT_CALLED);
             }
@@ -520,14 +520,14 @@ namespace Gorgon.Renderers
         {
             index.ValidateRange(nameof(index), 0, PassCount);
 
-            if ((!_isRenderingPass) || (_currentEffect == null))
+            if ((!_isRenderingPass) || (_currentEffect is null))
             {
                 return;
             }
 
             try
             {
-                if (output == null)
+                if (output is null)
                 {
                     return;
                 }
@@ -576,7 +576,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected void EndRender(GorgonRenderTargetView output)
         {
-            if (_currentEffect == null)
+            if (_currentEffect is null)
             {
                 return;
             }
@@ -595,7 +595,7 @@ namespace Gorgon.Renderers
                     Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
                 }
 
-                if (output == null)
+                if (output is null)
                 {
                     return;
                 }

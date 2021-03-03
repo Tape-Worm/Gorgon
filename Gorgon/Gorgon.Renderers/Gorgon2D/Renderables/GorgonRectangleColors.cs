@@ -194,7 +194,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
         public void CopyTo(GorgonRectangleColors destination)
         {
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }

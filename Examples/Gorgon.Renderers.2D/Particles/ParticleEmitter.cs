@@ -463,7 +463,7 @@ namespace Gorgon.Examples
             // Flag to skip initialization.
             float frameDelta = GorgonTiming.Delta;
 
-            if ((Paused) || (ParticleSprite == null))
+            if ((Paused) || (ParticleSprite is null))
             {
                 return;
             }
@@ -526,7 +526,7 @@ namespace Gorgon.Examples
         /// </summary>
         public void Draw()
         {
-            if (ParticleSprite == null)
+            if (ParticleSprite is null)
             {
                 return;
             }

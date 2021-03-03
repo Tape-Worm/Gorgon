@@ -233,7 +233,7 @@ namespace Gorgon.Examples
             TreeNodeCollection nodes;
             TreeNode parentNode;
 
-            if (directory == null)
+            if (directory is null)
             {
                 directory = _fileSystem.RootDirectory;
                 nodes = treeFileSystem.Nodes;

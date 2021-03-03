@@ -119,7 +119,7 @@ namespace Gorgon.Examples
             {
                 Light light = Lights[i];
 
-                if (light == null)
+                if (light is null)
                 {
                     continue;
                 }
@@ -149,7 +149,7 @@ namespace Gorgon.Examples
         /// <param name="light">The light to apply.</param>
         public void ApplyLight(Light light)
         {
-            if (light == null)
+            if (light is null)
             {
                 return;
             }

@@ -39,7 +39,7 @@ namespace System.ComponentModel.Composition.Registration
 
         public ExportBuilder AddMetadata(string name, object value)
         {
-            if (_metadataItems == null)
+            if (_metadataItems is null)
             {
                 _metadataItems = new List<Tuple<string, object>>();
             }
@@ -50,7 +50,7 @@ namespace System.ComponentModel.Composition.Registration
 
         public ExportBuilder AddMetadata(string name, Func<Type, object> itemFunc)
         {
-            if (_metadataItemFuncs == null)
+            if (_metadataItemFuncs is null)
             {
                 _metadataItemFuncs = new List<Tuple<string, Func<Type, object>>>();
             }
@@ -61,7 +61,7 @@ namespace System.ComponentModel.Composition.Registration
 
         internal void BuildAttributes(Type type, ref List<Attribute> attributes)
         {
-            if (attributes == null)
+            if (attributes is null)
             {
                 attributes = new List<Attribute>();
             }

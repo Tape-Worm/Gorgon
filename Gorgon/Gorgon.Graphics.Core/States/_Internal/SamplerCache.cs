@@ -58,7 +58,7 @@ namespace Gorgon.Graphics.Core
         {
             foreach (GorgonSamplerState sampler in _cachedSamplers)
             {
-                if (sampler == null)
+                if (sampler is null)
                 {
                     break;
                 }
@@ -106,7 +106,7 @@ namespace Gorgon.Graphics.Core
                 {
                     GorgonSamplerState cached = _cachedSamplers[index];
 
-                    if (cached == null)
+                    if (cached is null)
                     {
                         break;
                     }

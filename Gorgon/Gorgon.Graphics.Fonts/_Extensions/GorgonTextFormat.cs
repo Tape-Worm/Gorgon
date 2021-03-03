@@ -165,7 +165,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         public static string WordWrap(this string text, GorgonFont font, float wordWrapWidth)
         {
-            if (font == null)
+            if (font is null)
             {
                 throw new ArgumentNullException(nameof(font));
             }
@@ -312,7 +312,7 @@ namespace Gorgon.Graphics.Fonts
         /// <seealso cref="MeasureText"/>
         public static DX.Size2F MeasureLine(this string text, GorgonFont font, bool useOutline = false, float lineSpacing = 1.0f)
         {
-            if (font == null)
+            if (font is null)
             {
                 throw new ArgumentNullException(nameof(font));
             }
@@ -367,7 +367,7 @@ namespace Gorgon.Graphics.Fonts
         /// <seealso cref="MeasureLine"/>
         public static DX.Size2F MeasureText(this string text, GorgonFont font, bool useOutline = false, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
         {
-            if (font == null)
+            if (font is null)
             {
                 throw new ArgumentNullException(nameof(font));
             }

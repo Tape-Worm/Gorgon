@@ -92,7 +92,7 @@ namespace Gorgon.IO
                 {
                     ulong? id = (ulong?)reader.ReadAsDecimal();
 
-                    if ((id == null) || (id != CurrentFileHeader))
+                    if ((id is null) || (id != CurrentFileHeader))
                     {
                         return false;
                     }
@@ -250,12 +250,12 @@ namespace Gorgon.IO
         /// <exception cref="GorgonException">Thrown if the JSON string does not contain sprite data, or there is a version mismatch.</exception>
         public static GorgonSprite FromJson(Gorgon2D renderer, GorgonTexture2DView overrideTexture, string json)
         {
-            if (renderer == null)
+            if (renderer is null)
             {
                 throw new ArgumentNullException(nameof(renderer));
             }
 
-            if (json == null)
+            if (json is null)
             {
                 throw new ArgumentNullException(nameof(json));
             }

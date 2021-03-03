@@ -196,7 +196,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         public void RefreshGif(System.Drawing.Graphics graphics)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
@@ -282,7 +282,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         public void DrawGallery(System.Drawing.Graphics graphics, Size clientSize)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
@@ -361,7 +361,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseFont"/>, or the <paramref name="animator"/> parameter is <b>null</b>.</exception>
         public ImageGallery(Font baseFont, int deviceDpi, GifAnimator animator)
         {
-            if (baseFont == null)
+            if (baseFont is null)
             {
                 throw new ArgumentNullException(nameof(baseFont));
             }

@@ -306,7 +306,7 @@ namespace Gorgon.Renderers
                 {
                     GorgonLightCommon light = Lights[i];
 
-                    if (light == null)
+                    if (light is null)
                     {
                         continue;
                     }
@@ -389,7 +389,7 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if (_vertexLitShaderState == null)
+            if (_vertexLitShaderState is null)
             {
                 _vertexLitShaderState = builders.VertexShaderBuilder.Shader(_rotateNormals ? _vertexLitTransformShader : _vertexLitShader)
                                                                     .Build(VertexShaderAllocator);
@@ -401,7 +401,7 @@ namespace Gorgon.Renderers
                 BuildPixelShaderPermutations();
             }
 
-            if ((statesChanged) || (_pixelLitShaderState == null))
+            if ((statesChanged) || (_pixelLitShaderState is null))
             {
                 builders.PixelShaderBuilder.Clear()                                           
                                            .ConstantBuffer(_lightBuffer, 1)
@@ -430,7 +430,7 @@ namespace Gorgon.Renderers
                 _lightingState = null;
             }
 
-            if (_lightingState == null)
+            if (_lightingState is null)
             {
                 _lightingState = builders.BatchBuilder
                                          .PixelShaderState(_pixelLitShaderState)

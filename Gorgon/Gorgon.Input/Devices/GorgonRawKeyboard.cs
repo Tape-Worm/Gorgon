@@ -344,7 +344,7 @@ namespace Gorgon.Input
         /// </remarks>
         public GorgonRawKeyboard(IGorgonKeyboardInfo keyboardInfo = null)
         {
-            if (keyboardInfo == null)
+            if (keyboardInfo is null)
             {
                 keyboardInfo = GetSysKeyboardInfo();
             }

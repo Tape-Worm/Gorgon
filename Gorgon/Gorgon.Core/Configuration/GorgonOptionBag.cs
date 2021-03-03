@@ -73,7 +73,7 @@ namespace Gorgon.Configuration
         public GorgonOptionBag(IEnumerable<IGorgonOption> options)
             : base(false)
         {
-            if (options == null)
+            if (options is null)
             {
                 throw new ArgumentNullException(nameof(options));
             }

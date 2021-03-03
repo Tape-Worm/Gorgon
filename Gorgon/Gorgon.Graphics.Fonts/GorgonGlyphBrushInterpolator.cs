@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>
         /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
         /// </returns>
-        public bool Equals(GorgonGlyphBrushInterpolator other) => other != null && other.Weight.EqualsEpsilon(Weight) && Color.Equals(other.Color);
+        public bool Equals(GorgonGlyphBrushInterpolator other) => other.Weight.EqualsEpsilon(Weight) && Color.Equals(other.Color);
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -95,7 +95,7 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>
         /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
         /// </returns>
-        public int CompareTo(GorgonGlyphBrushInterpolator other) => other == null ? -1 : Weight < other.Weight ? -1 : Weight > other.Weight ? 1 : 0;
+        public int CompareTo(GorgonGlyphBrushInterpolator other) => Weight < other.Weight ? -1 : Weight > other.Weight ? 1 : 0;
 
 
         /// <summary>

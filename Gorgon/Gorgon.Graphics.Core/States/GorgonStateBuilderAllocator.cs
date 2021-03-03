@@ -69,7 +69,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public TRs Build(IGorgonAllocator<TRs> allocator)
         {
-            if (allocator == null)
+            if (allocator is null)
             {
                 return OnCreateState();
             }

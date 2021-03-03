@@ -154,7 +154,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonSamplerStateBuilder Wrapping(TextureWrap? wrapU = null, TextureWrap? wrapV = null, TextureWrap? wrapW = null, in GorgonColor? borderColor = null)
         {
-            if ((wrapW == null) && (wrapU == null) && (wrapV == null) && (borderColor == null))
+            if ((wrapW is null) && (wrapU is null) && (wrapV is null) && (borderColor is null))
             {
                 WorkingState.WrapU = WorkingState.WrapV = WorkingState.WrapW = TextureWrap.Clamp;
                 WorkingState.BorderColor = GorgonColor.Transparent;
@@ -219,7 +219,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
 	    public GorgonSamplerStateBuilder MipLevelOfDetail(float? min = null, float? max = null, float? mipLodBias = null)
         {
-            if ((min == null) && (max == null) && (mipLodBias == null))
+            if ((min is null) && (max is null) && (mipLodBias is null))
             {
                 WorkingState.MinimumLevelOfDetail = float.MinValue;
                 WorkingState.MaximumLevelOfDetail = float.MaxValue;

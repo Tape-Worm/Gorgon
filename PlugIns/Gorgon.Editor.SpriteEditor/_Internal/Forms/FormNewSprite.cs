@@ -193,7 +193,7 @@ namespace Gorgon.Editor.SpriteEditor
                 PicturePreview.Image = _previewImage = image.Buffers[0].ToBitmap();
 
                 // Default width/height to the image size.
-                if (_originalSize == null)
+                if (_originalSize is null)
                 {
                     NumericWidth.Value = metaData.Width.Max(1).Min((int)NumericWidth.Maximum);
                     NumericHeight.Value = metaData.Height.Max(1).Min((int)NumericHeight.Maximum);
@@ -333,7 +333,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             FileTextures.Entries = dirs.Values.ToArray();
 
-            if (selectedTexture == null)
+            if (selectedTexture is null)
             {
                 return;
             }

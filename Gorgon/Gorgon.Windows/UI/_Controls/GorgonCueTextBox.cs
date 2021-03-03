@@ -59,7 +59,7 @@ namespace Gorgon.UI
             get => _cueText;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = string.Empty;
                 }
@@ -125,7 +125,7 @@ namespace Gorgon.UI
                     using (System.Drawing.Graphics g = CreateGraphics())
                     {
                         // If the font has not been created, then create it now.
-                        if (_cueFont == null)
+                        if (_cueFont is null)
                         {
                             _cueFont = new Font(Font, FontStyle.Italic);
                         }

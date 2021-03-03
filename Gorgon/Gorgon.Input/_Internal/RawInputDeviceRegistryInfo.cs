@@ -66,7 +66,7 @@ namespace Gorgon.Input
             using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
                                                                             false))
             {
-                if (deviceKey?.GetValue("DeviceDesc") == null)
+                if (deviceKey?.GetValue("DeviceDesc") is null)
                 {
                     return string.Empty;
                 }
@@ -106,7 +106,7 @@ namespace Gorgon.Input
             using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
                                                                             false))
             {
-                if (deviceKey?.GetValue("DeviceDesc") == null)
+                if (deviceKey?.GetValue("DeviceDesc") is null)
                 {
                     return string.Empty;
                 }
@@ -117,7 +117,7 @@ namespace Gorgon.Input
                 }
 
                 // Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
-                if (deviceKey.GetValue("ClassGUID") == null)
+                if (deviceKey.GetValue("ClassGUID") is null)
                 {
                     return string.Empty;
                 }
@@ -131,7 +131,7 @@ namespace Gorgon.Input
 
                 using (RegistryKey classKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Control\Class\{classGUID}"))
                 {
-                    return classKey?.GetValue("Class") == null ? string.Empty : classKey.GetValue("Class").ToString();
+                    return classKey?.GetValue("Class") is null ? string.Empty : classKey.GetValue("Class").ToString();
                 }
             }
         }

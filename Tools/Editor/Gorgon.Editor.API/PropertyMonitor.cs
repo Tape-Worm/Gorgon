@@ -87,7 +87,7 @@ namespace Gorgon.Editor
         [DebuggerStepThrough]
         private void ValidatePropertyName(string propertyName)
         {
-            if (_properties == null)
+            if (_properties is null)
             {
                 Type thisType = GetType();
 
@@ -186,7 +186,7 @@ namespace Gorgon.Editor
         [DebuggerStepThrough]
         public void NotifyPropertyChanged(string propertyName)
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
@@ -232,7 +232,7 @@ namespace Gorgon.Editor
         [DebuggerStepThrough]
         public void NotifyPropertyChanging(string propertyName)
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }

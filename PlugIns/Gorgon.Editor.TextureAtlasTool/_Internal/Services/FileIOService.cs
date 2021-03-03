@@ -61,7 +61,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <returns>The sprite texture.</returns>
         private GorgonTexture2DView LoadSpriteTexture(IContentFile textureFile)
         {
-            if (textureFile == null)
+            if (textureFile is null)
             {
                 return null;
             }

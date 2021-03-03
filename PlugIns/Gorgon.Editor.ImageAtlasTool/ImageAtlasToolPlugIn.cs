@@ -146,19 +146,19 @@ namespace Gorgon.Editor.ImageAtlasTool
             {
                 settings = HostToolServices.ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(ImageAtlasToolPlugIn).FullName);
 
-                if (settings == null)
+                if (settings is null)
                 {
                     settings = new TextureAtlasSettings();
                 }
 
                 (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> entries) = GetFileEntries();
 
-                if (_fileVm == null)
+                if (_fileVm is null)
                 {
                     _fileVm = new ImageFiles();
                 }
 
-                if (_textureAtlas == null)
+                if (_textureAtlas is null)
                 {
                     _textureAtlas = new ImageAtlas();
                 }
@@ -204,7 +204,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// </remarks>
         protected override IToolPlugInRibbonButton OnGetToolButton()
         {
-            if (_button.ClickCallback == null)
+            if (_button.ClickCallback is null)
             {
                 _button.ClickCallback = ShowForm;
             }

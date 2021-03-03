@@ -68,7 +68,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
         protected GorgonNamedObject(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

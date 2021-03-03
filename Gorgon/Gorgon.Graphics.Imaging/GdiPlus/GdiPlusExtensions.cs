@@ -180,7 +180,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </remarks>
 	    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
         {
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
@@ -317,12 +317,12 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </remarks>
 	    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
         {
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            if (bitmap == null)
+            if (bitmap is null)
             {
                 throw new ArgumentNullException(nameof(bitmap));
             }
@@ -451,12 +451,12 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </remarks>
 	    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
         {
-            if (bitmap == null)
+            if (bitmap is null)
             {
                 throw new ArgumentNullException(nameof(bitmap));
             }
 
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
@@ -554,7 +554,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </remarks>
         public static IGorgonImage ToGorgonImage(this Bitmap bitmap)
         {
-            if (bitmap == null)
+            if (bitmap is null)
             {
                 throw new ArgumentNullException(nameof(bitmap));
             }

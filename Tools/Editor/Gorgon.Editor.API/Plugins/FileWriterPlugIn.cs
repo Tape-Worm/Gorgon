@@ -185,7 +185,7 @@ namespace Gorgon.Editor.PlugIns
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         public bool CanWriteFile(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -230,13 +230,13 @@ namespace Gorgon.Editor.PlugIns
         /// </remarks>
         public Task WriteAsync(string filePath, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
 
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (workspace == null)
+            if (workspace is null)
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
@@ -265,7 +265,7 @@ namespace Gorgon.Editor.PlugIns
         protected FileWriterPlugIn(string description, IEnumerable<GorgonFileExtension> fileExtensions)
             : base(description)
         {
-            if (fileExtensions == null)
+            if (fileExtensions is null)
             {
                 throw new ArgumentNullException(nameof(fileExtensions));
             }

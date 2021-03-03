@@ -90,7 +90,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
         private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
         {
-            if ((DataContext?.SearchCommand == null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+            if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
             {
                 return;
             }
@@ -105,7 +105,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// <param name="e">The e.</param>
         private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
         {
-            if ((DataContext?.RefreshImagePreviewCommand == null) || (!DataContext.RefreshImagePreviewCommand.CanExecute(e.FocusedFiles)))
+            if ((DataContext?.RefreshImagePreviewCommand is null) || (!DataContext.RefreshImagePreviewCommand.CanExecute(e.FocusedFiles)))
             {
                 return;
             }
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonLoad_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ConfirmLoadCommand == null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
+            if ((DataContext?.ConfirmLoadCommand is null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
             {
                 return;
             }
@@ -167,7 +167,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         {
             _previewImage?.Dispose();
 
-            if (image == null)
+            if (image is null)
             {
                 _previewImage = null;
                 return;
@@ -283,7 +283,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -302,7 +302,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(IImageFiles dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -322,7 +322,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                 return;
             }
 
-            if ((_closeState == 1) || (DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((_closeState == 1) || (DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 _closeState = 0;
                 DataContext?.OnUnload();
@@ -363,7 +363,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 
             _graphicsContext = context;
 
-            if (context == null)
+            if (context is null)
             {
                 return;
             }
@@ -383,7 +383,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

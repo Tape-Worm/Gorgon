@@ -149,7 +149,7 @@ namespace Gorgon.Examples
 
             GorgonRenderTargetView rtv = Graphics.RenderTargets[0];
 
-            if (rtv == null)
+            if (rtv is null)
             {
                 return;
             }
@@ -170,7 +170,7 @@ namespace Gorgon.Examples
 
                 if (needStateChange)
                 {
-                    if ((!entity.IsLit) || (GBuffer == null))
+                    if ((!entity.IsLit) || (GBuffer is null))
                     {
                         if ((wasLit) && (GBuffer != null))
                         {
@@ -232,7 +232,7 @@ namespace Gorgon.Examples
 
             foreach (GorgonBlendState blendState in Sprites.Select(item => item.BlendState).Distinct())
             {
-                if ((blendState == null) || (blendState == GorgonBlendState.Default))
+                if ((blendState is null) || (blendState == GorgonBlendState.Default))
                 {
                     continue;
                 }

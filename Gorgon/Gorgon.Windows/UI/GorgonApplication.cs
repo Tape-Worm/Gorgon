@@ -125,7 +125,7 @@ namespace Gorgon.UI
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     ExitEvent = null;
                     return;
@@ -135,7 +135,7 @@ namespace Gorgon.UI
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {                    
                     return;
                 }
@@ -151,7 +151,7 @@ namespace Gorgon.UI
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     ThreadExitEvent = null;
                     return;
@@ -161,7 +161,7 @@ namespace Gorgon.UI
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -363,9 +363,9 @@ namespace Gorgon.UI
             {
                 // If we have no application form, or context and we try disable the loop, leave. 
                 // We do this because if there's no context or form, then there's nothing to run and that's an invalid state.
-                if ((value == null)
-                    && (MainForm == null)
-                    && (ApplicationContext == null))
+                if ((value is null)
+                    && (MainForm is null)
+                    && (ApplicationContext is null))
                 {
                     throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_CANNOT_REMOVE_IDLE_LOOP);
                 }
@@ -379,7 +379,7 @@ namespace Gorgon.UI
 
                 _loop = value;
 
-                if ((value == null) || (!IsRunning))
+                if ((value is null) || (!IsRunning))
                 {
                     return;
                 }
@@ -466,7 +466,7 @@ namespace Gorgon.UI
                     {
                         _log?.LogEnd();
 
-                        if (value == null)
+                        if (value is null)
                         {
                             _log = _dummyLog;
                             return;
@@ -497,14 +497,14 @@ namespace Gorgon.UI
             // Windows message to retrieve.
 
             // We have nothing to execute, so just leave.
-            if ((IdleMethod == null) || (!IsRunning))
+            if ((IdleMethod is null) || (!IsRunning))
             {
                 return;
             }
 
             // Check for application focus. If we didn't assign a main form, or one was not assigned to the application context, then 
             // run regardless since we have an idle method to execute.
-            bool appShouldProcess = MainForm == null || AllowBackground || IsForeground;
+            bool appShouldProcess = MainForm is null || AllowBackground || IsForeground;
 
             if (!GorgonTiming.TimingStarted)
             {
@@ -531,7 +531,7 @@ namespace Gorgon.UI
                 }
 
                 // Give up CPU time if we're not focused.
-                if ((MainForm == null) || (MainForm.ContainsFocus) || (_unfocusedSleepTime <= 0) || (Form.ActiveForm != null))
+                if ((MainForm is null) || (MainForm.ContainsFocus) || (_unfocusedSleepTime <= 0) || (Form.ActiveForm != null))
                 {
                     continue;
                 }
@@ -551,7 +551,7 @@ namespace Gorgon.UI
         /// </summary>
         private static void InitializeLogger()
         {
-            if (Log == null)
+            if (Log is null)
             {
                 return;
             }

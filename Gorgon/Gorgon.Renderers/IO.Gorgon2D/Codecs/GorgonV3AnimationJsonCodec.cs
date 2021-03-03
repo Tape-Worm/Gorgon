@@ -104,7 +104,7 @@ namespace Gorgon.IO
                 {
                     ulong? id = (ulong?)reader.ReadAsDecimal();
 
-                    if ((id == null) || (id != FileHeader30))
+                    if ((id is null) || (id != FileHeader30))
                     {
                         return false;
                     }
@@ -505,12 +505,12 @@ namespace Gorgon.IO
         /// <exception cref="GorgonException">Thrown if the JSON string does not contain animation data, or there is a version mismatch.</exception>
         public IGorgonAnimation FromJson(Gorgon2D renderer, string json)
         {
-            if (renderer == null)
+            if (renderer is null)
             {
                 throw new ArgumentNullException(nameof(renderer));
             }
 
-            if (json == null)
+            if (json is null)
             {
                 throw new ArgumentNullException(nameof(json));
             }

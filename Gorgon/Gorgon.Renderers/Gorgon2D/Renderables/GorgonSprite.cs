@@ -394,7 +394,7 @@ namespace Gorgon.Renderers
             set
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (value == null)
+                if (value is null)
                 {
                     if (Renderable.AlphaTestData.IsEnabled == 0)
                     {
@@ -462,7 +462,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
         public void CopyTo(GorgonSprite sprite)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 throw new ArgumentNullException(nameof(sprite));
             }
@@ -508,7 +508,7 @@ namespace Gorgon.Renderers
         public GorgonSprite(GorgonSprite clone)
             : this()
         {
-            if (clone == null)
+            if (clone is null)
             {
                 throw new ArgumentNullException(nameof(clone));
             }

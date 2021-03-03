@@ -75,7 +75,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>A tuple containing the new sprite name, the associated sprite texture file, and the initial size of the sprite.</returns>
         public (string spriteName, IContentFile textureFile, DX.Size2F spriteSize) GetNewSpriteName(IContentFile currentSprite, IContentFile currentTexture, DX.Size2F currentSize)
         {
-            if (currentSprite == null)
+            if (currentSprite is null)
             {
                 throw new ArgumentNullException(nameof(currentSprite));
             }

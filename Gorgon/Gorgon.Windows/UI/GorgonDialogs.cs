@@ -113,7 +113,7 @@ namespace Gorgon.UI
         /// <returns>A string containing the details of the exception.</returns>
         private static string GetDetailsFromException(Exception innerException)
         {
-            if (innerException == null)
+            if (innerException is null)
             {
                 return Resources.GOR_EXCEPT_NO_MSG;
             }
@@ -278,7 +278,7 @@ namespace Gorgon.UI
                 errorDialog.ShowDialog(parentForm);
 
                 // If the owner form is null or not available, center on screen.
-                if ((parentForm == null) || (parentForm.WindowState == FormWindowState.Minimized) || (!parentForm.Visible))
+                if ((parentForm is null) || (parentForm.WindowState == FormWindowState.Minimized) || (!parentForm.Visible))
                 {
                     errorDialog.StartPosition = FormStartPosition.CenterScreen;
                 }

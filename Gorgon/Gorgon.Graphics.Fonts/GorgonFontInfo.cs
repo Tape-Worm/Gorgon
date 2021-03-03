@@ -197,7 +197,7 @@ namespace Gorgon.Graphics.Fonts
             get => _characters;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     _characters = new[]
                                   {
@@ -474,7 +474,7 @@ namespace Gorgon.Graphics.Fonts
         /// <exception cref="ArgumentException">The <paramref name="size"/> parameter is less than or equal to 0.</exception>
         public GorgonFontInfo(string fontFamily, float size, FontHeightMode heightMode = FontHeightMode.Pixels, string name = null)
         {
-            if (fontFamily == null)
+            if (fontFamily is null)
             {
                 throw new ArgumentNullException(nameof(fontFamily));
             }

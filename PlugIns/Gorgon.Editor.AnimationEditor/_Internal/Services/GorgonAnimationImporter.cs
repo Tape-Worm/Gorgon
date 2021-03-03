@@ -82,7 +82,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
             {
                 IGorgonVirtualFile textureFile = _projectFileSystem.GetFile(textureName);
 
-                if (textureFile == null)
+                if (textureFile is null)
                 {
                     return null;
                 }
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
 
                     // We couldn't load the file, so, let's try again without a file extension since we strip those.
                     int extensionDot = textureName.LastIndexOf('.');
-                    if ((textureFile == null) && (extensionDot > 1))
+                    if ((textureFile is null) && (extensionDot > 1))
                     {
                         textureFile = LocateTextureFile(textureName.Substring(0, extensionDot));
                     }
@@ -228,7 +228,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
         {
             IGorgonVirtualDirectory directory = _tempFileSystem.FileSystem.GetDirectory(_tempDirPath);
 
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }

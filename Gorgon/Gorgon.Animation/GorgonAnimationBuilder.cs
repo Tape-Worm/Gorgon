@@ -88,7 +88,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeySingle> EditSingle(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -120,7 +120,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyVector2> EditVector2(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -152,7 +152,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditVector3(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -184,7 +184,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyVector4> EditVector4(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -216,7 +216,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyRectangle> EditRectangle(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -248,7 +248,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> EditColor(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -280,7 +280,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyTexture2D> Edit2DTexture(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -309,7 +309,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteSingle(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -337,7 +337,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteVector2(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -366,7 +366,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteVector3(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -395,7 +395,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteVector4(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -424,7 +424,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteRectangle(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -453,7 +453,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteColor(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -482,7 +482,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder Delete2DTexture(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -520,7 +520,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonAnimation Build(string name, float fps = 60, float? length = null)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -647,7 +647,7 @@ namespace Gorgon.Animation
                 };
             }
 
-            if (length == null)
+            if (length is null)
             {
                 length = _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>()).DefaultIfEmpty()
                                       .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
@@ -685,7 +685,7 @@ namespace Gorgon.Animation
         {
             Clear();
 
-            if (builderObject == null)
+            if (builderObject is null)
             {
                 return this;
             }

@@ -203,7 +203,7 @@ namespace Gorgon.Collections
         /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from dictionary. The <see cref="Array"/> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <exception cref="ArgumentNullException">
-        /// 	<paramref name="array"/> is null.
+        /// 	<paramref name="array"/> == null.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// 	<paramref name="arrayIndex"/> is less than 0.

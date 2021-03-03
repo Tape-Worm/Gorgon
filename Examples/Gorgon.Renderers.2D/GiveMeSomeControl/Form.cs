@@ -85,7 +85,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
         private void SplitViews_SplitterMoved(object sender, SplitterEventArgs e)
         {
-            if (_graphics == null)
+            if (_graphics is null)
             {
                 return;
             }

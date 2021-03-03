@@ -62,7 +62,7 @@ namespace Gorgon.UI
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     OperationCancelledEvent = value;
                     return;
@@ -72,7 +72,7 @@ namespace Gorgon.UI
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }

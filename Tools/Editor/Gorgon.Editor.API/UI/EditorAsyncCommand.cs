@@ -78,7 +78,7 @@ namespace Gorgon.Editor.UI
         public bool CanExecute(T args)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if ((_canExecute == null) && (_canExecuteNoArgs == null))
+            if ((_canExecute is null) && (_canExecuteNoArgs is null))
             {
                 return true;
             }

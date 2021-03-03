@@ -75,7 +75,7 @@ namespace Gorgon.Editor.Services
             get => !_textureRef.TryGetTarget(out GorgonTexture2DView result) ? null : result;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     _textureRef = null;
                     return;
@@ -141,7 +141,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return the number of sprites that will be extracted.
         /// </summary>
-        public int SpriteCount => _textureRef == null ? 0 : (GridSize.Width.Min(MaxGridSize.Width).Max(1) * GridSize.Height.Min(MaxGridSize.Height).Max(1)) * ArrayCount;
+        public int SpriteCount => _textureRef is null ? 0 : (GridSize.Width.Min(MaxGridSize.Width).Max(1) * GridSize.Height.Min(MaxGridSize.Height).Max(1)) * ArrayCount;
         #endregion
     }
 }

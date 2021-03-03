@@ -154,7 +154,7 @@ namespace Gorgon.Input.DirectInput
                 GorgonGamingDeviceAxisInfo info = Info.AxisInfo[axis.Axis];
                 DI.ObjectProperties properties = result.GetObjectPropertiesById(_axisMappings[axis.Axis]);
 
-                if (properties == null)
+                if (properties is null)
                 {
                     continue;
                 }

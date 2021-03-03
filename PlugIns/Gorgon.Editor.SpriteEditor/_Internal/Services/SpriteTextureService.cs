@@ -216,7 +216,7 @@ namespace Gorgon.Editor.SpriteEditor
                 }
             });
 
-            if ((imageData == null) || (file == null))
+            if ((imageData is null) || (file is null))
             {
                 return (null, null);
             }

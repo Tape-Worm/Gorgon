@@ -172,7 +172,7 @@ namespace Gorgon.Editor
         /// <param name="buttons">The buttons to display on the ribbon.</param>
         private void UpdateToolsTab(IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> buttons)
         {
-            if ((buttons == null) || (buttons.Count == 0))
+            if ((buttons is null) || (buttons.Count == 0))
             {
                 ReleaseToolRibbonItems();
                 return;
@@ -180,7 +180,7 @@ namespace Gorgon.Editor
 
             foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> buttonItem in buttons)
             {
-                if ((buttonItem.Value == null) || (buttonItem.Value.Count == 0))
+                if ((buttonItem.Value is null) || (buttonItem.Value.Count == 0))
                 {
                     continue;
                 }
@@ -217,7 +217,7 @@ namespace Gorgon.Editor
                     }
 
                     // Figure out which subgroup type to create.
-                    if ((triple == null) && (lines == null))
+                    if ((triple is null) && (lines is null))
                     {
                         if (button.IsSmall)
                         {
@@ -309,7 +309,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ToolButton_Click(object sender, EventArgs e)
         {
-            if (DataContext?.CurrentProject == null)
+            if (DataContext?.CurrentProject is null)
             {
                 return;
             }
@@ -333,7 +333,7 @@ namespace Gorgon.Editor
             toolButton?.ClickCallback();
 
             IFile selectedFile = null;
-            if (DataContext.CurrentProject.FileExplorer == null)
+            if (DataContext.CurrentProject.FileExplorer is null)
             {
                 return;
             }
@@ -349,12 +349,12 @@ namespace Gorgon.Editor
                 await DataContext.CurrentProject.ContentPreviewer.ResetPreviewCommand.ExecuteAsync(null);
             }
 
-            if (selectedFile == null)
+            if (selectedFile is null)
             {
                 return;
             }
 
-            if ((DataContext.CurrentProject.ContentPreviewer?.RefreshPreviewCommand == null)
+            if ((DataContext.CurrentProject.ContentPreviewer?.RefreshPreviewCommand is null)
                 || (!DataContext.CurrentProject.ContentPreviewer.RefreshPreviewCommand.CanExecute(selectedFile.FullPath)))                
             {
                 return;
@@ -372,7 +372,7 @@ namespace Gorgon.Editor
             IFileExplorer fileExplorer = project?.FileExplorer;
             string currentFilePath = fileExplorer?.SelectedFiles[0].FullPath;
 
-            if ((fileExplorer?.OpenContentFileCommand == null) || (!fileExplorer.OpenContentFileCommand.CanExecute(currentFilePath)))
+            if ((fileExplorer?.OpenContentFileCommand is null) || (!fileExplorer.OpenContentFileCommand.CanExecute(currentFilePath)))
             {
                 return;
             }
@@ -390,7 +390,7 @@ namespace Gorgon.Editor
             IFileExplorer fileExplorer = project?.FileExplorer;
             IContentPreview preview = project?.ContentPreviewer;
 
-            if ((fileExplorer?.RefreshCommand == null) || (!fileExplorer.RefreshCommand.CanExecute(null)))
+            if ((fileExplorer?.RefreshCommand is null) || (!fileExplorer.RefreshCommand.CanExecute(null)))
             {
                 return;
             }
@@ -402,7 +402,7 @@ namespace Gorgon.Editor
                 project.SaveProjectMetadataCommand.Execute(null);
             }
 
-            if ((preview?.ResetPreviewCommand == null) || (preview?.RefreshPreviewCommand == null))
+            if ((preview?.ResetPreviewCommand is null) || (preview?.RefreshPreviewCommand is null))
             {
                 return;
             }
@@ -414,7 +414,7 @@ namespace Gorgon.Editor
 
             IFile file = fileExplorer.SelectedFiles.Count > 0 ? fileExplorer.SelectedFiles[0] : null;
 
-            if ((file == null) || (!preview.RefreshPreviewCommand.CanExecute(file.FullPath)))
+            if ((file is null) || (!preview.RefreshPreviewCommand.CanExecute(file.FullPath)))
             {
                 return;
             }
@@ -506,7 +506,7 @@ namespace Gorgon.Editor
             try
             {
                 var args = new DeleteArgs(fileExplorer.Root.ID);
-                if ((fileExplorer?.DeleteDirectoryCommand == null) || (!fileExplorer.DeleteDirectoryCommand.CanExecute(args)))
+                if ((fileExplorer?.DeleteDirectoryCommand is null) || (!fileExplorer.DeleteDirectoryCommand.CanExecute(args)))
                 {
                     return;
                 }
@@ -524,7 +524,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Stage_OpenClicked(object sender, EventArgs e)
         {
-            if ((DataContext?.OpenPackFileCommand == null) || (!DataContext.OpenPackFileCommand.CanExecute(null)))
+            if ((DataContext?.OpenPackFileCommand is null) || (!DataContext.OpenPackFileCommand.CanExecute(null)))
             {
                 return;
             }
@@ -537,7 +537,7 @@ namespace Gorgon.Editor
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
         private void StageLive_BrowseClicked(object sender, EventArgs e)
         {
-            if ((DataContext?.BrowseProjectCommand == null) || (!DataContext.BrowseProjectCommand.CanExecute(null)))
+            if ((DataContext?.BrowseProjectCommand is null) || (!DataContext.BrowseProjectCommand.CanExecute(null)))
             {
                 return;
             }
@@ -552,7 +552,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void FormMain_Activated(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -565,7 +565,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSave_Click(object sender, EventArgs e)
         {
-            if (DataContext?.CurrentProject == null)
+            if (DataContext?.CurrentProject is null)
             {
                 return;
             }
@@ -579,7 +579,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFileSystemPanel_Click(object sender, EventArgs e)
         {
-            if (DataContext?.CurrentProject == null)
+            if (DataContext?.CurrentProject is null)
             {
                 return;
             }
@@ -593,7 +593,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFileSystemPreview_Click(object sender, EventArgs e)
         {
-            if (DataContext?.CurrentProject == null)
+            if (DataContext?.CurrentProject is null)
             {
                 return;
             }
@@ -626,7 +626,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="SaveEventArgs" /> instance containing the event data.</param>
         private async void StageLive_Save(object sender, SaveEventArgs e)
         {
-            if (DataContext?.CurrentProject?.SaveProjectToPackFileCommand == null)
+            if (DataContext?.CurrentProject?.SaveProjectToPackFileCommand is null)
             {
                 return;
             }
@@ -663,7 +663,7 @@ namespace Gorgon.Editor
             IProjectEditor project = DataContext?.CurrentProject;
             IFileExplorer fileExplorer = project?.FileExplorer;
 
-            if ((project == null) || (fileExplorer == null))
+            if ((project is null) || (fileExplorer is null))
             {
                 TabFileSystem.Visible = false;
                 RibbonTabEditorTools.Visible = false;
@@ -702,7 +702,7 @@ namespace Gorgon.Editor
                     ButtonFileSystemCut.Enabled = false;
                     break;
                 case FileExplorerContext.DirectoryTree:
-                    ButtonFileSystemDeleteAll.Visible = (fileExplorer.SelectedDirectory == null) || (fileExplorer.SelectedDirectory == fileExplorer.Root);
+                    ButtonFileSystemDeleteAll.Visible = (fileExplorer.SelectedDirectory is null) || (fileExplorer.SelectedDirectory == fileExplorer.Root);
                     ButtonFileSystemDelete.Visible = !ButtonFileSystemDeleteAll.Visible;
                     ButtonExport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ExportDirectoryCommand?.CanExecute(null) ?? false);
                     ButtonFileSystemCopy.Enabled = (!PanelProject.FileExplorer.IsRenaming)
@@ -959,7 +959,7 @@ namespace Gorgon.Editor
                 case nameof(IMain.CurrentProject):
                     NavigateToProjectView(DataContext);
 
-                    if (DataContext.CurrentProject == null)
+                    if (DataContext.CurrentProject is null)
                     {
                         break;
                     }
@@ -1011,7 +1011,7 @@ namespace Gorgon.Editor
         /// <param name="metadata">The metadata for plug ins that can create content.</param>
         private void AddNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
         {
-            if (metadata == null)
+            if (metadata is null)
             {
                 return;
             }
@@ -1022,7 +1022,7 @@ namespace Gorgon.Editor
                 Image icon = item.GetNewIcon();
 
                 if ((MenuCreate.Items.ContainsKey(id))
-                    || (icon == null))
+                    || (icon is null))
                 {
                     continue;
                 }
@@ -1064,7 +1064,7 @@ namespace Gorgon.Editor
             var item = (ToolStripItem)sender;
             var id = (Guid)item.Tag;
 
-            if ((DataContext?.CurrentProject?.CreateContentCommand == null) || (!DataContext.CurrentProject.CreateContentCommand.CanExecute(id)))
+            if ((DataContext?.CurrentProject?.CreateContentCommand is null) || (!DataContext.CurrentProject.CreateContentCommand.CanExecute(id)))
             {
                 return;
             }
@@ -1078,7 +1078,7 @@ namespace Gorgon.Editor
         /// <param name="dataContext">The data context to assign.</param>
         private void InitializeFromDataContext(IMain dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 _deleteAllValidationArgs = null;
                 _clipboardContext = null;
@@ -1113,7 +1113,7 @@ namespace Gorgon.Editor
         {
             _progressForm.SetDataContext(null);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1209,7 +1209,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFileSystemCut_Click(object sender, EventArgs e)
         {
-            if (_clipboardContext?.CopyDataCommand == null)
+            if (_clipboardContext?.CopyDataCommand is null)
             {
                 return;
             }
@@ -1235,7 +1235,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonFileSystemPaste_Click(object sender, EventArgs e)
         {
-            if ((_clipboardContext?.PasteDataCommand == null)
+            if ((_clipboardContext?.PasteDataCommand is null)
                 || (!_clipboardContext.PasteDataCommand.CanExecute(null)))
             {
                 return;
@@ -1252,7 +1252,7 @@ namespace Gorgon.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFileSystemCopy_Click(object sender, EventArgs e) 
         {
-            if (_clipboardContext?.CopyDataCommand == null)
+            if (_clipboardContext?.CopyDataCommand is null)
             {
                 return;
             }
@@ -1274,7 +1274,7 @@ namespace Gorgon.Editor
         /// <param name="e">A <see cref="System.EventArgs"/> that contains the event data.</param>
         protected override void OnResizeEnd(EventArgs e)
         {
-            if ((WindowState != FormWindowState.Normal) || (DataContext == null))
+            if ((WindowState != FormWindowState.Normal) || (DataContext is null))
             {
                 return;
             }
@@ -1288,7 +1288,7 @@ namespace Gorgon.Editor
         {
             base.OnLoad(e);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1306,7 +1306,7 @@ namespace Gorgon.Editor
         {
             base.OnFormClosing(e);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1340,7 +1340,7 @@ namespace Gorgon.Editor
                     var args = new AppCloseArgs(windowDimensions, windowState);
 
                     // If we don't have anything to handle the shut down, then just shut it all down.
-                    if ((DataContext.AppClosingAsyncCommand == null) || (!DataContext.AppClosingAsyncCommand.CanExecute(args)))
+                    if ((DataContext.AppClosingAsyncCommand is null) || (!DataContext.AppClosingAsyncCommand.CanExecute(args)))
                     {
                         _closeFlag = CloseStates.NotClosing;
                         e.Cancel = false;
@@ -1388,7 +1388,7 @@ namespace Gorgon.Editor
                 _waitForm.SetDataContext(DataContext);
                 _progressForm.SetDataContext(DataContext);
 
-                if (DataContext == null)
+                if (DataContext is null)
                 {
                     return;
                 }

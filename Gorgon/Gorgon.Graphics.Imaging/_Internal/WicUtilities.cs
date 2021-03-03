@@ -429,7 +429,7 @@ namespace Gorgon.Graphics.Imaging
                 return null;
             }
 
-            if (frame == null)
+            if (frame is null)
             {
                 return null;
             }
@@ -482,7 +482,7 @@ namespace Gorgon.Graphics.Imaging
                 return null;
             }
 
-            if (frame == null)
+            if (frame is null)
             {
                 return null;
             }
@@ -972,12 +972,12 @@ namespace Gorgon.Graphics.Imaging
                 reader.TryGetMetadataByName(metadataNames[0], out object xValue);
                 reader.TryGetMetadataByName(metadataNames[1], out object yValue);
 
-                if (xValue == null)
+                if (xValue is null)
                 {
                     xValue = 0;
                 }
 
-                if (yValue == null)
+                if (yValue is null)
                 {
                     yValue = 0;
                 }
@@ -1096,7 +1096,7 @@ namespace Gorgon.Graphics.Imaging
             {
                 metaData = GetImageMetaData(stream, imageFileFormat, decodingOptions);
 
-                if (metaData.ImageInfo == null)
+                if (metaData.ImageInfo is null)
                 {
                     return null;
                 }
@@ -1419,7 +1419,7 @@ namespace Gorgon.Graphics.Imaging
 
                     frame.MetadataQueryReader.TryGetMetadataByName(delayMetaDataName, out object value);
 
-                    if (value == null)
+                    if (value is null)
                     {
                         continue;
                     }

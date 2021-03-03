@@ -58,7 +58,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             set
             {
-                if (Track == null)
+                if (Track is null)
                 {
                     return;
                 }
@@ -105,7 +105,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             set
             {
-                if (Track == null)
+                if (Track is null)
                 {
                     return;
                 }

@@ -72,7 +72,7 @@ namespace Gorgon.Editor.ImageSplitTool
         /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
         private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
         {
-            if ((DataContext?.SearchCommand == null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+            if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
             {
                 return;
             }
@@ -87,7 +87,7 @@ namespace Gorgon.Editor.ImageSplitTool
         /// <param name="e">The e.</param>
         private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
         {
-            if ((DataContext?.RefreshSpritePreviewCommand == null) || (!DataContext.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
+            if ((DataContext?.RefreshSpritePreviewCommand is null) || (!DataContext.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
             {
                 return;
             }
@@ -102,7 +102,7 @@ namespace Gorgon.Editor.ImageSplitTool
         private async void ButtonCancel_Click(object sender, EventArgs e)
         {
             var args = new CancelEventArgs();
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(args)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(args)))
             {
                 Close();
                 return;
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.ImageSplitTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonSplit_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SplitImageCommand == null) || (!DataContext.SplitImageCommand.CanExecute(null)))
+            if ((DataContext?.SplitImageCommand is null) || (!DataContext.SplitImageCommand.CanExecute(null)))
             {
                 return;
             }
@@ -167,7 +167,7 @@ namespace Gorgon.Editor.ImageSplitTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFolderBrowse_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SelectFolderCommand == null) || (!DataContext.SelectFolderCommand.CanExecute(null)))
+            if ((DataContext?.SelectFolderCommand is null) || (!DataContext.SelectFolderCommand.CanExecute(null)))
             {
                 return;
             }
@@ -186,7 +186,7 @@ namespace Gorgon.Editor.ImageSplitTool
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(ISplit dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -236,7 +236,7 @@ namespace Gorgon.Editor.ImageSplitTool
                 return;
             }
 
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 DataContext?.OnUnload();
                 return;

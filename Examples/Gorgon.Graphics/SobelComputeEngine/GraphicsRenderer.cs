@@ -54,7 +54,7 @@ namespace Gorgon.Examples
         /// <param name="outputTexture">The output texture to render.</param>
         public void Render(GorgonTexture2DView texture, GorgonTexture2DView outputTexture)
         {
-            if (_swapChain == null)
+            if (_swapChain is null)
             {
                 return;
             }
@@ -66,8 +66,8 @@ namespace Gorgon.Examples
 
             _swapChain.RenderTargetView.Clear(Color.CornflowerBlue);
 
-            if ((texture == null)
-                || (outputTexture == null))
+            if ((texture is null)
+                || (outputTexture is null))
             {
                 _swapChain.Present(1);
                 return;
@@ -107,7 +107,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="panel"/> parameter is <b>null</b>.</exception>
         public void SetPanel(Panel panel)
         {
-            if (panel == null)
+            if (panel is null)
             {
                 throw new ArgumentNullException(nameof(panel));
             }

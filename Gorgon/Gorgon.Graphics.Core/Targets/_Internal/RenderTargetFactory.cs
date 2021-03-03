@@ -246,7 +246,7 @@ namespace Gorgon.Graphics.Core
         {
             ExpireTargets();
 
-            if ((rtv == null) || (rtv.OwnerFactory != this))
+            if ((rtv is null) || (rtv.OwnerFactory != this))
             {
                 return false;
             }

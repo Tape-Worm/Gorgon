@@ -193,7 +193,7 @@ namespace Gorgon.Graphics.Core
         {
             List<GorgonConstantBufferView> cbvs = Interlocked.Exchange(ref _cbvs, null);
 
-            if (cbvs == null)
+            if (cbvs is null)
             {
                 base.Dispose();
                 return;
@@ -283,7 +283,7 @@ namespace Gorgon.Graphics.Core
         public GorgonConstantBuffer(GorgonGraphics graphics, IGorgonConstantBufferInfo info, ReadOnlySpan<byte> initialData = default)
             : base(graphics)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }

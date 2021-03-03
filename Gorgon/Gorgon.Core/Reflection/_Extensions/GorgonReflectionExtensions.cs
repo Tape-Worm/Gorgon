@@ -76,7 +76,7 @@ namespace Gorgon.Reflection
         /// <returns>The constructor info for the constructor that matches the parameter types, or <b>null</b> if no matching constructor is found.</returns>
         private static (ConstructorInfo Ctor, ParameterInfo[] Params) GetConstructor(Type objectType, Type[] paramTypes)
         {
-            if (paramTypes == null)
+            if (paramTypes is null)
             {
                 paramTypes = Array.Empty<Type>();
             }
@@ -139,12 +139,12 @@ namespace Gorgon.Reflection
         /// <returns>The method that will retrieve a property value from an instance.</returns>
         public static PropertyGetter<T, TP> CreatePropertyGetter<T, TP>(this PropertyInfo propertyInfo)
         {
-            if (propertyInfo == null)
+            if (propertyInfo is null)
             {
                 throw new ArgumentNullException(nameof(propertyInfo));
             }
 
-            if (propertyInfo.DeclaringType == null)
+            if (propertyInfo.DeclaringType is null)
             {
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_PROPERTY_NO_DECLARING_TYPE, propertyInfo.Name));
             }
@@ -225,12 +225,12 @@ namespace Gorgon.Reflection
         /// </exception>
         public static PropertySetter<T, TP> CreatePropertySetter<T, TP>(this PropertyInfo propertyInfo)
         {
-            if (propertyInfo == null)
+            if (propertyInfo is null)
             {
                 throw new ArgumentNullException(nameof(propertyInfo));
             }
 
-            if (propertyInfo.DeclaringType == null)
+            if (propertyInfo.DeclaringType is null)
             {
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_PROPERTY_NO_DECLARING_TYPE, propertyInfo.Name));
             }
@@ -311,7 +311,7 @@ namespace Gorgon.Reflection
         /// <exception cref="InvalidCastException">Thrown when the type of the generic type parameter <typeparamref name="T"/> is not the same as the <paramref name="type"/> parameter.</exception>
         public static ObjectActivator<T> CreateActivator<T>(this Type type, params Type[] paramTypes)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -336,14 +336,14 @@ namespace Gorgon.Reflection
                 throw new InvalidCastException(string.Format(Resources.GOR_ERR_ACTIVATOR_TYPE_MISMATCH, type.FullName, typeT.FullName));
             }
 
-            if (paramTypes == null)
+            if (paramTypes is null)
             {
                 paramTypes = Array.Empty<Type>();
             }
 
             (ConstructorInfo Ctor, ParameterInfo[] Params) = GetConstructor(type, paramTypes);
 
-            if (Ctor == null)
+            if (Ctor is null)
             {
                 throw new TypeLoadException(string.Format(Resources.GOR_ERR_ACTIVATOR_CANNOT_FIND_CONSTRUCTOR, type.FullName));
             }
@@ -411,7 +411,7 @@ namespace Gorgon.Reflection
         /// </remarks>
         public static bool IsFieldSafeForNative(this FieldInfo field)
         {
-            if (field == null)
+            if (field is null)
             {
                 throw new ArgumentNullException(nameof(field));
             }
@@ -433,7 +433,7 @@ namespace Gorgon.Reflection
                 return false;
             }
 
-            return field.FieldType.GetCustomAttribute<MarshalAsAttribute>() == null && field.FieldType.IsSafeForNative();
+            return field.FieldType.GetCustomAttribute<MarshalAsAttribute>() is null && field.FieldType.IsSafeForNative();
 #pragma warning restore IDE0046 // Convert to conditional expression
         }
 
@@ -467,12 +467,12 @@ namespace Gorgon.Reflection
         /// </remarks>
         public static bool IsSafeForNative(this Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if ((type.StructLayoutAttribute == null) || (type.IsAutoLayout))
+            if ((type.StructLayoutAttribute is null) || (type.IsAutoLayout))
             {
                 return false;
             }
@@ -528,7 +528,7 @@ namespace Gorgon.Reflection
         /// </remarks>
         public static bool IsSafeForNative(this Type type, out IReadOnlyList<FieldInfo> incompatibleFields)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -536,7 +536,7 @@ namespace Gorgon.Reflection
             var result = new List<FieldInfo>();
             incompatibleFields = result;
 
-            if ((type.StructLayoutAttribute == null) || (type.IsAutoLayout))
+            if ((type.StructLayoutAttribute is null) || (type.IsAutoLayout))
             {
                 return false;
             }

@@ -388,13 +388,13 @@ namespace Gorgon.IO
             GorgonTexture2DView textureView;
 
             // Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
-            if ((!string.IsNullOrEmpty(textureName)) && (overrideTexture == null))
+            if ((!string.IsNullOrEmpty(textureName)) && (overrideTexture is null))
             {
                 GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).FirstOrDefault();
 
                 // If we used the editor build to sprite, the path to the texture is stored in the name instead of just the name.
                 // So let's try and strip out the path information and extension and try again.
-                if (texture == null)
+                if (texture is null)
                 {
                     textureName = Path.GetFileNameWithoutExtension(textureName);
                     texture = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).FirstOrDefault();

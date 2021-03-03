@@ -233,7 +233,7 @@ namespace Gorgon.IO
 		/// <param name="description">The description.</param>
 		public GorgonFileExtension(string extension, string description)
 		{
-			if (extension == null)
+			if (extension is null)
 			{
 				throw new ArgumentNullException(nameof(extension));
 			}

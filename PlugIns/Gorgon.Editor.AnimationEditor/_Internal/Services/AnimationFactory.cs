@@ -218,13 +218,13 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 IKeyFrame[] newKeys = ArrayPool<IKeyFrame>.Shared.Rent(newKeyCount);
 
-                if (keyFrames == null)
+                if (keyFrames is null)
                 {
                     for (int i = 0; i < track.KeyFrames.Count; ++i)
                     {
                         IKeyFrame key = track.KeyFrames[i];
 
-                        if (key == null)
+                        if (key is null)
                         {
                             continue;
                         }

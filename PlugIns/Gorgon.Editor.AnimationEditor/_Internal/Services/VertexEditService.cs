@@ -82,7 +82,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     VerticesChangedEvent = null;
                     return;
@@ -92,7 +92,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.AnimationEditor
             get => _vertices;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     Array.Clear(_vertices, 0, _vertices.Length);
                     return;

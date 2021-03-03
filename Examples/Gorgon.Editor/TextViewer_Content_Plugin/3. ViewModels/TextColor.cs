@@ -67,11 +67,6 @@ namespace Gorgon.Examples
             get => _originalColor;
             set
             {
-                if (value == null)
-                {
-                    return;
-                }
-
                 if (_originalColor.Equals(in value))
                 {
                     return;

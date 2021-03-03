@@ -90,12 +90,12 @@ namespace Gorgon.Security
 		/// </remarks>
 		public static string HashAndSalt(string password, byte[] salt)
 		{
-			if (password == null)
+			if (password is null)
 			{
 				throw new ArgumentNullException(nameof(password));
 			}
 
-			if (salt == null)
+			if (salt is null)
 			{
 				throw new ArgumentNullException(nameof(salt));
 			}

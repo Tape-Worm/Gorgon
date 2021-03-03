@@ -79,7 +79,7 @@ namespace Gorgon.Editor
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             // If we don't know who wants the assembly, then we can't load it.
-            if (args.RequestingAssembly == null)
+            if (args.RequestingAssembly is null)
             {
                 return null;
             }
@@ -169,7 +169,7 @@ namespace Gorgon.Editor
         /// </summary>
         private void HideSplash()
         {
-            if (_splash == null)
+            if (_splash is null)
             {
                 return;
             }
@@ -252,7 +252,7 @@ namespace Gorgon.Editor
                 }
             }
 
-            if (result == null)
+            if (result is null)
             {
                 result = CreateEditorSettings();
             }

@@ -105,7 +105,7 @@ namespace Gorgon.Editor.Services
         /// <summary>Function to cancel the currently executing undo/redo operation.</summary>
         public void Cancel()
         {
-            if (_cancelSource == null)
+            if (_cancelSource is null)
             {
                 return;
             }
@@ -175,7 +175,7 @@ namespace Gorgon.Editor.Services
             {
                 IUndoCommand redo = _undoStack[++_undoIndex];
 
-                if (redo == null)
+                if (redo is null)
                 {
                     return Task.FromResult<object>(null);
                 }
@@ -212,7 +212,7 @@ namespace Gorgon.Editor.Services
             {
                 IUndoCommand undo = _undoStack[_undoIndex--];
 
-                if (undo == null)
+                if (undo is null)
                 {
                     return Task.FromResult<object>(null);
                 }

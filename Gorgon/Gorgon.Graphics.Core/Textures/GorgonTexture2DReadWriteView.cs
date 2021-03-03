@@ -288,7 +288,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Rectangle
                 {
@@ -329,7 +329,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.RectangleF
                 {
@@ -370,7 +370,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
             }
@@ -399,7 +399,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
             }
@@ -428,7 +428,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
             }
@@ -457,7 +457,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
             }
@@ -568,12 +568,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonTexture2D"/>
         public static GorgonTexture2DReadWriteView CreateTexture(GorgonGraphics graphics, IGorgonTexture2DInfo info, IGorgonImage initialData = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
@@ -605,7 +605,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            GorgonTexture2D texture = initialData == null
+            GorgonTexture2D texture = initialData is null
                                           ? new GorgonTexture2D(graphics, newInfo)
                                           : initialData.ToTexture2D(graphics,
                                                                     new GorgonTexture2DLoadOptions
@@ -673,17 +673,17 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture2DReadWriteView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTexture2DLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -693,7 +693,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -756,12 +756,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture2DReadWriteView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTexture2DLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -771,7 +771,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }

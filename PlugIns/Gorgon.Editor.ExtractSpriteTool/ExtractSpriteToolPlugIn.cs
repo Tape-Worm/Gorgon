@@ -78,7 +78,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
             IContentFile file = ContentFileManager.GetFile(selectedFiles[0]);
 
-            if ((file?.Metadata == null)
+            if ((file?.Metadata is null)
                 || (!file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 || (!string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
             {
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             {
                 settings = HostToolServices.ToolPlugInService.ReadContentSettings<ExtractSpriteToolSettings>(typeof(ExtractSpriteToolPlugIn).FullName);
 
-                if (settings == null)
+                if (settings is null)
                 {
                     settings = new ExtractSpriteToolSettings();
                 }
@@ -221,12 +221,12 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// </remarks>
         protected override IToolPlugInRibbonButton OnGetToolButton()
         {
-            if (_button.ClickCallback == null)
+            if (_button.ClickCallback is null)
             {
                 _button.ClickCallback = ShowForm;
             }
             
-            if (_button.CanExecute == null)
+            if (_button.CanExecute is null)
             {
                 _button.CanExecute = CanShowForm;
             }

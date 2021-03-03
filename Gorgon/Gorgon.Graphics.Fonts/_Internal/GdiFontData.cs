@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Fonts
                                     .FirstOrDefault(item => string.Equals(fontInfo.FontFamilyName, item.Name, StringComparison.InvariantCultureIgnoreCase));
 
             // If we cannot locate the font family by name, then fall back.
-            if (fontFamily == null)
+            if (fontFamily is null)
             {
                 fontFamily = FontFamily.GenericSerif;
             }

@@ -55,7 +55,7 @@ namespace Gorgon.Editor.UI.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="copy"/> parameter is <b>null</b>.</exception>
         protected ViewModelInjection(IViewModelInjection<T> copy)
         {
-            if (copy == null)
+            if (copy is null)
             {
                 throw new ArgumentNullException(nameof(copy));
             }

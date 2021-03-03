@@ -103,7 +103,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void ConfigureDialog()
         {
-            if ((SelectedCodec == null) || (ContentFile == null))
+            if ((SelectedCodec is null) || (ContentFile is null))
             {
                 FileFilter = string.Empty;
                 DialogTitle = string.Empty;

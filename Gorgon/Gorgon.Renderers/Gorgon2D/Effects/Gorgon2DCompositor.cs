@@ -124,7 +124,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="outputTarget">The final render output target.</param>
         /// <returns><b>true</b> if the resources need updating, or <b>false</b> if not.</returns>
-        private bool NeedsResourceUpdate(GorgonRenderTargetView outputTarget) => (_final == null)
+        private bool NeedsResourceUpdate(GorgonRenderTargetView outputTarget) => (_final is null)
                                                                                  || (_pingTarget.Width != outputTarget.Width)
                                                                                  || (_pingTarget.Height != outputTarget.Height)
                                                                                  || (_pingTarget.Format != outputTarget.Format);
@@ -217,7 +217,7 @@ namespace Gorgon.Renderers
         /// <seealso cref="CompositionPass"/>
         private Gorgon2DCompositor Pass(CompositionPass pass)
         {
-            if (pass == null)
+            if (pass is null)
             {
                 throw new ArgumentNullException(nameof(pass));
             }
@@ -344,7 +344,7 @@ namespace Gorgon.Renderers
         /// <returns>The fluent interface for the effects processor.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="effect"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        public Gorgon2DCompositor EffectPass(string name, IGorgon2DCompositorEffect effect) => effect == null
+        public Gorgon2DCompositor EffectPass(string name, IGorgon2DCompositorEffect effect) => effect is null
                 ? throw new ArgumentNullException(nameof(effect))
                 : Pass(new CompositionPass(name)
                 {
@@ -379,7 +379,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         public Gorgon2DCompositor RenderingPass(string name, Action<Gorgon2D, GorgonTexture2DView, GorgonRenderTargetView> renderMethod, Gorgon2DBatchState batchState = null, GorgonCameraCommon camera = null)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -389,7 +389,7 @@ namespace Gorgon.Renderers
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (renderMethod == null)
+            if (renderMethod is null)
             {
                 throw new ArgumentNullException(nameof(renderMethod));
             }

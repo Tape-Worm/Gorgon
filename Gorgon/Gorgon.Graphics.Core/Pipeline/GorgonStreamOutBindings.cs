@@ -123,7 +123,7 @@ namespace Gorgon.Graphics.Core
         {
             Native = new D3D11.StreamOutputBufferBinding[MaximumStreamOutCount];
 
-            if (bindings == null)
+            if (bindings is null)
             {
                 return;
             }

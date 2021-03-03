@@ -58,7 +58,7 @@ namespace Gorgon.IO
         /// <seealso cref="IGorgonAnimation"/>
         public static string ToJson(this IGorgonAnimation animation, bool prettyFormat = false)
         {
-            if (animation == null)
+            if (animation is null)
             {
                 throw new ArgumentNullException(nameof(animation));
             }

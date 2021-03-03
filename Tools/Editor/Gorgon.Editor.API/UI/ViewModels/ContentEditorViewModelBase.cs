@@ -138,7 +138,7 @@ namespace Gorgon.Editor.UI
                 _state = value;
                 OnPropertyChanged();
 
-                if (File == null)
+                if (File is null)
                 {
                     return;
                 }
@@ -360,7 +360,7 @@ namespace Gorgon.Editor.UI
         /// </remarks>
         protected async Task SaveContentFileAsync(IGorgonVirtualFile workFile)
         {
-            if (File == null)
+            if (File is null)
             {
                 return;
             }
@@ -420,7 +420,7 @@ namespace Gorgon.Editor.UI
         /// </remarks>
         protected override void OnInitialize(T injectionParameters)
         {
-            if (injectionParameters == null)
+            if (injectionParameters is null)
             {
                 throw new ArgumentNullException(nameof(injectionParameters));
             }
@@ -429,7 +429,7 @@ namespace Gorgon.Editor.UI
             _filesSelected = ContentFileManager.GetSelectedFiles().Count > 0;
             _file = injectionParameters.File;            
 
-            if (_file == null)
+            if (_file is null)
             {
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, string.Empty), nameof(injectionParameters));
             }

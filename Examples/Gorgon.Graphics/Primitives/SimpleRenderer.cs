@@ -195,7 +195,7 @@ namespace Gorgon.Examples
             // input layout, then this will have to suffice.  In a real renderer, we'd cache the vertex inputs per shader and just look it up because the type 
             // of vertex may not be what we expect. In this case, we *know* that we're using GorgonVertexPosNormUvTangent and no other vertex type, so we're 100% safe doing it 
             // here in this example.
-            if ((_vertexLayout == null) && (vertexShader != null))
+            if ((_vertexLayout is null) && (vertexShader != null))
             {
                 _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
             }
@@ -385,7 +385,7 @@ namespace Gorgon.Examples
         /// </summary>
         public void Render()
         {
-            if (Camera == null)
+            if (Camera is null)
             {
                 return;
             }

@@ -316,12 +316,12 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonTexture3D"/>
 		public static GorgonRenderTarget3DView CreateRenderTarget(GorgonGraphics graphics, IGorgonTexture3DInfo info)
 		{
-			if (graphics == null)
+			if (graphics is null)
 			{
 				throw new ArgumentNullException(nameof(graphics));
 			}
 
-			if (info == null)
+			if (info is null)
 			{
 				throw new ArgumentNullException(nameof(info));
 			}
