@@ -74,6 +74,6 @@ This assembly contains a plug in that will read a zip file as a file system.</De
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\net472\PlugIns\FileSystem&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0" />
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\net48\PlugIns\FileSystem&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0" />
   </Target>
 </Project>
