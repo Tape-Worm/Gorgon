@@ -58,7 +58,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         // The service used to search through the files.
         private ISearchService<IContentFileExplorerSearchEntry> _searchService;
         // The list of selected files.
-        private readonly List<ContentFileExplorerFileEntry> _selected = new List<ContentFileExplorerFileEntry>();
+        private readonly List<ContentFileExplorerFileEntry> _selected = new();
         // The task used to load the preview.
         private Task<IGorgonImage> _loadPreviewTask;
         // The cancellation source.
@@ -188,7 +188,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                     thumbDirectory = _tempFileSystem.CreateDirectory(ThumbnailPath);
                 }
 
-                if (_loadPreviewTask != null)
+                if (_loadPreviewTask is not null)
                 {
                     if (_loadPreviewTask.Status == TaskStatus.Faulted)
                     {
@@ -342,7 +342,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 file.PropertyChanged -= File_PropertyChanged;
             }
 
-            if (_cancelSource != null)
+            if (_cancelSource is not null)
             {
                 _cancelSource.Cancel();
             }

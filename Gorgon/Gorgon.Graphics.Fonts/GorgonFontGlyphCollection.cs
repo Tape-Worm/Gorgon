@@ -165,7 +165,7 @@ namespace Gorgon.Graphics.Fonts
         public IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> GetGlyphsByTexture()
         {
             IEnumerable<IGrouping<GorgonTexture2D, GorgonGlyph>> groupedGlyphs = from glyph in this
-                                                                                 where glyph.TextureView != null
+                                                                                 where glyph.TextureView is not null
                                                                                  group glyph by glyph.TextureView.Texture;
 
             return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)v.ToArray());

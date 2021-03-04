@@ -426,14 +426,12 @@ namespace Gorgon.Graphics.Imaging
                 sourceFormat = BufferFormat.B8G8R8A8_UNorm;
             }
 
-            using (var wic = new WicUtilities())
-            {
-                return wic.CanConvertFormats(sourceFormat,
-                                             new[]
-                                             {
+            using var wic = new WicUtilities();
+            return wic.CanConvertFormats(sourceFormat,
+                                         new[]
+                                         {
                                                  format
-                                             }).Count > 0;
-            }
+                                         }).Count > 0;
         }
 
         /// <summary>
@@ -452,10 +450,8 @@ namespace Gorgon.Graphics.Imaging
             // If we're converting from B4G4R4A4, then we need to use another path.
             if (_imageInfo.Format == BufferFormat.B4G4R4A4_UNorm)
             {
-                using (var wic = new WicUtilities())
-                {
-                    return wic.CanConvertFormats(BufferFormat.B8G8R8A8_UNorm, destFormats);
-                }
+                using var wic = new WicUtilities();
+                return wic.CanConvertFormats(BufferFormat.B8G8R8A8_UNorm, destFormats);
             }
 
             using (var wic = new WicUtilities())
@@ -548,7 +544,7 @@ namespace Gorgon.Graphics.Imaging
         /// <seealso cref="BeginUpdate"/>
         public IGorgonImageUpdateFluent Decompress(bool useBC1Alpha)
         {
-            if ((_isEditing) || (_wic != null))
+            if ((_isEditing) || (_wic is not null))
             {
                 throw new InvalidOperationException(Resources.GORIMG_ERR_ALREADY_EDITING);
             }
@@ -593,11 +589,9 @@ namespace Gorgon.Graphics.Imaging
                                 int depthArrayIndex = ImageType != ImageType.Image3D ? arrayIndex : depthSlice;
                                 IGorgonImageBuffer buffer = Buffers[mip, depthArrayIndex];
 
-                                using (GorgonNativeBuffer<byte> decompressedData = decoder.Decode(buffer.Data, buffer.Width, buffer.Height, useBC1Alpha, Format))
-                                {
-                                    // Replace the data in the source image buffer with our newly compressed data.
-                                    decompressedData.CopyTo((Span<byte>)bufferList[mip, depthArrayIndex].Data);
-                                }
+                                using GorgonNativeBuffer<byte> decompressedData = decoder.Decode(buffer.Data, buffer.Width, buffer.Height, useBC1Alpha, Format);
+                                // Replace the data in the source image buffer with our newly compressed data.
+                                decompressedData.CopyTo((Span<byte>)bufferList[mip, depthArrayIndex].Data);
                             }
                         }
                     }
@@ -657,7 +651,7 @@ namespace Gorgon.Graphics.Imaging
                 throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
             }
 
-            if ((_isEditing) || (_wic != null))
+            if ((_isEditing) || (_wic is not null))
             {
                 throw new InvalidOperationException(Resources.GORIMG_ERR_ALREADY_EDITING);
             }

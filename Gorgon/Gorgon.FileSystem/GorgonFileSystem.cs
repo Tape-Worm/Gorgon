@@ -123,7 +123,7 @@ namespace Gorgon.IO
         internal static readonly string PhysicalDirSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 
         // Synchronization object.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         // The list of providers available to the file system.
         private readonly Dictionary<string, IGorgonFileSystemProvider> _providers;
         // The log file for the application.
@@ -403,7 +403,7 @@ namespace Gorgon.IO
                                      RegexOptions.Singleline | RegexOptions.IgnoreCase);
             }
 
-            return item.Name.EndsWith(searchMask.Substring(searchMask.IndexOf('*') + 1), StringComparison.OrdinalIgnoreCase);
+            return item.Name.EndsWith(searchMask[(searchMask.IndexOf('*') + 1)..], StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -1006,7 +1006,7 @@ namespace Gorgon.IO
         /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
         /// 
         /// // The file will now show up in the directory.
-        /// if (file != null)
+        /// if (file is not null)
         /// {
         ///    Console.WriteLine("File exists.");
         /// }
@@ -1459,11 +1459,11 @@ namespace Gorgon.IO
             }
 
             // Get all the providers in the parameter.
-            foreach (IGorgonFileSystemProvider provider in providers.Where(item => item != null))
+            foreach (IGorgonFileSystemProvider provider in providers.Where(item => item is not null))
             {
                 string providerTypeName = provider.GetType().FullName;
 
-                Debug.Assert(providerTypeName != null, nameof(providerTypeName) + " is null");
+                Debug.Assert(providerTypeName is not null, nameof(providerTypeName) + " is null");
 
                 _providers[providerTypeName] = provider;
             }

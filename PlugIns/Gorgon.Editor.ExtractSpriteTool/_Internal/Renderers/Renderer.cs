@@ -50,7 +50,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 		// Inverted rendering.
 		private Gorgon2DBatchState _inverted;
 		// The sprite to display for preview.
-		private readonly GorgonSprite _previewSprite = new GorgonSprite();
+		private readonly GorgonSprite _previewSprite = new();
 		#endregion
 
 		#region Methods.

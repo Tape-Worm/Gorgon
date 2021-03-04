@@ -201,7 +201,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             finally
             {
-                if (defaultPos != null)
+                if (defaultPos is not null)
                 {
                     ArrayPool<DX.Vector2>.Shared.Return(defaultPos);
                 }

@@ -159,7 +159,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // Custom application data.
-        private readonly Dictionary<Guid, object> _appData = new Dictionary<Guid, object>();
+        private readonly Dictionary<Guid, object> _appData = new();
         // The Direct 3D 11 resource.
         private D3D11.Resource _resource;
         #endregion
@@ -227,7 +227,7 @@ namespace Gorgon.Graphics.Core
             get => D3DResource is null ? EvictionPriority.Minimum : (EvictionPriority)D3DResource.EvictionPriority;
             set
             {
-                if (D3DResource != null)
+                if (D3DResource is not null)
                 {
                     D3DResource.EvictionPriority = (int)value;
                 }

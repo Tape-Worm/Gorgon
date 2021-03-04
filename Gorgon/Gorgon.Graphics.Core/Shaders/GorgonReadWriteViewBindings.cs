@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         protected override void OnValidate()
         {
-            GorgonReadWriteViewBinding startView = this.FirstOrDefault(target => target.ReadWriteView != null);
+            GorgonReadWriteViewBinding startView = this.FirstOrDefault(target => target.ReadWriteView is not null);
 
             // If no other uavs are assigned, then we're done here.
             if (startView.ReadWriteView is null)

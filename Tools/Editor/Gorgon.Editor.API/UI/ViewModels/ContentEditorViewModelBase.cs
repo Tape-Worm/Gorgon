@@ -163,7 +163,7 @@ namespace Gorgon.Editor.UI
                     return;
                 }
 
-                if (_file != null)
+                if (_file is not null)
                 {
                     _file.Renamed -= File_Renamed;
                     _file.IsOpen = false;
@@ -173,7 +173,7 @@ namespace Gorgon.Editor.UI
                 _file = value;
                 OnPropertyChanged();
 
-                if (_file != null)
+                if (_file is not null)
                 {
                     _file.Renamed += File_Renamed;
                     _file.IsOpen = true;
@@ -336,7 +336,7 @@ namespace Gorgon.Editor.UI
                     ContentState = ContentState.Unmodified;
                 }
 
-                if (File != null)
+                if (File is not null)
                 {
                     File.IsChanged = false;
                 }

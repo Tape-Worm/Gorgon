@@ -320,7 +320,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function called to validate the OK button.</summary>
         /// <returns>
         ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
          
         /// <summary>
         /// Function to initialize the control from the data context.

@@ -120,7 +120,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            if (!(e.Item.Tag is CodecSetting setting))
+            if (e.Item.Tag is not CodecSetting setting)
             {
                 return;
             }

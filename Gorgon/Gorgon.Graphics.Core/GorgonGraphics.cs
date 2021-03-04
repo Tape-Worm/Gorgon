@@ -181,7 +181,7 @@ namespace Gorgon.Graphics.Core
         private SamplerCache _samplerCache;
 
         // The timer used to trigger a clean up of cached render targets.
-        private readonly GorgonTimerQpc _rtExpireTimer = new GorgonTimerQpc();
+        private readonly GorgonTimerQpc _rtExpireTimer = new();
         #endregion
 
         #region Properties.
@@ -434,23 +434,19 @@ namespace Gorgon.Graphics.Core
             {
                 resultFactory = factory2.QueryInterface<Factory5>();
 
-                using (Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
+                using Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
                                               ? resultFactory.GetAdapter1(adapterInfo.Index)
-                                              : resultFactory.GetWarpAdapter()))
+                                              : resultFactory.GetWarpAdapter());
+                resultAdapter = adapter.QueryInterface<Adapter4>();
+
+                using var device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
                 {
-                    resultAdapter = adapter.QueryInterface<Adapter4>();
+                    DebugName = $"'{adapterInfo.Name}' D3D {requestedFeatureLevel.D3DVersion()} {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
+                };
+                resultDevice = device.QueryInterface<D3D11.Device5>();
 
-                    using (var device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
-                    {
-                        DebugName = $"'{adapterInfo.Name}' D3D {requestedFeatureLevel.D3DVersion()} {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
-                    })
-                    {
-                        resultDevice = device.QueryInterface<D3D11.Device5>();
-
-                        Log.Print($"Direct 3D {requestedFeatureLevel.D3DVersion()} device created for video adapter '{adapterInfo.Name}' at feature set [{(FeatureSet)resultDevice.FeatureLevel}]",
-                                  LoggingLevel.Simple);
-                    }
-                }
+                Log.Print($"Direct 3D {requestedFeatureLevel.D3DVersion()} device created for video adapter '{adapterInfo.Name}' at feature set [{(FeatureSet)resultDevice.FeatureLevel}]",
+                          LoggingLevel.Simple);
             }
 
             return (resultDevice, resultFactory, resultAdapter);
@@ -986,7 +982,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void ClearStateCache()
         {
-            if (D3DDeviceContext != null)
+            if (D3DDeviceContext is not null)
             {
                 ClearState();
             }

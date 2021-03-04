@@ -44,7 +44,7 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // Synchronization lock for the event.
-        private readonly object _eventLock = new object();
+        private readonly object _eventLock = new();
         // The number of times the SetBusy method has been called.
         private int _busyStateCounter;
         #endregion

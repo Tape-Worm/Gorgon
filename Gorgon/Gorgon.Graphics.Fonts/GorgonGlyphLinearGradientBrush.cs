@@ -276,7 +276,7 @@ namespace Gorgon.Graphics.Fonts
         {
             var brush = other as GorgonGlyphLinearGradientBrush;
 
-            return ((brush == this) || ((brush != null)
+            return ((brush == this) || ((brush is not null)
                 && (brush.Angle.EqualsEpsilon(Angle))
                 && (brush.ScaleAngle == ScaleAngle)
                 && (brush.GammaCorrection == GammaCorrection)

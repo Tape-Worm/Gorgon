@@ -53,22 +53,14 @@ namespace Gorgon.Renderers
         /// </remarks>
         public GorgonColor this[int index]
         {
-            get
+            get => index switch
             {
-                switch (index)
-                {
-                    case 0:
-                        return _renderable.UpperLeftColor;
-                    case 1:
-                        return _renderable.UpperRightColor;
-                    case 2:
-                        return _renderable.LowerRightColor;
-                    case 3:
-                        return _renderable.LowerLeftColor;
-                }
-
-                throw new ArgumentOutOfRangeException();
-            }
+                0 => _renderable.UpperLeftColor,
+                1 => _renderable.UpperRightColor,
+                2 => _renderable.LowerRightColor,
+                3 => _renderable.LowerLeftColor,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
             set
             {
                 switch (index)

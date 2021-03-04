@@ -217,7 +217,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void ButtonNextMip_Click(object sender, EventArgs e)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.CurrentMipLevel++;
             }
@@ -229,7 +229,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevMip_Click(object sender, EventArgs e)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.CurrentMipLevel--;
             }
@@ -241,7 +241,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevArrayIndex_Click(object sender, EventArgs e)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.CurrentArrayIndex--;
             }
@@ -254,7 +254,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextArrayIndex_Click(object sender, EventArgs e)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.CurrentArrayIndex++;
             }
@@ -266,7 +266,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevDepthSlice_Click(object sender, EventArgs e)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.CurrentDepthSlice--;
             }
@@ -278,7 +278,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e"></param>
         private void ButtonNextDepthSlice_Click(object sender, EventArgs e)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.CurrentDepthSlice++;
             }
@@ -360,7 +360,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (propertyName)
             {
                 case nameof(IImageContent.CommandContext):
-                    if (DataContext.CommandContext != null)
+                    if (DataContext.CommandContext is not null)
                     {
                         DataContext.CommandContext.OnUnload();
                     }

@@ -157,7 +157,7 @@ namespace Gorgon.Configuration
                         // Convert to a decimal first, just because it's the largest primitive number format.
                         decimal convertedValue = (decimal)Convert.ChangeType(newValue, typeof(decimal));
 
-                        if (_minValue != null)
+                        if (_minValue is not null)
                         {
                             decimal minValue = (decimal)Convert.ChangeType(_minValue, typeof(decimal));
 
@@ -167,7 +167,7 @@ namespace Gorgon.Configuration
                             }
                         }
 
-                        if (_maxValue != null)
+                        if (_maxValue is not null)
                         {
                             decimal maxValue = (decimal)Convert.ChangeType(_maxValue, typeof(decimal));
 
@@ -184,7 +184,7 @@ namespace Gorgon.Configuration
                     {
                         var convertedValue = (DateTime)Convert.ChangeType(newValue, typeof(DateTime));
 
-                        if (_minValue != null)
+                        if (_minValue is not null)
                         {
                             var minValue = (DateTime)Convert.ChangeType(_minValue, typeof(DateTime));
 
@@ -194,7 +194,7 @@ namespace Gorgon.Configuration
                             }
                         }
 
-                        if (_maxValue != null)
+                        if (_maxValue is not null)
                         {
                             var maxValue = (DateTime)Convert.ChangeType(_maxValue, typeof(DateTime));
                             if (convertedValue > maxValue)
@@ -230,12 +230,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateByteOption(string name, byte defaultValue, string description = null, byte? minValue = null, byte? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -243,8 +243,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(byte),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -267,12 +267,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateSByteOption(string name, sbyte defaultValue, string description = null, sbyte? minValue = null, sbyte? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -280,8 +280,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(sbyte),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -304,12 +304,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateInt16Option(string name, short defaultValue, string description = null, short? minValue = null, short? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -317,8 +317,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(short),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -341,12 +341,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateUInt16Option(string name, ushort defaultValue, string description = null, ushort? minValue = null, ushort? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -354,8 +354,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(ushort),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -378,12 +378,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateInt32Option(string name, int defaultValue, string description, int? minValue = null, int? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -391,8 +391,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(int),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -415,12 +415,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateUInt32Option(string name, uint defaultValue, string description = null, uint? minValue = null, uint? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -428,8 +428,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(uint),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -452,12 +452,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateInt64Option(string name, long defaultValue, string description = null, long? minValue = null, long? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -465,8 +465,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(long),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -489,12 +489,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateUInt64Option(string name, ulong defaultValue, string description = null, ulong? minValue = null, ulong? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -502,8 +502,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(ulong),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -526,17 +526,17 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateDoubleOption(string name, double defaultValue, string description = null, double? minValue = null, double? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
 
-            return new GorgonOption(name, typeof(double), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null, description);
+            return new GorgonOption(name, typeof(double), defaultValue, minValue is not null ? (object)minValue.Value : null, maxValue is not null ? (object)maxValue.Value : null, description);
         }
 
         /// <summary>
@@ -558,12 +558,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateSingleOption(string name, float defaultValue, string description = null, float? minValue = null, float? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -571,8 +571,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(float),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -595,12 +595,12 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateDecimalOption(string name, decimal defaultValue, string description = null, decimal? minValue = null, decimal? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
@@ -608,8 +608,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(decimal),
                                     defaultValue,
-                                    minValue != null ? (object)minValue.Value : null,
-                                    maxValue != null ? (object)maxValue.Value : null,
+                                    minValue is not null ? (object)minValue.Value : null,
+                                    maxValue is not null ? (object)maxValue.Value : null,
                                     description);
         }
 
@@ -632,17 +632,17 @@ namespace Gorgon.Configuration
         /// </remarks>
         public static IGorgonOption CreateDateTimeOption(string name, DateTime defaultValue, string description = null, DateTime? minValue = null, DateTime? maxValue = null)
         {
-            if ((minValue != null) && (defaultValue < minValue.Value))
+            if ((minValue is not null) && (defaultValue < minValue.Value))
             {
                 defaultValue = minValue.Value;
             }
 
-            if ((maxValue != null) && (defaultValue > maxValue.Value))
+            if ((maxValue is not null) && (defaultValue > maxValue.Value))
             {
                 defaultValue = maxValue.Value;
             }
 
-            return new GorgonOption(name, typeof(decimal), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null, description);
+            return new GorgonOption(name, typeof(decimal), defaultValue, minValue is not null ? (object)minValue.Value : null, maxValue is not null ? (object)maxValue.Value : null, description);
         }
 
         /// <summary>
@@ -716,7 +716,7 @@ namespace Gorgon.Configuration
 
             if ((newLineIndex != -1) && (newLineIndex != Description.Length - 1))
             {
-                Text = Description.Substring(newLineIndex + 1);
+                Text = Description[(newLineIndex + 1)..];
             }
             else
             {

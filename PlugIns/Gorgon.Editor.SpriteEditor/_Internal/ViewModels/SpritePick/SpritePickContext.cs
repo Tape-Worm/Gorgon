@@ -200,7 +200,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Property to return whether the currently loaded texture supports array changes.</summary>
-        bool ISpriteInfo.SupportsArrayChange => (_spriteContent.Texture != null) && (_spriteContent.ArrayCount > 1);
+        bool ISpriteInfo.SupportsArrayChange => (_spriteContent.Texture is not null) && (_spriteContent.ArrayCount > 1);
 
         /// <summary>Property to return the total number of array indices in the sprite texture.</summary>
         int ISpriteInfo.ArrayCount => _spriteContent.ArrayCount;
@@ -224,7 +224,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the array index can be updated, <b>false</b> if not.</returns>
         private bool CanUpdateArrayIndex(int amount)
         {
-            if ((_spriteContent.Texture is null) || ((_spriteContent.CurrentPanel != null) && (_spriteContent.CurrentPanel != SpritePickMaskEditor)))
+            if ((_spriteContent.Texture is null) || ((_spriteContent.CurrentPanel is not null) && (_spriteContent.CurrentPanel != SpritePickMaskEditor)))
             {
                 return false;
             }
@@ -311,7 +311,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the sprite picker mask color editor panel can be shown.
         /// </summary>
         /// <returns><b>true</b> if the color editor panel can be shown, <b>false</b> if not.</returns>
-        private bool CanShowPickMaskEditor() => (_spriteContent.Texture != null) && ((_spriteContent.CurrentPanel is null) || (_spriteContent.CurrentPanel == SpritePickMaskEditor));
+        private bool CanShowPickMaskEditor() => (_spriteContent.Texture is not null) && ((_spriteContent.CurrentPanel is null) || (_spriteContent.CurrentPanel == SpritePickMaskEditor));
 
         /// <summary>
         /// Function to show or hide the sprite picker mask color editor.
@@ -320,7 +320,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             try
             {
-                if (_spriteContent.CurrentPanel != null)
+                if (_spriteContent.CurrentPanel is not null)
                 {
                     _spriteContent.CurrentPanel = null;
                     return;

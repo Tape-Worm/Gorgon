@@ -81,7 +81,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             TableSpritePreview.Visible = DataContext.IsInSpritePreview;
             ButtonNextSprite.Enabled = DataContext.NextPreviewSpriteCommand?.CanExecute(null) ?? false;
             ButtonPrevSprite.Enabled = DataContext.PrevPreviewSpriteCommand?.CanExecute(null) ?? false;
-            CheckPreviewSprites.Enabled = (DataContext.Sprites != null) && (DataContext.Sprites.Count > 0);
+            CheckPreviewSprites.Enabled = (DataContext.Sprites is not null) && (DataContext.Sprites.Count > 0);
             TableSkipMaskColor.Enabled = (!DataContext.IsGenerating) && (DataContext.SetEmptySpriteMaskColorCommand?.CanExecute(null) ?? false);
 
             ButtonOk.Enabled = DataContext.SaveSpritesCommand?.CanExecute(null) ?? false;
@@ -326,7 +326,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// </returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) 
         {
-            if ((keyData == Keys.Escape) && (DataContext?.CancelSpriteGenerationCommand != null) && (DataContext.CancelSpriteGenerationCommand.CanExecute(null)))
+            if ((keyData == Keys.Escape) && (DataContext?.CancelSpriteGenerationCommand is not null) && (DataContext.CancelSpriteGenerationCommand.CanExecute(null)))
             {
                 DataContext.CancelSpriteGenerationCommand.Execute(null);
                 ValidateControls();
@@ -535,7 +535,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         {
             base.OnShown(e);
 
-            if ((Settings != null) && (Settings.IsMaximized))
+            if ((Settings is not null) && (Settings.IsMaximized))
             {
                 WindowState = FormWindowState.Maximized;
             }

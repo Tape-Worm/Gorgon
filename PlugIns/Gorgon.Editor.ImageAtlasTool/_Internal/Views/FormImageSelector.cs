@@ -225,7 +225,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             _graphicsContext.Renderer2D.DrawFilledRectangle(renderRegion, DarkFormsRenderer.DarkBackground);
 
             // Render the sprite image.
-            if (_previewImage != null)
+            if (_previewImage is not null)
             {                
                 float scale = (renderRegion.Width / _previewImage.Width).Min(renderRegion.Height / _previewImage.Height);
                 float width = _previewImage.Width * scale;
@@ -246,7 +246,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 
             _swapChain.Present(1);
 
-            if ((GorgonApplication.AllowBackground) && (_oldIdle != null))
+            if ((GorgonApplication.AllowBackground) && (_oldIdle is not null))
             {
                 if (!_oldIdle())
                 {
@@ -263,7 +263,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         private void ShutdownGraphics()
         {
             Func<bool> oldIdle = Interlocked.Exchange(ref _oldIdle, null);
-            if (oldIdle != null)
+            if (oldIdle is not null)
             {
                 GorgonApplication.IdleMethod = oldIdle;
             }
@@ -271,7 +271,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             GorgonSwapChain swap = Interlocked.Exchange(ref _swapChain, null);
 
             preview?.Dispose();
-            if (swap != null)
+            if (swap is not null)
             {
                 _graphicsContext.ReturnSwapPresenter(ref swap);
             }

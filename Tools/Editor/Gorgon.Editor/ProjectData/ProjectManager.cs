@@ -120,7 +120,7 @@ namespace Gorgon.Editor.ProjectData
         {
             Stream lockStream = Interlocked.Exchange(ref _lockStream, null);
 
-            if (lockStream != null)
+            if (lockStream is not null)
             {
                 lockStream.Dispose();
             }
@@ -231,7 +231,7 @@ namespace Gorgon.Editor.ProjectData
 
             foreach (IGorgonVirtualDirectory directory in directories)
             {
-                string dirPath = Path.Combine(fileSystemDir, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1));                
+                string dirPath = Path.Combine(fileSystemDir, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..]);                
 
                 if (Directory.Exists(dirPath))
                 {
@@ -262,13 +262,11 @@ namespace Gorgon.Editor.ProjectData
             {
                 foreach (IGorgonVirtualFile file in job.Files)
                 {
-                    string outPath = Path.Combine(fileSystemDir, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar).Substring(1), file.Name);                    
+                    string outPath = Path.Combine(fileSystemDir, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..], file.Name);
 
-                    using (Stream readJobStream = file.OpenStream())
-                    using (Stream writeJobStream = File.Open(outPath, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        readJobStream.CopyToStream(writeJobStream, (int)readJobStream.Length, job.ReadBuffer);
-                    }
+                    using Stream readJobStream = file.OpenStream();
+                    using Stream writeJobStream = File.Open(outPath, FileMode.Create, FileAccess.Write, FileShare.None);
+                    readJobStream.CopyToStream(writeJobStream, (int)readJobStream.Length, job.ReadBuffer);
                 }
             }
 
@@ -343,26 +341,24 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="GorgonException">Thrown if the project was not a valid editor project.</exception>
         private string GetVersion(string metaDataFile, string location)
         {
-            using (var reader = new StreamReader(metaDataFile, Encoding.UTF8))
-            using (var jsonReader = new JsonTextReader(reader))
+            using var reader = new StreamReader(metaDataFile, Encoding.UTF8);
+            using var jsonReader = new JsonTextReader(reader);
+            // First property must be the version #.
+            if ((!jsonReader.Read()) || (!jsonReader.Read()))
             {
-                // First property must be the version #.
-                if ((!jsonReader.Read()) || (!jsonReader.Read()))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
-                }
-
-                if ((jsonReader.TokenType != JsonToken.PropertyName)
-                    || (!string.Equals(jsonReader.Value.ToString(), nameof(IProjectMetadata.Version), StringComparison.Ordinal)))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
-                }
-
-                string version = jsonReader.ReadAsString();
-                return !version.StartsWith(CommonEditorConstants.EditorProjectHeader, StringComparison.Ordinal)
-                    ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location))
-                    : version;
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
             }
+
+            if ((jsonReader.TokenType != JsonToken.PropertyName)
+                || (!string.Equals(jsonReader.Value.ToString(), nameof(IProjectMetadata.Version), StringComparison.Ordinal)))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
+            }
+
+            string version = jsonReader.ReadAsString();
+            return !version.StartsWith(CommonEditorConstants.EditorProjectHeader, StringComparison.Ordinal)
+                ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location))
+                : version;
         }
 
         /// <summary>
@@ -921,7 +917,7 @@ namespace Gorgon.Editor.ProjectData
             }
 
             // We've already got this locked, so leave.
-            if (_lockStream != null)
+            if (_lockStream is not null)
             {
                 return;
             }

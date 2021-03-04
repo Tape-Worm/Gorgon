@@ -143,9 +143,9 @@ namespace Gorgon.Renderers
         // The last light count.
         private int _lastLightCount;
         // The macro to pass in when using array indices instead of separate textures.
-        private readonly GorgonShaderMacro _arrayMacro = new GorgonShaderMacro("USE_ARRAY");
+        private readonly GorgonShaderMacro _arrayMacro = new("USE_ARRAY");
         // The data to pass to the effect.
-        private GlobalEffectData _effectData = new GlobalEffectData
+        private GlobalEffectData _effectData = new()
         {
             AmbientColor = GorgonColor.Black
         };
@@ -474,7 +474,7 @@ namespace Gorgon.Renderers
 
             // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
             // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.
-            if (camera != null)
+            if (camera is not null)
             {
                 cameraPos = new DX.Vector4(camera.Position, 0);
             }

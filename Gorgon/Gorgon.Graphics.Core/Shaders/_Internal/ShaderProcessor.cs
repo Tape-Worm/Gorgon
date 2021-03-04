@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
                 line.Remove(0, 1);
             }
 
-            while ((line.Length > 0) && (char.IsWhiteSpace(line[line.Length - 1])))
+            while ((line.Length > 0) && (char.IsWhiteSpace(line[^1])))
             {
                 line.Remove(line.Length - 1, 1);
             }
@@ -92,7 +92,7 @@ namespace Gorgon.Graphics.Core
             // Get include files.
             int endQuote = 0;
 
-            if ((line[0] != '"') || (line[line.Length - 1] != '"'))
+            if ((line[0] != '"') || (line[^1] != '"'))
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID, includeLine));
             }

@@ -304,8 +304,7 @@ namespace Gorgon.Examples
         /// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private static void Mouse_Down(object sender, MouseEventArgs args)
         {
-            if ((args.Button != MouseButtons.Right)
-                || (_mouse != null))
+            if ((args.Button is not MouseButtons.Right) || (_mouse is not null))
             {
                 return;
             }
@@ -752,7 +751,7 @@ namespace Gorgon.Examples
 
                 _input?.Dispose();
 
-                if (_renderer != null)
+                if (_renderer is not null)
                 {
                     foreach (Mesh mesh in _renderer.Meshes)
                     {

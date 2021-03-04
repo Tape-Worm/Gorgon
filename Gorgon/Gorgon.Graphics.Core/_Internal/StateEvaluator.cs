@@ -54,17 +54,17 @@ namespace Gorgon.Graphics.Core
 		private readonly GorgonGraphics _graphics;
 
 		// The previously assigned pipeline state.
-		private readonly GorgonPipelineState _prevPipelineState = new GorgonPipelineState
+		private readonly GorgonPipelineState _prevPipelineState = new()
         {
             PrimitiveType = PrimitiveType.None
         };
 
 		// The ranges of resource arrays that were updated.
-		private readonly ResourceRanges _ranges = new ResourceRanges();
+		private readonly ResourceRanges _ranges = new();
 
         // The previously assigned resource state.
-        private readonly D3DState _prevResourceState = new D3DState
-		{
+        private readonly D3DState _prevResourceState = new()
+        {
 			CsReadWriteViews = new GorgonReadWriteViewBindings(),
 			PsSamplers = new GorgonSamplerStates(),
 			VsSrvs = new GorgonShaderResourceViews(),
@@ -237,7 +237,7 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			if ((_graphics.DepthStencilView != null) && ((_graphics.DepthStencilView.Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource))
+			if ((_graphics.DepthStencilView is not null) && ((_graphics.DepthStencilView.Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource))
 			{
 				for (int s = indices.Start; s < indices.Count + indices.Start; ++s)
 				{
@@ -476,7 +476,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="depth">The depth stencil being assigned.</param>
 		private void CheckRtvsForSrvHazards(ReadOnlySpan<GorgonRenderTargetView> rtViews, GorgonDepthStencil2DView depth)
 		{
-			if (depth != null)
+			if (depth is not null)
 			{
 				CheckDsvSrvsHazards(_prevResourceState.VsSrvs, depth, _graphics.D3DDeviceContext.VertexShader);
 				CheckDsvSrvsHazards(_prevResourceState.PsSrvs, depth, _graphics.D3DDeviceContext.PixelShader);
@@ -544,35 +544,35 @@ namespace Gorgon.Graphics.Core
 			CheckArray(_prevResourceState.VertexBuffers, newState.VertexBuffers, ResourceStateChanges.VertexBuffers, ref result, ref _ranges.VertexBuffers);
 			CheckArray(_prevResourceState.StreamOutBindings, newState.StreamOutBindings, ResourceStateChanges.StreamOutBuffers, ref result, ref _ranges.StreamOutBuffers);
 
-			if ((newState.PipelineState.VertexShader != null) || ((pipelineStateChanges & PipelineStateChanges.VertexShader) == PipelineStateChanges.VertexShader))
+			if ((newState.PipelineState.VertexShader is not null) || ((pipelineStateChanges & PipelineStateChanges.VertexShader) == PipelineStateChanges.VertexShader))
 			{
 				CheckArray(_prevResourceState.VsConstantBuffers, newState.VsConstantBuffers, ResourceStateChanges.VsConstants, ref result, ref _ranges.VertexShaderConstants);
 				CheckArray(_prevResourceState.VsSrvs, newState.VsSrvs, ResourceStateChanges.VsResourceViews, ref result, ref _ranges.VertexShaderResources);
 				CheckArray(_prevResourceState.VsSamplers, newState.VsSamplers, ResourceStateChanges.VsSamplers, ref result, ref _ranges.VertexShaderSamplers);
 			}
 
-			if ((newState.PipelineState.PixelShader != null) || ((pipelineStateChanges & PipelineStateChanges.PixelShader) == PipelineStateChanges.PixelShader))
+			if ((newState.PipelineState.PixelShader is not null) || ((pipelineStateChanges & PipelineStateChanges.PixelShader) == PipelineStateChanges.PixelShader))
 			{
 				CheckArray(_prevResourceState.PsConstantBuffers, newState.PsConstantBuffers, ResourceStateChanges.PsConstants, ref result, ref _ranges.PixelShaderConstants);
 				CheckArray(_prevResourceState.PsSrvs, newState.PsSrvs, ResourceStateChanges.PsResourceViews, ref result, ref _ranges.PixelShaderResources);
 				CheckArray(_prevResourceState.PsSamplers, newState.PsSamplers, ResourceStateChanges.PsSamplers, ref result, ref _ranges.PixelShaderSamplers);
 			}
 
-			if ((newState.PipelineState.GeometryShader != null) || ((pipelineStateChanges & PipelineStateChanges.GeometryShader) == PipelineStateChanges.GeometryShader))
+			if ((newState.PipelineState.GeometryShader is not null) || ((pipelineStateChanges & PipelineStateChanges.GeometryShader) == PipelineStateChanges.GeometryShader))
 			{
 				CheckArray(_prevResourceState.GsConstantBuffers, newState.GsConstantBuffers, ResourceStateChanges.GsConstants, ref result, ref _ranges.GeometryShaderConstants);
 				CheckArray(_prevResourceState.GsSrvs, newState.GsSrvs, ResourceStateChanges.GsResourceViews, ref result, ref _ranges.GeometryShaderResources);
 				CheckArray(_prevResourceState.GsSamplers, newState.GsSamplers, ResourceStateChanges.GsSamplers, ref result, ref _ranges.GeometryShaderSamplers);
 			}
 
-			if ((newState.PipelineState.HullShader != null) || ((pipelineStateChanges & PipelineStateChanges.HullShader) == PipelineStateChanges.HullShader))
+			if ((newState.PipelineState.HullShader is not null) || ((pipelineStateChanges & PipelineStateChanges.HullShader) == PipelineStateChanges.HullShader))
 			{
 				CheckArray(_prevResourceState.HsConstantBuffers, newState.HsConstantBuffers, ResourceStateChanges.HsConstants, ref result, ref _ranges.HullShaderConstants);
 				CheckArray(_prevResourceState.HsSrvs, newState.HsSrvs, ResourceStateChanges.HsResourceViews, ref result, ref _ranges.HullShaderResources);
 				CheckArray(_prevResourceState.HsSamplers, newState.HsSamplers, ResourceStateChanges.HsSamplers, ref result, ref _ranges.HullShaderSamplers);
 			}
 
-			if ((newState.PipelineState.DomainShader != null) || ((pipelineStateChanges & PipelineStateChanges.DomainShader) == PipelineStateChanges.DomainShader))
+			if ((newState.PipelineState.DomainShader is not null) || ((pipelineStateChanges & PipelineStateChanges.DomainShader) == PipelineStateChanges.DomainShader))
 			{
 				CheckArray(_prevResourceState.DsConstantBuffers, newState.DsConstantBuffers, ResourceStateChanges.DsConstants, ref result, ref _ranges.DomainShaderConstants);
 				CheckArray(_prevResourceState.DsSrvs, newState.DsSrvs, ResourceStateChanges.DsResourceViews, ref result, ref _ranges.DomainShaderResources);

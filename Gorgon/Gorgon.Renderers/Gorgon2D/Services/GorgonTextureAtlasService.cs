@@ -60,7 +60,7 @@ namespace Gorgon.Renderers.Services
         // The graphics interface used to generate the data.
         private readonly GorgonGraphics _graphics;
         // The size of the texture to generate.
-        private DX.Size2 _textureSize = new DX.Size2(1024, 1024);
+        private DX.Size2 _textureSize = new(1024, 1024);
         // The number of array indices in the texture to generate.
         private int _arrayCount;
         #endregion
@@ -324,7 +324,7 @@ namespace Gorgon.Renderers.Services
             }
 
             // Filter out empty sprites.
-            IReadOnlyList<GorgonSprite> filtered = sprites.Where(item => (item.Texture != null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0)))
+            IReadOnlyList<GorgonSprite> filtered = sprites.Where(item => (item.Texture is not null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0)))
                                                           .Distinct()
                                                           .ToArray();
 
@@ -381,7 +381,7 @@ namespace Gorgon.Renderers.Services
             }
 
             // Filter out empty sprites.
-            IReadOnlyList<GorgonSprite> filtered = sprites.Where(item => (item.Texture != null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0)))
+            IReadOnlyList<GorgonSprite> filtered = sprites.Where(item => (item.Texture is not null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0)))
                                                           .Distinct()
                                                           .ToArray();
 

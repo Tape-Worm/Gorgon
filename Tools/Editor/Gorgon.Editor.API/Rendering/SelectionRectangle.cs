@@ -108,7 +108,7 @@ namespace Gorgon.Editor.Rendering
         {
             GorgonTexture2DView texture = _selectionTexture.Value;
 
-            Debug.Assert(texture != null, "No texture was found for the selection rectangle.");
+            Debug.Assert(texture is not null, "No texture was found for the selection rectangle.");
 
             _renderer.DrawFilledRectangle(region,
                 Color,

@@ -42,7 +42,7 @@ namespace Gorgon.Editor.ImageEditor
         // The number of mip map levels in the image.
         private int _alpha = 255;
         // The range of alpha values to update.
-        private GorgonRange _alphaUpdateRange = new GorgonRange(0, 255);
+        private GorgonRange _alphaUpdateRange = new(0, 255);
         #endregion
 
         #region Properties.

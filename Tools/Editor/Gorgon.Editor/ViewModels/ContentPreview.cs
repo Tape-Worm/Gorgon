@@ -186,7 +186,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                if (_loadPreviewTask != null)
+                if (_loadPreviewTask is not null)
                 {
                     if (_loadPreviewTask.Status == TaskStatus.Faulted)
                     {
@@ -286,7 +286,7 @@ namespace Gorgon.Editor.ViewModels
                     
                     if (_fileExplorer.SelectedFiles.Count > 0)
                     {
-                        file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[_fileExplorer.SelectedFiles.Count - 1].FullPath);                        
+                        file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[^1].FullPath);                        
                     }
 
                     _fileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
@@ -367,7 +367,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     IGorgonVirtualFile thumbnailFile = _tempFileSystem.FileSystem.GetFile(thumbDirectory.FullPath + thumbnailName);
 
-                    if (thumbnailFile != null)
+                    if (thumbnailFile is not null)
                     {
                         _tempFileSystem.DeleteFile(thumbnailFile.FullPath);
                     }

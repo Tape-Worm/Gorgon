@@ -43,7 +43,7 @@ namespace Gorgon.Examples
             {
                 _trackingLayer = value;
 
-                if (_trackingLayer != null)
+                if (_trackingLayer is not null)
                 {
                     _trackingLayer.Offset = DX.Vector2.Zero;
                 }

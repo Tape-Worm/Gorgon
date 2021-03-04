@@ -62,7 +62,7 @@ namespace Gorgon.IO
             {
                 foreach (GorgonFileSystemMountPoint mountPoint in fileSystem.MountPoints.Where(item => item.PhysicalPath.EndsWith(Path.DirectorySeparatorChar + "fs" + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
                 {
-                    string dirName = Path.GetDirectoryName(mountPoint.PhysicalPath.Substring(0, mountPoint.PhysicalPath.Length - 1));
+                    string dirName = Path.GetDirectoryName(mountPoint.PhysicalPath[0..^1]);
                     if (File.Exists(Path.Combine(dirName, CommonEditorConstants.EditorMetadataFileName)))
                     {
                         externalProjectData = new FileInfo(Path.Combine(dirName, CommonEditorConstants.EditorMetadataFileName));
@@ -250,7 +250,7 @@ namespace Gorgon.IO
 
                     IReadOnlyDictionary<string, string> attributes = metaDataItem.Attributes;
 
-                    if ((attributes != null) && (attributes.Count > 0) && (attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out _)))
+                    if ((attributes is not null) && (attributes.Count > 0) && (attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out _)))
                     {
                         continue;
                     }

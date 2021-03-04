@@ -40,9 +40,9 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // Buffer used to parse the string.
-        private readonly StringBuilder _colorBuffer = new StringBuilder(16);
+        private readonly StringBuilder _colorBuffer = new(16);
         // Buffer used to parse the string.
-        private readonly StringBuilder _parseBuffer = new StringBuilder(256);
+        private readonly StringBuilder _parseBuffer = new(256);
         #endregion
 
         #region Properties.
@@ -130,7 +130,7 @@ namespace Gorgon.Renderers
                 {
                     GorgonColor? color = GetColor(tagValueIndex, tagLength);
 
-                    if (color != null)
+                    if (color is not null)
                     {
                         blocks.Add(new ColorBlock(startText - (tagLength + 3), endText - (tagLength + 3), color.Value));
                     }

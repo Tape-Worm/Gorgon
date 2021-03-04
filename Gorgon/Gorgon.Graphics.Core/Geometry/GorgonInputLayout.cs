@@ -57,8 +57,8 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // Type mapping for types.
-        private static readonly Dictionary<Type, BufferFormat> _typeMapping = new Dictionary<Type, BufferFormat>
-            {
+        private static readonly Dictionary<Type, BufferFormat> _typeMapping = new()
+        {
                 {
                     typeof(byte), BufferFormat.R8_UInt
                 },
@@ -580,14 +580,14 @@ namespace Gorgon.Graphics.Core
         /// <returns>The size of the elements in the slot, in bytes.</returns>
         public int GetSlotSize(int slot)
         {
-            if ((_slotSizes != null) && (_slotSizes.Count != 0))
+            if ((_slotSizes is not null) && (_slotSizes.Count != 0))
             {
                 return _slotSizes[slot];
             }
 
             UpdateVertexSize();
 
-            Debug.Assert(_slotSizes != null, "_slotSizes != null");
+            Debug.Assert(_slotSizes is not null, "_slotSizes is not null");
 
             return _slotSizes[slot];
         }

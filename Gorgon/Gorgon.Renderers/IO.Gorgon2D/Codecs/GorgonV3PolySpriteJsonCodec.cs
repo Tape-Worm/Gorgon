@@ -126,14 +126,10 @@ namespace Gorgon.IO
         /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
         protected override GorgonPolySprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
         {
-            using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
-            {
-                using (var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
-                {
-                    string jsonString = reader.ReadToEnd();
-                    return FromJson(Renderer, overrideTexture, jsonString);
-                }
-            }
+            using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
+            using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
+            string jsonString = reader.ReadToEnd();
+            return FromJson(Renderer, overrideTexture, jsonString);
         }
 
         /// <summary>
@@ -143,10 +139,8 @@ namespace Gorgon.IO
         /// <param name="stream">The stream that will contain the sprite.</param>
         protected override void OnSaveToStream(GorgonPolySprite sprite, Stream stream)
         {
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
-            {
-                writer.Write(sprite.ToJson());
-            }
+            using var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
+            writer.Write(sprite.ToJson());
         }
 
         /// <summary>
@@ -180,35 +174,33 @@ namespace Gorgon.IO
         /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
         protected override string OnGetAssociatedTextureName(Stream stream)
         {
-            using (JsonReader reader = GetJsonReader(stream))
+            using JsonReader reader = GetJsonReader(stream);
+            if (!IsReadableJObject(reader))
             {
-                if (!IsReadableJObject(reader))
+                return null;
+            }
+
+            while (reader.Read())
+            {
+                if ((!string.Equals(reader.Path, "Texture", StringComparison.Ordinal))
+                    || (reader.TokenType != JsonToken.PropertyName))
                 {
-                    return null;
+                    continue;
                 }
 
                 while (reader.Read())
                 {
-                    if ((!string.Equals(reader.Path, "Texture", StringComparison.Ordinal))
+                    if ((!string.Equals(reader.Path, "Texture.name", StringComparison.Ordinal))
                         || (reader.TokenType != JsonToken.PropertyName))
                     {
                         continue;
                     }
 
-                    while (reader.Read())
-                    {
-                        if ((!string.Equals(reader.Path, "Texture.name", StringComparison.Ordinal))
-                            || (reader.TokenType != JsonToken.PropertyName))
-                        {
-                            continue;
-                        }
-
-                        return !reader.Read() ? null : reader.Value?.ToString();
-                    }
+                    return !reader.Read() ? null : reader.Value?.ToString();
                 }
-
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>

@@ -74,7 +74,7 @@ namespace Gorgon.Diagnostics
                 if (extraPath.Contains(Path.VolumeSeparatorChar.ToString(CultureInfo.InvariantCulture)))
                 {
                     extraPath = extraPath.IndexOf(Path.VolumeSeparatorChar) < (extraPath.Length - 1)
-                                    ? extraPath.Substring(extraPath.IndexOf(Path.VolumeSeparatorChar) + 1)
+                                    ? extraPath[(extraPath.IndexOf(Path.VolumeSeparatorChar) + 1)..]
                                     : string.Empty;
                 }
 

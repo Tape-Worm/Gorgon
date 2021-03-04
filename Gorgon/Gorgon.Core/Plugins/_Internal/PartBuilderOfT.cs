@@ -81,7 +81,7 @@ namespace System.ComponentModel.Composition.Registration
 
             public void ConfigureConstructorImports(ParameterInfo parameterInfo, ImportBuilder importBuilder)
             {
-                if (_importBuilders != null &&
+                if (_importBuilders is not null &&
                     _importBuilders.TryGetValue(parameterInfo, out Action<ImportBuilder> parameterImportBuilder))
                 {
                     parameterImportBuilder(importBuilder);

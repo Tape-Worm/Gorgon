@@ -79,13 +79,11 @@ namespace Gorgon.Editor.Services
                 }
             }
 
-            switch (confirmResult)
+            return confirmResult switch
             {
-                case ConfirmationResult.Yes:
-                    return MessageResponse.Yes;
-                default:
-                    return MessageResponse.No;
-            }
+                ConfirmationResult.Yes => MessageResponse.Yes,
+                _ => MessageResponse.No,
+            };
         }
 
         /// <summary>

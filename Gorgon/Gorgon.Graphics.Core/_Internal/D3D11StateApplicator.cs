@@ -645,7 +645,7 @@ namespace Gorgon.Graphics.Core
 				GorgonRenderTargetView rtv = null;
 				for (int i = 0; i < renderTargets.Length; ++i)
 				{
-					if (renderTargets[i] != null)
+					if (renderTargets[i] is not null)
 					{
 						rtv = renderTargets[i];
 						break;

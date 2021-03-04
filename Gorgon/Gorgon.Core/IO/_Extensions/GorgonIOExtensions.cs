@@ -535,7 +535,7 @@ namespace Gorgon.IO
         public static string FormatDirectory(this string path, char directorySeparator)
         {
             string directorySep = _directoryPathSeparator;
-            string doubleSeparator = new string(new[] { directorySeparator, directorySeparator });
+            string doubleSeparator = new(new[] { directorySeparator, directorySeparator });
 
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -561,7 +561,7 @@ namespace Gorgon.IO
                 directorySep = _altPathSeparator;
             }
 
-            if (output[output.Length - 1] != directorySeparator)
+            if (output[^1] != directorySeparator)
             {
                 output.Append(directorySeparator);
             }

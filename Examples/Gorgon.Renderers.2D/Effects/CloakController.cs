@@ -61,23 +61,12 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the amount of cloaking applied.
         /// </summary>
-        public float CloakAmount
+        public float CloakAmount => Direction switch
         {
-            get
-            {
-                switch (Direction)
-                {
-                    case CloakDirection.Cloak:
-                    case CloakDirection.Uncloak:
-                        return _cloakAmount;
-                    case CloakDirection.CloakPulse:
-                    case CloakDirection.UncloakStopPulse:
-                        return (_cloakAmount - ((_cloakAngleRads.Cos() + 1.0f) / 10.0f)).Min(0.25f).Max(0);
-                    default:
-                        return 0.0f;
-                }
-            }
-        }
+            CloakDirection.Cloak or CloakDirection.Uncloak => _cloakAmount,
+            CloakDirection.CloakPulse or CloakDirection.UncloakStopPulse => (_cloakAmount - ((_cloakAngleRads.Cos() + 1.0f) / 10.0f)).Min(0.25f).Max(0),
+            _ => 0.0f,
+        };
 
         /// <summary>
         /// Property to return the cloak direction.

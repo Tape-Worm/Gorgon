@@ -208,8 +208,7 @@ namespace Gorgon.Graphics.Core
             }
 
             // These events don't really require a Begin call.
-            if ((QueryType == QueryType.Event)
-                || (QueryType == QueryType.Timestamp))
+            if (QueryType is QueryType.Event or QueryType.Timestamp)
             {
                 return;
             }

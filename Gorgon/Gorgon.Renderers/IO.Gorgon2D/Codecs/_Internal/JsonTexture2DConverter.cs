@@ -44,7 +44,7 @@ namespace Gorgon.IO
         // The override texture.
         private readonly GorgonTexture2DView _override;
         // The list of properties for the type.
-        private readonly HashSet<string> _propNames = new HashSet<string>(StringComparer.Ordinal)
+        private readonly HashSet<string> _propNames = new(StringComparer.Ordinal)
                                                       {
                                                           "name",
                                                           "texWidth",
@@ -208,7 +208,7 @@ namespace Gorgon.IO
                 return null;
             }
 
-            if (_override != null)
+            if (_override is not null)
             {
                 return _override;
             }

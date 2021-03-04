@@ -289,7 +289,7 @@ namespace Gorgon.Editor.Services
 
                 IContentFile file = _fileManager.GetFile(filePath);
 
-                Debug.Assert(file != null, $"Sprite file '{filePath}' was not created!");
+                Debug.Assert(file is not null, $"Sprite file '{filePath}' was not created!");
 
                 file.LinkContent(textureFile);
             }

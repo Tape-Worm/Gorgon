@@ -50,13 +50,13 @@ namespace Gorgon.Editor.AnimationEditor
     {
         #region Variables.
         // The list of menu items associated with the zoom level.
-        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
+        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new();
         // The buttons on the ribbon.
-        private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new List<WeakReference<KryptonRibbonGroupButton>>();
+        private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new();
         // The numeric controls on the ribbon.
-        private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = new List<WeakReference<KryptonRibbonGroupNumericUpDown>>();
+        private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = new();
         // A list of buttons mapped to the tool structure.
-        private readonly Dictionary<string, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new Dictionary<string, WeakReference<KryptonRibbonGroupButton>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
         // The currently selected zoom level
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         // The renderer for the content.
@@ -90,14 +90,14 @@ namespace Gorgon.Editor.AnimationEditor
                     return;
                 }
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
                 }
 
                 _contentRenderer = value;
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged += ContentRenderer_ZoomScale;
                     _zoomLevel = _contentRenderer.ZoomLevel;

@@ -48,11 +48,11 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // The plugin list.
-        private readonly Dictionary<string, ToolPlugIn> _plugins = new Dictionary<string, ToolPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ToolPlugIn> _plugins = new(StringComparer.OrdinalIgnoreCase);
         // The list of disabled tool plug ins.
-        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
         // The list of ribbon buttons for all tools.
-        private readonly Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+        private readonly Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new(StringComparer.CurrentCultureIgnoreCase);
         // The directory that contains the settings for the plug ins.
         private readonly string _settingsDir;
         // The host application services to pass to the plug ins.
@@ -81,7 +81,7 @@ namespace Gorgon.Editor.Services
         /// <returns>The file containing the plug in settings.</returns>
         private FileInfo GetContentPlugInSettingsPath(string name) =>
 #if DEBUG
-            new FileInfo(Path.Combine(_settingsDir, name.FormatFileName()) + ".DEBUG.json");
+            new(Path.Combine(_settingsDir, name.FormatFileName()) + ".DEBUG.json");
 #else
             new FileInfo(Path.Combine(_settingsDir, Path.ChangeExtension(name.FormatFileName(), "json")));
 #endif
@@ -281,11 +281,9 @@ namespace Gorgon.Editor.Services
                 return null;
             }
 
-            using (Stream stream = settingsFile.OpenRead())
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-            {
-                return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
-            }
+            using Stream stream = settingsFile.OpenRead();
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
         }
 
         /// <summary>Function to write out the settings for a content plug in as a JSON file.</summary>
@@ -315,11 +313,9 @@ namespace Gorgon.Editor.Services
             }
 
             FileInfo settingsFile = GetContentPlugInSettingsPath(name);
-            using (Stream stream = settingsFile.Open(FileMode.Create, FileAccess.Write, FileShare.None))
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
-            {
-                writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
-            }
+            using Stream stream = settingsFile.Open(FileMode.Create, FileAccess.Write, FileShare.None);
+            using var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false);
+            writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
         }
 
         /// <summary>

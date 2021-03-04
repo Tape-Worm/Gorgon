@@ -275,7 +275,7 @@ namespace Gorgon.Editor
             }
 
             // If we're not on one of the screens, then default to the main screen.
-            if (result.WindowBounds != null)
+            if (result.WindowBounds is not null)
             {
                 var rect = new Rectangle(result.WindowBounds.Value.X,
                                          result.WindowBounds.Value.Y,

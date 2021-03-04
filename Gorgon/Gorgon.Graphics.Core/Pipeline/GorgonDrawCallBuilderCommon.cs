@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public TB SamplerStates(ShaderType shaderType, IReadOnlyList<GorgonSamplerState> samplers, int index = 0)
         {
-            if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
+            if (index is < 0 or >= GorgonSamplerStates.MaximumSamplerStateCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GORGFX_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
             }
@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public TB SamplerState(ShaderType shaderType, GorgonSamplerState sampler, int index = 0)
         {
-            if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
+            if (index is < 0 or >= GorgonSamplerStates.MaximumSamplerStateCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GORGFX_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
             }
@@ -225,7 +225,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonStreamOutBindings.MaximumStreamOutCount"/>.</exception>
         public TB StreamOutBuffer(in GorgonStreamOutBinding binding, int slot = 0)
         {
-            if ((slot < 0) || (slot >= GorgonStreamOutBindings.MaximumStreamOutCount))
+            if (slot is < 0 or >= GorgonStreamOutBindings.MaximumStreamOutCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_SO_SLOT_INVALID, GorgonStreamOutBindings.MaximumStreamOutCount));
             }
@@ -281,7 +281,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonVertexBufferBindings.MaximumVertexBufferCount"/>.</exception>
         public TB VertexBuffer(GorgonInputLayout layout, in GorgonVertexBufferBinding binding, int slot = 0)
         {
-            if ((slot < 0) || (slot >= GorgonVertexBufferBindings.MaximumVertexBufferCount))
+            if (slot is < 0 or >= GorgonVertexBufferBindings.MaximumVertexBufferCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_INVALID_VERTEXBUFFER_SLOT, GorgonVertexBufferBindings.MaximumVertexBufferCount));
             }
@@ -325,7 +325,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public TB ConstantBuffer(ShaderType shaderType, GorgonConstantBufferView constantBuffer, int slot = 0)
         {
-            if ((slot < 0) || (slot >= GorgonConstantBuffers.MaximumConstantBufferCount))
+            if (slot is < 0 or >= GorgonConstantBuffers.MaximumConstantBufferCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_CBUFFER_SLOT_INVALID, GorgonConstantBuffers.MaximumConstantBufferCount));
             }
@@ -370,7 +370,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public TB ConstantBuffers(ShaderType shaderType, IReadOnlyList<GorgonConstantBufferView> constantBuffers, int startSlot = 0)
         {
-            if ((startSlot < 0) || (startSlot >= GorgonConstantBuffers.MaximumConstantBufferCount))
+            if (startSlot is < 0 or >= GorgonConstantBuffers.MaximumConstantBufferCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_CBUFFER_SLOT_INVALID, GorgonConstantBuffers.MaximumConstantBufferCount));
             }
@@ -415,7 +415,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public TB ShaderResource(ShaderType shaderType, GorgonShaderResourceView resourceView, int slot = 0)
         {
-            if ((slot < 0) || (slot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
+            if (slot is < 0 or >= GorgonShaderResourceViews.MaximumShaderResourceViewCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
             }
@@ -460,7 +460,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public TB ShaderResources(ShaderType shaderType, IReadOnlyList<GorgonShaderResourceView> resourceViews, int startSlot = 0)
         {
-            if ((startSlot < 0) || (startSlot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
+            if (startSlot is < 0 or >= GorgonShaderResourceViews.MaximumShaderResourceViewCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
             }
@@ -498,7 +498,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
         public TB ReadWriteView(in GorgonReadWriteViewBinding resourceView, int slot = 0)
         {
-            if ((slot < 0) || (slot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
+            if (slot is < 0 or >= GorgonShaderResourceViews.MaximumShaderResourceViewCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
             }
@@ -516,7 +516,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
         public TB ReadWriteViews(IReadOnlyList<GorgonReadWriteViewBinding> resourceViews, int startSlot = 0)
         {
-            if ((startSlot < 0) || (startSlot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
+            if (startSlot is < 0 or >= GorgonShaderResourceViews.MaximumShaderResourceViewCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
             }
@@ -650,7 +650,7 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopyStreamOutBuffers(final.D3DState.StreamOutBindings, DrawCall.StreamOutBufferBindings);
 
             // Copy over the shader resources.
-            if (DrawCall.D3DState.PipelineState?.PixelShader != null)
+            if (DrawCall.D3DState.PipelineState?.PixelShader is not null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.PsConstantBuffers, DrawCall.D3DState.PsConstantBuffers, 0);
                 StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers, 0);
@@ -663,7 +663,7 @@ namespace Gorgon.Graphics.Core
                 final.D3DState.PsSrvs.Clear();
             }
 
-            if (DrawCall.D3DState.PipelineState?.VertexShader != null)
+            if (DrawCall.D3DState.PipelineState?.VertexShader is not null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.VsConstantBuffers, DrawCall.D3DState.VsConstantBuffers, 0);
                 StateCopy.CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers, 0);
@@ -676,7 +676,7 @@ namespace Gorgon.Graphics.Core
                 final.D3DState.VsSrvs.Clear();
             }
 
-            if (DrawCall.D3DState.PipelineState?.GeometryShader != null)
+            if (DrawCall.D3DState.PipelineState?.GeometryShader is not null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
                 StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers, 0);
@@ -689,7 +689,7 @@ namespace Gorgon.Graphics.Core
                 final.D3DState.GsSrvs.Clear();
             }
 
-            if (DrawCall.D3DState.PipelineState?.DomainShader != null)
+            if (DrawCall.D3DState.PipelineState?.DomainShader is not null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
                 StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers, 0);
@@ -702,7 +702,7 @@ namespace Gorgon.Graphics.Core
                 final.D3DState.DsSrvs.Clear();
             }
 
-            if (DrawCall.D3DState.PipelineState?.HullShader != null)
+            if (DrawCall.D3DState.PipelineState?.HullShader is not null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
                 StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers, 0);

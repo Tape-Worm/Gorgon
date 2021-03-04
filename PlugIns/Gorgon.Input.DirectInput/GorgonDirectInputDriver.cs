@@ -52,7 +52,7 @@ namespace Gorgon.Input.DirectInput
         private readonly Lazy<IEnumerable<string>> _xinputDeviceIDs;
         // The available axis mappings for the individual gaming devices.
         private readonly Dictionary<IGorgonGamingDeviceInfo, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId>> _axisMappings = 
-                                    new Dictionary<IGorgonGamingDeviceInfo, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId>>();
+                                    new();
         #endregion
 
         #region Methods.
@@ -84,22 +84,20 @@ namespace Gorgon.Input.DirectInput
             // This monstrosity is based on the code at:
             // https://msdn.microsoft.com/en-ca/library/windows/desktop/ee417014(v=vs.85).aspx
             // 
-            using (var search = new ManagementObjectSearcher("SELECT DeviceID FROM Win32_PnPEntity"))
-            {
-                IEnumerable<string> xinputDevices = (from pnpDevice in search.Get().Cast<ManagementBaseObject>()
-                                                     let deviceID = pnpDevice.GetPropertyValue("DeviceID")
-                                                     where deviceID is string
-                                                     let deviceName = deviceID.ToString()
-                                                     let pidIndex = deviceName.IndexOf("PID_", StringComparison.OrdinalIgnoreCase)
-                                                     let vidIndex = deviceName.IndexOf("VID_", StringComparison.OrdinalIgnoreCase)
-                                                     where deviceName.IndexOf("IG_", StringComparison.OrdinalIgnoreCase) != -1
-                                                           && pidIndex != -1
-                                                           && vidIndex != -1
-                                                     select GetXInputDeviceID(deviceName, pidIndex, vidIndex))
-                    .ToArray();
+            using var search = new ManagementObjectSearcher("SELECT DeviceID FROM Win32_PnPEntity");
+            IEnumerable<string> xinputDevices = (from pnpDevice in search.Get().Cast<ManagementBaseObject>()
+                                                 let deviceID = pnpDevice.GetPropertyValue("DeviceID")
+                                                 where deviceID is string
+                                                 let deviceName = deviceID.ToString()
+                                                 let pidIndex = deviceName.IndexOf("PID_", StringComparison.OrdinalIgnoreCase)
+                                                 let vidIndex = deviceName.IndexOf("VID_", StringComparison.OrdinalIgnoreCase)
+                                                 where deviceName.IndexOf("IG_", StringComparison.OrdinalIgnoreCase) != -1
+                                                       && pidIndex != -1
+                                                       && vidIndex != -1
+                                                 select GetXInputDeviceID(deviceName, pidIndex, vidIndex))
+                .ToArray();
 
-                return xinputDevices;
-            }
+            return xinputDevices;
         }
 
         /// <summary>

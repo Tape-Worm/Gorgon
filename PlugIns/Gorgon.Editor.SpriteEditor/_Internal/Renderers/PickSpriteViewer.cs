@@ -60,7 +60,7 @@ namespace Gorgon.Editor.SpriteEditor
         // The sprite texture to display in the background.
         private GorgonTexture2DView _spriteTexture;
         // The sprite to render.
-        private readonly GorgonSprite _sprite = new GorgonSprite();
+        private readonly GorgonSprite _sprite = new();
         // The region for the sprite.
         private DX.RectangleF _spriteRegion;
         #endregion

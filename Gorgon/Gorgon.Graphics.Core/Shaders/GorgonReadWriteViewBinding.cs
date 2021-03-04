@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// An empty UAV binding.
         /// </summary>
-        public static readonly GorgonReadWriteViewBinding Empty = new GorgonReadWriteViewBinding(null);
+        public static readonly GorgonReadWriteViewBinding Empty = new(null);
 
         /// <summary>
         /// An initial count for a <see cref="GorgonStructuredReadWriteView"/>.

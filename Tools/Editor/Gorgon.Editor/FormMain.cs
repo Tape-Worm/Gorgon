@@ -81,21 +81,21 @@ namespace Gorgon.Editor
         // The currently selected tab prior to showing a context tab.
         private KryptonRibbonTab _prevTabBeforeContext;
         // The list of groups on the tools tab.
-        private readonly Dictionary<string, KryptonRibbonGroup> _toolGroups = new Dictionary<string, KryptonRibbonGroup>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, KryptonRibbonGroup> _toolGroups = new(StringComparer.OrdinalIgnoreCase);
         // The list of line groups for the tools tab.
-        private readonly List<KryptonRibbonGroupLines> _toolLines = new List<KryptonRibbonGroupLines>();
+        private readonly List<KryptonRibbonGroupLines> _toolLines = new();
         // The list of triple groups for the tools tab.
-        private readonly List<KryptonRibbonGroupTriple> _toolTriples = new List<KryptonRibbonGroupTriple>();
+        private readonly List<KryptonRibbonGroupTriple> _toolTriples = new();
         // The list of buttons for the tools tab.
-        private readonly Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup> _toolGroupButtons = new Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup>();
-        private readonly Dictionary<string, KryptonRibbonGroupButton> _toolButtons = new Dictionary<string, KryptonRibbonGroupButton>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup> _toolGroupButtons = new();
+        private readonly Dictionary<string, KryptonRibbonGroupButton> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
         // The list of separators for the tools tab.
-        private readonly List<KryptonRibbonGroupSeparator> _toolSeparators = new List<KryptonRibbonGroupSeparator>();
+        private readonly List<KryptonRibbonGroupSeparator> _toolSeparators = new();
         // Default event arguments for button validation.
-        private readonly CreateDirectoryArgs _createDirArgs = new CreateDirectoryArgs();
-        private readonly DeleteArgs _deleteValidationArgs = new DeleteArgs(null);
+        private readonly CreateDirectoryArgs _createDirArgs = new();
+        private readonly DeleteArgs _deleteValidationArgs = new(null);
         private DeleteArgs _deleteAllValidationArgs;
-        private readonly ImportData _defaultImportData = new ImportData();
+        private readonly ImportData _defaultImportData = new();
         // The wait panel form.
         private readonly WaitPanelDisplay _waitForm;
         // The progress panel form.
@@ -191,7 +191,7 @@ namespace Gorgon.Editor
                     {
                         TextLine1 = buttonItem.Key,
                         AllowCollapsed = false,
-                        KeyTipGroup = buttonItem.Key.Substring(0),
+                        KeyTipGroup = buttonItem.Key[..],
                         DialogBoxLauncher = false
                     };
 
@@ -234,7 +234,7 @@ namespace Gorgon.Editor
                             ribGroup.Items.Add(triple);
                         }
                     }
-                    else if ((triple != null) && (button.IsSmall))
+                    else if ((triple is not null) && (button.IsSmall))
                     {
                         lines = new KryptonRibbonGroupLines();
                         lines.Items.Clear();
@@ -242,7 +242,7 @@ namespace Gorgon.Editor
                         ribGroup.Items.Add(lines);
                         triple = null;
                     }
-                    else if ((lines != null) && (!button.IsSmall))
+                    else if ((lines is not null) && (!button.IsSmall))
                     {
                         triple = new KryptonRibbonGroupTriple();
                         triple.Items.Clear();
@@ -273,11 +273,11 @@ namespace Gorgon.Editor
                     _toolButtons[button.Name] = newButton;
 
                     // Add the button.
-                    if (triple != null)
+                    if (triple is not null)
                     {
                         triple.Items.Add(newButton);
                     }
-                    else if (lines != null)
+                    else if (lines is not null)
                     {
                         lines.Items.Add(newButton);
                     }
@@ -343,7 +343,7 @@ namespace Gorgon.Editor
                 selectedFile = DataContext.CurrentProject.FileExplorer.SelectedFiles[0];
             }
 
-            if ((DataContext.CurrentProject.ContentPreviewer?.ResetPreviewCommand != null)
+            if ((DataContext.CurrentProject.ContentPreviewer?.ResetPreviewCommand is not null)
                 && (DataContext.CurrentProject.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
             {
                 await DataContext.CurrentProject.ContentPreviewer.ResetPreviewCommand.ExecuteAsync(null);
@@ -397,7 +397,7 @@ namespace Gorgon.Editor
 
             await fileExplorer.RefreshCommand.ExecuteAsync(null);
 
-            if ((project.SaveProjectMetadataCommand != null) && (project.SaveProjectMetadataCommand.CanExecute(null)))
+            if ((project.SaveProjectMetadataCommand is not null) && (project.SaveProjectMetadataCommand.CanExecute(null)))
             {
                 project.SaveProjectMetadataCommand.Execute(null);
             }
@@ -431,7 +431,7 @@ namespace Gorgon.Editor
 
             RibbonMain.SuspendLayout();
 
-            if ((e.Ribbon != null) && (e.Ribbon.RibbonTabs.Count > 0))
+            if ((e.Ribbon is not null) && (e.Ribbon.RibbonTabs.Count > 0))
             {
                 firstTab = e.Ribbon.RibbonTabs[0];
             }
@@ -439,7 +439,7 @@ namespace Gorgon.Editor
             _ribbonMerger.Merge(e.Ribbon);
 
             // Default to the first tab on the joined ribbon.
-            if (firstTab != null)
+            if (firstTab is not null)
             {
                 RibbonMain.SelectedTab = firstTab;
             }
@@ -673,7 +673,7 @@ namespace Gorgon.Editor
             TabFileSystem.Visible = true;
             _defaultImportData.Destination = fileExplorer.SelectedDirectory;
 
-            ButtonFileSystemPanel.Enabled = project != null;
+            ButtonFileSystemPanel.Enabled = project is not null;
             ButtonFileSystemPreview.Enabled = (ButtonFileSystemPanel.Enabled) && (_settings.ShowFileExplorer);
             ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);            
             ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);            
@@ -723,7 +723,7 @@ namespace Gorgon.Editor
                     ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteValidationArgs) ?? false);
                     ButtonFileSystemDeleteAll.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteAllValidationArgs) ?? false);
                     ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameDirectoryCommand?.CanExecute(null) ?? false);
-                    PanelProject.FileExplorer.MenuItemDirCreateContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.SelectedDirectory != null);
+                    PanelProject.FileExplorer.MenuItemDirCreateContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.SelectedDirectory is not null);
                     break;
                 case FileExplorerContext.FileList:
                     string[] validationFiles = fileExplorer.SelectedFiles.Select(item => item.ID).ToArray();
@@ -748,7 +748,7 @@ namespace Gorgon.Editor
                     ButtonFileSystemDeleteAll.Enabled = false;
                     ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteFileCommand?.CanExecute(_deleteValidationArgs) ?? false);
                     ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameFileCommand?.CanExecute(null) ?? false);
-                    PanelProject.FileExplorer.MenuItemFileCreateContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer?.SelectedDirectory != null);
+                    PanelProject.FileExplorer.MenuItemFileCreateContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer?.SelectedDirectory is not null);
                     break;
             }
 
@@ -759,7 +759,7 @@ namespace Gorgon.Editor
                     continue;
                 }
 
-                if (button.CanExecute != null)
+                if (button.CanExecute is not null)
                 {
                     ribButton.Enabled = button.CanExecute();
                 }
@@ -799,7 +799,7 @@ namespace Gorgon.Editor
         /// </summary>
         private void NavigateToStagingView()
         {
-            if (DataContext?.CurrentProject?.SaveProjectToPackFileCommand != null)
+            if (DataContext?.CurrentProject?.SaveProjectToPackFileCommand is not null)
             {
                 var saveAsArgs = new CancelEventArgs();
                 Stage.CanSavePackedFile = DataContext.CurrentProject.SaveProjectToPackFileCommand.CanExecute(saveAsArgs);
@@ -811,7 +811,7 @@ namespace Gorgon.Editor
 
             Text = string.Empty;
             Stage.IsStartup = false;
-            Stage.CanOpen = (DataContext.OpenPackFileCommand != null) && (DataContext.OpenPackFileCommand.CanExecute(null));
+            Stage.CanOpen = (DataContext.OpenPackFileCommand is not null) && (DataContext.OpenPackFileCommand.CanExecute(null));
 
             Stage.Visible = true;
             _clipboardContext = null;
@@ -836,11 +836,11 @@ namespace Gorgon.Editor
                     _deleteAllValidationArgs = null;
                     RibbonMain.SelectedContext = string.Empty;
 
-                    if (DataContext.CurrentProject != null)
+                    if (DataContext.CurrentProject is not null)
                     {
                         DataContext.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
                         DataContext.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
-                        if (DataContext.CurrentProject.FileExplorer != null)
+                        if (DataContext.CurrentProject.FileExplorer is not null)
                         {
                             DataContext.CurrentProject.FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
                             DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
@@ -884,7 +884,7 @@ namespace Gorgon.Editor
 
                     if (string.IsNullOrWhiteSpace(DataContext.CurrentProject.CommandContext))
                     {
-                        if (_prevTabBeforeContext != null)
+                        if (_prevTabBeforeContext is not null)
                         {
                             RibbonMain.SelectedTab = _prevTabBeforeContext;
                         }
@@ -893,7 +893,7 @@ namespace Gorgon.Editor
                     {
                         // Find the first tab associated with this context.
                         KryptonRibbonTab contextTab = RibbonMain.RibbonTabs.FirstOrDefault(item => string.Equals(DataContext.CurrentProject.CommandContext, item.ContextName, StringComparison.OrdinalIgnoreCase));
-                        if (contextTab != null)
+                        if (contextTab is not null)
                         {
                             RibbonMain.SelectedTab = contextTab;
                         }
@@ -967,7 +967,7 @@ namespace Gorgon.Editor
                     DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
                     DataContext.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
 
-                    if (DataContext.CurrentProject.FileExplorer != null)
+                    if (DataContext.CurrentProject.FileExplorer is not null)
                     {
                         DataContext.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
                         DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
@@ -1091,7 +1091,7 @@ namespace Gorgon.Editor
             Text = string.Empty;
             _clipboardContext = dataContext.CurrentProject?.ClipboardContext;
 
-            if (dataContext.CurrentProject != null)
+            if (dataContext.CurrentProject is not null)
             {
                 RibbonMain.SelectedContext = dataContext.CurrentProject.CommandContext;
                 ButtonFileSystemPanel.Checked = _settings.ShowFileExplorer;
@@ -1118,12 +1118,12 @@ namespace Gorgon.Editor
                 return;
             }
 
-            if (DataContext.CurrentProject != null)
+            if (DataContext.CurrentProject is not null)
             {
                 DataContext.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
                 DataContext.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
 
-                if (DataContext.CurrentProject.FileExplorer != null)
+                if (DataContext.CurrentProject.FileExplorer is not null)
                 {
                     DataContext.CurrentProject.FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
                     DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
@@ -1295,7 +1295,7 @@ namespace Gorgon.Editor
 
             DataContext.OnLoad();
 
-            Stage.CanOpen = (DataContext.OpenPackFileCommand != null) && (DataContext.OpenPackFileCommand.CanExecute(null));
+            Stage.CanOpen = (DataContext.OpenPackFileCommand is not null) && (DataContext.OpenPackFileCommand.CanExecute(null));
 
             Focus();
         }
@@ -1393,12 +1393,12 @@ namespace Gorgon.Editor
                     return;
                 }
 
-                if (DataContext.CurrentProject != null)
+                if (DataContext.CurrentProject is not null)
                 {
                     DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
                     DataContext.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
 
-                    if (DataContext.CurrentProject.FileExplorer != null)
+                    if (DataContext.CurrentProject.FileExplorer is not null)
                     {
                         DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
                         DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;

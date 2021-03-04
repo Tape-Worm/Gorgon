@@ -154,18 +154,16 @@ namespace Gorgon.Editor.AnimationEditor.Services
             {
                 _log.Print("WARNING: No sprite texture dependency found, interrogating sprite data...", LoggingLevel.Verbose);
                 // If there's no linkage, then see if the sprite has the path information embedded within its data.
-                using (Stream spriteStream = _fileManager.OpenStream(spriteContent.Path, FileMode.Open))
+                using Stream spriteStream = _fileManager.OpenStream(spriteContent.Path, FileMode.Open);
+                string textureName = _spriteCodec.GetAssociatedTextureName(spriteStream);
+
+                if ((string.IsNullOrWhiteSpace(textureName))
+                    || (!_fileManager.FileExists(textureName)))
                 {
-                    string textureName = _spriteCodec.GetAssociatedTextureName(spriteStream);
-
-                    if ((string.IsNullOrWhiteSpace(textureName))
-                        || (!_fileManager.FileExists(textureName)))
-                    {
-                        return (null, null);
-                    }
-
-                    dependency = new List<string> { textureName };
+                    return (null, null);
                 }
+
+                dependency = new List<string> { textureName };
             }
 
             IContentFile imageFile = _fileManager.GetFile(dependency[0]);
@@ -240,7 +238,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
                     {
                         spriteTextureFile = _fileManager.GetFile(textureName);
 
-                        if (spriteTextureFile != null)
+                        if (spriteTextureFile is not null)
                         {
                             texture = await _textureCache.GetTextureAsync(spriteTextureFile);
                             spriteTextureFile.IsOpen = true;
@@ -281,15 +279,13 @@ namespace Gorgon.Editor.AnimationEditor.Services
                 || (dependencies.Count == 0))
             {
                 _log.Print("WARNING: No sprite texture dependencies found, interrogating animation data...", LoggingLevel.Intermediate);
-                using (Stream stream = _fileManager.OpenStream(animationFile.Path, FileMode.Open))
-                {
-                    dependencies = new List<string>(_animationCodec.GetAssociatedTextureNames(stream));
+                using Stream stream = _fileManager.OpenStream(animationFile.Path, FileMode.Open);
+                dependencies = new List<string>(_animationCodec.GetAssociatedTextureNames(stream));
 
-                    if (dependencies.Count == 0)
-                    {
-                        _log.Print($"WARNING: No textures for the animation for were found on the file system.", LoggingLevel.Intermediate);
-                        return new TextureDependencies(Array.Empty<GorgonTexture2DView>(), Array.Empty<IContentFile>());
-                    }
+                if (dependencies.Count == 0)
+                {
+                    _log.Print($"WARNING: No textures for the animation for were found on the file system.", LoggingLevel.Intermediate);
+                    return new TextureDependencies(Array.Empty<GorgonTexture2DView>(), Array.Empty<IContentFile>());
                 }
             }
 
@@ -317,7 +313,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
 
                 if (texture is null)
                 {
-                    if (file != null)
+                    if (file is not null)
                     {
                         _log.Print($"WARNING: The texture '{file.Path}' was not loaded and will not be available when rendering the animation.", LoggingLevel.Intermediate);
                     }
@@ -337,8 +333,8 @@ namespace Gorgon.Editor.AnimationEditor.Services
         /// </summary>
         /// <param name="file">The file to evaluate.</param>
         /// <returns><b>true</b> if the file is an image, supported by this editor, or <b>false</b> if not.</returns>
-        public bool IsContentImage(IContentFile file) => ((file != null)
-                && (file.Metadata != null)
+        public bool IsContentImage(IContentFile file) => ((file is not null)
+                && (file.Metadata is not null)
                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 && (string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
 
@@ -347,8 +343,8 @@ namespace Gorgon.Editor.AnimationEditor.Services
         /// </summary>
         /// <param name="file">The file to evaluate.</param>
         /// <returns><b>true</b> if the file is a sprite, supported by this editor, or <b>false</b> if not.</returns>
-        public bool IsContentSprite(IContentFile file) => ((file != null)
-                && (file.Metadata != null)
+        public bool IsContentSprite(IContentFile file) => ((file is not null)
+                && (file.Metadata is not null)
                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 && (string.Equals(contentType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
 
@@ -357,7 +353,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
         /// <returns>The textures and sprites associated with the animation.</returns>
         public async Task<(TextureDependencies, PrimarySpriteDependency)> LoadDependenciesAsync(IContentFile animationFile)
         {
-            Debug.Assert(animationFile.Metadata != null, "No meta data for animation content!");
+            Debug.Assert(animationFile.Metadata is not null, "No meta data for animation content!");
 
             TextureDependencies textures = await LoadTexturesAsync(animationFile);
             PrimarySpriteDependency sprite = await LoadPrimarySpriteDependency(animationFile);
@@ -382,10 +378,8 @@ namespace Gorgon.Editor.AnimationEditor.Services
 
             (GorgonSprite, IContentFile) result = await Task.Run(() =>
             {
-                using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
-                {
-                    return (_spriteCodec.FromStream(stream, texture), textureFile);
-                }
+                using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
+                return (_spriteCodec.FromStream(stream, texture), textureFile);
             });
 
             return result;
@@ -399,7 +393,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
         {
             bool unloaded = _textureCache.ReturnTexture(spriteInfo.sprite?.Texture);
 
-            if (spriteInfo.spriteFile != null)
+            if (spriteInfo.spriteFile is not null)
             {
                 spriteInfo.spriteFile.IsOpen = false;
             }
@@ -459,7 +453,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
             {
                 animFile = _fileManager.GetFile(path);
 
-                if (animFile != null)
+                if (animFile is not null)
                 {
                     animFile.IsOpen = false;
                     animFile.ClearLinks();
@@ -478,14 +472,14 @@ namespace Gorgon.Editor.AnimationEditor.Services
 
                 // Setup metadata.
                 animFile.IsOpen = true;
-                if (backgroundImage != null)
+                if (backgroundImage is not null)
                 {
                     animFile.Metadata.DependsOn[AnimationEditorPlugIn.BgImageDependencyName] = new List<string> { backgroundImage.Path };
                 }
 
                 animFile.LinkContent(primarySpriteFile);                
 
-                if ((textureFiles != null) && (textureFiles.Count > 0))
+                if ((textureFiles is not null) && (textureFiles.Count > 0))
                 {
 
                     var files = new List<string>();                    
@@ -508,7 +502,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
             finally
             {
                 stream?.Dispose();
-                if (animFile != null)
+                if (animFile is not null)
                 {
                     animFile.IsOpen = true;
                 }
@@ -542,12 +536,12 @@ namespace Gorgon.Editor.AnimationEditor.Services
         {
             bool unloaded = false;
 
-            if (backgroundTexture.texture != null)
+            if (backgroundTexture.texture is not null)
             {
                 unloaded = _textureCache.ReturnTexture(backgroundTexture.texture);
             }
 
-            if ((unloaded) && (backgroundTexture.file != null))
+            if ((unloaded) && (backgroundTexture.file is not null))
             {
                 backgroundTexture.file.IsOpen = false;
             }

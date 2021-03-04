@@ -90,7 +90,7 @@ namespace Gorgon.Renderers
         // The previous size of the output.
         private DX.Size2 _prevOutputSize;
         // The builders used to manage state for the effect.
-        private readonly EffectBuilders _effectBuilders = new EffectBuilders();
+        private readonly EffectBuilders _effectBuilders = new();
         // Flag to indicate that the batch state for the effect pass needs updating.
         private bool _needsStateUpdate = true;
         // The state of the current rendering pass.
@@ -392,7 +392,7 @@ namespace Gorgon.Renderers
         {
             output.ValidateObject(nameof(output));
 
-            if (_currentEffect != null)
+            if (_currentEffect is not null)
             {
                 throw new GorgonException(GorgonResult.AlreadyInitialized, string.Format(Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED, _currentEffect));
             }
@@ -590,7 +590,7 @@ namespace Gorgon.Renderers
                 }
 
                 // Set the output render target so effects can just dump their contents to the output.
-                if ((output != null) && (Graphics.RenderTargets[0] != output))
+                if ((output is not null) && (Graphics.RenderTargets[0] != output))
                 {
                     Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
                 }

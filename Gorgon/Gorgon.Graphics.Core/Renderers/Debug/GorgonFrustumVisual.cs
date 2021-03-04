@@ -41,7 +41,7 @@ namespace Gorgon.Renderers.Debug
     {
         #region Variables.        
         // The builder used to build draw calls.
-        private readonly GorgonDrawCallBuilder _builder = new GorgonDrawCallBuilder();
+        private readonly GorgonDrawCallBuilder _builder = new();
         // The draw call to submit to the graphics interface.
         private GorgonDrawCall _drawCall;
         // The layout of the vertices.

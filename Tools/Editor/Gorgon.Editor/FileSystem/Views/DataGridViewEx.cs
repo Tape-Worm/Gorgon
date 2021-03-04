@@ -46,7 +46,7 @@ namespace Gorgon.Editor.Views
         // Pass through event arguments.
         private MouseEventArgs _passThruEventArgs;
         // The list of rows for dragging.
-        private readonly List<DataGridViewRow> _dragRows = new List<DataGridViewRow>();
+        private readonly List<DataGridViewRow> _dragRows = new();
         #endregion
 
         #region Events.
@@ -189,7 +189,7 @@ namespace Gorgon.Editor.Views
             _dragRows.Clear();
             _dragRegion = Rectangle.Empty;
 
-            if ((_passThruEventArgs != null) && (e.Button != MouseButtons.Right))
+            if ((_passThruEventArgs is not null) && (e.Button != MouseButtons.Right))
             {
                 // Fire the actual event if we're dragging.
                 base.OnMouseDown(_passThruEventArgs);

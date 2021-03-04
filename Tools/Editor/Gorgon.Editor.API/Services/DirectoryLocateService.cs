@@ -88,12 +88,12 @@ namespace Gorgon.Editor.Services
 
                 locatorUI.CurrentDirectory = initialDir.FullName;
 
-                if (onSelected != null)
+                if (onSelected is not null)
                 {
                     locatorUI.FolderSelected += OnSelected;
                 }
 
-                if (onEntered != null)
+                if (onEntered is not null)
                 {
                     locatorUI.FolderEntered += OnEntered;
                 }

@@ -401,7 +401,7 @@ namespace Gorgon.Graphics.Core
                                             : info.Binding
             };
 
-            if (initialData != null)
+            if (initialData is not null)
             {
                 if ((initialData.Width < info.Width)
                     || (initialData.Height < info.Height)
@@ -518,13 +518,11 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            using (IGorgonImage image = codec.FromStream(stream, size))
-            {
-                GorgonTexture3D texture = image.ToTexture3D(graphics, options);
-                GorgonTexture3DView view = texture.GetShaderResourceView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromStream(stream, size);
+            GorgonTexture3D texture = image.ToTexture3D(graphics, options);
+            GorgonTexture3DView view = texture.GetShaderResourceView();
+            view.OwnsResource = true;
+            return view;
         }
 
         /// <summary>
@@ -591,13 +589,11 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            using (IGorgonImage image = codec.FromFile(filePath))
-            {
-                GorgonTexture3D texture = image.ToTexture3D(graphics, options);
-                GorgonTexture3DView view = texture.GetShaderResourceView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromFile(filePath);
+            GorgonTexture3D texture = image.ToTexture3D(graphics, options);
+            GorgonTexture3DView view = texture.GetShaderResourceView();
+            view.OwnsResource = true;
+            return view;
         }
         #endregion
 

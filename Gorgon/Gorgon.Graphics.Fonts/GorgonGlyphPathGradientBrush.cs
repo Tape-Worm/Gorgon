@@ -333,7 +333,7 @@ namespace Gorgon.Graphics.Fonts
         {
             var brush = other as GorgonGlyphPathGradientBrush;
 
-            return ((brush == this) || ((brush != null)
+            return ((brush == this) || ((brush is not null)
                 && (brush.WrapMode == WrapMode)
                 && (brush.CenterColor == CenterColor)
                 && (brush.CenterPoint.Equals(CenterPoint))

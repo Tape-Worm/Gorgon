@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
     public static class GorgonImageTextureExtensions
     {
         // Default load options.
-        private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new GorgonTexture2DLoadOptions();
+        private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new();
 
         /// <summary>
         /// Function to create a <see cref="GorgonTexture2D"/> from a GDI+ bitmap.
@@ -103,17 +103,15 @@ namespace Gorgon.Graphics.Core
                 options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture2D.NamePrefix);
             }
 
-            using (IGorgonImage image = gdiBitmap.ToGorgonImage())
+            using IGorgonImage image = gdiBitmap.ToGorgonImage();
+            if (options.ConvertToPremultipliedAlpha)
             {
-                if (options.ConvertToPremultipliedAlpha)
-                {
-                    image.BeginUpdate()
-                         .ConvertToPremultipliedAlpha()
-                         .EndUpdate();
-                }
-
-                return new GorgonTexture2D(graphics, image, options);
+                image.BeginUpdate()
+                     .ConvertToPremultipliedAlpha()
+                     .EndUpdate();
             }
+
+            return new GorgonTexture2D(graphics, image, options);
         }
 
         /// <summary>

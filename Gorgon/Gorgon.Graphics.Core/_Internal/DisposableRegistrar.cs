@@ -36,9 +36,9 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // The list of disposable objects.
-        private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = new Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>>();
+        private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = new();
         // Synchronization object for multiple threads.
-        private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new();
         #endregion
 
         #region Methods.

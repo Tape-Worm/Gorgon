@@ -56,7 +56,7 @@ namespace Gorgon.Collections.Specialized
             {
                 if (!Items.ContainsKey(name))
                 {
-                    if (value != null)
+                    if (value is not null)
                     {
                         Items[value.Name] = value;
                     }

@@ -183,13 +183,13 @@ namespace Gorgon.UI
         // The dummy log interface.
         private static readonly IGorgonLog _dummyLog = GorgonLog.NullLog;
         // A synchronization object for threads.
-        private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new();
         // The number of milliseconds to sleep while the application is unfocused but running in the background.
         private static int _unfocusedSleepTime = 16;
         // An atomic to ensure that run is only called by 1 thread at a time.
         private static int _runAtomic;
         // Event used to put the application to sleep.
-        private static readonly ManualResetEventSlim _unfocusedTimeout = new ManualResetEventSlim(false, 20);
+        private static readonly ManualResetEventSlim _unfocusedTimeout = new(false, 20);
         #endregion
 
         #region Properties.
@@ -251,7 +251,7 @@ namespace Gorgon.UI
         /// If no <see cref="MainForm"/> is assigned, then this property will always return <b>false</b>. 
         /// </para>
         /// </remarks>
-        public static bool IsForeground => ((MainForm != null) && (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus));
+        public static bool IsForeground => ((MainForm is not null) && (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus));
 
         /// <summary>
         /// Property to return the ID of the application UI thread.
@@ -429,7 +429,7 @@ namespace Gorgon.UI
         /// property.
         /// </para>
         /// </remarks>
-        public static Form MainForm => ApplicationContext != null ? ApplicationContext.MainForm : _mainForm;
+        public static Form MainForm => ApplicationContext is not null ? ApplicationContext.MainForm : _mainForm;
 
         /// <summary>
         /// Property to set or return the current application context.
@@ -531,7 +531,7 @@ namespace Gorgon.UI
                 }
 
                 // Give up CPU time if we're not focused.
-                if ((MainForm is null) || (MainForm.ContainsFocus) || (_unfocusedSleepTime <= 0) || (Form.ActiveForm != null))
+                if ((MainForm is null) || (MainForm.ContainsFocus) || (_unfocusedSleepTime <= 0) || (Form.ActiveForm is not null))
                 {
                     continue;
                 }
@@ -582,12 +582,12 @@ namespace Gorgon.UI
             IsRunning = true;
 
             // Display the form.
-            if ((MainForm != null) && (!MainForm.IsDisposed))
+            if ((MainForm is not null) && (!MainForm.IsDisposed))
             {
                 MainForm.Show();
             }
 
-            if ((IdleMethod != null) && (!_quitSignalled))
+            if ((IdleMethod is not null) && (!_quitSignalled))
             {
                 Log.Print("Application loop starting...", LoggingLevel.Simple);
                 Application.Idle += Application_Idle;
@@ -646,7 +646,7 @@ namespace Gorgon.UI
             ExitEvent = null;
             ThreadExitEvent = null;
 
-            if (IdleMethod != null)
+            if (IdleMethod is not null)
             {
                 Application.Idle -= Application_Idle;
                 _loop = null;
@@ -757,7 +757,7 @@ namespace Gorgon.UI
                 throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD);
             }
 
-            if (idleMethod != null)
+            if (idleMethod is not null)
             {
                 IdleMethod = idleMethod;
             }
@@ -838,7 +838,7 @@ namespace Gorgon.UI
                 throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD);
             }
 
-            if (idleMethod != null)
+            if (idleMethod is not null)
             {
                 IdleMethod = idleMethod;
             }

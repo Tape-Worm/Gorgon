@@ -80,8 +80,8 @@ namespace Gorgon.Editor.ImageAtlasTool
         {
             ButtonGenerate.Enabled = DataContext?.GenerateCommand?.CanExecute(null) ?? false;
             ButtonCalculateSize.Enabled = DataContext?.CalculateSizesCommand?.CanExecute(null) ?? false;
-            ButtonPrevArray.Visible = (DataContext.Atlas != null) || ((DataContext.Images != null) && (DataContext.Images.Count != 0));
-            ButtonNextArray.Visible = (DataContext.Atlas != null) || ((DataContext.Images != null) && (DataContext.Images.Count != 0));
+            ButtonPrevArray.Visible = (DataContext.Atlas is not null) || ((DataContext.Images is not null) && (DataContext.Images.Count != 0));
+            ButtonNextArray.Visible = (DataContext.Atlas is not null) || ((DataContext.Images is not null) && (DataContext.Images.Count != 0));
             ButtonPrevArray.Enabled = DataContext?.PrevPreviewCommand?.CanExecute(null) ?? false;
             ButtonNextArray.Enabled = DataContext?.NextPreviewCommand?.CanExecute(null) ?? false;
             ButtonOk.Enabled = DataContext?.CommitAtlasCommand?.CanExecute(null) ?? false;
@@ -113,7 +113,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// </summary>
         private void ShowFileSelector()
         {
-            if ((DataContext?.ImageFiles is null) || (_imageSelector != null))
+            if ((DataContext?.ImageFiles is null) || (_imageSelector is not null))
             {
                 return;
             }
@@ -486,7 +486,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         {
             base.OnSetupGraphics(graphicsContext, swapChain);
 
-            Debug.Assert(DataContext != null, "No datacontext");
+            Debug.Assert(DataContext is not null, "No datacontext");
 
             NumericTextureWidth.Maximum = graphicsContext.VideoAdapter.MaxTextureWidth;
             NumericTextureHeight.Maximum = graphicsContext.VideoAdapter.MaxTextureHeight;

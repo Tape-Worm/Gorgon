@@ -44,7 +44,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Conversion Formats.
         // Formats used to convert from a compressed format to an expanded format.
-        private readonly Dictionary<BufferFormat, string> _d3dFormats = new Dictionary<BufferFormat, string>
+        private readonly Dictionary<BufferFormat, string> _d3dFormats = new()
         {
             {
                 BufferFormat.BC1_UNorm,
@@ -236,7 +236,7 @@ namespace Gorgon.Editor.ImageEditor
                 texConvProcess?.Dispose();
                 inStream?.Dispose();
 
-                if (decodedFile != null)
+                if (decodedFile is not null)
                 {
                     _writer.DeleteFile(decodedFile.FullPath);
                 }

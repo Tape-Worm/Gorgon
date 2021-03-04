@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Fonts
     {
         #region Variables.
         // Texture size.
-        private DX.Size2 _textureSize = new DX.Size2(256, 256);
+        private DX.Size2 _textureSize = new(256, 256);
         // The list of characters supported by the font.
         private char[] _characters;
         // Packing spacing.

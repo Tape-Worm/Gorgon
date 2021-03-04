@@ -90,7 +90,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             try
             {
-                if ((dataContext.SelectedVertexIndex < 0) || (dataContext.SelectedVertexIndex > 3))
+                if (dataContext.SelectedVertexIndex is < 0 or > 3)
                 {
                     tableLayoutPanel1.Enabled = false;
                     NumericX.Value = 0;

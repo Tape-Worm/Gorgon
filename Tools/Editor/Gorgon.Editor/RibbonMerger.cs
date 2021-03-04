@@ -46,7 +46,7 @@ namespace Gorgon.Editor
     {
         #region Variables.
         // The list of merged items.
-        private readonly HashSet<Component> _mergedItems = new HashSet<Component>();
+        private readonly HashSet<Component> _mergedItems = new();
         #endregion
 
         #region Properties.
@@ -154,7 +154,7 @@ namespace Gorgon.Editor
                     KryptonRibbonGroup existingGroup = sourceGroups.FirstOrDefault(item => (string.Equals(item.TextLine1, grp.TextLine1, StringComparison.CurrentCulture))
                                                                                         && (string.Equals(item.TextLine2, grp.TextLine2, StringComparison.CurrentCulture)));
 
-                    if (existingGroup != null)
+                    if (existingGroup is not null)
                     {
                         UnmergeGroupItems(existingGroup.Items, grp.Items);
                     }
@@ -252,7 +252,7 @@ namespace Gorgon.Editor
                 KryptonRibbonContext existing = sourceRibbon.RibbonContexts.FirstOrDefault(item => string.Equals(item.ContextTitle, context.ContextTitle, StringComparison.CurrentCulture));
 
                 // The tab doesn't exist, so just add it
-                if ((existing != null) || (sourceRibbon.RibbonContexts.Contains(context)))
+                if ((existing is not null) || (sourceRibbon.RibbonContexts.Contains(context)))
                 {
                     continue;
                 }
@@ -277,7 +277,7 @@ namespace Gorgon.Editor
                 KryptonRibbonContext existing = targetRibbon.RibbonContexts.FirstOrDefault(item => string.Equals(item.ContextTitle, context.ContextTitle, StringComparison.CurrentCulture));
 
                 // The tab doesn't exist, so just add it
-                if ((existing != null) || (targetRibbon.RibbonContexts.Contains(context)))
+                if ((existing is not null) || (targetRibbon.RibbonContexts.Contains(context)))
                 {
                     continue;
                 }
@@ -309,7 +309,7 @@ namespace Gorgon.Editor
                 {
                     KryptonRibbonTab existingTab = sourceRibbon.RibbonTabs.FirstOrDefault(item => string.Equals(item.Text, tab.Text, StringComparison.CurrentCulture));
 
-                    if (existingTab != null)
+                    if (existingTab is not null)
                     {
                         UnmergeGroups(existingTab.Groups, tab.Groups);
                     }

@@ -47,16 +47,16 @@ namespace Gorgon.Editor.UI.Views
     {
         #region Variables.
         // Synchronization objects for events.
-        private readonly object _closeEventLock = new object();
-        private readonly object _dragEnterEventLock = new object();
-        private readonly object _dragOverEventLock = new object();
-        private readonly object _dragDropEventLock = new object();
+        private readonly object _closeEventLock = new();
+        private readonly object _dragEnterEventLock = new();
+        private readonly object _dragOverEventLock = new();
+        private readonly object _dragDropEventLock = new();
         // The swap chain for the control.
         private GorgonSwapChain _swapChain;
         // The data context for the editor context.
         private IEditorContent _dataContext;
         // A list of child panel views identified by name.
-        private readonly Dictionary<string, Control> _panelViews = new Dictionary<string, Control>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Control> _panelViews = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Events.
@@ -291,7 +291,7 @@ namespace Gorgon.Editor.UI.Views
             EventHandler handler = null;
             var args = new CloseContentArgs(true);
 
-            if ((_dataContext?.CloseContentCommand != null) && (_dataContext.CloseContentCommand.CanExecute(args)))
+            if ((_dataContext?.CloseContentCommand is not null) && (_dataContext.CloseContentCommand.CanExecute(args)))
             {
                 await _dataContext.CloseContentCommand.ExecuteAsync(args);
             }
@@ -316,7 +316,7 @@ namespace Gorgon.Editor.UI.Views
             switch (e.PropertyName)
             {
                 case nameof(IEditorContent.CloseContentCommand):
-                    ButtonClose.Visible = _dataContext.CloseContentCommand != null;
+                    ButtonClose.Visible = _dataContext.CloseContentCommand is not null;
 
                     if (!PanelContentName.Visible)
                     {
@@ -349,7 +349,7 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            ButtonClose.Visible = dataContext.CloseContentCommand != null;
+            ButtonClose.Visible = dataContext.CloseContentCommand is not null;
             SetContentName(dataContext);
         }
 
@@ -365,7 +365,7 @@ namespace Gorgon.Editor.UI.Views
             OnShutdown();
 
             // Return the swap chain to the pool.
-            if (_swapChain != null)
+            if (_swapChain is not null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref _swapChain);
             }
@@ -416,7 +416,7 @@ namespace Gorgon.Editor.UI.Views
 
             try
             {
-                while (hostParent != null)
+                while (hostParent is not null)
                 {
                     hostParent.SuspendLayout();
                     hostParent = hostParent.Parent;
@@ -457,7 +457,7 @@ namespace Gorgon.Editor.UI.Views
             finally
             {
                 hostParent = control;
-                while (hostParent != null)
+                while (hostParent is not null)
                 {
                     hostParent.ResumeLayout();
                     hostParent = hostParent.Parent;
@@ -822,12 +822,12 @@ namespace Gorgon.Editor.UI.Views
             }
 
             // If we've made no change, then do nothing.
-            if ((context == GraphicsContext) && (_swapChain != null) && (_swapChain.Window == RenderControl))
+            if ((context == GraphicsContext) && (_swapChain is not null) && (_swapChain.Window == RenderControl))
             {
                 return;
             }
 
-            if (_swapChain != null)
+            if (_swapChain is not null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref _swapChain);
             }
@@ -835,7 +835,7 @@ namespace Gorgon.Editor.UI.Views
             GorgonSwapChain swapChain = null;
 
             // If we've defined a render control, then lease a swap chain from the swap chain pool.
-            if ((context != null) && (RenderControl != null))
+            if ((context is not null) && (RenderControl is not null))
             {
                 swapChain = context.LeaseSwapPresenter(RenderControl);
             }

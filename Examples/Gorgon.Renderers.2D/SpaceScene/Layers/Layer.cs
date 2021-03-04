@@ -42,7 +42,7 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // The list of active lights for the layer.
-        private readonly List<Light> _activeLights = new List<Light>();
+        private readonly List<Light> _activeLights = new();
         #endregion
 
         #region Properties.
@@ -124,7 +124,7 @@ namespace Gorgon.Examples
                     continue;
                 }
 
-                if (light.PointLight != null)
+                if (light.PointLight is not null)
                 {
                     light.PointLight.Position = new DX.Vector3(((DX.Vector2)light.LocalLightPosition + Offset) / ParallaxLevel, Lights[i].LocalLightPosition.Z);
                 }

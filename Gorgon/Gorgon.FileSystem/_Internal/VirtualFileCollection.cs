@@ -45,7 +45,7 @@ namespace Gorgon.IO
         // Parent directory for this file system entry.
         private readonly VirtualDirectory _parent;
         // The list of file entries.
-        private readonly Dictionary<string, VirtualFile> _files = new Dictionary<string, VirtualFile>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, VirtualFile> _files = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.

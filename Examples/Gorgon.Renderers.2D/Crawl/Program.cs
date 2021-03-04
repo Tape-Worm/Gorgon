@@ -126,7 +126,7 @@ namespace Gorgon.Examples
             _crawlSprite.CornerColors.UpperLeft = GorgonColor.BlackTransparent;
             _crawlSprite.CornerColors.UpperRight = GorgonColor.BlackTransparent;
 
-            if (_crawlText != null)
+            if (_crawlText is not null)
             {
                 _crawlText.LayoutArea = new DX.Size2F(_crawlRtv.Width, _crawlRtv.Height);
                 _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);

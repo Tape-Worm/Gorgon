@@ -188,7 +188,7 @@ namespace Gorgon.Editor.Views
 
         #region Variables.
         // Synchronization lock for the file explorer context changed event.
-        private readonly object _eventLock = new object();
+        private readonly object _eventLock = new();
         // Flag to indicate that the data context load should be deferred.
         private bool _deferDataContextLoad = true;
         // The current ribbon for the current content.
@@ -387,7 +387,7 @@ namespace Gorgon.Editor.Views
             switch (e.PropertyName)
             {
                 case nameof(IProjectEditor.CurrentContent):
-                    if (_contentControl != null)
+                    if (_contentControl is not null)
                     {
                         _contentControl.BubbleDragEnter -= ContentControl_BubbleDragEnter;
                         _contentControl.BubbleDragOver -= ContentControl_BubbleDragOver;
@@ -414,7 +414,7 @@ namespace Gorgon.Editor.Views
         private void SetupContent(IProjectEditor dataContext)
         {
             KryptonRibbon ribbon = Interlocked.Exchange(ref _currentContentRibbon, null);
-            if (ribbon != null)
+            if (ribbon is not null)
             {
                 EventHandler<ContentRibbonEventArgs> handler = null;
 
@@ -455,7 +455,7 @@ namespace Gorgon.Editor.Views
             {
                 _contentControl.SetupGraphics(GraphicsContext);
 
-                if (_contentControl.Ribbon != null)
+                if (_contentControl.Ribbon is not null)
                 {
                     if (Interlocked.Exchange(ref _currentContentRibbon, _contentControl.Ribbon) is null)
                     {
@@ -479,7 +479,7 @@ namespace Gorgon.Editor.Views
             }
             catch
             {
-                if (_contentControl != null)
+                if (_contentControl is not null)
                 {
                     _contentControl.ContentClosed -= ContentClosed;
                     _contentControl.BubbleDragEnter -= ContentControl_BubbleDragEnter;
@@ -584,7 +584,7 @@ namespace Gorgon.Editor.Views
         {
             ContentBaseControl currentContent = Interlocked.Exchange(ref _contentControl, null);
 
-            if (currentContent != null)
+            if (currentContent is not null)
             {
                 currentContent.ContentClosed -= ContentClosed;
                 currentContent.BubbleDragOver -= ContentControl_BubbleDragOver;
@@ -611,7 +611,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void FileExplorer_Enter(object sender, EventArgs e)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.ClipboardContext = DataContext.FileExplorer.Clipboard;
             }
@@ -623,7 +623,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void FileExplorer_Leave(object sender, EventArgs e)
         {
-            if ((DataContext != null) && (DataContext.FileExplorer.Clipboard == DataContext.ClipboardContext))
+            if ((DataContext is not null) && (DataContext.FileExplorer.Clipboard == DataContext.ClipboardContext))
             {
                 DataContext.ClipboardContext = null;
             }
@@ -634,7 +634,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void PanelContent_Enter(object sender, EventArgs e)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.ClipboardContext = DataContext.CurrentContent.Clipboard;
             }
@@ -645,7 +645,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void PanelContent_Leave(object sender, EventArgs e)
         {
-            if ((DataContext?.CurrentContent != null) && (DataContext.CurrentContent.Clipboard == DataContext.ClipboardContext))
+            if ((DataContext?.CurrentContent is not null) && (DataContext.CurrentContent.Clipboard == DataContext.ClipboardContext))
             {
                 DataContext.ClipboardContext = null;
             }
@@ -709,7 +709,7 @@ namespace Gorgon.Editor.Views
             {
                 string filePath = DataContext.FileExplorer.SelectedFiles[0]?.FullPath;
 
-                if ((DataContext.ContentPreviewer.RefreshPreviewCommand != null) && (DataContext.ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
+                if ((DataContext.ContentPreviewer.RefreshPreviewCommand is not null) && (DataContext.ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
                 {
                     DataContext.ContentPreviewer.RefreshPreviewCommand.Execute(filePath);
                 }
@@ -717,7 +717,7 @@ namespace Gorgon.Editor.Views
 
             void ResetContentPreviewer()
             {
-                if ((DataContext.ContentPreviewer.ResetPreviewCommand != null) && (DataContext.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
+                if ((DataContext.ContentPreviewer.ResetPreviewCommand is not null) && (DataContext.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
                 {
                     DataContext.ContentPreviewer.ResetPreviewCommand.Execute(null);
                 }

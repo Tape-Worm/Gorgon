@@ -147,7 +147,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 IGorgonAnimationCodec codec = Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
-                if (codec != null)
+                if (codec is not null)
                 {
                     Codecs.Remove(codec);
                 }

@@ -49,7 +49,7 @@ namespace Gorgon.Examples
         : GorgonAnimationController<MoveableMesh>
     {
         // Track used for rotating the mesh.
-        private static readonly GorgonTrackRegistration _rotationTrack = new GorgonTrackRegistration("Rotation", null, AnimationTrackKeyType.Vector3);
+        private static readonly GorgonTrackRegistration _rotationTrack = new("Rotation", null, AnimationTrackKeyType.Vector3);
 
         /// <summary>Function called when a texture needs to be updated on the object.</summary>
         /// <param name="track">The track currently being processed.</param>

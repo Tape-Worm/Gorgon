@@ -72,7 +72,7 @@ namespace Gorgon.Examples
         // The controller for the animation on the right.
         private GorgonSpriteAnimationController _controllerRight;
         // The scale of the left sprite.
-        private DX.Vector2 _scale = new DX.Vector2(2, 2);
+        private DX.Vector2 _scale = new(2, 2);
         // The original size of the left panel.
         private DX.Vector2 _originalSize;
         #endregion

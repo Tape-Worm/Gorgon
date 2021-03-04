@@ -90,7 +90,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             var color = new GorgonColor(GorgonColor.White, Opacity);
             
-            Debug.Assert(_textureView != null, "The texture is null.  Why?");
+            Debug.Assert(_textureView is not null, "The texture is null.  Why?");
 
             Renderer.Begin(BatchState, Camera);
             Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f,

@@ -53,7 +53,7 @@ namespace Gorgon.Diagnostics.LogProviders
         {
             StreamWriter stream = null;
 
-            Debug.Assert(_filePath.Directory != null, $"Directory not found for '{_filePath.FullName}'");
+            Debug.Assert(_filePath.Directory is not null, $"Directory not found for '{_filePath.FullName}'");
 
             try
             {

@@ -121,7 +121,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the size for the video mode.
         /// </summary>
-        public DX.Size2 Size => new DX.Size2(Width, Height);
+        public DX.Size2 Size => new(Width, Height);
         #endregion
 
         #region Methods.

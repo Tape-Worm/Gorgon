@@ -64,9 +64,9 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // A cache of shader views for the buffer.
-        private Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = new Dictionary<BufferShaderViewKey, GorgonShaderResourceView>();
+        private Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = new();
         // A cache of unordered access views for the buffer.
-        private Dictionary<BufferShaderViewKey, GorgonReadWriteView> _uavs = new Dictionary<BufferShaderViewKey, GorgonReadWriteView>();
+        private Dictionary<BufferShaderViewKey, GorgonReadWriteView> _uavs = new();
         #endregion
 
         #region Properties.
@@ -191,9 +191,7 @@ namespace Gorgon.Graphics.Core
                     result = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
                     break;
                 case ResourceUsage.Default:
-                    if ((binding != D3D11.BindFlags.ShaderResource)
-                        && (binding != D3D11.BindFlags.UnorderedAccess)
-                        && (binding != (D3D11.BindFlags.ShaderResource | D3D11.BindFlags.UnorderedAccess)))
+                    if (binding is not D3D11.BindFlags.ShaderResource and not D3D11.BindFlags.UnorderedAccess and not (D3D11.BindFlags.ShaderResource | D3D11.BindFlags.UnorderedAccess))
                     {
                         break;
                     }
@@ -213,12 +211,12 @@ namespace Gorgon.Graphics.Core
         internal GorgonShaderResourceView GetView(BufferShaderViewKey key)
         {
             if ((_shaderViews.TryGetValue(key, out GorgonShaderResourceView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _shaderViews.Remove(key);
             }
@@ -242,12 +240,12 @@ namespace Gorgon.Graphics.Core
             where T : GorgonReadWriteView
         {
             if ((_uavs.TryGetValue(key, out GorgonReadWriteView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view as T;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _uavs.Remove(key);
             }
@@ -394,15 +392,11 @@ namespace Gorgon.Graphics.Core
 
             if (Usage != ResourceUsage.Staging)
             {
-                switch (copyMode)
+                mapMode = copyMode switch
                 {
-                    case CopyMode.NoOverwrite:
-                        mapMode = D3D11.MapMode.WriteNoOverwrite;
-                        break;
-                    default:
-                        mapMode = D3D11.MapMode.WriteDiscard;
-                        break;
-                }
+                    CopyMode.NoOverwrite => D3D11.MapMode.WriteNoOverwrite,
+                    _ => D3D11.MapMode.WriteDiscard,
+                };
             }
 
             DX.DataBox mapData = Graphics.D3DDeviceContext.MapSubresource(Native, 0, mapMode, D3D11.MapFlags.None);
@@ -1178,7 +1172,7 @@ namespace Gorgon.Graphics.Core
             Dictionary<BufferShaderViewKey, GorgonShaderResourceView> shaderViews = Interlocked.Exchange(ref _shaderViews, null);
             Dictionary<BufferShaderViewKey, GorgonReadWriteView> unorderedViews = Interlocked.Exchange(ref _uavs, null);
 
-            if (shaderViews != null)
+            if (shaderViews is not null)
             {
                 // Remove any cached views for this buffer.
                 foreach (KeyValuePair<BufferShaderViewKey, GorgonShaderResourceView> view in shaderViews)
@@ -1187,7 +1181,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            if (unorderedViews != null)
+            if (unorderedViews is not null)
             {
                 foreach (KeyValuePair<BufferShaderViewKey, GorgonReadWriteView> view in unorderedViews)
                 {

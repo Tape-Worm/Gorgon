@@ -66,16 +66,14 @@ namespace Gorgon.Editor.TextureAtlasTool
                 return null;
             }
 
-            using (Stream stream = _fileSystem.OpenStream(textureFile.Path, FileMode.Open))
+            using Stream stream = _fileSystem.OpenStream(textureFile.Path, FileMode.Open);
+            return GorgonTexture2DView.FromStream(_defaultSpriteCodec.Renderer.Graphics, stream, _defaultImageCodec, options: new GorgonTexture2DLoadOptions
             {
-                return GorgonTexture2DView.FromStream(_defaultSpriteCodec.Renderer.Graphics, stream, _defaultImageCodec, options: new GorgonTexture2DLoadOptions
-                {
-                    Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Immutable,
-                    Name = textureFile.Path,
-                    IsTextureCube = false
-                });
-            }
+                Binding = TextureBinding.ShaderResource,
+                Usage = ResourceUsage.Immutable,
+                Name = textureFile.Path,
+                IsTextureCube = false
+            });
         }
 
         /// <summary>Function to load the sprites used to generate the atlas texture(s).</summary>
@@ -161,7 +159,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             foreach (GorgonTexture2DView texture in atlas.Textures)
             {
-                if (_fileSystem.GetFile(texture.Texture.Name) != null)
+                if (_fileSystem.GetFile(texture.Texture.Name) is not null)
                 {
                     return true;
                 }
@@ -190,7 +188,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 {
                     IContentFile textureFile = _fileSystem.GetFile(texture.Texture.Name);
 
-                    if ((textureFile != null) && (textureFile.IsOpen))
+                    if ((textureFile is not null) && (textureFile.IsOpen))
                     {
                         throw new IOException(string.Format(Resources.GORTAG_ERR_IMAGE_OPEN, textureFile.Path));
                     }
@@ -200,7 +198,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 {
                     IContentFile oldFile = spriteFiles.FirstOrDefault(item => item.Value == original).Key;
 
-                    if ((oldFile != null) && (oldFile.IsOpen))
+                    if ((oldFile is not null) && (oldFile.IsOpen))
                     {
                         throw new IOException(string.Format(Resources.GORTAG_ERR_IMAGE_OPEN, oldFile.Path));
                     }

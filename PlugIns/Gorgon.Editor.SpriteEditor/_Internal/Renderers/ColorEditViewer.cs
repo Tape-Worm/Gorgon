@@ -115,7 +115,7 @@ namespace Gorgon.Editor.SpriteEditor
             switch (args.KeyCode)
             {
                 case Keys.D1:
-                    if ((args.Modifiers != Keys.Control) && (args.Modifiers != Keys.Shift))
+                    if (args.Modifiers is not Keys.Control and not Keys.Shift)
                     {
                         Array.Clear(_selected, 0, _selected.Length);
                     }
@@ -123,7 +123,7 @@ namespace Gorgon.Editor.SpriteEditor
                     args.IsInputKey = true;
                     break;
                 case Keys.D2:
-                    if ((args.Modifiers != Keys.Control) && (args.Modifiers != Keys.Shift))
+                    if (args.Modifiers is not Keys.Control and not Keys.Shift)
                     {
                         Array.Clear(_selected, 0, _selected.Length);
                     }
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.SpriteEditor
                     args.IsInputKey = true;
                     break;
                 case Keys.D3:
-                    if ((args.Modifiers != Keys.Control) && (args.Modifiers != Keys.Shift))
+                    if (args.Modifiers is not Keys.Control and not Keys.Shift)
                     {
                         Array.Clear(_selected, 0, _selected.Length);
                     }
@@ -139,7 +139,7 @@ namespace Gorgon.Editor.SpriteEditor
                     args.IsInputKey = true;
                     break;
                 case Keys.D4:
-                    if ((args.Modifiers != Keys.Control) && (args.Modifiers != Keys.Shift))
+                    if (args.Modifiers is not Keys.Control and not Keys.Shift)
                     {
                         Array.Clear(_selected, 0, _selected.Length);
                     }
@@ -169,11 +169,11 @@ namespace Gorgon.Editor.SpriteEditor
                     }
                     args.IsInputKey = true;
                     break;
-                case Keys.Enter when ((DataContext.ColorEditor.OkCommand != null) && (DataContext.ColorEditor.OkCommand.CanExecute(null))):
+                case Keys.Enter when ((DataContext.ColorEditor.OkCommand is not null) && (DataContext.ColorEditor.OkCommand.CanExecute(null))):
                     DataContext.ColorEditor.OkCommand.Execute(null);
                     args.IsInputKey = true;
                     break;
-                case Keys.Escape when ((DataContext.ColorEditor.CancelCommand != null) && (DataContext.ColorEditor.CancelCommand.CanExecute(null))):
+                case Keys.Escape when ((DataContext.ColorEditor.CancelCommand is not null) && (DataContext.ColorEditor.CancelCommand.CanExecute(null))):
                     DataContext.ColorEditor.CancelCommand.Execute(null);
                     args.IsInputKey = true;
                     break;
@@ -197,7 +197,7 @@ namespace Gorgon.Editor.SpriteEditor
                 }
             }
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex == 4))
+            if (_activeHandleIndex is (-1) or 4)
             {
                 DataContext.ColorEditor.SelectedVertices = _selected;
             }

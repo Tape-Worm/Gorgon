@@ -70,7 +70,7 @@ namespace Gorgon.Graphics.Core
         {
             D3D11.StreamOutputBufferBinding binding = default;
 
-            if (value.Buffer != null)
+            if (value.Buffer is not null)
             {
                 binding = new D3D11.StreamOutputBufferBinding(value.Buffer?.Native, value.Offset);
             }

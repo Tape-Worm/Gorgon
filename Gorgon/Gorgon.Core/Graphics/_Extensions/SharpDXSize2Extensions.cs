@@ -44,62 +44,62 @@ namespace Gorgon.Graphics
         /// This method converts the coordinates to integer values without applying rounding.
         /// </para>
         /// </remarks>
-        public static DX.Size2F Truncate(this DX.Size2F size) => new DX.Size2F((int)size.Width, (int)size.Height);
+        public static DX.Size2F Truncate(this DX.Size2F size) => new((int)size.Width, (int)size.Height);
 
         /// <summary>
         /// Function to set the size coordinates to the nearest integer values that are lower than or equal to the original values.
         /// </summary>
         /// <param name="size">The size to floor.</param>
         /// <returns>The truncated size.</returns>
-        public static DX.Size2F Floor(this DX.Size2F size) => new DX.Size2F(size.Width.FastFloor(), size.Height.FastFloor());
+        public static DX.Size2F Floor(this DX.Size2F size) => new(size.Width.FastFloor(), size.Height.FastFloor());
 
         /// <summary>
         /// Function to set the size coordinates to the nearest integer values that are higher than or equal to the original values.
         /// </summary>
         /// <param name="size">The size to ceiling.</param>
         /// <returns>The truncated size.</returns>
-        public static DX.Size2F Ceiling(this DX.Size2F size) => new DX.Size2F(size.Width.FastCeiling(), size.Height.FastCeiling());
+        public static DX.Size2F Ceiling(this DX.Size2F size) => new(size.Width.FastCeiling(), size.Height.FastCeiling());
 
         /// <summary>
         /// Function to convert a size into a vector.
         /// </summary>
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent vector value.</returns>
-        public static DX.Vector2 ToVector2(this DX.Size2F size) => new DX.Vector2(size.Width, size.Height);
+        public static DX.Vector2 ToVector2(this DX.Size2F size) => new(size.Width, size.Height);
 
         /// <summary>
         /// Function to convert a size into an integer size.
         /// </summary>
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent size value.</returns>
-        public static DX.Size2 ToSize2(this DX.Size2F size) => new DX.Size2((int)size.Width, (int)size.Height);
+        public static DX.Size2 ToSize2(this DX.Size2F size) => new((int)size.Width, (int)size.Height);
 
         /// <summary>
         /// Function to convert an integer size to a point.
         /// </summary>
         /// <param name="size">The size value to convert.</param>
         /// <returns>The point value.</returns>
-        public static DX.Point ToPoint(this DX.Size2 size) => new DX.Point(size.Width, size.Height);
+        public static DX.Point ToPoint(this DX.Size2 size) => new(size.Width, size.Height);
 
         /// <summary>
         /// Function to convert an integer size to a point.
         /// </summary>
         /// <param name="point">The point value to convert.</param>
         /// <returns>The size value.</returns>
-        public static DX.Size2 ToSize2(this DX.Point point) => new DX.Size2(point.X, point.Y);
+        public static DX.Size2 ToSize2(this DX.Point point) => new(point.X, point.Y);
 
         /// <summary>
         /// Function to convert a size into an floating point size.
         /// </summary>
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent size value.</returns>
-        public static DX.Size2F ToSize2F(this DX.Size2 size) => new DX.Size2F(size.Width, size.Height);
+        public static DX.Size2F ToSize2F(this DX.Size2 size) => new(size.Width, size.Height);
 
         /// <summary>
         /// Function to convert a size into a vector.
         /// </summary>
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent vector value.</returns>
-        public static DX.Vector2 ToVector2(this DX.Size2 size) => new DX.Vector2(size.Width, size.Height);
+        public static DX.Vector2 ToVector2(this DX.Size2 size) => new(size.Width, size.Height);
     }
 }

@@ -161,22 +161,22 @@ namespace Gorgon.Graphics.Core
                 return this;
             }
 
-            if (wrapU != null)
+            if (wrapU is not null)
             {
                 WorkingState.WrapU = wrapU.Value;
             }
 
-            if (wrapV != null)
+            if (wrapV is not null)
             {
                 WorkingState.WrapV = wrapV.Value;
             }
 
-            if (wrapW != null)
+            if (wrapW is not null)
             {
                 WorkingState.WrapW = wrapW.Value;
             }
 
-            if (borderColor != null)
+            if (borderColor is not null)
             {
                 WorkingState.BorderColor = borderColor.Value;
             }
@@ -227,17 +227,17 @@ namespace Gorgon.Graphics.Core
                 return this;
             }
 
-            if (min != null)
+            if (min is not null)
             {
                 WorkingState.MinimumLevelOfDetail = min.Value;
             }
 
-            if (max != null)
+            if (max is not null)
             {
                 WorkingState.MaximumLevelOfDetail = max.Value;
             }
 
-            if (mipLodBias != null)
+            if (mipLodBias is not null)
             {
                 WorkingState.MipLevelOfDetailBias = mipLodBias.Value;
             }

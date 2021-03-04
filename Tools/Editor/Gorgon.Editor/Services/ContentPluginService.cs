@@ -49,11 +49,11 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // The plugin list.
-        private readonly Dictionary<string, ContentPlugIn> _plugins = new Dictionary<string, ContentPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ContentPlugIn> _plugins = new(StringComparer.OrdinalIgnoreCase);
         // The plugin list.
-        private readonly Dictionary<string, ContentImportPlugIn> _importers = new Dictionary<string, ContentImportPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ContentImportPlugIn> _importers = new(StringComparer.OrdinalIgnoreCase);
         // The list of disabled content plug ins.
-        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
         // The directory that contains the settings for the plug ins.
         private readonly string _settingsDir;
         // The services passed from the host to the content plug ins.
@@ -257,11 +257,9 @@ namespace Gorgon.Editor.Services
                 return null;
             }
 
-            using (Stream stream = File.Open(settingsFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-            {
-                return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
-            }
+            using Stream stream = File.Open(settingsFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
         }
 
         /// <summary>Function to write out the settings for a content plug in as a JSON file.</summary>
@@ -291,11 +289,9 @@ namespace Gorgon.Editor.Services
             }
 
             string settingsFile = GetContentPlugInSettingsPath(name);
-            using (Stream stream = File.Open(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None))
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
-            {
-                writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
-            }
+            using Stream stream = File.Open(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None);
+            using var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false);
+            writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
         }
 
         /// <summary>Function to add a content import plugin to the service.</summary>

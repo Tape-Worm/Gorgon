@@ -43,7 +43,7 @@ namespace Gorgon.Editor.Services
         // The rows containing the editor files.
         private readonly IReadOnlyList<IContentFileExplorerSearchEntry> _rows;
         // The type of search keywords that can be used.
-        private readonly Dictionary<string, string> _searchKeywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
+        private readonly Dictionary<string, string> _searchKeywords = new(StringComparer.CurrentCultureIgnoreCase)
         {
             { Resources.GOREDIT_SEARCH_DIRECTORY_TAG1, "directory" },
             { Resources.GOREDIT_SEARCH_DIRECTORY_TAG2, "directory" }
@@ -77,7 +77,7 @@ namespace Gorgon.Editor.Services
             }
 
             // Get the keyword value.
-            string keywordValue = searchText.Substring(searchKeyword.Key.Length + 1).TrimStart();
+            string keywordValue = searchText[(searchKeyword.Key.Length + 1)..].TrimStart();
 
             return string.IsNullOrWhiteSpace(keywordValue) ? ((string keyword, string search))(string.Empty, null) : (searchKeyword.Value, keywordValue);
         }
@@ -126,20 +126,20 @@ namespace Gorgon.Editor.Services
             // Check for search mode.
             if (searchText.Length > 1)
             {
-                if ((searchText.Length >= 3) && (searchText[0] == '"') && (searchText[searchText.Length - 1] == '"'))
+                if ((searchText.Length >= 3) && (searchText[0] == '"') && (searchText[^1] == '"'))
                 {
                     mode = SearchMode.OnlyWord;
-                    searchText = searchText.Substring(1, searchText.Length - 2);
+                    searchText = searchText[1..^1];
                 }
                 else if (searchText[0] == '*')
                 {
                     mode = SearchMode.EndsWith;
-                    searchText = searchText.Substring(1).Replace("*", string.Empty);
+                    searchText = searchText[1..].Replace("*", string.Empty);
                 }
-                else if (searchText[searchText.Length - 1] == '*')
+                else if (searchText[^1] == '*')
                 {
                     mode = SearchMode.StartsWith;
-                    searchText = searchText.Substring(0, searchText.Length - 1).Replace("*", string.Empty);
+                    searchText = searchText[0..^1].Replace("*", string.Empty);
                 }
             }
             else

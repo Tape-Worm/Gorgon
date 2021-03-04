@@ -60,10 +60,8 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns><b>true</b> if the file is a sprite, or <b>false</b> if not.</returns>
         private bool IsSprite(IContentFile file)
         {
-            using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
-            {
-                return _spriteCodec.IsReadable(stream);
-            }
+            using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
+            return _spriteCodec.IsReadable(stream);
         }
 
         /// <summary>
@@ -73,11 +71,9 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns><b>true</b> if the image is 2D, or <b>false</b> if not.</returns>
         private bool Is2DImage(IContentFile file)
         {
-            using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
-            {
-                IGorgonImageInfo metadata = _imageCodec.GetMetaData(stream);
-                return (metadata.ImageType != ImageType.Image3D) && (metadata.ImageType != ImageType.Image1D);
-            }
+            using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
+            IGorgonImageInfo metadata = _imageCodec.GetMetaData(stream);
+            return metadata.ImageType is not ImageType.Image3D and not ImageType.Image1D;
         }
 
         /// <summary>
@@ -95,7 +91,7 @@ namespace Gorgon.Editor.AnimationEditor
             string animationPath = animDirectory.FormatDirectory('/') + baseAnimationName.FormatFileName();
 
             int counter = 0;
-            while (_fileManager.GetFile(animationPath) != null)
+            while (_fileManager.GetFile(animationPath) is not null)
             {
                 string filename = Path.GetFileNameWithoutExtension(baseAnimationName);
                 string extension = Path.GetExtension(baseAnimationName);
@@ -116,7 +112,7 @@ namespace Gorgon.Editor.AnimationEditor
                                                         && (IsSprite(item)))
                                                 .ToArray();
 
-            using (var newAnimationForm = new FormNewAnimation()
+            using var newAnimationForm = new FormNewAnimation()
             {
                 ImageCodec = _imageCodec,
                 SpriteCodec = _spriteCodec,
@@ -124,16 +120,14 @@ namespace Gorgon.Editor.AnimationEditor
                 Text = Resources.GORANM_CAPTION_ANIMATION_NAME,
                 ObjectName = Path.GetFileName(animationPath),
                 CueText = Resources.GORANM_TEXT_CUE_ANIMATION_NAME
-            })
-            {
-                newAnimationForm.SetDefaults(length, fps);
-                newAnimationForm.FillSprites(sprites, primarySprite);
-                newAnimationForm.FillTextures(textures, bgTextureFile);
+            };
+            newAnimationForm.SetDefaults(length, fps);
+            newAnimationForm.FillSprites(sprites, primarySprite);
+            newAnimationForm.FillTextures(textures, bgTextureFile);
 
-                return newAnimationForm.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK
-                    ? (newAnimationForm.ObjectName, newAnimationForm.Length, newAnimationForm.Fps, newAnimationForm.PrimarySpriteFile, newAnimationForm.BackgroundTextureFile)
-                    : ((string, float, float, IContentFile, IContentFile))(null, 0, 0, null, null);
-            }
+            return newAnimationForm.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK
+                ? (newAnimationForm.ObjectName, newAnimationForm.Length, newAnimationForm.Fps, newAnimationForm.PrimarySpriteFile, newAnimationForm.BackgroundTextureFile)
+                : ((string, float, float, IContentFile, IContentFile))(null, 0, 0, null, null);
         }
         #endregion
 

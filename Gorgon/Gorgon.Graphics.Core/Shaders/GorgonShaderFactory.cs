@@ -69,7 +69,7 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // A processor used to parse shader source code for include statements.
-        private static readonly ShaderProcessor _processor = new ShaderProcessor();
+        private static readonly ShaderProcessor _processor = new();
 
         // A list of available shader types.
         private static readonly (Type, ShaderType, string)[] _shaderTypes =
@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Core
 
         // A list of factory objects used to create the actual shader objects.
         private static readonly Dictionary<ShaderType, ObjectActivator<GorgonShader>> _shaderFactory =
-            new Dictionary<ShaderType, ObjectActivator<GorgonShader>>();
+            new();
         #endregion
 
         #region Properties.
@@ -331,10 +331,8 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return FromStream<T>(graphics, stream, (int)stream.Length);
-            }
+            using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return FromStream<T>(graphics, stream, (int)stream.Length);
         }
 
         /// <summary>
@@ -435,7 +433,7 @@ namespace Gorgon.Graphics.Core
             // Make compatible macros for the shader compiler.
             D3D.ShaderMacro[] actualMacros = null;
 
-            if ((macros != null) && (macros.Count > 0))
+            if ((macros is not null) && (macros.Count > 0))
             {
                 actualMacros = macros.Select(item => item.D3DShaderMacro).ToArray();
             }

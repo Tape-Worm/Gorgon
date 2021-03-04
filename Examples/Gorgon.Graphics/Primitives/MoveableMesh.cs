@@ -44,7 +44,7 @@ namespace Gorgon.Examples
         private DX.Vector3 _rotation = DX.Vector3.Zero;
 
         // Scale of the triangle.
-        private DX.Vector3 _scale = new DX.Vector3(1);
+        private DX.Vector3 _scale = new(1);
 
         // Cached position matrix.
         private DX.Matrix _posMatrix = DX.Matrix.Identity;

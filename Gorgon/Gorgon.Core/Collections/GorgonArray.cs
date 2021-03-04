@@ -94,7 +94,7 @@ namespace Gorgon.Collections
             set
             {
                 if (((value == null) && (BackingArray[index] == null))
-                    || ((BackingArray[index] != null) && (value != null) && (value.Equals(BackingArray[index]))))
+                    || ((BackingArray[index] is not null) && (value is not null) && (value.Equals(BackingArray[index]))))
                 {
                     return;
                 }
@@ -507,7 +507,7 @@ namespace Gorgon.Collections
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="maxSize"/> is less than 1, or larger than 64.</exception>
         public GorgonArray(int maxSize)
         {
-            if ((maxSize < 1) || (maxSize > 64))
+            if (maxSize is < 1 or > 64)
             {
                 throw new ArgumentOutOfRangeException(nameof(maxSize));
             }

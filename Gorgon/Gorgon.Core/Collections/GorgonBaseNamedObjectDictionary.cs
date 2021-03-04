@@ -258,7 +258,7 @@ namespace Gorgon.Collections
             {
                 if (!_list.ContainsKey(name))
                 {
-                    if (value != null)
+                    if (value is not null)
                     {
                         _list[value.Name] = value;
                     }

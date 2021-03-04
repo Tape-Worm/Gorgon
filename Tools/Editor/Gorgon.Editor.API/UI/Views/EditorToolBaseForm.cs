@@ -55,7 +55,7 @@ namespace Gorgon.Editor.UI.Views
     {
         #region Variables.
         // A list of renderers used to draw our content to the UI.
-        private readonly Dictionary<string, IToolRenderer> _renderers = new Dictionary<string, IToolRenderer>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IToolRenderer> _renderers = new(StringComparer.OrdinalIgnoreCase);
         // The control that will receive rendering output.
         private Control _renderControl;
         // Previous idle method.
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.UI.Views
             OnAfterRender();
 
             // Render on other controls as well.
-            if ((GorgonApplication.AllowBackground) && (_oldIdle != null))
+            if ((GorgonApplication.AllowBackground) && (_oldIdle is not null))
             {
                 if (!_oldIdle())
                 {
@@ -203,7 +203,7 @@ namespace Gorgon.Editor.UI.Views
 
             GorgonApplication.AllowBackground = _oldBackgroundState;
 
-            if (swapChain != null)
+            if (swapChain is not null)
             {
                 context?.ReturnSwapPresenter(ref swapChain);
             }
@@ -427,7 +427,7 @@ namespace Gorgon.Editor.UI.Views
             }
 
             // Blow away any temporary resources registered to the renderer.
-            if (Renderer != null)
+            if (Renderer is not null)
             {
                 Renderer.UnloadResources();
                 OnSwitchRenderer(null);
@@ -545,7 +545,7 @@ namespace Gorgon.Editor.UI.Views
 
             var args = new CloseToolArgs(true);
 
-            if ((_dataContext?.CloseToolCommand!= null) && (_dataContext.CloseToolCommand.CanExecute(args)))
+            if ((_dataContext?.CloseToolCommand is not null) && (_dataContext.CloseToolCommand.CanExecute(args)))
             {
                 await _dataContext.CloseToolCommand.ExecuteAsync(args);
             }
@@ -624,12 +624,12 @@ namespace Gorgon.Editor.UI.Views
             }
 
             // If we've made no change, then do nothing.
-            if ((context == _graphicsContext) && (_swapChain != null) && (_swapChain.Window == RenderControl))
+            if ((context == _graphicsContext) && (_swapChain is not null) && (_swapChain.Window == RenderControl))
             {
                 return;
             }
 
-            if (_swapChain != null)
+            if (_swapChain is not null)
             {
                 _graphicsContext?.ReturnSwapPresenter(ref _swapChain);
                 _graphicsContext = null;

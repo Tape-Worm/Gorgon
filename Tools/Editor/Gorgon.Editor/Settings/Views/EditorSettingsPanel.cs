@@ -44,9 +44,9 @@ namespace Gorgon.Editor.Views
     {
         #region Variables.
         // The lookup used to locate categories.
-        private readonly Dictionary<string, string> _categoryLookup = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+        private readonly Dictionary<string, string> _categoryLookup = new(StringComparer.CurrentCultureIgnoreCase);
         // The lookup used to locate panels.
-        private readonly Dictionary<string, SettingsBaseControl> _panelLookup = new Dictionary<string, SettingsBaseControl>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, SettingsBaseControl> _panelLookup = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
@@ -186,7 +186,7 @@ namespace Gorgon.Editor.Views
                     SplitSettingsNav.Panel2.Controls.Remove(control);
                 }
 
-                if ((listItem != null) && (ListCategories.Items.Contains(listItem)))
+                if ((listItem is not null) && (ListCategories.Items.Contains(listItem)))
                 {
                     ListCategories.Items.Remove(listItem);
                     _categoryLookup.Remove(listItem);

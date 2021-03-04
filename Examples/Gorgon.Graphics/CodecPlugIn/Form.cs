@@ -128,7 +128,7 @@ namespace Graphics.Examples
             // Normally you would enumerate the plug ins, but in this case we know there's only one.
             _customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
 
-            return _customCodec != null;
+            return _customCodec is not null;
         }
 
         /// <summary>

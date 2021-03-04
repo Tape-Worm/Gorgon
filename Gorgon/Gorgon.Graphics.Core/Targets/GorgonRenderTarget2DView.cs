@@ -468,7 +468,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public override void Dispose()
 		{
-			if (OwnerFactory != null)
+			if (OwnerFactory is not null)
 			{
 				OwnerFactory.Return(this);
 				return;

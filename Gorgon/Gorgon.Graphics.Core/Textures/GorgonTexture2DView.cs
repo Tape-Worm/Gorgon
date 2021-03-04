@@ -675,7 +675,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(info));
             }
 
-            if (initialData != null)
+            if (initialData is not null)
             {
                 if ((initialData.Width < info.Width)
                     || (initialData.Height < info.Height))
@@ -800,13 +800,11 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            using (IGorgonImage image = codec.FromStream(stream, size))
-            {
-                GorgonTexture2D texture = image.ToTexture2D(graphics, options);
-                GorgonTexture2DView view = texture.GetShaderResourceView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromStream(stream, size);
+            GorgonTexture2D texture = image.ToTexture2D(graphics, options);
+            GorgonTexture2DView view = texture.GetShaderResourceView();
+            view.OwnsResource = true;
+            return view;
         }
 
         /// <summary>
@@ -873,23 +871,21 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            using (IGorgonImage image = codec.FromFile(filePath))
+            using IGorgonImage image = codec.FromFile(filePath);
+            if (options is null)
             {
-                if (options is null)
+                options = new GorgonTexture2DLoadOptions
                 {
-                    options = new GorgonTexture2DLoadOptions
-                    {
-                        Name = Path.GetFileNameWithoutExtension(filePath),
-                        Usage = ResourceUsage.Default,
-                        Binding = TextureBinding.ShaderResource,
-                        IsTextureCube = image.ImageType == ImageType.ImageCube
-                    };
-                }
-                GorgonTexture2D texture = image.ToTexture2D(graphics, options);
-                GorgonTexture2DView view = texture.GetShaderResourceView();
-                view.OwnsResource = true;
-                return view;
+                    Name = Path.GetFileNameWithoutExtension(filePath),
+                    Usage = ResourceUsage.Default,
+                    Binding = TextureBinding.ShaderResource,
+                    IsTextureCube = image.ImageType == ImageType.ImageCube
+                };
             }
+            GorgonTexture2D texture = image.ToTexture2D(graphics, options);
+            GorgonTexture2DView view = texture.GetShaderResourceView();
+            view.OwnsResource = true;
+            return view;
         }
         #endregion
 

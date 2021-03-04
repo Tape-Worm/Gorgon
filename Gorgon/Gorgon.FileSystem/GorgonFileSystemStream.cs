@@ -143,7 +143,7 @@ namespace Gorgon.IO
         {
             if (disposing)
             {
-                if (_baseStream != null)
+                if (_baseStream is not null)
                 {
                     if (CloseUnderlyingStream)
                     {

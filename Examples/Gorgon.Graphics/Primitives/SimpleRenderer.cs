@@ -116,9 +116,9 @@ namespace Gorgon.Examples
         // The light data to send to the constant buffer.
         private readonly GorgonGpuLightData[] _lightData = new GorgonGpuLightData[MaxLights];
         // The list of meshes to render.
-        private readonly ObservableCollection<Mesh> _meshes = new ObservableCollection<Mesh>();
+        private readonly ObservableCollection<Mesh> _meshes = new();
         // The draw calls for the available meshes.
-        private readonly List<GorgonDrawIndexCall> _drawCalls = new List<GorgonDrawIndexCall>();
+        private readonly List<GorgonDrawIndexCall> _drawCalls = new();
         // The layout of a vertex.
         private GorgonInputLayout _vertexLayout;
         // The default sampler state.
@@ -195,7 +195,7 @@ namespace Gorgon.Examples
             // input layout, then this will have to suffice.  In a real renderer, we'd cache the vertex inputs per shader and just look it up because the type 
             // of vertex may not be what we expect. In this case, we *know* that we're using GorgonVertexPosNormUvTangent and no other vertex type, so we're 100% safe doing it 
             // here in this example.
-            if ((_vertexLayout is null) && (vertexShader != null))
+            if ((_vertexLayout is null) && (vertexShader is not null))
             {
                 _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
             }
@@ -272,7 +272,7 @@ namespace Gorgon.Examples
 
             for (int i = 0; i < Lights.Length; ++i)
             {
-                if ((Lights[i] != null) && (Lights[i].IsUpdated))
+                if ((Lights[i] is not null) && (Lights[i].IsUpdated))
                 {
                     return true;
                 }

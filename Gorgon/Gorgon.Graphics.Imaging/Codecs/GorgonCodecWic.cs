@@ -320,10 +320,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentEmptyException(nameof(fileName));
             }
 
-            using (FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return GetFrameOffsets(stream);
-            }
+            using FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return GetFrameOffsets(stream);
         }
 
         /// <summary>
@@ -409,7 +407,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             {
                 GorgonImageInfo info = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, null);
 
-                return info != null && info.Format != BufferFormat.Unknown;
+                return info is not null && info.Format != BufferFormat.Unknown;
             }
             catch (DX.SharpDXException)
             {

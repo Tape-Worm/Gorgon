@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="name">The name of the query.</param>
         /// <param name="desc">The description of the query.</param>
         /// <returns>A new Direct 3D query.</returns>
-        public static D3D11.Query CreateQuery(D3D11.Device5 device, string name, in D3D11.QueryDescription desc) => new D3D11.Query(device, desc)
+        public static D3D11.Query CreateQuery(D3D11.Device5 device, string name, in D3D11.QueryDescription desc) => new(device, desc)
         {
             DebugName = name
         };
@@ -61,7 +61,7 @@ namespace Gorgon.Graphics.Core
         {
             D3D11.Buffer result = null;
 
-            if ((initialData != null) && (initialData.Length > 0))
+            if (initialData.Length > 0)
             {
                 unsafe
                 {

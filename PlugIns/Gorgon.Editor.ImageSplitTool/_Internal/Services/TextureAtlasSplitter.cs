@@ -78,10 +78,8 @@ namespace Gorgon.Editor.ImageSplitTool
         /// <returns>The image data.</returns>
         private IGorgonImage LoadImage(IContentFile imageFile)
         {
-            using (Stream stream = _fileManager.OpenStream(imageFile.Path, FileMode.Open))
-            {
-                return _imageCodec.FromStream(stream);
-            }
+            using Stream stream = _fileManager.OpenStream(imageFile.Path, FileMode.Open);
+            return _imageCodec.FromStream(stream);
         }
 
         /// <summary>
@@ -102,18 +100,16 @@ namespace Gorgon.Editor.ImageSplitTool
                     return Array.Empty<(IContentFile, GorgonSprite)>();
                 }
 
-                using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
+                using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
+                GorgonSprite sprite = _spriteCodec.FromStream(stream, texture);
+
+                if (sprite.Texture != texture)
                 {
-                    GorgonSprite sprite = _spriteCodec.FromStream(stream, texture);
-
-                    if (sprite.Texture != texture)
-                    {
-                        _log.Print($"WARNING: The sprite '{file.Path}' has texture '{sprite.Texture?.Texture.Name}' when it should have '{texture.Texture.Name}'. Skipping this sprite.", LoggingLevel.Intermediate);
-                        continue;
-                    }
-
-                    result.Add((file, sprite));
+                    _log.Print($"WARNING: The sprite '{file.Path}' has texture '{sprite.Texture?.Texture.Name}' when it should have '{texture.Texture.Name}'. Skipping this sprite.", LoggingLevel.Intermediate);
+                    continue;
                 }
+
+                result.Add((file, sprite));
             }
 
             return result;
@@ -165,7 +161,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
             IContentFile file = _fileManager.GetFile(outputPath);
 
-            if (file != null)
+            if (file is not null)
             {
                 if (file.IsOpen)
                 {
@@ -198,29 +194,27 @@ namespace Gorgon.Editor.ImageSplitTool
                 format = sprite.Texture.Format;
             }
 
-            using (var target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo
+            using var target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo
             {
                 Width = (int)sprite.Size.Width,
                 Height = (int)sprite.Size.Height,
                 Format = format,
                 Binding = TextureBinding.RenderTarget
-            }))
-            {
-                GorgonRenderTargetView currentTarget = _graphics.RenderTargets[0];
+            });
+            GorgonRenderTargetView currentTarget = _graphics.RenderTargets[0];
 
-                _graphics.SetRenderTarget(target);
-                target.Clear(GorgonColor.BlackTransparent);
-                _renderer.Begin();
-                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White, 
-                                              sprite.Texture, 
-                                              sprite.TextureRegion, 
-                                              sprite.TextureArrayIndex, 
-                                              GorgonSamplerState.PointFiltering);
-                _renderer.End();                
+            _graphics.SetRenderTarget(target);
+            target.Clear(GorgonColor.BlackTransparent);
+            _renderer.Begin();
+            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White,
+                                          sprite.Texture,
+                                          sprite.TextureRegion,
+                                          sprite.TextureArrayIndex,
+                                          GorgonSamplerState.PointFiltering);
+            _renderer.End();
 
-                _graphics.SetRenderTarget(currentTarget);
-                return target.Texture.ToImage();
-            }
+            _graphics.SetRenderTarget(currentTarget);
+            return target.Texture.ToImage();
         }
 
         /// <summary>
@@ -311,10 +305,8 @@ namespace Gorgon.Editor.ImageSplitTool
                     _imageCodec.Save(image, imageStream);
                 }
 
-                using (Stream spriteStream = _fileManager.OpenStream(newSpritePath, FileMode.Create))
-                {
-                    _spriteCodec.Save(sprite, spriteStream);
-                }
+                using Stream spriteStream = _fileManager.OpenStream(newSpritePath, FileMode.Create);
+                _spriteCodec.Save(sprite, spriteStream);
             }
         }
 
@@ -396,7 +388,7 @@ namespace Gorgon.Editor.ImageSplitTool
                 }
                 finally
                 {
-                    if (sprites != null)
+                    if (sprites is not null)
                     {
                         foreach ((_, GorgonSprite sprite) in sprites)
                         {
@@ -404,7 +396,7 @@ namespace Gorgon.Editor.ImageSplitTool
                         }
                     }
 
-                    if (newImages != null)
+                    if (newImages is not null)
                     {
                         foreach ((_, IGorgonImage image, _, _) in newImages)
                         {

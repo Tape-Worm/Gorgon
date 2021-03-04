@@ -89,16 +89,14 @@ namespace Gorgon.Editor.Services
                 initialDirectory = _mainViewModel.CurrentProject?.FileExplorer.Root;
             }
 
-            using (var browser = new FormFileSystemFolderBrowser()
+            using var browser = new FormFileSystemFolderBrowser()
             {
                 Text = caption,
                 Description = description
-            })
-            {
-                browser.SetDataContext(_mainViewModel.CurrentProject?.FileExplorer);
-                browser.SetInitialPath(initialDirectory);
-                return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
-            }
+            };
+            browser.SetDataContext(_mainViewModel.CurrentProject?.FileExplorer);
+            browser.SetInitialPath(initialDirectory);
+            return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
         }
         #endregion
 

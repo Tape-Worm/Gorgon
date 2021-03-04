@@ -67,7 +67,7 @@ namespace Gorgon.Renderers
         // Radius for the blur.
         private int _blurRadius;
         // The size of the render targets used to blur.
-        private DX.Size2 _renderTargetSize = new DX.Size2(256, 256);
+        private DX.Size2 _renderTargetSize = new(256, 256);
 
         // Flag to indicate that the kernel data needs updating.
         private bool _needKernelUpdate = true;
@@ -325,7 +325,7 @@ namespace Gorgon.Renderers
 
             // Write out the current blur radius.
             // Store the blur radius in the last part of the buffer (minus 4 floats for float alignment rules on constant buffers).
-            _blurKernelData[_blurKernelData.Length - 4] = _blurRadius;
+            _blurKernelData[^4] = _blurRadius;
 
             _needKernelUpdate = false;
             _needOffsetUpdate = true;
@@ -336,7 +336,7 @@ namespace Gorgon.Renderers
         /// </summary>
         private void FreeTargets()
         {
-            if (_hPass != null)
+            if (_hPass is not null)
             {
                 Graphics.TemporaryTargets?.Return(_hPass);
             }
@@ -632,8 +632,7 @@ namespace Gorgon.Renderers
         public Gorgon2DGaussBlurEffect(Gorgon2D renderer, int kernelSize = 7)
             : base(renderer, Resources.GOR2D_EFFECT_GAUSS_BLUR, Resources.GOR2D_EFFECT_GAUSS_BLUT_DESC, 2)
         {
-            if ((kernelSize < 3)
-                || (kernelSize > 81))
+            if (kernelSize is < 3 or > 81)
             {
                 throw new ArgumentOutOfRangeException(nameof(kernelSize), Resources.GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID);
             }

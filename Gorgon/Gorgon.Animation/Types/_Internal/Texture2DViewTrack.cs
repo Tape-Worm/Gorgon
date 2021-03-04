@@ -109,7 +109,7 @@ namespace Gorgon.Animation
 
             GorgonKeyTexture2D result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }

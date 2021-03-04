@@ -88,7 +88,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="rect">The rectangle to convert.</param>
         /// <returns>The converted rectangle.</returns>
-        public static DX.RectangleF ToRectangleF(this DX.Rectangle rect) => new DX.RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
+        public static DX.RectangleF ToRectangleF(this DX.Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
         /// <summary>
         /// Function to truncate the rectangle coordinates to the whole number portion of their values.
@@ -100,21 +100,21 @@ namespace Gorgon.Graphics
         /// This method converts the coordinates to integer values without applying rounding.
         /// </para>
         /// </remarks>
-        public static DX.RectangleF Truncate(this DX.RectangleF rect) => new DX.RectangleF((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+        public static DX.RectangleF Truncate(this DX.RectangleF rect) => new((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 
         /// <summary>
         /// Function to set the rectangle coordinates to the nearest integer values that are lower than or equal to the original values.
         /// </summary>
         /// <param name="rect">The rectangle to floor.</param>
         /// <returns>The truncated rectangle.</returns>
-        public static DX.RectangleF Floor(this DX.RectangleF rect) => new DX.RectangleF(rect.X.FastFloor(), rect.Y.FastFloor(), rect.Width.FastFloor(), rect.Height.FastFloor());
+        public static DX.RectangleF Floor(this DX.RectangleF rect) => new(rect.X.FastFloor(), rect.Y.FastFloor(), rect.Width.FastFloor(), rect.Height.FastFloor());
 
         /// <summary>
         /// Function to set the rectangle coordinates to the nearest integer values that are higher than or equal to the original values.
         /// </summary>
         /// <param name="rect">The rectangle to floor.</param>
         /// <returns>The truncated rectangle.</returns>
-        public static DX.RectangleF Ceiling(this DX.RectangleF rect) => new DX.RectangleF(rect.X.FastCeiling(), rect.Y.FastCeiling(), rect.Width.FastCeiling(), rect.Height.FastCeiling());
+        public static DX.RectangleF Ceiling(this DX.RectangleF rect) => new(rect.X.FastCeiling(), rect.Y.FastCeiling(), rect.Width.FastCeiling(), rect.Height.FastCeiling());
 
         /// <summary>
         /// Function to convert a floating point rectangle to an integer rectangle/
@@ -126,6 +126,6 @@ namespace Gorgon.Graphics
         /// This method converts the coordinates to integer values without applying rounding.
         /// </para>
         /// </remarks>
-        public static DX.Rectangle ToRectangle(this DX.RectangleF rect) => new DX.Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+        public static DX.Rectangle ToRectangle(this DX.RectangleF rect) => new((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
     }
 }

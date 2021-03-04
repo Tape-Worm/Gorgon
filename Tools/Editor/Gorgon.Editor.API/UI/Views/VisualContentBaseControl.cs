@@ -65,7 +65,7 @@ namespace Gorgon.Editor.UI.Views
     {
         #region Variables.
         // A list of renderers used to draw our content to the UI.
-        private readonly Dictionary<string, IContentRenderer> _renderers = new Dictionary<string, IContentRenderer>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IContentRenderer> _renderers = new(StringComparer.OrdinalIgnoreCase);
         // Flag for event transformation registration.
         private int _transformEventRegister;
         // The data context for the view.
@@ -100,7 +100,7 @@ namespace Gorgon.Editor.UI.Views
                 ScrollHorizontal.Visible = value;
                 ButtonCenter.Visible = ScrollHorizontal.Visible && ScrollVertical.Visible;
 
-                if (Renderer != null)
+                if (Renderer is not null)
                 {
                     Renderer.CanPanHorizontally = value;
                     Renderer.SetOffset(DX.Vector2.Zero);
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.UI.Views
                 ScrollVertical.Visible = value;
                 ButtonCenter.Visible = ScrollHorizontal.Visible && ScrollVertical.Visible;
 
-                if (Renderer != null)
+                if (Renderer is not null)
                 {
                     Renderer.CanPanVertically = value;
                     Renderer.SetOffset(DX.Vector2.Zero);
@@ -382,7 +382,7 @@ namespace Gorgon.Editor.UI.Views
                     string viewModelTypeName = _dataContext.CurrentPanel.GetType().FullName;
                     Control hostControl = GetRegisteredPanel<EditorSubPanelCommon>(viewModelTypeName);
 
-                    if (hostControl != null)
+                    if (hostControl is not null)
                     {
                         hostControl.Visible = false;
                     }
@@ -544,7 +544,7 @@ namespace Gorgon.Editor.UI.Views
             ZoomLevels zoomLevel = ZoomLevels.ToWindow;
 
             // Blow away any temporary resources registered to the renderer.
-            if (Renderer != null)
+            if (Renderer is not null)
             {
                 offset = Renderer.Offset;
                 zoomLevel = Renderer.ZoomLevel;

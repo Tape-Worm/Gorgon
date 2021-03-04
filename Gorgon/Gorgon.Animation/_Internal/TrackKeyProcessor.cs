@@ -231,19 +231,12 @@ namespace Gorgon.Animation
 
             (GorgonKeyVector4 prev, GorgonKeyVector4 next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, lastKey.Time);
 
-            switch (track.InterpolationMode)
+            result = track.InterpolationMode switch
             {
-                case TrackInterpolationMode.Linear:
-                    result = DX.Vector4.Lerp(prev.Value, next.Value, deltaTime);
-                    break;
-                case TrackInterpolationMode.Spline:
-                    result = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
-                    break;
-                default:
-                    result = prev.Value;
-                    break;
-            }
-
+                TrackInterpolationMode.Linear => DX.Vector4.Lerp(prev.Value, next.Value, deltaTime),
+                TrackInterpolationMode.Spline => track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime),
+                _ => prev.Value,
+            };
             return true;
         }
 

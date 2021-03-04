@@ -47,7 +47,7 @@ namespace Gorgon.Editor.AnimationEditor
         // Pass through event arguments.
         private MouseEventArgs _passThruEventArgs;
         // The list of rows for dragging.
-        private readonly List<DataGridViewCell> _dragCells = new List<DataGridViewCell>();
+        private readonly List<DataGridViewCell> _dragCells = new();
         // Flag to indicate that the selection changed event should be fired or not.
         private int _noFireSelectEvent;
         #endregion
@@ -202,7 +202,7 @@ namespace Gorgon.Editor.AnimationEditor
                 _dragCells.Clear();
                 _dragRegion = Rectangle.Empty;
 
-                if ((_passThruEventArgs != null) && (e.Button != MouseButtons.Right))
+                if ((_passThruEventArgs is not null) && (e.Button != MouseButtons.Right))
                 {
                     // Fire the actual event if we're dragging.
                     base.OnMouseDown(_passThruEventArgs);
@@ -242,10 +242,8 @@ namespace Gorgon.Editor.AnimationEditor
                         
             SizeF textSize = e.Graphics.MeasureString(NoDataMessage, Font, new SizeF(ClientSize.Width, ClientSize.Height));
             var pos = new PointF(ClientSize.Width * 0.5f - textSize.Width * 0.5f, ClientSize.Height * 0.5f - textSize.Height * 0.5f);
-            using (Brush brush = new SolidBrush(ForeColor))
-            {
-                e.Graphics.DrawString(NoDataMessage, Font, brush, pos);
-            }
+            using Brush brush = new SolidBrush(ForeColor);
+            e.Graphics.DrawString(NoDataMessage, Font, brush, pos);
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="Control"/> and its child controls and optionally releases the managed resources.</summary>

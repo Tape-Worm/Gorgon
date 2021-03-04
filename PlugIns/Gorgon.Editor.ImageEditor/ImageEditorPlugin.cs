@@ -61,10 +61,10 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // This is the only codec supported by the image plug in.  Images will be converted when imported.
-        private readonly GorgonCodecDds _ddsCodec = new GorgonCodecDds();
+        private readonly GorgonCodecDds _ddsCodec = new();
 
         // The synchronization lock for threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
 
         // The codec registry.
         private ICodecRegistry _codecs;
@@ -120,12 +120,12 @@ namespace Gorgon.Editor.ImageEditor
         {
             lock (_syncLock)
             {
-                using (GorgonTexture2D texture = image.ToTexture2D(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DLoadOptions
+                using GorgonTexture2D texture = image.ToTexture2D(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DLoadOptions
                 {
                     Usage = ResourceUsage.Immutable,
                     IsTextureCube = false
-                }))
-                using (var rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo
+                });
+                using var rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo
                 {
                     ArrayCount = 1,
                     Binding = TextureBinding.ShaderResource,
@@ -134,17 +134,15 @@ namespace Gorgon.Editor.ImageEditor
                     Height = (int)(image.Height * scale),
                     Width = (int)(image.Width * scale),
                     Usage = ResourceUsage.Default
-                }))
-                {
-                    GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);
-                    rtv.Clear(GorgonColor.BlackTransparent);
-                    HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
-                    HostContentServices.GraphicsContext.Blitter.Blit(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
-                    HostContentServices.GraphicsContext.Graphics.SetRenderTarget(null);
+                });
+                GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);
+                rtv.Clear(GorgonColor.BlackTransparent);
+                HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
+                HostContentServices.GraphicsContext.Blitter.Blit(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
+                HostContentServices.GraphicsContext.Graphics.SetRenderTarget(null);
 
-                    image?.Dispose();
-                    image = rtv.Texture.ToImage();
-                }
+                image?.Dispose();
+                image = rtv.Texture.ToImage();
             }
         }
 
@@ -191,7 +189,7 @@ namespace Gorgon.Editor.ImageEditor
                 IGorgonVirtualFile file = TemporaryFileSystem.FileSystem.GetFile(thumbnailFile);
 
                 // If we've already got the file, then leave.
-                if (file != null)
+                if (file is not null)
                 {
                     inStream = file.OpenStream();
                     result = thumbnailCodec.FromStream(inStream);
@@ -294,11 +292,9 @@ namespace Gorgon.Editor.ImageEditor
                 HostContentServices.Log);
 
             var imageData = await Task.Run(() =>
-            {                
-                using (Stream inStream = ContentFileManager.OpenStream(file.Path, FileMode.Open))
-                {
-                    return imageIO.LoadImageFile(inStream, file.Name);
-                }
+            {
+                using Stream inStream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
+                return imageIO.LoadImageFile(inStream, file.Name);
             });
 
             var services = new ImageEditorServices
@@ -374,7 +370,7 @@ namespace Gorgon.Editor.ImageEditor
             _fxServices?.Dispose();
             _noThumbnail?.Dispose();
 
-            if ((_settings?.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
+            if ((_settings?.WriteSettingsCommand is not null) && (_settings.WriteSettingsCommand.CanExecute(null)))
             {
                 _settings.WriteSettingsCommand.Execute(null);
             }
@@ -417,26 +413,24 @@ namespace Gorgon.Editor.ImageEditor
 
             IContentFile file = ContentFileManager.GetFile(filePath);
 
-            Debug.Assert(file != null, $"File '{filePath}' doesn't exist, but it should!");
+            Debug.Assert(file is not null, $"File '{filePath}' doesn't exist, but it should!");
 
-            using (Stream stream = ContentFileManager.OpenStream(filePath, FileMode.Open))
+            using Stream stream = ContentFileManager.OpenStream(filePath, FileMode.Open);
+            if (!_ddsCodec.IsReadable(stream))
             {
-                if (!_ddsCodec.IsReadable(stream))
-                {
-                    return false;
-                }
-
-                IGorgonImageInfo metadata = _ddsCodec.GetMetaData(stream);
-
-                // We won't be supporting 1D images in this editor.
-                if ((metadata.ImageType == ImageType.Image1D) || (metadata.ImageType == ImageType.Unknown))
-                {
-                    return false;
-                }
-
-                UpdateFileMetadataAttributes(file.Metadata.Attributes);
-                return true;
+                return false;
             }
+
+            IGorgonImageInfo metadata = _ddsCodec.GetMetaData(stream);
+
+            // We won't be supporting 1D images in this editor.
+            if (metadata.ImageType is ImageType.Image1D or ImageType.Unknown)
+            {
+                return false;
+            }
+
+            UpdateFileMetadataAttributes(file.Metadata.Attributes);
+            return true;
         }
 
         /// <summary>
@@ -516,10 +510,8 @@ namespace Gorgon.Editor.ImageEditor
                 Cursor.Current = Cursors.Default;
 
                 await Task.Run(() => {
-                    using (Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create))
-                    {
-                        pngCodec.Save(thumbImage, stream);
-                    }
+                    using Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create);
+                    pngCodec.Save(thumbImage, stream);
                 }, cancelToken);
 
                 if (cancelToken.IsCancellationRequested)

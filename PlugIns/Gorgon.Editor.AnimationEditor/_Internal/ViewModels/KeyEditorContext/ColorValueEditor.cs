@@ -45,7 +45,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>
         /// Property to return whether to edit alpha values or color values.
         /// </summary>
-        public bool AlphaOnly => (Track != null) && (Track.Track.SpriteProperty == TrackSpriteProperty.Opacity);
+        public bool AlphaOnly => (Track is not null) && (Track.Track.SpriteProperty == TrackSpriteProperty.Opacity);
 
         /// <summary>Property to set or return the color to apply to the sprite.</summary>
         public GorgonColor NewColor

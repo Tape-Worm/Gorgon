@@ -51,7 +51,7 @@ namespace Gorgon.IO
         /// <summary>
         /// The highest currently supported version for animation serialization.
         /// </summary>
-        public static readonly Version CurrentVersion = new Version(3, 1);
+        public static readonly Version CurrentVersion = new(3, 1);
         #endregion
 
         #region Properties.
@@ -294,10 +294,8 @@ namespace Gorgon.IO
                 name = filePath.FormatPath(Path.DirectorySeparatorChar);
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return FromStream(stream, (int)stream.Length, name);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return FromStream(stream, (int)stream.Length, name);
         }
 
         /// <summary>
@@ -358,10 +356,8 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                Save(animation, stream);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            Save(animation, stream);
         }
 
         /// <summary>

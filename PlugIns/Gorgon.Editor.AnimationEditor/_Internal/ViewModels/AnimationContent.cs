@@ -120,7 +120,7 @@ namespace Gorgon.Editor.AnimationEditor
         // Flag to indicate that the animation is looped.
         private bool _looping;
         // A list of tracks for synchronization with the observable collection.
-        private readonly List<ITrack> _trackList = new List<ITrack>();
+        private readonly List<ITrack> _trackList = new();
         // The list of tracks unsupported by the editor.
         private IReadOnlyList<ITrack> _unsupportedTracks;
         // The list of selected tracks and keys.
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.AnimationEditor
                     return;
                 }
 
-                if (_currentPanel != null)
+                if (_currentPanel is not null)
                 {
                     _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
                     _currentPanel.IsActive = false;
@@ -176,7 +176,7 @@ namespace Gorgon.Editor.AnimationEditor
                 _currentPanel = value;
                 OnPropertyChanged();
 
-                if (_currentPanel != null)
+                if (_currentPanel is not null)
                 {
                     _currentPanel.IsActive = true;
                     _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
@@ -203,7 +203,7 @@ namespace Gorgon.Editor.AnimationEditor
                 OnPropertyChanging();
                 _primarySprite = (value, _primarySprite.spriteFile, _primarySprite.textureFile);
                 UpdatePrimarySprite();
-                if (value != null)
+                if (value is not null)
                 {
                     value.CopyTo(WorkingSprite);
                 }
@@ -339,7 +339,7 @@ namespace Gorgon.Editor.AnimationEditor
                 OnPropertyChanging();
                 _looping = value;
 
-                if (_animation != null)
+                if (_animation is not null)
                 {
                     Properties.IsLooped = _animation.IsLooped = value;
                 }
@@ -681,7 +681,7 @@ namespace Gorgon.Editor.AnimationEditor
             switch (e.PropertyName)
             {
                 case nameof(IHostedPanelViewModel.IsActive):
-                    if (CurrentPanel != null)
+                    if (CurrentPanel is not null)
                     {
                         CurrentPanel = null;
                     }
@@ -753,7 +753,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             string spritePath;
 
-            if ((CurrentPanel != null) || (CommandContext != null))
+            if ((CurrentPanel is not null) || (CommandContext is not null))
             {
                 return false;
             }
@@ -780,7 +780,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 spritePath = spritePaths[0];
 
-                if ((!ContentFileManager.FileExists(spritePath)) || (CurrentPanel != null))
+                if ((!ContentFileManager.FileExists(spritePath)) || (CurrentPanel is not null))
                 {
                     return false;
                 }
@@ -788,7 +788,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             IContentFile spriteFile = ContentFileManager.GetFile(spritePath);
 
-            return (spriteFile != null) && (_contentServices.IOService.IsContentSprite(spriteFile));
+            return (spriteFile is not null) && (_contentServices.IOService.IsContentSprite(spriteFile));
         }
 
         /// <summary>
@@ -846,7 +846,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             finally
             {
-                if (keyFrames != null)
+                if (keyFrames is not null)
                 {
                     ArrayPool<IKeyFrame>.Shared.Return(keyFrames, true);
                 }
@@ -859,8 +859,8 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if the animation can be played or not.
         /// </summary>
         /// <returns><b>true</b> if the animation can be played, <b>false</b> if not.</returns>
-        private bool CanPlayAnimation() => (_primarySprite.sprite != null)
-                                        && (_controller.CurrentAnimation != null)
+        private bool CanPlayAnimation() => (_primarySprite.sprite is not null)
+                                        && (_controller.CurrentAnimation is not null)
                                         && (HasTracks)
                                         && (Tracks.Any(item => item.KeyFrames.Count > 0))
                                         && (_controller.State != AnimationState.Playing)
@@ -887,7 +887,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if the animation can be stopped or not.
         /// </summary>
         /// <returns><b>true</b> if the animation can be stopped, <b>false</b> if not.</returns>
-        private bool CanStopAnimation() => (_controller.CurrentAnimation != null) && (_primarySprite.sprite != null) && (CurrentPanel is null) && (CommandContext is null);
+        private bool CanStopAnimation() => (_controller.CurrentAnimation is not null) && (_primarySprite.sprite is not null) && (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function to start playing the animation.
@@ -918,8 +918,8 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if the animation preview can be updated.
         /// </summary>
         /// <returns><b>true</b> if the animation preview can be updated, or <b>false</b> if not.</returns>
-        private bool CanUpdateAnimationPreview() => (_primarySprite.sprite != null) 
-                                                && (_controller.CurrentAnimation != null) 
+        private bool CanUpdateAnimationPreview() => (_primarySprite.sprite is not null) 
+                                                && (_controller.CurrentAnimation is not null) 
                                                 && (_controller.State == AnimationState.Playing) 
                                                 && (CurrentPanel is null)
                                                 && (CommandContext is null);
@@ -979,7 +979,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if a track can be added to the animation.
         /// </summary>
         /// <returns></returns>
-        private bool CanShowAddTrack() => (CurrentPanel is null) && (CommandContext is null) && (_primarySprite.sprite != null) && (AddTrack.AvailableTracks.Count > 0);
+        private bool CanShowAddTrack() => (CurrentPanel is null) && (CommandContext is null) && (_primarySprite.sprite is not null) && (AddTrack.AvailableTracks.Count > 0);
 
         /// <summary>
         /// Function to show the add track interface.
@@ -1007,7 +1007,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if animation properties can be shown.
         /// </summary>
         /// <returns><b>true</b> if the properties can be shown at this time, or <b>false</b> if not.</returns>
-        private bool CanShowProperties() => (CurrentPanel is null) && (CommandContext is null) && (_primarySprite.sprite != null);
+        private bool CanShowProperties() => (CurrentPanel is null) && (CommandContext is null) && (_primarySprite.sprite is not null);
 
         /// <summary>
         /// Function to show the animation properties interface.
@@ -1039,11 +1039,11 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if tracks can be added to the animation.
         /// </summary>
         /// <returns></returns>
-        private bool CanAddTrack() => (_primarySprite.sprite != null) 
+        private bool CanAddTrack() => (_primarySprite.sprite is not null) 
                                    && (CurrentPanel == AddTrack) 
                                    && (CommandContext is null)
                                    && (AddTrack.AvailableTracks.Count > 0) 
-                                   && (AddTrack != null) 
+                                   && (AddTrack is not null) 
                                    && (AddTrack.SelectedTracks.Count > 0);
 
 
@@ -1107,7 +1107,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     DeactivateCommandContexts();
 
-                    if (args.RemovedTracks != null)
+                    if (args.RemovedTracks is not null)
                     {
                         foreach (ITrack track in args.RemovedTracks)
                         {
@@ -1118,7 +1118,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                             GorgonTrackRegistration reg = AddTrack.AvailableTracks.FirstOrDefault(item => item.ID == track.ID);
 
-                            Debug.Assert(reg != null, "Track registation not found.");
+                            Debug.Assert(reg is not null, "Track registation not found.");
 
                             Tracks.Add(track);
                             AddTrack.AvailableTracks.Remove(reg);
@@ -1185,7 +1185,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if tracks can be removed.
         /// </summary>
         /// <returns><b>true</b> if the selected tracks can be deleted, <b>false</b> if not.</returns>
-        private bool CanDeleteTrack() => (_primarySprite.sprite != null) && (CurrentPanel is null) && (CommandContext is null) && (_selected.Count != 0);
+        private bool CanDeleteTrack() => (_primarySprite.sprite is not null) && (CurrentPanel is null) && (CommandContext is null) && (_selected.Count != 0);
 
         /// <summary>
         /// Function to delete tracks from the animation.
@@ -1253,7 +1253,7 @@ namespace Gorgon.Editor.AnimationEditor
                         ITrack track = removeTrackArgs.Tracks[i];
 
                         // If this track is a texture track, we need to dispose of any textures we are no longer using (as long as it's not attached to the primary sprite).                        
-                        foreach (IKeyFrame textureFrame in track.KeyFrames.Where(item => (item != null) && (item.TextureValue.Texture != null)))
+                        foreach (IKeyFrame textureFrame in track.KeyFrames.Where(item => (item is not null) && (item.TextureValue.Texture is not null)))
                         {
                             _contentServices.KeyProcessor.UnloadTextureKeyframe(textureFrame);
                         }
@@ -1324,7 +1324,7 @@ namespace Gorgon.Editor.AnimationEditor
                     tracks[i] = _selected[i].Track;
                 }
 
-                DeleteTracks(tracks.Where(item => item != null));
+                DeleteTracks(tracks.Where(item => item is not null));
             }
             finally
             {
@@ -1336,7 +1336,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if the animation can be cleared.
         /// </summary>
         /// <returns><b>true</b> if the animation can be cleared, <b>false</b> if not.</returns>
-        private bool CanClearAnimation() => (_primarySprite.sprite != null) && (CurrentPanel is null) && (CommandContext is null) && (Tracks.Count > 0);
+        private bool CanClearAnimation() => (_primarySprite.sprite is not null) && (CurrentPanel is null) && (CommandContext is null) && (Tracks.Count > 0);
 
         /// <summary>
         /// Function to clear the animation.
@@ -1474,7 +1474,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns><b>true</b> if a background image can be loaded, <b>false</b> if not.</returns>
         private bool CanLoadBackgroundImage()
         {
-            if ((CurrentPanel != null) || (CommandContext != null))
+            if ((CurrentPanel is not null) || (CommandContext is not null))
             {
                 return false;
             }
@@ -1488,7 +1488,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             IContentFile file = ContentFileManager.GetFile(selectedFiles[0]);
 
-            return (file != null)
+            return (file is not null)
                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 && (string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase));
         }
@@ -1528,7 +1528,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if a background image can be cleared.
         /// </summary>
         /// <returns><b>true</b> if a background image can be cleared, <b>false</b> if not.</returns>
-        private bool CanClearBackgroundImage() => (_backImage.texture != null) && (CurrentPanel is null) && (CommandContext is null);
+        private bool CanClearBackgroundImage() => (_backImage.texture is not null) && (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function to clear the background image.
@@ -1564,7 +1564,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if we can move to the previous key.
         /// </summary>
         /// <returns><b>true</b> if it can move, <b>false</b> if not.</returns>
-        private bool CanMoveToPrevKey() => (_primarySprite.sprite != null)
+        private bool CanMoveToPrevKey() => (_primarySprite.sprite is not null)
                                             && (HasTracks)
                                             && (Length > 0)
                                             && (_selected.Count == 1)
@@ -1591,9 +1591,9 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 else
                 {
-                    IKeyFrame frame = track.KeyFrames.Take(selectedIndex.Max(1).Min(MaxKeyCount - 1)).LastOrDefault(item => item != null);
+                    IKeyFrame frame = track.KeyFrames.Take(selectedIndex.Max(1).Min(MaxKeyCount - 1)).LastOrDefault(item => item is not null);
 
-                    if (frame != null)
+                    if (frame is not null)
                     {
                         keyTime = frame.Time;
                         keyIndex = track.KeyFrames.IndexOf(frame);
@@ -1621,7 +1621,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if we can move to the next key.
         /// </summary>
         /// <returns><b>true</b> if it can move, <b>false</b> if not.</returns>
-        private bool CanMoveToNextKey() => (_primarySprite.sprite != null)
+        private bool CanMoveToNextKey() => (_primarySprite.sprite is not null)
                                                 && (HasTracks)
                                                 && (Length > 0)
                                                 && (_selected.Count == 1)
@@ -1649,7 +1649,7 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 else
                 {
-                    IKeyFrame frame = track.KeyFrames.Skip(keyIndex).FirstOrDefault(item => item != null);
+                    IKeyFrame frame = track.KeyFrames.Skip(keyIndex).FirstOrDefault(item => item is not null);
 
                     if (frame is null)
                     {
@@ -1684,7 +1684,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if we can move to the first key.
         /// </summary>
         /// <returns><b>true</b> if it can move, <b>false</b> if not.</returns>
-        private bool CanMoveToFirstKey() => (_primarySprite.sprite != null)
+        private bool CanMoveToFirstKey() => (_primarySprite.sprite is not null)
                                         && (HasTracks)
                                         && (Length > 0)
                                         && (_selected.Count == 1)
@@ -1705,9 +1705,9 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 if (selectedTrack.KeyFrames.Count != 0)
                 {
-                    IKeyFrame frame = selectedTrack.KeyFrames.FirstOrDefault(item => item != null);
+                    IKeyFrame frame = selectedTrack.KeyFrames.FirstOrDefault(item => item is not null);
 
-                    if (frame != null)
+                    if (frame is not null)
                     {
                         animTime = frame.Time;
                         index = selectedTrack.KeyFrames.IndexOf(frame);
@@ -1735,7 +1735,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if we can move to the first key.
         /// </summary>
         /// <returns><b>true</b> if it can move, <b>false</b> if not.</returns>
-        private bool CanMoveToLastKey() => (_primarySprite.sprite != null)
+        private bool CanMoveToLastKey() => (_primarySprite.sprite is not null)
                                         && (HasTracks)
                                         && (Length > 0)
                                         && (_selected.Count == 1)
@@ -1762,8 +1762,8 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 else
                 {
-                    IKeyFrame frame = selectedTrack.KeyFrames.LastOrDefault(item => item != null);
-                    if (frame != null)
+                    IKeyFrame frame = selectedTrack.KeyFrames.LastOrDefault(item => item is not null);
+                    if (frame is not null)
                     {
                         animTime = frame.Time;
                         index = selectedTrack.KeyFrames.IndexOf(frame);
@@ -1845,7 +1845,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                     ShowWaitPanel(Resources.GORANM_TEXT_PLEASE_WAIT);
 
-                    int count = Tracks.SelectMany(item => item.KeyFrames).Count(item => item?.TextureValue.Texture != null);
+                    int count = Tracks.SelectMany(item => item.KeyFrames).Count(item => item?.TextureValue.Texture is not null);
 
                     // Unload current textures.
                     _contentServices.KeyProcessor.UnloadTextureKeyframes(Tracks);
@@ -1874,7 +1874,7 @@ namespace Gorgon.Editor.AnimationEditor
                     // Add each texture frame to the cache.
                     
                     foreach (IKeyFrame keyFrame in args.Keys.SelectMany(item => item.Value)
-                                                            .Where(item => (item?.TextureValue.TextureFile != null) && (item?.TextureValue.Texture is null)))
+                                                            .Where(item => (item?.TextureValue.TextureFile is not null) && (item?.TextureValue.Texture is null)))
                     {
                         await _contentServices.KeyProcessor.RestoreTextureAsync(keyFrame);
                     }
@@ -1934,7 +1934,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if the key editor can be activated or not.
         /// </summary>
         /// <returns><b>true</b> if the key editor can be activated, <b>false</b> if not.</returns>
-        private bool CanActivateKeyEditor() => (_primarySprite.sprite != null) && (((CurrentPanel is null) && (_selected.Count > 0)) || (CurrentPanel == KeyEditor.CurrentEditor));
+        private bool CanActivateKeyEditor() => (_primarySprite.sprite is not null) && (((CurrentPanel is null) && (_selected.Count > 0)) || (CurrentPanel == KeyEditor.CurrentEditor));
 
         /// <summary>
         /// Function to activate the key editor.
@@ -2047,7 +2047,7 @@ namespace Gorgon.Editor.AnimationEditor
                 string animationPath = animationDirectory + newName.FormatFileName();
 
                 IContentFile existingFile = ContentFileManager.GetFile(animationPath);
-                if (existingFile != null)
+                if (existingFile is not null)
                 {
                     // We cannot overwrite a file that's already open for editing.
                     if (existingFile.IsOpen)
@@ -2088,7 +2088,7 @@ namespace Gorgon.Editor.AnimationEditor
                 Length = length;
                 Fps = fps;
 
-                if ((primarySprite != null) && (Settings.AddTextureTrackForPrimarySprite))
+                if ((primarySprite is not null) && (Settings.AddTextureTrackForPrimarySprite))
                 {
                     Tracks.Add(await _contentServices.ViewModelFactory.CreateDefaultTextureTrackAsync(_primarySprite, MaxKeyCount));
                 }
@@ -2128,7 +2128,7 @@ namespace Gorgon.Editor.AnimationEditor
             _animation = injectionParameters.Animation;
             Settings = injectionParameters.Settings;
             _primarySprite = (injectionParameters.PrimarySprite?.PrimarySprite, injectionParameters.PrimarySprite?.File, injectionParameters.PrimarySprite?.TextureFile);
-            if (_primarySprite.sprite != null)
+            if (_primarySprite.sprite is not null)
             {
                 _primarySprite.sprite.CopyTo(WorkingSprite);
             }
@@ -2144,7 +2144,7 @@ namespace Gorgon.Editor.AnimationEditor
             Tracks = injectionParameters.Tracks;
             _trackList.AddRange(Tracks);
 
-            if (WorkingSprite != null)
+            if (WorkingSprite is not null)
             {
                 _controller.Play(WorkingSprite, _animation);
                 _controller.Pause();

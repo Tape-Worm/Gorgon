@@ -194,75 +194,30 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>
         /// Function to assign the track ID property.
         /// </summary>
-        private void SetTrackID()
+        private void SetTrackID() => SpriteProperty = Name switch
         {
-            switch (Name)
-            {
-                case null:
-                    SpriteProperty = TrackSpriteProperty.None;
-                    break;
-                case nameof(GorgonSprite.Position):
-                    SpriteProperty = TrackSpriteProperty.Position;
-                    break;
-                case nameof(GorgonSprite.Anchor):
-                    SpriteProperty = TrackSpriteProperty.Anchor;
-                    break;
-                case nameof(GorgonSprite.AbsoluteAnchor):
-                    SpriteProperty = TrackSpriteProperty.AnchorAbsolute;
-                    break;
-                case nameof(GorgonSprite.Size):
-                    SpriteProperty = TrackSpriteProperty.Size;
-                    break;
-                case nameof(GorgonSprite.Scale):
-                    SpriteProperty = TrackSpriteProperty.Scale;
-                    break;
-                case nameof(GorgonSprite.ScaledSize):
-                    SpriteProperty = TrackSpriteProperty.ScaledSize;
-                    break;
-                case nameof(GorgonSprite.CornerOffsets.LowerLeft):
-                    SpriteProperty = TrackSpriteProperty.LowerLeft;
-                    break;
-                case nameof(GorgonSprite.CornerOffsets.LowerRight):
-                    SpriteProperty = TrackSpriteProperty.LowerRight;
-                    break;
-                case nameof(GorgonSprite.CornerOffsets.UpperLeft):
-                    SpriteProperty = TrackSpriteProperty.UpperLeft;
-                    break;
-                case nameof(GorgonSprite.CornerOffsets.UpperRight):
-                    SpriteProperty = TrackSpriteProperty.UpperRight;
-                    break;
-                case GorgonSpriteAnimationController.LowerLeftColorTrackName:
-                    SpriteProperty = TrackSpriteProperty.LowerLeftColor;
-                    break;
-                case GorgonSpriteAnimationController.LowerRightColorTrackName:
-                    SpriteProperty = TrackSpriteProperty.LowerRightColor;
-                    break;
-                case GorgonSpriteAnimationController.UpperLeftColorTrackName:
-                    SpriteProperty = TrackSpriteProperty.UpperLeftColor;
-                    break;
-                case GorgonSpriteAnimationController.UpperRightColorTrackName:
-                    SpriteProperty = TrackSpriteProperty.UpperRightColor;
-                    break;
-                case nameof(GorgonSprite.Angle):
-                    SpriteProperty = TrackSpriteProperty.Angle;
-                    break;
-                case GorgonSpriteAnimationController.OpacityTrackName:
-                    SpriteProperty = TrackSpriteProperty.Opacity;
-                    break;
-                case nameof(GorgonSprite.Bounds):
-                    SpriteProperty = TrackSpriteProperty.Bounds;
-                    break;
-                case nameof(GorgonSprite.Color):
-                    SpriteProperty = TrackSpriteProperty.Color;
-                    break;
-                case nameof(GorgonSprite.Texture):
-                    SpriteProperty = TrackSpriteProperty.Texture;
-                    break;
-                default:
-                    SpriteProperty = TrackSpriteProperty.None;
-                    break;
-            }
-        }
+            null => TrackSpriteProperty.None,
+            nameof(GorgonSprite.Position) => TrackSpriteProperty.Position,
+            nameof(GorgonSprite.Anchor) => TrackSpriteProperty.Anchor,
+            nameof(GorgonSprite.AbsoluteAnchor) => TrackSpriteProperty.AnchorAbsolute,
+            nameof(GorgonSprite.Size) => TrackSpriteProperty.Size,
+            nameof(GorgonSprite.Scale) => TrackSpriteProperty.Scale,
+            nameof(GorgonSprite.ScaledSize) => TrackSpriteProperty.ScaledSize,
+            nameof(GorgonSprite.CornerOffsets.LowerLeft) => TrackSpriteProperty.LowerLeft,
+            nameof(GorgonSprite.CornerOffsets.LowerRight) => TrackSpriteProperty.LowerRight,
+            nameof(GorgonSprite.CornerOffsets.UpperLeft) => TrackSpriteProperty.UpperLeft,
+            nameof(GorgonSprite.CornerOffsets.UpperRight) => TrackSpriteProperty.UpperRight,
+            GorgonSpriteAnimationController.LowerLeftColorTrackName => TrackSpriteProperty.LowerLeftColor,
+            GorgonSpriteAnimationController.LowerRightColorTrackName => TrackSpriteProperty.LowerRightColor,
+            GorgonSpriteAnimationController.UpperLeftColorTrackName => TrackSpriteProperty.UpperLeftColor,
+            GorgonSpriteAnimationController.UpperRightColorTrackName => TrackSpriteProperty.UpperRightColor,
+            nameof(GorgonSprite.Angle) => TrackSpriteProperty.Angle,
+            GorgonSpriteAnimationController.OpacityTrackName => TrackSpriteProperty.Opacity,
+            nameof(GorgonSprite.Bounds) => TrackSpriteProperty.Bounds,
+            nameof(GorgonSprite.Color) => TrackSpriteProperty.Color,
+            nameof(GorgonSprite.Texture) => TrackSpriteProperty.Texture,
+            _ => TrackSpriteProperty.None,
+        };
 
         /// <summary>
         /// Function called to assign the interpolation mode for the track.

@@ -56,7 +56,7 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The shader to build.
-        private readonly Gorgon2DShaderState<T> _workingShader = new Gorgon2DShaderState<T>();
+        private readonly Gorgon2DShaderState<T> _workingShader = new();
         #endregion
 
         #region Methods.
@@ -111,7 +111,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonConstantBuffers.MaximumConstantBufferCount"/>.</exception>
         public Gorgon2DShaderStateBuilder<T> ConstantBuffer(GorgonConstantBufferView constantBuffer, int slot = 0)
         {
-            if ((slot < 0) || (slot >= GorgonConstantBuffers.MaximumConstantBufferCount))
+            if (slot is < 0 or >= GorgonConstantBuffers.MaximumConstantBufferCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GOR2D_ERR_CBUFFER_SLOT_INVALID, GorgonConstantBuffers.MaximumConstantBufferCount));
             }
@@ -129,7 +129,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to <see cref="GorgonConstantBuffers.MaximumConstantBufferCount"/>.</exception>
         public Gorgon2DShaderStateBuilder<T> ConstantBuffers(IReadOnlyList<GorgonConstantBufferView> constantBuffers, int startSlot = 0)
         {
-            if ((startSlot < 0) || (startSlot >= GorgonConstantBuffers.MaximumConstantBufferCount))
+            if (startSlot is < 0 or >= GorgonConstantBuffers.MaximumConstantBufferCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GOR2D_ERR_CBUFFER_SLOT_INVALID, GorgonConstantBuffers.MaximumConstantBufferCount));
             }
@@ -147,7 +147,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 16.</exception>
         public Gorgon2DShaderStateBuilder<T> ShaderResource(GorgonShaderResourceView resourceView, int slot = 0)
         {
-            if ((slot < 0) || (slot >= 16))
+            if (slot is < 0 or >= 16)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GOR2D_ERR_SRV_SLOT_INVALID, 16));
             }
@@ -165,7 +165,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to 16.</exception>
         public Gorgon2DShaderStateBuilder<T> ShaderResources(IReadOnlyList<GorgonShaderResourceView> resourceViews, int startSlot = 0)
         {
-            if ((startSlot < 0) || (startSlot >= 16))
+            if (startSlot is < 0 or >= 16)
             {
                 throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GOR2D_ERR_SRV_SLOT_INVALID, 16));
             }
@@ -184,7 +184,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
         public Gorgon2DShaderStateBuilder<T> SamplerStates(IReadOnlyList<GorgonSamplerState> samplers, int index = 0)
         {
-            if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
+            if (index is < 0 or >= GorgonSamplerStates.MaximumSamplerStateCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR2D_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
             }
@@ -211,7 +211,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
         public Gorgon2DShaderStateBuilder<T> SamplerState(GorgonSamplerState sampler, int index = 0)
         {
-            if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
+            if (index is < 0 or >= GorgonSamplerStates.MaximumSamplerStateCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR2D_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
             }

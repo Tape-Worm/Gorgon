@@ -186,7 +186,7 @@ namespace Gorgon.IO.Providers
         /// The default functionality will only enumerate directories and files from the operating system file system.
         /// </para>
         /// </remarks>
-        protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint) => new GorgonPhysicalFileSystemData(OnEnumerateDirectories(physicalLocation, mountPoint), OnEnumerateFiles(physicalLocation, mountPoint, true));
+        protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint) => new(OnEnumerateDirectories(physicalLocation, mountPoint), OnEnumerateFiles(physicalLocation, mountPoint, true));
 
         /// <summary>
         /// Function to return the physical file system path from a virtual file system path.

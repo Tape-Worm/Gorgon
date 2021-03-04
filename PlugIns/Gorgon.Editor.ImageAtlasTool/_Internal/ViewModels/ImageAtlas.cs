@@ -125,7 +125,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 				}
 
 				OnPropertyChanging();
-				if (_images != null)
+				if (_images is not null)
 				{
 					foreach (IGorgonImage image in _images.Values)
 					{
@@ -268,7 +268,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 
 				OnPropertyChanging();
 
-				if (_atlas?.Textures != null)
+				if (_atlas?.Textures is not null)
 				{
 					foreach (GorgonTexture2DView texture in _atlas.Textures)
 					{
@@ -540,7 +540,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 			finally
 			{
 				// We no longer need the textures.
-				if (_atlasSpriteList != null)
+				if (_atlasSpriteList is not null)
 				{
 					UnloadSpriteTextures(_atlasSpriteList.Values);
 				}
@@ -621,7 +621,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 			}
 			catch (Exception ex)
 			{
-				if ((atlas?.Textures != null) && (Atlas != atlas))
+				if ((atlas?.Textures is not null) && (Atlas != atlas))
 				{
 					UnloadAtlasTextures();
 				}
@@ -631,7 +631,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 			finally
 			{
 				// We no longer need the textures.
-				if (_atlasSpriteList != null)
+				if (_atlasSpriteList is not null)
 				{
 					UnloadSpriteTextures(_atlasSpriteList.Values);
 				}
@@ -646,12 +646,12 @@ namespace Gorgon.Editor.ImageAtlasTool
 		/// <returns><b>true</b> if possible, <b>false</b> if not.</returns>
 		private bool CanNextPreview()
 		{
-			if (_loadImageTask != null)
+			if (_loadImageTask is not null)
 			{
 				return false;
 			}
 
-			if (Atlas != null)
+			if (Atlas is not null)
 			{
 				if ((Atlas?.Textures is null) || (Atlas.Textures.Count == 0))
 				{
@@ -663,7 +663,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 				return ((PreviewArrayIndex + 1 < texture.ArrayCount) || (PreviewTextureIndex + 1 < Atlas.Textures.Count));
 			}
 
-            return (Images != null) && (Images.Count != 0) && (_currentImageIndex + 1 < _imageFiles.Length);
+            return (Images is not null) && (Images.Count != 0) && (_currentImageIndex + 1 < _imageFiles.Length);
         }
 
         /// <summary>
@@ -703,18 +703,18 @@ namespace Gorgon.Editor.ImageAtlasTool
 		/// <returns><b>true</b> if possible, <b>false</b> if not.</returns>
 		private bool CanPrevPreview()
 		{
-			if (_loadImageTask != null)
+			if (_loadImageTask is not null)
 			{
 				return false;
 			}
 
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (Atlas != null)
+            if (Atlas is not null)
             {
-                return (Atlas.Textures != null) && (Atlas.Textures.Count != 0) && ((PreviewArrayIndex - 1 >= 0) || (PreviewTextureIndex - 1 >= 0));
+                return (Atlas.Textures is not null) && (Atlas.Textures.Count != 0) && ((PreviewArrayIndex - 1 >= 0) || (PreviewTextureIndex - 1 >= 0));
             }
 
-            return (Images != null) && (Images.Count != 0) && (_currentImageIndex - 1 >= 0);
+            return (Images is not null) && (Images.Count != 0) && (_currentImageIndex - 1 >= 0);
 #pragma warning restore IDE0046 // Convert to conditional expression
 		}
 
@@ -752,7 +752,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		/// </summary>
 		/// <param name="args">The arguments to pass to the command.</param>
 		/// <returns><b>true</b> if the data can be committed, <b>false</b> if not.</returns>
-		private bool CanCommitAtlas(CancelEventArgs args) => (Atlas?.Textures != null) && (Atlas.Textures.Count > 0) && (_images.Count > 0) && (_loadImageTask is null);
+		private bool CanCommitAtlas(CancelEventArgs args) => (Atlas?.Textures is not null) && (Atlas.Textures.Count > 0) && (_images.Count > 0) && (_loadImageTask is null);
 
 		/// <summary>
 		/// Function to commit the atlas data back to the file system.
@@ -817,7 +817,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 			}
 			finally
 			{
-				if (_atlasSpriteList != null)
+				if (_atlasSpriteList is not null)
 				{
 					UnloadSpriteTextures(_atlasSpriteList.Values);
 				}
@@ -872,7 +872,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		{
 			base.OnLoad();
 
-			if (ImageFiles != null)
+			if (ImageFiles is not null)
 			{
 				ImageFiles.ConfirmLoadCommand = new EditorAsyncCommand<object>(DoLoadImagesAsync, CanLoadImages);
 				ImageFiles.CancelCommand = new EditorAsyncCommand<object>(DoCancelAsync);
@@ -884,7 +884,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		{
 			CurrentImage = (null, null);
 
-			if (ImageFiles != null)
+			if (ImageFiles is not null)
 			{
 				ImageFiles.CancelCommand = null;
 				ImageFiles.ConfirmLoadCommand = null;

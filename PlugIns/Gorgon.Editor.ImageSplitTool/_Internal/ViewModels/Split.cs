@@ -59,7 +59,7 @@ namespace Gorgon.Editor.ImageSplitTool
         // The service used to search through the files.
         private ISearchService<IContentFileExplorerSearchEntry> _searchService;
         // The list of selected files.
-        private readonly List<ContentFileExplorerFileEntry> _selected = new List<ContentFileExplorerFileEntry>();
+        private readonly List<ContentFileExplorerFileEntry> _selected = new();
         // The task used to load the preview.
         private Task<IGorgonImage> _loadPreviewTask;
         // The cancellation source.
@@ -260,7 +260,7 @@ namespace Gorgon.Editor.ImageSplitTool
                     thumbDirectory = _tempFileSystem.CreateDirectory(ThumbnailPath);
                 }
 
-                if (_loadPreviewTask != null)
+                if (_loadPreviewTask is not null)
                 {
                     if (_loadPreviewTask.Status == TaskStatus.Faulted)
                     {
@@ -466,7 +466,7 @@ namespace Gorgon.Editor.ImageSplitTool
                     args.Cancel = true;
                 }
 
-                if (_splitTask != null)
+                if (_splitTask is not null)
                 {
                     await _splitTask;
                 }
@@ -519,12 +519,12 @@ namespace Gorgon.Editor.ImageSplitTool
                 file.PropertyChanged -= File_PropertyChanged;
             }
 
-            if (_splitCancelSource != null)
+            if (_splitCancelSource is not null)
             {
                 _splitCancelSource.Cancel();
             }
 
-            if (_previewCancelSource != null)
+            if (_previewCancelSource is not null)
             {
                 _previewCancelSource.Cancel();
             }

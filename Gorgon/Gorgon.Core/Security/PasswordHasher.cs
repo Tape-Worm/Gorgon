@@ -115,11 +115,9 @@ namespace Gorgon.Security
 				password = password.Substring(0, MaxiumumPasswordLength);
 			}
 
-			using (var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations))
-			{
-				return Convert.ToBase64String(hashProvider.GetBytes(HashSize));
-			}
-		}
+            using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);
+            return Convert.ToBase64String(hashProvider.GetBytes(HashSize));
+        }
 
 		/// <summary>
 		/// Function to generate a initialization vector and key based on the application password.
@@ -129,14 +127,12 @@ namespace Gorgon.Security
 		/// <returns>A tuple containing the initialization vector and key.</returns>
 		public static (byte[] IV, byte[] key) GenerateIvKey(string password, byte[] salt)
 		{
-			using (var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations))
-			{
-				byte[] key = hashProvider.GetBytes(32);
-				byte[] iv = hashProvider.GetBytes(16);
+            using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);
+            byte[] key = hashProvider.GetBytes(32);
+            byte[] iv = hashProvider.GetBytes(16);
 
-				return (iv, key);
-			}
-		}
+            return (iv, key);
+        }
 		#endregion
 	}
 }

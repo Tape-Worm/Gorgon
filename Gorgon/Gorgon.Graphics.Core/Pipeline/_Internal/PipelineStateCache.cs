@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // A syncrhonization lock for multiple thread when dealing with the pipeline state cache.
-        private readonly object _stateLock = new object();
+        private readonly object _stateLock = new();
         // A list of cached pipeline states.
         private GorgonPipelineState[] _cachedPipelineStates = new GorgonPipelineState[InitialCacheSize];
         // The Direct 3D device.
@@ -99,7 +99,7 @@ namespace Gorgon.Graphics.Core
             inheritedState |= ((cachedState.RwBlendStates.Equals(newState.RwBlendStates))
                                 && (cachedState.IsAlphaToCoverageEnabled == newState.IsAlphaToCoverageEnabled)
                                 && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled)) ? PipelineStateChanges.BlendState : PipelineStateChanges.None;
-            inheritedState |= ((cachedState.DepthStencilState != null) 
+            inheritedState |= ((cachedState.DepthStencilState is not null) 
                                 && (cachedState.DepthStencilState.Equals(newState.DepthStencilState))) ? PipelineStateChanges.DepthStencilState : PipelineStateChanges.None;
 
             return inheritedState;
@@ -122,17 +122,17 @@ namespace Gorgon.Graphics.Core
             pipelineState.D3DBlendState = blendState;
             pipelineState.D3DDepthStencilState = depthStencilState;
 
-            if ((rasterState is null) && (pipelineState.RasterState != null))
+            if ((rasterState is null) && (pipelineState.RasterState is not null))
             {
                 pipelineState.D3DRasterState = pipelineState.RasterState.GetD3D11RasterState(_device);
             }
 
-            if ((depthStencilState is null) && (pipelineState.DepthStencilState != null))
+            if ((depthStencilState is null) && (pipelineState.DepthStencilState is not null))
             {
                 pipelineState.D3DDepthStencilState = pipelineState.DepthStencilState.GetD3D11DepthStencilState(_device);
             }
 
-            if (blendState != null)
+            if (blendState is not null)
             {
                 return;
             }
@@ -156,16 +156,16 @@ namespace Gorgon.Graphics.Core
 
             lock (_stateLock)
             {
-                if ((newState.ID >= 0) && (newState.ID < _cachedPipelineStates.Length) && (_cachedPipelineStates[newState.ID] != null))
+                if ((newState.ID >= 0) && (newState.ID < _cachedPipelineStates.Length) && (_cachedPipelineStates[newState.ID] is not null))
                 {
                     GorgonPipelineState state = _cachedPipelineStates[newState.ID];
                     depthStencilState = newState.D3DDepthStencilState;
                     rasterState = newState.D3DRasterState;
                     blendState = newState.D3DBlendState;
 
-                    if ((depthStencilState == state.D3DDepthStencilState) && (depthStencilState != null)
-                        && (rasterState == state.D3DRasterState)  && (rasterState != null)
-                        && (blendState == state.D3DBlendState) && (blendState != null))
+                    if ((depthStencilState == state.D3DDepthStencilState) && (depthStencilState is not null)
+                        && (rasterState == state.D3DRasterState)  && (rasterState is not null)
+                        && (blendState == state.D3DBlendState) && (blendState is not null))
                     {
                         return state;
                     }
@@ -173,7 +173,7 @@ namespace Gorgon.Graphics.Core
                     newState.ID = int.MinValue;
                 }
 
-                if (_cachedPipelineStates[_cachedPipelineStates.Length - 1] != null)
+                if (_cachedPipelineStates[^1] is not null)
                 {
                     Array.Resize(ref _cachedPipelineStates, _cachedPipelineStates.Length + InitialCacheSize);
                 }

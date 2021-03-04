@@ -41,7 +41,7 @@ namespace Gorgon.Editor.AnimationEditor
     {
         #region Variables.
         // The builder used to create the animation.
-        private static readonly GorgonAnimationBuilder _builder = new GorgonAnimationBuilder();
+        private static readonly GorgonAnimationBuilder _builder = new();
         #endregion
 
         #region Methods.
@@ -58,7 +58,7 @@ namespace Gorgon.Editor.AnimationEditor
                 // There is no interpolation for texture tracks (not yet at least).
                 keyBuilder.SetInterpolationMode(track.InterpolationMode);
 
-                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
+                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
                 {
                     keyBuilder.SetKey(new GorgonKeySingle(keyFrame.Time, keyFrame.FloatValue.X));
                 }
@@ -80,7 +80,7 @@ namespace Gorgon.Editor.AnimationEditor
                 // There is no interpolation for texture tracks (not yet at least).
                 keyBuilder.SetInterpolationMode(track.InterpolationMode);
 
-                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
+                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
                 {
                     keyBuilder.SetKey(new GorgonKeyVector2(keyFrame.Time, (DX.Vector2)keyFrame.FloatValue));
                 }
@@ -102,7 +102,7 @@ namespace Gorgon.Editor.AnimationEditor
                 // There is no interpolation for texture tracks (not yet at least).
                 keyBuilder.SetInterpolationMode(track.InterpolationMode);
 
-                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
+                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
                 {
                     keyBuilder.SetKey(new GorgonKeyVector3(keyFrame.Time, (DX.Vector3)keyFrame.FloatValue));
                 }
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.AnimationEditor
                 // There is no interpolation for texture tracks (not yet at least).
                 keyBuilder.SetInterpolationMode(track.InterpolationMode);
 
-                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
+                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
                 {
                     keyBuilder.SetKey(new GorgonKeyVector4(keyFrame.Time, keyFrame.FloatValue));
                 }
@@ -146,7 +146,7 @@ namespace Gorgon.Editor.AnimationEditor
                 // There is no interpolation for texture tracks (not yet at least).
                 keyBuilder.SetInterpolationMode(track.InterpolationMode);
 
-                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
+                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
                 {
                     keyBuilder.SetKey(new GorgonKeyRectangle(keyFrame.Time, new DX.RectangleF
                     {
@@ -174,7 +174,7 @@ namespace Gorgon.Editor.AnimationEditor
                 // There is no interpolation for texture tracks (not yet at least).
                 keyBuilder.SetInterpolationMode(track.InterpolationMode);
 
-                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
+                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
                 {
                     keyBuilder.SetKey(new GorgonKeyGorgonColor(keyFrame.Time, new GorgonColor(keyFrame.FloatValue)));
                 }
@@ -196,7 +196,7 @@ namespace Gorgon.Editor.AnimationEditor
                 // There is no interpolation for texture tracks (not yet at least).
                 keyBuilder.SetInterpolationMode(TrackInterpolationMode.None);
 
-                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item != null))
+                foreach (IKeyFrame keyFrame in track.KeyFrames.Where(item => item is not null))
                 {
                     keyBuilder.SetKey(new GorgonKeyTexture2D(keyFrame.Time, keyFrame.TextureValue.Texture, keyFrame.TextureValue.TextureCoordinates, keyFrame.TextureValue.ArrayIndex));
                 }
@@ -250,7 +250,7 @@ namespace Gorgon.Editor.AnimationEditor
                     MaxKeyFrameCount = newKeyCount
                 };
 
-                if ((track.SetKeyFramesCommand != null) && (track.SetKeyFramesCommand.CanExecute(args)))
+                if ((track.SetKeyFramesCommand is not null) && (track.SetKeyFramesCommand.CanExecute(args)))
                 {
                     track.SetKeyFramesCommand.Execute(args);
                 }
@@ -277,13 +277,13 @@ namespace Gorgon.Editor.AnimationEditor
 
             if (tracks.Count != 0)
             {
-                BuildSingleTracks(tracks.Where(item => (item != null) && (item.KeyType == AnimationTrackKeyType.Single) && (item.KeyFrames.Any(item2 => item2 != null))));
-                BuildVector2Tracks(tracks.Where(item => (item != null) && (item.KeyType == AnimationTrackKeyType.Vector2) && (item.KeyFrames.Any(item2 => item2 != null))));
-                BuildVector3Tracks(tracks.Where(item => (item != null) && (item.KeyType == AnimationTrackKeyType.Vector3) && (item.KeyFrames.Any(item2 => item2 != null))));
-                BuildVector4Tracks(tracks.Where(item => (item != null) && (item.KeyType == AnimationTrackKeyType.Vector4) && (item.KeyFrames.Any(item2 => item2 != null))));
-                BuildRectangleTracks(tracks.Where(item => (item != null) && (item.KeyType == AnimationTrackKeyType.Rectangle) && (item.KeyFrames.Any(item2 => item2 != null))));
-                BuildColorTracks(tracks.Where(item => (item != null) && (item.KeyType == AnimationTrackKeyType.Color) && (item.KeyFrames.Any(item2 => item2 != null))));
-                BuildTextureTracks(tracks.Where(item => (item != null) && (item.KeyType == AnimationTrackKeyType.Texture2D) && (item.KeyFrames.Any(item2 => item2 != null))));
+                BuildSingleTracks(tracks.Where(item => (item is not null) && (item.KeyType == AnimationTrackKeyType.Single) && (item.KeyFrames.Any(item2 => item2 is not null))));
+                BuildVector2Tracks(tracks.Where(item => (item is not null) && (item.KeyType == AnimationTrackKeyType.Vector2) && (item.KeyFrames.Any(item2 => item2 is not null))));
+                BuildVector3Tracks(tracks.Where(item => (item is not null) && (item.KeyType == AnimationTrackKeyType.Vector3) && (item.KeyFrames.Any(item2 => item2 is not null))));
+                BuildVector4Tracks(tracks.Where(item => (item is not null) && (item.KeyType == AnimationTrackKeyType.Vector4) && (item.KeyFrames.Any(item2 => item2 is not null))));
+                BuildRectangleTracks(tracks.Where(item => (item is not null) && (item.KeyType == AnimationTrackKeyType.Rectangle) && (item.KeyFrames.Any(item2 => item2 is not null))));
+                BuildColorTracks(tracks.Where(item => (item is not null) && (item.KeyType == AnimationTrackKeyType.Color) && (item.KeyFrames.Any(item2 => item2 is not null))));
+                BuildTextureTracks(tracks.Where(item => (item is not null) && (item.KeyType == AnimationTrackKeyType.Texture2D) && (item.KeyFrames.Any(item2 => item2 is not null))));
             }
 
             result = _builder.Build(name, fps, keyCount / fps);

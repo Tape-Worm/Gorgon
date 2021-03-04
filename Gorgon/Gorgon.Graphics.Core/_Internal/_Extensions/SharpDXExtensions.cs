@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="desc">The description to convert.</param>
         /// <param name="name">The name of the swap chain.</param>
         /// <returns>A new <see cref="GorgonSwapChainInfo"/>.</returns>
-	    public static GorgonSwapChainInfo ToSwapChainInfo(this SwapChainDescription1 desc, string name) => new GorgonSwapChainInfo(name)
+	    public static GorgonSwapChainInfo ToSwapChainInfo(this SwapChainDescription1 desc, string name) => new(name)
         {
             Width = desc.Width,
             Height = desc.Height,
@@ -55,7 +55,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="swapChainInfo">The swap chain info to convert.</param>
         /// <returns>A DXGI swap chain description.</returns>
-        public static SwapChainDescription1 ToSwapChainDesc(this IGorgonSwapChainInfo swapChainInfo) => new SwapChainDescription1
+        public static SwapChainDescription1 ToSwapChainDesc(this IGorgonSwapChainInfo swapChainInfo) => new()
         {
             BufferCount = 2,
             AlphaMode = AlphaMode.Unspecified,
@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="box">The box value to convert.</param>
         /// <returns>The D3D11 resource region.</returns>
-        public static D3D11.ResourceRegion ToResourceRegion(this GorgonBox box) => new D3D11.ResourceRegion(box.Left, box.Top, box.Front, box.Right, box.Bottom, box.Back);
+        public static D3D11.ResourceRegion ToResourceRegion(this GorgonBox box) => new(box.Left, box.Top, box.Front, box.Right, box.Bottom, box.Back);
 
         /// <summary>
         /// Function to convert a DXGI rational number to a Gorgon rational number.
@@ -88,14 +88,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="rational">The rational number to convert.</param>
         /// <returns>The DXGI ration number.</returns>
-        public static Rational ToDxGiRational(this GorgonRationalNumber rational) => new Rational(rational.Numerator, rational.Denominator);
+        public static Rational ToDxGiRational(this GorgonRationalNumber rational) => new(rational.Numerator, rational.Denominator);
 
         /// <summary>
         /// Function to convert a GorgonVideoMode to a ModeDescription.
         /// </summary>
         /// <param name="mode">ModeDescription1 to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription ToModeDesc(this in GorgonVideoMode mode) => new ModeDescription
+        public static ModeDescription ToModeDesc(this in GorgonVideoMode mode) => new()
         {
             Format = (Format)mode.Format,
             Height = mode.Height,
@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription1 ToModeDesc1(this in GorgonVideoMode mode) => new ModeDescription1
+        public static ModeDescription1 ToModeDesc1(this in GorgonVideoMode mode) => new()
         {
             Format = (Format)mode.Format,
             Height = mode.Height,
@@ -133,14 +133,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static GorgonVideoMode ToGorgonVideoMode(this ModeDescription mode) => new GorgonVideoMode(mode.ToModeDesc1());
+        public static GorgonVideoMode ToGorgonVideoMode(this ModeDescription mode) => new(mode.ToModeDesc1());
 
         /// <summary>
         /// Function to convert a ModeDescription1 to a ModeDescription.
         /// </summary>
         /// <param name="mode">ModeDescription1 to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription ToModeDesc(this ModeDescription1 mode) => new ModeDescription
+        public static ModeDescription ToModeDesc(this ModeDescription1 mode) => new()
         {
             Format = mode.Format,
             Height = mode.Height,
@@ -155,7 +155,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">ModeDescription to convert.</param>
         /// <returns>The new mode description.</returns>
-        public static ModeDescription1 ToModeDesc1(this ModeDescription mode) => new ModeDescription1
+        public static ModeDescription1 ToModeDesc1(this ModeDescription mode) => new()
         {
             Format = mode.Format,
             Height = mode.Height,
@@ -171,13 +171,13 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="binding">The binding to convert.</param>
         /// <returns>The D3D11 vertex buffer binding.</returns>
-	    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this in GorgonVertexBufferBinding binding) => new D3D11.VertexBufferBinding(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
+	    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this in GorgonVertexBufferBinding binding) => new(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
 
         /// <summary>
         /// Function to convert a <see cref="GorgonMultisampleInfo"/> to a DXGI multi sample description.
         /// </summary>
         /// <param name="samplingInfo">The Gorgon multi sample info to convert.</param>
         /// <returns>The DXGI multi sample description.</returns>
-        public static SampleDescription ToSampleDesc(this GorgonMultisampleInfo samplingInfo) => new SampleDescription(samplingInfo.Count, samplingInfo.Quality);
+        public static SampleDescription ToSampleDesc(this GorgonMultisampleInfo samplingInfo) => new(samplingInfo.Count, samplingInfo.Quality);
     }
 }

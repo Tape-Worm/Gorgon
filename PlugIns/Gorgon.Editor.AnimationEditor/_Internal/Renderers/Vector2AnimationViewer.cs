@@ -224,7 +224,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             finally
             {
-                if (vertices != null)
+                if (vertices is not null)
                 {
                     ArrayPool<DX.Vector2>.Shared.Return(vertices);
                 }

@@ -83,7 +83,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             try
             {
-                if ((_settings?.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
+                if ((_settings?.WriteSettingsCommand is not null) && (_settings.WriteSettingsCommand.CanExecute(null)))
                 {
                     // Persist any settings.
                     _settings.WriteSettingsCommand.Execute(null);
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Implementors may use whatever method they desire to determine if the file can be opened (e.g. checking file extensions, examining file headers, etc...).
         /// </para>
         /// </remarks>
-        protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) != null;
+        protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) is not null;
 
         /// <summary>
         /// Function to retrieve the codec used by the image.

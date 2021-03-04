@@ -248,7 +248,7 @@ namespace Gorgon.Graphics.Fonts
         {
             var brush = other as GorgonGlyphTextureBrush;
 
-            return ((brush == this) || ((brush != null)
+            return ((brush == this) || ((brush is not null)
                 && (brush.WrapMode == WrapMode)
                 && (brush.TextureRegion.Equals(TextureRegion))
                 && ((brush.Image == Image) || ((brush.Image.ImageType == Image.ImageType)

@@ -205,10 +205,8 @@ namespace Gorgon.IO
 
             IGorgonImage image = await Task.Run(() =>
             {
-                using (Stream stream = file.OpenStream())
-                {
-                    return codec.FromStream(stream);
-                }
+                using Stream stream = file.OpenStream();
+                return codec.FromStream(stream);
             });
 
             using (image)
@@ -289,17 +287,15 @@ namespace Gorgon.IO
             }
 
             if ((metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths)) 
-                && (paths != null)
+                && (paths is not null)
                 && (paths.Count > 0))
             {
                 IEnumerable<Task> dependencyTasks = paths.Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
                 await Task.WhenAll(dependencyTasks);
             }
 
-            using (Stream stream = animationFile.OpenStream())
-            {
-                return animationCodec.FromStream(stream);
-            }
+            using Stream stream = animationFile.OpenStream();
+            return animationCodec.FromStream(stream);
         }
 
         /// <summary>
@@ -371,10 +367,8 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, codecTypeName));
             }
 
-            using (Stream stream = file.OpenStream())
-            {
-                return imageCodec.FromStream(stream, (int)file.Size);
-            }
+            using Stream stream = file.OpenStream();
+            return imageCodec.FromStream(stream, (int)file.Size);
         }
 
         /// <summary>
@@ -561,7 +555,7 @@ namespace Gorgon.IO
             // If we've not provided an override, then load the texture dependencies.
             if ((overrideTexture is null)
                 && (metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths))
-                && (paths != null)
+                && (paths is not null)
                 && (paths.Count > 0))
             {
                 IEnumerable<Task<GorgonTexture2D>> dependencies = paths.Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
@@ -569,10 +563,8 @@ namespace Gorgon.IO
                 overrideTexture = textures.FirstOrDefault(item => string.Equals(item?.Name, paths[0], StringComparison.OrdinalIgnoreCase))?.GetShaderResourceView();
             }
 
-            using (Stream stream = spriteFile.OpenStream())
-            {
-                return spriteCodec.FromStream(stream, overrideTexture);
-            }
+            using Stream stream = spriteFile.OpenStream();
+            return spriteCodec.FromStream(stream, overrideTexture);
         }
         #endregion
 

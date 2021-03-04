@@ -89,7 +89,7 @@ namespace Gorgon.Graphics.Imaging
     {
         #region Variables.
         // Commands to execute when EndUpdate is called.
-        private readonly ConcurrentQueue<Action> _commands = new ConcurrentQueue<Action>();
+        private readonly ConcurrentQueue<Action> _commands = new();
         // WIC utility functions for editing the image.
         private WicUtilities _wic;
         #endregion
@@ -228,7 +228,7 @@ namespace Gorgon.Graphics.Imaging
         private GorgonImage ConvertFromB4G4R4A4(BufferFormat destFormat)
         {
             // If we're converting to R8G8B8A8 or B8G8R8A8, then use those formats, otherwise, default to B8G8R8A8 as an intermediate buffer.
-            BufferFormat tempFormat = ((destFormat != BufferFormat.B8G8R8A8_UNorm) && (destFormat != BufferFormat.R8G8B8A8_UNorm)) ? BufferFormat.B8G8R8A8_UNorm : destFormat;
+            BufferFormat tempFormat = (destFormat is not BufferFormat.B8G8R8A8_UNorm and not BufferFormat.R8G8B8A8_UNorm) ? BufferFormat.B8G8R8A8_UNorm : destFormat;
 
             // Create an worker image in B8G8R8A8 format.
             var destInfo = new GorgonImageInfo(ImageType, tempFormat)
@@ -295,8 +295,7 @@ namespace Gorgon.Graphics.Imaging
             try
             {
                 // If necessary, convert to B8G8R8A8. Otherwise, we'll just downsample directly.
-                if ((Format != BufferFormat.B8G8R8A8_UNorm)
-                    && (Format != BufferFormat.R8G8B8A8_UNorm))
+                if (Format is not BufferFormat.B8G8R8A8_UNorm and not BufferFormat.R8G8B8A8_UNorm)
                 {
                     tempBuffer = new GorgonImage(this);
                     tempBuffer.BeginUpdate()
@@ -904,18 +903,16 @@ namespace Gorgon.Graphics.Imaging
                             {
                                 int depthArrayIndex = ImageType != ImageType.Image3D ? arrayIndex : depthSlice;
                                 IGorgonImageBuffer buffer = workImage.Buffers[mip, depthArrayIndex];
-                                using (GorgonNativeBuffer<byte> compressedData = encoder.EncodeToRawBytes(buffer.Data,
+                                using GorgonNativeBuffer<byte> compressedData = encoder.EncodeToRawBytes(buffer.Data,
                                                                                                           buffer.Width,
                                                                                                           buffer.Height,
                                                                                                           useBC1Alpha,
                                                                                                           buffer.Format,
                                                                                                           compressionFormat,
                                                                                                           (BCnEncode.CompressionQuality)quality,
-                                                                                                          multithreadCompression))
-                                {
-                                    // Replace the data in the source image buffer with our newly compressed data.
-                                    compressedData.CopyTo((Span<byte>)bufferList[mip, depthArrayIndex].Data);
-                                }
+                                                                                                          multithreadCompression);
+                                // Replace the data in the source image buffer with our newly compressed data.
+                                compressedData.CopyTo((Span<byte>)bufferList[mip, depthArrayIndex].Data);
                             }
                         }
                     }

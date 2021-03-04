@@ -40,7 +40,7 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The state that will be edited.
-        private readonly Gorgon2DBatchState _worker = new Gorgon2DBatchState();
+        private readonly Gorgon2DBatchState _worker = new();
         #endregion
 
         #region Properties.

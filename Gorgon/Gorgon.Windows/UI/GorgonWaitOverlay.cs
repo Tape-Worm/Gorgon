@@ -39,7 +39,7 @@ namespace Gorgon.UI
     {
         #region Variables.
         // The overlay used to dim the background.
-        private readonly Lazy<GorgonOverlay> _overlay = new Lazy<GorgonOverlay>(() => new GorgonOverlay(), true);
+        private readonly Lazy<GorgonOverlay> _overlay = new(() => new GorgonOverlay(), true);
 
         // The form used to display the progress meter.
         private FormWait _waitForm;
@@ -55,7 +55,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Property to return whether the overlay is active or not.
         /// </summary>
-        public bool IsActive => _waitForm != null;
+        public bool IsActive => _waitForm is not null;
 
         /// <summary>
         /// Property to set or return the amount of transparency.
@@ -186,23 +186,23 @@ namespace Gorgon.UI
         {
             Hide();
 
-            if (!(parentWindow is Control parent))
+            if (parentWindow is not Control parent)
             {
                 return null;
             }
 
             _waitForm = new FormWait();
-            if (title != null)
+            if (title is not null)
             {
                 _waitForm.Wait.WaitTitle = title;
             }
 
-            if (message != null)
+            if (message is not null)
             {
                 _waitForm.Wait.WaitMessage = message;                    
             }
 
-            if (image != null)
+            if (image is not null)
             {
                 _waitForm.Wait.WaitIcon = image;
             }
@@ -212,7 +212,7 @@ namespace Gorgon.UI
             _parent = new WeakReference<Control>(parent);
 
             Form parentForm = parent.FindForm();
-            if (parentForm != null)
+            if (parentForm is not null)
             {
                 _parentForm = new WeakReference<Form>(parentForm);
                 parentForm.Move += Parent_Move;
@@ -238,24 +238,24 @@ namespace Gorgon.UI
             Control parent = null;
             Form parentForm = null;
 
-            if (controlRef != null)
+            if (controlRef is not null)
             {
                 controlRef.TryGetTarget(out parent);
             }
 
-            if (formRef != null)
+            if (formRef is not null)
             {
                 formRef.TryGetTarget(out parentForm);
             }
 
-            if (parentForm != null)
+            if (parentForm is not null)
             {
                 parentForm.Layout -= ParentForm_Layout;
                 parentForm.FormClosed -= ParentForm_FormClosed;
                 parentForm.Move -= Parent_Move;   
             }
 
-            if (parent != null)
+            if (parent is not null)
             {
                 parent.Layout -= Parent_Layout;
                 parent.Move -= Parent_Move;

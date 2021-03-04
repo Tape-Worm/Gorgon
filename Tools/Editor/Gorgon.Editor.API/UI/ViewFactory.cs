@@ -46,7 +46,7 @@ namespace Gorgon.Editor.UI
     {
         #region Variables.
         // A list of view builders used to create views.
-        private static readonly Dictionary<string, Func<Control>> _viewBuilders = new Dictionary<string, Func<Control>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, Func<Control>> _viewBuilders = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Methods.
@@ -143,7 +143,7 @@ namespace Gorgon.Editor.UI
 
             Type interfaceType = interfaces.FirstOrDefault(item => _viewBuilders.ContainsKey(item.AssemblyQualifiedName));
 
-            return interfaceType != null;
+            return interfaceType is not null;
         }
 
         /// <summary>

@@ -57,7 +57,7 @@ namespace Gorgon.Renderers
         // Flag to indicate that the parameters were updated.
         private bool _isUpdated = true;
         // The texture size used to calculate the emboss/sharpen edges.
-        private DX.Size2F _textureSize = new DX.Size2F(512.0f, 512.0f);
+        private DX.Size2F _textureSize = new(512.0f, 512.0f);
         #endregion
 
         #region Properties.

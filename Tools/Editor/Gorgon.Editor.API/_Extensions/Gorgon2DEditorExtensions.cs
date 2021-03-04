@@ -75,7 +75,7 @@ namespace Gorgon.IO
                 { typeof(GorgonV1SpriteBinaryCodec).FullName, new GorgonV1SpriteBinaryCodec(renderer) }
             };
 
-            if (spriteCodecs != null)
+            if (spriteCodecs is not null)
             {
                 foreach (IGorgonSpriteCodec codec in spriteCodecs)
                 {
@@ -110,7 +110,7 @@ namespace Gorgon.IO
                 { typeof(GorgonCodecBmp).FullName, new GorgonCodecBmp() }
             };
 
-            if (imageCodecs != null)
+            if (imageCodecs is not null)
             {
                 foreach (IGorgonImageCodec codec in imageCodecs)
                 {
@@ -145,7 +145,7 @@ namespace Gorgon.IO
             // First, check to see if this texture isn't already loaded into memory.
             GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(imagePath).FirstOrDefault();
 
-            if (texture != null)
+            if (texture is not null)
             {
                 return texture;
             }
@@ -287,10 +287,8 @@ namespace Gorgon.IO
                 bool.TryParse(isPremultiplied, out shouldConvertToPremultiplied);
             }
 
-            using (Stream stream = file.OpenStream())
-            {
-                return shouldConvertToPremultiplied ? imageCodec.FromStream(stream, (int)file.Size).BeginUpdate().ConvertToPremultipliedAlpha().EndUpdate() : imageCodec.FromStream(stream, (int)file.Size);
-            }
+            using Stream stream = file.OpenStream();
+            return shouldConvertToPremultiplied ? imageCodec.FromStream(stream, (int)file.Size).BeginUpdate().ConvertToPremultipliedAlpha().EndUpdate() : imageCodec.FromStream(stream, (int)file.Size);
         }
 
         /// <summary>
@@ -419,7 +417,7 @@ namespace Gorgon.IO
             {
                 if (fileMetadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> imagePaths))
                 {
-                    if ((imagePaths != null) && (imagePaths.Count > 0))
+                    if ((imagePaths is not null) && (imagePaths.Count > 0))
                     {
                         texture = GetTexture(renderer.Graphics, fileSystem, metaData, imagePaths[0], textureUsage, supportedImageCodecs);
                         overrideTexture = texture.GetShaderResourceView();
@@ -427,10 +425,8 @@ namespace Gorgon.IO
                 }
             }
 
-            using (Stream stream = file.OpenStream())
-            {
-                return (spriteCodec.FromStream(stream, overrideTexture, (int)file.Size), texture);
-            }
+            using Stream stream = file.OpenStream();
+            return (spriteCodec.FromStream(stream, overrideTexture, (int)file.Size), texture);
         }
         #endregion
 

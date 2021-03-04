@@ -396,7 +396,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         public GorgonNativeBuffer<TCastType> To<TCastType>()
-            where TCastType : unmanaged => new GorgonNativeBuffer<TCastType>(_memoryBlock.To<TCastType>());
+            where TCastType : unmanaged => new(_memoryBlock.To<TCastType>());
 
         /// <summary>
         /// Implicit operator to return the pointer to the underlying data in the buffer.

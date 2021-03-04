@@ -58,22 +58,22 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // Default texture loading options.
-        private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new GorgonTexture2DLoadOptions();
+        private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new();
         // The ID number of the texture.
         private static int _textureID;
         // The list of cached texture unordered access views.
-        private Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> _cachedReadWriteViews = new Dictionary<TextureViewKey, GorgonTexture2DReadWriteView>();
+        private Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> _cachedReadWriteViews = new();
         // The list of cached texture shader resource views.
-        private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = new Dictionary<TextureViewKey, GorgonTexture2DView>();
+        private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = new();
         // The list of cached render target resource views.
-        private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = new Dictionary<TextureViewKey, GorgonRenderTarget2DView>();
+        private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = new();
         // The list of cached depth/stencil resource views.
-        private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = new Dictionary<TextureViewKey, GorgonDepthStencil2DView>();
+        private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = new();
         // The information used to create the texture.
         private readonly GorgonTexture2DInfo _info;
         // List of typeless formats that are compatible with a depth view format.
-        private static readonly HashSet<BufferFormat> _typelessDepthFormats = new HashSet<BufferFormat>
-                                                                             {
+        private static readonly HashSet<BufferFormat> _typelessDepthFormats = new()
+        {
                                                                                  BufferFormat.R16_Typeless,
                                                                                  BufferFormat.R32_Typeless,
                                                                                  BufferFormat.R24G8_Typeless,
@@ -298,7 +298,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Format));
             }
 
-            if ((Usage == ResourceUsage.Dynamic) || (Usage == ResourceUsage.Staging))
+            if (Usage is ResourceUsage.Dynamic or ResourceUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT);
             }
@@ -674,7 +674,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_SHARED_RES, Name));
             }
 
-            if (_sharedResource != null)
+            if (_sharedResource is not null)
             {
                 return _sharedResource.SharedHandle;
             }
@@ -1415,7 +1415,7 @@ namespace Gorgon.Graphics.Core
             unsafe
             {
                 // If we have a default usage, then update using update subresource.
-                if ((Usage != ResourceUsage.Dynamic) && (Usage != ResourceUsage.Staging))
+                if (Usage is not ResourceUsage.Dynamic and not ResourceUsage.Staging)
                 {
                     Graphics.D3DDeviceContext.UpdateSubresource1(D3DResource,
                                                                  D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, MipLevels),
@@ -1439,15 +1439,11 @@ namespace Gorgon.Graphics.Core
 
                 if (Usage == ResourceUsage.Dynamic)
                 {
-                    switch (copyMode)
+                    mapMode = copyMode switch
                     {
-                        case CopyMode.NoOverwrite:
-                            mapMode = D3D11.MapMode.WriteNoOverwrite;
-                            break;
-                        default:
-                            mapMode = D3D11.MapMode.WriteDiscard;
-                            break;
-                    }
+                        CopyMode.NoOverwrite => D3D11.MapMode.WriteNoOverwrite,
+                        _ => D3D11.MapMode.WriteDiscard,
+                    };
                 }
 
                 // Otherwise we will map and write the data.
@@ -1522,7 +1518,7 @@ namespace Gorgon.Graphics.Core
                 mipLevel = mipLevel.Min(MipLevels - 1).Max(0);
                 int index = 0;
 
-                if (arrayIndex != null)
+                if (arrayIndex is not null)
                 {
                     index = arrayIndex.Value.Min(ArrayCount - 1).Max(0);
                 }
@@ -1627,42 +1623,42 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="texelCoordinates">The texel coordinates to convert.</param>
         /// <returns>The pixel coordinates.</returns>
-        public DX.Point ToPixel(DX.Vector2 texelCoordinates) => new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height));
+        public DX.Point ToPixel(DX.Vector2 texelCoordinates) => new((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height));
 
         /// <summary>
         /// Function to convert a pixel coordinate into a texel coordinate.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
         /// <returns>The texel coordinates.</returns>
-        public DX.Vector2 ToTexel(DX.Point pixelCoordinates) => new DX.Vector2(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height);
+        public DX.Vector2 ToTexel(DX.Point pixelCoordinates) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height);
 
         /// <summary>
         /// Function to convert a pixel coordinate into a texel coordinate.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
         /// <returns>The texel coordinates.</returns>
-        public DX.Vector2 ToTexel(DX.Vector2 pixelCoordinates) => new DX.Vector2(pixelCoordinates.X / Width, pixelCoordinates.Y / Height);
+        public DX.Vector2 ToTexel(DX.Vector2 pixelCoordinates) => new(pixelCoordinates.X / Width, pixelCoordinates.Y / Height);
 
         /// <summary>
         /// Function to convert a texel size into a pixel size.
         /// </summary>
         /// <param name="texelCoordinates">The texel size to convert.</param>
         /// <returns>The pixel size.</returns>
-        public DX.Size2 ToPixel(DX.Size2F texelCoordinates) => new DX.Size2((int)(texelCoordinates.Width * Width), (int)(texelCoordinates.Height * Height));
+        public DX.Size2 ToPixel(DX.Size2F texelCoordinates) => new((int)(texelCoordinates.Width * Width), (int)(texelCoordinates.Height * Height));
 
         /// <summary>
         /// Function to convert a pixel size into a texel size.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel size to convert.</param>
         /// <returns>The texel size.</returns>
-        public DX.Size2F ToTexel(DX.Size2 pixelCoordinates) => new DX.Size2F(pixelCoordinates.Width / (float)Width, pixelCoordinates.Height / (float)Height);
+        public DX.Size2F ToTexel(DX.Size2 pixelCoordinates) => new(pixelCoordinates.Width / (float)Width, pixelCoordinates.Height / (float)Height);
 
         /// <summary>
         /// Function to convert a texel rectangle into a pixel rectangle.
         /// </summary>
         /// <param name="texelCoordinates">The texel rectangle to convert.</param>
         /// <returns>The pixel rectangle.</returns>
-        public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates) => new DX.Rectangle
+        public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates) => new()
         {
             Left = (int)(texelCoordinates.Left * Width),
             Top = (int)(texelCoordinates.Top * Height),
@@ -1675,7 +1671,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="pixelCoordinates">The pixel rectangle to convert.</param>
         /// <returns>The texel rectangle.</returns>
-        public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates) => new DX.RectangleF
+        public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates) => new()
         {
             Left = pixelCoordinates.Left / (float)Width,
             Top = pixelCoordinates.Top / (float)Height,
@@ -1773,12 +1769,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
             if ((_cachedSrvs.TryGetValue(key, out GorgonTexture2DView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedSrvs.Remove(key);
             }
@@ -1875,12 +1871,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
             if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture2DReadWriteView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedReadWriteViews.Remove(key);
             }
@@ -1945,28 +1941,14 @@ namespace Gorgon.Graphics.Core
 
             // Validate the format for the view.
             // If we have a typeless format for the texture, then it's likely we want to read it using a shader resource view.
-            switch (format)
+            format = format switch
             {
-                case BufferFormat.R32G8X24_Typeless:
-                case BufferFormat.D32_Float_S8X24_UInt:
-                    format = BufferFormat.D32_Float_S8X24_UInt;
-                    break;
-                case BufferFormat.R24G8_Typeless:
-                case BufferFormat.D24_UNorm_S8_UInt:
-                    format = BufferFormat.D24_UNorm_S8_UInt;
-                    break;
-                case BufferFormat.R16_Typeless:
-                case BufferFormat.D16_UNorm:
-                    format = BufferFormat.D16_UNorm;
-                    break;
-                case BufferFormat.R32_Typeless:
-                case BufferFormat.D32_Float:
-                    format = BufferFormat.D32_Float;
-                    break;
-                default:
-                    throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, format));
-            }
-
+                BufferFormat.R32G8X24_Typeless or BufferFormat.D32_Float_S8X24_UInt => BufferFormat.D32_Float_S8X24_UInt,
+                BufferFormat.R24G8_Typeless or BufferFormat.D24_UNorm_S8_UInt => BufferFormat.D24_UNorm_S8_UInt,
+                BufferFormat.R16_Typeless or BufferFormat.D16_UNorm => BufferFormat.D16_UNorm,
+                BufferFormat.R32_Typeless or BufferFormat.D32_Float => BufferFormat.D32_Float,
+                _ => throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, format)),
+            };
             GorgonFormatInfo formatInfo = FormatInformation;
 
             if (Format != format)
@@ -1988,12 +1970,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
 
             if ((_cachedDsvs.TryGetValue(key, out GorgonDepthStencil2DView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedDsvs.Remove(key);
             }
@@ -2077,12 +2059,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, 1, arrayIndex, arrayCount);
 
             if ((_cachedRtvs.TryGetValue(key, out GorgonRenderTarget2DView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedRtvs.Remove(key);
             }
@@ -2179,17 +2161,15 @@ namespace Gorgon.Graphics.Core
                 options.Name = GenerateName(NamePrefix);
             }
 
-            using (IGorgonImage image = codec.FromStream(stream, size))
+            using IGorgonImage image = codec.FromStream(stream, size);
+            if (options.ConvertToPremultipliedAlpha)
             {
-                if (options.ConvertToPremultipliedAlpha)
-                {
-                    image.BeginUpdate()
-                         .ConvertToPremultipliedAlpha()
-                         .EndUpdate();
-                }
-
-                return new GorgonTexture2D(graphics, image, options);
+                image.BeginUpdate()
+                     .ConvertToPremultipliedAlpha()
+                     .EndUpdate();
             }
+
+            return new GorgonTexture2D(graphics, image, options);
         }
 
         /// <summary>
@@ -2261,17 +2241,15 @@ namespace Gorgon.Graphics.Core
                 options.Name = GenerateName(NamePrefix);
             }
 
-            using (IGorgonImage image = codec.FromFile(filePath))
+            using IGorgonImage image = codec.FromFile(filePath);
+            if (options.ConvertToPremultipliedAlpha)
             {
-                if (options.ConvertToPremultipliedAlpha)
-                {
-                    image.BeginUpdate()
-                         .ConvertToPremultipliedAlpha()
-                         .EndUpdate();
-                }
-
-                return new GorgonTexture2D(graphics, image, options);
+                image.BeginUpdate()
+                     .ConvertToPremultipliedAlpha()
+                     .EndUpdate();
             }
+
+            return new GorgonTexture2D(graphics, image, options);
         }
 
         /// <summary>
@@ -2280,7 +2258,7 @@ namespace Gorgon.Graphics.Core
         public override void Dispose()
         {
             // We cannot dispose of a texture that has a render target owned by a factory. We'll let the factory deal with the destruction of this object.
-            if ((_cachedRtvs != null) && (_cachedRtvs.Values.Any(item => item.OwnerFactory != null)))
+            if ((_cachedRtvs is not null) && (_cachedRtvs.Values.Any(item => item.OwnerFactory is not null)))
             {
                 return;
             }
@@ -2294,7 +2272,7 @@ namespace Gorgon.Graphics.Core
             Dictionary<TextureViewKey, GorgonDepthStencil2DView> cachedDsvs = Interlocked.Exchange(ref _cachedDsvs, null);
             Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> cachedReadWriteViews = Interlocked.Exchange(ref _cachedReadWriteViews, null);
 
-            if (cachedSrvs != null)
+            if (cachedSrvs is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonTexture2DView> view in cachedSrvs)
                 {
@@ -2302,7 +2280,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            if (cachedRtvs != null)
+            if (cachedRtvs is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonRenderTarget2DView> view in cachedRtvs)
                 {
@@ -2310,7 +2288,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            if (cachedDsvs != null)
+            if (cachedDsvs is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonDepthStencil2DView> view in cachedDsvs)
                 {
@@ -2318,7 +2296,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            if (cachedReadWriteViews != null)
+            if (cachedReadWriteViews is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonTexture2DReadWriteView> view in cachedReadWriteViews)
                 {
@@ -2366,15 +2344,13 @@ namespace Gorgon.Graphics.Core
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DXGI_RESOURCE_IS_NOT_D3D_RESOURCE);
                 }
 
-                using (D3D11.Texture2D texture = D3DResource.QueryInterface<D3D11.Texture2D>())
+                using D3D11.Texture2D texture = D3DResource.QueryInterface<D3D11.Texture2D>();
+                if (texture is null)
                 {
-                    if (texture is null)
-                    {
-                        throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_D3D_RESOURCE_IS_NOT_2D_TEXTURE);
-                    }
-
-                    desc = texture.Description;
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_D3D_RESOURCE_IS_NOT_2D_TEXTURE);
                 }
+
+                desc = texture.Description;
             }
 
             // Get the info from the back buffer texture.

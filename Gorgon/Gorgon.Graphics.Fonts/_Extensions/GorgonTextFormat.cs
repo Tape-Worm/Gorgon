@@ -71,8 +71,7 @@ namespace Gorgon.Graphics.Fonts
                 }
 
                 // Skip out on carriage returns and newlines.
-                if ((character == '\r')
-                    || (character == '\n'))
+                if (character is '\r' or '\n')
                 {
                     continue;
                 }
@@ -192,8 +191,7 @@ namespace Gorgon.Graphics.Fonts
                 char character = wordText[index];
 
                 // Don't count newline or carriage return.
-                if ((character == '\n')
-                    || (character == '\r'))
+                if (character is '\n' or '\r')
                 {
                     firstChar = true;
                     position = 0;
@@ -386,7 +384,7 @@ namespace Gorgon.Graphics.Fonts
 
             DX.Size2F result = DX.Size2F.Zero;
 
-            if (wordWrapWidth != null)
+            if (wordWrapWidth is not null)
             {
                 formattedText = WordWrap(formattedText, font, wordWrapWidth.Value);
             }

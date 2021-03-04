@@ -57,7 +57,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // A list of images held until the form is loaded for the first time.
-        private readonly List<(string, Image)> _deferredImages = new List<(string, Image)>();
+        private readonly List<(string, Image)> _deferredImages = new();
         // The background texture.
         private GorgonTexture2DView _bgTextureView;
         private GorgonTexture2D _bgTexture;
@@ -130,8 +130,7 @@ namespace Gorgon.Editor.ImageEditor
             PanelDialogButtons.Visible = LabelImportDesc.Visible = ListImages.Visible = enableList;
             TableArrayDepthControls.Visible = enableList;            
 
-            LabelAnchor.Visible = AlignmentPicker.Visible = (dataContext.CropResizeSettings.CurrentMode == CropResizeMode.Crop) 
-                                                            || (dataContext.CropResizeSettings.CurrentMode == CropResizeMode.None);
+            LabelAnchor.Visible = AlignmentPicker.Visible = dataContext.CropResizeSettings.CurrentMode is CropResizeMode.Crop or CropResizeMode.None;
             LabelResizeAnchor.Visible = AlignmentResize.Visible = (dataContext.CropResizeSettings.CurrentMode == CropResizeMode.Resize)
                                                             && (dataContext.CropResizeSettings.PreserveAspect);
             LabelImageFilter.Visible = PanelFilter.Visible = !LabelAnchor.Visible;
@@ -480,7 +479,7 @@ namespace Gorgon.Editor.ImageEditor
             GorgonTexture3DView view3D = Interlocked.Exchange(ref _imageTexture3D, null);
             view3D?.Dispose();
 
-            if (swapChain != null)
+            if (swapChain is not null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref swapChain);
             }
@@ -610,7 +609,7 @@ namespace Gorgon.Editor.ImageEditor
             src3D?.Dispose();
             src2D?.Dispose();
 
-            if (swap != null)
+            if (swap is not null)
             {
                 GraphicsContext?.ReturnSwapPresenter(ref swap);
             }
@@ -720,7 +719,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="ListViewItemMouseHoverEventArgs"/> instance containing the event data.</param>
         private void ListImages_ItemMouseHover(object sender, ListViewItemMouseHoverEventArgs e)
         {
-            if (!(e.Item?.Tag is ImagePickerImportData data))
+            if (e.Item?.Tag is not ImagePickerImportData data)
             {
                 TipsFiles.Hide(ListImages);
                 return;
@@ -977,7 +976,7 @@ namespace Gorgon.Editor.ImageEditor
                 _resetSelection = true;
 
                 ListImages.SelectedItems.Clear();
-                if (_selectedFile != null)
+                if (_selectedFile is not null)
                 {
                     _selectedFile.Selected = true;
                 }
@@ -1171,7 +1170,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(ISourceImagePicker.SourceImage):
-                    if ((_sourceTexture2D != null) || (_sourceTexture3D != null))
+                    if ((_sourceTexture2D is not null) || (_sourceTexture3D is not null))
                     {
                         BuildSourceImageTexture();
                     }
@@ -1203,7 +1202,7 @@ namespace Gorgon.Editor.ImageEditor
                     CleanupSourceImagePicking();
                     break;
                 case nameof(IImagePicker.IsActive):
-                    if (_prevIdle != null)
+                    if (_prevIdle is not null)
                     {
                         GorgonApplication.IdleMethod = _prevIdle;
                     }                    
@@ -1236,7 +1235,7 @@ namespace Gorgon.Editor.ImageEditor
                     break;
                 case nameof(IImagePicker.ImageData):
                     // Only update the texture if we've already created it.
-                    if ((_imageTexture2D != null) || (_imageTexture3D != null))
+                    if ((_imageTexture2D is not null) || (_imageTexture3D is not null))
                     {
                         BuildImageTexture();
                     }
@@ -1295,7 +1294,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             // Convert to GDI+ bitmaps.
-            foreach (ImagePickerImportData data in dataContext.FilesToImport.Where(item => item.Thumbnail != null))
+            foreach (ImagePickerImportData data in dataContext.FilesToImport.Where(item => item.Thumbnail is not null))
             {
                 Image bitmap = data.Thumbnail.Buffers[0].ToBitmap();
 
@@ -1462,12 +1461,12 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnFormClosing(e);
 
-            if ((e.CloseReason == CloseReason.UserClosing) && (DataContext != null))
+            if ((e.CloseReason == CloseReason.UserClosing) && (DataContext is not null))
             {
                 e.Cancel = true;
             }
 
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.Settings.PickerWindowState = (int)WindowState;
 
@@ -1478,7 +1477,7 @@ namespace Gorgon.Editor.ImageEditor
                 }
             }           
 
-            if ((DataContext?.DeactivateCommand != null) && (DataContext.DeactivateCommand.CanExecute(null)))
+            if ((DataContext?.DeactivateCommand is not null) && (DataContext.DeactivateCommand.CanExecute(null)))
             {
                 DataContext.DeactivateCommand.Execute(null);
             }

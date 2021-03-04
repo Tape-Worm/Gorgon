@@ -91,7 +91,7 @@ namespace Gorgon.Examples
         // Flag to indicate that the help text should be shown.
         private static bool _showHelp = true;
         // The cloaking animation controller.
-        private static readonly CloakController _cloakController = new CloakController();
+        private static readonly CloakController _cloakController = new();
         // Final render target brightness.
         private static float _finalBrightness = 1.0f;
         #endregion

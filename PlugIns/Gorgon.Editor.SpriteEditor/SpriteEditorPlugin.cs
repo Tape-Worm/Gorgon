@@ -77,7 +77,7 @@ namespace Gorgon.Editor.SpriteEditor
         private GorgonTexture2DView _bgPattern;
 
         // The settings for the plug in.
-        private SpriteEditorSettings _settings = new SpriteEditorSettings();
+        private SpriteEditorSettings _settings = new();
 
         // No thumbnail image.
         private IGorgonImage _noThumbnail;
@@ -86,7 +86,7 @@ namespace Gorgon.Editor.SpriteEditor
         private IGorgonImage _noImage;
 
         // The synchronization lock for multiple threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
 
         /// <summary>
         /// The file name for the file that stores the settings.
@@ -139,11 +139,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the image is 2D, or <b>false</b> if not.</returns>
         private bool Is2DImage(IContentFile file)
         {
-            using (Stream stream = ContentFileManager.OpenStream(file.Path, FileMode.Open))
-            {
-                IGorgonImageInfo metadata = _ddsCodec.GetMetaData(stream);
-                return (metadata.ImageType != ImageType.Image3D) && (metadata.ImageType != ImageType.Image1D);
-            }
+            using Stream stream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
+            IGorgonImageInfo metadata = _ddsCodec.GetMetaData(stream);
+            return metadata.ImageType is not ImageType.Image3D and not ImageType.Image1D;
         }
 
         /// <summary>
@@ -156,7 +154,7 @@ namespace Gorgon.Editor.SpriteEditor
             // If we have a texture bound in the dependencies already, and it actually exists in the project file system, then 
             // we don't need to update anything.
             if ((dependencyList.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> textureNames))
-                && (textureNames != null)
+                && (textureNames is not null)
                 && (textureNames.Count > 0))
             {
                 if (ContentFileManager.FileExists(textureNames[0]))
@@ -289,7 +287,7 @@ namespace Gorgon.Editor.SpriteEditor
                 finally
                 {
                     rtv?.Dispose();
-                    if (prevRtv != null)
+                    if (prevRtv is not null)
                     {
                         HostContentServices.GraphicsContext.Graphics.SetRenderTarget(prevRtv);
                     }
@@ -316,7 +314,7 @@ namespace Gorgon.Editor.SpriteEditor
                 IGorgonVirtualFile file = TemporaryFileSystem.FileSystem.GetFile(thumbnailFile);
 
                 // If we've already got the file, then leave.
-                if (file != null)
+                if (file is not null)
                 {
                     inStream = file.OpenStream();
 
@@ -473,7 +471,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 // We don't have a texture attached to this guy (probably due to a mismatch in the metadata), so we'll unlink it 
                 // and remove any reference to any image that might have been loaded.
-                if ((sprite.Texture is null) && (imageFile != null))
+                if ((sprite.Texture is null) && (imageFile is not null))
                 {
                     file.UnlinkContent(imageFile);
 
@@ -534,7 +532,7 @@ namespace Gorgon.Editor.SpriteEditor
                 spritePickContext.Initialize(new SpritePickContextParameters(content, spritePickMaskEditor, spriteContentServices.TextureService, HostContentServices));
                 spriteVertexEditContext.Initialize(new SpriteVertexEditContextParameters(content, HostContentServices));
 
-                if ((spritePickContext.GetImageDataCommand != null) && (spritePickContext.GetImageDataCommand.CanExecute(null)))
+                if ((spritePickContext.GetImageDataCommand is not null) && (spritePickContext.GetImageDataCommand.CanExecute(null)))
                 {
                     await spritePickContext.GetImageDataCommand.ExecuteAsync(null);
                 }
@@ -557,7 +555,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             try
             {
-                if (_settings != null)
+                if (_settings is not null)
                 {
                     // Persist any settings.
                     HostContentServices.ContentPlugInService.WriteContentSettings(SettingsFilename, _settings, new JsonSharpDxRectConverter());
@@ -596,7 +594,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             SpriteEditorSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteEditorSettings>(SettingsFilename, new JsonSharpDxRectConverter());
-            if (settings != null)
+            if (settings is not null)
             {
                 _settings = settings;
             }
@@ -627,7 +625,7 @@ namespace Gorgon.Editor.SpriteEditor
                     Size = size
                 };
 
-                if (textureFile != null)
+                if (textureFile is not null)
                 {
                     using (Stream textureStream = ContentFileManager.OpenStream(textureFile.Path, FileMode.Open))
                     {
@@ -648,13 +646,11 @@ namespace Gorgon.Editor.SpriteEditor
 
                 metadata.Attributes[CodecAttr] = _defaultCodec.GetType().FullName;
 
-                using (var stream = new MemoryStream())
-                {
-                    _defaultCodec.Save(sprite, stream);
-                    // We don't need this now.
-                    sprite.Texture?.Dispose();
-                    return stream.ToArray();
-                }
+                using var stream = new MemoryStream();
+                _defaultCodec.Save(sprite, stream);
+                // We don't need this now.
+                sprite.Texture?.Dispose();
+                return stream.ToArray();
             }
 
             // Find all available textures in our file system.
@@ -736,7 +732,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return thumbnailImage;
             }
 
-            if (thumbnailImage != null)
+            if (thumbnailImage is not null)
             {
                 return thumbnailImage;
             }
@@ -762,10 +758,8 @@ namespace Gorgon.Editor.SpriteEditor
                 Cursor.Current = Cursors.Default;
 
                 await Task.Run(() => {
-                    using (Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create))
-                    {
-                        pngCodec.Save(thumbnailImage, stream);
-                    }
+                    using Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create);
+                    pngCodec.Save(thumbnailImage, stream);
                 }, cancelToken);
 
                 if (cancelToken.IsCancellationRequested)
@@ -817,19 +811,17 @@ namespace Gorgon.Editor.SpriteEditor
 
             IContentFile file = ContentFileManager.GetFile(filePath);
 
-            Debug.Assert(file != null, $"File '{filePath}' doesn't exist, but it should!");
+            Debug.Assert(file is not null, $"File '{filePath}' doesn't exist, but it should!");
 
-            using (Stream stream = ContentFileManager.OpenStream(filePath, FileMode.Open))
+            using Stream stream = ContentFileManager.OpenStream(filePath, FileMode.Open);
+            if (!_defaultCodec.IsReadable(stream))
             {
-                if (!_defaultCodec.IsReadable(stream))
-                {
-                    return false;
-                }
-
-                UpdateFileMetadataAttributes(file.Metadata.Attributes);
-                UpdateDependencies(stream, file.Metadata.DependsOn);
-                return true;
+                return false;
             }
+
+            UpdateFileMetadataAttributes(file.Metadata.Attributes);
+            UpdateDependencies(stream, file.Metadata.DependsOn);
+            return true;
         }
         #endregion
 

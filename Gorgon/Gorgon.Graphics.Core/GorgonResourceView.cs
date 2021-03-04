@@ -97,7 +97,7 @@ namespace Gorgon.Graphics.Core
         internal void CreateNativeView()
         {
             _view = OnCreateNativeView();
-            Debug.Assert(_view != null, "No view was created.");
+            Debug.Assert(_view is not null, "No view was created.");
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            if (resource != null)
+            if (resource is not null)
             {
                 Log.Print($"Resource View '{resource.Name}': Releasing D3D11 resource view.", LoggingLevel.Simple);
 

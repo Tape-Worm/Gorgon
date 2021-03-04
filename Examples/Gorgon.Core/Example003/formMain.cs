@@ -148,10 +148,8 @@ namespace Gorgon.Examples
             }
             else
             {
-                using (var pen = new Pen(color))
-                {
-                    _graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
-                }
+                using var pen = new Pen(color);
+                _graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
             }
         }
 

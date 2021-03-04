@@ -99,7 +99,7 @@ namespace Gorgon.Examples
                 mesh.Position = new DX.Vector3(_position.X, _position.Y, depth);
                 mesh.Rotation = Rotation;
 
-                if ((animation != null) && (controller.State != AnimationState.Playing))
+                if ((animation is not null) && (controller.State != AnimationState.Playing))
                 {
                     controller.Play(mesh, animation);
                 }

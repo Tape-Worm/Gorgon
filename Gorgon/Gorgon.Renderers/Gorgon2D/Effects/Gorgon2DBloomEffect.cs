@@ -143,7 +143,7 @@ namespace Gorgon.Renderers
         // The shader resource for the scene.
         private GorgonTexture2DView _sceneSrv;
         // A builder used to create shader states.
-        private readonly Gorgon2DShaderStateBuilder<GorgonPixelShader> _shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
+        private readonly Gorgon2DShaderStateBuilder<GorgonPixelShader> _shaderBuilder = new();
         // Information used to build render targets.
         private readonly GorgonTexture2DInfo _sceneTargetInfo;
         private readonly GorgonTexture2DInfo _blurTargetInfo;
@@ -165,10 +165,10 @@ namespace Gorgon.Renderers
         // The states that apply to each down sample target.
         private Gorgon2DBatchState[] _sampleTargetStates;
         // The allocators used to creating states for final pass.
-        private readonly Gorgon2DBatchStatePoolAllocator _finalPassBatchAllocator = new Gorgon2DBatchStatePoolAllocator(64);
-        private readonly Gorgon2DShaderStatePoolAllocator<GorgonPixelShader> _finalPassPixelShaderAllocator = new Gorgon2DShaderStatePoolAllocator<GorgonPixelShader>(64);
+        private readonly Gorgon2DBatchStatePoolAllocator _finalPassBatchAllocator = new(64);
+        private readonly Gorgon2DShaderStatePoolAllocator<GorgonPixelShader> _finalPassPixelShaderAllocator = new(64);
         // The batch state builder for downsampling.
-        private readonly Gorgon2DBatchStateBuilder _downSampleStateBuilder = new Gorgon2DBatchStateBuilder();
+        private readonly Gorgon2DBatchStateBuilder _downSampleStateBuilder = new();
         #endregion
 
         #region Properties.
@@ -393,7 +393,7 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpSample()
         {
-            GorgonTexture2DView src = _sampleTargets[_sampleTargets.Length - 1].down.GetShaderResourceView();
+            GorgonTexture2DView src = _sampleTargets[^1].down.GetShaderResourceView();
 
             for (int i = _sampleTargets.Length - 2; i >= 0; --i)
             {
@@ -487,7 +487,7 @@ namespace Gorgon.Renderers
 
                     return _pass0State;
                 case 1:
-                    if ((_finalPassBatchState != null) 
+                    if ((_finalPassBatchState is not null) 
                         && (_finalPassBatchState.PixelShaderState.ShaderResources[1] == _blurSrv)
                         && (_finalPassBatchState.PixelShaderState.ShaderResources[2] == DirtTexture))
                     {

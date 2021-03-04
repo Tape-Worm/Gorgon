@@ -145,8 +145,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(ICropResizeSettings.CurrentMode):
-                    RadioCrop.Checked = (DataContext.CurrentMode == CropResizeMode.Crop)
-                                    || (DataContext.CurrentMode == CropResizeMode.None);
+                    RadioCrop.Checked = DataContext.CurrentMode is CropResizeMode.Crop or CropResizeMode.None;
                     RadioResize.Checked = !RadioCrop.Checked;
                     break;
             }
@@ -280,7 +279,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function called to validate the OK button.</summary>
         /// <returns>
         ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
 
         /// <summary>Raises the <see cref="System.Windows.Forms.Control.VisibleChanged"/> event.</summary>
         /// <param name="e">An <see cref="EventArgs"/> object that contains the event data.</param>

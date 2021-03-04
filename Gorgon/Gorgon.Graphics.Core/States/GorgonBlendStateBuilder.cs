@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonBlendState OnCreateState() => new GorgonBlendState(WorkingState);
+        protected override GorgonBlendState OnCreateState() => new(WorkingState);
 
         /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
         /// <param name="state">The state to update.</param>
@@ -148,12 +148,12 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public GorgonBlendStateBuilder BlendOperation(BlendOperation? color = null, BlendOperation? alpha = null)
         {
-            if (color != null)
+            if (color is not null)
             {
                 WorkingState.ColorBlendOperation = color.Value;
             }
 
-            if (alpha != null)
+            if (alpha is not null)
             {
                 WorkingState.AlphaBlendOperation = alpha.Value;
             }
@@ -169,12 +169,12 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public GorgonBlendStateBuilder SourceBlend(Blend? color = null, Blend? alpha = null)
         {
-            if (color != null)
+            if (color is not null)
             {
                 WorkingState.SourceColorBlend = color.Value;
             }
 
-            if (alpha != null)
+            if (alpha is not null)
             {
                 WorkingState.SourceAlphaBlend = alpha.Value;
             }
@@ -190,12 +190,12 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public GorgonBlendStateBuilder DestinationBlend(Blend? color = null, Blend? alpha = null)
         {
-            if (color != null)
+            if (color is not null)
             {
                 WorkingState.DestinationColorBlend = color.Value;
             }
 
-            if (alpha != null)
+            if (alpha is not null)
             {
                 WorkingState.DestinationAlphaBlend = alpha.Value;
             }

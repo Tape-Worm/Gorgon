@@ -173,7 +173,7 @@ namespace Gorgon.Editor.ImageSplitTool
 			Renderer.Begin();
 
 			// Render the image.
-			if ((DataContext.PreviewImage != null) && (!_loading))
+			if ((DataContext.PreviewImage is not null) && (!_loading))
 			{
 				float scale = (renderRegion.Width / DataContext.PreviewImage.Width).Min(renderRegion.Height / DataContext.PreviewImage.Height);
 				float width = DataContext.PreviewImage.Width * scale;
@@ -220,7 +220,7 @@ namespace Gorgon.Editor.ImageSplitTool
 				}, image);
 			}
 
-			if (DataContext.PreviewImage != null)
+			if (DataContext.PreviewImage is not null)
 			{
 				UpdateRenderImage(DataContext.PreviewImage);
 			}

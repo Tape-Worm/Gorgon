@@ -45,7 +45,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// An empty box.
         /// </summary>
-	    public static readonly GorgonBox Empty = new GorgonBox
+	    public static readonly GorgonBox Empty = new()
         {
             X = 0,
             Y = 0,
@@ -151,7 +151,7 @@ namespace Gorgon.Graphics
         /// <param name="bottom">Bottom coordinate.</param>
         /// <param name="back">Back coordinate.</param>
         /// <returns>A new box with the specified coordinates.</returns>
-	    public static GorgonBox FromTLFRBB(int top, int left, int front, int right, int bottom, int back) => new GorgonBox
+	    public static GorgonBox FromTLFRBB(int top, int left, int front, int right, int bottom, int back) => new()
         {
             X = left,
             Y = top,

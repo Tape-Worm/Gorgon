@@ -243,7 +243,7 @@ namespace Gorgon.IO.Providers
 
             if (virtualPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
-                virtualPath = virtualPath.Substring(1);
+                virtualPath = virtualPath[1..];
             }
 
             return string.IsNullOrWhiteSpace(virtualPath) ? mountPoint.PhysicalPath : OnGetPhysicalPath(virtualPath, mountPoint);

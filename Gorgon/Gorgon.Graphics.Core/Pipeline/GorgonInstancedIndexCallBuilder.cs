@@ -131,7 +131,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(indexStart), Resources.GORGFX_ERR_INDEX_TOO_SMALL);
             }
 
-            if ((indexCountPerInstance != null) && (indexCountPerInstance < 1))
+            if (indexCountPerInstance is not null and < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexCountPerInstance), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
             }

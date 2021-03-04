@@ -290,8 +290,8 @@ namespace Gorgon.IO
                 binWriter.WriteValue(sprite.Anchor);
 
                 // If we do not have alpha test information, then skip writing its data.
-                binWriter.Write(sprite.AlphaTest != null);
-                if (sprite.AlphaTest != null)
+                binWriter.Write(sprite.AlphaTest is not null);
+                if (sprite.AlphaTest is not null)
                 {
                     binWriter.WriteValue(sprite.AlphaTest.Value);
                 }
@@ -326,7 +326,7 @@ namespace Gorgon.IO
                 }
 
                 // We have no texture data, so don't bother writing out that chunk.
-                if (sprite.Texture != null)
+                if (sprite.Texture is not null)
                 {
                     binWriter = writer.OpenChunk(TextureData);
                     binWriter.Write(sprite.Texture.Texture.Name);
@@ -387,13 +387,11 @@ namespace Gorgon.IO
                 return false;
             }
 
-            using (GorgonBinaryReader binReader = reader.OpenChunk(VersionData))
-            {
-                var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
-                reader.CloseChunk();
+            using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
+            var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+            reader.CloseChunk();
 
-                return Version.Equals(fileVersion);
-            }
+            return Version.Equals(fileVersion);
         }
 
         /// <summary>

@@ -165,7 +165,7 @@ namespace System.ComponentModel.Composition.Registration
                             foreach (Tuple<object, List<Attribute>> element in EvaluateThisTypeAgainstTheConvention((Type)member))
                             {
                                 attributeList = element.Item2;
-                                if (attributeList != null)
+                                if (attributeList is not null)
                                 {
                                     if (element.Item1 is MemberInfo info)
                                     {

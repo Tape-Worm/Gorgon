@@ -42,8 +42,8 @@ namespace Gorgon.Examples
         // Initial orientation.
         private DX.Matrix _orientation;
         // A list of previously performed splits.
-        private readonly Dictionary<long, int> _cachedSplits = new Dictionary<long, int>();
-        private readonly List<DX.Vector3> _vertices = new List<DX.Vector3>();
+        private readonly Dictionary<long, int> _cachedSplits = new();
+        private readonly List<DX.Vector3> _vertices = new();
         private int _index;
         #endregion
 
@@ -95,8 +95,8 @@ namespace Gorgon.Examples
         /// Function to return the base indices for the icosphere.
         /// </summary>
         /// <returns>A list of triangle indices.</returns>
-        private static List<int[]> GetBaseIndices() => new List<int[]>
-                   {
+        private static List<int[]> GetBaseIndices() => new()
+        {
                        new[]
                        {
                            0, 11, 5

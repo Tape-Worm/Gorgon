@@ -147,13 +147,11 @@ namespace Gorgon.IO
                 return false;
             }
 
-            using (GorgonBinaryReader binReader = reader.OpenChunk(VersionData))
-            {
-                var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
-                reader.CloseChunk();
+            using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
+            var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+            reader.CloseChunk();
 
-                return Version.Equals(fileVersion);
-            }
+            return Version.Equals(fileVersion);
         }
 
         /// <summary>
@@ -192,7 +190,7 @@ namespace Gorgon.IO
                     {
                         binWriter.WriteValue<byte>(1);                        
 
-                        if (key.Value != null)
+                        if (key.Value is not null)
                         {
                             binWriter.Write(key.Value.Texture.Name);
                             binWriter.Write(key.Value.Texture.Width);
@@ -313,7 +311,7 @@ namespace Gorgon.IO
                         }
                     }
 
-                    if ((texture is null) && (hasTexture != 0))
+                    if ((texture is null) && (hasTexture is not 0))
                     {
                         trackBuilder.SetKey(new GorgonKeyTexture2D(time, textureName, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
                     }

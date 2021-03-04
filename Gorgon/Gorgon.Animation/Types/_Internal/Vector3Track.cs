@@ -42,7 +42,7 @@ namespace Gorgon.Animation
         // The interpolation mode for the track.
         private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
         // The spline controller for the track.
-        private readonly GorgonCatmullRomSpline _splineController = new GorgonCatmullRomSpline();
+        private readonly GorgonCatmullRomSpline _splineController = new();
         #endregion
 
         #region Properties.
@@ -119,7 +119,7 @@ namespace Gorgon.Animation
 
             GorgonKeyVector3 result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }

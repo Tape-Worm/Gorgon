@@ -152,7 +152,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                if (_currentContent != null)
+                if (_currentContent is not null)
                 {
                     _currentContent.PropertyChanging -= CurrentContent_PropertyChanging;
                     _currentContent.PropertyChanged -= CurrentContent_PropertyChanged;
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.ViewModels
                 _currentContent = value;
                 OnPropertyChanged();
 
-                if (_currentContent != null)
+                if (_currentContent is not null)
                 {
                     _currentContent.PropertyChanging += CurrentContent_PropertyChanging;
                     _currentContent.PropertyChanged += CurrentContent_PropertyChanged;
@@ -376,7 +376,7 @@ namespace Gorgon.Editor.ViewModels
             HostServices.BusyService.SetBusy();
             try
             {
-                if (CurrentContent?.File != null)
+                if (CurrentContent?.File is not null)
                 {
                     RefreshFilePreview(CurrentContent.File.Path);
                 }
@@ -477,7 +477,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         private void UnassignEvents()
         {
-            if (_currentContent != null)
+            if (_currentContent is not null)
             {
                 CurrentContent.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
                 CurrentContent.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
@@ -507,7 +507,7 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
-            if ((ContentPreviewer.RefreshPreviewCommand != null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
+            if ((ContentPreviewer.RefreshPreviewCommand is not null) && (ContentPreviewer.RefreshPreviewCommand.CanExecute(filePath)))
             {
                 await ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(filePath);
             }
@@ -532,11 +532,11 @@ namespace Gorgon.Editor.ViewModels
             switch (response)
             {
                 case MessageResponse.Yes:
-                    if ((CurrentContent.SaveContentCommand != null) && (CurrentContent.SaveContentCommand.CanExecute(saveReason)))
+                    if ((CurrentContent.SaveContentCommand is not null) && (CurrentContent.SaveContentCommand.CanExecute(saveReason)))
                     {
                         await CurrentContent.SaveContentCommand.ExecuteAsync(saveReason);
 
-                        if (_contentPreviewer != null)
+                        if (_contentPreviewer is not null)
                         {
                             // Wait for the previewer to finish its load operation (if the app is closing it'll destroy the area where the thumbnails are saved, so we'll need to ensure
                             // it doesn't wipe those directories away until after the preview is complete).
@@ -631,7 +631,7 @@ namespace Gorgon.Editor.ViewModels
             }
 
             IContentFile file = _contentFileManager.GetFile(FileExplorer.SelectedFiles[0].FullPath);
-            return file.Metadata.ContentMetadata != null;
+            return file.Metadata.ContentMetadata is not null;
         }
 
         /// <summary>
@@ -698,7 +698,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the project can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveProjectToPackFile(CancelEventArgs args) => (_saveDialog != null) && (_saveDialog.Providers.Writers.Count > 0);
+        private bool CanSaveProjectToPackFile(CancelEventArgs args) => (_saveDialog is not null) && (_saveDialog.Providers.Writers.Count > 0);
 
         /// <summary>
         /// Function to save the current project to a packed file.
@@ -735,7 +735,7 @@ namespace Gorgon.Editor.ViewModels
                 path = Path.GetFullPath(path);
                 writer = _saveDialog.CurrentWriter;
 
-                Debug.Assert(writer != null, "Must have a writer plug in.");
+                Debug.Assert(writer is not null, "Must have a writer plug in.");
 
                 HostServices.Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
                 HostServices.Log.Print($"Saving to '{path}'...", LoggingLevel.Simple);
@@ -812,13 +812,13 @@ namespace Gorgon.Editor.ViewModels
             {                
                 IContentPlugInMetadata metadata = _contentCreators.FirstOrDefault(item => id == item.NewIconID);
 
-                Debug.Assert(metadata != null, $"Could not locate the content plugin metadata for {id}.");
+                Debug.Assert(metadata is not null, $"Could not locate the content plugin metadata for {id}.");
 
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));                                
                 
                 ContentPlugIn plugin = HostServices.ContentPlugInService.PlugIns.FirstOrDefault(item => item.Value == metadata).Value;
 
-                Debug.Assert(plugin != null, $"Could not locate the content plug in for {id}.");
+                Debug.Assert(plugin is not null, $"Could not locate the content plug in for {id}.");
                 
                 directory = _fileExplorer.SelectedDirectory ?? _fileExplorer.Root;
 
@@ -826,7 +826,7 @@ namespace Gorgon.Editor.ViewModels
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
 
                 // Ensure we don't wipe out any changes.
-                if ((CurrentContent?.SaveContentCommand != null) && (CurrentContent.ContentState != ContentState.Unmodified))
+                if ((CurrentContent?.SaveContentCommand is not null) && (CurrentContent.ContentState != ContentState.Unmodified))
                 {
                     MessageResponse response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_SAVE_CONTENT, CurrentContent.File.Name));
 
@@ -862,7 +862,7 @@ namespace Gorgon.Editor.ViewModels
                 contentStream.Dispose();
 
                 file = ContentFileManager.GetFile(path);
-                Debug.Assert(file != null, $"File {path} was not found!");
+                Debug.Assert(file is not null, $"File {path} was not found!");
 
                 // Copy the attribute and dependency metadata to the actual file object.
                 file.Metadata.Attributes.Clear();
@@ -888,7 +888,7 @@ namespace Gorgon.Editor.ViewModels
                 HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_CONTENT_CREATION);
 
                 // If we fail, for any reason, destroy the file.
-                if ((file != null) && (ContentFileManager.FileExists(file.Path)))
+                if ((file is not null) && (ContentFileManager.FileExists(file.Path)))
                 {
                     ContentFileManager.DeleteFile(file.Path);
                 }
@@ -906,7 +906,7 @@ namespace Gorgon.Editor.ViewModels
             // Ensure we're in the correct directory.
             if (FileExplorer.SelectedDirectory != directory)
             {
-                if ((FileExplorer.SelectDirectoryCommand != null) && (FileExplorer.SelectDirectoryCommand.CanExecute(directory.FullPath)))
+                if ((FileExplorer.SelectDirectoryCommand is not null) && (FileExplorer.SelectDirectoryCommand.CanExecute(directory.FullPath)))
                 {
                     FileExplorer.SelectDirectoryCommand.Execute(directory.FullPath);
                 }
@@ -922,10 +922,10 @@ namespace Gorgon.Editor.ViewModels
             IFile virtualFile = directory.Files.FirstOrDefault(item => string.Equals(item.FullPath, file.Path, StringComparison.OrdinalIgnoreCase));
 
             // There should be no chance of this happening.
-            Debug.Assert(virtualFile != null, $"File not {file.Path} found in file system.");
+            Debug.Assert(virtualFile is not null, $"File not {file.Path} found in file system.");
 
             IReadOnlyList<string> selectedFile = new[] { virtualFile.ID };
-            if ((FileExplorer.SelectFileCommand != null) && (FileExplorer.SelectFileCommand.CanExecute(selectedFile)))
+            if ((FileExplorer.SelectFileCommand is not null) && (FileExplorer.SelectFileCommand.CanExecute(selectedFile)))
             {
                 FileExplorer.SelectFileCommand.Execute(selectedFile);
             }
@@ -978,14 +978,14 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                if (FileExplorer != null)
+                if (FileExplorer is not null)
                 {
                     FileExplorer.OnLoad();
 
                     FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
                 }
                 
-                if (ContentPreviewer != null)
+                if (ContentPreviewer is not null)
                 {
                     ContentPreviewer.OnLoad();
                     ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
@@ -1008,7 +1008,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         public override void OnUnload()
         {
-            if (FileExplorer != null)
+            if (FileExplorer is not null)
             {
                 FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
             }

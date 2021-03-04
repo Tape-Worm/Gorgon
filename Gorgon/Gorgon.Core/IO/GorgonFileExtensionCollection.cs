@@ -47,7 +47,7 @@ namespace Gorgon.IO
             {
                 if (extension.StartsWith(".", StringComparison.Ordinal))
                 {
-                    extension = extension.Substring(1);
+                    extension = extension[1..];
                 }
 
                 return !Contains(extension)
@@ -58,7 +58,7 @@ namespace Gorgon.IO
             {
                 if (extension.StartsWith(".", StringComparison.Ordinal))
                 {
-                    extension = extension.Substring(1);
+                    extension = extension[1..];
                 }
 
                 if (!Contains(extension))
@@ -107,7 +107,7 @@ namespace Gorgon.IO
 
             if (extension.StartsWith(".", StringComparison.Ordinal))
             {
-                extension = extension.Substring(1);
+                extension = extension[1..];
             }
 
             if (!Contains(extension))

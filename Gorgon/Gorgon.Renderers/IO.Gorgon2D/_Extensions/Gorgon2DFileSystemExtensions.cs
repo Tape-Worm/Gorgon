@@ -45,7 +45,7 @@ namespace Gorgon.IO.Extensions
     {
         #region Variables.
         // The default texture loading options supplied when a texture is loaded.
-        private readonly static GorgonTexture2DLoadOptions _defaultLoadOptions = new GorgonTexture2DLoadOptions
+        private readonly static GorgonTexture2DLoadOptions _defaultLoadOptions = new()
         {
             Binding = TextureBinding.ShaderResource,
             Usage = ResourceUsage.Default
@@ -181,7 +181,7 @@ namespace Gorgon.IO.Extensions
                                               .LocateResourcesByName<GorgonTexture2D>(textureName)
                                               .FirstOrDefault();
 
-            if (texture != null)
+            if (texture is not null)
             {
                 return (null, null, true);
             }
@@ -197,7 +197,7 @@ namespace Gorgon.IO.Extensions
             {
                 codec = FindTextureCodec(file, codecs);
 
-                if (codec != null)
+                if (codec is not null)
                 {
                     return (codec, file, false);
                 }
@@ -245,7 +245,7 @@ namespace Gorgon.IO.Extensions
                 options.Binding |= TextureBinding.ShaderResource;
             }
 
-            if ((options.Usage != ResourceUsage.Immutable) && (options.Usage != ResourceUsage.Default))
+            if (options.Usage is not ResourceUsage.Immutable and not ResourceUsage.Default)
             {
                 options.Usage = ResourceUsage.Default;
             }
@@ -394,16 +394,14 @@ namespace Gorgon.IO.Extensions
 
                     // We have not loaded the texture yet.  Do so now.
                     // ReSharper disable once InvertIf
-                    if ((!loaded) && (textureFile != null) && (codec != null))
+                    if ((!loaded) && (textureFile is not null) && (codec is not null))
                     {
-                        using (Stream textureStream = textureFile.OpenStream())
-                        {
-                            textureForSprite = GorgonTexture2DView.FromStream(renderer.Graphics,
-                                                                              textureStream,
-                                                                              codec,
-                                                                              textureFile.Size,
-                                                                              GetTextureOptions(textureFile.FullPath, textureOptions));
-                        }
+                        using Stream textureStream = textureFile.OpenStream();
+                        textureForSprite = GorgonTexture2DView.FromStream(renderer.Graphics,
+                                                                          textureStream,
+                                                                          codec,
+                                                                          textureFile.Size,
+                                                                          GetTextureOptions(textureFile.FullPath, textureOptions));
                     }
 
                 }
@@ -554,16 +552,14 @@ namespace Gorgon.IO.Extensions
 
                     // We have not loaded the texture yet.  Do so now.
                     // ReSharper disable once InvertIf
-                    if ((!loaded) && (textureFile != null) && (codec != null))
+                    if ((!loaded) && (textureFile is not null) && (codec is not null))
                     {
-                        using (Stream textureStream = textureFile.OpenStream())
-                        {
-                            textureForSprite = GorgonTexture2DView.FromStream(renderer.Graphics,
-                                                                              textureStream,
-                                                                              codec,
-                                                                              textureFile.Size,
-                                                                              GetTextureOptions(textureFile.FullPath, textureOptions));
-                        }
+                        using Stream textureStream = textureFile.OpenStream();
+                        textureForSprite = GorgonTexture2DView.FromStream(renderer.Graphics,
+                                                                          textureStream,
+                                                                          codec,
+                                                                          textureFile.Size,
+                                                                          GetTextureOptions(textureFile.FullPath, textureOptions));
                     }
 
                 }
@@ -729,18 +725,16 @@ namespace Gorgon.IO.Extensions
 
                         // We have not loaded the texture yet.  Do so now.
                         // ReSharper disable once InvertIf
-                        if ((!loaded) && (textureFile != null) && (codec != null))
+                        if ((!loaded) && (textureFile is not null) && (codec is not null))
                         {
-                            using (Stream textureStream = textureFile.OpenStream())
-                            {
-                                textureKey.Value = GorgonTexture2DView.FromStream(renderer.Graphics,
-                                                                                  textureStream,
-                                                                                  codec,
-                                                                                  textureFile.Size, GetTextureOptions(textureFile.FullPath, textureOptions));
-                            }
+                            using Stream textureStream = textureFile.OpenStream();
+                            textureKey.Value = GorgonTexture2DView.FromStream(renderer.Graphics,
+                                                                              textureStream,
+                                                                              codec,
+                                                                              textureFile.Size, GetTextureOptions(textureFile.FullPath, textureOptions));
                         }
 
-                        if ((needsCoordinateFix) && (textureKey.Value != null))
+                        if ((needsCoordinateFix) && (textureKey.Value is not null))
                         {
                             textureKey.TextureCoordinates = new RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
                                                                            textureKey.TextureCoordinates.Y / textureKey.Value.Height,

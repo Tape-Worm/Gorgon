@@ -42,7 +42,7 @@ namespace Gorgon.IO
     {
         #region Variables.
         // The backing store for the directories.
-        private readonly Dictionary<string, VirtualDirectory> _directories = new Dictionary<string, VirtualDirectory>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, VirtualDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
         // The parent directory that owns this collection.
         private readonly VirtualDirectory _parent;
         #endregion

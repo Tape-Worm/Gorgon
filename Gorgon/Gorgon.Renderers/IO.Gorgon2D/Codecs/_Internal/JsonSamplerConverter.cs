@@ -42,7 +42,7 @@ namespace Gorgon.IO
         // The graphics object to use for resource look up.
         private readonly GorgonGraphics _graphics;
         // The property names for the object.
-        private readonly HashSet<string> _propNames = new HashSet<string>(StringComparer.Ordinal)
+        private readonly HashSet<string> _propNames = new(StringComparer.Ordinal)
                                                       {
                                                           "borderColor",
                                                           "compareFunc",

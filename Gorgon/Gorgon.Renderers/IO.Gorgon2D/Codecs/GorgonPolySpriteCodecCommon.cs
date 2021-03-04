@@ -50,7 +50,7 @@ namespace Gorgon.IO
         /// <summary>
         /// The highest currently supported version for sprite serialization.
         /// </summary>
-        public static readonly Version CurrentVersion = new Version(3, 0);
+        public static readonly Version CurrentVersion = new(3, 0);
         #endregion
 
         #region Properties.
@@ -281,10 +281,8 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return FromStream(stream, overrideTexture, (int)stream.Length);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return FromStream(stream, overrideTexture, (int)stream.Length);
         }
 
         /// <summary>
@@ -345,10 +343,8 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                Save(sprite, stream);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            Save(sprite, stream);
         }
 
         /// <summary>

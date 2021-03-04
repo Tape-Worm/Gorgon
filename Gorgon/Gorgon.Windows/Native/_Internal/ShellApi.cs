@@ -228,7 +228,7 @@ namespace Gorgon.Native
             }
             finally
             {
-                if (imageList != null)
+                if (imageList is not null)
                 {
                     Marshal.ReleaseComObject(imageList);
                 }

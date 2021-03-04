@@ -59,11 +59,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the image is 2D, or <b>false</b> if not.</returns>
         private bool Is2DImage(IContentFile file)
         {
-            using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
-            {
-                IGorgonImageInfo metadata = _imageCodec.GetMetaData(stream);
-                return (metadata.ImageType != ImageType.Image3D) && (metadata.ImageType != ImageType.Image1D);
-            }
+            using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
+            IGorgonImageInfo metadata = _imageCodec.GetMetaData(stream);
+            return metadata.ImageType is not ImageType.Image3D and not ImageType.Image1D;
         }
 
         /// <summary>
@@ -84,7 +82,7 @@ namespace Gorgon.Editor.SpriteEditor
             string spritePath = currentSprite.Path;
 
             int counter = 0;
-            while (_fileManager.GetFile(spritePath) != null)
+            while (_fileManager.GetFile(spritePath) is not null)
             {
                 string directory = Path.GetDirectoryName(currentSprite.Path).FormatDirectory('/');
                 string filename = Path.GetFileNameWithoutExtension(currentSprite.Name);
@@ -100,22 +98,20 @@ namespace Gorgon.Editor.SpriteEditor
                                                         && (Is2DImage(item)))
                                                 .ToArray();
 
-            using (var newSpriteForm = new FormNewSprite()
+            using var newSpriteForm = new FormNewSprite()
             {
                 ImageCodec = _imageCodec,
                 FileManager = _fileManager,
                 Text = Resources.GORSPR_CAPTION_SPRITE_NAME,
                 ObjectName = Path.GetFileName(spritePath),
                 CueText = Resources.GORSPR_TEXT_CUE_SPRITE_NAME
-            })
-            {
-                newSpriteForm.FillTextures(textures, currentTexture);
-                newSpriteForm.SetOriginalSize(currentSize);
+            };
+            newSpriteForm.FillTextures(textures, currentTexture);
+            newSpriteForm.SetOriginalSize(currentSize);
 
-                return newSpriteForm.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK
-                    ? (newSpriteForm.ObjectName, newSpriteForm.TextureFile, newSpriteForm.SpriteSize)
-                    : ((string spriteName, IContentFile textureFile, DX.Size2F spriteSize))(null, null, DX.Size2F.Zero);
-            }
+            return newSpriteForm.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK
+                ? (newSpriteForm.ObjectName, newSpriteForm.TextureFile, newSpriteForm.SpriteSize)
+                : ((string spriteName, IContentFile textureFile, DX.Size2F spriteSize))(null, null, DX.Size2F.Zero);
         }
         #endregion
 

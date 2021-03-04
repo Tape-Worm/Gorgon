@@ -124,7 +124,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                if (_currentProject != null)
+                if (_currentProject is not null)
                 {
                     _currentProject.WaitPanelActivated -= CurrentProject_WaitPanelActivated;
                     _currentProject.WaitPanelDeactivated -= CurrentProject_WaitPanelDeactivated;
@@ -383,7 +383,7 @@ namespace Gorgon.Editor.ViewModels
 
             // Check for content/project changes.
             var args = new CancelEventArgs();
-            if ((current?.BeforeCloseCommand != null) && (current.BeforeCloseCommand.CanExecute(args)))
+            if ((current?.BeforeCloseCommand is not null) && (current.BeforeCloseCommand.CanExecute(args)))
             {
                 await current.BeforeCloseCommand.ExecuteAsync(args);
 
@@ -422,7 +422,7 @@ namespace Gorgon.Editor.ViewModels
             }
 
             // Ensure that the project is completely closed.
-            if ((current?.AfterCloseCommand != null) && (current.AfterCloseCommand.CanExecute(null)))
+            if ((current?.AfterCloseCommand is not null) && (current.AfterCloseCommand.CanExecute(null)))
             {
                 current.AfterCloseCommand.Execute(null);
             }
@@ -457,7 +457,7 @@ namespace Gorgon.Editor.ViewModels
             RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(path, item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
                                                                         StringComparison.OrdinalIgnoreCase));
 
-            if (dupe != null)
+            if (dupe is not null)
             {
                 RecentFiles.Files.Remove(dupe);
             }
@@ -476,7 +476,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="recentItem">The recent item to open.</param>
         /// <returns><b>true</b> if a recent project can be opened, or <b>false</b> if not.</returns>
-        private bool CanOpenRecent(RecentItem recentItem) => (recentItem != null) && (!string.IsNullOrWhiteSpace(recentItem.FilePath));
+        private bool CanOpenRecent(RecentItem recentItem) => (recentItem is not null) && (!string.IsNullOrWhiteSpace(recentItem.FilePath));
 
         /// <summary>
         /// Function to open a recent project item.
@@ -629,7 +629,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the project can be created, <b>false</b> if not.</returns>
-        private bool CanCreateProject() => (string.IsNullOrWhiteSpace(NewProject.InvalidPathReason)) && (!string.IsNullOrWhiteSpace(NewProject.Title)) && (NewProject.WorkspacePath != null);
+        private bool CanCreateProject() => (string.IsNullOrWhiteSpace(NewProject.InvalidPathReason)) && (!string.IsNullOrWhiteSpace(NewProject.Title)) && (NewProject.WorkspacePath is not null);
 
         /// <summary>
         /// Function to create a project.
@@ -646,7 +646,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 // Check for content/project changes.
                 var args = new CancelEventArgs();
-                if ((current?.BeforeCloseCommand != null) && (current.BeforeCloseCommand.CanExecute(args)))
+                if ((current?.BeforeCloseCommand is not null) && (current.BeforeCloseCommand.CanExecute(args)))
                 {
                     await current.BeforeCloseCommand.ExecuteAsync(args);
 
@@ -659,7 +659,7 @@ namespace Gorgon.Editor.ViewModels
                 IProject project = await Task.Run(() => _projectManager.CreateProject(directory));
                 CurrentProject = null;
 
-                if ((current?.AfterCloseCommand != null) && (current.AfterCloseCommand.CanExecute(null)))
+                if ((current?.AfterCloseCommand is not null) && (current.AfterCloseCommand.CanExecute(null)))
                 {
                     current.AfterCloseCommand.Execute(null);
                 }
@@ -670,7 +670,7 @@ namespace Gorgon.Editor.ViewModels
                 RecentItem dupe = RecentFiles.Files.FirstOrDefault(item => string.Equals(item.FilePath.FormatDirectory(Path.DirectorySeparatorChar),
                                                                                          Settings.LastProjectWorkingDirectory, StringComparison.OrdinalIgnoreCase));
 
-                if (dupe != null)
+                if (dupe is not null)
                 {
                     RecentFiles.Files.Remove(dupe);
                 }
@@ -740,7 +740,7 @@ namespace Gorgon.Editor.ViewModels
                 IProjectEditor current = CurrentProject;
 
                 // Save the project if one is open.
-                if ((current?.BeforeCloseCommand != null) && (current.BeforeCloseCommand.CanExecute(args)))
+                if ((current?.BeforeCloseCommand is not null) && (current.BeforeCloseCommand.CanExecute(args)))
                 {
                     await current.BeforeCloseCommand.ExecuteAsync(args);
 
@@ -762,7 +762,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Ensure that the project is completely closed.
-                if ((current?.AfterCloseCommand != null) && (current.AfterCloseCommand.CanExecute(null)))
+                if ((current?.AfterCloseCommand is not null) && (current.AfterCloseCommand.CanExecute(null)))
                 {
                     current.AfterCloseCommand.Execute(null);
                 }

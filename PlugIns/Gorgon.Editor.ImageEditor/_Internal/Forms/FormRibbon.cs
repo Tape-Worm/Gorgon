@@ -27,7 +27,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // The list of menu items associated with the zoom level.
-        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
+        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new();
         // The current zoom level.
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         // The renderer for the content.
@@ -57,14 +57,14 @@ namespace Gorgon.Editor.ImageEditor
                     return;
                 }
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
                 }
 
                 _contentRenderer = value;
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged += ContentRenderer_ZoomScale;
                     _zoomLevel = _contentRenderer.ZoomLevel;
@@ -91,27 +91,18 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateImageTypeMenu(IImageContent dataContext)
         {
-            ToolStripMenuItem currentItem;
-
             if (dataContext is null)
             {
                 ButtonImageType.TextLine1 = ImageType.Unknown.ToString();
                 return;
             }
 
-            switch (dataContext.ImageType)
+            ToolStripMenuItem currentItem = dataContext.ImageType switch
             {
-                case ImageType.ImageCube:
-                    currentItem = ItemCubeMap;
-                    break;
-                case ImageType.Image3D:
-                    currentItem = Item3DImage;
-                    break;
-                default:
-                    currentItem = Item2DImage;
-                    break;
-            }
-
+                ImageType.ImageCube => ItemCubeMap,
+                ImageType.Image3D => Item3DImage,
+                _ => Item2DImage,
+            };
             foreach (ToolStripMenuItem item in MenuImageType.Items.OfType<ToolStripMenuItem>().Where(item => item != currentItem))
             {
                 item.Checked = false;
@@ -453,7 +444,7 @@ namespace Gorgon.Editor.ImageEditor
             var item = (ToolStripMenuItem)sender;
             var format = (BufferFormat)item.Tag;
 
-            if ((DataContext.ConvertFormatCommand != null) && (DataContext.ConvertFormatCommand.CanExecute(format)))
+            if ((DataContext.ConvertFormatCommand is not null) && (DataContext.ConvertFormatCommand.CanExecute(format)))
             {
                 DataContext.ConvertFormatCommand.Execute(format);
             }
@@ -471,7 +462,7 @@ namespace Gorgon.Editor.ImageEditor
             var item = (ToolStripMenuItem)sender;
             var codec = item.Tag as IGorgonImageCodec;
 
-            if ((DataContext?.ExportImageCommand != null) && (DataContext.ExportImageCommand.CanExecute(codec)))
+            if ((DataContext?.ExportImageCommand is not null) && (DataContext.ExportImageCommand.CanExecute(codec)))
             {
                 DataContext.ExportImageCommand.Execute(codec);
             }
@@ -722,7 +713,7 @@ namespace Gorgon.Editor.ImageEditor
                 return;
             }
 
-            if (DataContext.Codecs != null)
+            if (DataContext.Codecs is not null)
             {
                 DataContext.Codecs.CollectionChanged -= Codecs_CollectionChanged;
             }
@@ -875,7 +866,7 @@ namespace Gorgon.Editor.ImageEditor
             DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.FxContext.PropertyChanged += FxContext_PropertyChanged;
 
-            if (DataContext.Codecs != null)
+            if (DataContext.Codecs is not null)
             {
                 DataContext.Codecs.CollectionChanged += Codecs_CollectionChanged;
             }

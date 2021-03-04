@@ -50,7 +50,7 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Variables.        
         // The buffer to hold directory paths.
-        private readonly Dictionary<string, IDirectory> _directoryBuffer = new Dictionary<string, IDirectory>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDirectory> _directoryBuffer = new(StringComparer.OrdinalIgnoreCase);
         // The host content services.
         private readonly HostContentServices _hostContentServices;
         // The file system providers for reading/writing file systems.
@@ -220,7 +220,7 @@ namespace Gorgon.Editor.ViewModels
                 IDirectory subDirParent = null;
                 IDirectory fileDir = null;                
 
-                if (subDir.Parent != null)
+                if (subDir.Parent is not null)
                 {
                     if (!directories.TryGetValue(subDir.Parent.FullPath, out subDirParent))
                     {

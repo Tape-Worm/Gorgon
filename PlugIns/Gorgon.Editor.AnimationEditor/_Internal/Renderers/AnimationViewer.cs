@@ -144,7 +144,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             Renderer.DrawFilledRectangle(region, new GorgonColor(GorgonColor.SteelBlue, 0.25f));
 
-            if (DataContext?.BackgroundImage != null)
+            if (DataContext?.BackgroundImage is not null)
             {
                 Renderer.DrawFilledRectangle(region, GorgonColor.White, DataContext.BackgroundImage, new DX.RectangleF(0, 0, 1, 1));
             }
@@ -216,7 +216,7 @@ namespace Gorgon.Editor.AnimationEditor
                     {
                         prev = track.KeyFrames[k];
 
-                        if (prev != null)
+                        if (prev is not null)
                         {
                             break;
                         }
@@ -224,7 +224,7 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 else
                 {
-                    if ((DataContext.IsLooping) && (track.KeyFrames[track.KeyFrames.Count - 1] != null))
+                    if ((DataContext.IsLooping) && (track.KeyFrames[track.KeyFrames.Count - 1] is not null))
                     {
                         prev = track.KeyFrames[track.KeyFrames.Count - 1];
                     }
@@ -241,7 +241,7 @@ namespace Gorgon.Editor.AnimationEditor
                     {
                         next = track.KeyFrames[k];
 
-                        if (next != null)
+                        if (next is not null)
                         {
                             break;
                         }
@@ -249,7 +249,7 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 else
                 {
-                    if ((DataContext.IsLooping) && (track.KeyFrames[0] != null))
+                    if ((DataContext.IsLooping) && (track.KeyFrames[0] is not null))
                     {
                         next = track.KeyFrames[0];
                     }
@@ -370,7 +370,7 @@ namespace Gorgon.Editor.AnimationEditor
                         break;
                     }
 
-                    if (DataContext.CurrentPanel != null)
+                    if (DataContext.CurrentPanel is not null)
                     {
                         DataContext.CurrentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
                     }
@@ -399,7 +399,7 @@ namespace Gorgon.Editor.AnimationEditor
                         break;
                     }
 
-                    if (DataContext.CurrentPanel != null)
+                    if (DataContext.CurrentPanel is not null)
                     {
                         DataContext.CurrentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
                     }
@@ -467,12 +467,12 @@ namespace Gorgon.Editor.AnimationEditor
 
             switch (args.KeyCode)
             {
-                case Keys.Home when (Sprite != null) && ((args.Modifiers & Keys.Control) == Keys.Control) && ((args.Modifiers & Keys.Shift) == Keys.Shift):
+                case Keys.Home when (Sprite is not null) && ((args.Modifiers & Keys.Control) == Keys.Control) && ((args.Modifiers & Keys.Shift) == Keys.Shift):
                     ZoomToSprite(Sprite);
                     args.IsInputKey = true;
                     break;
                 case Keys.Escape:
-                    if ((DataContext.CommandContext == DataContext.KeyEditor) && (DataContext.ActivateKeyEditorCommand != null) && (DataContext.ActivateKeyEditorCommand.CanExecute(null)))
+                    if ((DataContext.CommandContext == DataContext.KeyEditor) && (DataContext.ActivateKeyEditorCommand is not null) && (DataContext.ActivateKeyEditorCommand.CanExecute(null)))
                     {
                         DataContext.ActivateKeyEditorCommand.Execute(null);
                         args.IsInputKey = true;
@@ -494,7 +494,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             UpdateOnionSkin();
 
-            if ((SupportsOnionSkinning) && (DataContext.Settings.UseOnionSkinning) && (_prevKey != null))
+            if ((SupportsOnionSkinning) && (DataContext.Settings.UseOnionSkinning) && (_prevKey is not null))
             {
                 Silhouette.Begin();
                 Renderer.DrawSprite(_onionBefore);
@@ -503,7 +503,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             DrawAnimation();
 
-            if ((SupportsOnionSkinning) && (DataContext.Settings.UseOnionSkinning) && (_nextKey != null))
+            if ((SupportsOnionSkinning) && (DataContext.Settings.UseOnionSkinning) && (_nextKey is not null))
             {
                 Silhouette.Begin();
                 Renderer.DrawSprite(_onionAfter);
@@ -530,7 +530,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers can override this method to handle a mouse down event in their own content view.</remarks>
         protected override void OnMouseDown(MouseArgs args)
         {
-            if ((args.ButtonClickCount > 1) && ((args.Modifiers & Keys.Control) == Keys.Control) && (Sprite != null))
+            if ((args.ButtonClickCount > 1) && ((args.Modifiers & Keys.Control) == Keys.Control) && (Sprite is not null))
             {
                 ZoomToSprite(Sprite);
                 args.Handled = true;                
@@ -556,7 +556,7 @@ namespace Gorgon.Editor.AnimationEditor
             DataContext.Settings.PropertyChanged += Settings_PropertyChanged;
             DataContext.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
 
-            if (DataContext.CurrentPanel != null)
+            if (DataContext.CurrentPanel is not null)
             {
                 DataContext.CurrentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
             }
@@ -576,12 +576,12 @@ namespace Gorgon.Editor.AnimationEditor
             rtv?.Dispose();
             main?.Dispose();
 
-            if (DataContext.CurrentPanel != null)
+            if (DataContext.CurrentPanel is not null)
             {
                 DataContext.CurrentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
             }
 
-            if ((DataContext?.UpdateAnimationPreviewCommand != null) && (DataContext.UpdateAnimationPreviewCommand.CanExecute(null)))
+            if ((DataContext?.UpdateAnimationPreviewCommand is not null) && (DataContext.UpdateAnimationPreviewCommand.CanExecute(null)))
             {
                 DataContext.UpdateAnimationPreviewCommand.Execute(null);
             }

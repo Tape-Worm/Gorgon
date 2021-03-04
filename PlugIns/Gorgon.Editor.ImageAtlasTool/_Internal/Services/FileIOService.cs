@@ -127,7 +127,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 
             foreach (GorgonTexture2DView texture in atlas.Textures)
             {
-                if (_fileSystem.GetFile(texture.Texture.Name) != null)
+                if (_fileSystem.GetFile(texture.Texture.Name) is not null)
                 {
                     return true;
                 }
@@ -175,7 +175,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                 {
                     IContentFile textureFile = _fileSystem.GetFile(texture.Texture.Name);
 
-                    if ((textureFile != null) && (textureFile.IsOpen))
+                    if ((textureFile is not null) && (textureFile.IsOpen))
                     {
                         throw new IOException(string.Format(Resources.GORIAG_ERR_IMAGE_OPEN, textureFile.Path));
                     }
@@ -188,7 +188,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                         string spritePath = GetSpritePath(sprites.First(item => item.Value == original).Key);
                         IContentFile fileExists = _fileSystem.GetFile(spritePath);
 
-                        if ((fileExists != null) && (fileExists.IsOpen))
+                        if ((fileExists is not null) && (fileExists.IsOpen))
                         {
                             throw new IOException(string.Format(Resources.GORIAG_ERR_SPRITE_OPEN, fileExists.Path));
                         }
@@ -217,7 +217,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                     string spritePath = GetSpritePath(sprites.First(item => item.Value == original).Key);
                     IContentFile spriteFile = _fileSystem.GetFile(spritePath);
 
-                    if ((spriteFile != null)
+                    if ((spriteFile is not null)
                         && (spriteFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> oldTexturePaths))
                         && (oldTexturePaths.Count > 0) 
                         && (_fileSystem.FileExists(oldTexturePaths[0])))

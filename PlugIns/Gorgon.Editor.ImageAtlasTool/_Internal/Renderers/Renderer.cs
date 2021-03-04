@@ -149,7 +149,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 
 			if ((DataContext.Atlas is null) || (DataContext.Atlas.Textures.Count == 0))
 			{
-				if (_texture != null)
+				if (_texture is not null)
 				{
 					DrawImage();
 				}
@@ -200,13 +200,13 @@ namespace Gorgon.Editor.ImageAtlasTool
 				Anchor = new DX.Vector2(0.5f, 0.5f)
 			};
 
-			GorgonTexture2DView texture = (DataContext.Atlas != null) && (DataContext.Atlas.Textures.Count > 0) ? DataContext.Atlas.Textures[0] : null;
+			GorgonTexture2DView texture = (DataContext.Atlas is not null) && (DataContext.Atlas.Textures.Count > 0) ? DataContext.Atlas.Textures[0] : null;
 
 			_textureSprite = new GorgonSprite
 			{
 				Texture = texture,
 				TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-				Size = new DX.Size2F(texture != null ? texture.Width : 1, texture != null ? texture.Height : 1),
+				Size = new DX.Size2F(texture is not null ? texture.Width : 1, texture is not null ? texture.Height : 1),
 				TextureSampler = GorgonSamplerState.PointFiltering
 			};
 		}

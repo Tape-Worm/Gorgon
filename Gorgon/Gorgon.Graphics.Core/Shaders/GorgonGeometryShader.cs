@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Core
         {
             D3D11.GeometryShader shader = Interlocked.Exchange(ref _shader, null);
 
-            if (shader != null)
+            if (shader is not null)
             {
                 Graphics.Log.Print($"Destroying {ShaderType} '{Name}' ({ID})", LoggingLevel.Verbose);
                 shader.Dispose();

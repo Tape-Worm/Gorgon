@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonRasterState OnCreateState() => new GorgonRasterState(WorkingState);
+        protected override GorgonRasterState OnCreateState() => new(WorkingState);
         
         /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
         /// <param name="state">The state to update.</param>
@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Core
         public GorgonRasterStateBuilder CullMode(CullingMode cullMode, bool? isFrontCounterClockwise = null)
         {
             WorkingState.CullMode = cullMode;
-            if (isFrontCounterClockwise != null)
+            if (isFrontCounterClockwise is not null)
             {
                 WorkingState.IsFrontCounterClockwise = isFrontCounterClockwise.Value;
             }
@@ -224,7 +224,7 @@ namespace Gorgon.Graphics.Core
         public GorgonRasterStateBuilder Antialiasing(bool msaa, bool? lineAntiAlias = null)
         {
             WorkingState.IsMultisamplingEnabled = msaa;
-            if (lineAntiAlias != null)
+            if (lineAntiAlias is not null)
             {
                 WorkingState.IsAntialiasedLineEnabled = lineAntiAlias.Value;
             }

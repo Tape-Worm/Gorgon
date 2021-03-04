@@ -153,7 +153,7 @@ namespace Gorgon.IO
                 yield break;
             }
 
-            while (parent != null)
+            while (parent is not null)
             {
                 yield return parent;
 

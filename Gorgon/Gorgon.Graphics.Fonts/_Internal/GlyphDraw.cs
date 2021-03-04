@@ -154,7 +154,7 @@ namespace Gorgon.Graphics.Fonts
             }
             finally
             {
-                if (characterRanges != null)
+                if (characterRanges is not null)
                 {
                     foreach (Region region in characterRanges)
                     {
@@ -162,7 +162,7 @@ namespace Gorgon.Graphics.Fonts
                     }
                 }
 
-                if (defaultCharacterRanges != null)
+                if (defaultCharacterRanges is not null)
                 {
                     foreach (Region region in defaultCharacterRanges)
                     {
@@ -255,7 +255,7 @@ namespace Gorgon.Graphics.Fonts
             }
             finally
             {
-                if (pixels != null)
+                if (pixels is not null)
                 {
                     glyphBitmap.UnlockBits(pixels);
                 }
@@ -317,11 +317,9 @@ namespace Gorgon.Graphics.Fonts
                 if ((_fontInfo.OutlineColor1 == _fontInfo.OutlineColor2)
                     || (_fontInfo.OutlineSize < 3))
                 {
-                    using (var outlinePen = new Pen(_fontInfo.OutlineColor1, _fontInfo.OutlineSize * 2))
-                    {
-                        outlinePen.LineJoin = LineJoin.Round;
-                        glyphGraphics.DrawPath(outlinePen, outlineRenderer);
-                    }
+                    using var outlinePen = new Pen(_fontInfo.OutlineColor1, _fontInfo.OutlineSize * 2);
+                    outlinePen.LineJoin = LineJoin.Round;
+                    glyphGraphics.DrawPath(outlinePen, outlineRenderer);
                 }
                 else
                 {
@@ -335,11 +333,9 @@ namespace Gorgon.Graphics.Fonts
 
                         GorgonColor.Lerp(in start, in end, delta, out GorgonColor penColor);
 
-                        using (var outlinePen = new Pen(penColor, i))
-                        {
-                            outlinePen.LineJoin = LineJoin.Round;
-                            glyphGraphics.DrawPath(outlinePen, outlineRenderer);
-                        }
+                        using var outlinePen = new Pen(penColor, i);
+                        outlinePen.LineJoin = LineJoin.Round;
+                        glyphGraphics.DrawPath(outlinePen, outlineRenderer);
                     }
                 }
             }
@@ -355,7 +351,7 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="glyphSize">The size of the glyph.</param>
         private void GetGlyphBitmap(ref Bitmap oldBitmap, ref System.Drawing.Graphics oldGraphics, RectangleF glyphSize)
         {
-            if ((oldBitmap != null) && (glyphSize.Width * 2 <= oldBitmap.Width) && (glyphSize.Height <= oldBitmap.Height))
+            if ((oldBitmap is not null) && (glyphSize.Width * 2 <= oldBitmap.Width) && (glyphSize.Height <= oldBitmap.Height))
             {
                 return;
             }
@@ -480,35 +476,33 @@ namespace Gorgon.Graphics.Fonts
                     ((GorgonGlyphLinearGradientBrush)brush).GradientRegion = new DX.Rectangle(charRect.Left, charRect.Top, charRect.Width, charRect.Height);
                 }
 
-                using (Brush gdiBrush = brush.ToGDIBrush())
+                using Brush gdiBrush = brush.ToGDIBrush();
+                // Draw the main character glyph.
+                DrawGlyphCharacter(character, glyphBitmap, glyphGraphics, gdiBrush);
+
+                packedGraphics.DrawImage(glyphBitmap,
+                                         new Rectangle(location.X, location.Y, size.Width, size.Height),
+                                         new Rectangle(charRect.X, charRect.Y, size.Width, size.Height),
+                                         GraphicsUnit.Pixel);
+
+                // Draw the outline for the character glyph.
+                if ((hasOutline) && (!outlineRect.IsEmpty))
                 {
-                    // Draw the main character glyph.
-                    DrawGlyphCharacter(character, glyphBitmap, glyphGraphics, gdiBrush);
+                    outlineLocation.X += _fontInfo.PackingSpacing;
+                    outlineLocation.Y += _fontInfo.PackingSpacing;
+                    DrawGlyphCharacterOutline(character, glyphBitmap, glyphGraphics);
 
                     packedGraphics.DrawImage(glyphBitmap,
-                                             new Rectangle(location.X, location.Y, size.Width, size.Height),
-                                             new Rectangle(charRect.X, charRect.Y, size.Width, size.Height),
+                                             new Rectangle(outlineLocation.X, outlineLocation.Y, outlineRect.Width + 1, outlineRect.Height + 1),
+                                             new Rectangle(outlineRect.X, outlineRect.Y, outlineRect.Width + 1, outlineRect.Height + 1),
                                              GraphicsUnit.Pixel);
-
-                    // Draw the outline for the character glyph.
-                    if ((hasOutline) && (!outlineRect.IsEmpty))
-                    {
-                        outlineLocation.X += _fontInfo.PackingSpacing;
-                        outlineLocation.Y += _fontInfo.PackingSpacing;
-                        DrawGlyphCharacterOutline(character, glyphBitmap, glyphGraphics);
-
-                        packedGraphics.DrawImage(glyphBitmap,
-                                                 new Rectangle(outlineLocation.X, outlineLocation.Y, outlineRect.Width + 1, outlineRect.Height + 1),
-                                                 new Rectangle(outlineRect.X, outlineRect.Y, outlineRect.Width + 1, outlineRect.Height + 1),
-                                                 GraphicsUnit.Pixel);
-                    }
-
-                    packedGlyphs[character] = new GlyphInfo(packedBitmap,
-                                                            new DX.Rectangle(location.X, location.Y, size.Width, size.Height),
-                                                            new DX.Point(charRect.X, charRect.Y),
-                                                            new DX.Rectangle(outlineLocation.X, outlineLocation.Y, outlineRect.Width + 1, outlineRect.Height + 1),
-                                                            new DX.Point(outlineRect.X, outlineRect.Y));
                 }
+
+                packedGlyphs[character] = new GlyphInfo(packedBitmap,
+                                                        new DX.Rectangle(location.X, location.Y, size.Width, size.Height),
+                                                        new DX.Point(charRect.X, charRect.Y),
+                                                        new DX.Rectangle(outlineLocation.X, outlineLocation.Y, outlineRect.Width + 1, outlineRect.Height + 1),
+                                                        new DX.Point(outlineRect.X, outlineRect.Y));
             }
         }
 

@@ -229,7 +229,7 @@ namespace Gorgon.Editor.Services
                 initialDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
             }
 
-            if (CurrentWriter != null)
+            if (CurrentWriter is not null)
             {
                 FindCurrentWriterExtensionIndex(extensions);
             }

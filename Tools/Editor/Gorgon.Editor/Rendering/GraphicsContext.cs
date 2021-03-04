@@ -46,7 +46,7 @@ namespace Gorgon.Editor.Rendering
     {
         #region Variables.
         // Leases for a swap chain.
-        private readonly Dictionary<string, WeakReference<GorgonSwapChain>> _swapChainLeases = new Dictionary<string, WeakReference<GorgonSwapChain>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, WeakReference<GorgonSwapChain>> _swapChainLeases = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.

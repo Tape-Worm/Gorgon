@@ -52,22 +52,14 @@ namespace Gorgon.Renderers
         /// </remarks>
         public DX.Vector3 this[int index]
         {
-            get
+            get => index switch
             {
-                switch (index)
-                {
-                    case 0:
-                        return _renderable.UpperLeftOffset;
-                    case 1:
-                        return _renderable.UpperRightOffset;
-                    case 2:
-                        return _renderable.LowerRightOffset;
-                    case 3:
-                        return _renderable.LowerLeftOffset;
-                }
-
-                throw new ArgumentOutOfRangeException();
-            }
+                0 => _renderable.UpperLeftOffset,
+                1 => _renderable.UpperRightOffset,
+                2 => _renderable.LowerRightOffset,
+                3 => _renderable.LowerLeftOffset,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
             set
             {
                 switch (index)

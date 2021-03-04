@@ -52,7 +52,7 @@ namespace Gorgon.Renderers
 #pragma warning restore IDE0032 // Use auto property
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
-        internal readonly BatchRenderable Renderable = new BatchRenderable();
+        internal readonly BatchRenderable Renderable = new();
         #endregion
 
         #region Properties.
@@ -154,7 +154,7 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public DX.Vector2 Position
         {
-            get => new DX.Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
+            get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;

@@ -178,7 +178,7 @@ namespace Gorgon.IO
         // The list of invalid file name characters.
         private readonly char[] _invalidFileNameChars = Path.GetInvalidFileNameChars();
         // Locking synchronization for multiple threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         // The mount point for the write area.
         private readonly GorgonFileSystemMountPoint _mountPoint;
         // The notifier used to update the file system.
@@ -188,7 +188,7 @@ namespace Gorgon.IO
         // The buffer used to block copy a file.
         private byte[] _writeBuffer;
         // The buffer used for building a path.
-        private readonly StringBuilder _pathBuffer = new StringBuilder(1024);
+        private readonly StringBuilder _pathBuffer = new(1024);
         #endregion
 
         #region Properties.
@@ -224,7 +224,7 @@ namespace Gorgon.IO
         {
             _pathBuffer.Length = 0;
 
-            if (dirToUpdate.Parent != null)
+            if (dirToUpdate.Parent is not null)
             {
                 _pathBuffer.Append(dirToUpdate.FullPath);
                 _pathBuffer.Remove(0, pathToReplace.Length);
@@ -392,11 +392,9 @@ namespace Gorgon.IO
         /// </remarks>
         private void BlockCopyFileToPhysical(IGorgonVirtualFile srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
         {
-            using (Stream inStream = srcFile.OpenStream())
-            using (Stream outStream = File.Open(destPath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                BlockCopyStreams(srcFile.FullPath, destPath, null, inStream, outStream, progressCallback, cancelToken);
-            }
+            using Stream inStream = srcFile.OpenStream();
+            using Stream outStream = File.Open(destPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            BlockCopyStreams(srcFile.FullPath, destPath, null, inStream, outStream, progressCallback, cancelToken);
         }
 
         /// <summary>
@@ -413,11 +411,9 @@ namespace Gorgon.IO
         /// </remarks>
         private void BlockCopyFileFromPhysical(string srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
         {
-            using (Stream inStream = File.Open(srcFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (Stream outStream = OpenStream(destPath, FileMode.Create))
-            {
-                BlockCopyStreams(srcFile, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), destPath, inStream, outStream, progressCallback, cancelToken);
-            }
+            using Stream inStream = File.Open(srcFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using Stream outStream = OpenStream(destPath, FileMode.Create);
+            BlockCopyStreams(srcFile, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), destPath, inStream, outStream, progressCallback, cancelToken);
         }
 
         /// <summary>
@@ -434,11 +430,9 @@ namespace Gorgon.IO
         /// </remarks>
         private void BlockCopyFile(IGorgonVirtualFile srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
         {
-            using (Stream inStream = srcFile.OpenStream())
-            using (Stream outStream = OpenStream(destPath, FileMode.Create))
-            {
-                BlockCopyStreams(srcFile.FullPath, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), destPath, inStream, outStream, progressCallback, cancelToken);
-            }
+            using Stream inStream = srcFile.OpenStream();
+            using Stream outStream = OpenStream(destPath, FileMode.Create);
+            BlockCopyStreams(srcFile.FullPath, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), destPath, inStream, outStream, progressCallback, cancelToken);
         }
 
         /// <summary>
@@ -1279,7 +1273,7 @@ namespace Gorgon.IO
                         bool fileExists = destDir.Files.Contains(fileName);
                         bool directoryExists = destDir.Directories.Contains(fileName);
 
-                        if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null)
+                        if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                                 && ((fileExists) || (directoryExists)))
                         {
                             if ((directoryExists) || (conflictRes != FileConflictResolution.SkipAll))
@@ -1311,7 +1305,7 @@ namespace Gorgon.IO
 
                         IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
 
-                        if ((destFile != null) && (!cancelToken.IsCancellationRequested))
+                        if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                         {
                             filesCopied.Add((srcFile, destFile));
                         }
@@ -1491,7 +1485,7 @@ namespace Gorgon.IO
                         bool fileExists = destDir.Files.Contains(file.Name);
                         bool directoryExists = destDir.Directories.Contains(file.Name);
 
-                        if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null)
+                        if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                             && ((fileExists) || (directoryExists)))
                         {
                             if ((directoryExists) || ((conflictRes != FileConflictResolution.RenameAll) && (conflictRes != FileConflictResolution.SkipAll)))
@@ -1520,7 +1514,7 @@ namespace Gorgon.IO
                         BlockCopyFile(file, destFilePath, progressCallback, cancelToken);
                         IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
 
-                        if ((destFile != null) && (!cancelToken.IsCancellationRequested))
+                        if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                         {
                             filesCopied.Add((file, destFile));
                         }
@@ -1654,7 +1648,7 @@ namespace Gorgon.IO
                     bool fileExists = destDirectory.Files.Contains(fileName);
                     bool directoryExists = destDirectory.Directories.Contains(fileName);
 
-                    if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null)
+                    if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                             && ((fileExists) || (directoryExists)))
                     {
                         if ((directoryExists) || (conflictRes != FileConflictResolution.SkipAll))
@@ -1686,7 +1680,7 @@ namespace Gorgon.IO
 
                     IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
 
-                    if ((destFile != null) && (!cancelToken.IsCancellationRequested))
+                    if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                     {
                         filesCopied.Add((srcFile, destFile));
                     }
@@ -1813,7 +1807,7 @@ namespace Gorgon.IO
                     bool fileExists = destDirectory.Files.Contains(file.Name);
                     bool directoryExists = destDirectory.Directories.Contains(file.Name);
 
-                    if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null) 
+                    if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null) 
                         && ((fileExists) || (directoryExists)))
                     {
                         if ((directoryExists) 
@@ -1851,7 +1845,7 @@ namespace Gorgon.IO
                     BlockCopyFile(file, destFilePath, progressCallback, cancelToken);
                     IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
 
-                    if ((destFile != null) && (!cancelToken.IsCancellationRequested))
+                    if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                     {
                         filesCopied.Add((file, destFile));
                     }
@@ -1956,7 +1950,7 @@ namespace Gorgon.IO
                     bool fileExists = File.Exists(destFilePath);
                     bool directoryExists = Directory.Exists(destFilePath);
 
-                    if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null)
+                    if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                         && ((fileExists) || (directoryExists)))
                     {
                         if ((directoryExists) || ((conflictRes != FileConflictResolution.RenameAll) && (conflictRes != FileConflictResolution.SkipAll)))
@@ -2077,7 +2071,7 @@ namespace Gorgon.IO
                     }
 
                     IGorgonVirtualDirectory srcDir = dirsToCopy[i];
-                    string sourcePhysical = srcDir.FullPath.Substring((srcDirectory.Parent != null ? srcDirectory.Parent.FullPath : FileSystem.RootDirectory.FullPath).Length);
+                    string sourcePhysical = srcDir.FullPath[(srcDirectory.Parent is not null ? srcDirectory.Parent.FullPath : FileSystem.RootDirectory.FullPath).Length..];
                     string destDirPath = destDirectoryPath + sourcePhysical.FormatDirectory(Path.DirectorySeparatorChar);
 
                     progressCallback?.Invoke(srcDir.FullPath, 0);
@@ -2106,7 +2100,7 @@ namespace Gorgon.IO
                         bool fileExists = File.Exists(destFilePath);
                         bool directoryExists = Directory.Exists(destFilePath);
 
-                        if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null)
+                        if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                             && ((fileExists) || (directoryExists)))
                         {
                             if ((directoryExists) || ((conflictRes != FileConflictResolution.RenameAll) && (conflictRes != FileConflictResolution.SkipAll)))
@@ -2266,7 +2260,7 @@ namespace Gorgon.IO
                         EventHandler<FileImportingArgs> beforeHandler = FileImporting;
                         beforeArgs.PhysicalFilePath = file.FullName;
 
-                        if (beforeHandler != null)
+                        if (beforeHandler is not null)
                         {
                             beforeHandler(this, beforeArgs);
                             if (string.IsNullOrWhiteSpace(beforeArgs.PhysicalFilePath))
@@ -2285,7 +2279,7 @@ namespace Gorgon.IO
                         bool fileExists = destDir.Files.Contains(fileName);
                         bool directoryExists = destDir.Directories.Contains(fileName);
 
-                        if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback != null)
+                        if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                             && ((fileExists) || (directoryExists)))
                         {
                             if ((directoryExists) || ((conflictRes != FileConflictResolution.RenameAll) && (conflictRes != FileConflictResolution.SkipAll)))
@@ -2313,7 +2307,7 @@ namespace Gorgon.IO
                         BlockCopyFileFromPhysical(beforeArgs.PhysicalFilePath, destFilePath, progressCallback, cancelToken);
                         IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
 
-                        if ((destFile != null) && (!cancelToken.IsCancellationRequested))
+                        if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                         {
                             EventHandler<FileImportedArgs> afterHandler = FileImported;
                             afterHandler?.Invoke(this, new FileImportedArgs(beforeArgs.PhysicalFilePath, destFile));
@@ -2354,7 +2348,7 @@ namespace Gorgon.IO
                     }
 
                     DirectoryInfo srcDir = dirsToCopy[i];
-                    string destDirPath = destDirectory.FullPath + srcDir.FullName.Substring(importParent.FullName.Length + 1).FormatDirectory('/');
+                    string destDirPath = destDirectory.FullPath + srcDir.FullName[(importParent.FullName.Length + 1)..].FormatDirectory('/');
 
                     progressCallback?.Invoke(srcDir.FullName, 0);
 

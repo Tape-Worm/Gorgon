@@ -40,7 +40,7 @@ namespace Gorgon.Editor.UI
         private static readonly ZoomLevels[] _levels = (ZoomLevels[])Enum.GetValues(typeof(ZoomLevels));
 
         // The look up for zoom level names.
-        private static readonly Dictionary<ZoomLevels, string> _names = new Dictionary<ZoomLevels, string>()
+        private static readonly Dictionary<ZoomLevels, string> _names = new()
         {
             {
                 ZoomLevels.Percent12,
@@ -118,37 +118,21 @@ namespace Gorgon.Editor.UI
         /// When the zoom level is set to <see cref="ZoomLevels.ToWindow"/>, then this method will return -1.
         /// </para>
         /// </remarks>
-        public static float GetScale(this ZoomLevels zoomLevel)
+        public static float GetScale(this ZoomLevels zoomLevel) => zoomLevel switch
         {
-            switch (zoomLevel)
-            {
-                case ZoomLevels.Percent12:
-                    return 0.12f;
-                case ZoomLevels.Percent25:
-                    return 0.25f;
-                case ZoomLevels.Percent50:
-                    return 0.5f;
-                case ZoomLevels.Percent100:
-                    return 1;
-                case ZoomLevels.Percent200:
-                    return 2;
-                case ZoomLevels.Percent400:
-                    return 4;
-                case ZoomLevels.Percent800:
-                    return 8;
-                case ZoomLevels.Percent1600:
-                    return 16;
-                case ZoomLevels.Percent3200:
-                    return 32;
-                case ZoomLevels.Percent6400:
-                    return 64;
-                case ZoomLevels.Custom:
-                case ZoomLevels.ToWindow:
-                    return -1;
-            }
-
-            return 1;
-        }
+            ZoomLevels.Percent12 => 0.12f,
+            ZoomLevels.Percent25 => 0.25f,
+            ZoomLevels.Percent50 => 0.5f,
+            ZoomLevels.Percent100 => 1,
+            ZoomLevels.Percent200 => 2,
+            ZoomLevels.Percent400 => 4,
+            ZoomLevels.Percent800 => 8,
+            ZoomLevels.Percent1600 => 16,
+            ZoomLevels.Percent3200 => 32,
+            ZoomLevels.Percent6400 => 64,
+            ZoomLevels.Custom or ZoomLevels.ToWindow => -1,
+            _ => 1,
+        };
 
         /// <summary>
         /// Function to retrieve the best <see cref="ZoomLevels"/> for the value passed. 
@@ -175,7 +159,7 @@ namespace Gorgon.Editor.UI
                 }
             }
 
-            if (result != null)
+            if (result is not null)
             {
                 return result.Value;
             }

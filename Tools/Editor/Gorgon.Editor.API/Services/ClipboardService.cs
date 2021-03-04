@@ -45,7 +45,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return whether or not there is data on the clipboard.
         /// </summary>
-        public bool HasData => _data != null;
+        public bool HasData => _data is not null;
         #endregion
 
         #region Methods.

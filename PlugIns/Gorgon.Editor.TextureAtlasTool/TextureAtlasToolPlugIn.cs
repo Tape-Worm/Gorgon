@@ -77,7 +77,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
             IEnumerable<IContentFile> spriteFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                && (item.Metadata.ContentMetadata != null)
+                                                && (item.Metadata.ContentMetadata is not null)
                                                 && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
             IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
@@ -103,7 +103,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             {
                 spriteFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                            && (item.Metadata.ContentMetadata != null)
+                                                            && (item.Metadata.ContentMetadata is not null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
                 if (!spriteFiles.Any())
                 {
@@ -229,7 +229,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         protected override void OnShutdown()
         {
             // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
-            if (_button != null)
+            if (_button is not null)
             {
                 _button.ClickCallback = null;
                 _button.Dispose();

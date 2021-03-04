@@ -363,7 +363,7 @@ namespace Gorgon.Core
             }
 
             // Format the string.
-            if ((values != null) && (values.Length > 0))
+            if ((values is not null) && (values.Length > 0))
             {
                 theString = string.Format(theString, values);
             }
@@ -410,7 +410,7 @@ namespace Gorgon.Core
                         }
                         else
                         {
-                            lines[i] = lines[i].Substring(lines[i].Length - difference);
+                            lines[i] = lines[i][^difference..];
                         }
                     }
                 }

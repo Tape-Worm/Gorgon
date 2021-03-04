@@ -129,11 +129,9 @@ namespace Gorgon.UI
                         {
                             _cueFont = new Font(Font, FontStyle.Italic);
                         }
-                        using (var brush = new SolidBrush(BackColor))
-                        {
-                            g.FillRectangle(brush, ClientRectangle);
-                            TextRenderer.DrawText(g, _cueText, _cueFont, ClientRectangle, Color.FromKnownColor(KnownColor.GrayText), TextFormatFlags.Left);
-                        }
+                        using var brush = new SolidBrush(BackColor);
+                        g.FillRectangle(brush, ClientRectangle);
+                        TextRenderer.DrawText(g, _cueText, _cueFont, ClientRectangle, Color.FromKnownColor(KnownColor.GrayText), TextFormatFlags.Left);
                     }
                     break;
                 default:

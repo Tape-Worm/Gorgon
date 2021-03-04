@@ -98,9 +98,9 @@ namespace Gorgon.Editor.AnimationEditor
                     case NotifyCollectionChangedAction.Add:
                         var added = (GorgonTrackRegistration)e.NewItems[0];
 
-                        Debug.Assert(added != null, "Must have a value to add to the list.");
+                        Debug.Assert(added is not null, "Must have a value to add to the list.");
 
-                        if (ListTracks.Items.OfType<TrackListItem>().FirstOrDefault(item => item.TrackRegistration == added) != null)
+                        if (ListTracks.Items.OfType<TrackListItem>().FirstOrDefault(item => item.TrackRegistration == added) is not null)
                         {
                             return;
                         }
@@ -110,7 +110,7 @@ namespace Gorgon.Editor.AnimationEditor
                     case NotifyCollectionChangedAction.Remove:
                         var removed = (GorgonTrackRegistration)e.OldItems[0];
 
-                        Debug.Assert(removed != null, "Must have a value to remove from the list.");
+                        Debug.Assert(removed is not null, "Must have a value to remove from the list.");
 
                         TrackListItem listItem = ListTracks.Items.OfType<TrackListItem>().FirstOrDefault(item => item.TrackRegistration == removed);
                         if (listItem is null)
@@ -252,7 +252,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to validate the state of the OK button.
         /// </summary>
         /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
         
         /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>

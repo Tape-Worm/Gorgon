@@ -108,7 +108,7 @@ namespace Gorgon.Editor.SpriteEditor
                 NumericAlpha.Value = alpha;
             }
 
-            if ((DataContext != null) && (!DataContext.ClipMaskValue.Alpha.EqualsEpsilon(SliderAlpha.ValuePercentual)))
+            if ((DataContext is not null) && (!DataContext.ClipMaskValue.Alpha.EqualsEpsilon(SliderAlpha.ValuePercentual)))
             {
                 DataContext.ClipMaskValue = new GorgonColor(Picker.SelectedColor, SliderAlpha.ValuePercentual);
             }
@@ -257,7 +257,7 @@ namespace Gorgon.Editor.SpriteEditor
                 color = Picker.OriginalColor;
             }
 
-            return (DataContext != null) && ((_originalMask != DataContext.ClipMaskType) || (!DataContext.ClipMaskValue.Equals(in color)));
+            return (DataContext is not null) && ((_originalMask != DataContext.ClipMaskType) || (!DataContext.ClipMaskValue.Equals(in color)));
         }
         
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>

@@ -40,53 +40,29 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="sprite">The sprite to read.</param>
         /// <param name="property">The property to read.</param>
         /// <returns>The floating point values.</returns>
-        public static DX.Vector4 GetFloatValues(this GorgonSprite sprite, TrackSpriteProperty property)
-        {
-            if (sprite is null)
-            {
-                return DX.Vector4.Zero;
-            }
-
-            switch (property)
-            {
-                case TrackSpriteProperty.Angle:
-                    return new DX.Vector4(sprite.Angle, 0, 0, 0);
-                case TrackSpriteProperty.Opacity:
-                    return new DX.Vector4(sprite.Color.Alpha, 0, 0, 0);
-                case TrackSpriteProperty.Color:
-                    return sprite.Color;
-                case TrackSpriteProperty.UpperLeftColor:
-                    return sprite.CornerColors.UpperLeft;
-                case TrackSpriteProperty.UpperRightColor:
-                    return sprite.CornerColors.UpperRight;
-                case TrackSpriteProperty.LowerLeftColor:
-                    return sprite.CornerColors.LowerLeft;
-                case TrackSpriteProperty.LowerRightColor:
-                    return sprite.CornerColors.LowerRight;
-                case TrackSpriteProperty.Anchor:                
-                    return new DX.Vector4(sprite.Anchor, 0, 0);
-                case TrackSpriteProperty.AnchorAbsolute:
-                    return new DX.Vector4(sprite.AbsoluteAnchor, 0, 0);
-                case TrackSpriteProperty.UpperLeft:
-                    return new DX.Vector4(sprite.CornerOffsets.UpperLeft, 0);                    
-                case TrackSpriteProperty.UpperRight:
-                    return new DX.Vector4(sprite.CornerOffsets.UpperRight, 0);                    
-                case TrackSpriteProperty.LowerLeft:
-                    return new DX.Vector4(sprite.CornerOffsets.LowerLeft, 0);                    
-                case TrackSpriteProperty.LowerRight:
-                    return new DX.Vector4(sprite.CornerOffsets.LowerRight, 0);
-                case TrackSpriteProperty.Position:
-                    return new DX.Vector4(sprite.Position, 0, 0);
-                case TrackSpriteProperty.Size:
-                    return new DX.Vector4(sprite.Size.Width, sprite.Size.Height, 0, 0);
-                case TrackSpriteProperty.Scale:
-                    return new DX.Vector4(sprite.Scale, 0, 0);
-                case TrackSpriteProperty.ScaledSize:
-                    return new DX.Vector4(sprite.ScaledSize.Width, sprite.ScaledSize.Height, 0, 0);
-                default:
-                    return DX.Vector4.Zero;
-            }
-        }
+        public static DX.Vector4 GetFloatValues(this GorgonSprite sprite, TrackSpriteProperty property) => sprite is null
+                ? DX.Vector4.Zero
+                : property switch
+                {
+                    TrackSpriteProperty.Angle => new DX.Vector4(sprite.Angle, 0, 0, 0),
+                    TrackSpriteProperty.Opacity => new DX.Vector4(sprite.Color.Alpha, 0, 0, 0),
+                    TrackSpriteProperty.Color => sprite.Color,
+                    TrackSpriteProperty.UpperLeftColor => sprite.CornerColors.UpperLeft,
+                    TrackSpriteProperty.UpperRightColor => sprite.CornerColors.UpperRight,
+                    TrackSpriteProperty.LowerLeftColor => sprite.CornerColors.LowerLeft,
+                    TrackSpriteProperty.LowerRightColor => sprite.CornerColors.LowerRight,
+                    TrackSpriteProperty.Anchor => new DX.Vector4(sprite.Anchor, 0, 0),
+                    TrackSpriteProperty.AnchorAbsolute => new DX.Vector4(sprite.AbsoluteAnchor, 0, 0),
+                    TrackSpriteProperty.UpperLeft => new DX.Vector4(sprite.CornerOffsets.UpperLeft, 0),
+                    TrackSpriteProperty.UpperRight => new DX.Vector4(sprite.CornerOffsets.UpperRight, 0),
+                    TrackSpriteProperty.LowerLeft => new DX.Vector4(sprite.CornerOffsets.LowerLeft, 0),
+                    TrackSpriteProperty.LowerRight => new DX.Vector4(sprite.CornerOffsets.LowerRight, 0),
+                    TrackSpriteProperty.Position => new DX.Vector4(sprite.Position, 0, 0),
+                    TrackSpriteProperty.Size => new DX.Vector4(sprite.Size.Width, sprite.Size.Height, 0, 0),
+                    TrackSpriteProperty.Scale => new DX.Vector4(sprite.Scale, 0, 0),
+                    TrackSpriteProperty.ScaledSize => new DX.Vector4(sprite.ScaledSize.Width, sprite.ScaledSize.Height, 0, 0),
+                    _ => DX.Vector4.Zero,
+                };
 
         /// <summary>
         /// Function to assign a sprite property value based on the track property and values from the keyframe.

@@ -260,14 +260,12 @@ namespace Gorgon.Examples
                 throw new FileNotFoundException($"The file '{path}' was not found in the file system.");
             }
 
-            using (Stream stream = file.OpenStream())
-            {
-                byte[] result = new byte[stream.Length];
+            using Stream stream = file.OpenStream();
+            byte[] result = new byte[stream.Length];
 
-                stream.Read(result, 0, result.Length);
+            stream.Read(result, 0, result.Length);
 
-                return result;
-            }
+            return result;
         }
 
         /// <summary>

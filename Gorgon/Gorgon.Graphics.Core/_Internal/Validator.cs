@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			if (firstTarget != null)
+			if (firstTarget is not null)
 			{
 				// Ensure our dimensions match, and multi-sample settings match.
 				for (int i = 0; i < currentTargets.Length; ++i)

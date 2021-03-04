@@ -52,7 +52,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The form for the ribbon.
         private readonly FormRibbon _ribbonForm;
         // The list of tracks in the animation.
-        private readonly List<ITrack> _tracks = new List<ITrack>();
+        private readonly List<ITrack> _tracks = new();
         // The loader used to load sprites into the animation.
         private ISpriteLoader _spriteLoader;
         // The marching ants interface.
@@ -210,7 +210,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            if ((_spriteLoader?.LoadSpriteCommand != null) && (_spriteLoader.LoadSpriteCommand.CanExecute(contentData.FilePaths)))
+            if ((_spriteLoader?.LoadSpriteCommand is not null) && (_spriteLoader.LoadSpriteCommand.CanExecute(contentData.FilePaths)))
             {
                 e.Effect = DragDropEffects.Move;
             }            
@@ -223,7 +223,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             IContentFileDragData contentData = GetContentFileDragDropData<IContentFileDragData>(e);
 
-            if ((_spriteLoader?.LoadSpriteCommand != null) && (_spriteLoader.LoadSpriteCommand.CanExecute(contentData.FilePaths)))
+            if ((_spriteLoader?.LoadSpriteCommand is not null) && (_spriteLoader.LoadSpriteCommand.CanExecute(contentData.FilePaths)))
             {
                 await _spriteLoader.LoadSpriteCommand.ExecuteAsync(contentData.FilePaths);
             }
@@ -265,7 +265,7 @@ namespace Gorgon.Editor.AnimationEditor
                         || (DataContext.Selected.Count == 0) 
                         || (!HasRenderer(DataContext.Selected[0].Track.KeyType.ToString())))
                     {
-                        rendererName = DataContext.PrimarySprite != null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName;
+                        rendererName = DataContext.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName;
 
                         if ((!HasRenderer(rendererName)) || (string.Equals(Renderer?.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
                         {
@@ -286,7 +286,7 @@ namespace Gorgon.Editor.AnimationEditor
                 case nameof(IAnimationContent.CommandContext):
                     if (DataContext.CommandContext is null)
                     {
-                        SwitchRenderer(DataContext.PrimarySprite != null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName, false);
+                        SwitchRenderer(DataContext.PrimarySprite is not null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName, false);
                         _spriteLoader = DataContext;
                     }
                     else

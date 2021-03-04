@@ -71,9 +71,9 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The working sprite.
-        private readonly GorgonPolySprite _workingSprite = new GorgonPolySprite();
+        private readonly GorgonPolySprite _workingSprite = new();
         // The triangulator used to convert the polygon into a triangle mesh.
-        private readonly Triangulator _triangulator = new Triangulator(null);
+        private readonly Triangulator _triangulator = new(null);
         #endregion
 
         #region Properties.

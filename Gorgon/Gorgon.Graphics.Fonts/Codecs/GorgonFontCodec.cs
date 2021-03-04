@@ -429,10 +429,8 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 name = filePath;
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return await OnLoadFromStreamAsync(name, stream);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return await OnLoadFromStreamAsync(name, stream);
         }
 
         /// <summary>
@@ -454,10 +452,8 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 name = filePath;
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return OnLoadFromStream(name, stream);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return OnLoadFromStream(name, stream);
         }
 
         /// <summary>

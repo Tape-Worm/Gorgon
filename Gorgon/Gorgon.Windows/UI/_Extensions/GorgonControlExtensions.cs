@@ -49,7 +49,7 @@ namespace System.Windows.Forms
 
             Control parent = control.Parent;
 
-            while (parent != null)
+            while (parent is not null)
             {
                 if ((parent.Parent is null) && (parent is T))
                 {
@@ -79,7 +79,7 @@ namespace System.Windows.Forms
 
             Control parent = control.Parent;
 
-            while (parent != null)
+            while (parent is not null)
             {
                 if (parent.Parent is null)
                 {

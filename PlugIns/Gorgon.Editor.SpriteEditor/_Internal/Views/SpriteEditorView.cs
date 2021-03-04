@@ -93,7 +93,7 @@ namespace Gorgon.Editor.SpriteEditor
         private void ValidateButtons()
         {
             _ribbonForm.ValidateButtons();
-            _ribbonForm.ButtonZoomSprite.Enabled = (DataContext?.Texture != null) && (Renderer?.CanZoom ?? false);
+            _ribbonForm.ButtonZoomSprite.Enabled = (DataContext?.Texture is not null) && (Renderer?.CanZoom ?? false);
             
             if (DataContext?.Texture is null)
             {
@@ -218,7 +218,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 // Disable to stop the form from being dragged any further.
                 form.Enabled = false;
-                if (DataContext != null)
+                if (DataContext is not null)
                 {
                     DataContext.Settings.ManualVertexEditorBounds = null;
                 }
@@ -248,7 +248,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 // Disable to stop the form from being dragged any further.
                 form.Enabled = false;
-                if (DataContext != null)
+                if (DataContext is not null)
                 {
                     DataContext.Settings.ManualRectangleEditorBounds = null;
                 }
@@ -412,12 +412,12 @@ namespace Gorgon.Editor.SpriteEditor
             UpdateArrayPanel();
             UpdateSpriteDimensionsPanel();
                         
-            if (dataContext?.SpriteClipContext != null)
+            if (dataContext?.SpriteClipContext is not null)
             {
                 dataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
             }
 
-            if (dataContext?.SpritePickContext != null)
+            if (dataContext?.SpritePickContext is not null)
             {
                 dataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
             }
@@ -507,7 +507,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             var args = new SetTextureArgs(contentData.FilePaths[0]);
 
-            if ((DataContext?.SetTextureCommand != null) && (DataContext.SetTextureCommand.CanExecute(args)))
+            if ((DataContext?.SetTextureCommand is not null) && (DataContext.SetTextureCommand.CanExecute(args)))
             {
                 await DataContext.SetTextureCommand.ExecuteAsync(args);
             }
@@ -554,7 +554,7 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpriteContent.CurrentPanel):
                     if ((DataContext.CurrentPanel is null) || (!HasRenderer(DataContext.CurrentPanel.GetType().FullName)))
                     {
-                        rendererName = DataContext.Texture != null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
+                        rendererName = DataContext.Texture is not null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
 
                         if (string.Equals(Renderer?.Name, rendererName, StringComparison.OrdinalIgnoreCase))
                         {
@@ -581,7 +581,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     if ((DataContext.CommandContext is null) || (!HasRenderer(DataContext.CommandContext.Name)))
                     {
-                        rendererName = DataContext.Texture != null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
+                        rendererName = DataContext.Texture is not null ? DefaultSpriteViewer.ViewerName : NoTextureViewer.ViewerName;
                     }
                     else
                     {
@@ -637,13 +637,13 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected override void OnParentChanged(EventArgs e)
         {
-            if (_parentForm != null)
+            if (_parentForm is not null)
             {
                 _parentForm.Move -= ParentForm_Move;
                 _parentForm = null;
             }
 
-            if (ParentForm != null)
+            if (ParentForm is not null)
             {
                 // This will allow us to reposition our pop up window -after- the parent form stops moving.  Move will just fire non-stop, and the window 
                 // position will be updated constantly (which actually slows things down quite a bit).  
@@ -821,12 +821,12 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.UnassignEvents();
 
-            if (DataContext?.SpriteClipContext != null)
+            if (DataContext?.SpriteClipContext is not null)
             {
                 DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
             }
 
-            if (DataContext?.SpritePickContext != null)
+            if (DataContext?.SpritePickContext is not null)
             {
                 DataContext.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
             }
@@ -856,7 +856,7 @@ namespace Gorgon.Editor.SpriteEditor
             _ribbonForm.ButtonSpriteCornerManualInput.Click += VertexEditViewer_ToggleManualInput;
             Ribbon = _ribbonForm.RibbonSpriteContent;
 
-            if (RenderWindow != null)
+            if (RenderWindow is not null)
             {
                 RenderWindow.PreviewKeyDown += PanelRenderWindow_PreviewKeyDown;
             }

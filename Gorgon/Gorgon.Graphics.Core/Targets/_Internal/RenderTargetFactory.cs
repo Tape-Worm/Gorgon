@@ -61,21 +61,21 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // The list of render targets handled by this factory.
-        private readonly List<GorgonRenderTarget2DView> _renderTargets = new List<GorgonRenderTarget2DView>();
+        private readonly List<GorgonRenderTarget2DView> _renderTargets = new();
         // The list of preallocated default shader resource views.
-        private readonly List<GorgonShaderResourceView> _srvs = new List<GorgonShaderResourceView>();
+        private readonly List<GorgonShaderResourceView> _srvs = new();
         // The list of indexes for previously rented targets.
-        private readonly HashSet<GorgonRenderTarget2DView> _rented = new HashSet<GorgonRenderTarget2DView>();
+        private readonly HashSet<GorgonRenderTarget2DView> _rented = new();
         // The graphics interface that owns this factory.
         private readonly GorgonGraphics _graphics;
         // The time at which a render target was last returned from rental.
-        private readonly Dictionary<GorgonRenderTarget2DView, double> _expiryTime = new Dictionary<GorgonRenderTarget2DView, double>();
+        private readonly Dictionary<GorgonRenderTarget2DView, double> _expiryTime = new();
         // The list used to clean up expired targets.
-        private readonly List<GorgonRenderTarget2DView> _cleanupList = new List<GorgonRenderTarget2DView>();
+        private readonly List<GorgonRenderTarget2DView> _cleanupList = new();
         // The timer used to expire the render targets.
         private readonly IGorgonTimer _expiryTimer;
         // An allocator for creating texture info objects.
-        private readonly GorgonRingPool<GorgonTexture2DInfo> _textureInfoAllocator = new GorgonRingPool<GorgonTexture2DInfo>(100, () => new GorgonTexture2DInfo());
+        private readonly GorgonRingPool<GorgonTexture2DInfo> _textureInfoAllocator = new(100, () => new GorgonTexture2DInfo());
         #endregion
 
         #region Properties.

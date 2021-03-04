@@ -278,22 +278,14 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="imageAddress">Image addressing values.</param>
 		/// <returns>Texture addressing values.</returns>
-		private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress)
+		private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress) => imageAddress switch
         {
-            switch (imageAddress)
-            {
-                case 1:
-                    return TextureWrap.Wrap;
-                case 2:
-                    return TextureWrap.Mirror;
-                case 5:
-                    return TextureWrap.MirrorOnce;
-                case 4:
-                    return TextureWrap.Border;
-                default:
-                    return TextureWrap.Clamp;
-            }
-        }
+            1 => TextureWrap.Wrap,
+            2 => TextureWrap.Mirror,
+            5 => TextureWrap.MirrorOnce,
+            4 => TextureWrap.Border,
+            _ => TextureWrap.Clamp,
+        };
 
         /// <summary>
         /// Function to build a sampler state from the information provided by the sprite data.
@@ -308,21 +300,16 @@ namespace Gorgon.IO
         {
             var builder = new GorgonSamplerStateBuilder(graphics);
 
-            switch (filter)
+            return filter switch
             {
-                case SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White):
-                    return null;
-                case SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White):
-                    return GorgonSamplerState.PointFiltering;
-                case SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White):
-                    return GorgonSamplerState.Wrapping;
-                case SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White):
-                    return GorgonSamplerState.PointFilteringWrapping;
-                default:
-                    return builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
-                                  .Filter(filter)
-                                  .Build();
-            }
+                SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => null,
+                SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFiltering,
+                SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.Wrapping,
+                SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFilteringWrapping,
+                _ => builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
+.Filter(filter)
+.Build(),
+            };
         }
 
         /// <summary>
@@ -409,7 +396,7 @@ namespace Gorgon.IO
 
             sprite.TextureRegion = reader.ReadRectangleF();
 
-            if (textureView != null)
+            if (textureView is not null)
             {
                 // V2 used black transparent by default, so convert it to our default so we can keep from creating unnecessary states.
                 if (borderColor == GorgonColor.BlackTransparent)
@@ -434,20 +421,18 @@ namespace Gorgon.IO
         /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
         protected override bool OnIsReadable(Stream stream)
         {
-            using (var reader = new GorgonBinaryReader(stream, true))
+            using var reader = new GorgonBinaryReader(stream, true);
+            if ((stream.Length - stream.Position) < sizeof(ulong) * 2)
             {
-                if ((stream.Length - stream.Position) < sizeof(ulong) * 2)
-                {
-                    return false;
-                }
-
-                ulong chunkHeader = reader.ReadUInt64();
-                // Skip the size, we don't need it.
-                reader.ReadUInt32();
-                ulong chunkFileData = reader.ReadUInt64();
-
-                return (chunkHeader == FileHeader.ChunkID()) && (chunkFileData == SpriteDataChunk.ChunkID());
+                return false;
             }
+
+            ulong chunkHeader = reader.ReadUInt64();
+            // Skip the size, we don't need it.
+            reader.ReadUInt32();
+            ulong chunkFileData = reader.ReadUInt64();
+
+            return (chunkHeader == FileHeader.ChunkID()) && (chunkFileData == SpriteDataChunk.ChunkID());
         }
 
         /// <summary>
@@ -457,32 +442,30 @@ namespace Gorgon.IO
         /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
         protected override string OnGetAssociatedTextureName(Stream stream)
         {
-            using (var reader = new GorgonChunkReader(stream))
+            using var reader = new GorgonChunkReader(stream);
+            if (!reader.HasChunk(FileHeader))
             {
-                if (!reader.HasChunk(FileHeader))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
-                }
-
-                reader.Begin(FileHeader);
-                reader.Begin(SpriteDataChunk);
-                reader.SkipBytes(Unsafe.SizeOf<DX.Vector2>()
-                                 + Unsafe.SizeOf<DX.Size2F>()
-                                 + (sizeof(bool) * 2)
-                                 + (GorgonColor.SizeInBytes * 4)
-                                 + (Unsafe.SizeOf<DX.Vector2>() * 4));
-                reader.End();
-
-                // Read rendering information.
-                reader.Begin(RenderDataChunk);
-                reader.SkipBytes(Unsafe.SizeOf<CullingMode>() + Unsafe.SizeOf<GorgonRangeF>() + 91);
-                reader.End();
-
-                // Read texture information.
-                reader.Begin(TextureDataChunk);
-                reader.SkipBytes(GorgonColor.SizeInBytes + (sizeof(int) * 2) + Unsafe.SizeOf<TextureFilter>());
-                return reader.ReadString();
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
             }
+
+            reader.Begin(FileHeader);
+            reader.Begin(SpriteDataChunk);
+            reader.SkipBytes(Unsafe.SizeOf<DX.Vector2>()
+                             + Unsafe.SizeOf<DX.Size2F>()
+                             + (sizeof(bool) * 2)
+                             + (GorgonColor.SizeInBytes * 4)
+                             + (Unsafe.SizeOf<DX.Vector2>() * 4));
+            reader.End();
+
+            // Read rendering information.
+            reader.Begin(RenderDataChunk);
+            reader.SkipBytes(Unsafe.SizeOf<CullingMode>() + Unsafe.SizeOf<GorgonRangeF>() + 91);
+            reader.End();
+
+            // Read texture information.
+            reader.Begin(TextureDataChunk);
+            reader.SkipBytes(GorgonColor.SizeInBytes + (sizeof(int) * 2) + Unsafe.SizeOf<TextureFilter>());
+            return reader.ReadString();
         }
 
         /// <summary>

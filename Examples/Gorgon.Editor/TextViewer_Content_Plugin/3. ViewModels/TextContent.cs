@@ -104,7 +104,7 @@ namespace Gorgon.Examples
                     return;
                 }
 
-                if (_currentPanel != null)
+                if (_currentPanel is not null)
                 {
                     _currentPanel.PropertyChanged -= TextColor_PropertyChanged;
                     _currentPanel.IsActive = false;
@@ -114,7 +114,7 @@ namespace Gorgon.Examples
                 _currentPanel = value;
                 OnPropertyChanged();
 
-                if (_currentPanel != null)
+                if (_currentPanel is not null)
                 {
                     _currentPanel.IsActive = true;
                     _currentPanel.PropertyChanged += TextColor_PropertyChanged;
@@ -428,7 +428,7 @@ namespace Gorgon.Examples
             // minimum. 
             try
             {
-                if (CurrentPanel != null)
+                if (CurrentPanel is not null)
                 {
                     CurrentPanel = null;
                     return;

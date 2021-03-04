@@ -71,16 +71,16 @@ namespace Gorgon.Examples
         // The file system where resources are kept.
         private IGorgonFileSystem _fileSystem;
         // The list of shaders.
-        private readonly Dictionary<string, GorgonPixelShader> _pixelShaders = new Dictionary<string, GorgonPixelShader>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, GorgonVertexShader> _vertexShaders = new Dictionary<string, GorgonVertexShader>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, GorgonPixelShader> _pixelShaders = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, GorgonVertexShader> _vertexShaders = new(StringComparer.OrdinalIgnoreCase);
         // The list of 3D models.
-        private readonly Dictionary<string, MoveableMesh> _meshes = new Dictionary<string, MoveableMesh>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, MoveableMesh> _meshes = new(StringComparer.OrdinalIgnoreCase);
         // The list of animations.
-        private readonly Dictionary<string, IGorgonAnimation> _animations = new Dictionary<string, IGorgonAnimation>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IGorgonAnimation> _animations = new(StringComparer.OrdinalIgnoreCase);
         // The list of post process renderers.
-        private readonly Dictionary<string, Gorgon2DCompositor> _postProcess = new Dictionary<string, Gorgon2DCompositor>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Gorgon2DCompositor> _postProcess = new(StringComparer.OrdinalIgnoreCase);
         // The list of effects used by the application.
-        private readonly Dictionary<string, Gorgon2DEffect> _effects = new Dictionary<string, Gorgon2DEffect>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Gorgon2DEffect> _effects = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.

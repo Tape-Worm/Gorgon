@@ -367,7 +367,7 @@ namespace Gorgon.IO
         /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
         /// 
         /// // The file will now show up in the directory.
-        /// if (file != null)
+        /// if (file is not null)
         /// {
         ///    Console.WriteLine("File exists.");
         /// }

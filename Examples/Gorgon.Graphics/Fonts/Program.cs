@@ -59,7 +59,7 @@ namespace Gorgon.Examples
         // Our 2D renderer, used to draw text.
         private static Gorgon2D _renderer;
         // The list of built-in Windows font family names to use.
-        private static readonly List<string> _fontFamilies = new List<string>
+        private static readonly List<string> _fontFamilies = new()
         {
             "Usuzi",
             "Algerian",
@@ -75,7 +75,7 @@ namespace Gorgon.Examples
             "Playbill"
         };
         // The fonts for the application. 
-        private static readonly List<GorgonFont> _font = new List<GorgonFont>();
+        private static readonly List<GorgonFont> _font = new();
         // The starting time.
         private static float _startTime = float.MinValue;
         // The current font index.
@@ -113,83 +113,81 @@ namespace Gorgon.Examples
             int fontWithTexture = GorgonRandom.RandomInt32(fontWithGradient + 1, fontWithGradient + 5).Min(_fontFamilies.Count - 1);
 
             var pngCodec = new GorgonCodecPng();
-            using (IGorgonImage texture = pngCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\Fonts\").FullName, "Gradient.png")))
+            using IGorgonImage texture = pngCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\Fonts\").FullName, "Gradient.png"));
+            for (int i = 0; i < _fontFamilies.Count; ++i)
             {
-                for (int i = 0; i < _fontFamilies.Count; ++i)
+                string fontFamily = _fontFamilies[i];
+
+                // Use this to determine if the font is avaiable.
+                if (fontFamilies.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    string fontFamily = _fontFamilies[i];
-
-                    // Use this to determine if the font is avaiable.
-                    if (fontFamilies.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase)))
-                    {
-                        // Can't locate this one, move on...
-                        continue;
-                    }
-
-                    bool isExternal = Drawing.FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
-                    string fontName;
-                    int outlineSize = 0;
-                    GorgonColor outlineColor1 = GorgonColor.BlackTransparent;
-                    GorgonColor outlineColor2 = GorgonColor.BlackTransparent;
-                    GorgonGlyphBrush brush = null;
-
-                    if (i == fontWithOutlineIndex)
-                    {
-                        fontName = $"{fontFamily} 32px Outlined{(isExternal ? " External TTF" : string.Empty)}";
-                        outlineColor1 = GorgonColor.Black;
-                        outlineColor2 = GorgonColor.Black;
-                        outlineSize = 3;
-                    }
-                    else if (i == _glowIndex)
-                    {
-                        fontName = $"{fontFamily} 32px Outline as Glow{(isExternal ? " External TTF" : string.Empty)}";
-                        outlineColor1 = new GorgonColor(GorgonColor.YellowPure, 1.0f);
-                        outlineColor2 = new GorgonColor(GorgonColor.DarkRed, 0.0f);
-                        outlineSize = 16;
-                    }
-                    else if (i == fontWithGradient)
-                    {
-                        fontName = $"{fontFamily} 32px Gradient{(isExternal ? " External TTF" : string.Empty)}";
-                        brush = new GorgonGlyphLinearGradientBrush
-                        {
-                            StartColor = GorgonColor.White,
-                            EndColor = GorgonColor.Black,
-                            Angle = 45.0f
-                        };
-                    }
-                    else if (i == fontWithTexture)
-                    {
-                        fontName = $"{fontFamily} 32px Textured{(isExternal ? " External TTF" : string.Empty)}";
-                        brush = new GorgonGlyphTextureBrush(texture);
-                    }
-                    else
-                    {
-                        fontName = $"{fontFamily} 32px{(isExternal ? " External TTF" : string.Empty)}";
-                    }
-
-                    window.UpdateStatus($"Generating Font: {fontFamily}".Ellipses(50));
-
-                    var fontInfo = new GorgonFontInfo(fontFamily,
-                                                      30.25f,
-                                                      name:
-                                                      fontName)
-                    {
-                        AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-                        OutlineSize = outlineSize,
-                        OutlineColor1 = outlineColor1,
-                        OutlineColor2 = outlineColor2,
-                        UsePremultipliedTextures = false,
-                        Brush = brush
-                    };
-
-                    // Because fonts can take a bit of time to generate (especially if using compression), we can retrieve the font asynchronously from the 
-                    // font factory. In addition to an async method, a GetFont method is also available to grab/generate the font synchronously.
-                    _font.Add(await GorgonExample.Fonts.GetFontAsync(fontInfo));
-
-                    // Texture brushes have to be disposed when we're done with them.
-                    var disposableBrush = brush as IDisposable;
-                    disposableBrush?.Dispose();
+                    // Can't locate this one, move on...
+                    continue;
                 }
+
+                bool isExternal = Drawing.FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
+                string fontName;
+                int outlineSize = 0;
+                GorgonColor outlineColor1 = GorgonColor.BlackTransparent;
+                GorgonColor outlineColor2 = GorgonColor.BlackTransparent;
+                GorgonGlyphBrush brush = null;
+
+                if (i == fontWithOutlineIndex)
+                {
+                    fontName = $"{fontFamily} 32px Outlined{(isExternal ? " External TTF" : string.Empty)}";
+                    outlineColor1 = GorgonColor.Black;
+                    outlineColor2 = GorgonColor.Black;
+                    outlineSize = 3;
+                }
+                else if (i == _glowIndex)
+                {
+                    fontName = $"{fontFamily} 32px Outline as Glow{(isExternal ? " External TTF" : string.Empty)}";
+                    outlineColor1 = new GorgonColor(GorgonColor.YellowPure, 1.0f);
+                    outlineColor2 = new GorgonColor(GorgonColor.DarkRed, 0.0f);
+                    outlineSize = 16;
+                }
+                else if (i == fontWithGradient)
+                {
+                    fontName = $"{fontFamily} 32px Gradient{(isExternal ? " External TTF" : string.Empty)}";
+                    brush = new GorgonGlyphLinearGradientBrush
+                    {
+                        StartColor = GorgonColor.White,
+                        EndColor = GorgonColor.Black,
+                        Angle = 45.0f
+                    };
+                }
+                else if (i == fontWithTexture)
+                {
+                    fontName = $"{fontFamily} 32px Textured{(isExternal ? " External TTF" : string.Empty)}";
+                    brush = new GorgonGlyphTextureBrush(texture);
+                }
+                else
+                {
+                    fontName = $"{fontFamily} 32px{(isExternal ? " External TTF" : string.Empty)}";
+                }
+
+                window.UpdateStatus($"Generating Font: {fontFamily}".Ellipses(50));
+
+                var fontInfo = new GorgonFontInfo(fontFamily,
+                                                  30.25f,
+                                                  name:
+                                                  fontName)
+                {
+                    AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+                    OutlineSize = outlineSize,
+                    OutlineColor1 = outlineColor1,
+                    OutlineColor2 = outlineColor2,
+                    UsePremultipliedTextures = false,
+                    Brush = brush
+                };
+
+                // Because fonts can take a bit of time to generate (especially if using compression), we can retrieve the font asynchronously from the 
+                // font factory. In addition to an async method, a GetFont method is also available to grab/generate the font synchronously.
+                _font.Add(await GorgonExample.Fonts.GetFontAsync(fontInfo));
+
+                // Texture brushes have to be disposed when we're done with them.
+                var disposableBrush = brush as IDisposable;
+                disposableBrush?.Dispose();
             }
         }
 
@@ -362,10 +360,10 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);            
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Use a callback so we can use async.
-            async void OnLoad(object sender, EventArgs e)
+            static async void OnLoad(object sender, EventArgs e)
             {
                 var form = (FormMain)sender;
 

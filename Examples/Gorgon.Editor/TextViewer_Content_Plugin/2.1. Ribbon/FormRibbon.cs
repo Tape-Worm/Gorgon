@@ -38,12 +38,12 @@ namespace Gorgon.Examples
         // with the menu item assigned to the zoom level.
 
         // The list of menu items associated with the zoom level.
-        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
+        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = new();
 
         // This is similar to the zoom items in that it's a lookup for the font values and the menu items for the fonts.
 
         // The list of menu items associated with font selection.
-        private readonly Dictionary<FontFace, ToolStripMenuItem> _menuFontItems = new Dictionary<FontFace, ToolStripMenuItem>();
+        private readonly Dictionary<FontFace, ToolStripMenuItem> _menuFontItems = new();
 
         // The current zoom level.
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
@@ -79,14 +79,14 @@ namespace Gorgon.Examples
                     return;
                 }
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
                 }
 
                 _contentRenderer = value;
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged += ContentRenderer_ZoomScale;
                     _zoomLevel = _contentRenderer.ZoomLevel;

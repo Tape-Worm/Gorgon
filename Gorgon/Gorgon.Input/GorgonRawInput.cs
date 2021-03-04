@@ -88,17 +88,17 @@ namespace Gorgon.Input
         // The logger used for debugging.
         private readonly IGorgonLog _log;
         // Synchronization lock for threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         // The list of registered devices.
         private readonly Dictionary<DeviceKey, IGorgonRawInputDevice> _devices;
         // The handle to the window that is receiving raw input events.
         private readonly IntPtr _applicationWindow;
         // The list of human interface devices registered on the system.
-        private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> _hids = new Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>>();
+        private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> _hids = new();
         // The list of keyboard devices registered on the system.
-        private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = new Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>>();
+        private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = new();
         // The list of pointing devices registered on the system.
-        private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = new Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>>();
+        private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = new();
         #endregion
 
         #region Methods.
@@ -133,17 +133,13 @@ namespace Gorgon.Input
             string className = RawInputDeviceRegistryInfo.GetDeviceClass(deviceName, _log);
             string deviceDescription = RawInputDeviceRegistryInfo.GetDeviceDescription(deviceName, _log);
 
-            switch (deviceInfo.dwType)
+            return deviceInfo.dwType switch
             {
-                case RawInputType.Keyboard:
-                    return new RawKeyboardInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.keyboard) as T;
-                case RawInputType.Mouse:
-                    return new RawMouseInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.mouse) as T;
-                case RawInputType.HID:
-                    return new GorgonRawHIDInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.hid) as T;
-                default:
-                    return null;
-            }
+                RawInputType.Keyboard => new RawKeyboardInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.keyboard) as T,
+                RawInputType.Mouse => new RawMouseInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.mouse) as T,
+                RawInputType.HID => new GorgonRawHIDInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.hid) as T,
+                _ => null,
+            };
         }
 
         /// <summary>
@@ -177,7 +173,7 @@ namespace Gorgon.Input
 
             // If all devices of this type have been unregistered, unregister with raw input as well.
             if ((!_devices.Any(item => item.Value.DeviceType == device.DeviceType))
-                && (RawInputApi.GetDeviceRegistration(device.DeviceUsage) != null))
+                && (RawInputApi.GetDeviceRegistration(device.DeviceUsage) is not null))
             {
                 RawInputApi.UnregisterRawInputDevice(device.DeviceUsage);
             }
@@ -269,7 +265,7 @@ namespace Gorgon.Input
 
                 // Get the current device registration properties.
                 RAWINPUTDEVICE? deviceReg = RawInputApi.GetDeviceRegistration(device.DeviceUsage);
-                if (deviceReg != null)
+                if (deviceReg is not null)
                 {
                     // Remove the device before updating it.
                     UnregisterDevice(device);
@@ -322,7 +318,7 @@ namespace Gorgon.Input
 
                 // Get the current device registration properties.
                 RAWINPUTDEVICE? deviceReg = RawInputApi.GetDeviceRegistration(device.DeviceUsage);
-                if (deviceReg != null)
+                if (deviceReg is not null)
                 {
                     // Remove the device before updating it.
                     UnregisterDevice(device);
@@ -375,7 +371,7 @@ namespace Gorgon.Input
 
                 // Get the current device registration properties.
                 RAWINPUTDEVICE? deviceReg = RawInputApi.GetDeviceRegistration(device.DeviceUsage);
-                if (deviceReg != null)
+                if (deviceReg is not null)
                 {
                     // Remove the device before updating it.
                     UnregisterDevice(device);
@@ -579,7 +575,7 @@ namespace Gorgon.Input
                 _hids.Clear();
 
                 _devices.Clear();
-                if ((_filter != null) && (_filter.IsValueCreated))
+                if ((_filter is not null) && (_filter.IsValueCreated))
                 {
                     if (_applicationWindow != IntPtr.Zero)
                     {
@@ -612,7 +608,7 @@ namespace Gorgon.Input
         /// </remarks>
         public GorgonRawInput(IWin32Window applicationWindow, IGorgonLog log = null)
         {
-            RawInputMessageFilter CreateFilter() => new RawInputMessageFilter(_keyboardDevices, _mouseDevices, _hids, _applicationWindow);
+            RawInputMessageFilter CreateFilter() => new(_keyboardDevices, _mouseDevices, _hids, _applicationWindow);
 
             _log = log ?? GorgonLog.NullLog;
             _applicationWindow = applicationWindow?.Handle ?? throw new ArgumentNullException(nameof(applicationWindow));

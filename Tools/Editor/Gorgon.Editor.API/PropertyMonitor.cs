@@ -127,7 +127,7 @@ namespace Gorgon.Editor
                     }
                 }
 
-                Debug.Assert(_properties != null, "This object does not contain public properties!");
+                Debug.Assert(_properties is not null, "This object does not contain public properties!");
             }
 
             if (!_properties.Contains(propertyName))

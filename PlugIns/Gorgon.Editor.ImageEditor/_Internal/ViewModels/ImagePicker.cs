@@ -590,7 +590,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to determine if the selected file can be imported.
         /// </summary>
         /// <returns><b>true</b> if the file can be imported, <b>false</b> if not.</returns>
-        private bool CanImport() => _selectedFile != null;
+        private bool CanImport() => _selectedFile is not null;
 
         /// <summary>
         /// Function to perform the import of a file.
@@ -626,7 +626,7 @@ namespace Gorgon.Editor.ImageEditor
                     }
                     finally
                     {
-                        if (_ioService.ScratchArea.FileSystem.GetFile(workPath) != null)
+                        if (_ioService.ScratchArea.FileSystem.GetFile(workPath) is not null)
                         {
                             _ioService.ScratchArea.DeleteFile(workPath);
                         }
@@ -728,7 +728,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
-        private bool CanActivate(ActivateImagePickerArgs args) => (args?.FilesToImport != null) && (args.FilesToImport.Count > 0) && (args.ImageData != null);
+        private bool CanActivate(ActivateImagePickerArgs args) => (args?.FilesToImport is not null) && (args.FilesToImport.Count > 0) && (args.ImageData is not null);
 
         /// <summary>
         /// Function to activate the image editor.

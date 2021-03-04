@@ -153,13 +153,11 @@ namespace Gorgon.Native
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
             }            
 
-            var result = new GorgonNativeBuffer<T>(count.Value);            
-            using (var reader = new GorgonBinaryReader(stream, true))
-            {                
-                for (int i = 0; i < count.Value; ++i)
-                {
-                    reader.ReadValue(out result[i]);
-                }
+            var result = new GorgonNativeBuffer<T>(count.Value);
+            using var reader = new GorgonBinaryReader(stream, true);
+            for (int i = 0; i < count.Value; ++i)
+            {
+                reader.ReadValue(out result[i]);
             }
         }
 

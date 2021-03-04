@@ -44,7 +44,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the position of the vertex in space.
         /// </summary>
-        public DX.Vector2 Position => new DX.Vector2(Vertex.Position.X, Vertex.Position.Y);
+        public DX.Vector2 Position => new(Vertex.Position.X, Vertex.Position.Y);
 
         /// <summary>
         /// Property to return the color of the vertex.
@@ -60,7 +60,7 @@ namespace Gorgon.Renderers
         /// </summary>
         public DX.Vector2 TextureCoordinate
         {
-            get => new DX.Vector2(Vertex.UV.X, Vertex.UV.Y);
+            get => new(Vertex.UV.X, Vertex.UV.Y);
             internal set => Vertex.UV = new DX.Vector4(value, Vertex.UV.Z, 0);
         }
         #endregion

@@ -57,13 +57,13 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // Default texture loading options.
-        private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new GorgonTextureLoadOptions();
+        private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new();
         // The ID number of the texture.
         private static int _textureID;
         // The list of cached texture unordered access views.
-        private Dictionary<TextureViewKey, GorgonTexture1DReadWriteView> _cachedReadWriteViews = new Dictionary<TextureViewKey, GorgonTexture1DReadWriteView>();
+        private Dictionary<TextureViewKey, GorgonTexture1DReadWriteView> _cachedReadWriteViews = new();
         // The list of cached texture shader resource views.
-        private Dictionary<TextureViewKey, GorgonTexture1DView> _cachedSrvs = new Dictionary<TextureViewKey, GorgonTexture1DView>();
+        private Dictionary<TextureViewKey, GorgonTexture1DView> _cachedSrvs = new();
         // The information used to create the texture.
         private readonly GorgonTexture1DInfo _info;
         #endregion
@@ -241,7 +241,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Format));
             }
 
-            if ((Usage == ResourceUsage.Dynamic) || (Usage == ResourceUsage.Staging))
+            if (Usage is ResourceUsage.Dynamic or ResourceUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT);
             }
@@ -1023,7 +1023,7 @@ namespace Gorgon.Graphics.Core
             unsafe
             {
                 // If we have a default usage, then update using update subresource.
-                if ((Usage != ResourceUsage.Dynamic) && (Usage != ResourceUsage.Staging))
+                if (Usage is not ResourceUsage.Dynamic and not ResourceUsage.Staging)
                 {
                     Graphics.D3DDeviceContext.UpdateSubresource1(D3DResource,
                                                                  D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, MipLevels),
@@ -1047,15 +1047,11 @@ namespace Gorgon.Graphics.Core
 
                 if (Usage == ResourceUsage.Dynamic)
                 {
-                    switch (copyMode)
+                    mapMode = copyMode switch
                     {
-                        case CopyMode.NoOverwrite:
-                            mapMode = D3D11.MapMode.WriteNoOverwrite;
-                            break;
-                        default:
-                            mapMode = D3D11.MapMode.WriteDiscard;
-                            break;
-                    }
+                        CopyMode.NoOverwrite => D3D11.MapMode.WriteNoOverwrite,
+                        _ => D3D11.MapMode.WriteDiscard,
+                    };
                 }
 
                 // Otherwise we will map and write the data.
@@ -1116,7 +1112,7 @@ namespace Gorgon.Graphics.Core
 
                 int index = 0;
 
-                if (arrayIndex != null)
+                if (arrayIndex is not null)
                 {
                     index = arrayIndex.Value.Min(ArrayCount - 1).Max(0);
                 }
@@ -1230,7 +1226,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="texelCoordinates">The texel rectangle to convert.</param>
         /// <returns>The pixel rectangle.</returns>
-        public GorgonRange ToPixel(GorgonRangeF texelCoordinates) => new GorgonRange((int)(texelCoordinates.Minimum * Width),
+        public GorgonRange ToPixel(GorgonRangeF texelCoordinates) => new((int)(texelCoordinates.Minimum * Width),
                                    (int)(texelCoordinates.Maximum * Width));
 
         /// <summary>
@@ -1238,7 +1234,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="pixelCoordinates">The pixel rectangle to convert.</param>
         /// <returns>The texel rectangle.</returns>
-        public GorgonRangeF ToTexel(GorgonRange pixelCoordinates) => new GorgonRangeF(pixelCoordinates.Minimum / (float)Width,
+        public GorgonRangeF ToTexel(GorgonRange pixelCoordinates) => new(pixelCoordinates.Minimum / (float)Width,
                                     pixelCoordinates.Maximum / (float)Width);
 
         /// <summary>
@@ -1328,12 +1324,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
             if ((_cachedSrvs.TryGetValue(key, out GorgonTexture1DView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedSrvs.Remove(key);
             }
@@ -1423,12 +1419,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
             if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture1DReadWriteView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedReadWriteViews.Remove(key);
             }
@@ -1526,17 +1522,15 @@ namespace Gorgon.Graphics.Core
                 options.Name = GenerateName(NamePrefix);
             }
 
-            using (IGorgonImage image = codec.FromStream(stream, size))
+            using IGorgonImage image = codec.FromStream(stream, size);
+            if (options.ConvertToPremultipliedAlpha)
             {
-                if (options.ConvertToPremultipliedAlpha)
-                {
-                    image.BeginUpdate()
-                         .ConvertToPremultipliedAlpha()
-                         .EndUpdate();
-                }
-
-                return new GorgonTexture1D(graphics, image, options);
+                image.BeginUpdate()
+                     .ConvertToPremultipliedAlpha()
+                     .EndUpdate();
             }
+
+            return new GorgonTexture1D(graphics, image, options);
         }
 
         /// <summary>
@@ -1608,17 +1602,15 @@ namespace Gorgon.Graphics.Core
                 options.Name = GenerateName(NamePrefix);
             }
 
-            using (IGorgonImage image = codec.FromFile(filePath))
+            using IGorgonImage image = codec.FromFile(filePath);
+            if (options.ConvertToPremultipliedAlpha)
             {
-                if (options.ConvertToPremultipliedAlpha)
-                {
-                    image.BeginUpdate()
-                         .ConvertToPremultipliedAlpha()
-                         .EndUpdate();
-                }
-
-                return new GorgonTexture1D(graphics, image, options);
+                image.BeginUpdate()
+                     .ConvertToPremultipliedAlpha()
+                     .EndUpdate();
             }
+
+            return new GorgonTexture1D(graphics, image, options);
         }
 
         /// <summary>
@@ -1630,7 +1622,7 @@ namespace Gorgon.Graphics.Core
             Dictionary<TextureViewKey, GorgonTexture1DView> cachedSrvs = Interlocked.Exchange(ref _cachedSrvs, null);
             Dictionary<TextureViewKey, GorgonTexture1DReadWriteView> cachedReadWriteViews = Interlocked.Exchange(ref _cachedReadWriteViews, null);
 
-            if (cachedSrvs != null)
+            if (cachedSrvs is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonTexture1DView> view in cachedSrvs)
                 {
@@ -1638,7 +1630,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            if (cachedReadWriteViews != null)
+            if (cachedReadWriteViews is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonTexture1DReadWriteView> view in cachedReadWriteViews)
                 {

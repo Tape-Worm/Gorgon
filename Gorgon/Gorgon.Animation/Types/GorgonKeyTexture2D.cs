@@ -76,7 +76,7 @@ namespace Gorgon.Animation
 
                 _value = value;
 
-                if (_value != null)
+                if (_value is not null)
                 {
                     TextureName = _value.Texture.Name;
                 }

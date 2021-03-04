@@ -101,7 +101,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 		/// <param name="compressedSize">Compressed size of the file.</param>
         /// <returns>A new node element with the file information.</returns>
         private static XElement CreateFileNode(FileInfo file, long position, long size, long compressedSize) =>
-                                new XElement("File",
+                                new("File",
                                 new XElement("Filename", Path.GetFileNameWithoutExtension(file.Name)),
                                 new XElement("Extension", file.Extension),
                                 new XElement("Offset", position),
@@ -120,43 +120,41 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// <param name="token">The token used to cancel the operation.</param>
         private void CompressData(Stream inStream, Stream outStream, byte[] writeBuffer, int compressionRate, CancellationToken token)
         {
-            Debug.Assert(outStream != null, "outStream != null");
+            Debug.Assert(outStream is not null, "outStream is not null");
 
-            using (var bzStream = new Ionic.BZip2.ParallelBZip2OutputStream(outStream, compressionRate, true))
+            using var bzStream = new Ionic.BZip2.ParallelBZip2OutputStream(outStream, compressionRate, true);
+            long streamSize = inStream.Length;
+
+            while (streamSize > 0)
             {
-                long streamSize = inStream.Length;
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
 
-                while (streamSize > 0)
+                int readSize = inStream.Read(writeBuffer, 0, writeBuffer.Length);
+
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                if (readSize > 0)
                 {
                     if (token.IsCancellationRequested)
                     {
                         return;
                     }
 
-                    int readSize = inStream.Read(writeBuffer, 0, writeBuffer.Length);
+                    bzStream.Write(writeBuffer, 0, readSize);
 
                     if (token.IsCancellationRequested)
                     {
                         return;
                     }
-
-                    if (readSize > 0)
-                    {
-                        if (token.IsCancellationRequested)
-                        {
-                            return;
-                        }
-
-                        bzStream.Write(writeBuffer, 0, readSize);
-
-                        if (token.IsCancellationRequested)
-                        {
-                            return;
-                        }
-                    }
-
-                    streamSize -= readSize;
                 }
+
+                streamSize -= readSize;
             }
         }
 
@@ -491,8 +489,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
             IEnumerable<(XElement node, FileInfo file)> compressedFiles = finishedTasks.SelectMany(item => item.CompressedFiles);
             // Validate.
-            Debug.Assert(compressedFiles.All(item => item.node != null), "File info not found in compression list.");
-            Debug.Assert(compressedFiles.All(item => item.file != null), "XElement node not found in compression list.");
+            Debug.Assert(compressedFiles.All(item => item.node is not null), "File info not found in compression list.");
+            Debug.Assert(compressedFiles.All(item => item.file is not null), "XElement node not found in compression list.");
             Debug.Assert(compressedFiles.All(item =>
             {
                 XElement fileName = item.node.Element("Filename");
@@ -516,20 +514,18 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         /// </remarks>
         protected override bool OnEvaluateCanWriteFile(string file)
         {
-            using (FileStream stream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var memStream = new MemoryStream())
+            using FileStream stream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var memStream = new MemoryStream();
+            int byteCount = Encoding.UTF8.GetByteCount(FileHeader) + 5; // Plus string length bytes (potentially up to 4), plus byte order mark.
+
+            if (stream.Length <= byteCount)
             {
-                int byteCount = Encoding.UTF8.GetByteCount(FileHeader) + 5; // Plus string length bytes (potentially up to 4), plus byte order mark.
-
-                if (stream.Length <= byteCount)
-                {
-                    return false;
-                }
-
-                stream.CopyToStream(memStream, byteCount);
-                string header = memStream.ReadString();
-                return string.Equals(header, FileHeader, StringComparison.Ordinal);
+                return false;
             }
+
+            stream.CopyToStream(memStream, byteCount);
+            string header = memStream.ReadString();
+            return string.Equals(header, FileHeader, StringComparison.Ordinal);
         }
 
         /// <summary>

@@ -255,7 +255,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
             }
 
-            if ((slot < 0) || (slot > 15))
+            if (slot is < 0 or > 15)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, slot, 16));
             }

@@ -147,7 +147,7 @@ namespace Gorgon.Editor.Views
             _loadingTexture?.Dispose();
             _defaultTexture?.Dispose();
 
-            if (_swapChain != null)
+            if (_swapChain is not null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref _swapChain);
             }
@@ -185,15 +185,13 @@ namespace Gorgon.Editor.Views
                 });
             }
 
-            using (var loadingStream = new MemoryStream(Resources.LoadingBg))
+            using var loadingStream = new MemoryStream(Resources.LoadingBg);
+            _loadingTexture = GorgonTexture2DView.FromStream(GraphicsContext.Graphics, loadingStream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
             {
-                _loadingTexture = GorgonTexture2DView.FromStream(GraphicsContext.Graphics, loadingStream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
-                {
-                    Name = "LoadingPreviewTexture",
-                    Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Immutable
-                });
-            }
+                Name = "LoadingPreviewTexture",
+                Binding = TextureBinding.ShaderResource,
+                Usage = ResourceUsage.Immutable
+            });
         }
 
         /// <summary>

@@ -68,13 +68,13 @@ namespace Gorgon.Graphics.Fonts
     {
         #region Variables.
         // The cache used to hold previously created font data.
-        private readonly Dictionary<string, GorgonFont> _fontCache = new Dictionary<string, GorgonFont>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, GorgonFont> _fontCache = new(StringComparer.OrdinalIgnoreCase);
         // The list of external fonts loaded from the file system.
-        private PrivateFontCollection _externalFonts = new PrivateFontCollection();
+        private PrivateFontCollection _externalFonts = new();
         // The default font.
         private Lazy<GorgonFont> _defaultFont;
         // Synchronization object for multiple threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         #endregion
 
         #region Properties.
@@ -414,7 +414,7 @@ namespace Gorgon.Graphics.Fonts
                     return result;
                 }
 
-                if (result != null)
+                if (result is not null)
                 {
                     throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_EXISTS, fontInfo.Name), nameof(fontInfo));
                 }
@@ -489,7 +489,7 @@ namespace Gorgon.Graphics.Fonts
                 return result;
             }
 
-            if (result != null)
+            if (result is not null)
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_EXISTS, fontInfo.Name), nameof(fontInfo));
             }
@@ -528,7 +528,7 @@ namespace Gorgon.Graphics.Fonts
             PrivateFontCollection ttFonts = Interlocked.Exchange(ref _externalFonts, null);
             Lazy<GorgonFont> defaultFont = Interlocked.Exchange(ref _defaultFont, null);
 
-            if ((defaultFont != null) && (defaultFont.IsValueCreated))
+            if ((defaultFont is not null) && (defaultFont.IsValueCreated))
             {
                 defaultFont.Value.Dispose();
             }

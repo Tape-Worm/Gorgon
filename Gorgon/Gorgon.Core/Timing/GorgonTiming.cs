@@ -378,7 +378,7 @@ namespace Gorgon.Timing
                 theTime = _timer.Milliseconds;
                 frameDelta = (theTime - _lastTimerValue);
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-            } while ((frameDelta < 0.000001) && (frameDelta != 0.0));
+            } while (frameDelta is < 0.000001 and not 0.0);
 
             Delta = (float)frameDelta / 1000.0f;
 

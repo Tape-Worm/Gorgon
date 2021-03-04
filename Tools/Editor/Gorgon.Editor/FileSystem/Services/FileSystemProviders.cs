@@ -45,11 +45,11 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // A list of available file system reader providers.
-        private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new(StringComparer.OrdinalIgnoreCase);
         // A list of available file system writer providers.
-        private readonly Dictionary<string, FileWriterPlugIn> _writers = new Dictionary<string, FileWriterPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, FileWriterPlugIn> _writers = new(StringComparer.OrdinalIgnoreCase);
         // A list of disabled plug ins.
-        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
         // Common application services.
         private readonly IHostServices _hostServices;
         #endregion
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.Services
             {
                 FileWriterPlugIn v2PlugIn = _writers.FirstOrDefault(item => string.Equals(item.Value.V2PlugInName, writerName, StringComparison.OrdinalIgnoreCase)).Value;
 
-                if (v2PlugIn != null)
+                if (v2PlugIn is not null)
                 {
                     return v2PlugIn;
                 }

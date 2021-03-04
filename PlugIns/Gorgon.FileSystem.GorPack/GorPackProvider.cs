@@ -65,14 +65,10 @@ namespace Gorgon.IO.GorPack
         /// <returns>The uncompressed data.</returns>
         private static byte[] Decompress(byte[] data)
         {
-            using (var sourceStream = new MemoryStream(data))
-            {
-                using (var decompressedStream = new MemoryStream())
-                {
-                    BZip2.Decompress(sourceStream, decompressedStream, true);
-                    return decompressedStream.ToArray();
-                }
-            }
+            using var sourceStream = new MemoryStream(data);
+            using var decompressedStream = new MemoryStream();
+            BZip2.Decompress(sourceStream, decompressedStream, true);
+            return decompressedStream.ToArray();
         }
 
         /// <summary>
@@ -176,7 +172,7 @@ namespace Gorgon.IO.GorPack
                 }
 
                 // If the file is compressed, then add it to a special list.
-                if (fileCompressedSizeNode != null)
+                if (fileCompressedSizeNode is not null)
                 {
 
                     if (!long.TryParse(fileCompressedSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long compressed))
@@ -228,20 +224,18 @@ namespace Gorgon.IO.GorPack
         /// </remarks>
         protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
-            using (var reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
-            {
-                // Skip the header.
-                reader.ReadString();
+            using var reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read));
+            // Skip the header.
+            reader.ReadString();
 
-                int indexLength = reader.ReadInt32();
+            int indexLength = reader.ReadInt32();
 
-                byte[] indexData = Decompress(reader.ReadBytes(indexLength));
-                string xmlData = Encoding.UTF8.GetString(indexData);
-                var index = XDocument.Parse(xmlData, LoadOptions.None);
+            byte[] indexData = Decompress(reader.ReadBytes(indexLength));
+            string xmlData = Encoding.UTF8.GetString(indexData);
+            var index = XDocument.Parse(xmlData, LoadOptions.None);
 
-                return new GorgonPhysicalFileSystemData(EnumerateDirectories(index, mountPoint),
-                                                        EnumerateFiles(index, reader.BaseStream.Position, physicalLocation, mountPoint));
-            }
+            return new GorgonPhysicalFileSystemData(EnumerateDirectories(index, mountPoint),
+                                                    EnumerateFiles(index, reader.BaseStream.Position, physicalLocation, mountPoint));
         }
 
         /// <summary>Function to enumerate the files for a given directory.</summary>

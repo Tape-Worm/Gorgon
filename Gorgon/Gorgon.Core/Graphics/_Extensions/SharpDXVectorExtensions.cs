@@ -46,7 +46,7 @@ namespace Gorgon.Graphics
         /// </para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector4 Truncate(this DX.Vector4 vec) => new DX.Vector4((int)vec.X, (int)vec.Y, (int)vec.Z, (int)vec.W);
+        public static DX.Vector4 Truncate(this DX.Vector4 vec) => new((int)vec.X, (int)vec.Y, (int)vec.Z, (int)vec.W);
 
         /// <summary>
         /// Function to set the vector coordinates to the nearest integer values that are lower than or equal to the original values.
@@ -54,7 +54,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to floor.</param>
         /// <returns>The truncated vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector4 Floor(this DX.Vector4 vec) => new DX.Vector4(vec.X.FastFloor(), vec.Y.FastFloor(), vec.Z.FastFloor(), vec.W.FastFloor());
+        public static DX.Vector4 Floor(this DX.Vector4 vec) => new(vec.X.FastFloor(), vec.Y.FastFloor(), vec.Z.FastFloor(), vec.W.FastFloor());
 
         /// <summary>
         /// Function to set the vector coordinates to the nearest integer values that are higher than or equal to the original values.
@@ -62,7 +62,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to ceiling.</param>
         /// <returns>The truncated vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector4 Ceiling(this DX.Vector4 vec) => new DX.Vector4(vec.X.FastCeiling(), vec.Y.FastCeiling(), vec.Z.FastCeiling(), vec.W.FastCeiling());
+        public static DX.Vector4 Ceiling(this DX.Vector4 vec) => new(vec.X.FastCeiling(), vec.Y.FastCeiling(), vec.Z.FastCeiling(), vec.W.FastCeiling());
 
         /// <summary>
         /// Function to truncate the vector coordinates to the whole number portion of their values.
@@ -75,7 +75,7 @@ namespace Gorgon.Graphics
         /// </para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector3 Truncate(this DX.Vector3 vec) => new DX.Vector3((int)vec.X, (int)vec.Y, (int)vec.Z);
+        public static DX.Vector3 Truncate(this DX.Vector3 vec) => new((int)vec.X, (int)vec.Y, (int)vec.Z);
 
         /// <summary>
         /// Function to set the vector coordinates to the nearest integer values that are lower than or equal to the original values.
@@ -83,7 +83,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to floor.</param>
         /// <returns>The truncated vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector3 Floor(this DX.Vector3 vec) => new DX.Vector3(vec.X.FastFloor(), vec.Y.FastFloor(), vec.Z.FastFloor());
+        public static DX.Vector3 Floor(this DX.Vector3 vec) => new(vec.X.FastFloor(), vec.Y.FastFloor(), vec.Z.FastFloor());
 
         /// <summary>
         /// Function to set the vector coordinates to the nearest integer values that are higher than or equal to the original values.
@@ -91,7 +91,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to ceiling.</param>
         /// <returns>The truncated vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector3 Ceiling(this DX.Vector3 vec) => new DX.Vector3(vec.X.FastCeiling(), vec.Y.FastCeiling(), vec.Z.FastCeiling());
+        public static DX.Vector3 Ceiling(this DX.Vector3 vec) => new(vec.X.FastCeiling(), vec.Y.FastCeiling(), vec.Z.FastCeiling());
 
         /// <summary>
         /// Function to truncate the vector coordinates to the whole number portion of their values.
@@ -104,7 +104,7 @@ namespace Gorgon.Graphics
         /// </para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector2 Truncate(this DX.Vector2 vec) => new DX.Vector2((int)vec.X, (int)vec.Y);
+        public static DX.Vector2 Truncate(this DX.Vector2 vec) => new((int)vec.X, (int)vec.Y);
 
         /// <summary>
         /// Function to set the vector coordinates to the nearest integer values that are lower than or equal to the original values.
@@ -112,7 +112,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to floor.</param>
         /// <returns>The truncated vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector2 Floor(this DX.Vector2 vec) => new DX.Vector2(vec.X.FastFloor(), vec.Y.FastFloor());
+        public static DX.Vector2 Floor(this DX.Vector2 vec) => new(vec.X.FastFloor(), vec.Y.FastFloor());
 
         /// <summary>
         /// Function to set the vector coordinates to the nearest integer values that are higher than or equal to the original values.
@@ -120,7 +120,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to ceiling.</param>
         /// <returns>The truncated vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector2 Ceiling(this DX.Vector2 vec) => new DX.Vector2(vec.X.FastCeiling(), vec.Y.FastCeiling());
+        public static DX.Vector2 Ceiling(this DX.Vector2 vec) => new(vec.X.FastCeiling(), vec.Y.FastCeiling());
 
         /// <summary>
         /// Function to convert a vector into a size.
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to convert.</param>
         /// <returns>The equivalent size value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Size2F ToSize2F(this DX.Vector2 vec) => new DX.Size2F(vec.X, vec.Y);
+        public static DX.Size2F ToSize2F(this DX.Vector2 vec) => new(vec.X, vec.Y);
 
         /// <summary>
         /// Function to convert a vector into a size.
@@ -136,7 +136,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to convert.</param>
         /// <returns>The equivalent size value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Size2 ToSize2(this DX.Vector2 vec) => new DX.Size2((int)vec.X, (int)vec.Y);
+        public static DX.Size2 ToSize2(this DX.Vector2 vec) => new((int)vec.X, (int)vec.Y);
 
         /// <summary>
         /// Function to convert a vector into a point.
@@ -144,7 +144,7 @@ namespace Gorgon.Graphics
         /// <param name="vec">The vector to convert.</param>
         /// <returns>The equivalent point value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Point ToPoint(this DX.Vector2 vec) => new DX.Point((int)vec.X, (int)vec.Y);
+        public static DX.Point ToPoint(this DX.Vector2 vec) => new((int)vec.X, (int)vec.Y);
 
         /// <summary>
         /// Function to convert a point to a 2D vector.
@@ -152,6 +152,6 @@ namespace Gorgon.Graphics
         /// <param name="pt">The point to convert.</param>
         /// <returns>The equivalent 2D vector value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DX.Vector2 ToVector2(this DX.Point pt) => new DX.Vector2(pt.X, pt.Y);
+        public static DX.Vector2 ToVector2(this DX.Point pt) => new(pt.X, pt.Y);
     }
 }

@@ -119,7 +119,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             foreach (GorgonAnimationCodecPlugIn plugIn in plugIns)
             {
-                if ((response != MessageResponse.YesToAll) && (response != MessageResponse.NoToAll))
+                if (response is not MessageResponse.YesToAll and not MessageResponse.NoToAll)
                 {
                     response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORANM_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: plugIns.Count > 1);
                 }

@@ -119,7 +119,7 @@ namespace Gorgon.Examples
         // A combination of both matrices. This is calculated on every frame update when the view/projection is updated.
         private DX.Matrix _viewProjection;
         // Flag to indicate that we can draw the planet or not.
-        private readonly List<Planet> _drawPlanets = new List<Planet>();
+        private readonly List<Planet> _drawPlanets = new();
         #endregion
 
         #region Properties.

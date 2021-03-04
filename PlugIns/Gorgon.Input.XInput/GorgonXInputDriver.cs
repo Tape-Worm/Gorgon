@@ -87,8 +87,7 @@ namespace Gorgon.Input.XInput
         /// on the object when you are done with the object so that those resources may be freed.
         /// </para>
         /// </remarks>
-        public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo) => !(gamingDeviceInfo is XInputDeviceInfo xInputInfo)
-                ? throw new ArgumentException(Resources.GORINP_ERR_XINP_NOT_AN_XINPUT_DEVICE_INFO, nameof(gamingDeviceInfo))
+        public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo) => gamingDeviceInfo is not XInputDeviceInfo xInputInfo ? throw new ArgumentException(Resources.GORINP_ERR_XINP_NOT_AN_XINPUT_DEVICE_INFO, nameof(gamingDeviceInfo))
                 : new XInputDevice(xInputInfo);
 
         /// <summary>Releases unmanaged and - optionally - managed resources.</summary>

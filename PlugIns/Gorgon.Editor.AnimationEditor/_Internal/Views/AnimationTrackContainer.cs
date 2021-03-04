@@ -57,7 +57,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The reference count for the selection event assignment.
         private int _selectionEvent = 1;
         // The data to copy/move.
-        private readonly KeyFrameCopyMoveData _copyMoveData = new KeyFrameCopyMoveData();
+        private readonly KeyFrameCopyMoveData _copyMoveData = new();
         #endregion
 
         #region Properties.
@@ -628,7 +628,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             DataContext.GetTrackKeyCommand.Execute(args);
 
-            if (args.Key != null)
+            if (args.Key is not null)
             {
                 e.Value = _keyHasDataImage;
             }

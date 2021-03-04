@@ -343,7 +343,7 @@ namespace Gorgon.IO.GorPack
         {
             stream.Position = file.PhysicalFile.Offset;     // Set the offset here.
 
-            _bzipStream = compressedSize != null ? new BZip2InputStream(stream) : stream;
+            _bzipStream = compressedSize is not null ? new BZip2InputStream(stream) : stream;
             Length = file.Size;
             _basePosition = stream.Position;
         }

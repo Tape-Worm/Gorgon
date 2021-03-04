@@ -112,7 +112,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return the width and height for the sprite.
         /// </summary>
-        public DX.Size2F SpriteSize => new DX.Size2F((float)NumericWidth.Value, (float)NumericHeight.Value);
+        public DX.Size2F SpriteSize => new((float)NumericWidth.Value, (float)NumericHeight.Value);
 
         /// <summary>
         /// Property to return the selected texture file.
@@ -135,7 +135,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             try
             {
-                if (_previewTask != null)
+                if (_previewTask is not null)
                 {
                     if (_previewTask.Status == TaskStatus.Faulted)
                     {
@@ -371,7 +371,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             _originalSize = size;
 
-            if (_originalSize != null)
+            if (_originalSize is not null)
             {
                 NumericWidth.Value = (int)_originalSize.Value.Width.Max(1).Min((int)NumericWidth.Maximum);
                 NumericHeight.Value = (int)_originalSize.Value.Height.Max(1).Min((int)NumericHeight.Maximum);

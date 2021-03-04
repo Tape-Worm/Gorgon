@@ -107,7 +107,7 @@ namespace Gorgon.Renderers.Lights
         ///   <span class="nu">
         ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
         /// </returns>
-        public bool Equals(GorgonPointLight other) => (other != null) && (LightType == other.LightType)
+        public bool Equals(GorgonPointLight other) => (other is not null) && (LightType == other.LightType)
                 && (Attenuation.EqualsEpsilon(other.Attenuation))
                 && (Intensity.EqualsEpsilon(other.Intensity))
                 && (SpecularPower.EqualsEpsilon(other.SpecularPower))

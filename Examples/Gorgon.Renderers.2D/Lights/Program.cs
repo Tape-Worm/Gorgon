@@ -70,7 +70,7 @@ namespace Gorgon.Examples
         // The actual light color value.
         private static float _lightValue = 0.5f;
         // The min and max bounds for the lighting values.
-        private static readonly GorgonRangeF _lightMinMax = new GorgonRangeF(0.75f, 1.0f);
+        private static readonly GorgonRangeF _lightMinMax = new(0.75f, 1.0f);
         // The timer for switching torch frames.
         private static IGorgonTimer _torchFrameTime;
         // The point light that we control.

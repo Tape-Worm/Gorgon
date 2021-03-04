@@ -80,8 +80,8 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             ButtonGenerate.Enabled = DataContext?.GenerateCommand?.CanExecute(null) ?? false;
             ButtonCalculateSize.Enabled = DataContext?.CalculateSizesCommand?.CanExecute(null) ?? false;
-            ButtonPrevArray.Visible = DataContext.Atlas != null;
-            ButtonNextArray.Visible = DataContext.Atlas != null;
+            ButtonPrevArray.Visible = DataContext.Atlas is not null;
+            ButtonNextArray.Visible = DataContext.Atlas is not null;
             ButtonPrevArray.Enabled = DataContext?.PrevPreviewCommand?.CanExecute(null) ?? false;
             ButtonNextArray.Enabled = DataContext?.NextPreviewCommand?.CanExecute(null) ?? false;
             ButtonOk.Enabled = DataContext?.CommitAtlasCommand?.CanExecute(null) ?? false;
@@ -113,7 +113,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// </summary>
         private void ShowFileSelector()
         {
-            if ((DataContext?.SpriteFiles is null) || (_spriteSelector != null))
+            if ((DataContext?.SpriteFiles is null) || (_spriteSelector is not null))
             {
                 return;
             }
@@ -470,7 +470,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnSetupGraphics(graphicsContext, swapChain);
 
-            Debug.Assert(DataContext != null, "No datacontext");
+            Debug.Assert(DataContext is not null, "No datacontext");
 
             NumericTextureWidth.Maximum = graphicsContext.VideoAdapter.MaxTextureWidth;
             NumericTextureHeight.Maximum = graphicsContext.VideoAdapter.MaxTextureHeight;

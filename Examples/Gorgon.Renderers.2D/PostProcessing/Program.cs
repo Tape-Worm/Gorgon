@@ -152,7 +152,7 @@ namespace Gorgon.Examples
             }
 
             // Always draw the dragging button on top.
-            if (_dragButton != null)
+            if (_dragButton is not null)
             {
                 Drawing.Point cursorPosition = _screen.Window.PointToClient(Cursor.Position);
 
@@ -227,7 +227,7 @@ namespace Gorgon.Examples
 
             for (int i = 0; i < _buttons.Length; ++i)
             {
-                if (_buttons[i] != null)
+                if (_buttons[i] is not null)
                 {
                     _buttons[i].Click -= Button_Click;
                 }
@@ -463,7 +463,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
         private static void Window_MouseDown(object sender, MouseEventArgs e)
         {
-            if (_dragButton != null)
+            if (_dragButton is not null)
             {
                 return;
             }
@@ -490,7 +490,7 @@ namespace Gorgon.Examples
                     continue;
                 }
 
-                if (_dragButton != null)
+                if (_dragButton is not null)
                 {
                     var dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
 
@@ -504,7 +504,7 @@ namespace Gorgon.Examples
 
                 button.State = ButtonState.Hovered;
 
-                if ((e.Button != MouseButtons.Left) || (_dragButton != null))
+                if ((e.Button is not MouseButtons.Left) || (_dragButton is not null))
                 {
                     continue;
                 }
@@ -534,7 +534,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            if (_dragButton != null)
+            if (_dragButton is not null)
             {
                 var dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
                 int index = -1;
@@ -626,7 +626,7 @@ namespace Gorgon.Examples
             {
                 GorgonExample.UnloadResources();
 
-                if (_images != null)
+                if (_images is not null)
                 {
                     for (int i = 0; i < _images.Length; ++i)
                     {
@@ -634,7 +634,7 @@ namespace Gorgon.Examples
                     }
                 }
 
-                if (_compositor != null)
+                if (_compositor is not null)
                 {
                     _blurEffect?.Dispose();        
                     _grayScaleEffect?.Dispose();

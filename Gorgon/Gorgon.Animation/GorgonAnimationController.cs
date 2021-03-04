@@ -118,9 +118,9 @@ namespace Gorgon.Animation
         // The current animation state.
         private AnimationState _state = AnimationState.Stopped;
         // The list of registered track names.
-        private readonly List<GorgonTrackRegistration> _trackNames = new List<GorgonTrackRegistration>();
+        private readonly List<GorgonTrackRegistration> _trackNames = new();
         // The list of registered track names that can be played with a given animation.
-        private readonly List<GorgonTrackRegistration> _playableTracks = new List<GorgonTrackRegistration>();
+        private readonly List<GorgonTrackRegistration> _playableTracks = new();
         #endregion
 
         #region Properties.
@@ -563,7 +563,7 @@ namespace Gorgon.Animation
             }
 
             // Stop the current animation.
-            if (CurrentAnimation != null)
+            if (CurrentAnimation is not null)
             {
                 _playableTracks.Clear();
                 State = AnimationState.Stopped;

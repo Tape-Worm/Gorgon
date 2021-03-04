@@ -90,7 +90,7 @@ namespace Gorgon.Native
                                                                               VER_MINORVERSION,
                                                                               VER_GREATER_EQUAL);
 
-            if (buildNumber != null)
+            if (buildNumber is not null)
             {
                 versionMask = VerSetConditionMask(versionMask, VER_BUILDNUMBER, VER_GREATER_EQUAL);
                 typeMask |= VER_BUILDNUMBER;

@@ -171,7 +171,7 @@ namespace Gorgon.Renderers
         {
             if ((_useSimple != FullScreen)
                 || ((LookupTexture is null) && (_currentLut != _defaultLut))
-                || ((LookupTexture != null) && (LookupTexture != _currentLut))
+                || ((LookupTexture is not null) && (LookupTexture != _currentLut))
                 || (_chromeAbBatchState is null)
                 || (_chromeAbShaderState is null))
             {

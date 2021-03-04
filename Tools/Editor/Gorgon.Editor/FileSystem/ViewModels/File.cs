@@ -50,7 +50,7 @@ namespace Gorgon.Editor.ViewModels
 
         #region Variables.
         // The synchronization lock for the rename event.
-        private readonly object _eventLock = new object();
+        private readonly object _eventLock = new();
         // The virtual file wrapped by this view model.
         private IGorgonVirtualFile _file;
         // The parent directory.

@@ -308,7 +308,7 @@ namespace Gorgon.Editor.ViewModels
                     {
                         var parentDir = new DirectoryInfo(lastPath);
 
-                        if (parentDir.Parent != null)
+                        if (parentDir.Parent is not null)
                         {
                             lastPath = parentDir.FullName;
                         }
@@ -381,7 +381,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the project workspace can be set, or <b>false</b> if not.</returns>
-        private bool CanSetProjectWorkspace(SetProjectWorkspaceArgs args) => args != null;
+        private bool CanSetProjectWorkspace(SetProjectWorkspaceArgs args) => args is not null;
 
         /// <summary>
         /// Function to set the project workspace.
@@ -433,7 +433,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // If we just a drive letter (e.g. "C:"), then restore the path separator so we can treat it as the root of the drive.
-                if (path[path.Length - 1] == Path.VolumeSeparatorChar)
+                if (path[^1] == Path.VolumeSeparatorChar)
                 {
                     path += Path.DirectorySeparatorChar;
                 }
@@ -462,7 +462,7 @@ namespace Gorgon.Editor.ViewModels
                 }
                 else
                 {
-                    Title = path.Substring(lastSep + 1);
+                    Title = path[(lastSep + 1)..];
                 }
 
                 InvalidPathReason = null;

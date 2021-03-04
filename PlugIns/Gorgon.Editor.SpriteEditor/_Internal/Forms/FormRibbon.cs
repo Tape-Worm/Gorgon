@@ -51,13 +51,13 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The list of menu items associated with the zoom level.
-        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
+        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new();
         // The buttons on the ribbon.
-        private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new List<WeakReference<KryptonRibbonGroupButton>>();
+        private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new();
         // The numeric controls on the ribbon.
-        private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = new List<WeakReference<KryptonRibbonGroupNumericUpDown>>();
+        private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = new();
         // A list of buttons mapped to the tool structure.
-        private readonly Dictionary<string, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new Dictionary<string, WeakReference<KryptonRibbonGroupButton>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
         // The currently selected zoom level
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         // The renderer for the content.
@@ -96,14 +96,14 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
                 }
 
                 _contentRenderer = value;
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged += ContentRenderer_ZoomScale;
                     _zoomLevel = _contentRenderer.ZoomLevel;
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.SpriteEditor
             switch (e.PropertyName)
             {
                 case nameof(ISpriteClipContext.FixedSize):
-                    if (DataContext.SpriteClipContext.FixedSize != null)
+                    if (DataContext.SpriteClipContext.FixedSize is not null)
                     {
                         DX.Size2F size = DataContext.SpriteClipContext.FixedSize.Value;
                         NumericFixedWidth.Value = ((decimal)size.Width).Min(NumericFixedWidth.Maximum).Max(NumericFixedWidth.Minimum);
@@ -662,17 +662,17 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            if (DataContext.SpriteClipContext != null)
+            if (DataContext.SpriteClipContext is not null)
             {
                 DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
             }
 
-            if (DataContext.SpritePickContext != null)
+            if (DataContext.SpritePickContext is not null)
             {
                 DataContext.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
             }
 
-            if (DataContext.SpriteVertexEditContext != null)
+            if (DataContext.SpriteVertexEditContext is not null)
             {
                 DataContext.SpriteVertexEditContext.PropertyChanged -= SpriteVertexEditorContext_PropertyChanged;
             }
@@ -780,7 +780,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            if (dataContext.SpriteClipContext != null)
+            if (dataContext.SpriteClipContext is not null)
             {
                 NumericPadding.Value = dataContext?.SpritePickContext.Padding.Min((int)NumericPadding.Maximum).Max((int)NumericPadding.Minimum) ?? 0;
                 NumericFixedWidth.Maximum = dataContext?.Texture?.Width ?? 16384;
@@ -828,17 +828,17 @@ namespace Gorgon.Editor.SpriteEditor
                 return;
             }
 
-            if (DataContext.SpriteClipContext != null)
+            if (DataContext.SpriteClipContext is not null)
             {
                 DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
             }
 
-            if (dataContext.SpritePickContext != null)
+            if (dataContext.SpritePickContext is not null)
             {
                 DataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
             }
 
-            if (DataContext.SpriteVertexEditContext != null)
+            if (DataContext.SpriteVertexEditContext is not null)
             {
                 DataContext.SpriteVertexEditContext.PropertyChanged += SpriteVertexEditorContext_PropertyChanged;
             }
@@ -874,14 +874,14 @@ namespace Gorgon.Editor.SpriteEditor
                 : SampleFilter.MinPointMagMipLinear) ?? false;
             ButtonSpriteTextureWrap.Enabled = DataContext.ShowWrappingEditorCommand?.CanExecute(null) ?? false;
 
-            if (DataContext.SpritePickContext != null)
+            if (DataContext.SpritePickContext is not null)
             {
                 ButtonSpritePickApply.Enabled = DataContext.SpritePickContext.ApplyCommand?.CanExecute(null) ?? false;
                 ButtonSpritePickCancel.Enabled = DataContext.SpritePickContext.CancelCommand?.CanExecute(null) ?? false;
                 ButtonPickMaskColor.Enabled = DataContext.SpritePickContext.ShowSpritePickMaskEditorCommand?.CanExecute(null) ?? false;
             }
 
-            if (DataContext.SpriteClipContext != null)
+            if (DataContext.SpriteClipContext is not null)
             {
                 DX.Size2F? fixedSize = ButtonFixedSize.Enabled ? new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value)
                                                                : (DX.Size2F?)null;
@@ -896,12 +896,12 @@ namespace Gorgon.Editor.SpriteEditor
                     NumericFixedWidth.Enabled = 
                     NumericFixedWidth.NumericUpDown.Enabled =
                     NumericFixedHeight.Enabled = 
-                    NumericFixedHeight.NumericUpDown.Enabled = DataContext.SpriteClipContext.FixedSize != null;
+                    NumericFixedHeight.NumericUpDown.Enabled = DataContext.SpriteClipContext.FixedSize is not null;
 
                 ButtonClipManualInput.Enabled = DataContext.SpriteClipContext == DataContext.CommandContext;
             }
 
-            if (DataContext.SpriteVertexEditContext != null)
+            if (DataContext.SpriteVertexEditContext is not null)
             {
                 ButtonSpriteCornerOffsetApply.Enabled = DataContext.SpriteVertexEditContext.ApplyCommand?.CanExecute(null) ?? false;
                 ButtonSpriteCornerOffsetCancel.Enabled = DataContext.SpriteVertexEditContext.CancelCommand?.CanExecute(null) ?? false;

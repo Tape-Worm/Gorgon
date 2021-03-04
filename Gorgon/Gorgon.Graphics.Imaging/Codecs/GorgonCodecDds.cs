@@ -175,31 +175,31 @@ namespace Gorgon.Graphics.Imaging.Codecs
         #endregion
 
         #region Variables.
-        private static readonly DdsPixelFormat _pfDxt1 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '1'), 0, 0, 0, 0, 0);     // DXT1		
-        private static readonly DdsPixelFormat _pfDxt2 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '2'), 0, 0, 0, 0, 0);     // DXT2
-        private static readonly DdsPixelFormat _pfDxt3 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '3'), 0, 0, 0, 0, 0);     // DXT3
-        private static readonly DdsPixelFormat _pfDxt4 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '4'), 0, 0, 0, 0, 0);     // DXT4
-        private static readonly DdsPixelFormat _pfDxt5 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '5'), 0, 0, 0, 0, 0);     // DXT5
-        private static readonly DdsPixelFormat _pfBC4U = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('B', 'C', '4', 'U'), 0, 0, 0, 0, 0);     // BC4 Unsigned
-        private static readonly DdsPixelFormat _pfBC4S = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('B', 'C', '4', 'S'), 0, 0, 0, 0, 0);     // BC4 Signed
-        private static readonly DdsPixelFormat _pfBC5U = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('B', 'C', '5', 'U'), 0, 0, 0, 0, 0);     // BC5 Unsigned
-        private static readonly DdsPixelFormat _pfBC5S = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('B', 'C', '5', 'S'), 0, 0, 0, 0, 0);     // BC5 Signed
-        private static readonly DdsPixelFormat _pfR8G8_B8G8 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('R', 'G', 'B', 'G'), 0, 0, 0, 0, 0); // R8G8_B8G8
-        private static readonly DdsPixelFormat _pfG8R8_G8B8 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('G', 'R', 'G', 'B'), 0, 0, 0, 0, 0); // G8R8_G8B8
-        private static readonly DdsPixelFormat _pfA8R8G8B8 = new DdsPixelFormat(DdsPixelFormatFlags.RGBA, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000); // A8R8G8B8
-        private static readonly DdsPixelFormat _pfX8R8G8B8 = new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000); // X8R8G8B8
-        private static readonly DdsPixelFormat _pfA8B8G8R8 = new DdsPixelFormat(DdsPixelFormatFlags.RGBA, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000); // A8B8G8R8
-        private static readonly DdsPixelFormat _pfX8B8G8R8 = new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000); // X8B8G8R8
-        private static readonly DdsPixelFormat _pfG16R16 = new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000); // G16R16
-        private static readonly DdsPixelFormat _pfR5G6B5 = new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000); // R5G6B5
-        private static readonly DdsPixelFormat _pfA1R5G5B5 = new DdsPixelFormat(DdsPixelFormatFlags.RGBA, 0, 16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000); // A1R5G5B5A1
-        private static readonly DdsPixelFormat _pfA4R4G4B4 = new DdsPixelFormat(DdsPixelFormatFlags.RGBA, 0, 16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000); // A4R4G4B4		
-        private static readonly DdsPixelFormat _pfR8G8B8 = new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000); // R8G8B8
-        private static readonly DdsPixelFormat _pfL8 = new DdsPixelFormat(DdsPixelFormatFlags.Luminance, 0, 8, 0xff, 0x00, 0x00, 0x00);                     // L8
-        private static readonly DdsPixelFormat _pfL16 = new DdsPixelFormat(DdsPixelFormatFlags.Luminance, 0, 16, 0xffff, 0x0000, 0x0000, 0x0000);           // L16
-        private static readonly DdsPixelFormat _pfA8L8 = new DdsPixelFormat(DdsPixelFormatFlags.LuminanceAlpha, 0, 16, 0x00ff, 0x0000, 0x0000, 0xff00);     // A8L8
-        private static readonly DdsPixelFormat _pfA8 = new DdsPixelFormat(DdsPixelFormatFlags.Alpha, 0, 8, 0x00, 0x00, 0x00, 0xff);                         // A8
-        private static readonly DdsPixelFormat _pfDX10 = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', '1', '0'), 0, 0, 0, 0, 0);              // DX10 extension
+        private static readonly DdsPixelFormat _pfDxt1 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '1'), 0, 0, 0, 0, 0);     // DXT1		
+        private static readonly DdsPixelFormat _pfDxt2 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '2'), 0, 0, 0, 0, 0);     // DXT2
+        private static readonly DdsPixelFormat _pfDxt3 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '3'), 0, 0, 0, 0, 0);     // DXT3
+        private static readonly DdsPixelFormat _pfDxt4 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '4'), 0, 0, 0, 0, 0);     // DXT4
+        private static readonly DdsPixelFormat _pfDxt5 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '5'), 0, 0, 0, 0, 0);     // DXT5
+        private static readonly DdsPixelFormat _pfBC4U = new(DdsPixelFormatFlags.FourCC, MakeFourCC('B', 'C', '4', 'U'), 0, 0, 0, 0, 0);     // BC4 Unsigned
+        private static readonly DdsPixelFormat _pfBC4S = new(DdsPixelFormatFlags.FourCC, MakeFourCC('B', 'C', '4', 'S'), 0, 0, 0, 0, 0);     // BC4 Signed
+        private static readonly DdsPixelFormat _pfBC5U = new(DdsPixelFormatFlags.FourCC, MakeFourCC('B', 'C', '5', 'U'), 0, 0, 0, 0, 0);     // BC5 Unsigned
+        private static readonly DdsPixelFormat _pfBC5S = new(DdsPixelFormatFlags.FourCC, MakeFourCC('B', 'C', '5', 'S'), 0, 0, 0, 0, 0);     // BC5 Signed
+        private static readonly DdsPixelFormat _pfR8G8_B8G8 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('R', 'G', 'B', 'G'), 0, 0, 0, 0, 0); // R8G8_B8G8
+        private static readonly DdsPixelFormat _pfG8R8_G8B8 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('G', 'R', 'G', 'B'), 0, 0, 0, 0, 0); // G8R8_G8B8
+        private static readonly DdsPixelFormat _pfA8R8G8B8 = new(DdsPixelFormatFlags.RGBA, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000); // A8R8G8B8
+        private static readonly DdsPixelFormat _pfX8R8G8B8 = new(DdsPixelFormatFlags.RGB, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000); // X8R8G8B8
+        private static readonly DdsPixelFormat _pfA8B8G8R8 = new(DdsPixelFormatFlags.RGBA, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000); // A8B8G8R8
+        private static readonly DdsPixelFormat _pfX8B8G8R8 = new(DdsPixelFormatFlags.RGB, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000); // X8B8G8R8
+        private static readonly DdsPixelFormat _pfG16R16 = new(DdsPixelFormatFlags.RGB, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000); // G16R16
+        private static readonly DdsPixelFormat _pfR5G6B5 = new(DdsPixelFormatFlags.RGB, 0, 16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000); // R5G6B5
+        private static readonly DdsPixelFormat _pfA1R5G5B5 = new(DdsPixelFormatFlags.RGBA, 0, 16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000); // A1R5G5B5A1
+        private static readonly DdsPixelFormat _pfA4R4G4B4 = new(DdsPixelFormatFlags.RGBA, 0, 16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000); // A4R4G4B4		
+        private static readonly DdsPixelFormat _pfR8G8B8 = new(DdsPixelFormatFlags.RGB, 0, 24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000); // R8G8B8
+        private static readonly DdsPixelFormat _pfL8 = new(DdsPixelFormatFlags.Luminance, 0, 8, 0xff, 0x00, 0x00, 0x00);                     // L8
+        private static readonly DdsPixelFormat _pfL16 = new(DdsPixelFormatFlags.Luminance, 0, 16, 0xffff, 0x0000, 0x0000, 0x0000);           // L16
+        private static readonly DdsPixelFormat _pfA8L8 = new(DdsPixelFormatFlags.LuminanceAlpha, 0, 16, 0x00ff, 0x0000, 0x0000, 0xff00);     // A8L8
+        private static readonly DdsPixelFormat _pfA8 = new(DdsPixelFormatFlags.Alpha, 0, 8, 0x00, 0x00, 0x00, 0xff);                         // A8
+        private static readonly DdsPixelFormat _pfDX10 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', '1', '0'), 0, 0, 0, 0, 0);              // DX10 extension
 
         // Mappings for legacy formats.
         private readonly DdsLegacyConversion[] _legacyMapping =
@@ -1035,7 +1035,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             writer.WriteValue(ref header);
 
             // If we didn't map a legacy format, then use the DX 10 header.
-            if (format != null)
+            if (format is not null)
             {
                 return;
             }
@@ -1291,7 +1291,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
                     palette = new uint[256];
 
-                    if ((DecodingOptions?.Palette != null) && (DecodingOptions.Palette.Count > 0))
+                    if ((DecodingOptions?.Palette is not null) && (DecodingOptions.Palette.Count > 0))
                     {
                         int count = DecodingOptions.Palette.Count.Min(256);
 
@@ -1374,43 +1374,41 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }
 
             // Use a binary writer.
-            using (var writer = new GorgonBinaryWriter(stream, true))
-            {
-                // Write the header for the file.
-                WriteHeader(imageData, writer, DdsLegacyFlags.None);
+            using var writer = new GorgonBinaryWriter(stream, true);
+            // Write the header for the file.
+            WriteHeader(imageData, writer, DdsLegacyFlags.None);
 
-                // Write image data.
-                switch (imageData.ImageType)
-                {
-                    case ImageType.Image1D:
-                    case ImageType.Image2D:
-                    case ImageType.ImageCube:
-                        for (int array = 0; array < imageData.ArrayCount; array++)
-                        {
-                            for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
-                            {
-                                IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
-                                writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
-                            }
-                        }
-                        break;
-                    case ImageType.Image3D:
-                        int depth = imageData.Depth;
+            // Write image data.
+            switch (imageData.ImageType)
+            {
+                case ImageType.Image1D:
+                case ImageType.Image2D:
+                case ImageType.ImageCube:
+                    for (int array = 0; array < imageData.ArrayCount; array++)
+                    {
                         for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
                         {
-                            for (int slice = 0; slice < depth; slice++)
-                            {
-                                IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, slice];
-                                writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
-                            }
-
-                            if (depth > 1)
-                            {
-                                depth >>= 1;
-                            }
+                            IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
+                            writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
                         }
-                        break;
-                }
+                    }
+                    break;
+                case ImageType.Image3D:
+                    int depth = imageData.Depth;
+                    for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
+                    {
+                        for (int slice = 0; slice < depth; slice++)
+                        {
+                            IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, slice];
+                            writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
+                        }
+
+                        if (depth > 1)
+                        {
+                            depth >>= 1;
+                        }
+                    }
+                    break;
             }
         }
 

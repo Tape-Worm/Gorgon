@@ -53,7 +53,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         // The default image codec to use.
         private IGorgonImageCodec _defaultImageCodec;
         // Data used for extracting sprites.
-        private readonly SpriteExtractionData _extractData = new SpriteExtractionData();
+        private readonly SpriteExtractionData _extractData = new();
         #endregion
 
         #region Methods.		
@@ -96,7 +96,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
                 IGorgonImageInfo metaData = _defaultImageCodec.GetMetaData(fileStream);
 
-                if ((metaData.ImageType != ImageType.Image2D) && (metaData.ImageType != ImageType.ImageCube))
+                if (metaData.ImageType is not ImageType.Image2D and not ImageType.ImageCube)
                 {
                     return false;
                 }
@@ -251,7 +251,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         protected override void OnShutdown()
         {
             // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
-            if (_button != null)
+            if (_button is not null)
             {
                 _button.CanExecute = null;
                 _button.ClickCallback = null;

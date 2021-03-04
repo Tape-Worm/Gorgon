@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
         // The information used to create the buffer.
         private readonly GorgonConstantBufferInfo _info;
         // A list of constant buffer views.
-        private List<GorgonConstantBufferView> _cbvs = new List<GorgonConstantBufferView>();
+        private List<GorgonConstantBufferView> _cbvs = new();
         #endregion
 
         #region Properties.

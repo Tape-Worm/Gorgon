@@ -87,7 +87,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return whether or not block compression is supported.
         /// </summary>
-        public bool CanHandleBlockCompression => _compressor != null;
+        public bool CanHandleBlockCompression => _compressor is not null;
         #endregion
 
         #region Methods.
@@ -136,10 +136,8 @@ namespace Gorgon.Editor.ImageEditor
                 _log.Print($"Adding {codecExtension.Extension} extension to working file or else external tools may not be able to read it.", LoggingLevel.Verbose);
                 workFilePath = $"{workFilePath}.{codecExtension.Extension}";
 
-                using (Stream outStream = ScratchArea.OpenStream(workFilePath, FileMode.Create))
-                {
-                    stream.CopyTo(outStream);
-                }
+                using Stream outStream = ScratchArea.OpenStream(workFilePath, FileMode.Create);
+                stream.CopyTo(outStream);
             }
 
             workFile = ScratchArea.FileSystem.GetFile(workFilePath);
@@ -167,10 +165,8 @@ namespace Gorgon.Editor.ImageEditor
             }
             else
             {
-                using (Stream workStream = workFile.OpenStream())
-                {
-                    importImage = importCodec.FromStream(workStream);
-                }
+                using Stream workStream = workFile.OpenStream();
+                importImage = importCodec.FromStream(workStream);
             }
 
             return (file, importImage, workFile, metaData.Format);
@@ -509,10 +505,8 @@ namespace Gorgon.Editor.ImageEditor
             else
             {
                 _log.Print($"Loading image '{workFile.FullPath}'...", LoggingLevel.Simple);
-                using (Stream workingFileStream = workFile.OpenStream())
-                {
-                    result = DefaultCodec.FromStream(workingFileStream);
-                }
+                using Stream workingFileStream = workFile.OpenStream();
+                result = DefaultCodec.FromStream(workingFileStream);
             }
 
             return (result, workFile, originalFormat);
@@ -525,10 +519,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>An image information object containing data about the image.</returns>
         public IGorgonImageInfo GetImageInfo(string filePath)
         {
-            using (Stream stream = ScratchArea.OpenStream(filePath, FileMode.Open))
-            {
-                return DefaultCodec.GetMetaData(stream);
-            }
+            using Stream stream = ScratchArea.OpenStream(filePath, FileMode.Open);
+            return DefaultCodec.GetMetaData(stream);
         }
         #endregion
 

@@ -58,19 +58,19 @@ namespace Gorgon.Animation
     {
         #region Variables.
         // A list of builders for single floating point value tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeySingle>> _singleTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeySingle>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeySingle>> _singleTracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for vector 2 tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector2>> _vector2Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector2>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector2>> _vector2Tracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for vector 3 tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>> _vector3Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>> _vector3Tracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for vector 4 tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>> _vector4Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>> _vector4Tracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for rectangle tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>> _rectangleTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>> _rectangleTracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for rectangle tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>> _colorTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>> _colorTracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for texture tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>> _textureTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>> _textureTracks = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Methods.       

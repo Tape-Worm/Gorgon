@@ -59,7 +59,7 @@ namespace Gorgon.Renderers
             /// <summary>
             /// Property to return the size of a texel.
             /// </summary>
-            public DX.Vector2 TexelSize => new DX.Vector2(_texelThreshold.X, _texelThreshold.Y);
+            public DX.Vector2 TexelSize => new(_texelThreshold.X, _texelThreshold.Y);
 
             /// <summary>
             /// Property to return the threshold for the effect.
@@ -95,7 +95,7 @@ namespace Gorgon.Renderers
         // The thickness of the lines.
         private float _lineThickness = 1.0f;
         // The texture size used to calculate the line thickness.
-        private DX.Size2F _textureSize = new DX.Size2F(512.0f, 512.0f);
+        private DX.Size2F _textureSize = new(512.0f, 512.0f);
         #endregion
 
         #region Properties.

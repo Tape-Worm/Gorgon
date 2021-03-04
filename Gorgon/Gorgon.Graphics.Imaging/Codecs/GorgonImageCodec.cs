@@ -416,10 +416,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return FromStream(stream);
-            }
+            using Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return FromStream(stream);
         }
 
         /// <summary>
@@ -465,10 +463,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (Stream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                Save(imageData, stream);
-            }
+            using Stream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            Save(imageData, stream);
         }
 
         /// <summary>

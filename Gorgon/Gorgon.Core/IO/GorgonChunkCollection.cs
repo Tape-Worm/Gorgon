@@ -37,7 +37,7 @@ namespace Gorgon.IO
     {
         #region Variables.
         // The backing store for the chunks.
-        private readonly List<GorgonChunk> _list = new List<GorgonChunk>();
+        private readonly List<GorgonChunk> _list = new();
         #endregion
 
         #region IList<GorgonChunk> Members

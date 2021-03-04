@@ -40,7 +40,7 @@ namespace Gorgon.UI
     {
         #region Variables.
         private string _message = string.Empty;             // Message to be displayed.
-        private Point _textPosition = new Point(60, 2);     // Text position.
+        private Point _textPosition = new(60, 2);     // Text position.
         private Size _maxTextSize;                          // Maximum text size.
         #endregion
 
@@ -142,7 +142,7 @@ namespace Gorgon.UI
             _maxTextSize.Width = _maxTextSize.Width <= 0 ? currentScreen.WorkingArea.Width / 4 : _maxTextSize.Width;
 
             // Inherit the parent icon.
-            if (Owner != null)
+            if (Owner is not null)
             {
                 Icon = Owner.Icon;
             }
@@ -160,7 +160,7 @@ namespace Gorgon.UI
         {
             base.OnShown(e);
 
-            if ((!DesignMode) && (Owner != null))
+            if ((!DesignMode) && (Owner is not null))
             {
                 Icon = Owner.Icon;
             }
@@ -255,7 +255,7 @@ namespace Gorgon.UI
             }
 
             // Reposition.
-            if ((StartPosition != FormStartPosition.CenterScreen) && (StartPosition != FormStartPosition.CenterParent))
+            if (StartPosition is not FormStartPosition.CenterScreen and not FormStartPosition.CenterParent)
             {
                 return;
             }

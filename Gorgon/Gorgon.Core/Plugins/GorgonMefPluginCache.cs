@@ -125,13 +125,13 @@ namespace Gorgon.PlugIns
         // The contract name for the plug in.
         private readonly string _contractName = typeof(GorgonPlugIn).FullName;
         // The root catalog for the plugins.
-        private AggregateCatalog _rootCatalog = new AggregateCatalog();
+        private AggregateCatalog _rootCatalog = new();
         // The container for the plugin definitions.
         private CompositionContainer _container;
         // The synchronization lock for multiple threads..
-        private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new();
         // The builder used for type registration.
-        private readonly RegistrationBuilder _builder = new RegistrationBuilder();
+        private readonly RegistrationBuilder _builder = new();
         #endregion
 
         #region Properties.
@@ -233,7 +233,7 @@ namespace Gorgon.PlugIns
 
                 ushort exePlatform = reader.ReadUInt16();
 
-                if ((exePlatform != Pe32Bit) && (exePlatform != Pe64bit))
+                if (exePlatform is not Pe32Bit and not Pe64bit)
                 {
                     return (false, AssemblyPlatformType.Unknown);
                 }
@@ -391,7 +391,7 @@ namespace Gorgon.PlugIns
             _container?.Dispose();
             _container = null;
 
-            if (_rootCatalog != null)
+            if (_rootCatalog is not null)
             {
                 foreach (ComposablePartCatalog item in _rootCatalog.Catalogs)
                 {
@@ -453,7 +453,7 @@ namespace Gorgon.PlugIns
                                                                                      && string.Equals(item.SearchPattern, filePattern, StringComparison.OrdinalIgnoreCase));
 
                 // This catalog was already loaded, so just refresh it by recomposing.
-                if (catalog != null)
+                if (catalog is not null)
                 {
                     Log.Print("Path is already registered in cache, no need to re-add.", LoggingLevel.Verbose);
                     catalog.Refresh();

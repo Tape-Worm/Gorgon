@@ -54,7 +54,7 @@ namespace Gorgon.IO
                 return null;
             }            
 
-            IEnumerable<GorgonTexture2D> textureResources = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).Where(item => item != null);
+            IEnumerable<GorgonTexture2D> textureResources = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).Where(item => item is not null);
             int resourceCount = textureResources.Count();
 
             // Nothing found, leave.

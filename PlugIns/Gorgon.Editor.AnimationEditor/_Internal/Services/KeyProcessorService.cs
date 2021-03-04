@@ -49,11 +49,11 @@ namespace Gorgon.Editor.AnimationEditor
         // The log used for debug messages.
         private readonly IGorgonLog _log;
         // The list of files for a texture track.
-        private readonly List<IContentFile> _textureFiles = new List<IContentFile>();
+        private readonly List<IContentFile> _textureFiles = new();
         // The arguments for the set keyframe command.
-        private readonly SetKeyFramesArgs _setKeysArgs = new SetKeyFramesArgs();
+        private readonly SetKeyFramesArgs _setKeysArgs = new();
         // The synchronization lock for multiple threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         #endregion
 
         #region Methods.
@@ -80,7 +80,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     IKeyFrame keyFrame = track.KeyFrames[i];
 
-                    if ((keyFrame != null) && (!_textureFiles.Contains(keyFrame.TextureValue.TextureFile)))
+                    if ((keyFrame is not null) && (!_textureFiles.Contains(keyFrame.TextureValue.TextureFile)))
                     {
                         _textureFiles.Add(keyFrame.TextureValue.TextureFile);
                     }
@@ -146,9 +146,9 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     IKeyFrame keyFrame = track.KeyFrames[i];
 
-                    if (keyFrame?.TextureValue.Texture != null)
+                    if (keyFrame?.TextureValue.Texture is not null)
                     {
-                        if ((_textureCache.ReturnTexture(keyFrame.TextureValue.Texture)) && (keyFrame.TextureValue.TextureFile != null))
+                        if ((_textureCache.ReturnTexture(keyFrame.TextureValue.Texture)) && (keyFrame.TextureValue.TextureFile is not null))
                         {
                             keyFrame.TextureValue.TextureFile.IsOpen = false;
                         }
@@ -172,8 +172,8 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            if ((keyFrame.TextureValue.Texture != null)
-                && (keyFrame.TextureValue.TextureFile != null)
+            if ((keyFrame.TextureValue.Texture is not null)
+                && (keyFrame.TextureValue.TextureFile is not null)
                 && (_textureCache.ReturnTexture(keyFrame.TextureValue.Texture)))
             {
                 keyFrame.TextureValue.TextureFile.IsOpen = false;
@@ -200,7 +200,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
 
             // We've already got texture data.
-            if (keyFrame.TextureValue.Texture != null)
+            if (keyFrame.TextureValue.Texture is not null)
             {
                 return;
             }

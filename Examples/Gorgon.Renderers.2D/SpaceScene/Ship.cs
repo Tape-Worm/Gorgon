@@ -99,7 +99,7 @@ namespace Gorgon.Examples
             set
             {
                 _ai = value;
-                if (_ai != null)
+                if (_ai is not null)
                 {
                     _ai.Ship = this;
                 }
@@ -147,14 +147,14 @@ namespace Gorgon.Examples
             get => _layerController;
             set
             {
-                if (_layerController != null)
+                if (_layerController is not null)
                 {
                     _layerController.TrackingLayer = null;
                 }
 
                 _layerController = value;
 
-                if (_layerController != null)
+                if (_layerController is not null)
                 {
                     _layerController.TrackingLayer = _layer;
                 }
@@ -170,7 +170,7 @@ namespace Gorgon.Examples
         /// </summary>
         private void UpdateEntityPositions()
         {
-            if (_layerController != null)
+            if (_layerController is not null)
             {
                 _layerController.SetPosition(-_position);
             }
@@ -306,7 +306,7 @@ namespace Gorgon.Examples
         /// </remarks>
         public void UserInput(GorgonKeyStateCollection keys)
         {
-            if ((_layerController is null) || (_ai != null))
+            if ((_layerController is null) || (_ai is not null))
             {
                 return;
             }

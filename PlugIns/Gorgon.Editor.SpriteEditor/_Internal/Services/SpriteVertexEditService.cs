@@ -337,7 +337,7 @@ namespace Gorgon.Editor.SpriteEditor
         private void SetupHandles()
         {
             // Convert to client space.
-            if (Camera != null)
+            if (Camera is not null)
             {
                 var half = new DX.Vector2(SpriteBounds.Width * 0.5f, SpriteBounds.Height * 0.5f);
                 _screenVertices[0] = (DX.Vector2)Camera.Unproject((DX.Vector3)_vertices[0]) - half;
@@ -571,7 +571,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return true;
             }
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 3))
+            if (_activeHandleIndex is (-1) or > 3)
             {
                 SelectedVertexIndex = -1;
                 return false;

@@ -216,7 +216,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, start, 4));
             }
 
-            if ((count > 4) || (count < 1))
+            if (count is > 4 or < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT, count, 4));
             }

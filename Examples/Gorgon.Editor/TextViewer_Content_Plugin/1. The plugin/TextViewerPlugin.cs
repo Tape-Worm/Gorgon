@@ -114,7 +114,7 @@ namespace Gorgon.Examples
 
         // This contains the global settings for the plug in. These can contain defaults for the plug in 
         // and can be changed any time by going into the File tab, and clicking on the Settings button.
-        private TextContentSettings _settings = new TextContentSettings();
+        private TextContentSettings _settings = new();
 
         // This the view model for the settings. It is used on the settings panel control supplied by 
         // our plug in and is used to persist our settings back to the disk.
@@ -188,7 +188,7 @@ namespace Gorgon.Examples
         /// <remarks>
         /// Plug in developers can override this to default the file name extension for their content when creating new content with <see cref="GetDefaultContentAsync(string, HashSet{string})"/>.
         /// </remarks>
-        protected override GorgonFileExtension DefaultFileExtension => new GorgonFileExtension(".txt", "Text files");
+        protected override GorgonFileExtension DefaultFileExtension => new(".txt", "Text files");
         #endregion
 
         #region Methods.
@@ -384,7 +384,7 @@ namespace Gorgon.Examples
             _noThumbnail?.Dispose();
 
             // If our application had settings, this is what we'd use to write the settings back to the disk.
-            if (_settings != null)
+            if (_settings is not null)
             {
                 // Persist any settings.
                 HostContentServices.ContentPlugInService.WriteContentSettings(SettingsName, _settings);
@@ -414,7 +414,7 @@ namespace Gorgon.Examples
             // At this point, we'll read in the settings for the plug in.
             // This will contain our default configuration for the plug in and editor(s) contained within.
             TextContentSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<TextContentSettings>(SettingsName);
-            if (settings != null)
+            if (settings is not null)
             {
                 _settings = settings;
             }
@@ -466,7 +466,7 @@ namespace Gorgon.Examples
             // Get the file here, we'll need to update its metadata so we can store some basic infor about the 
             // file for the editor.
             IContentFile file = ContentFileManager.GetFile(filePath);
-            Debug.Assert(file != null, $"File '{filePath}' doesn't exist, but it should!");
+            Debug.Assert(file is not null, $"File '{filePath}' doesn't exist, but it should!");
 
             // Just set up basic metadata for the file.
             // The metadata for a file contains extra information that the editor uses to help determine how 

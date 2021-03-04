@@ -63,9 +63,9 @@ namespace Gorgon.Renderers
         // The texture view for the pong target.
         private GorgonTexture2DView _pongTexture;
         // The ordered list where the actual passes are stored.
-        private readonly GorgonNamedObjectList<CompositionPass> _passes = new GorgonNamedObjectList<CompositionPass>();
+        private readonly GorgonNamedObjectList<CompositionPass> _passes = new();
         // The unique list of effects
-        private readonly Dictionary<string, int> _passLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, int> _passLookup = new(StringComparer.OrdinalIgnoreCase);
         // The color used to clear the initial render target.
         private GorgonColor? _initialClear = GorgonColor.BlackTransparent;
         // The color used to clear the final render target.
@@ -176,7 +176,7 @@ namespace Gorgon.Renderers
         {
             Graphics.SetRenderTarget(_final);
 
-            if (_finalClear != null)
+            if (_finalClear is not null)
             {
                 _final.Clear(_finalClear.Value);
             }
@@ -482,7 +482,7 @@ namespace Gorgon.Renderers
                 return this;
             }
 
-            if (_initialClear != null)
+            if (_initialClear is not null)
             {
                 _pingTarget.Clear(_initialClear.Value);
                 _pongTarget.Clear(_initialClear.Value);
@@ -505,12 +505,12 @@ namespace Gorgon.Renderers
                 GorgonTexture2DView nextTexture = ((currentTexture == source) || (currentTexture == _pongTexture)) ? _pingTexture : _pongTexture;
                 GorgonRenderTarget2DView nextTarget = current.target == _pingTarget ? _pongTarget : _pingTarget;
 
-                if (pass.ClearColor != null)
+                if (pass.ClearColor is not null)
                 {
                     currentTarget.Clear(pass.ClearColor.Value);
                 }
 
-                if (pass.Effect != null)
+                if (pass.Effect is not null)
                 {
                     pass.Effect.Render(currentTexture, currentTarget);
                 }

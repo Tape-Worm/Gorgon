@@ -62,7 +62,7 @@ namespace Gorgon.Examples
         /// </summary>
         public void Resize(Size newSize)
         {
-            if (_graphics != null)
+            if (_graphics is not null)
             {
                 _graphics.Dispose();
                 _graphics = null;
@@ -71,7 +71,7 @@ namespace Gorgon.Examples
             var newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
             _graphics = DrawingGraphics.FromImage(newBuffer);
 
-            if (Surface != null)
+            if (Surface is not null)
             {
                 // Copy the old image to the new surface.
                 _graphics.DrawImage(Surface, Point.Empty);

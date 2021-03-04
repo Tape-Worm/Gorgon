@@ -79,19 +79,19 @@ namespace Gorgon.Renderers
         // Text with embedded codes.
         private string _encodedText;
         // The formatted text.
-        private readonly StringBuilder _formattedText = new StringBuilder(256);
+        private readonly StringBuilder _formattedText = new(256);
         // The area for used for text layout.
         private DX.Size2F? _layoutArea;
         // Flag to allow or disallow control codes in the text.
         private bool _allowCodes;
         // The parser used to parse out the codes from text assigned to this object.
-        private readonly TextCodeParser _parser = new TextCodeParser();
+        private readonly TextCodeParser _parser = new();
 
         /// <summary>
         /// The renderable data for this sprite.
         /// It is exposed an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
         /// </summary>
-        internal readonly TextRenderable Renderable = new TextRenderable();
+        internal readonly TextRenderable Renderable = new();
         #endregion
 
         #region Properties.
@@ -400,7 +400,7 @@ namespace Gorgon.Renderers
 
                 Renderable.Font = value;
                 // Default to the first glyph texture.
-                Renderable.Texture = value.Glyphs.FirstOrDefault(item => item.TextureView != null)?.TextureView;
+                Renderable.Texture = value.Glyphs.FirstOrDefault(item => item.TextureView is not null)?.TextureView;
                 Renderable.HasVertexChanges = true;
                 Renderable.HasTextureChanges = true;
                 Renderable.HasVertexColorChanges = true;
@@ -420,7 +420,7 @@ namespace Gorgon.Renderers
         /// </summary>
         public DX.Vector2 Position
         {
-            get => new DX.Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
+            get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;

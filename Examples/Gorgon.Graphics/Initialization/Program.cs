@@ -97,7 +97,7 @@ namespace Gorgon.Examples
         // Our primary swap chain.
         private static GorgonSwapChain _swap;
         // The color to clear our swap chain with.
-        private static GorgonColor _clearColor = new GorgonColor(0, 0, 0);
+        private static GorgonColor _clearColor = new(0, 0, 0);
         // Which color channel are we animating? (R = 0, G = 1, B = 2).
         private static int _channel;
         // The value to apply to a specific color channel.

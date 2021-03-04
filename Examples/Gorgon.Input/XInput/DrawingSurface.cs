@@ -96,7 +96,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            if (_imageGraphics != null)
+            if (_imageGraphics is not null)
             {
                 _imageGraphics.Dispose();
                 _imageGraphics = null;
@@ -105,7 +105,7 @@ namespace Gorgon.Examples
             // Copy the old image into the new buffer.
             Image tempImage = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, _drawing.PixelFormat);
             _imageGraphics = DrawingGraphics.FromImage(tempImage);
-            if (_drawing != null)
+            if (_drawing is not null)
             {
                 _imageGraphics.DrawImage(_drawing, Point.Empty);
 
@@ -122,31 +122,31 @@ namespace Gorgon.Examples
         /// <param name="clearDrawing"><b>true</b> to destroy the drawing image, <b>false</b> to leave alone.</param>
         private void CleanUp(bool clearDrawing)
         {
-            if (_buffer != null)
+            if (_buffer is not null)
             {
                 _buffer.Dispose();
                 _buffer = null;
             }
 
-            if (_context != null)
+            if (_context is not null)
             {
                 _context.Dispose();
                 _context = null;
             }
 
-            if (_surfaceGraphics != null)
+            if (_surfaceGraphics is not null)
             {
                 _surfaceGraphics.Dispose();
                 _surfaceGraphics = null;
             }
 
-            if (_controlGraphics != null)
+            if (_controlGraphics is not null)
             {
                 _controlGraphics.Dispose();
                 _controlGraphics = null;
             }
 
-            if (_surfaceBuffer != null)
+            if (_surfaceBuffer is not null)
             {
                 _surfaceBuffer.Dispose();
                 _surfaceBuffer = null;
@@ -157,7 +157,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            if (_imageGraphics != null)
+            if (_imageGraphics is not null)
             {
                 _imageGraphics.Dispose();
                 _imageGraphics = null;
@@ -219,11 +219,9 @@ namespace Gorgon.Examples
         /// <param name="size">Size of the point.</param>
         public void DrawPoint(Point position, Color color, float size)
         {
-            using (var brush = new SolidBrush(color))
-            {
-                float halfSize = size / 2.0f;
-                _imageGraphics.FillEllipse(brush, new Rectangle(position.X - (int)halfSize, position.Y - (int)halfSize, (int)size, (int)size));
-            }
+            using var brush = new SolidBrush(color);
+            float halfSize = size / 2.0f;
+            _imageGraphics.FillEllipse(brush, new Rectangle(position.X - (int)halfSize, position.Y - (int)halfSize, (int)size, (int)size));
         }
 
         /// <summary>
@@ -238,7 +236,7 @@ namespace Gorgon.Examples
 
             _cursorTint += GorgonTiming.Delta * (_cursorFlash / 256.0f);
 
-            if ((_cursorTint > 1.0f) || (_cursorTint < 0.0f))
+            if (_cursorTint is > 1.0f or < 0.0f)
             {
                 if (_cursorTint < 0.0f)
                 {
@@ -311,7 +309,7 @@ namespace Gorgon.Examples
             {
                 _control.Resize -= SurfaceControl_Resize;
 
-                if (_cursorAttribs != null)
+                if (_cursorAttribs is not null)
                 {
                     _cursorAttribs.Dispose();
                     _cursorAttribs = null;

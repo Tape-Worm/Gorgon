@@ -92,7 +92,7 @@ namespace Gorgon.Examples
         // The compute engine.
         private static GorgonComputeEngine _engine;
         // The dispatch call builder.
-        private static readonly GorgonDispatchCallBuilder _dispatchBuilder = new GorgonDispatchCallBuilder();
+        private static readonly GorgonDispatchCallBuilder _dispatchBuilder = new();
         #endregion
 
         #region Methods.

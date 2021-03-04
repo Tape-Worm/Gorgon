@@ -116,7 +116,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, StringComparison.OrdinalIgnoreCase));
 
-                    if (listItem != null)
+                    if (listItem is not null)
                     {
                         return;
                     }
@@ -196,7 +196,7 @@ namespace Gorgon.Editor.ViewModels
 
         #region Constructor.
         /// <summary>Initializes a new instance of the <see cref="Recent"/> class.</summary>
-        public Recent() => DeleteItemCommand = new EditorCommand<RecentItem>(DoDeleteItemAsync, args => args != null);
+        public Recent() => DeleteItemCommand = new EditorCommand<RecentItem>(DoDeleteItemAsync, args => args is not null);
         #endregion
     }
 }
