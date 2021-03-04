@@ -210,7 +210,7 @@ namespace Gorgon.Native
             {
                 _ = SHGetImageList((int)ShellIconSize.ExtraLarge, ref IID, ref imageList);
 
-                if (imageList == null)
+                if (imageList is null)
                 {
                     return null;
                 }

@@ -76,7 +76,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if ((DataContext?.SetCategoryCommand == null) || (!DataContext.SetCategoryCommand.CanExecute(id)))
+            if ((DataContext?.SetCategoryCommand is null) || (!DataContext.SetCategoryCommand.CanExecute(id)))
             {
                 return;
             }
@@ -121,7 +121,7 @@ namespace Gorgon.Editor.Views
             {
                 ClearExtraPanels(true);
 
-                if (dataContext == null)
+                if (dataContext is null)
                 {
                     return;
                 }
@@ -135,7 +135,7 @@ namespace Gorgon.Editor.Views
 
                     SettingsBaseControl panel = ViewFactory.CreateView<SettingsBaseControl>(category);
 
-                    if (panel == null)
+                    if (panel is null)
                     {
                         continue;
                     }
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -222,7 +222,7 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(IEditorSettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -270,7 +270,7 @@ namespace Gorgon.Editor.Views
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

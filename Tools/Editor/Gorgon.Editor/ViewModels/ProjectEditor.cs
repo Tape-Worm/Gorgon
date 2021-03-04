@@ -461,7 +461,7 @@ namespace Gorgon.Editor.ViewModels
         {
             UnassignEvents();
 
-            if (FileExplorer == null)
+            if (FileExplorer is null)
             {
                 return;
             }
@@ -485,7 +485,7 @@ namespace Gorgon.Editor.ViewModels
                 CurrentContent.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
             }
 
-            if (FileExplorer == null)
+            if (FileExplorer is null)
             {
                 return;
             }
@@ -520,8 +520,8 @@ namespace Gorgon.Editor.ViewModels
         /// <returns><b>true</b> if saved or skipped, <b>false</b> if cancelled.</returns>
         private async Task<bool> UpdateChangedContentAsync(SaveReason saveReason)
         {
-            if ((CurrentContent == null)
-                || (CurrentContent.SaveContentCommand == null)
+            if ((CurrentContent is null)
+                || (CurrentContent.SaveContentCommand is null)
                 || (!CurrentContent.SaveContentCommand.CanExecute(saveReason)))
             {
                 return true;
@@ -625,7 +625,7 @@ namespace Gorgon.Editor.ViewModels
         /// <returns><b>true</b> if the node can be opened, <b>false</b> if not.</returns>
         private bool CanOpenContent()
         {
-            if ((FileExplorer == null) || (FileExplorer.SelectedFiles.Count == 0))
+            if ((FileExplorer is null) || (FileExplorer.SelectedFiles.Count == 0))
             {
                 return false;
             }
@@ -672,7 +672,7 @@ namespace Gorgon.Editor.ViewModels
                 // Create a content object.                
                 IEditorContent content = await plugIn.OpenContentAsync(file, _contentFileManager, _projectData, undoService);
 
-                if (content == null)
+                if (content is null)
                 {
                     return;
                 }
@@ -850,7 +850,7 @@ namespace Gorgon.Editor.ViewModels
                 // Get a new name (and any default data).
                 (string contentName, byte[] contentData, ProjectItemMetadata contentMetadata) = await plugin.GetDefaultContentAsync(plugin.ContentTypeID, directory.Files.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
 
-                if ((contentName == null) || (contentData == null))
+                if ((contentName is null) || (contentData is null))
                 {
                     return;
                 }
@@ -932,7 +932,7 @@ namespace Gorgon.Editor.ViewModels
 
             if ((FileExplorer.SelectedFiles.Count == 0)
                 || (FileExplorer.SelectedFiles[0] != virtualFile)
-                || (FileExplorer?.OpenContentFileCommand == null)
+                || (FileExplorer?.OpenContentFileCommand is null)
                 || (!FileExplorer.OpenContentFileCommand.CanExecute(null)))
             {
                 return;

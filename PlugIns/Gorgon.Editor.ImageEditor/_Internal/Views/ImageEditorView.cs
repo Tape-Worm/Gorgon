@@ -70,7 +70,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void ValidateControls()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 LabelMipDetails.Visible = LabelMipLevel.Visible = ButtonPrevMip.Visible = ButtonNextMip.Visible = false;
                 LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = false;
@@ -83,12 +83,12 @@ namespace Gorgon.Editor.ImageEditor
             LabelArrayIndexDetails.Visible = LabelArrayIndex.Visible = ButtonPrevArrayIndex.Visible = ButtonNextArrayIndex.Visible = DataContext.ArrayCount > 1;
             LabelDepthSliceDetails.Visible = LabelDepthSlice.Visible = ButtonPrevDepthSlice.Visible = ButtonNextDepthSlice.Visible = DataContext.ImageType == ImageType.Image3D;
 
-            ButtonNextMip.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentMipLevel < DataContext.MipCount - 1);
-            ButtonPrevMip.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentMipLevel > 0);
-            ButtonNextArrayIndex.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentArrayIndex < DataContext.ArrayCount - 1);
-            ButtonPrevArrayIndex.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentArrayIndex > 0);
-            ButtonNextDepthSlice.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentDepthSlice < DataContext.DepthCount - 1);
-            ButtonPrevDepthSlice.Enabled = (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null) && (DataContext.CurrentDepthSlice > 0);
+            ButtonNextMip.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentMipLevel < DataContext.MipCount - 1);
+            ButtonPrevMip.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentMipLevel > 0);
+            ButtonNextArrayIndex.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentArrayIndex < DataContext.ArrayCount - 1);
+            ButtonPrevArrayIndex.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentArrayIndex > 0);
+            ButtonNextDepthSlice.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentDepthSlice < DataContext.DepthCount - 1);
+            ButtonPrevDepthSlice.Enabled = (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null) && (DataContext.CurrentDepthSlice > 0);
 
             StatusPanel.Visible = true;
         }
@@ -119,7 +119,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The data context to use.</param>
         private void InitializeFromDataContext(IImageContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -159,7 +159,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateImageSizeDetails(IImageContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -173,7 +173,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateDepthSliceDetails(IImageContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -187,7 +187,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateArrayDetails(IImageContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -201,7 +201,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateMipDetails(IImageContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -292,7 +292,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             IContentFileDragData contentData = GetContentFileDragDropData<IContentFileDragData>(e);
 
-            if (contentData == null)
+            if (contentData is null)
             {                
                 return;
             }
@@ -305,7 +305,7 @@ namespace Gorgon.Editor.ImageEditor
 
             var args = new CopyToImageArgs(contentData.FilePaths, dpi);
 
-            if ((DataContext?.CopyToImageCommand == null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
+            if ((DataContext?.CopyToImageCommand is null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
             {
                 if (args.Cancel)
                 {
@@ -326,7 +326,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             IContentFileDragData contentData = GetContentFileDragDropData<IContentFileDragData>(e);
 
-            if (contentData == null)
+            if (contentData is null)
             {
                 e.Effect = DragDropEffects.None;
                 return;
@@ -334,7 +334,7 @@ namespace Gorgon.Editor.ImageEditor
 
             var args = new CopyToImageArgs(contentData.FilePaths, 1.0f);
 
-            if ((DataContext?.CopyToImageCommand == null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
+            if ((DataContext?.CopyToImageCommand is null) || (!DataContext.CopyToImageCommand.CanExecute(args)))
             {
                 if (!args.Cancel)
                 {
@@ -402,7 +402,7 @@ namespace Gorgon.Editor.ImageEditor
                     UpdateMipDetails(DataContext);                    
                     break;
                 case nameof(IImageContent.CommandContext):
-                    if ((DataContext.CommandContext == null) || (!HasRenderer(DataContext.CommandContext.Name)))
+                    if ((DataContext.CommandContext is null) || (!HasRenderer(DataContext.CommandContext.Name)))
                     {
                         if (!HasRenderer(DataContext.ImageType.ToString()))
                         {
@@ -411,7 +411,7 @@ namespace Gorgon.Editor.ImageEditor
 
                         string rendererName = DataContext.ImageType.ToString();
 
-                        if ((Renderer == null) || (!string.Equals(Renderer.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
+                        if ((Renderer is null) || (!string.Equals(Renderer.Name, rendererName, StringComparison.OrdinalIgnoreCase)))
                         {
                             SwitchRenderer(DataContext.ImageType.ToString(), false);
                         }
@@ -421,7 +421,7 @@ namespace Gorgon.Editor.ImageEditor
                     DataContext.CommandContext.OnLoad();
                     SwitchRenderer(DataContext.CommandContext.Name, false);
                     break;
-                case nameof(IImageContent.CurrentPanel) when (DataContext.CurrentPanel == null) && (DataContext.CommandContext == null):
+                case nameof(IImageContent.CurrentPanel) when (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null):
                     if (!HasRenderer(DataContext.ImageType.ToString()))
                     {
                         break;
@@ -461,7 +461,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.ResetDataContext();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

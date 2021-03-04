@@ -476,7 +476,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             target.Entries = dirs.Values.ToArray();
 
-            if (selectedTexture == null)
+            if (selectedTexture is null)
             {
                 return;
             }

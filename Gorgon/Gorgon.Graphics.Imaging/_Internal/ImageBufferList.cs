@@ -203,7 +203,7 @@ namespace Gorgon.Graphics.Imaging
         /// </summary>
         /// <param name="buffer">The buffer to look up.</param>
         /// <returns>The index of the buffer within the list, or -1 if not found.</returns>
-        public int IndexOf(IGorgonImageBuffer buffer) => buffer == null ? -1 : Array.IndexOf(_buffers, buffer);
+        public int IndexOf(IGorgonImageBuffer buffer) => buffer is null ? -1 : Array.IndexOf(_buffers, buffer);
 
         /// <summary>
         /// Function to retrieve the index of a buffer within the list using a mip map level and optional depth slice or array index.

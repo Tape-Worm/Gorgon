@@ -228,7 +228,7 @@ namespace Gorgon.Timing
         /// <exception cref="Win32Exception">Thrown when the last known period value is out of range.</exception>
         public static void EndTiming()
         {
-            if (_lastPeriod == null)
+            if (_lastPeriod is null)
             {
                 return;
             }

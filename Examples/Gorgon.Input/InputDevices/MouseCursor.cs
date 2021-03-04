@@ -96,7 +96,7 @@ namespace Gorgon.Examples
                 _imageGraphics = null;
             }
 
-            if (_mouseImage == null)
+            if (_mouseImage is null)
             {
                 return;
             }

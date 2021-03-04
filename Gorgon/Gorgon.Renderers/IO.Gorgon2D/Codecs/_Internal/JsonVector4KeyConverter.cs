@@ -43,7 +43,7 @@ namespace Gorgon.IO
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, GorgonKeyVector4 value, JsonSerializer serializer)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;

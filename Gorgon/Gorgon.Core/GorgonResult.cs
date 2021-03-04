@@ -218,7 +218,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
         public GorgonResult(string name, int code, string description)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -228,7 +228,7 @@ namespace Gorgon.Core
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (description == null)
+            if (description is null)
             {
                 throw new ArgumentNullException(nameof(description));
             }

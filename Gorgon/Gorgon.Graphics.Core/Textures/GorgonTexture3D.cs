@@ -382,7 +382,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="image">The image used to initialize the texture.</param>
         private void Initialize(IGorgonImage image)
         {
-            if ((Usage == ResourceUsage.Immutable) && (image == null))
+            if ((Usage == ResourceUsage.Immutable) && (image is null))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE_REQUIRES_DATA, Name));
             }
@@ -518,7 +518,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">The <see cref="IGorgonTexture3DInfo"/> used to define a texture.</param>
         /// <returns>The number of bytes for the texture.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public static int CalculateSizeInBytes(IGorgonTexture3DInfo info) => info == null
+        public static int CalculateSizeInBytes(IGorgonTexture3DInfo info) => info is null
                 ? throw new ArgumentNullException(nameof(info))
                 : CalculateSizeInBytes(info.Width,
                                         info.Height,
@@ -589,7 +589,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRange == null)
+            if (sourceRange is null)
             {
                 rect = new DX.Rectangle(0, sourceY, Width.Min(destinationTexture.Width).Max(1), 1);
             }
@@ -731,7 +731,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRectangle == null)
+            if (sourceRectangle is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
             }
@@ -880,7 +880,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            if ((sourceRectangle == null) && (sourceDepthSliceRange == null) && (sourceMipLevel == 0)
+            if ((sourceRectangle is null) && (sourceDepthSliceRange is null) && (sourceMipLevel == 0)
                 && (destX == 0) && (destY == 0) && (destZ == 0) && (destMipLevel == 0)
                 && (MipLevels == destinationTexture.MipLevels)
                 && (Width == destinationTexture.Width) && (Height == destinationTexture.Height) && (Depth == destinationTexture.Depth)
@@ -893,7 +893,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRectangle == null)
+            if (sourceRectangle is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
             }
@@ -907,7 +907,7 @@ namespace Gorgon.Graphics.Core
 
 
             // Ensure the indices are clipped to our settings.
-            GorgonRange srcDepth = sourceDepthSliceRange == null
+            GorgonRange srcDepth = sourceDepthSliceRange is null
                                        ? new GorgonRange(0, Depth)
                                        : new GorgonRange(sourceDepthSliceRange.Value.Minimum.Min(Depth - 1).Max(0), sourceDepthSliceRange.Value.Maximum.Min(Depth).Max(1));
 
@@ -1270,7 +1270,7 @@ namespace Gorgon.Graphics.Core
                 {
                     Width = (Width >> mipLevel).Max(1),
                     Height = (Height >> mipLevel).Max(1),
-                    Depth = depthSlice == null ? 1 : ((Depth - slice) >> mipLevel).Max(1),
+                    Depth = depthSlice is null ? 1 : ((Depth - slice) >> mipLevel).Max(1),
                     ArrayCount = 1,
                     MipCount = 1
                 });
@@ -1708,17 +1708,17 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture3D FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -1728,7 +1728,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -1738,7 +1738,7 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -1800,12 +1800,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture3D FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -1815,12 +1815,12 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }

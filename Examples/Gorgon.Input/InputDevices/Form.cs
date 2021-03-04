@@ -463,7 +463,7 @@ namespace Gorgon.Examples
         {
             base.OnActivated(e);
 
-            if (_mouse == null)
+            if (_mouse is null)
             {
                 return;
             }
@@ -479,7 +479,7 @@ namespace Gorgon.Examples
         {
             base.OnDeactivate(e);
 
-            if (_mouse == null)
+            if (_mouse is null)
             {
                 return;
             }

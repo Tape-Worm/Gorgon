@@ -149,7 +149,7 @@ namespace Gorgon.Editor.UI
         {
             Service = service ?? throw new ArgumentNullException(nameof(service));
 
-            if (desc == null)
+            if (desc is null)
             {
                 throw new ArgumentNullException(nameof(desc));
             }

@@ -72,7 +72,7 @@ namespace Gorgon.Renderers
         {
             dest.Clear();
 
-            if (src == null)
+            if (src is null)
             {
                 return;
             }
@@ -247,7 +247,7 @@ namespace Gorgon.Renderers
         /// <returns>The fluent builder interface.</returns>
         public Gorgon2DShaderStateBuilder<T> ResetTo(Gorgon2DShaderState<T> builderObject = null)
         {
-            if (builderObject == null)
+            if (builderObject is null)
             {
                 Clear();
                 return this;
@@ -279,7 +279,7 @@ namespace Gorgon.Renderers
         {
             Gorgon2DShaderState<T> shader;
 
-            if (allocator == null)
+            if (allocator is null)
             {
                 shader = new Gorgon2DShaderState<T>();
             }

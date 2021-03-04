@@ -230,7 +230,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_SO_SLOT_INVALID, GorgonStreamOutBindings.MaximumStreamOutCount));
             }
 
-            if (DrawCall.D3DState.StreamOutBindings == null)
+            if (DrawCall.D3DState.StreamOutBindings is null)
             {
                 DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
             }
@@ -252,7 +252,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(bindings), string.Format(Resources.GORGFX_ERR_SO_SLOT_INVALID, GorgonStreamOutBindings.MaximumStreamOutCount));
             }
 
-            if (DrawCall.D3DState.StreamOutBindings == null)
+            if (DrawCall.D3DState.StreamOutBindings is null)
             {
                 DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
             }
@@ -286,7 +286,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_INVALID_VERTEXBUFFER_SLOT, GorgonVertexBufferBindings.MaximumVertexBufferCount));
             }
 
-            if (DrawCall.D3DState.VertexBuffers == null)
+            if (DrawCall.D3DState.VertexBuffers is null)
             {
                 DrawCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             }
@@ -532,7 +532,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public TB ResetTo(TDc drawCall = null)
         {
-            if (drawCall == null)
+            if (drawCall is null)
             {
                 return Clear();
             }
@@ -626,22 +626,22 @@ namespace Gorgon.Graphics.Core
         {
             TDc final = OnCreate(allocator);
 
-            if ((allocator == null)
-                || (final.VertexShader.ConstantBuffers == null)
-                || (final.PixelShader.Samplers == null)
-                || (final.PixelShader.ShaderResources == null))
+            if ((allocator is null)
+                || (final.VertexShader.ConstantBuffers is null)
+                || (final.PixelShader.Samplers is null)
+                || (final.PixelShader.ShaderResources is null))
             {
                 final.SetupConstantBuffers();
                 final.SetupSamplers();
                 final.SetupViews();
             }
 
-            if (final.D3DState.VertexBuffers == null)
+            if (final.D3DState.VertexBuffers is null)
             {
                 final.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             }
 
-            if (final.D3DState.StreamOutBindings == null)
+            if (final.D3DState.StreamOutBindings is null)
             {
                 final.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
             }
@@ -727,7 +727,7 @@ namespace Gorgon.Graphics.Core
 
             OnUpdate(final);
 
-            return final.PipelineState.VertexShader == null
+            return final.PipelineState.VertexShader is null
                 ? throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER)
                 : final;
         }

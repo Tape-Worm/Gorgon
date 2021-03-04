@@ -97,7 +97,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
         public void ShowError(Exception ex, string message = null, string caption = null)
         {
-            if (ex == null)
+            if (ex is null)
             {
                 throw new ArgumentNullException(nameof(ex));
             }

@@ -69,7 +69,7 @@ namespace Gorgon.Core
             // We'll always have at least 1 line.
             ++lineCount;
 
-            if ((buffer == null) || (buffer.Length != lineCount))
+            if ((buffer is null) || (buffer.Length != lineCount))
             {
                 buffer = new string[lineCount];
             }
@@ -125,7 +125,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int IndexOf(this StringBuilder theString, char character)
         {
-            if (theString == null)
+            if (theString is null)
             {
                 throw new ArgumentNullException(nameof(theString));
             }
@@ -157,7 +157,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int IndexOf(this StringBuilder theString, string characters, int startIndex = 0, StringComparison comparison = StringComparison.InvariantCulture)
         {
-            if (theString == null)
+            if (theString is null)
             {
                 throw new ArgumentNullException(nameof(theString));
             }
@@ -183,7 +183,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int LastIndexOf(this StringBuilder theString, char character)
         {
-            if (theString == null)
+            if (theString is null)
             {
                 throw new ArgumentNullException(nameof(theString));
             }
@@ -214,7 +214,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int LastIndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
         {
-            if (theString == null)
+            if (theString is null)
             {
                 throw new ArgumentNullException(nameof(theString));
             }
@@ -239,7 +239,7 @@ namespace Gorgon.Core
         /// </remarks>
         public static string ToStringWithDeclaration(this XDocument document)
         {
-            if (document == null)
+            if (document is null)
             {
                 throw new ArgumentNullException(nameof(document));
             }
@@ -443,7 +443,7 @@ namespace Gorgon.Core
                 return 0;
             }
 
-            if (encoding == null)
+            if (encoding is null)
             {
                 encoding = Encoding.UTF8;
             }
@@ -475,7 +475,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
 	    public static bool IsWhiteSpaceOrEmpty(this string value)
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }

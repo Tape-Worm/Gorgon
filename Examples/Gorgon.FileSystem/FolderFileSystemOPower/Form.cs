@@ -237,7 +237,7 @@ namespace Gorgon.Examples
         {
             IGorgonVirtualFile file = _fileSystem.GetFile(path);
 
-            if (file == null)
+            if (file is null)
             {
                 throw new FileNotFoundException($"The file '{path}' was not found in the file system.");
             }

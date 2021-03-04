@@ -60,7 +60,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void ValidateButtons()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 ButtonAddCodec.Enabled = ButtonRemoveCodecs.Enabled = false;
                 return;
@@ -83,7 +83,7 @@ namespace Gorgon.Editor.AnimationEditor
                 ListCodecs.Items.Clear();
                 DataContext?.SelectedCodecs.Clear();
 
-                if (dataContext == null)
+                if (dataContext is null)
                 {
                     return;
                 }
@@ -114,7 +114,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckAnimatePrimaryBg_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -127,7 +127,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="ListViewItemSelectionChangedEventArgs"/> instance containing the event data.</param>
         private void ListCodecs_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            if ((e.Item == null) || (DataContext == null))
+            if ((e.Item is null) || (DataContext is null))
             {
                 return;
             }
@@ -152,7 +152,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAddCodec_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.LoadPlugInAssemblyCommand == null) || (!DataContext.LoadPlugInAssemblyCommand.CanExecute(null)))
+            if ((DataContext?.LoadPlugInAssemblyCommand is null) || (!DataContext.LoadPlugInAssemblyCommand.CanExecute(null)))
             {
                 return;
             }
@@ -165,7 +165,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonRemoveCodecs_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.UnloadPlugInAssembliesCommand == null) || (!DataContext.UnloadPlugInAssembliesCommand.CanExecute(null)))
+            if ((DataContext?.UnloadPlugInAssembliesCommand is null) || (!DataContext.UnloadPlugInAssembliesCommand.CanExecute(null)))
             {
                 return;
             }
@@ -203,7 +203,7 @@ namespace Gorgon.Editor.AnimationEditor
                         {
                             ListViewItem listItem = ListCodecs.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == setting);
 
-                            if (listItem == null)
+                            if (listItem is null)
                             {
                                 continue;
                             }
@@ -268,7 +268,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -288,7 +288,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="dataContext">The data context to apply.</param>
         private void InitializeFromDataContext(IImportSettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -316,7 +316,7 @@ namespace Gorgon.Editor.AnimationEditor
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

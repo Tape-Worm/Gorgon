@@ -215,7 +215,7 @@ namespace Gorgon.Renderers
         /// <returns>The fluent builder interface.</returns>
         public Gorgon2DBatchStateBuilder ResetTo(Gorgon2DBatchState builderObject = null)
         {
-            if (builderObject == null)
+            if (builderObject is null)
             {
                 return Clear();
             }
@@ -243,7 +243,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         public Gorgon2DBatchState Build(IGorgonAllocator<Gorgon2DBatchState> allocator)
         {
-            if (allocator == null)
+            if (allocator is null)
             {
                 return Build();
             }

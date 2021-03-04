@@ -75,7 +75,7 @@ namespace Gorgon.Editor
         private static (bool hasSwitch, string switchValue) GetCommandLineArgument(string[] args, string argument)
         {
             if ((string.IsNullOrWhiteSpace(argument))
-                || (args == null)
+                || (args is null)
                 || (args.Length == 0))
             {
                 return (false, string.Empty);

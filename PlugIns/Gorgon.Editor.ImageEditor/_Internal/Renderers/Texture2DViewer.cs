@@ -64,7 +64,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         protected override void CreateTexture()
         {
-            if ((DataContext?.ImageData == null) || (DataContext.ImageType != ImageType.Image2D))
+            if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageType.Image2D))
             {
                 RenderRegion = DX.RectangleF.Empty;
                 return;

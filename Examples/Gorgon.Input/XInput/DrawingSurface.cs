@@ -91,7 +91,7 @@ namespace Gorgon.Examples
         {
             System.Windows.Forms.Form parentForm = _control.FindForm();
 
-            if ((parentForm == null) || (parentForm.WindowState == FormWindowState.Minimized))
+            if ((parentForm is null) || (parentForm.WindowState == FormWindowState.Minimized))
             {
                 return;
             }
@@ -163,7 +163,7 @@ namespace Gorgon.Examples
                 _imageGraphics = null;
             }
 
-            if (_drawing == null)
+            if (_drawing is null)
             {
                 return;
             }

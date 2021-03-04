@@ -260,7 +260,7 @@ namespace Gorgon.UI
                 return;
             }
 
-            if (Parent == null)
+            if (Parent is null)
             {
                 CenterToScreen();
             }

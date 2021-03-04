@@ -341,7 +341,7 @@ namespace Gorgon.Renderers
                 Graphics.TemporaryTargets?.Return(_hPass);
             }
 
-            if (_vPass == null)
+            if (_vPass is null)
             {
                 return;
             }
@@ -355,7 +355,7 @@ namespace Gorgon.Renderers
         /// <param name="builders">The builder types that will manage the state of the effect.</param>
         private void BuildState(IGorgon2DEffectBuilders builders)
         {
-            if (_blurState == null)
+            if (_blurState is null)
             {
                 _blurState = builders.PixelShaderBuilder.SamplerState(GorgonSamplerState.Default)
                                                         .ConstantBuffer(_blurBufferKernel, 1)
@@ -364,7 +364,7 @@ namespace Gorgon.Renderers
                                                         .Build();
             }
 
-            if (_blurStateNoAlpha == null)
+            if (_blurStateNoAlpha is null)
             {
                 _blurStateNoAlpha = builders.PixelShaderBuilder.Shader(_blurShaderNoAlpha)
                                                                .Build();
@@ -389,8 +389,8 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if ((_batchStateNoAlpha == null)
-                || (_batchState == null))
+            if ((_batchStateNoAlpha is null)
+                || (_batchState is null))
             {
                 BuildState(builders);
             }
@@ -526,7 +526,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnAfterRender(GorgonRenderTargetView output)
         {
-            if ((_hPass == null) || (_vPass == null))
+            if ((_hPass is null) || (_vPass is null))
             {
                 return;
             }

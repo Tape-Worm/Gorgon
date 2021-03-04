@@ -61,7 +61,7 @@ namespace Gorgon.Editor.Views
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     RowsDragEvent = null;
                     return;
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.Views
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }

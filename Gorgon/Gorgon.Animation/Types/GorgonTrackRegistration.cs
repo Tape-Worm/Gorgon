@@ -172,7 +172,7 @@ namespace Gorgon.Animation
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="trackName"/> parameter is empty.</exception>
         public GorgonTrackRegistration(string trackName, string description, AnimationTrackKeyType keyType, TrackInterpolationMode interpolationSupport = TrackInterpolationMode.Spline | TrackInterpolationMode.Linear)
         {
-            if (trackName == null)
+            if (trackName is null)
             {
                 throw new ArgumentNullException(nameof(trackName));
             }

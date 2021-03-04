@@ -91,7 +91,7 @@ namespace Gorgon.Examples
                 MoveableMesh mesh = Layers[meshIndex].Mesh;
                 IGorgonAnimation animation = Layers[meshIndex].Animation;
 
-                if (animation == null)
+                if (animation is null)
                 {
                     mesh.Rotation = Rotation;
                 }

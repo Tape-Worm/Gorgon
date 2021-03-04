@@ -307,7 +307,7 @@ namespace Gorgon.Examples
                 PlayAudio();
             }
 
-            if (_animController.CurrentAnimation == null)
+            if (_animController.CurrentAnimation is null)
             {
                 _animController.Play(_animatedSprite, _animation);
             }

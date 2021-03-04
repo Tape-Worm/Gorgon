@@ -507,7 +507,7 @@ namespace Gorgon.Graphics.Fonts
             // it is absolutely necessary to change and should improve performance when rendering.
             foreach (KeyValuePair<Bitmap, IEnumerable<GlyphInfo>> glyphBitmap in glyphData)
             {
-                if ((image == null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
+                if ((image is null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
                 {
                     imageSettings.ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount);
                     arrayIndex = 0;
@@ -538,7 +538,7 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="images">The images containing the data to upload to the GPU.</param>
         private void GenerateTextures(IReadOnlyList<(IGorgonImage, IEnumerable<GlyphInfo>)> images)
         {
-            if ((images == null) || (images.Count == 0))
+            if ((images is null) || (images.Count == 0))
             {
                 return;
             }

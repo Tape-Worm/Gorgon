@@ -79,7 +79,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_closeEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         ContentClosedEvent = null;
                         return;
@@ -92,7 +92,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_closeEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragEnterEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         BubbleDragEnterEvent = null;
                         return;
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragEnterEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -145,7 +145,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragOverEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         BubbleDragOverEvent = null;
                         return;
@@ -158,7 +158,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragOverEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -178,7 +178,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragDropEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         BubbleDragDropEvent = null;
                         return;
@@ -191,7 +191,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragDropEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -343,7 +343,7 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeFromDataContext(IEditorContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -380,7 +380,7 @@ namespace Gorgon.Editor.UI.Views
             if (string.IsNullOrWhiteSpace(dataContext?.File?.Name))
             {
                 LabelHeader.Text = string.Empty;
-                if (dataContext?.CloseContentCommand == null)
+                if (dataContext?.CloseContentCommand is null)
                 {
                     PanelContentName.Visible = false;
                 }
@@ -407,7 +407,7 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected void ShowHostedPanel(Control control)
         {
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }
@@ -628,7 +628,7 @@ namespace Gorgon.Editor.UI.Views
         /// </summary>
         protected virtual void UnassignEvents()
         {
-            if (_dataContext == null)
+            if (_dataContext is null)
             {
                 return;
             }
@@ -642,7 +642,7 @@ namespace Gorgon.Editor.UI.Views
         /// </summary>
         protected virtual void ResetDataContext()
         {
-            if (_dataContext == null)
+            if (_dataContext is null)
             {
                 return;
             }
@@ -672,7 +672,7 @@ namespace Gorgon.Editor.UI.Views
             InitializeFromDataContext(dataContext);
             _dataContext = dataContext;
 
-            if (_dataContext == null)
+            if (_dataContext is null)
             {
                 return;
             }
@@ -709,7 +709,7 @@ namespace Gorgon.Editor.UI.Views
             where T : Control
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (id == null)
+            if (id is null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
@@ -729,7 +729,7 @@ namespace Gorgon.Editor.UI.Views
         /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="id"/> is not registered.</exception>
         protected void UnregisterChildPanel(string id)
         {
-            if (id == null)
+            if (id is null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
@@ -757,12 +757,12 @@ namespace Gorgon.Editor.UI.Views
         /// <exception cref="ArgumentException">Thrown when the <paramref name="id"/> is already registered.</exception>
         protected void RegisterChildPanel(string id, Control control)
         {
-            if (id == null)
+            if (id is null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }
@@ -816,7 +816,7 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            if (context == null)
+            if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }

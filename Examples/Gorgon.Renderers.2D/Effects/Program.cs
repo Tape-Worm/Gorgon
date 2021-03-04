@@ -209,7 +209,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void InitializeBackgroundTexturePositioning()
         {
-            if (_randomOffset == null)
+            if (_randomOffset is null)
             {
                 _randomOffset = new DX.Vector2(GorgonRandom.RandomSingle(_background.Width - _postTarget1.Width),
                                                GorgonRandom.RandomSingle(_background.Height - _postTarget1.Height));

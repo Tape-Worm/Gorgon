@@ -160,7 +160,7 @@ namespace Gorgon.Editor.Rendering
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         public SelectionRectangle(IGraphicsContext graphics)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }

@@ -93,13 +93,13 @@ namespace Gorgon.Editor.Services
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public (ContentPlugIn plugin, MetadataPlugInState state) GetContentPlugIn(ProjectItemMetadata metadata)
         {
-            if (metadata == null)
+            if (metadata is null)
             {
                 throw new ArgumentNullException(nameof(metadata));
             }
 
             // If the name is null, then we've never assigned the content plugin.  So look it up.
-            if (metadata.PlugInName == null)
+            if (metadata.PlugInName is null)
             {
                 return (null, MetadataPlugInState.Unassigned);
             }
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.Services
         public T ReadContentSettings<T>(string name, params JsonConverter[] converters)
             where T : class
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -275,7 +275,7 @@ namespace Gorgon.Editor.Services
         public void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters)
             where T : class
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -285,7 +285,7 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (contentSettings == null)
+            if (contentSettings is null)
             {
                 throw new ArgumentNullException(nameof(contentSettings));
             }
@@ -303,7 +303,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
         public void AddContentImportPlugIn(ContentImportPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -321,7 +321,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
         public void AddContentPlugIn(ContentPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -365,12 +365,12 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginDir"/> parameter is empty.</exception>
         public void LoadContentPlugIns(GorgonMefPlugInCache pluginCache, string pluginDir)
         {
-            if (pluginCache == null)
+            if (pluginCache is null)
             {
                 throw new ArgumentNullException(nameof(pluginCache));
             }
 
-            if (pluginDir == null)
+            if (pluginDir is null)
             {
                 throw new ArgumentNullException(nameof(pluginDir));
             }
@@ -403,7 +403,7 @@ namespace Gorgon.Editor.Services
         /// <param name="plugin">The plugin to remove.</param>
         public void RemoveContentImportPlugIn(ContentImportPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -421,7 +421,7 @@ namespace Gorgon.Editor.Services
         /// <param name="plugin">The plugin to remove.</param>
         public void RemoveContentPlugIn(ContentPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -449,7 +449,7 @@ namespace Gorgon.Editor.Services
         /// </remarks>
         public IEditorContentImporter GetContentImporter(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }

@@ -78,7 +78,7 @@ namespace Gorgon.Examples
         /// <param name="frameChangeCallback">The callback to execute when a frame is updated.</param>
         public void Animate(Action frameChangeCallback)
         {
-            if ((FrameTimes == null) || (FrameTimes.Count == 0) || (_animationTask != null))
+            if ((FrameTimes is null) || (FrameTimes.Count == 0) || (_animationTask != null))
             {
                 return;
             }
@@ -118,7 +118,7 @@ namespace Gorgon.Examples
         /// <returns>The task that is updating the animation.</returns>
         public async Task CancelAsync()
         {
-            if (_animationTask == null)
+            if (_animationTask is null)
             {
                 return;
             }

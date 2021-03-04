@@ -102,7 +102,7 @@ namespace Gorgon.Editor.ViewModels
         public SettingsPlugInListItemParameters(EditorPlugIn plugin, IHostServices hostServices)
             : base(hostServices)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -122,7 +122,7 @@ namespace Gorgon.Editor.ViewModels
         public SettingsPlugInListItemParameters(IDisabledPlugIn plugin, IHostServices hostServices)
             : base(hostServices)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -142,7 +142,7 @@ namespace Gorgon.Editor.ViewModels
         public SettingsPlugInListItemParameters(IGorgonFileSystemProvider plugin, IHostServices hostServices)
             : base(hostServices)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }

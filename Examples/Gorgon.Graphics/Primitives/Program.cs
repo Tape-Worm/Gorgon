@@ -342,7 +342,7 @@ namespace Gorgon.Examples
         private static void Mouse_Up(object sender, GI.GorgonMouseEventArgs args)
         {
             if (((args.Buttons & GI.MouseButtons.Right) != GI.MouseButtons.Right)
-                || (_mouse == null))
+                || (_mouse is null))
             {
                 return;
             }

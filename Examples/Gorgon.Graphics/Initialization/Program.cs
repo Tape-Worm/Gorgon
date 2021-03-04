@@ -293,7 +293,7 @@ namespace Gorgon.Examples
         {
             if ((e.KeyCode != Keys.Enter)
                 || (!e.Alt)
-                || (_swap == null))
+                || (_swap is null))
             {
                 return;
             }
@@ -306,7 +306,7 @@ namespace Gorgon.Examples
 
             IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[GorgonApplication.MainForm.Handle];
 
-            if (output == null)
+            if (output is null)
             {
                 return;
             }

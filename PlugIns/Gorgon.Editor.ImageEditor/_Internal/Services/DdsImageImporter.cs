@@ -59,7 +59,7 @@ namespace Gorgon.Editor.ImageEditor.Services
         {
             IGorgonVirtualDirectory directory = _tempWriter.FileSystem.GetDirectory(_tempDirPath);
 
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }
@@ -85,7 +85,7 @@ namespace Gorgon.Editor.ImageEditor.Services
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalFilePath"/> parameter is empty.</exception>
         public IGorgonVirtualFile ImportData(string physicalFilePath, CancellationToken cancelToken)
         {
-            if (physicalFilePath == null)
+            if (physicalFilePath is null)
             {
                 throw new ArgumentNullException(nameof(physicalFilePath));
             }
@@ -98,7 +98,7 @@ namespace Gorgon.Editor.ImageEditor.Services
             IGorgonImageCodec sourceCodec = ImageImporterPlugIn.GetCodec(physicalFilePath, _codecs);
 
             // This source is the same as the destination codec. So there's nothing to do.
-            if (sourceCodec == null)
+            if (sourceCodec is null)
             {
                 return null;
             }

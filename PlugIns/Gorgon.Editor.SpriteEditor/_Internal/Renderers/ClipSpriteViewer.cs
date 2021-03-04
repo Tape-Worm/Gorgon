@@ -56,7 +56,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     ToggleManualInputEvent = null;
                     return;
@@ -66,7 +66,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -163,9 +163,9 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpriteClipContext.FixedSize):
                     DX.Size2F? size = DataContext.SpriteClipContext.FixedSize;
 
-                    _clipper.AllowResize = size == null;
+                    _clipper.AllowResize = size is null;
 
-                    if (size == null)
+                    if (size is null)
                     {
                         break;
                     }
@@ -377,7 +377,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (DataContext?.Texture == null)
+            if (DataContext?.Texture is null)
             {
                 return;
             }

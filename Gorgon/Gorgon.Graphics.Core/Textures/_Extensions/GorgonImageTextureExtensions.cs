@@ -83,17 +83,17 @@ namespace Gorgon.Graphics.Core
                                                   GorgonGraphics graphics,
                                                   GorgonTexture2DLoadOptions options = null)
         {
-            if (gdiBitmap == null)
+            if (gdiBitmap is null)
             {
                 throw new ArgumentNullException(nameof(gdiBitmap));
             }
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -156,17 +156,17 @@ namespace Gorgon.Graphics.Core
                                                   GorgonGraphics graphics,
                                                   GorgonTextureLoadOptions options = null)
         {
-            if (image == null)
+            if (image is null)
             {
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -226,17 +226,17 @@ namespace Gorgon.Graphics.Core
                                                   GorgonGraphics graphics,
                                                   GorgonTexture2DLoadOptions options = null)
         {
-            if (image == null)
+            if (image is null)
             {
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -296,17 +296,17 @@ namespace Gorgon.Graphics.Core
                                                   GorgonGraphics graphics,
                                                   GorgonTextureLoadOptions options = null)
         {
-            if (image == null)
+            if (image is null)
             {
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }

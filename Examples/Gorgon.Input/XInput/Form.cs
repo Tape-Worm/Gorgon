@@ -409,7 +409,7 @@ namespace Gorgon.Examples
 
             _assemblies?.Dispose();
 
-            if (_surface == null)
+            if (_surface is null)
             {
                 return;
             }

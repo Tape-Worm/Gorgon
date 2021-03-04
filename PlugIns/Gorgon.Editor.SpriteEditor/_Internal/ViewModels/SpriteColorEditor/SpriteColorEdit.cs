@@ -74,7 +74,7 @@ namespace Gorgon.Editor.SpriteEditor
             get => _selectedVertex;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     for (int i = 0; i < _selectedVertex.Length; ++i)
                     {
@@ -103,7 +103,7 @@ namespace Gorgon.Editor.SpriteEditor
             get => _color;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -128,7 +128,7 @@ namespace Gorgon.Editor.SpriteEditor
             get => _originalColor;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }

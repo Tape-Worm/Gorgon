@@ -258,7 +258,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void SetHandles()
         {
-            if (DataContext.Texture == null)
+            if (DataContext.Texture is null)
             {
                 return;
             }

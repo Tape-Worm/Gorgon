@@ -698,7 +698,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             try
             {
-                if (((srcFormat == DdsConversionFlags.Palette) || (srcFormat == DdsConversionFlags.A8P8)) && ((palette == null) || (actualPalette.Length != 256)))
+                if (((srcFormat == DdsConversionFlags.Palette) || (srcFormat == DdsConversionFlags.A8P8)) && ((palette is null) || (actualPalette.Length != 256)))
                 {
                     // Create an empty palette if we didn't supply one.
                     actualPalette = GorgonArrayPool<uint>.SharedTiny.Rent(256);
@@ -1196,7 +1196,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                             for (int h = 0; h < destBuffer.Height; h++)
                             {
                                 // Use this to read a line of data from the source.
-                                if (lineBuffer == null)
+                                if (lineBuffer is null)
                                 {
                                     lineBuffer = new GorgonNativeBuffer<byte>(pitchInfo.RowPitch);
                                 }
@@ -1353,12 +1353,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public override void Save(IGorgonImage imageData, Stream stream)
         {
-            if (imageData == null)
+            if (imageData is null)
             {
                 throw new ArgumentNullException(nameof(imageData));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -1440,7 +1440,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             int headerSize = Unsafe.SizeOf<Dx10Header>() + Unsafe.SizeOf<DdsHeader>() + sizeof(uint);
             long position = 0;
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -1494,7 +1494,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             uint magicNumber;
             long position = 0;
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

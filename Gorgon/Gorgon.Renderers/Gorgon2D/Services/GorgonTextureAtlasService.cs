@@ -247,7 +247,7 @@ namespace Gorgon.Renderers.Services
 
                     DX.Rectangle? newRegion = SpritePacker.Add(new DX.Size2(sprite.region.Width, sprite.region.Height));
 
-                    if ((newRegion == null) || (newRegion.Value.Width == 0) || (newRegion.Value.Height == 0))
+                    if ((newRegion is null) || (newRegion.Value.Width == 0) || (newRegion.Value.Height == 0))
                     {
                         continue;
                     }
@@ -318,7 +318,7 @@ namespace Gorgon.Renderers.Services
         /// <seealso cref="GetBestFit"/>
         public IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> GetSpriteRegions(IEnumerable<GorgonSprite> sprites)
         {
-            if (sprites == null)
+            if (sprites is null)
             {
                 throw new ArgumentNullException(nameof(sprites));
             }
@@ -375,7 +375,7 @@ namespace Gorgon.Renderers.Services
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public (DX.Size2 textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, DX.Size2 minTextureSize, int minArrayCount)
         {
-            if (sprites == null)
+            if (sprites is null)
             {
                 throw new ArgumentNullException(nameof(sprites));
             }
@@ -443,7 +443,7 @@ namespace Gorgon.Renderers.Services
         /// <seealso cref="GorgonTextureAtlas"/>
         public GorgonTextureAtlas GenerateAtlas(IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions, BufferFormat textureFormat)
         {
-            if (regions == null)
+            if (regions is null)
             {
                 throw new ArgumentNullException(nameof(regions));
             }

@@ -143,10 +143,10 @@ namespace Gorgon.Animation
         /// </summary>
         public AnimationState State
         {
-            get => CurrentAnimation == null ? AnimationState.Stopped : _state;
+            get => CurrentAnimation is null ? AnimationState.Stopped : _state;
             private set
             {
-                if (CurrentAnimation == null)
+                if (CurrentAnimation is null)
                 {
                     return;
                 }
@@ -163,7 +163,7 @@ namespace Gorgon.Animation
             get => _time;
             set
             {
-                if (CurrentAnimation == null)
+                if (CurrentAnimation is null)
                 {
                     return;
                 }
@@ -506,7 +506,7 @@ namespace Gorgon.Animation
         /// </summary>
         public void Refresh()
         {
-            if (CurrentAnimation == null)
+            if (CurrentAnimation is null)
             {
                 return;
             }
@@ -519,7 +519,7 @@ namespace Gorgon.Animation
         /// </summary>
 	    public void Reset()
         {
-            if (CurrentAnimation == null)
+            if (CurrentAnimation is null)
             {
                 Time = 0;
                 return;
@@ -551,7 +551,7 @@ namespace Gorgon.Animation
         /// <seealso cref="GorgonTrackRegistration"/>
         public void Play(T animatedObject, IGorgonAnimation animation)
         {
-            if (animation == null)
+            if (animation is null)
             {
                 throw new ArgumentNullException(nameof(animation));
             }
@@ -597,7 +597,7 @@ namespace Gorgon.Animation
         /// </summary>
 	    public void Pause()
         {
-            if ((CurrentAnimation == null) || (_animatedObject == null))
+            if ((CurrentAnimation is null) || (_animatedObject is null))
             {
                 State = AnimationState.Stopped;
                 return;
@@ -611,7 +611,7 @@ namespace Gorgon.Animation
         /// </summary>
         public void Resume()
         {
-            if ((CurrentAnimation == null) || (_animatedObject == null))
+            if ((CurrentAnimation is null) || (_animatedObject is null))
             {
                 State = AnimationState.Stopped;
                 return;
@@ -627,7 +627,7 @@ namespace Gorgon.Animation
         {
             Reset();
 
-            if (CurrentAnimation == null)
+            if (CurrentAnimation is null)
             {
                 return;
             }

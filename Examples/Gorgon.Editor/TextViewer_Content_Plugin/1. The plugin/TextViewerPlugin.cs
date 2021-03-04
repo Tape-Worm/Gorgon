@@ -495,12 +495,12 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile" />, or the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
         public Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken)
         {
-            if (contentFile == null)
+            if (contentFile is null)
             {
                 throw new ArgumentNullException(nameof(contentFile));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }

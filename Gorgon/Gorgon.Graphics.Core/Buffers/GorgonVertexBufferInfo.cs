@@ -149,7 +149,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonInputLayout"/>
         public static IGorgonVertexBufferInfo CreateFromInputLayout(GorgonInputLayout layout, int slot, int count, ResourceUsage usage = ResourceUsage.Default)
         {
-            if (layout == null)
+            if (layout is null)
             {
                 throw new ArgumentNullException(nameof(layout));
             }
@@ -180,7 +180,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonVertexBufferInfo(IGorgonVertexBufferInfo info, string newName = null)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }

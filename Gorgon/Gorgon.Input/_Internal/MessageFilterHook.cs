@@ -199,7 +199,7 @@ namespace Gorgon.Input
                 throw new ArgumentNullException(nameof(hwnd));
             }
 
-            if (filter == null)
+            if (filter is null)
             {
                 throw new ArgumentNullException(nameof(filter));
             }

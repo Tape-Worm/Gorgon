@@ -73,7 +73,7 @@ namespace Gorgon.Editor
                 return 0;
             }
 
-            if (tagValue == null)
+            if (tagValue is null)
             {
                 return maxValue;
             }
@@ -182,7 +182,7 @@ namespace Gorgon.Editor
                 KryptonRibbonGroup existingGroup = targetGroups.FirstOrDefault(item => (string.Equals(item.TextLine1, sourceGroup.TextLine1, StringComparison.CurrentCulture))
                                                                                     && (string.Equals(item.TextLine2, sourceGroup.TextLine2, StringComparison.CurrentCulture)));
 
-                if ((existingGroup == null) && (!targetGroups.Contains(sourceGroup)))
+                if ((existingGroup is null) && (!targetGroups.Contains(sourceGroup)))
                 {
                     sourceGroups.Remove(sourceGroup);
 
@@ -214,7 +214,7 @@ namespace Gorgon.Editor
                 KryptonRibbonTab existingTab = targetRibbon.RibbonTabs.FirstOrDefault(item => string.Equals(item.Text, tab.Text, StringComparison.CurrentCulture));
 
                 // The tab doesn't exist, so just add it
-                if ((existingTab == null) && (!targetRibbon.RibbonTabs.Contains(tab)))
+                if ((existingTab is null) && (!targetRibbon.RibbonTabs.Contains(tab)))
                 {
                     sourceRibbon.RibbonTabs.Remove(tab);
 
@@ -328,7 +328,7 @@ namespace Gorgon.Editor
         /// <param name="ribbon">The ribbon to merge.</param>
         public void Merge(KryptonRibbon ribbon)
         {
-            if (ribbon == null)
+            if (ribbon is null)
             {
                 return;
             }
@@ -354,7 +354,7 @@ namespace Gorgon.Editor
         /// <param name="ribbon">The ribbon to unmerge.</param>
         public void Unmerge(KryptonRibbon ribbon)
         {
-            if (ribbon == null)
+            if (ribbon is null)
             {
                 return;
             }

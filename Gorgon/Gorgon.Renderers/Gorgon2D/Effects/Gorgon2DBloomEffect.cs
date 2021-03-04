@@ -269,7 +269,7 @@ namespace Gorgon.Renderers
         /// </summary>
         private void ReturnSampleTargets()
         {
-            if (_sampleTargets == null)
+            if (_sampleTargets is null)
             {
                 return;
             }
@@ -327,7 +327,7 @@ namespace Gorgon.Renderers
             _settingsBuffer.Buffer.SetData(ref settings);
 
             // Check target and state arrays for changes.
-            if ((_sampleTargets == null) || (_sampleTargets.Length != sampleIterations))
+            if ((_sampleTargets is null) || (_sampleTargets.Length != sampleIterations))
             {
                 Array.Resize(ref _sampleTargets, sampleIterations);
                 Array.Resize(ref _sampleTargetStates, sampleIterations);
@@ -448,7 +448,7 @@ namespace Gorgon.Renderers
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
 
-            if (_filterBatchState == null)
+            if (_filterBatchState is null)
             {
                 _filterBatchState = builders.BatchBuilder
                                                 .Clear()
@@ -461,7 +461,7 @@ namespace Gorgon.Renderers
                                                 .Build();
             }
 
-            if (_downSampleBatchState == null)
+            if (_downSampleBatchState is null)
             {
                 _downSampleBatchState = builders.BatchBuilder
                                                 .Clear()
@@ -477,7 +477,7 @@ namespace Gorgon.Renderers
             {
                 case 0:
                     // This state shouldn't change that often in typical use cases, so we'll not bother with an allocator here.
-                    if ((statesChanged) || (_pass0State == null))
+                    if ((statesChanged) || (_pass0State is null))
                     {
                         _pass0State = builders.BatchBuilder
                                                 .Clear()

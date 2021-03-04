@@ -96,7 +96,7 @@ namespace Gorgon.Native
                 typeMask |= VER_BUILDNUMBER;
             }
 
-            if (servicePackMajorVersion == null)
+            if (servicePackMajorVersion is null)
             {
                 return VerifyVersionInfo(ref osInfoEx, typeMask, versionMask) != 0;
             }

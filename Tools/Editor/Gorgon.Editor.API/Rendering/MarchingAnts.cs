@@ -58,7 +58,7 @@ namespace Gorgon.Editor.Rendering
         {
             Lazy<GorgonTexture2DView> ants = Interlocked.Exchange(ref _marchAntsTexture, null);
 
-            if ((ants == null) || (!ants.IsValueCreated))
+            if ((ants is null) || (!ants.IsValueCreated))
             {
                 return;
             }

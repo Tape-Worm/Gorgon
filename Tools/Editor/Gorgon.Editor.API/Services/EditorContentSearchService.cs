@@ -91,12 +91,12 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="keyword"/>, or the <paramref name="attribute"/> parameter is empty.</exception>
         public void MapKeywordToContentAttribute(string keyword, string attribute)
         {
-            if (keyword == null)
+            if (keyword is null)
             {
                 throw new ArgumentNullException(nameof(keyword));
             }
 
-            if (attribute == null)
+            if (attribute is null)
             {
                 throw new ArgumentNullException(nameof(attribute));
             }

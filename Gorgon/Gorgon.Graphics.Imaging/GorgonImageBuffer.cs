@@ -159,14 +159,14 @@ namespace Gorgon.Graphics.Imaging
                 throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
             }
 
-            if (updateAlphaRange == null)
+            if (updateAlphaRange is null)
             {
                 updateAlphaRange = new GorgonRangeF(0, 1);
             }
 
             var fullRect = new DX.Rectangle(0, 0, Width - 1, Height - 1);
 
-            if (region == null)
+            if (region is null)
             {
                 region = fullRect;
             }
@@ -243,7 +243,7 @@ namespace Gorgon.Graphics.Imaging
                 Bottom = Height
             };
 
-            if ((buffer == null) || (buffer.Data == GorgonPtr<byte>.NullPtr))
+            if ((buffer is null) || (buffer.Data == GorgonPtr<byte>.NullPtr))
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
@@ -267,7 +267,7 @@ namespace Gorgon.Graphics.Imaging
 
             DX.Rectangle srcRegion;
 
-            if (sourceRegion == null)
+            if (sourceRegion is null)
             {
                 srcRegion = sourceBufferDims;
             }

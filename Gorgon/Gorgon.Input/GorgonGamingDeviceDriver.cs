@@ -143,7 +143,7 @@ namespace Gorgon.Input
         {
             IReadOnlyList<IGorgonGamingDeviceInfo> infoList = EnumerateGamingDevices(connectedOnly);
 
-            if ((infoList == null) || (infoList.Count == 0))
+            if ((infoList is null) || (infoList.Count == 0))
             {
                 return Array.Empty<GorgonGamingDevice>();
             }

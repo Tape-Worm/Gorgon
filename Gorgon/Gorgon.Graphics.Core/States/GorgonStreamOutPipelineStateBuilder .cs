@@ -232,7 +232,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent interface for the builder.</returns>
         public GorgonStreamOutPipelineStateBuilder ResetTo(GorgonStreamOutPipelineState pipeState)
         {
-            if (pipeState == null)
+            if (pipeState is null)
             {
                 Clear();
                 return this;
@@ -276,7 +276,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonStreamOutPipelineState Build(IGorgonAllocator<GorgonStreamOutPipelineState> allocator)
         {
-            if (allocator == null)
+            if (allocator is null)
             {
                 return new GorgonStreamOutPipelineState(Graphics.PipelineStateCache.Cache(_workState.PipelineState));
             }

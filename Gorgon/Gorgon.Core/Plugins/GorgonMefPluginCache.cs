@@ -341,7 +341,7 @@ namespace Gorgon.PlugIns
                 return AssemblySigningResults.NotSigned;
             }
 
-            if (publicKey == null)
+            if (publicKey is null)
             {
                 return AssemblySigningResults.Signed;
             }
@@ -349,7 +349,7 @@ namespace Gorgon.PlugIns
             var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
             byte[] compareToken = assemblyName.GetPublicKey();
 
-            return (compareToken == null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken))
+            return (compareToken is null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken))
                 ? AssemblySigningResults.Signed | AssemblySigningResults.KeyMismatch
                 : AssemblySigningResults.Signed;
         }
@@ -362,7 +362,7 @@ namespace Gorgon.PlugIns
         {
             lock (_syncLock)
             {
-                return _container == null
+                return _container is null
                     ? (Array.Empty<Lazy<GorgonPlugIn, IDictionary<string, object>>>())
                     : _container.GetExports<GorgonPlugIn, IDictionary<string, object>>(_contractName);
             }
@@ -418,7 +418,7 @@ namespace Gorgon.PlugIns
         /// </remarks>
         public void LoadPlugInAssemblies(string directoryPath, string filePattern = "*.dll")
         {
-            if (directoryPath == null)
+            if (directoryPath is null)
             {
                 throw new ArgumentNullException(nameof(directoryPath));
             }

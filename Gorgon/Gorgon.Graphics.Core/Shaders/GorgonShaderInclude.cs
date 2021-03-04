@@ -156,7 +156,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentException">Thrown when the includeName parameter is empty.</exception>
         public GorgonShaderInclude(string includeName, string includeSourceFile)
         {
-            if (includeName == null)
+            if (includeName is null)
             {
                 throw new ArgumentNullException(nameof(includeName));
             }
@@ -166,7 +166,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(includeName));
             }
 
-            if (includeSourceFile == null)
+            if (includeSourceFile is null)
             {
                 includeSourceFile = string.Empty;
             }

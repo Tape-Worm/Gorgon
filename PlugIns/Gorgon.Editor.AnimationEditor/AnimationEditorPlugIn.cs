@@ -330,10 +330,10 @@ namespace Gorgon.Editor.AnimationEditor
         {
             // Check for primary sprite dependency.
             if ((!dependencyList.TryGetValue(CommonEditorContentTypes.SpriteType, out List<string> spriteNames))
-                || (spriteNames == null)
+                || (spriteNames is null)
                 || (spriteNames.Any(item => !ContentFileManager.FileExists(item))))
             {
-                if (spriteNames == null)
+                if (spriteNames is null)
                 {
                     dependencyList[CommonEditorContentTypes.SpriteType] = spriteNames = new List<string>();
                 }
@@ -352,7 +352,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            if (textureNames == null)
+            if (textureNames is null)
             {
                 dependencyList[CommonEditorContentTypes.ImageType] = textureNames = new List<string>();
             }
@@ -425,7 +425,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             IContentFile file = ContentFileManager.GetFile(files[0]);
 
-            if (file == null)
+            if (file is null)
             {
                 HostContentServices.Log.Print($"WARNING: The background image file '{files[0]}' was not found.", LoggingLevel.Intermediate);
                 return (null, null);
@@ -464,7 +464,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                     int textureIndex = i.Min(textures.Textures.Count - 1);
 
-                    if ((!string.IsNullOrWhiteSpace(textureKey.TextureName)) && (textureKey.Value == null))
+                    if ((!string.IsNullOrWhiteSpace(textureKey.TextureName)) && (textureKey.Value is null))
                     {
                         textureKey.Value = textures.Textures[textureIndex];                        
                     }
@@ -489,7 +489,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -518,7 +518,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -547,7 +547,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -576,7 +576,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -605,7 +605,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -634,7 +634,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -663,7 +663,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -690,7 +690,7 @@ namespace Gorgon.Editor.AnimationEditor
                     
                     IContentFile textureFile = fileManager.GetFile(key.TextureName);
 
-                    if (textureFile == null)
+                    if (textureFile is null)
                     {
                         // If we cannot locate the file for the texture, then replace this with an empty key frame.
                         HostContentServices.Log.Print($"WARNING: The key at index {i}, for track '{track.Value.Name}' has a texture named '{key.TextureName}', but that texture file was not found in the file system. This will be replaced with an empty texture.", LoggingLevel.Intermediate);
@@ -758,7 +758,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 GorgonTrackRegistration registration = GetRegistration(track.Key);
 
-                if (registration == null)
+                if (registration is null)
                 {
                     continue;
                 }
@@ -978,7 +978,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="trackRegistration"/> parameter is <b>null</b>.</exception>
         ITrack IViewModelFactory.CreateTrack(GorgonTrackRegistration trackRegistration, int keyCount, IReadOnlyList<IKeyFrame> keyFrames)
         {
-            if (trackRegistration == null)
+            if (trackRegistration is null)
             {
                 throw new ArgumentNullException(nameof(trackRegistration));
             }
@@ -1040,7 +1040,7 @@ namespace Gorgon.Editor.AnimationEditor
                 textureFile.IsOpen = true;
             }
 
-            if (textureSprite == null)
+            if (textureSprite is null)
             {
                 HostContentServices.Log.Print($"WARNING: The sprite in file '{spriteFile.Path}' could not be loaded. No texture will be assigned to the key frame. This may cause undesirable results.", LoggingLevel.Intermediate);
                 return default;
@@ -1059,7 +1059,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns>The new texture track, or <b>null</b> if no primary sprite is available.</returns>
         async Task<ITrack> IViewModelFactory.CreateDefaultTextureTrackAsync((GorgonSprite sprite, IContentFile spriteFile, IContentFile textureFile) primarySprite, int frameCount)
         {
-            if (primarySprite.sprite?.Texture == null)
+            if (primarySprite.sprite?.Texture is null)
             {
                 return null;
             }
@@ -1094,7 +1094,7 @@ namespace Gorgon.Editor.AnimationEditor
         ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
         public bool CanOpenContent(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -1168,7 +1168,7 @@ namespace Gorgon.Editor.AnimationEditor
             try
             {
                 _undoService = undoService;
-                if (_textureCache == null)
+                if (_textureCache is null)
                 {
                     _textureCache = new TextureCache(HostContentServices.GraphicsContext.Graphics, ContentFileManager, scratchArea, _defaultImageCodec, HostContentServices.Log);
                 }

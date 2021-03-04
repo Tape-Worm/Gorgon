@@ -75,7 +75,7 @@ namespace Gorgon.Editor.ImageEditor
 
             ImageEditorSettings settings = commonServices.ContentPlugInService.ReadContentSettings<ImageEditorSettings>(ImageEditorPlugIn.SettingsName);
 
-            if (settings == null)
+            if (settings is null)
             {
                 settings = new ImageEditorSettings();
             }

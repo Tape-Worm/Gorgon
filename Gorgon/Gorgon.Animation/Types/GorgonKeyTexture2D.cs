@@ -158,7 +158,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public GorgonKeyTexture2D(float time, string textureName, DX.RectangleF textureCoordinates, int textureArrayIndex)
         {
-            if (textureName == null)
+            if (textureName is null)
             {
                 throw new ArgumentNullException(nameof(textureName));
             }

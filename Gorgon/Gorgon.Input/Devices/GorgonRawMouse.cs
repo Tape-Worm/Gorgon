@@ -681,7 +681,7 @@ namespace Gorgon.Input
         /// </remarks>
         public GorgonRawMouse(IGorgonMouseInfo mouseInfo = null)
         {
-            if (mouseInfo == null)
+            if (mouseInfo is null)
             {
                 mouseInfo = new RawMouseInfo(IntPtr.Zero,
                                              "System Mouse",

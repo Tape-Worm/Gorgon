@@ -66,7 +66,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         RibbonAddedEvent = value;
                         return;
@@ -79,7 +79,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -98,7 +98,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         RibbonRemovedEvent = value;
                         return;
@@ -111,7 +111,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -130,7 +130,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         FileExplorerContextChangedEvent = null;
                         return;
@@ -143,7 +143,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -162,7 +162,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         FileExplorerIsRenamingEvent = null;
                         return;
@@ -175,7 +175,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -283,7 +283,7 @@ namespace Gorgon.Editor.Views
         /// <returns>The content file if dropping is allowed, or <b>null</b> if not.</returns>
         private string GetContentFileDragData(IDataObject data)
         {
-            if (data == null)
+            if (data is null)
             {
                 return null;
             }
@@ -335,7 +335,7 @@ namespace Gorgon.Editor.Views
         {
             string contentID = GetContentFileDragData(e.Data);
 
-            if ((DataContext?.FileExplorer?.OpenContentFileCommand == null) || (!DataContext.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
+            if ((DataContext?.FileExplorer?.OpenContentFileCommand is null) || (!DataContext.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
             {
                 return;
             }
@@ -350,7 +350,7 @@ namespace Gorgon.Editor.Views
         {
             string contentID = GetContentFileDragData(e.Data);
 
-            if ((DataContext?.FileExplorer?.OpenContentFileCommand == null) || (!DataContext.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
+            if ((DataContext?.FileExplorer?.OpenContentFileCommand is null) || (!DataContext.FileExplorer.OpenContentFileCommand.CanExecute(contentID)))
             {
                 e.Effect = DragDropEffects.None;
                 return;
@@ -438,7 +438,7 @@ namespace Gorgon.Editor.Views
             }
 
             // No content, so we can go now.
-            if (dataContext?.CurrentContent == null)
+            if (dataContext?.CurrentContent is null)
             {
                 _contentControl = null;
                 return;
@@ -457,7 +457,7 @@ namespace Gorgon.Editor.Views
 
                 if (_contentControl.Ribbon != null)
                 {
-                    if (Interlocked.Exchange(ref _currentContentRibbon, _contentControl.Ribbon) == null)
+                    if (Interlocked.Exchange(ref _currentContentRibbon, _contentControl.Ribbon) is null)
                     {
                         EventHandler<ContentRibbonEventArgs> handler = null;
 
@@ -500,7 +500,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
         private void SplitMain_SplitterMoved(object sender, SplitterEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -513,7 +513,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
         private void SplitFileSystem_SplitterMoved(object sender, SplitterEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -541,7 +541,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ContentClosed(object sender, EventArgs e)
         {
-            if ((DataContext?.ContentClosedCommand == null) || (!DataContext.ContentClosedCommand.CanExecute(null)))
+            if ((DataContext?.ContentClosedCommand is null) || (!DataContext.ContentClosedCommand.CanExecute(null)))
             {
                 return;
             }
@@ -555,7 +555,7 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeFromDataContext(IProjectEditor dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -593,7 +593,7 @@ namespace Gorgon.Editor.Views
                 currentContent = null;
             }
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -726,7 +726,7 @@ namespace Gorgon.Editor.Views
             Settings.ShowContentPreview = visible;
             SplitFileSystem.Panel2Collapsed = !visible;
 
-            if ((DataContext?.ContentPreviewer == null) || (DataContext?.FileExplorer == null))
+            if ((DataContext?.ContentPreviewer is null) || (DataContext?.FileExplorer is null))
             {
                 return;
             }
@@ -735,7 +735,7 @@ namespace Gorgon.Editor.Views
 
             try
             {
-                if ((FileExplorer == null) || (DataContext.FileExplorer.SelectedFiles.Count == 0) || (!visible))
+                if ((FileExplorer is null) || (DataContext.FileExplorer.SelectedFiles.Count == 0) || (!visible))
                 {
                     ResetContentPreviewer();
                     return;
@@ -766,7 +766,7 @@ namespace Gorgon.Editor.Views
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

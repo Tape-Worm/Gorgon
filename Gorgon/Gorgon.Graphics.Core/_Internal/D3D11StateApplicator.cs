@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Core
 		{
 			MethodInfo methodInfo = typeof(D3D11.RasterizerStage).GetMethod("SetScissorRects", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(IntPtr) }, null);
 
-			if (methodInfo == null)
+			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
 				Debug.Print("[ERROR] Cannot find method SetScissorRects(int, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Core
 			}, null);
 
 
-			if (methodInfo == null)
+			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
 				Debug.Print("[ERROR] Cannot find method SetRenderTargets(int, IntPtr, DepthStencilView) in SharpDX.Direct3D11 assembly. Maybe a different version?");
@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Core
 			}, null);
 
 
-			if (methodInfo == null)
+			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
 				Debug.Print("[ERROR] Cannot find method SetUnorderedAccessViews(IntPtr, int, int, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
@@ -186,7 +186,7 @@ namespace Gorgon.Graphics.Core
 			}, null);
 
 
-			if (methodInfo == null)
+			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
 				Debug.Print("[ERROR] Cannot find method SetRenderTargetsAndUnorderedAccessViews(int, IntPtr, DepthStencilView, int, int, IntPtr, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
@@ -215,7 +215,7 @@ namespace Gorgon.Graphics.Core
 		{
 			MethodInfo methodInfo = typeof(D3D11.StreamOutputStage).GetMethod("SetTargets", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(IntPtr), typeof(IntPtr) }, null);
 
-			if (methodInfo == null)
+			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
 				Debug.Print("[ERROR] Cannot find method SetTargets(int, IntPtr, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
@@ -240,7 +240,7 @@ namespace Gorgon.Graphics.Core
 		private void BindIndexBuffer(GorgonIndexBuffer indexBuffer)
 		{
 			D3D11.Buffer native = indexBuffer?.Native;
-			DXGI.Format format = indexBuffer == null ? DXGI.Format.Unknown : (indexBuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt);
+			DXGI.Format format = indexBuffer is null ? DXGI.Format.Unknown : (indexBuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt);
 			_graphics.D3DDeviceContext.InputAssembler.SetIndexBuffer(native, format, 0);
 		}
 
@@ -251,7 +251,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="indices">The indices that were modified.</param>
 		private void BindStreamOutBuffers(GorgonStreamOutBindings streamOutBindings, in (int Start, int Count) indices)
 		{
-			if ((indices.Count <= 0) || (_setStreamOutTargets == null))
+			if ((indices.Count <= 0) || (_setStreamOutTargets is null))
 			{
 				_graphics.D3DDeviceContext.StreamOutput.SetTargets(null);
 				return;
@@ -279,7 +279,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="indices">The indices that were modified.</param>
 		private void BindCsUavs(GorgonReadWriteViewBindings uavs, in (int Start, int Count) indices)
 		{
-			if ((uavs == null) || (indices.Count == 0))
+			if ((uavs is null) || (indices.Count == 0))
 			{
 				_graphics.D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(0, Array.Empty<D3D11.UnorderedAccessView>(), Array.Empty<int>());
 				return;
@@ -311,7 +311,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="indices">The indices that were modified.</param>
 		private void BindUavs(GorgonReadWriteViewBindings uavs, in (int Start, int Count) indices)
 		{
-			if ((uavs == null) || (indices.Count == 0) || (_setUavs == null))
+			if ((uavs is null) || (indices.Count == 0) || (_setUavs is null))
 			{
 				_graphics.D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(0, Array.Empty<D3D11.UnorderedAccessView>(), Array.Empty<int>());
 				return;
@@ -378,7 +378,7 @@ namespace Gorgon.Graphics.Core
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static void BindSamplers(D3D11.CommonShaderStage shaderStage, GorgonSamplerStates samplers, in (int Start, int Count) indices)
 		{
-			if ((samplers == null) || (indices.Count == 0))
+			if ((samplers is null) || (indices.Count == 0))
 			{
 				shaderStage.SetSamplers(0, _emptySamplers);
 				return;
@@ -397,7 +397,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="indices">The indices in the resource array that have been updated.</param>
 		private void BindConstantBuffers(ShaderType shaderType, GorgonConstantBuffers constantBuffers, in (int Start, int Count) indices)
 		{
-			if ((constantBuffers == null) || (indices.Count == 0))
+			if ((constantBuffers is null) || (indices.Count == 0))
 			{
 				switch (shaderType)
 				{
@@ -429,7 +429,7 @@ namespace Gorgon.Graphics.Core
 			{
 				GorgonConstantBufferView view = constantBuffers[i + indices.Start];
 
-				if ((view == null) || (!view.ViewAdjusted))
+				if ((view is null) || (!view.ViewAdjusted))
 				{
 					continue;
 				}
@@ -475,7 +475,7 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void BindSrvs(D3D11.CommonShaderStage shaderStage, GorgonShaderResourceViews srvs, in (int Start, int Count) indices)
 		{
-			if ((srvs == null) || (indices.Count == 0))
+			if ((srvs is null) || (indices.Count == 0))
 			{
 				shaderStage.SetShaderResources(0, _emptySrvs);
 				return;
@@ -675,7 +675,7 @@ namespace Gorgon.Graphics.Core
 				_setRenderTargets(_graphics.D3DDeviceContext.OutputMerger, rtvCount, (IntPtr)rtv, depthStencil?.Native);
 			}
 
-			if (_renderTargets[0] == null)
+			if (_renderTargets[0] is null)
 			{
 				return;
 			}

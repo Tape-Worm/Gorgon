@@ -83,7 +83,7 @@ namespace Gorgon.Graphics.Core
             GorgonReadWriteViewBinding startView = this.FirstOrDefault(target => target.ReadWriteView != null);
 
             // If no other uavs are assigned, then we're done here.
-            if (startView.ReadWriteView == null)
+            if (startView.ReadWriteView is null)
             {
                 return;
             }
@@ -100,7 +100,7 @@ namespace Gorgon.Graphics.Core
             {
                 GorgonReadWriteViewBinding other = this[i];
 
-                if (other.ReadWriteView == null)
+                if (other.ReadWriteView is null)
                 {
                     continue;
                 }
@@ -120,7 +120,7 @@ namespace Gorgon.Graphics.Core
         protected override void OnAssignDirtyItem(int dirtyIndex, GorgonReadWriteViewBinding value)
         {
             Native[dirtyIndex] = value.ReadWriteView?.Native;
-            Counts[dirtyIndex] = value.ReadWriteView == null ? 0 : value.InitialCount;
+            Counts[dirtyIndex] = value.ReadWriteView is null ? 0 : value.InitialCount;
         }
 
         /// <summary>

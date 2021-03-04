@@ -65,7 +65,7 @@ namespace Gorgon.IO
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, GorgonTexture2DView value, JsonSerializer serializer)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;
@@ -126,7 +126,7 @@ namespace Gorgon.IO
             textureName = string.Empty;
 
             if ((reader.TokenType != JsonToken.StartObject)
-                || (_graphics == null))
+                || (_graphics is null))
             {
                 return null;
             }
@@ -188,16 +188,16 @@ namespace Gorgon.IO
             }
 
             if ((string.IsNullOrWhiteSpace(textureName))
-                || (texWidth == null)
-                || (texHeight == null)
-                || (texFormat == null)
-                || (texArrayCount == null)
-                || (texMipCount == null)
-                || (viewArrayStart == null)
-                || (viewArrayCount == null)
-                || (viewMipStart == null)
-                || (viewMipCount == null)
-                || (viewFormat == null))
+                || (texWidth is null)
+                || (texHeight is null)
+                || (texFormat is null)
+                || (texArrayCount is null)
+                || (texMipCount is null)
+                || (viewArrayStart is null)
+                || (viewArrayCount is null)
+                || (viewMipStart is null)
+                || (viewMipCount is null)
+                || (viewFormat is null))
             {
                 if (string.IsNullOrWhiteSpace(textureName))
                 {

@@ -97,7 +97,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonGeometryShader ToStreamOut(GorgonStreamOutLayout streamOutLayout, IEnumerable<int> strides = null)
         {
-            if (streamOutLayout == null)
+            if (streamOutLayout is null)
             {
                 throw new ArgumentNullException(nameof(streamOutLayout));
             }

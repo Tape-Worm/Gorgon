@@ -184,7 +184,7 @@ namespace Gorgon.Examples
         {
             GorgonRenderTargetView currentRtv = graphics.RenderTargets[0];
 
-            if ((currentRtv == null) || (_logo == null))
+            if ((currentRtv is null) || (_logo is null))
             {
                 return;
             }
@@ -199,7 +199,7 @@ namespace Gorgon.Examples
         /// <param name="ex">The exception to handle.</param>
         public static void HandleException(Exception ex)
         {
-            if (ex == null)
+            if (ex is null)
             {
                 return;
             }
@@ -218,7 +218,7 @@ namespace Gorgon.Examples
 
             GorgonRenderTargetView currentRtv = renderer.Graphics.RenderTargets[0];
 
-            if ((currentRtv == null) || (_logo == null) || (_statsFont == null))
+            if ((currentRtv is null) || (_logo is null) || (_statsFont is null))
             {
                 return;
             }
@@ -260,7 +260,7 @@ namespace Gorgon.Examples
 
             GorgonRenderTargetView currentRtv = renderer.Graphics.RenderTargets[0];
 
-            if ((currentRtv == null) || (_logo == null) || (_statsFont == null))
+            if ((currentRtv is null) || (_logo is null) || (_statsFont is null))
             {
                 return;
             }
@@ -317,7 +317,7 @@ namespace Gorgon.Examples
         /// <param name="graphics">The graphics interface to use.</param>
         public static void LoadResources(GorgonGraphics graphics)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }

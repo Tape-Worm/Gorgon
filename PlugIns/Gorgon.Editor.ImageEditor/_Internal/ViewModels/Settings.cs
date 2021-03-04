@@ -316,7 +316,7 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     IGorgonImageCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
-                    if (codec == null)
+                    if (codec is null)
                     {
                         continue;
                     }
@@ -347,7 +347,7 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     IGorgonImageCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
-                    if (codec == null)
+                    if (codec is null)
                     {
                         continue;
                     }

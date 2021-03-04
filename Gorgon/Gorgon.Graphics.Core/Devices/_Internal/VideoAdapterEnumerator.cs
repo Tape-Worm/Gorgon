@@ -64,7 +64,7 @@ namespace Gorgon.Graphics.Core
             {
                 FeatureSet? featureSet = GetFeatureLevel(D3DDevice5);
 
-                if (featureSet == null)
+                if (featureSet is null)
                 {
                     log.Print("WARNING: The WARP software adapter does not support the minimum feature set of 12.0. This device will be excluded.", LoggingLevel.All);
                     return null;
@@ -223,7 +223,7 @@ namespace Gorgon.Graphics.Core
         {
             var devices = new List<IGorgonVideoAdapterInfo>();
 
-            if (log == null)
+            if (log is null)
             {
                 log = GorgonLog.NullLog;
             }
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics.Core
                             FeatureSet? featureSet = GetFeatureLevel(D3DDevice5);                            
 
                             // Do not enumerate this device if its feature set is not supported.
-                            if (featureSet == null)
+                            if (featureSet is null)
                             {
                                 log.Print($"WARNING: The video adapter '{adapterName}' (max. feature level [{D3DDevice5.FeatureLevel}]) is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
                                 continue;

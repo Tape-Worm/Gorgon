@@ -111,27 +111,27 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return the number of array indices or depth slices.
         /// </summary>
-        public int ArrayCount => _targetImage == null ? 0 : (_targetImage.ImageType == ImageType.Image3D ? MipDepth : _targetImage.ArrayCount);
+        public int ArrayCount => _targetImage is null ? 0 : (_targetImage.ImageType == ImageType.Image3D ? MipDepth : _targetImage.ArrayCount);
 
         /// <summary>
         /// Property to return the number of mip levels.
         /// </summary>
-        public int MipCount => _targetImage == null ? 0 : _targetImage.MipCount;
+        public int MipCount => _targetImage is null ? 0 : _targetImage.MipCount;
 
         /// <summary>
         /// Property to return the width of the image at the current mip level.
         /// </summary>
-        public int MipWidth => _targetImage == null ? 0 : (_targetImage.Width >> _mipLevel).Max(1);
+        public int MipWidth => _targetImage is null ? 0 : (_targetImage.Width >> _mipLevel).Max(1);
 
         /// <summary>
         /// Property to return the height of the image at the current mip level.
         /// </summary>
-        public int MipHeight => _targetImage == null ? 0 : (_targetImage.Height >> _mipLevel).Max(1);
+        public int MipHeight => _targetImage is null ? 0 : (_targetImage.Height >> _mipLevel).Max(1);
 
         /// <summary>
         /// Property to return the depth of the 3D image at the current mip level.
         /// </summary>
-        public int MipDepth => _targetImage == null ? 0 : (_targetImage.GetDepthCount(_mipLevel)).Max(1);
+        public int MipDepth => _targetImage is null ? 0 : (_targetImage.GetDepthCount(_mipLevel)).Max(1);
 
         /// <summary>Property to set or return whether the image picker is active or not.</summary>
         public bool IsActive
@@ -155,12 +155,12 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         public int CurrentArrayIndexDepthSlice
         {
-            get => _targetImage == null
+            get => _targetImage is null
                     ? 0
                     : _currentArrayDepth.Max(0).Min(_targetImage.ImageType == ImageType.Image3D ? _targetImage.GetDepthCount(_mipLevel) - 1 : _targetImage.ArrayCount - 1);
             set
             {
-                if ((_currentArrayDepth == value) || (_targetImage == null))
+                if ((_currentArrayDepth == value) || (_targetImage is null))
                 {
                     return;
                 }
@@ -176,10 +176,10 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         public int CurrentMipLevel
         {
-            get => _targetImage == null ? 0 : _mipLevel.Max(0).Min(_targetImage.MipCount - 1);
+            get => _targetImage is null ? 0 : _mipLevel.Max(0).Min(_targetImage.MipCount - 1);
             set
             {
-                if ((_mipLevel == value) || (_targetImage == null))
+                if ((_mipLevel == value) || (_targetImage is null))
                 {
                     return;
                 }
@@ -634,7 +634,7 @@ namespace Gorgon.Editor.ImageEditor
                     }
                 });
 
-                if (imageToImport == null)
+                if (imageToImport is null)
                 {
                     return;
                 }

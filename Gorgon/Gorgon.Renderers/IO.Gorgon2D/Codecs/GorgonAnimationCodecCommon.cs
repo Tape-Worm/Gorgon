@@ -170,7 +170,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -216,7 +216,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -226,7 +226,7 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
             }
 
-            if (byteCount == null)
+            if (byteCount is null)
             {
                 byteCount = (int)stream.Length;
             }
@@ -279,7 +279,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -315,12 +315,12 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (animation == null)
+            if (animation is null)
             {
                 throw new ArgumentNullException(nameof(animation));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -348,7 +348,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -380,7 +380,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -421,7 +421,7 @@ namespace Gorgon.IO
         {
             Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

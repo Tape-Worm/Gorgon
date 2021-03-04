@@ -182,7 +182,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         public IGorgonFontInfo GetMetaData(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -241,7 +241,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
         public async Task<GorgonFont> FromStreamAsync(Stream stream, string name)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -251,7 +251,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 throw new ArgumentException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY, nameof(stream));
             }
 
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -297,7 +297,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
         public GorgonFont FromStream(Stream stream, string name)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -307,7 +307,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 throw new ArgumentException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY, nameof(stream));
             }
 
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -351,12 +351,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
         {
             FileStream stream = null;
 
-            if (fontData == null)
+            if (fontData is null)
             {
                 throw new ArgumentNullException(nameof(fontData));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -387,12 +387,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
         public void Save(GorgonFont fontData, Stream stream)
         {
-            if (fontData == null)
+            if (fontData is null)
             {
                 throw new ArgumentNullException(nameof(fontData));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent interface for the builder.</returns>
         public GorgonPipelineStateBuilder ResetTo(GorgonPipelineState pipeState)
         {
-            if (pipeState == null)
+            if (pipeState is null)
             {
                 Clear();
                 return this;

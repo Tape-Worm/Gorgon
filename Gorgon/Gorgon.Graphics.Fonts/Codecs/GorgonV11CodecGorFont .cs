@@ -380,7 +380,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         {
             ulong fileHeaderID = FileHeader.ChunkID();
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

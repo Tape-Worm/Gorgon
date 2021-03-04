@@ -168,7 +168,7 @@ namespace Gorgon.Editor.SpriteEditor
             // We couldn't find the texture in the dependency list (either did not exist, or there were no dependencies).
             string textureName = _defaultCodec.GetAssociatedTextureName(fileStream);
 
-            if (textureNames == null)
+            if (textureNames is null)
             {
                 dependencyList[CommonEditorContentTypes.ImageType] = textureNames = new List<string>();                
             }
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             if ((spriteFile.Metadata.DependsOn.Count == 0)
                 || (!spriteFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> texturePaths))
-                || (texturePaths == null)
+                || (texturePaths is null)
                 || (texturePaths.Count == 0))
             {
                 return null;
@@ -207,7 +207,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             IContentFile textureFile = ContentFileManager.GetFile(texturePaths[0]);
 
-            if (textureFile == null)
+            if (textureFile is null)
             {
                 HostContentServices.Log.Print($"ERROR: Sprite '{spriteFile.Path}' has texture '{texturePaths[0]}', but the file was not found on the file system.", LoggingLevel.Verbose);
                 return null;
@@ -344,7 +344,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 // If we couldn't locate the texture based on the dependency information, try to locate it from the embedded information 
                 // in the sprite data. We will not be updating the dependency metadata here, it will be updated when we open the sprite.
-                if (imageFile == null)
+                if (imageFile is null)
                 {
                     string textureName = _defaultCodec.GetAssociatedTextureName(inStream);
                     if ((string.IsNullOrWhiteSpace(textureName)) || (!ContentFileManager.FileExists(textureName)))
@@ -354,7 +354,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     imageFile = ContentFileManager.GetFile(textureName);
 
-                    if (imageFile == null)
+                    if (imageFile is null)
                     {
                         return (null, null, _noThumbnail.Clone());
                     }
@@ -376,7 +376,7 @@ namespace Gorgon.Editor.SpriteEditor
                 GorgonSprite sprite = _defaultCodec.FromStream(inStream, texture);
 
                 // If we don't have a texture by this point, then update the preview to show that there's no image attached.
-                return sprite.Texture == null ? ((GorgonSprite sprite, IContentFile imageFile, IGorgonImage thumbNail))(null, null, _noImage.Clone()) 
+                return sprite.Texture is null ? ((GorgonSprite sprite, IContentFile imageFile, IGorgonImage thumbNail))(null, null, _noImage.Clone()) 
                                               : ((GorgonSprite sprite, IContentFile imageFile, IGorgonImage thumbNail))(sprite, imageFile, null);
             }
             catch (Exception ex)
@@ -473,7 +473,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 // We don't have a texture attached to this guy (probably due to a mismatch in the metadata), so we'll unlink it 
                 // and remove any reference to any image that might have been loaded.
-                if ((sprite.Texture == null) && (imageFile != null))
+                if ((sprite.Texture is null) && (imageFile != null))
                 {
                     file.UnlinkContent(imageFile);
 
@@ -696,12 +696,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>A <see cref="IGorgonImage"/> containing the thumbnail image data.</returns>
         public async Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken)
         {
-            if (contentFile == null)
+            if (contentFile is null)
             {
                 throw new ArgumentNullException(nameof(contentFile));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -722,7 +722,7 @@ namespace Gorgon.Editor.SpriteEditor
             string fileDirectoryPath = Path.GetDirectoryName(filePath).FormatDirectory('/');
             IGorgonVirtualDirectory directory = TemporaryFileSystem.FileSystem.GetDirectory(fileDirectoryPath);
 
-            if (directory == null)
+            if (directory is null)
             {
                 directory = TemporaryFileSystem.CreateDirectory(fileDirectoryPath);
             }
@@ -731,7 +731,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             (GorgonSprite sprite, IContentFile imageFile, IGorgonImage thumbnailImage) = await Task.Run(() => LoadThumbnailImage(pngCodec, filePath, contentFile, cancelToken), cancelToken);
 
-            if ((sprite == null) || (cancelToken.IsCancellationRequested))
+            if ((sprite is null) || (cancelToken.IsCancellationRequested))
             {
                 return thumbnailImage;
             }
@@ -805,7 +805,7 @@ namespace Gorgon.Editor.SpriteEditor
         ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
         public bool CanOpenContent(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }

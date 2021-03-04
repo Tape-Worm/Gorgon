@@ -367,7 +367,7 @@ namespace Gorgon.IO
                 GorgonTexture2D texture = Graphics.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault();
                 GorgonTexture2DView view = texture?.GetShaderResourceView();
 
-                if ((view == null) && (string.IsNullOrWhiteSpace(name)))
+                if ((view is null) && (string.IsNullOrWhiteSpace(name)))
                 {
                     Graphics.Log.Print("The animation has texture keys, but no applicable textures were found, and no name for the texture was given.", LoggingLevel.Verbose);
                     continue;
@@ -522,7 +522,7 @@ namespace Gorgon.IO
                             if (textures.Count > 0)
                             {
                                 builder.Edit2DTexture("Texture")
-                                       .SetKeys(textures.Select(item => item.texture == null
+                                       .SetKeys(textures.Select(item => item.texture is null
                                                                             ? new GorgonKeyTexture2D(item.time, item.name, item.uv, 0)
                                                                             : new GorgonKeyTexture2D(item.time, item.texture, item.uv, 0)))
                                        .EndEdit();
@@ -647,7 +647,7 @@ namespace Gorgon.IO
                     animations = ReadV10AnimationData(reader, builder, animationCount);
                 }
 
-                return (animations == null) || (animations.Count == 0)
+                return (animations is null) || (animations.Count == 0)
                     ? throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE)
                     : animations;
             }
@@ -765,7 +765,7 @@ namespace Gorgon.IO
                     }
 
                     // We cannot locate the texture, so do not add the key.
-                    if (view == null)
+                    if (view is null)
                     {
                         Graphics.Log.Print($"The animation has texture keys and the texture '{imageName}' is required, but was not found in the loaded resources. The texture coordinates will most likely be incorrect for this frame.", LoggingLevel.Verbose);
                     }
@@ -775,7 +775,7 @@ namespace Gorgon.IO
                     }
 
                     builder.Edit2DTexture("Texture")
-                           .SetKey((view == null) && (!string.IsNullOrWhiteSpace(imageName)) ? new GorgonKeyTexture2D(time, imageName, texCoords, 0) : new GorgonKeyTexture2D(time, view, texCoords, 0))
+                           .SetKey((view is null) && (!string.IsNullOrWhiteSpace(imageName)) ? new GorgonKeyTexture2D(time, imageName, texCoords, 0) : new GorgonKeyTexture2D(time, view, texCoords, 0))
                            .EndEdit();
                 }
 
@@ -978,7 +978,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -988,7 +988,7 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
             }
 
-            if (byteCount == null)
+            if (byteCount is null)
             {
                 byteCount = (int)stream.Length;
             }

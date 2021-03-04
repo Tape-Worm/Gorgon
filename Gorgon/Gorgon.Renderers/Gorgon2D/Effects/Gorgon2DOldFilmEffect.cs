@@ -158,7 +158,7 @@ namespace Gorgon.Renderers
                 _noiseFrequency = value;
 
                 // Prepare the random data texture for update.
-                if (_randomTexture == null)
+                if (_randomTexture is null)
                 {
                     return;
                 }
@@ -497,7 +497,7 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if (_batchState == null)
+            if (_batchState is null)
             {
                 _filmState = builders.PixelShaderBuilder
                               .ConstantBuffer(_timingBuffer, 1)

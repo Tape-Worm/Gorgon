@@ -709,7 +709,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if (undoArgs.UndoFile == null)
+                    if (undoArgs.UndoFile is null)
                     {
                         return Task.CompletedTask;
                     }
@@ -796,7 +796,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     NotifyImageUpdated(nameof(ImageData));
 
-                    if (redoArgs == null)
+                    if (redoArgs is null)
                     {
                         redoArgs = importUndoArgs = new ImportDimensionUndoArgs();
                     }
@@ -847,7 +847,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns><b>true</b> if the image can be imported, <b>false</b> if not.</returns>
         private bool CanImportFile(float _) 
         {
-            if ((ImageData == null) || (CurrentPanel != null) || (CommandContext != null))
+            if ((ImageData is null) || (CurrentPanel != null) || (CommandContext != null))
             {
                 return false;
             }
@@ -947,14 +947,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <returns><b>true</b> if the editor can be shown, <b>false</b> if not.</returns>
         private bool CanShowImageDimensions() => (ImageData != null) && (DimensionSettings?.UpdateImageInfoCommand != null) && (DimensionSettings.UpdateImageInfoCommand.CanExecute(ImageData))
-                && (CurrentPanel == null) && (CommandContext == null);
+                && (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function to determine if the mip map generation settings can be shown.
         /// </summary>
         /// <returns><b>true</b> if the settings can be shown, <b>false</b> if not.</returns>
         private bool CanShowMipGeneration() => (ImageData != null) && (MipSupport) && (MipMapSettings?.UpdateImageInfoCommand != null) && (MipMapSettings.UpdateImageInfoCommand.CanExecute(ImageData))
-                && (CurrentPanel == null) && (CommandContext == null);
+                && (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function to show or hide the image dimensions editor.
@@ -1066,13 +1066,13 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => (_undoService.CanUndo) && (CurrentPanel == null) && (CommandContext == null);
+        private bool CanUndo() => (_undoService.CanUndo) && (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => (_undoService.CanRedo) && (CurrentPanel == null) && (CommandContext == null);
+        private bool CanRedo() => (_undoService.CanRedo) && (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -1165,7 +1165,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <param name="format">The format to change to.</param>
         /// <returns><b>true</b> if the conversion can take place, <b>false</b> if not.</returns>
-        private bool CanConvertFormat(BufferFormat format) => format == BufferFormat.Unknown ? (CurrentPanel == null) && (CommandContext == null) : format != CurrentPixelFormat;
+        private bool CanConvertFormat(BufferFormat format) => format == BufferFormat.Unknown ? (CurrentPanel is null) && (CommandContext is null) : format != CurrentPixelFormat;
 
         /// <summary>
         /// Function to create an undo cache file from the working file.
@@ -1190,7 +1190,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private void DeleteUndoCacheFile(IGorgonVirtualFile undoFile)
         {
             // If we errored out, then delete the undo file.
-            if (undoFile == null)
+            if (undoFile is null)
             {
                 return;
             }
@@ -1222,7 +1222,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if (undoArgs.UndoFile == null)
+                    if (undoArgs.UndoFile is null)
                     {
                         return Task.CompletedTask;
                     }
@@ -1296,7 +1296,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, format);
                     NotifyPropertyChanged(nameof(ImageData));
 
-                    if (redoArgs == null)
+                    if (redoArgs is null)
                     {
                         redoArgs = convertUndoArgs = new ConvertUndoArgs();
                     }
@@ -1336,7 +1336,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <param name="_">Not used.</param>
         /// <returns><b>true</b> if the image can be exported, <b>false</b> if not.</returns>
-        private bool CanExportImage(IGorgonImageCodec _) => (CurrentPanel == null) && (CommandContext == null) && (_codecs.Count > 0);
+        private bool CanExportImage(IGorgonImageCodec _) => (CurrentPanel is null) && (CommandContext is null) && (_codecs.Count > 0);
 
         /// <summary>
         /// Function to export this image to the physical file system.
@@ -1424,7 +1424,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 FileInfo exportedFile = _imageIO.ExportImage(File, exportImage, codec);
 
-                if (exportedFile == null)
+                if (exportedFile is null)
                 {
                     return;
                 }
@@ -1484,7 +1484,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns><b>true</b> if the image can be cropped or resized, <b>false</b> if not.</returns>
         private bool CanUpdateDimensions()
         {
-            if (ImageData == null)
+            if (ImageData is null)
             {
                 return false;
             }
@@ -1519,7 +1519,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if (undoArgs.UndoFile == null)
+                    if (undoArgs.UndoFile is null)
                     {
                         return Task.CompletedTask;
                     }                    
@@ -1589,7 +1589,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                         return Task.FromException(new OperationCanceledException());
                     }
 
-                    if ((redoArgs?.RedoFile == null) && ((((DimensionSettings.Width < ImageData.Width) || (DimensionSettings.Height < ImageData.Height))
+                    if ((redoArgs?.RedoFile is null) && ((((DimensionSettings.Width < ImageData.Width) || (DimensionSettings.Height < ImageData.Height))
                             && (DimensionSettings.CurrentMode != CropResizeMode.Resize))
                         || (DimensionSettings.DepthSlicesOrArrayIndices < arrayOrDepthCount)
                         || (DimensionSettings.MipLevels < ImageData.MipCount)))
@@ -1699,7 +1699,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                     redoFile = CreateUndoCacheFile();
 
-                    if (redoArgs == null)
+                    if (redoArgs is null)
                     {
                         redoArgs = dimensionUndoArgs = new ImportDimensionUndoArgs();
                     }
@@ -1774,7 +1774,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if (undoArgs.UndoFile == null)
+                    if (undoArgs.UndoFile is null)
                     {
                         return Task.CompletedTask;
                     }
@@ -1857,7 +1857,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                     redoFile = CreateUndoCacheFile();
 
-                    if (redoArgs == null)
+                    if (redoArgs is null)
                     {
                         redoArgs = mipGenUndoArgs = new ImportDimensionUndoArgs();
                     }
@@ -1965,7 +1965,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if (undoArgs.UndoFile == null)
+                    if (undoArgs.UndoFile is null)
                     {
                         return Task.CompletedTask;
                     }
@@ -2038,7 +2038,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     undoFile = CreateUndoCacheFile();
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
 
-                    if (redoArgs == null)
+                    if (redoArgs is null)
                     {
                         redoArgs = imageTypeUndoArgs = new ImageTypeUndoArgs();
                     }
@@ -2077,7 +2077,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if the image can be edited in an external application.
         /// </summary>
         /// <returns></returns>
-        private bool CanEditInApp() => (CurrentPanel == null) && (CommandContext == null);
+        private bool CanEditInApp() => (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function to edit the current image in an application.
@@ -2201,7 +2201,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <returns><b>true</b> if the file can be imported, <b>false</b> if not.</returns>
         private bool CanCopyToImage(CopyToImageArgs args)
         {
-            if ((args?.ContentFilePaths == null) || (args.ContentFilePaths.Count == 0) || (CurrentPanel != null) || (CommandContext == FxContext))
+            if ((args?.ContentFilePaths is null) || (args.ContentFilePaths.Count == 0) || (CurrentPanel != null) || (CommandContext == FxContext))
             {
                 args.Cancel = true;
                 return false;
@@ -2270,7 +2270,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if (undoArgs.UndoFile == null)
+                    if (undoArgs.UndoFile is null)
                     {
                         return Task.CompletedTask;
                     }
@@ -2343,7 +2343,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     NotifyImageUpdated(nameof(ImageData));
 
-                    if (redoArgs == null)
+                    if (redoArgs is null)
                     {
                         redoArgs = importUndoArgs = new ImportDimensionUndoArgs();
                     }
@@ -2479,7 +2479,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     CurrentArrayIndexDepthSlice = ImageType == ImageType.Image3D ? _currentDepthSlice : _currentArrayindex,
                     MipLevel = _currentMipLevel
                 };
-                if ((ImagePicker.ActivateCommand == null) || (!ImagePicker.ActivateCommand.CanExecute(imgPickerArgs)))
+                if ((ImagePicker.ActivateCommand is null) || (!ImagePicker.ActivateCommand.CanExecute(imgPickerArgs)))
                 {
                     return;
                 }
@@ -2496,7 +2496,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 // Blow away any files we generated to keep the system clean.
                 foreach (ImagePickerImportData thumbnail in imports)
                 {
-                    if (thumbnail?.FromFile == null)
+                    if (thumbnail?.FromFile is null)
                     {
                         continue;
                     }
@@ -2546,7 +2546,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _codecs.Clear();
             Codecs.Clear();
 
-            if (image == null)
+            if (image is null)
             {
                 HostServices.Log.Print("WARNING: No image was found.", LoggingLevel.Simple);
                 return;
@@ -2574,8 +2574,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// </summary>
         /// <returns></returns>
         private bool CanShowSetAlphaValue() => (ImageData != null)
-                && (CurrentPanel == null)
-                && (CommandContext == null)
+                && (CurrentPanel is null)
+                && (CommandContext is null)
                 && (ImageData.FormatInfo.HasAlpha)
                 && (ImageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
 
@@ -2614,7 +2614,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if (undoArgs.UndoFile == null)
+                    if (undoArgs.UndoFile is null)
                     {
                         return Task.CompletedTask;
                     }
@@ -2663,7 +2663,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                     NotifyPropertyChanging(nameof(ImageData));
 
-                    if (redoArgs == null)
+                    if (redoArgs is null)
                     {
                         redoArgs = alphaUndoArgs = new SetAlphaUndoArgs()
                         {
@@ -2815,7 +2815,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if the FX options can be shown.
         /// </summary>
         /// <returns><b>true</b> if the fx options can be shown, <b>false</b> if not.</returns>
-        private bool CanShowFx() => (CurrentPanel == null) && (CommandContext == null);
+        private bool CanShowFx() => (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function to show the FX options.
@@ -2847,7 +2847,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// Function to determine if the effects can be applied to the main image.
         /// </summary>
         /// <returns><b>true</b> if the effects can be applied, <b>false</b> if not.</returns>
-        private bool CanApplyFx() => (FxContext.EffectsUpdated) && (CurrentPanel == null);
+        private bool CanApplyFx() => (FxContext.EffectsUpdated) && (CurrentPanel is null);
 
         /// <summary>
         /// Function to apply the effects to the target image.
@@ -2864,7 +2864,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 try
                 {
-                    if (undoArgs.UndoFile == null)
+                    if (undoArgs.UndoFile is null)
                     {
                         return Task.CompletedTask;
                     }
@@ -2936,7 +2936,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     _workingFile = _imageIO.SaveImageFile(File.Name, ImageData, ImageData.Format);
                     redoFile = CreateUndoCacheFile();
 
-                    if (redoArgs == null)
+                    if (redoArgs is null)
                     {
                         redoArgs = effectsUndoArgs = new EffectsUndoArgs();
                     }

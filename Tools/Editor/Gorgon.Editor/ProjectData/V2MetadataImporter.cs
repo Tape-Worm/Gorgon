@@ -106,7 +106,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, or the <paramref name="contentPlugIns"/> parameter is <b>null</b>.</exception>
         public void Import(IProject project)
         {
-            if (project == null)
+            if (project is null)
             {
                 throw new ArgumentNullException(nameof(project));
             }
@@ -122,7 +122,7 @@ namespace Gorgon.Editor.ProjectData
 
             XElement rootNode = document.Element(RootNodeName);
 
-            if (rootNode == null)
+            if (rootNode is null)
             {
                 _log.Print("No root node found.  Not a v2 Gorgon Editor metadata file.", LoggingLevel.Verbose);
                 return;

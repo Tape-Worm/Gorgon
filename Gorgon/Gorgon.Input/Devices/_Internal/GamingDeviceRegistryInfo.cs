@@ -147,7 +147,7 @@ namespace Gorgon.Input
                 lookup = rootKey.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\MediaResources\Joystick\" + registryKey + @"\CurrentJoystickSettings");
 
                 // Try the local machine key as a root if that lookup failed.
-                if (lookup == null)
+                if (lookup is null)
                 {
                     rootKey.Close();
                     rootKey = Registry.LocalMachine;

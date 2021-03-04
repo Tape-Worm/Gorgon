@@ -76,7 +76,7 @@ namespace Gorgon.Editor.Views
         private void ListPlugIns_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedIndex = ListPlugIns.SelectedIndices.Count > 0 ? ListPlugIns.SelectedIndices[0] : -1;
-            if ((DataContext?.SelectPlugInCommand == null) || (!DataContext.SelectPlugInCommand.CanExecute(selectedIndex)))
+            if ((DataContext?.SelectPlugInCommand is null) || (!DataContext.SelectPlugInCommand.CanExecute(selectedIndex)))
             {
                 return;
             }
@@ -114,7 +114,7 @@ namespace Gorgon.Editor.Views
                         listItem.ForeColor = Color.DarkRed;
                     }
 
-                    if ((dataContext.Current == item) && (selected == null))
+                    if ((dataContext.Current == item) && (selected is null))
                     {
                         selected = listItem;
                     }
@@ -129,7 +129,7 @@ namespace Gorgon.Editor.Views
 
                 ListPlugIns.Select();
 
-                if (selected == null)
+                if (selected is null)
                 {
                     selected = ListPlugIns.Items[0];
                 }
@@ -137,7 +137,7 @@ namespace Gorgon.Editor.Views
                 selected.Selected = true;
                 ListPlugIns.SelectedIndices.Add(selected.Index);
 
-                if ((dataContext?.SelectPlugInCommand == null) || (!dataContext.SelectPlugInCommand.CanExecute(selected.Index)))
+                if ((dataContext?.SelectPlugInCommand is null) || (!dataContext.SelectPlugInCommand.CanExecute(selected.Index)))
                 {
                     return;
                 }
@@ -156,7 +156,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -179,7 +179,7 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(ISettingsPlugInsList dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.Views
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

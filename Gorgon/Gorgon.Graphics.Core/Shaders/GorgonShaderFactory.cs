@@ -147,12 +147,12 @@ namespace Gorgon.Graphics.Core
         public static T FromStream<T>(GorgonGraphics graphics, Stream stream, int size)
             where T : GorgonShader
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -316,12 +316,12 @@ namespace Gorgon.Graphics.Core
         public static T FromFile<T>(GorgonGraphics graphics, string path)
             where T : GorgonShader
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -397,17 +397,17 @@ namespace Gorgon.Graphics.Core
                                    string sourceFileName = "(in memory)")
             where T : GorgonShader
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (sourceCode == null)
+            if (sourceCode is null)
             {
                 throw new ArgumentNullException(nameof(sourceCode));
             }
 
-            if (entryPoint == null)
+            if (entryPoint is null)
             {
                 throw new ArgumentNullException(nameof(entryPoint));
             }
@@ -424,7 +424,7 @@ namespace Gorgon.Graphics.Core
 
             (Type Type, ShaderType Shader, string Profile)? shaderType = _shaderTypes.FirstOrDefault(item => item.Item1 == typeof(T));
 
-            if (shaderType == null)
+            if (shaderType is null)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, typeof(T).FullName));
             }
@@ -453,7 +453,7 @@ namespace Gorgon.Graphics.Core
                                                                     null,
                                                                     sourceFileName);
 
-                if ((byteCode.HasErrors) || (byteCode.Bytecode == null))
+                if ((byteCode.HasErrors) || (byteCode.Bytecode is null))
                 {
                     throw new GorgonException(GorgonResult.CannotCompile,
                                               string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER,

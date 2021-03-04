@@ -63,12 +63,12 @@ namespace Gorgon.Security
         /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
         public byte[] Decrypt(byte[] data)
         {
-            if ((_ivKey.IV == null) || (_ivKey.Key == null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
+            if ((_ivKey.IV is null) || (_ivKey.Key is null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
             {
                 throw new SecurityException(Resources.GOR_ERR_ENCRYPTION_KEY_NOT_VALID);
             }
 
-            if ((data == null) || (data.Length == 0))
+            if ((data is null) || (data.Length == 0))
             {
                 return Array.Empty<byte>();
             }
@@ -97,12 +97,12 @@ namespace Gorgon.Security
         /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
         public byte[] Encrypt(byte[] data)
         {
-            if ((_ivKey.IV == null) || (_ivKey.Key == null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
+            if ((_ivKey.IV is null) || (_ivKey.Key is null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
             {
                 throw new SecurityException(Resources.GOR_ERR_ENCRYPTION_KEY_NOT_VALID);
             }
 
-            if ((data == null) || (data.Length == 0))
+            if ((data is null) || (data.Length == 0))
             {
                 return Array.Empty<byte>();
             }
@@ -136,7 +136,7 @@ namespace Gorgon.Security
                 return Array.Empty<byte>();
             }
 
-            if (textEncoding == null)
+            if (textEncoding is null)
             {
                 textEncoding = Encoding.UTF8;
             }
@@ -156,12 +156,12 @@ namespace Gorgon.Security
         /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
         public string DecryptString(byte[] value, Encoding textEncoding = null)
         {
-            if ((value == null) || (value.Length == 0))
+            if ((value is null) || (value.Length == 0))
             {
                 return string.Empty;
             }
 
-            if (textEncoding == null)
+            if (textEncoding is null)
             {
                 textEncoding = Encoding.UTF8;
             }
@@ -208,7 +208,7 @@ namespace Gorgon.Security
         {
             using (var rndGen = RandomNumberGenerator.Create())
             {
-                if (salt == null)
+                if (salt is null)
                 {
                     salt = new byte[32];
                     rndGen.GetBytes(salt);
@@ -237,7 +237,7 @@ namespace Gorgon.Security
         /// </exception>
         public Aes256Encryption(byte[] keyPairFileData)
         {
-            if (keyPairFileData == null)
+            if (keyPairFileData is null)
             {
                 throw new ArgumentNullException(nameof(keyPairFileData));
             }
@@ -265,12 +265,12 @@ namespace Gorgon.Security
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="iv"/>, or the <paramref name="key"/> parameters are empty.</exception>
         public Aes256Encryption(byte[] iv, byte[] key)
         {
-            if (iv == null)
+            if (iv is null)
             {
                 throw new ArgumentNullException(nameof(iv));
             }
 
-            if (key == null)
+            if (key is null)
             {
                 throw new ArgumentNullException(nameof(key));
             }

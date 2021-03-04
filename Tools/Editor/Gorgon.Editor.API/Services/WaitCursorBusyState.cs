@@ -62,7 +62,7 @@ namespace Gorgon.Editor.Services
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         BusyStateChangedEvent = null;
                         return;
@@ -75,7 +75,7 @@ namespace Gorgon.Editor.Services
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }

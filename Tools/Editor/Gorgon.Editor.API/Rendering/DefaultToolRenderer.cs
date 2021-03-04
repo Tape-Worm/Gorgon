@@ -157,7 +157,7 @@ namespace Gorgon.Editor.Rendering
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

@@ -307,7 +307,7 @@ namespace Gorgon.Editor.ProjectData
 
             string metaDataOutput = Path.Combine(fileSystemDir, CommonEditorConstants.EditorMetadataFileName);
 
-            if (metaData == null)
+            if (metaData is null)
             {
                 _log.Print($"'{fileSystemFile}' has no metadata. A new metadata index will be generated.", LoggingLevel.Verbose);
                 return metaDataOutput;
@@ -434,7 +434,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="ArgumentEmptyException">Throw whent he <paramref name="directory"/> parameter is empty.</exception>
         public bool IsGorgonProject(string directory)
         {
-            if (directory == null)
+            if (directory is null)
             {
                 throw new ArgumentNullException(nameof(directory));
             }
@@ -467,7 +467,7 @@ namespace Gorgon.Editor.ProjectData
         {
             Stream fileStream = null;
 
-            if (workspace == null)
+            if (workspace is null)
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
@@ -527,7 +527,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspace" /> parameter is <b>null</b>.</exception>
         public void CloseProject(IProject project)
         {
-            if (project == null)
+            if (project is null)
             {
                 throw new ArgumentNullException(nameof(project));
             }
@@ -568,7 +568,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="GorgonException">Thrown if the <paramref name="workspace"/> directory is locked, and in use by other Gorgon editor instance.</exception>
         public IProject CreateProject(string workspace)
         {
-            if (workspace == null)
+            if (workspace is null)
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
@@ -644,12 +644,12 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         public async Task SavePackedFileAsync(IProject project, string path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
         {
-            if (project == null)
+            if (project is null)
             {
                 throw new ArgumentNullException(nameof(project));
             }
 
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -659,7 +659,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            if (writer == null)
+            if (writer is null)
             {
                 throw new ArgumentNullException(nameof(writer));
             }
@@ -711,7 +711,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="GorgonException">Thrown when the project is locked by another instance of the Gorgon editor.</exception>
         public IProject OpenProject(string projectWorkspace)
         {
-            if (projectWorkspace == null)
+            if (projectWorkspace is null)
             {
                 throw new ArgumentNullException(nameof(projectWorkspace));
             }
@@ -767,7 +767,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="GorgonException">Thrown if no provider could be found to load the file.</exception>
         public async Task<bool> ExtractPackFileProjectAsync(string path, string workspace)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -777,7 +777,7 @@ namespace Gorgon.Editor.ProjectData
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            if (workspace == null)
+            if (workspace is null)
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
@@ -797,7 +797,7 @@ namespace Gorgon.Editor.ProjectData
 
             IGorgonFileSystemProvider provider = _providers.GetBestReader(path);
 
-            if (provider == null)
+            if (provider is null)
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_NO_PROVIDER, Path.GetFileNameWithoutExtension(path)));
             }
@@ -864,7 +864,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/> parameter is <b>null</b>.</exception>
         public void PersistMetadata(IProject project, CancellationToken cancelToken)
         {
-            if (project == null)
+            if (project is null)
             {
                 throw new ArgumentNullException(nameof(project));
             }
@@ -915,7 +915,7 @@ namespace Gorgon.Editor.ProjectData
         /// </remarks>
         public void LockProject(IProject project)
         {
-            if (project == null)
+            if (project is null)
             {
                 throw new ArgumentNullException(nameof(project));
             }
@@ -939,7 +939,7 @@ namespace Gorgon.Editor.ProjectData
         /// <exception cref="GorgonException">Thrown when the <paramref name="projectPath"/> is open in another instance (or the same instance) of the editor.</exception>
         public bool DeleteProject(string projectPath)
         {
-            if (projectPath == null)
+            if (projectPath is null)
             {
                 throw new ArgumentNullException(nameof(projectPath));
             }

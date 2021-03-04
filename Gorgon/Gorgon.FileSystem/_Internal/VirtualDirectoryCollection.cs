@@ -92,7 +92,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentException">Thrown when this collection already contains a directory with the same name as the <paramref name="item"/> parameter.</exception>
         public void Add(VirtualDirectory item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -114,7 +114,7 @@ namespace Gorgon.IO
         /// </returns>
         public bool Remove(VirtualDirectory item)
         {
-            if (item == null)
+            if (item is null)
             {
                 return false;
             }

@@ -98,7 +98,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     VerticesChangedEvent = null;
                     return;
@@ -108,7 +108,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     VertexSelectedEvent = null;
                     return;
@@ -134,7 +134,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -150,7 +150,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     KeyboardIconClickedEvent = null;
                     return;
@@ -160,7 +160,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.SpriteEditor
             get => _vertices;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     Array.Clear(_vertices, 0, _vertices.Length);
                     return;
@@ -660,7 +660,7 @@ namespace Gorgon.Editor.SpriteEditor
                     _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
                 }
 
-                if (texture == null)
+                if (texture is null)
                 {
                     _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
                     _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);

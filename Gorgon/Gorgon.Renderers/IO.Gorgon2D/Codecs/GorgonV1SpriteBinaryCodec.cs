@@ -394,7 +394,7 @@ namespace Gorgon.IO
             GorgonTexture2DView textureView;
 
             // Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
-            if ((!string.IsNullOrEmpty(imageName)) && (overrideTexture == null))
+            if ((!string.IsNullOrEmpty(imageName)) && (overrideTexture is null))
             {
                 GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(imageName).FirstOrDefault();
                 textureView = texture?.GetShaderResourceView();
@@ -405,7 +405,7 @@ namespace Gorgon.IO
             }
 
             // If we cannot load the image, then fall back to the standard coordinates.            
-            if (textureView == null)
+            if (textureView is null)
             {
                 sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
             }

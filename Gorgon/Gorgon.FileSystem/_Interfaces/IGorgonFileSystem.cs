@@ -355,7 +355,7 @@ namespace Gorgon.IO
         /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
         /// 
         /// // The file does not exist yet because the file system has no idea that it's been added.
-        /// if (file == null)
+        /// if (file is null)
         /// {
         ///    Console.WriteLine("File does not exist.");
         /// }

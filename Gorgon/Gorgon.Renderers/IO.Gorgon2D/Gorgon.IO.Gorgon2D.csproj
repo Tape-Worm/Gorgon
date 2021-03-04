@@ -2,8 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <UseWindowsForms>true</UseWindowsForms>
     <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>

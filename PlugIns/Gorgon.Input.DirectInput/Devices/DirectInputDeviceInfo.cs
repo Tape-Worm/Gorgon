@@ -154,7 +154,7 @@ namespace Gorgon.Input.DirectInput
                 DI.ObjectProperties properties = joystick.GetObjectPropertiesById(axis.ObjectId);
 
                 // Skip this axis if retrieving the properties results in failure.
-                if (properties == null)
+                if (properties is null)
                 {
                     continue;
                 }

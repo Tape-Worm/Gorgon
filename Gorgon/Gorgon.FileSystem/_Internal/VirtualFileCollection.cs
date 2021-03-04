@@ -77,7 +77,7 @@ namespace Gorgon.IO
             {
                 fileName = fileName.FormatFileName();
 
-                if (value == null)
+                if (value is null)
                 {
                     _files.Remove(fileName);
                     return;
@@ -182,7 +182,7 @@ namespace Gorgon.IO
         /// </returns>
         public bool Remove(VirtualFile item)
         {
-            if (item == null)
+            if (item is null)
             {
                 return false;
             }

@@ -186,7 +186,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         public void UpdateTexture(GorgonTexture2D texture, DX.Rectangle glyphCoordinates, DX.Rectangle outlineCoordinates, int textureArrayIndex)
         {
-            if (texture == null)
+            if (texture is null)
             {
                 throw new ArgumentNullException(nameof(texture));
             }

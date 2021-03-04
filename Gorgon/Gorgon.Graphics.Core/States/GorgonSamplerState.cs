@@ -305,7 +305,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="device">The D3D11 device to use to create the sampler.</param>
         internal void BuildD3D11SamplerState(D3D11.Device5 device)
         {
-            Debug.Assert(Native == null, "Already have a native sampler state.");
+            Debug.Assert(Native is null, "Already have a native sampler state.");
 
             var desc = new D3D11.SamplerStateDescription
             {

@@ -120,7 +120,7 @@ namespace Graphics.Examples
             // Find the plugin.
             GorgonImageCodecPlugIn plugIn = pluginService.GetPlugIn<GorgonImageCodecPlugIn>(pluginName);
 
-            if ((plugIn == null) || (plugIn.Codecs.Count == 0))
+            if ((plugIn is null) || (plugIn.Codecs.Count == 0))
             {
                 return false;
             }

@@ -123,7 +123,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
         private void SplitTrack_SplitterMoved(object sender, SplitterEventArgs e)
         {
-            if (DataContext?.Settings == null)
+            if (DataContext?.Settings is null)
             {
                 return;
             }
@@ -146,7 +146,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="dataContext">The data context to use.</param>
         private void InitializeFromDataContext(IAnimationContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -180,7 +180,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             base.OnResize(e);
 
-            if ((IsDesignTime) || (SplitTrack == null))
+            if ((IsDesignTime) || (SplitTrack is null))
             {
                 return;
             }
@@ -188,7 +188,7 @@ namespace Gorgon.Editor.AnimationEditor
             SplitTrack.MinExtra = ClientSize.Height / 2;
             SplitTrack.MinSize = ClientSize.Height / 4;
 
-            if (DataContext?.Settings == null)
+            if (DataContext?.Settings is null)
             {
                 return;
             }
@@ -205,7 +205,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             e.Effect = DragDropEffects.None;
 
-            if (contentData == null) 
+            if (contentData is null) 
             {                
                 return;
             }
@@ -260,7 +260,7 @@ namespace Gorgon.Editor.AnimationEditor
                 case nameof(IAnimationContent.PrimarySprite):
                 case nameof(IAnimationContent.CurrentPanel):
                 case nameof(IAnimationContent.Selected):
-                    if ((DataContext.PrimarySprite == null)
+                    if ((DataContext.PrimarySprite is null)
                         || (DataContext.CommandContext != DataContext.KeyEditor) 
                         || (DataContext.Selected.Count == 0) 
                         || (!HasRenderer(DataContext.Selected[0].Track.KeyType.ToString())))
@@ -284,7 +284,7 @@ namespace Gorgon.Editor.AnimationEditor
                     }
                     break;
                 case nameof(IAnimationContent.CommandContext):
-                    if (DataContext.CommandContext == null)
+                    if (DataContext.CommandContext is null)
                     {
                         SwitchRenderer(DataContext.PrimarySprite != null ? DefaultAnimationViewer.ViewerName : NoPrimarySpriteViewer.ViewerName, false);
                         _spriteLoader = DataContext;
@@ -321,7 +321,7 @@ namespace Gorgon.Editor.AnimationEditor
             var viewer = renderer as AnimationViewer;
             _ribbonForm.ContentRenderer = viewer;
 
-            if (viewer == null)
+            if (viewer is null)
             {
                 return;
             }
@@ -384,7 +384,7 @@ namespace Gorgon.Editor.AnimationEditor
             AddRenderer(singleEditorView.Name, singleEditorView);
             AddRenderer(vec2EditorView.Name, vec2EditorView);
 
-            SwitchRenderer(DataContext.PrimarySprite == null ? noSprite.Name : defaultView.Name, true);
+            SwitchRenderer(DataContext.PrimarySprite is null ? noSprite.Name : defaultView.Name, true);
 
             ValidateButtons();
         }        
@@ -417,7 +417,7 @@ namespace Gorgon.Editor.AnimationEditor
         {            
             base.UnassignEvents();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -448,7 +448,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

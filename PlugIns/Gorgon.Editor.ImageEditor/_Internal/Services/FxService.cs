@@ -216,7 +216,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to apply the current effect that is using a preview.</summary>
         public void ApplyPreviewedEffect()
         {
-            if (PreviewTexture == null)
+            if (PreviewTexture is null)
             {
                 return;
             }
@@ -239,7 +239,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="overlay"><b>true</b> to overlay the edges on the original image, <b>false</b> to replace the image with edges.</param>
         public void GenerateEdgeDetectPreview(int threshold, float offset, GorgonColor color, bool overlay)
         {
-            if (_texture == null)
+            if (_texture is null)
             {
                 return;
             }
@@ -277,7 +277,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="blurAmount">The amount to blur.</param>
         public void GenerateBlurPreview(int blurAmount)
         {
-            if (_texture == null)
+            if (_texture is null)
             {
                 return;
             }
@@ -316,7 +316,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="amount">The amount to posterize.</param>
         public void GeneratePosterizePreview(int amount)
         {
-            if (_texture == null)
+            if (_texture is null)
             {
                 return;
             }
@@ -339,7 +339,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="emboss"><b>true</b> to use the emboss effect, <b>false</b> to use sharpening.</param>
         public void GenerateSharpenEmbossPreview(int amount, bool emboss)
         {
-            if (_texture == null)
+            if (_texture is null)
             {
                 return;
             }
@@ -363,7 +363,7 @@ namespace Gorgon.Editor.ImageEditor
         ///   <b>true</b> to invert the colors, <b>false</b> to leave as-is.</param>
         public void GenerateOneBitPreview(GorgonRangeF range, bool invert)
         {
-            if (_texture == null)
+            if (_texture is null)
             {
                 return;
             }
@@ -394,7 +394,7 @@ namespace Gorgon.Editor.ImageEditor
             // Destroy any previous texture.
             DestroyTexture();
 
-            if (image == null)
+            if (image is null)
             {
                 return;
             }

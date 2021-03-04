@@ -199,7 +199,7 @@ namespace Gorgon.PlugIns
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
         public T GetPlugIn<T>(string pluginName) where T : GorgonPlugIn
         {
-            if (pluginName == null)
+            if (pluginName is null)
             {
                 throw new ArgumentNullException(nameof(pluginName));
             }
@@ -239,7 +239,7 @@ namespace Gorgon.PlugIns
                 ScanPlugIns();
             }
 
-            return assemblyName == null
+            return assemblyName is null
                 ? _loadedPlugIns.Keys.ToArray()
                 : _loadedPlugIns.Where(item =>
                                         {
@@ -273,7 +273,7 @@ namespace Gorgon.PlugIns
                 ScanPlugIns();
             }
 
-            return assemblyName == null
+            return assemblyName is null
                 ? _loadedPlugIns.Values.Select(item => item.Value).OfType<T>().ToArray()
                 : _loadedPlugIns.Where(item =>
                                         {
@@ -371,7 +371,7 @@ namespace Gorgon.PlugIns
         /// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
         public bool Unload(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

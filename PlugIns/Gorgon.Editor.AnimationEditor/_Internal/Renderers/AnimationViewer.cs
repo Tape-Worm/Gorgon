@@ -121,7 +121,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void SetRenderRegion()
         {
-            if (DataContext.BackgroundImage == null)
+            if (DataContext.BackgroundImage is null)
             {
                 RenderRegion = new DX.RectangleF(0, 0, DataContext.Settings.DefaultResolution.Width, DataContext.Settings.DefaultResolution.Height);
             }
@@ -172,7 +172,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void UpdateOnionSkin()
         {
-            if ((DataContext?.CommandContext == null) || (DataContext.CommandContext != DataContext.KeyEditor) || (DataContext.Selected.Count == 0))
+            if ((DataContext?.CommandContext is null) || (DataContext.CommandContext != DataContext.KeyEditor) || (DataContext.Selected.Count == 0))
             {
                 return;
             }
@@ -190,7 +190,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 DX.Vector4 defaultValue = DataContext.WorkingSprite.GetFloatValues(track.SpriteProperty);
 
-                sprite.SetFloatValues(track.SpriteProperty, keyFrame == null ? defaultValue : keyFrame.FloatValue);
+                sprite.SetFloatValues(track.SpriteProperty, keyFrame is null ? defaultValue : keyFrame.FloatValue);
             }
 
             for (int t = 0; t < DataContext.Tracks.Count; ++t)
@@ -280,7 +280,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void KeyEditor_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (DataContext.KeyEditor.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor.CurrentEditor?.Track is null)
             {
                 return;
             }
@@ -301,7 +301,7 @@ namespace Gorgon.Editor.AnimationEditor
             switch (e.PropertyName)
             {
                 case nameof(ISettings.DefaultResolution):
-                    if (DataContext.BackgroundImage == null)
+                    if (DataContext.BackgroundImage is null)
                     {
                         SetRenderRegion();
                         DefaultZoom();
@@ -520,7 +520,7 @@ namespace Gorgon.Editor.AnimationEditor
                                          GorgonColor.White,
                                          _main,
                                          new DX.RectangleF(0, 0, 1, 1),
-                                         textureSampler: (DataContext.PrimarySprite == null ? GorgonSamplerState.PointFiltering : DataContext.PrimarySprite.TextureSampler));
+                                         textureSampler: (DataContext.PrimarySprite is null ? GorgonSamplerState.PointFiltering : DataContext.PrimarySprite.TextureSampler));
             Renderer.End();
             DrawGizmos();
         }
@@ -602,7 +602,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="sprite">The sprite to zoom to.</param>
         protected void ZoomToSprite(GorgonSprite sprite)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 return;
             }

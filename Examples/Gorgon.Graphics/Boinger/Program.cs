@@ -397,7 +397,7 @@ namespace Gorgon.Examples
             _graphics = CreateGraphicsInterface();
 
             // If we couldn't create the graphics interface, then leave.
-            if (_graphics == null)
+            if (_graphics is null)
             {
                 return;
             }

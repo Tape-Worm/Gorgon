@@ -60,7 +60,7 @@ namespace Gorgon.Input
         /// <exception cref="ArgumentException">Thrown when the <paramref name="assemblyPath"/> was invalid.</exception>
         public IReadOnlyList<IGorgonGamingDeviceDriver> LoadAllDrivers(string assemblyPath)
         {
-            if (assemblyPath == null)
+            if (assemblyPath is null)
             {
                 throw new ArgumentNullException(nameof(assemblyPath));
             }
@@ -100,7 +100,7 @@ namespace Gorgon.Input
         /// </exception>
         public IGorgonGamingDeviceDriver LoadDriver(string assemblyPath, string driverType)
         {
-            if (assemblyPath == null)
+            if (assemblyPath is null)
             {
                 throw new ArgumentNullException(nameof(assemblyPath));
             }
@@ -110,7 +110,7 @@ namespace Gorgon.Input
                 throw new ArgumentEmptyException(nameof(assemblyPath));
             }
 
-            if (driverType == null)
+            if (driverType is null)
             {
                 throw new ArgumentNullException(nameof(driverType));
             }
@@ -135,7 +135,7 @@ namespace Gorgon.Input
             _plugInCache.LoadPlugInAssemblies(dirName, fileName);
             GorgonGamingDeviceDriver result = _plugInService.GetPlugIn<GorgonGamingDeviceDriver>(driverType);
 
-            if (result == null)
+            if (result is null)
             {
                 throw new ArgumentException(string.Format(Resources.GORINP_ERR_DRIVER_NOT_FOUND, driverType));
             }

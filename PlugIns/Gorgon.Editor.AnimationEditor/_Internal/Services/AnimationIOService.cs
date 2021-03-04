@@ -170,7 +170,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
 
             IContentFile imageFile = _fileManager.GetFile(dependency[0]);
 
-            if (imageFile == null)
+            if (imageFile is null)
             {
                 return (null, null);
             }
@@ -187,7 +187,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
             GorgonTexture2DView texture = await _textureCache.GetTextureAsync(imageFile);
             imageFile.IsOpen = true;
 
-            return texture == null ? ((GorgonTexture2DView texture, IContentFile textureFile))(null, null) : (texture, imageFile);
+            return texture is null ? ((GorgonTexture2DView texture, IContentFile textureFile))(null, null) : (texture, imageFile);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
             _log.Print($"Loading sprites for '{animationFile.Path}'...", LoggingLevel.Verbose);
 
             if ((!animationFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.SpriteType, out List<string> primaryPath))
-                || (primaryPath == null)
+                || (primaryPath is null)
                 || (primaryPath.Count == 0)
                 || (!_fileManager.FileExists(primaryPath[0])))
             {
@@ -315,7 +315,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
                 GorgonTexture2DView texture = await _textureCache.GetTextureAsync(file);
                 file.IsOpen = true;
 
-                if (texture == null)
+                if (texture is null)
                 {
                     if (file != null)
                     {
@@ -372,7 +372,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
         /// <returns>The primary sprite and its texture file.</returns>
         public async Task<(GorgonSprite sprite, IContentFile textureFile)> LoadSpriteAsync(IContentFile file)
         {
-            if (file == null)
+            if (file is null)
             {
                 return (null, null);
             }
@@ -471,7 +471,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
 
                 animFile = _fileManager.GetFile(path);
 
-                if (animFile == null)
+                if (animFile is null)
                 {
                     throw new FileNotFoundException();
                 }
@@ -524,7 +524,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
         /// <returns>A tuple containing the texture, and its file.</returns>
         public async Task<(GorgonTexture2DView texture, IContentFile file)> LoadBackgroundTextureAsync(IContentFile file)
         {
-            if (file == null)
+            if (file is null)
             {
                 return (null, null);
             }

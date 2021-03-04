@@ -108,10 +108,10 @@ namespace Gorgon.Editor.ViewModels
         private bool CanPasteData()
         {
             if ((!HasData) 
-                || (_fileExplorer?.CopyDirectoryCommand == null) 
-                || (_fileExplorer.CopyFileCommand == null)
-                || (_fileExplorer.MoveDirectoryCommand == null)
-                || (_fileExplorer.MoveFileCommand == null))
+                || (_fileExplorer?.CopyDirectoryCommand is null) 
+                || (_fileExplorer.CopyFileCommand is null)
+                || (_fileExplorer.MoveDirectoryCommand is null)
+                || (_fileExplorer.MoveFileCommand is null))
             {
                 return false;
             }
@@ -161,7 +161,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     DirectoryCopyMoveData directoryData = _clipboardService.GetData<DirectoryCopyMoveData>();                    
 
-                    if (directoryData == null)
+                    if (directoryData is null)
                     {
                         return;
                     }
@@ -195,7 +195,7 @@ namespace Gorgon.Editor.ViewModels
 
                 FileCopyMoveData fileData = _clipboardService.GetData<FileCopyMoveData>();
 
-                if (fileData == null)
+                if (fileData is null)
                 {
                     return;
                 }
@@ -257,7 +257,7 @@ namespace Gorgon.Editor.ViewModels
         {
             Type argsType = args?.GetType();
 
-            if (argsType == null)
+            if (argsType is null)
             {                
                 return true;
             }
@@ -289,7 +289,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 DoClearClipboard();
 
-                if (args == null)
+                if (args is null)
                 {
                     return;
                 }

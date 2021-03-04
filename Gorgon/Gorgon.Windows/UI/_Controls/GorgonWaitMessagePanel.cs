@@ -227,7 +227,7 @@ namespace Gorgon.UI
                     return;
                 }
 
-                if (value == null)
+                if (value is null)
                 {
                     _waitIcon = null;
                     ImageWait.Image = Resources.wait_48x48;

@@ -127,7 +127,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="SizeChangedEventArgs" /> instance containing the event data.</param>
         private void ClientArea_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (_camera == null)
+            if (_camera is null)
             {
                 return;
             }
@@ -415,7 +415,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            if (_dragStart == null)
+            if (_dragStart is null)
             {
                 _dragStart = PointToScreen(e.GetPosition(this));
             }
@@ -427,7 +427,7 @@ namespace Gorgon.Examples
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             if ((e.LeftButton != MouseButtonState.Pressed)
-                || (_dragStart == null))
+                || (_dragStart is null))
             {
                 return;
             }

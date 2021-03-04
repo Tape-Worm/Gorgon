@@ -286,7 +286,7 @@ namespace Gorgon.Renderers
             get => _allowCodes ? _encodedText : _text;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = string.Empty;
                 }
@@ -393,7 +393,7 @@ namespace Gorgon.Renderers
             set
             {
                 if ((Renderable.Font == value)
-                    || (value == null))
+                    || (value is null))
                 {
                     return;
                 }
@@ -567,7 +567,7 @@ namespace Gorgon.Renderers
             {
                 BatchRenderable renderable = Renderable;
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (value == null)
+                if (value is null)
                 {
                     if (renderable.AlphaTestData.IsEnabled == 0)
                     {
@@ -617,7 +617,7 @@ namespace Gorgon.Renderers
             int estimatedVertexCount = _formattedText.Length * (Renderable.DrawMode == TextDrawMode.OutlinedGlyphs ? 8 : 4);
 
             Renderable.HasVertexChanges = true;
-            Renderable.VertexCountChanged = (Renderable.Vertices == null) || (estimatedVertexCount > Renderable.Vertices.Length);
+            Renderable.VertexCountChanged = (Renderable.Vertices is null) || (estimatedVertexCount > Renderable.Vertices.Length);
         }
         #endregion
 

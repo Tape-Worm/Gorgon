@@ -131,7 +131,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     RecentItem listItem = _recentItems.FirstOrDefault(item => string.Equals(item.FilePath, recentItem.FilePath, StringComparison.OrdinalIgnoreCase));
 
-                    if (listItem == null)
+                    if (listItem is null)
                     {
                         continue;
                     }

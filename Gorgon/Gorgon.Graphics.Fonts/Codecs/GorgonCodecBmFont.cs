@@ -503,7 +503,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </remarks>
         public override bool IsReadable(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

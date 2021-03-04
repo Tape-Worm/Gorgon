@@ -246,7 +246,7 @@ namespace Gorgon.Graphics.Core
             // Copy over unordered access views.
             StateCopy.CopyReadWriteViews(final.D3DState.CsReadWriteViews, _worker.D3DState.CsReadWriteViews, 0);
 
-            if (_worker.D3DState.ComputeShader == null)
+            if (_worker.D3DState.ComputeShader is null)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_COMPUTE_SHADER);
             }
@@ -270,7 +270,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public GorgonDispatchCallBuilder ResetTo(GorgonDispatchCall dispatchCall = null)
         {
-            if (dispatchCall == null)
+            if (dispatchCall is null)
             {
                 return Clear();
             }

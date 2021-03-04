@@ -148,7 +148,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 texConvProcess = Process.Start(info);
 
-                if (texConvProcess == null)
+                if (texConvProcess is null)
                 {
                     return null;
                 }
@@ -215,7 +215,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 texConvProcess = Process.Start(info);
 
-                if (texConvProcess == null)
+                if (texConvProcess is null)
                 {
                     return null;
                 }

@@ -182,7 +182,7 @@ namespace Gorgon.IO
         {
             IGorgonVirtualFile file = _fileSystem.GetFile(path);
 
-            if ((file == null) || (!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata)))
+            if ((file is null) || (!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata)))
             {
                 _graphics.Log.Print($"WARNING: The texture '{path}' was not found in the editor file system.", LoggingLevel.Intermediate);
                 return null;
@@ -252,7 +252,7 @@ namespace Gorgon.IO
         /// </remarks>
         public async Task<IGorgonAnimation> LoadAnimationAsync(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -267,7 +267,7 @@ namespace Gorgon.IO
             IGorgonVirtualFile animationFile = _fileSystem.GetFile(path);
 
             if ((!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata))
-                || (animationFile == null))
+                || (animationFile is null))
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
             }
@@ -335,7 +335,7 @@ namespace Gorgon.IO
         /// </remarks>        
         public IGorgonImage LoadImage(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -348,7 +348,7 @@ namespace Gorgon.IO
             IProjectMetadata metaData = _fileSystem.GetMetadata();
             IGorgonVirtualFile file = _fileSystem.GetFile(path);
 
-            if ((file == null) || (!metaData.ProjectItems.TryGetValue(path, out ProjectItemMetadata fileMetadata)))
+            if ((file is null) || (!metaData.ProjectItems.TryGetValue(path, out ProjectItemMetadata fileMetadata)))
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
             }
@@ -416,7 +416,7 @@ namespace Gorgon.IO
         /// </remarks>        
         public async Task<GorgonTexture2D> LoadTextureAsync(string path, bool cache = true)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -429,7 +429,7 @@ namespace Gorgon.IO
             IProjectMetadata metaData = _fileSystem.GetMetadata();
             IGorgonVirtualFile file = _fileSystem.GetFile(path);
 
-            if ((file == null) || (!metaData.ProjectItems.TryGetValue(path, out ProjectItemMetadata fileMetadata)))
+            if ((file is null) || (!metaData.ProjectItems.TryGetValue(path, out ProjectItemMetadata fileMetadata)))
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
             }
@@ -522,7 +522,7 @@ namespace Gorgon.IO
         /// </remarks>
         public async Task<GorgonSprite> LoadSpriteAsync(string path, GorgonTexture2DView overrideTexture = null)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -537,7 +537,7 @@ namespace Gorgon.IO
             IGorgonVirtualFile spriteFile = _fileSystem.GetFile(path);
 
             if ((!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata))
-                || (spriteFile == null))
+                || (spriteFile is null))
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
             }
@@ -559,7 +559,7 @@ namespace Gorgon.IO
             }
 
             // If we've not provided an override, then load the texture dependencies.
-            if ((overrideTexture == null)
+            if ((overrideTexture is null)
                 && (metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths))
                 && (paths != null)
                 && (paths.Count > 0))

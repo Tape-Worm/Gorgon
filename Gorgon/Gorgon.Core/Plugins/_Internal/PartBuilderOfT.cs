@@ -40,7 +40,7 @@ namespace System.ComponentModel.Composition.Registration
 
             private static PropertyInfo SelectProperties(Expression<Func<T, object>> propertyFilter)
             {
-                if (propertyFilter == null)
+                if (propertyFilter is null)
                 {
                     throw new ArgumentNullException(nameof(propertyFilter));
                 }
@@ -90,7 +90,7 @@ namespace System.ComponentModel.Composition.Registration
 
             private void ParseSelectConstructor(Expression<Func<ParameterImportBuilder, T>> constructorFilter)
             {
-                if (constructorFilter == null)
+                if (constructorFilter is null)
                 {
                     throw new ArgumentNullException(nameof(constructorFilter));
                 }
@@ -120,7 +120,7 @@ namespace System.ComponentModel.Composition.Registration
                                 var lambdaExpression = (LambdaExpression)parameter;
                                 Delegate importDelegate = lambdaExpression.Compile();
 
-                                if (_importBuilders == null)
+                                if (_importBuilders is null)
                                 {
                                     _importBuilders = new Dictionary<ParameterInfo, Action<ImportBuilder>>();
                                 }
@@ -150,7 +150,7 @@ namespace System.ComponentModel.Composition.Registration
 
         public PartBuilder<T> SelectConstructor(Expression<Func<ParameterImportBuilder, T>> constructorFilter)
         {
-            if (constructorFilter == null)
+            if (constructorFilter is null)
             {
                 throw new ArgumentNullException(nameof(constructorFilter));
             }
@@ -168,7 +168,7 @@ namespace System.ComponentModel.Composition.Registration
             Expression<Func<T, object>> propertyFilter,
             Action<ExportBuilder> exportConfiguration)
         {
-            if (propertyFilter == null)
+            if (propertyFilter is null)
             {
                 throw new ArgumentNullException(nameof(propertyFilter));
             }
@@ -184,7 +184,7 @@ namespace System.ComponentModel.Composition.Registration
         public PartBuilder<T> ExportProperty<TContract>(Expression<Func<T, object>> propertyFilter,
             Action<ExportBuilder> exportConfiguration)
         {
-            if (propertyFilter == null)
+            if (propertyFilter is null)
             {
                 throw new ArgumentNullException(nameof(propertyFilter));
             }
@@ -200,7 +200,7 @@ namespace System.ComponentModel.Composition.Registration
         public PartBuilder<T> ImportProperty(Expression<Func<T, object>> propertyFilter,
             Action<ImportBuilder> importConfiguration)
         {
-            if (propertyFilter == null)
+            if (propertyFilter is null)
             {
                 throw new ArgumentNullException(nameof(propertyFilter));
             }
@@ -216,7 +216,7 @@ namespace System.ComponentModel.Composition.Registration
         public PartBuilder<T> ImportProperty<TContract>(Expression<Func<T, object>> propertyFilter,
             Action<ImportBuilder> importConfiguration)
         {
-            if (propertyFilter == null)
+            if (propertyFilter is null)
             {
                 throw new ArgumentNullException(nameof(propertyFilter));
             }

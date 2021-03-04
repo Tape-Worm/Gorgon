@@ -96,7 +96,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A new texture.</returns>
         public static D3D11.Texture3D1 Create(D3D11.Device5 device, string name, long id, in D3D11.Texture3DDescription1 desc, IGorgonImage image)
         {
-            if (image == null)
+            if (image is null)
             {
                 return new D3D11.Texture3D1(device, desc)
                 {
@@ -142,7 +142,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A new texture.</returns>
         public static D3D11.Texture2D1 Create(D3D11.Device5 device, string name, long id, in D3D11.Texture2DDescription1 desc, IGorgonImage image)
         {
-            if (image == null)
+            if (image is null)
             {
                 return new D3D11.Texture2D1(device, desc)
                 {
@@ -180,7 +180,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A new texture.</returns>
         public static D3D11.Texture1D Create(D3D11.Device5 device, string name, long id, in D3D11.Texture1DDescription desc, IGorgonImage image)
         {
-            if (image == null)
+            if (image is null)
             {
                 return new D3D11.Texture1D(device, desc)
                 {

@@ -211,7 +211,7 @@ namespace Gorgon.Examples
         private static bool Idle()
         {
             // If the controller is not initialized, then we haven't finished loading our data yet.
-            if (_controller == null)
+            if (_controller is null)
             {
                 return true;
             }

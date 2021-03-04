@@ -131,7 +131,7 @@ namespace Gorgon.Graphics.Core
         public GorgonStreamOutLayout(string name, IEnumerable<GorgonStreamOutElement> elements)
             : base(name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

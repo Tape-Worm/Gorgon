@@ -117,7 +117,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             SpriteImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteImportSettings>(SettingsFilename);
 
-            if (settings == null)
+            if (settings is null)
             {
                 settings = new SpriteImportSettings();
             }

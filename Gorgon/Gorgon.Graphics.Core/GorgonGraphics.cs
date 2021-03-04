@@ -498,7 +498,7 @@ namespace Gorgon.Graphics.Core
         {
             CancelEventHandler cancelHandler = ViewportChanging;
 
-            if (cancelHandler == null)
+            if (cancelHandler is null)
             {
                 return true;
             }
@@ -523,7 +523,7 @@ namespace Gorgon.Graphics.Core
 
             CancelEventHandler cancelHandler = RenderTargetChanging;
 
-            if (cancelHandler == null)
+            if (cancelHandler is null)
             {
                 return rtvsUpdated;
             }
@@ -553,7 +553,7 @@ namespace Gorgon.Graphics.Core
 
             CancelEventHandler cancelHandler = DepthStencilChanging;
 
-            if (cancelHandler == null)
+            if (cancelHandler is null)
             {
                 return dsvUpdated;
             }
@@ -1213,7 +1213,7 @@ namespace Gorgon.Graphics.Core
             drawCall.ValidateObject(nameof(drawCall));
 
 #if DEBUG
-            if (drawCall.PipelineState.VertexShader == null)
+            if (drawCall.PipelineState.VertexShader is null)
             {
                 throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_NO_VERTEX_SHADER);
             }
@@ -1241,11 +1241,11 @@ namespace Gorgon.Graphics.Core
             SamplerCache samplerCache = Interlocked.Exchange(ref _samplerCache, null);
 
             // If these are all gone, then we've already disposed.
-            if ((factory == null)
-                && (adapter == null)
-                && (device == null)
-                && (context == null)
-                && (pipeCache == null))
+            if ((factory is null)
+                && (adapter is null)
+                && (device is null)
+                && (context is null)
+                && (pipeCache is null))
             {
                 return;
             }
@@ -1333,7 +1333,7 @@ namespace Gorgon.Graphics.Core
 
             // If we've not specified a feature level, or the feature level exceeds the requested device feature level, then 
             // fall back to the device feature level.
-            if ((featureSet == null) || (videoAdapterInfo.FeatureSet < featureSet.Value))
+            if ((featureSet is null) || (videoAdapterInfo.FeatureSet < featureSet.Value))
             {
                 featureSet = videoAdapterInfo.FeatureSet;
             }

@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
         {
             ref readonly GorgonVideoMode result = ref _invalidMode;
 
-            if (videoModes == null)
+            if (videoModes is null)
             {
                 suggestedMode = result;
                 return;

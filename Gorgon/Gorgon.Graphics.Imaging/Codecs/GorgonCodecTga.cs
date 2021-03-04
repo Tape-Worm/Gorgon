@@ -749,7 +749,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                     else
                     {
                         // Read the current scanline into memory.
-                        if (lineBuffer == null)
+                        if (lineBuffer is null)
                         {
                             lineBuffer = new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
                         }
@@ -963,7 +963,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             long position = 0;
 
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -1012,7 +1012,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             TgaHeader header;
             long position = 0;
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

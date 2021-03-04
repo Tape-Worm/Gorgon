@@ -152,7 +152,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UpdateRecentItem()
         {
-            if (_recentItem == null)
+            if (_recentItem is null)
             {
                 LabelTitle.Text =
                 LabelPath.Text =

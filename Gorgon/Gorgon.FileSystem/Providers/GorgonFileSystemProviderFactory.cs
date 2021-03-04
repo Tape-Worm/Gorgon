@@ -98,12 +98,12 @@ namespace Gorgon.IO.Providers
         /// </exception>
         public GorgonFileSystemProvider CreateProvider(string path, string providerPlugInName)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
 
-            if (providerPlugInName == null)
+            if (providerPlugInName is null)
             {
                 throw new ArgumentNullException(nameof(providerPlugInName));
             }
@@ -153,7 +153,7 @@ namespace Gorgon.IO.Providers
         {
             IGorgonPlugInService plugInService = new GorgonMefPlugInService(_plugInCache);
 
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }

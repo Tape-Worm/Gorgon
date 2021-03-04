@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Fonts
         /// </returns>
         internal override Brush ToGDIBrush()
         {
-            if (Image == null)
+            if (Image is null)
             {
                 return null;
             }
@@ -283,7 +283,7 @@ namespace Gorgon.Graphics.Fonts
         /// <exception cref="ArgumentException">Thrown when the <paramref name="textureImage"/> parameter uses an unsupported format or is not a 2D image.</exception>
         public GorgonGlyphTextureBrush(IGorgonImage textureImage)
         {
-            if (textureImage == null)
+            if (textureImage is null)
             {
                 throw new ArgumentNullException(nameof(textureImage));
             }

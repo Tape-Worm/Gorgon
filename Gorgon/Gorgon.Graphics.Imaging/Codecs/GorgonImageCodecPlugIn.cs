@@ -106,7 +106,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IGorgonImageCodecEncodingOptions CreateEncodingOptions(string codec)
         {
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IGorgonImageCodecDecodingOptions CreateDecodingOptions(string codec)
         {
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -171,7 +171,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IGorgonImageCodec CreateCodec(string codec)
         {
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }

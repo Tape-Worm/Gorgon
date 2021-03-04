@@ -250,7 +250,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonChunkFileWriter"/>
         public void Save(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -319,7 +319,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonChunkFileWriter"/>
         public void Save(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -342,7 +342,7 @@ namespace Gorgon.Graphics.Core
         {
             ShaderBytecode byteCode = Interlocked.Exchange(ref _byteCode, null);
 
-            if (byteCode == null)
+            if (byteCode is null)
             {
                 this.UnregisterDisposable(Graphics);
                 GC.SuppressFinalize(this);

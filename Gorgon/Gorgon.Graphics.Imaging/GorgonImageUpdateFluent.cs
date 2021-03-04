@@ -433,7 +433,7 @@ namespace Gorgon.Graphics.Imaging
         /// </remarks>
         IGorgonImageUpdateFluent IGorgonImageUpdateFluent.Crop(DX.Rectangle cropRect, int? newDepth)
         {
-            if (newDepth == null)
+            if (newDepth is null)
             {
                 newDepth = Depth.Max(1);
             }
@@ -509,7 +509,7 @@ namespace Gorgon.Graphics.Imaging
         /// </remarks>
         IGorgonImageUpdateFluent IGorgonImageUpdateFluent.Expand(int newWidth, int newHeight, int? newDepth, ImageExpandAnchor anchor)
         {
-            if (newDepth == null)
+            if (newDepth is null)
             {
                 newDepth = Depth.Max(1);
             }
@@ -610,7 +610,7 @@ namespace Gorgon.Graphics.Imaging
                 throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_WIDTH_TOO_SMALL, nameof(newWidth));
             }
 
-            if (newDepth == null)
+            if (newDepth is null)
             {
                 newDepth = Depth.Max(1);
             }

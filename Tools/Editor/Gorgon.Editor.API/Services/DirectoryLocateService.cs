@@ -56,7 +56,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="initialDir"/> parameter is <b>null</b>.</exception>
         public DirectoryInfo GetDirectory(DirectoryInfo initialDir, string caption = null, Action<FolderSelectedArgs> onSelected = null, Action<FolderSelectedArgs> onEntered = null)
         {
-            if (initialDir == null)
+            if (initialDir is null)
             {
                 throw new ArgumentNullException(nameof(initialDir));
             }

@@ -236,7 +236,7 @@ namespace Gorgon.IO
         /// </remarks>
         /// <seealso cref="GorgonChunkFileReader.OpenChunk(ulong)"/>
         /// <seealso cref="GorgonChunkFileWriter.OpenChunk(ulong)"/>
-        public T OpenChunk(string chunkName) => chunkName == null
+        public T OpenChunk(string chunkName) => chunkName is null
                 ? throw new ArgumentNullException(nameof(chunkName))
                 : string.IsNullOrEmpty(chunkName) ? throw new ArgumentEmptyException(nameof(chunkName)) : OpenChunk(chunkName.ChunkID());
         #endregion
@@ -253,7 +253,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="Stream.CanSeek"/> property set to <b>false</b>.</exception>
         protected GorgonChunkFile(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

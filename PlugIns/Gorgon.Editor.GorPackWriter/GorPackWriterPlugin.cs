@@ -416,7 +416,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             // Build up our file layout XML document, and return all nodes that represent files (for compression purposes).
             List<(XElement fileNode, FileInfo physicalPath)> fileNodes = BuildFatXml(workspace, fat.Element("FileSystem"), cancelToken);
 
-            if ((fileNodes == null) || (cancelToken.IsCancellationRequested))
+            if ((fileNodes is null) || (cancelToken.IsCancellationRequested))
             {
                 return null;
             }
@@ -453,7 +453,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
                                                         (int)(Compression * 9), // Bzip compression block size is from 0 - 9.
                                                         cancelToken);
 
-                    if ((compressedFile == null) || (cancelToken.IsCancellationRequested))
+                    if ((compressedFile is null) || (cancelToken.IsCancellationRequested))
                     {
                         return null;
                     }
@@ -484,7 +484,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
             CompressJob[] finishedTasks = await Task.WhenAll(jobs);
 
-            if ((finishedTasks.Length == 0) || (finishedTasks.Any(item => item == null)) || (cancelToken.IsCancellationRequested))
+            if ((finishedTasks.Length == 0) || (finishedTasks.Any(item => item is null)) || (cancelToken.IsCancellationRequested))
             {
                 return null;
             }
@@ -588,7 +588,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
                 XDocument fat = await BuildFileSystemLayoutAsync(tempFile, workspace, progressCallback, cancelToken);
 
-                if ((cancelToken.IsCancellationRequested) || (fat == null))
+                if ((cancelToken.IsCancellationRequested) || (fat is null))
                 {
                     return;
                 }

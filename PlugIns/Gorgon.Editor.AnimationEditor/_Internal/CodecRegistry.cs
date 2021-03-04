@@ -116,7 +116,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                     IGorgonAnimationCodec codec = plugin.CreateCodec(desc.Name, _renderer);
 
-                    if (codec == null)
+                    if (codec is null)
                     {
                         _log.Print($"ERROR: The animation codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                         continue;
@@ -133,7 +133,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="plugin">The plug in to remove.</param>
         public void RemoveCodecPlugIn(GorgonAnimationCodecPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -234,7 +234,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                     IGorgonAnimationCodec animationCodec = plugin.CreateCodec(desc.Name, _renderer);
 
-                    if (animationCodec == null)
+                    if (animationCodec is null)
                     {
                         _log.Print($"ERROR: Could not create animation codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                         localErrors.Add(string.Format(Resources.GORANM_ERR_CODEC_LOAD_FAIL, desc.Name));

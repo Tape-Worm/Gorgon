@@ -82,7 +82,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_Layout(object sender, LayoutEventArgs e)
         {
-            if ((_waitForm == null) || (_parent == null) || (!IsActive))
+            if ((_waitForm is null) || (_parent is null) || (!IsActive))
             {
                 return;
             }
@@ -100,7 +100,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_Move(object sender, EventArgs e)
         {
-            if ((_waitForm == null) || (_parent == null) || (!IsActive))
+            if ((_waitForm is null) || (_parent is null) || (!IsActive))
             {
                 return;
             }
@@ -118,7 +118,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_VisibleChanged(object sender, EventArgs e)
         {
-            if ((_waitForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)) || (!IsActive))
+            if ((_waitForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)) || (!IsActive))
             {
                 return;
             }
@@ -141,7 +141,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ParentForm_Layout(object sender, LayoutEventArgs e)
         {
-            if ((_waitForm == null) || (_parentForm == null) || (!_parentForm.TryGetTarget(out Form form)) || (!IsActive))
+            if ((_waitForm is null) || (_parentForm is null) || (!_parentForm.TryGetTarget(out Form form)) || (!IsActive))
             {
                 return;
             }

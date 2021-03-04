@@ -151,7 +151,7 @@ namespace Gorgon.Examples
 			}
 
 			// Create ball array.
-			if (_ballList == null)
+			if (_ballList is null)
 			{
 				_ballList = new Ball[1048576];
 			}
@@ -653,7 +653,7 @@ namespace Gorgon.Examples
 						{
 							IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[_window.Handle];
 
-							if (output == null)
+							if (output is null)
 							{
 								_mainScreen.EnterFullScreen();
 							}

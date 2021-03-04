@@ -118,11 +118,11 @@ namespace Gorgon.IO
             GorgonTexture2D texture = null;
 
             // Locate the texture resource.
-            if (overrideTexture == null)
+            if (overrideTexture is null)
             {
                 texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
-                if (texture == null)
+                if (texture is null)
                 {
                     textureOffset = DX.Vector2.Zero;
                     textureScale = DX.Vector2.One;
@@ -236,7 +236,7 @@ namespace Gorgon.IO
                                                    .Build();
                 }
 
-                if ((indices == null) || (indices.Length == 0))
+                if ((indices is null) || (indices.Length == 0))
                 {
                     var builder = new GorgonPolySpriteBuilder(Renderer);
                     return builder.AddVertices(vertices)
@@ -347,7 +347,7 @@ namespace Gorgon.IO
                     binWriter.Close();
                 }
 
-                if (sprite.TextureSampler == null)
+                if (sprite.TextureSampler is null)
                 {
                     return;
                 }

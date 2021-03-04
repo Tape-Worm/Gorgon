@@ -161,7 +161,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 ISettingsCategory settings = plugin.GetPlugInSettings();
 
-                if (settings == null)
+                if (settings is null)
                 {
                     continue;
                 }
@@ -181,17 +181,17 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
         private void EnumerateFileSystemObjects(IGorgonFileSystem fileSystem, IDirectory parent, IProject project)
         {
-            if (fileSystem == null)
+            if (fileSystem is null)
             {
                 throw new ArgumentNullException(nameof(fileSystem));
             }
 
-            if (parent == null)
+            if (parent is null)
             {
                 throw new ArgumentNullException(nameof(parent));
             }
 
-            if (project == null)
+            if (project is null)
             {
                 throw new ArgumentNullException(nameof(project));
             }
@@ -203,7 +203,7 @@ namespace Gorgon.Editor.ViewModels
 
             IGorgonVirtualDirectory parentVirtDir = fileSystem.GetDirectory(parent.FullPath);
 
-            if (parentVirtDir == null)
+            if (parentVirtDir is null)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, parent.FullPath));
             }
@@ -547,7 +547,7 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectData"/> parameter is <b>null</b>.</exception>
         public async Task<IProjectEditor> CreateProjectViewModelAsync(IProject projectData)
         {
-            if (projectData == null)
+            if (projectData is null)
             {
                 throw new ArgumentNullException(nameof(projectData));
             }

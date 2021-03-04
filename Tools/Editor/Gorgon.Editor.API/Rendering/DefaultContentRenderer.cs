@@ -127,7 +127,7 @@ namespace Gorgon.Editor.Rendering
             {
                 lock (_offsetEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         _offsetEvent = null;
                         return;
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.Rendering
             {
                 lock (_offsetEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -159,7 +159,7 @@ namespace Gorgon.Editor.Rendering
             {
                 lock (_zoomEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         _zoomEvent = null;
                         return;
@@ -172,7 +172,7 @@ namespace Gorgon.Editor.Rendering
             {
                 lock (_zoomEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -333,7 +333,7 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// Property to return the size of the content in camera space.
         /// </summary>
-        public DX.Size2F ContentSize => Camera == null
+        public DX.Size2F ContentSize => Camera is null
                                             ? new DX.Size2F((int)RenderRegion.Width, (int)RenderRegion.Height)
                                             : new DX.Size2F((int)(RenderRegion.Width * _camera.Zoom.X), (int)(RenderRegion.Height * _camera.Zoom.X));
 
@@ -389,7 +389,7 @@ namespace Gorgon.Editor.Rendering
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -525,7 +525,7 @@ namespace Gorgon.Editor.Rendering
                 return;
             }
 
-            if ((_mouseArgs.MouseButtons != MouseButtons.Middle) || (_panDragStart == null))
+            if ((_mouseArgs.MouseButtons != MouseButtons.Middle) || (_panDragStart is null))
             {
                 return;
             }
@@ -644,8 +644,8 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         protected DX.RectangleF ToCamera(DX.RectangleF rect, DX.Size2? targetSize = null)
         {
-            DX.Vector3 topLeft = targetSize == null ? _camera.Project(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0)) : _camera.Project(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0), targetSize.Value);
-            DX.Vector3 bottomRight = targetSize == null ? _camera.Project(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0)) : _camera.Project(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0), targetSize.Value);
+            DX.Vector3 topLeft = targetSize is null ? _camera.Project(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0)) : _camera.Project(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0), targetSize.Value);
+            DX.Vector3 bottomRight = targetSize is null ? _camera.Project(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0)) : _camera.Project(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0), targetSize.Value);
             return new DX.RectangleF
             {
                 Left = topLeft.X,
@@ -666,7 +666,7 @@ namespace Gorgon.Editor.Rendering
         /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
         /// </para>
         /// </remarks>
-        protected DX.Vector2 ToCamera(DX.Vector2 vector, DX.Size2? targetSize = null) => targetSize == null ? (DX.Vector2)_camera.Project((DX.Vector3)vector) : (DX.Vector2)_camera.Project((DX.Vector3)vector, targetSize.Value);
+        protected DX.Vector2 ToCamera(DX.Vector2 vector, DX.Size2? targetSize = null) => targetSize is null ? (DX.Vector2)_camera.Project((DX.Vector3)vector) : (DX.Vector2)_camera.Project((DX.Vector3)vector, targetSize.Value);
 
         /// <summary>
         /// Function to convert a size into camera space from client space.
@@ -681,7 +681,7 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         protected DX.Size2F ToCamera(DX.Size2F size, DX.Size2? targetSize = null)
         {
-            DX.Vector3 result = targetSize == null ? _camera.Project(new DX.Vector3(size.Width, size.Height, 0)) : _camera.Project(new DX.Vector3(size.Width, size.Height, 0), targetSize.Value);
+            DX.Vector3 result = targetSize is null ? _camera.Project(new DX.Vector3(size.Width, size.Height, 0)) : _camera.Project(new DX.Vector3(size.Width, size.Height, 0), targetSize.Value);
             return new DX.Size2F(result.X, result.Y);
         }
 
@@ -698,8 +698,8 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         protected DX.RectangleF ToClient(DX.RectangleF rect, DX.Size2? targetSize = null)
         {
-            DX.Vector3 topLeft = targetSize == null ? _camera.Unproject(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0)) : _camera.Unproject(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0), targetSize.Value);
-            DX.Vector3 bottomRight = targetSize == null ? _camera.Unproject(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0)) : _camera.Unproject(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0), targetSize.Value);
+            DX.Vector3 topLeft = targetSize is null ? _camera.Unproject(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0)) : _camera.Unproject(new DX.Vector3(rect.TopLeft.X, rect.TopLeft.Y, 0), targetSize.Value);
+            DX.Vector3 bottomRight = targetSize is null ? _camera.Unproject(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0)) : _camera.Unproject(new DX.Vector3(rect.BottomRight.X, rect.BottomRight.Y, 0), targetSize.Value);
             return new DX.RectangleF
             {
                 Left = topLeft.X,
@@ -720,7 +720,7 @@ namespace Gorgon.Editor.Rendering
         /// If the <paramref name="targetSize"/> is omitted, then the current render target at slot 0 in <see cref="GorgonGraphics.RenderTargets"/> will be used.
         /// </para>
         /// </remarks>
-        protected DX.Vector2 ToClient(DX.Vector2 vector, DX.Size2? targetSize = null) => targetSize == null ? (DX.Vector2)_camera.Unproject((DX.Vector3)vector) : (DX.Vector2)_camera.Unproject((DX.Vector3)vector, targetSize.Value);
+        protected DX.Vector2 ToClient(DX.Vector2 vector, DX.Size2? targetSize = null) => targetSize is null ? (DX.Vector2)_camera.Unproject((DX.Vector3)vector) : (DX.Vector2)_camera.Unproject((DX.Vector3)vector, targetSize.Value);
 
         /// <summary>
         /// Function to convert a size into client space from camera space.
@@ -735,7 +735,7 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         protected DX.Size2F ToClient(DX.Size2F size, DX.Size2? targetSize = null)
         {
-            DX.Vector3 result = targetSize == null ? _camera.Unproject(new DX.Vector3(size.Width, size.Height, 0)) : _camera.Unproject(new DX.Vector3(size.Width, size.Height, 0), targetSize.Value);
+            DX.Vector3 result = targetSize is null ? _camera.Unproject(new DX.Vector3(size.Width, size.Height, 0)) : _camera.Unproject(new DX.Vector3(size.Width, size.Height, 0), targetSize.Value);
             return new DX.Size2F(result.X, result.Y);
         }
 
@@ -1058,7 +1058,7 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         protected void ForceMoveTo(DX.Vector2 offset, float zoom, bool ignoreBoundaries)
         {
-            if (Camera == null)
+            if (Camera is null)
             {
                 return;
             }
@@ -1249,7 +1249,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="offset">The offset to apply to the view.</param>
         public void SetOffset(DX.Vector2 offset)
         {
-            if (Camera == null)
+            if (Camera is null)
             {
                 return;
             }            
@@ -1264,7 +1264,7 @@ namespace Gorgon.Editor.Rendering
         /// <param name="zoom">The zoom value to apply.</param>
         public void SetZoom(float zoom)
         {
-            if (Camera == null)
+            if (Camera is null)
             {
                 return;
             }
@@ -1296,7 +1296,7 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         public void MoveTo(DX.Vector2 offset, float zoom)
         {
-            if (Camera == null)
+            if (Camera is null)
             {
                 return;
             }
