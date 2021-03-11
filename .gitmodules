@@ -2,3 +2,7 @@
 	path = Dependencies/BCnEncoder.NET
 	url = https://github.com/Tape-Worm/BCnEncoder.NET.git
 	ignore = dirty
+[submodule "Dependencies/Microsoft.Wpf.Interop.DirectX"]
+	path = Dependencies/Microsoft.Wpf.Interop.DirectX
+	url = https://github.com/Tape-Worm/WPFDXInterop.git
+	branch = master

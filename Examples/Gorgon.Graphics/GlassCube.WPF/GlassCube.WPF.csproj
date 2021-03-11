@@ -2,14 +2,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Gorgon.Examples</RootNamespace>
-<<<<<<< HEAD
     <AssemblyName>GlassCube.WPF</AssemblyName>        
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-=======
-    <AssemblyName>GlassCube.WPF</AssemblyName>    
-    <TargetFramework>net48</TargetFramework>
->>>>>>> v3_2
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -53,33 +48,7 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>    
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="ExampleStyles.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="..\GlassCube\Cube.cs" Link="Cube.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Wpf.Interop.DirectX">
-      <HintPath>..\..\..\Dependencies\Microsoft.Wpf.Interop.DirectX\Microsoft.Wpf.Interop.DirectX.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework.Classic" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ExampleStyles.xaml">
@@ -101,9 +70,6 @@
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainWindow.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Wpf\Gorgon.Graphics.Wpf.csproj" />
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
   </ItemGroup>
@@ -121,7 +87,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="MainWindow.xaml" />
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -1,11 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-<<<<<<< HEAD
     <TargetFramework>net5.0-windows</TargetFramework>
-=======
-    <TargetFramework>net48</TargetFramework>
->>>>>>> v3_2
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <UseWPF>true</UseWPF>
     <Version>3.2.0</Version>
@@ -45,6 +41,16 @@
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <None Include="..\..\Dependencies\Microsoft.Wpf.Interop.DirectX\x64\Debug\Ijwhost.dll" Link="Ijwhost.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <None Include="..\..\Dependencies\Microsoft.Wpf.Interop.DirectX\x64\Release\Ijwhost.dll" Link="Ijwhost.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\g.png">
       <Pack>True</Pack>
@@ -66,15 +72,8 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Dependencies\Microsoft.Wpf.Interop.DirectX\src\Microsoft.Wpf.Interop.DirectX\Microsoft.Wpf.Interop.DirectX_winsdk.vcxproj" />
     <ProjectReference Include="..\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Wpf.Interop.DirectX">
-      <HintPath>..\..\Dependencies\Microsoft.Wpf.Interop.DirectX\Microsoft.Wpf.Interop.DirectX.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

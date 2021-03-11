@@ -158,7 +158,6 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
-        // Comment stripped.
         internal static string GBuffer {
             get {
                 return ResourceManager.GetString("GBuffer", resourceCulture);
@@ -587,6 +586,7 @@ namespace Gorgon.Renderers.Properties {
             }
         }
         
+        // Comment stripped.
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.

@@ -1,104 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E1E3F636-D272-462C-AD70-96414B318766}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net48;net5.0-windows</TargetFrameworks>
+    <UseWindowsForms>True</UseWindowsForms>
     <RootNamespace>WinFormsColor</RootNamespace>
     <AssemblyName>WinFormsColor</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <DelaySign>false</DelaySign>
-    <TargetFrameworkProfile />
+    <Description>A windows forms color dialog control with alpha channel support.</Description>
+    <PackageLicenseExpression>MIT License</PackageLicenseExpression>
+    <PackageProjectUrl>https://blog.ilexp.net/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AdamsLair/winforms</RepositoryUrl>
+    <PackageTags>Color Winforms Dialog</PackageTags>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <Company>Adam</Company>
+    <PackageReleaseNotes>Adapted for use by Gorgon.</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Debug\WinFormsColor.xml</DocumentationFile>
+    <DocumentationFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Release\WinFormsColor.xml</DocumentationFile>
+    <WarningLevel>0</WarningLevel>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ColorPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ColorPickerDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorPickerDialog.designer.cs">
-      <DependentUpon>ColorPickerDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ColorShowBox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ColorSlider.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ColorPickerPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ColorPickerPanel.designer.cs">
-      <DependentUpon>ColorPickerPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ExtMethodsSystemDrawingColor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ColorPickerDialog.de.resx">
-      <DependentUpon>ColorPickerDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorPickerDialog.resx">
-      <DependentUpon>ColorPickerDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorPickerPanel.de.resx">
-      <DependentUpon>ColorPickerPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ColorPickerPanel.resx">
-      <DependentUpon>ColorPickerPanel.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

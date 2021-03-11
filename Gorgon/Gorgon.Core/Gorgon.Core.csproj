@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net48;net5.0</TargetFrameworks>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>
@@ -21,23 +21,21 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyVersion>3.2.0.0</AssemblyVersion>
     <FileVersion>3.2.0.0</FileVersion>
+    <LangVersion>9</LangVersion>
+    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\Gorgon.Core.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\Gorgon.Core.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Math\GorgonAABB.cs" />
-    <Compile Remove="Math\GorgonBoundingSphere.cs" />
-    <Compile Remove="Math\GorgonFrustum.cs" />
-    <Compile Remove="Math\GorgonRay.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CenterCLR.XorRandomGenerator">
       <Version>1.1.0</Version>
@@ -89,6 +87,7 @@
       <PackagePath></PackagePath>
     </None>
     <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
+    <None Include="System\Index.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

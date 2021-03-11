@@ -74,11 +74,7 @@
 
         #endregion
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        /// <summary>
-        /// The wait panel embedded in the form.
-        /// </summary>
-        public Gorgon.UI.GorgonWaitMessagePanel Wait;
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+        // The wait panel embedded in the form.
+        internal Gorgon.UI.GorgonWaitMessagePanel Wait;
     }
 }
