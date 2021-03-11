@@ -69,7 +69,7 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // A processor used to parse shader source code for include statements.
-        private static readonly ShaderProcessor _processor = new ShaderProcessor();
+        private static readonly ShaderProcessor _processor = new();
 
         // A list of available shader types.
         private static readonly (Type, ShaderType, string)[] _shaderTypes =
@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Core
 
         // A list of factory objects used to create the actual shader objects.
         private static readonly Dictionary<ShaderType, ObjectActivator<GorgonShader>> _shaderFactory =
-            new Dictionary<ShaderType, ObjectActivator<GorgonShader>>();
+            new();
         #endregion
 
         #region Properties.
@@ -147,12 +147,12 @@ namespace Gorgon.Graphics.Core
         public static T FromStream<T>(GorgonGraphics graphics, Stream stream, int size)
             where T : GorgonShader
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -316,12 +316,12 @@ namespace Gorgon.Graphics.Core
         public static T FromFile<T>(GorgonGraphics graphics, string path)
             where T : GorgonShader
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -331,10 +331,8 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(path));
             }
 
-            using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return FromStream<T>(graphics, stream, (int)stream.Length);
-            }
+            using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return FromStream<T>(graphics, stream, (int)stream.Length);
         }
 
         /// <summary>
@@ -397,17 +395,17 @@ namespace Gorgon.Graphics.Core
                                    string sourceFileName = "(in memory)")
             where T : GorgonShader
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (sourceCode == null)
+            if (sourceCode is null)
             {
                 throw new ArgumentNullException(nameof(sourceCode));
             }
 
-            if (entryPoint == null)
+            if (entryPoint is null)
             {
                 throw new ArgumentNullException(nameof(entryPoint));
             }
@@ -424,7 +422,7 @@ namespace Gorgon.Graphics.Core
 
             (Type Type, ShaderType Shader, string Profile)? shaderType = _shaderTypes.FirstOrDefault(item => item.Item1 == typeof(T));
 
-            if (shaderType == null)
+            if (shaderType is null)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, typeof(T).FullName));
             }
@@ -435,7 +433,7 @@ namespace Gorgon.Graphics.Core
             // Make compatible macros for the shader compiler.
             D3D.ShaderMacro[] actualMacros = null;
 
-            if ((macros != null) && (macros.Count > 0))
+            if ((macros is not null) && (macros.Count > 0))
             {
                 actualMacros = macros.Select(item => item.D3DShaderMacro).ToArray();
             }
@@ -453,7 +451,7 @@ namespace Gorgon.Graphics.Core
                                                                     null,
                                                                     sourceFileName);
 
-                if ((byteCode.HasErrors) || (byteCode.Bytecode == null))
+                if ((byteCode.HasErrors) || (byteCode.Bytecode is null))
                 {
                     throw new GorgonException(GorgonResult.CannotCompile,
                                               string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER,

@@ -53,7 +53,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // The list of menu items associated with the zoom level.
-        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
+        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new();
         // The current zoom level.
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         // The renderer for the content.
@@ -83,14 +83,14 @@ namespace Gorgon.Editor.ImageEditor
                     return;
                 }
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
                 }
 
                 _contentRenderer = value;
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged += ContentRenderer_ZoomScale;
                     _zoomLevel = _contentRenderer.ZoomLevel;
@@ -117,27 +117,18 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateImageTypeMenu(IImageContent dataContext)
         {
-            ToolStripMenuItem currentItem;
-
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ButtonImageType.TextLine1 = ImageType.Unknown.ToString();
                 return;
             }
 
-            switch (dataContext.ImageType)
+            ToolStripMenuItem currentItem = dataContext.ImageType switch
             {
-                case ImageType.ImageCube:
-                    currentItem = ItemCubeMap;
-                    break;
-                case ImageType.Image3D:
-                    currentItem = Item3DImage;
-                    break;
-                default:
-                    currentItem = Item2DImage;
-                    break;
-            }
-
+                ImageType.ImageCube => ItemCubeMap,
+                ImageType.Image3D => Item3DImage,
+                _ => Item2DImage,
+            };
             foreach (ToolStripMenuItem item in MenuImageType.Items.OfType<ToolStripMenuItem>().Where(item => item != currentItem))
             {
                 item.Checked = false;
@@ -223,7 +214,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonGrayScale_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.GrayScaleCommand == null) || (!DataContext.FxContext.GrayScaleCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.GrayScaleCommand is null) || (!DataContext.FxContext.GrayScaleCommand.CanExecute(null)))
             {
                 return;
             }
@@ -237,7 +228,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void ButtonFxGaussBlur_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.ShowBlurCommand == null) || (!DataContext.FxContext.ShowBlurCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.ShowBlurCommand is null) || (!DataContext.FxContext.ShowBlurCommand.CanExecute(null)))
             {
                 return;
             }
@@ -251,7 +242,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxSharpen_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.ShowSharpenCommand == null) || (!DataContext.FxContext.ShowSharpenCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.ShowSharpenCommand is null) || (!DataContext.FxContext.ShowSharpenCommand.CanExecute(null)))
             {
                 return;
             }
@@ -265,7 +256,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxEmboss_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.ShowEmbossCommand == null) || (!DataContext.FxContext.ShowEmbossCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.ShowEmbossCommand is null) || (!DataContext.FxContext.ShowEmbossCommand.CanExecute(null)))
             {
                 return;
             }
@@ -279,7 +270,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxEdgeDetect_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.ShowEdgeDetectCommand == null) || (!DataContext.FxContext.ShowEdgeDetectCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.ShowEdgeDetectCommand is null) || (!DataContext.FxContext.ShowEdgeDetectCommand.CanExecute(null)))
             {
                 return;
             }
@@ -293,7 +284,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxInvert_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.InvertCommand == null) || (!DataContext.FxContext.InvertCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.InvertCommand is null) || (!DataContext.FxContext.InvertCommand.CanExecute(null)))
             {
                 return;
             }
@@ -307,7 +298,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxBurn_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.BurnCommand == null) || (!DataContext.FxContext.BurnCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.BurnCommand is null) || (!DataContext.FxContext.BurnCommand.CanExecute(null)))
             {
                 return;
             }
@@ -321,7 +312,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxOneBit_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.ShowOneBitCommand == null) || (!DataContext.FxContext.ShowOneBitCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.ShowOneBitCommand is null) || (!DataContext.FxContext.ShowOneBitCommand.CanExecute(null)))
             {
                 return;
             }
@@ -335,7 +326,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxDodge_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.DodgeCommand == null) || (!DataContext.FxContext.DodgeCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.DodgeCommand is null) || (!DataContext.FxContext.DodgeCommand.CanExecute(null)))
             {
                 return;
             }
@@ -349,7 +340,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxPosterize_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.ShowPosterizeCommand == null) || (!DataContext.FxContext.ShowPosterizeCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.ShowPosterizeCommand is null) || (!DataContext.FxContext.ShowPosterizeCommand.CanExecute(null)))
             {
                 return;
             }
@@ -363,7 +354,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonGenerateMipMaps_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ShowMipGenerationCommand == null)
+            if ((DataContext?.ShowMipGenerationCommand is null)
                 || (!DataContext.ShowMipGenerationCommand.CanExecute(null)))
             {
                 return;
@@ -377,7 +368,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSetAlpha_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ShowSetAlphaCommand == null)
+            if ((DataContext?.ShowSetAlphaCommand is null)
                 || (!DataContext.ShowSetAlphaCommand.CanExecute(null)))
             {
                 return;
@@ -391,7 +382,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonDimensions_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ShowImageDimensionsCommand == null)
+            if ((DataContext?.ShowImageDimensionsCommand is null)
                 || (!DataContext.ShowImageDimensionsCommand.CanExecute(null)))
             {
                 return;
@@ -405,7 +396,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFx_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ShowFxCommand == null) || (!DataContext.ShowFxCommand.CanExecute(null)))
+            if ((DataContext?.ShowFxCommand is null) || (!DataContext.ShowFxCommand.CanExecute(null)))
             {
                 return;
             }
@@ -451,7 +442,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonImport_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ImportFileCommand == null) || (!DataContext.ImportFileCommand.CanExecute(0)))
+            if ((DataContext?.ImportFileCommand is null) || (!DataContext.ImportFileCommand.CanExecute(0)))
             {
                 return;
             }
@@ -471,7 +462,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The [EventArgs] instance containing the event data.</param>
         private void PixelFormatItem_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -479,7 +470,7 @@ namespace Gorgon.Editor.ImageEditor
             var item = (ToolStripMenuItem)sender;
             var format = (BufferFormat)item.Tag;
 
-            if ((DataContext.ConvertFormatCommand != null) && (DataContext.ConvertFormatCommand.CanExecute(format)))
+            if ((DataContext.ConvertFormatCommand is not null) && (DataContext.ConvertFormatCommand.CanExecute(format)))
             {
                 DataContext.ConvertFormatCommand.Execute(format);
             }
@@ -497,7 +488,7 @@ namespace Gorgon.Editor.ImageEditor
             var item = (ToolStripMenuItem)sender;
             var codec = item.Tag as IGorgonImageCodec;
 
-            if ((DataContext?.ExportImageCommand != null) && (DataContext.ExportImageCommand.CanExecute(codec)))
+            if ((DataContext?.ExportImageCommand is not null) && (DataContext.ExportImageCommand.CanExecute(codec)))
             {
                 DataContext.ExportImageCommand.Execute(codec);
             }
@@ -509,7 +500,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonEditInApp_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.EditInAppCommand == null) || (!DataContext.EditInAppCommand.CanExecute(null)))
+            if ((DataContext?.EditInAppCommand is null) || (!DataContext.EditInAppCommand.CanExecute(null)))
             {
                 return;
             }
@@ -523,7 +514,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonSaveImage_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+            if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
             {
                 return;
             }
@@ -537,7 +528,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonImageRedo_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.RedoCommand == null) || (!DataContext.RedoCommand.CanExecute(null)))
+            if ((DataContext?.RedoCommand is null) || (!DataContext.RedoCommand.CanExecute(null)))
             {
                 return;
             }
@@ -551,7 +542,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonImageUndo_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.UndoCommand == null) || (!DataContext.UndoCommand.CanExecute(null)))
+            if ((DataContext?.UndoCommand is null) || (!DataContext.UndoCommand.CanExecute(null)))
             {
                 return;
             }
@@ -566,7 +557,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void CheckPremultipliedAlpha_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.PremultipliedAlphaCommand == null) || (!DataContext.PremultipliedAlphaCommand.CanExecute(true)))
+            if ((DataContext?.PremultipliedAlphaCommand is null) || (!DataContext.PremultipliedAlphaCommand.CanExecute(true)))
             {
                 return;
             }
@@ -580,7 +571,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void ValidateButtons()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -610,7 +601,7 @@ namespace Gorgon.Editor.ImageEditor
             ButtonFxOneBit.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ShowOneBitCommand?.CanExecute(null) ?? false);
             ButtonFxApply.Enabled = (!ButtonFx.Enabled) && (DataContext.FxContext?.ApplyCommand?.CanExecute(null) ?? false);            
 
-            if (DataContext.ChangeImageTypeCommand == null)
+            if (DataContext.ChangeImageTypeCommand is null)
             {
                 ButtonImageType.Enabled = false;
                 return;
@@ -627,7 +618,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdatePixelFormatMenuSelection(IImageContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -651,7 +642,7 @@ namespace Gorgon.Editor.ImageEditor
 
             MenuImageFormats.Items.Clear();
 
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -729,7 +720,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             ToolStripMenuItem menuItem = MenuCodecs.Items.OfType<ToolStripMenuItem>().FirstOrDefault(item => item.Tag == codec);
 
-            if (menuItem == null)
+            if (menuItem is null)
             {
                 return;
             }
@@ -743,12 +734,12 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
 
-            if (DataContext.Codecs != null)
+            if (DataContext.Codecs is not null)
             {
                 DataContext.Codecs.CollectionChanged -= Codecs_CollectionChanged;
             }
@@ -777,7 +768,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxApply_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.ApplyCommand == null) || (!DataContext.FxContext.ApplyCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.ApplyCommand is null) || (!DataContext.FxContext.ApplyCommand.CanExecute(null)))
             {
                 return;
             }
@@ -790,7 +781,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFxCancel_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FxContext?.CancelCommand == null) || (!DataContext.FxContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.FxContext?.CancelCommand is null) || (!DataContext.FxContext.CancelCommand.CanExecute(null)))
             {
                 return;
             }
@@ -805,7 +796,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             var item = (ToolStripMenuItem)sender;
 
-            if ((item.Tag == null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
+            if ((item.Tag is null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
             {
                 item.Checked = false;
                 return;
@@ -833,7 +824,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             var item = (ToolStripMenuItem)sender;
 
-            if (item.Tag == null)
+            if (item.Tag is null)
             {
                 item.Checked = false;
                 return;
@@ -841,7 +832,7 @@ namespace Gorgon.Editor.ImageEditor
 
             var imageType = (ImageType)item.Tag;
 
-            if ((DataContext?.ChangeImageTypeCommand == null)
+            if ((DataContext?.ChangeImageTypeCommand is null)
                 || (!DataContext.ChangeImageTypeCommand.CanExecute(imageType))
                 || (DataContext.ImageType == imageType))
             {
@@ -859,7 +850,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The data context used to initialize.</param>
         private void InitializeFromDataContext(IImageContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -892,7 +883,7 @@ namespace Gorgon.Editor.ImageEditor
             DataContext = dataContext;
             ValidateButtons();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -901,7 +892,7 @@ namespace Gorgon.Editor.ImageEditor
             DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.FxContext.PropertyChanged += FxContext_PropertyChanged;
 
-            if (DataContext.Codecs != null)
+            if (DataContext.Codecs is not null)
             {
                 DataContext.Codecs.CollectionChanged += Codecs_CollectionChanged;
             }

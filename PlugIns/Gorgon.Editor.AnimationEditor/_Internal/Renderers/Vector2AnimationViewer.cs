@@ -103,7 +103,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Vertex_Changed(object sender, VertexChangedEventArgs e)
         {
-            if (_vertexEditor.SelectedVertex == null)
+            if (_vertexEditor?.SelectedVertex is null)
             {
                 return;
             }
@@ -225,7 +225,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             finally
             {
-                if (vertices != null)
+                if (vertices is not null)
                 {
                     ArrayPool<Vector2>.Shared.Return(vertices);
                 }
@@ -365,7 +365,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers can override this method to handle a mouse down event in their own content view.</remarks>
         protected override void OnMouseDown(MouseArgs args)
         {
-            if (DataContext.KeyEditor?.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor?.CurrentEditor?.Track is null)
             {
                 base.OnMouseDown(args);
                 return;
@@ -396,7 +396,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers can override this method to handle a mouse move event in their own content view.</remarks>
         protected override void OnMouseMove(MouseArgs args)
         {
-            if (DataContext.KeyEditor?.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor?.CurrentEditor?.Track is null)
             {
                 base.OnMouseMove(args);
                 return;
@@ -427,7 +427,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers can override this method to handle a preview key down event in their own content view.</remarks>
         protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs args)
         {
-            if (DataContext.KeyEditor?.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor?.CurrentEditor?.Track is null)
             {
                 base.OnPreviewKeyDown(args);
                 return;
@@ -452,7 +452,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers can override this method to handle a mouse up event in their own content view.</remarks>
         protected override void OnMouseUp(MouseArgs args)
         {
-            if (DataContext.KeyEditor?.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor?.CurrentEditor?.Track is null)
             {
                 base.OnMouseUp(args);
                 return;
@@ -505,7 +505,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to draw any gizmos for UI components.</summary>
         protected override void DrawGizmos()
         {
-            if (DataContext.KeyEditor.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor.CurrentEditor?.Track is null)
             {
                 return;
             }
@@ -545,7 +545,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to draw the animation.</summary>
         protected override void DrawAnimation()
         {
-            if (DataContext.KeyEditor.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor.CurrentEditor?.Track is null)
             {
                 return;
             }
@@ -605,7 +605,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (Sprite == null)
+            if (Sprite is null)
             {
                 return;
             }

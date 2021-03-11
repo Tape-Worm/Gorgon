@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected override GorgonDrawIndexCall OnCreate(IGorgonAllocator<GorgonDrawIndexCall> allocator) => allocator == null ? new GorgonDrawIndexCall() : allocator.Allocate();
+        protected override GorgonDrawIndexCall OnCreate(IGorgonAllocator<GorgonDrawIndexCall> allocator) => allocator is null ? new GorgonDrawIndexCall() : allocator.Allocate();
 
         /// <summary>
         /// Function to reset the properties of the draw call to the draw call passed in.
@@ -126,7 +126,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(indexStart), Resources.GORGFX_ERR_INDEX_TOO_SMALL);
             }
 
-            if ((indexCount != null) && (indexCount < 1))
+            if (indexCount is not null and < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexCount), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
             }

@@ -258,7 +258,7 @@ namespace GorgonLibrary.IO
         {
             ValidateAccess(false);
 
-            if (data == null)
+            if (data is null)
             {
                 throw new ArgumentNullException(nameof(data));
             }
@@ -291,7 +291,7 @@ namespace GorgonLibrary.IO
         {
             ValidateAccess(false);
 
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -327,7 +327,7 @@ namespace GorgonLibrary.IO
         public void ReadRange<T>(T[] value)
             where T : unmanaged
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }

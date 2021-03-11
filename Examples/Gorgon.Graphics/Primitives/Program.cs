@@ -340,8 +340,7 @@ namespace Gorgon.Examples
         /// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private static void Mouse_Down(object sender, MouseEventArgs args)
         {
-            if ((args.Button != MouseButtons.Right)
-                || (_mouse != null))
+            if ((args.Button is not MouseButtons.Right) || (_mouse is not null))
             {
                 return;
             }
@@ -378,7 +377,7 @@ namespace Gorgon.Examples
         private static void Mouse_Up(object sender, GI.GorgonMouseEventArgs args)
         {
             if (((args.Buttons & GI.MouseButtons.Right) != GI.MouseButtons.Right)
-                || (_mouse == null))
+                || (_mouse is null))
             {
                 return;
             }
@@ -767,6 +766,7 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -788,7 +788,7 @@ namespace Gorgon.Examples
 
                 _input?.Dispose();
 
-                if (_renderer != null)
+                if (_renderer is not null)
                 {
                     foreach (Mesh mesh in _renderer.Meshes)
                     {

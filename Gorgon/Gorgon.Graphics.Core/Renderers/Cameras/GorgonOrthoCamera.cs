@@ -52,7 +52,7 @@ namespace Gorgon.Renderers.Cameras
         // The translation matrix.
         private Matrix4x4 _translate = Matrix4x4.Identity;
         // Scale.
-        private Vector2 _zoom = new Vector2(1.0f);
+        private Vector2 _zoom = new(1.0f);
         // Target position.
         private Vector2 _anchor = Vector2.Zero;
         // Angle of rotation on the Z axis.
@@ -124,7 +124,7 @@ namespace Gorgon.Renderers.Cameras
         /// This represents the boundaries of viewable space for the camera using its coordinate system. The upper left of the region corresponds with the upper left of the active render target at minimum 
         /// Z depth, and the lower right of the region corresponds with the lower right of the active render target at minimum Z depth.
         /// </remarks>
-        public override DX.RectangleF ViewableRegion => new DX.RectangleF(-ViewDimensions.Width * _anchor.X, -ViewDimensions.Height * _anchor.Y, ViewDimensions.Width, ViewDimensions.Height);
+        public override DX.RectangleF ViewableRegion => new(-ViewDimensions.Width * _anchor.X, -ViewDimensions.Height * _anchor.Y, ViewDimensions.Width, ViewDimensions.Height);
         #endregion
 
         #region Methods.

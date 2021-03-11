@@ -144,9 +144,9 @@ namespace Gorgon.Renderers
         // The last light count.
         private int _lastLightCount;
         // The macro to pass in when using array indices instead of separate textures.
-        private readonly GorgonShaderMacro _arrayMacro = new GorgonShaderMacro("USE_ARRAY");
+        private readonly GorgonShaderMacro _arrayMacro = new("USE_ARRAY");
         // The data to pass to the effect.
-        private GlobalEffectData _effectData = new GlobalEffectData
+        private GlobalEffectData _effectData = new()
         {
             AmbientColor = GorgonColor.Black
         };
@@ -307,7 +307,7 @@ namespace Gorgon.Renderers
                 {
                     GorgonLightCommon light = Lights[i];
 
-                    if (light == null)
+                    if (light is null)
                     {
                         continue;
                     }
@@ -390,7 +390,7 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if (_vertexLitShaderState == null)
+            if (_vertexLitShaderState is null)
             {
                 _vertexLitShaderState = builders.VertexShaderBuilder.Shader(_rotateNormals ? _vertexLitTransformShader : _vertexLitShader)
                                                                     .Build(VertexShaderAllocator);
@@ -402,7 +402,7 @@ namespace Gorgon.Renderers
                 BuildPixelShaderPermutations();
             }
 
-            if ((statesChanged) || (_pixelLitShaderState == null))
+            if ((statesChanged) || (_pixelLitShaderState is null))
             {
                 builders.PixelShaderBuilder.Clear()                                           
                                            .ConstantBuffer(_lightBuffer, 1)
@@ -431,7 +431,7 @@ namespace Gorgon.Renderers
                 _lightingState = null;
             }
 
-            if (_lightingState == null)
+            if (_lightingState is null)
             {
                 _lightingState = builders.BatchBuilder
                                          .PixelShaderState(_pixelLitShaderState)
@@ -475,7 +475,7 @@ namespace Gorgon.Renderers
 
             // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
             // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.
-            if (camera != null)
+            if (camera is not null)
             {
                 cameraPos = new Vector4(camera.Position, 0);
             }

@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// An empty UAV binding.
         /// </summary>
-        public static readonly GorgonReadWriteViewBinding Empty = new GorgonReadWriteViewBinding(null);
+        public static readonly GorgonReadWriteViewBinding Empty = new(null);
 
         /// <summary>
         /// An initial count for a <see cref="GorgonStructuredReadWriteView"/>.
@@ -78,7 +78,7 @@ namespace Gorgon.Graphics.Core
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
-        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_UAV_BINDING, InitialCount, (ReadWriteView == null ? "(NULL)" : ReadWriteView.Resource.Name));
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_UAV_BINDING, InitialCount, (ReadWriteView is null ? "(NULL)" : ReadWriteView.Resource.Name));
 
         /// <summary>
         /// Returns a hash code for this instance.

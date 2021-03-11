@@ -183,7 +183,7 @@ namespace Gorgon.Editor.Views
         /// Property to return whether a node is editing or not.
         /// </summary>
         [Browsable(false)]
-        public bool IsEditing => _renameNode != null;
+        public bool IsEditing => _renameNode is not null;
         #endregion
 
         #region Methods.
@@ -218,14 +218,14 @@ namespace Gorgon.Editor.Views
         /// <param name="node">The node being renamed.</param>
         private void ShowRenameBox(TreeNode node)
         {
-            if (node == null)
+            if (node is null)
             {
                 return;
             }
 
             _renameNode = node;
 
-            if (_renameBox == null)
+            if (_renameBox is null)
             {
                 _renameBox = new TextBox
                 {
@@ -259,14 +259,14 @@ namespace Gorgon.Editor.Views
         /// <param name="cancel"><b>true</b> to cancel the renaming operation, <b>false</b> to continue it.</param>
         private void HideRenameBox(bool cancel)
         {
-            if ((_renameBox == null) || (!_renameBox.Visible))
+            if ((_renameBox is null) || (!_renameBox.Visible))
             {
                 return;
             }
 
             TreeNode node = Interlocked.Exchange(ref _renameNode, null);
 
-            if (node == null)
+            if (node is null)
             {
                 return;
             }
@@ -328,7 +328,7 @@ namespace Gorgon.Editor.Views
         {
             if (disposing)
             {
-                if (_renameBox != null)
+                if (_renameBox is not null)
                 {
                     _renameBox.KeyDown -= RenameBox_KeyDown;
                     _renameBox.LostFocus -= RenameBox_LostFocus;
@@ -357,10 +357,10 @@ namespace Gorgon.Editor.Views
         {
             if ((!(_renameBox?.Visible ?? false)) || (!_renameBox.Focused))
             {
-                if ((keyData == Keys.F2) && (SelectedNode != null))
+                if ((keyData == Keys.F2) && (SelectedNode is not null))
                 {
                     TreeNode node = SelectedNode;
-                    var args = new NodeLabelEditEventArgs(node);                    
+                    var args = new NodeLabelEditEventArgs(node);
                     OnBeforeLabelEdit(args);
 
                     if (args.CancelEdit)
@@ -392,7 +392,7 @@ namespace Gorgon.Editor.Views
             TreeViewCancelEventArgs args = null;
             TreeViewHitTestInfo hit = HitTest(e.Location);
 
-            if ((SelectedNode != null) && (hit.Node == null))
+            if ((SelectedNode is not null) && (hit.Node is null))
             {
                 args = new TreeViewCancelEventArgs(null, false, TreeViewAction.ByMouse);
                 OnBeforeSelect(args);
@@ -406,7 +406,7 @@ namespace Gorgon.Editor.Views
 
             SelectedNode = hit.Node;
 
-            if (args != null)
+            if (args is not null)
             {
                 OnAfterSelect(new TreeViewEventArgs(null, TreeViewAction.ByMouse));
             }
@@ -442,7 +442,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if (e.Node == null)
+            if (e.Node is null)
             {
                 e.DrawDefault = true;
                 return;
@@ -452,7 +452,7 @@ namespace Gorgon.Editor.Views
 
             foreColor = (e.Node is DirectoryTreeNode dirNode) ? dirNode.ForeColor : e.Node.ForeColor;
 
-            if ((ImageList != null) && (ImageList.Images.Count > 0) 
+            if ((ImageList is not null) && (ImageList.Images.Count > 0) 
                 && ((ImageIndex > -1) || (e.Node.ImageIndex > -1)))
             {
                 int index = e.Node.ImageIndex > -1 ? e.Node.ImageIndex : ImageIndex;
@@ -482,29 +482,23 @@ namespace Gorgon.Editor.Views
 
                 if (Focused)
                 {
-                    using (var brush = new SolidBrush(combined))
-                    {
-                        e.Graphics.FillRectangle(brush, e.Bounds);
-                    }
+                    using var brush = new SolidBrush(combined);
+                    e.Graphics.FillRectangle(brush, e.Bounds);
                 }
                 else
                 {
-                    using (var pen = new Pen(SelectedNodeBackColor))
+                    using var pen = new Pen(SelectedNodeBackColor);
+                    var r = new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Width - 1, e.Bounds.Height);
+
+                    if (e.Node.BackColor != Color.Empty)
                     {
-                        var r = new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Width - 1, e.Bounds.Height);
-
-                        if (e.Node.BackColor != Color.Empty)
-                        {
-                            using (var brush = new SolidBrush(combined))
-                            {
-                                e.Graphics.FillRectangle(brush, r);
-                            }
-                        }
-
-                        pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
-
-                        e.Graphics.DrawRectangle(pen, r);
+                        using var brush = new SolidBrush(combined);
+                        e.Graphics.FillRectangle(brush, r);
                     }
+
+                    pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+
+                    e.Graphics.DrawRectangle(pen, r);
                 }
 
                 cr = (SelectedNodeForeColor.R / 255.0f);
@@ -522,10 +516,8 @@ namespace Gorgon.Editor.Views
             }
             else
             {
-                using (var brush = new SolidBrush(e.Node.BackColor))
-                {
-                    e.Graphics.FillRectangle(brush, e.Bounds);
-                }
+                using var brush = new SolidBrush(e.Node.BackColor);
+                e.Graphics.FillRectangle(brush, e.Bounds);
             }                       
 
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -550,7 +542,7 @@ namespace Gorgon.Editor.Views
 
             position.X += 19;
 
-            if (nodeIcon != null)
+            if (nodeIcon is not null)
             {
                 e.Graphics.DrawImage(nodeIcon,
                                      new Rectangle(position.X, position.Y + (int)(heightMid - nodeIcon.Size.Height * 0.5f), nodeIcon.Size.Width, nodeIcon.Size.Height),
@@ -578,7 +570,7 @@ namespace Gorgon.Editor.Views
         {
             TreeNode node = SelectedNode;
 
-            if ((node == null) || (IsEditing))
+            if ((node is null) || (IsEditing))
             {
                 return;
             }

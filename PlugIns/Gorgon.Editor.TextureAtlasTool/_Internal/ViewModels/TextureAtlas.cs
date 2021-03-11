@@ -190,7 +190,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 				OnPropertyChanging();
 
-				if (_atlas?.Textures != null)
+				if (_atlas?.Textures is not null)
 				{
 					foreach (GorgonTexture2DView texture in _atlas.Textures)
 					{
@@ -400,7 +400,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 			finally
 			{
 				// We no longer need the textures.
-				if (sprites != null)
+				if (sprites is not null)
 				{
 					foreach (GorgonTexture2DView texture in sprites.Values.Select(item => item.Texture))
 					{
@@ -432,7 +432,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions = _atlasService.GetSpriteRegions(_sprites.Values);
 
-			if ((regions == null) || (regions.Count == 0))
+			if ((regions is null) || (regions.Count == 0))
 			{
 				HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_NO_ROOM);
 				return null;
@@ -440,7 +440,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			atlas = _atlasService.GenerateAtlas(regions, BufferFormat.R8G8B8A8_UNorm);
 
-			if ((atlas == null) || (atlas.Textures == null) || (atlas.Sprites == null) || (atlas.Textures.Count == 0))
+			if ((atlas is null) || (atlas.Textures is null) || (atlas.Sprites is null) || (atlas.Textures.Count == 0))
 			{
 				HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_GEN_ATLAS);
 				return null;
@@ -460,7 +460,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
 			void UnloadAtlasTextures()
 			{
-				if (atlas == null)
+				if (atlas is null)
 				{
 					return;
 				}
@@ -478,13 +478,13 @@ namespace Gorgon.Editor.TextureAtlasTool
 				Debug.Assert(_sprites.Count != 0, "No sprites were returned.");
 
 				// If any of the sprites returned are not linked to a texture, give the user a chance to fix the problem.
-				if (_sprites.Values.All(item => item.Texture == null))
+				if (_sprites.Values.All(item => item.Texture is null))
 				{
 					HostServices.MessageDisplay.ShowError(Resources.GORTAG_ERR_NO_TEXTURES);
 					return;
 				}
 
-				if (_sprites.Values.Any(item => item.Texture == null))
+				if (_sprites.Values.Any(item => item.Texture is null))
 				{
 					HostServices.BusyService.SetIdle();
 					if (HostServices.MessageDisplay.ShowConfirmation(Resources.GORTAG_CONFIRM_SOME_NO_TEXTURE) == MessageResponse.No)
@@ -494,7 +494,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 					HostServices.BusyService.SetBusy();
 				}
 
-				GorgonTexture2DView texture = _sprites.Values.First(item => item.Texture != null).Texture;
+				GorgonTexture2DView texture = _sprites.Values.First(item => item.Texture is not null).Texture;
 				if (_sprites.Values.All(item => item.Texture == texture))
 				{
 					HostServices.MessageDisplay.ShowInfo(Resources.GORTAG_INF_ALREADY_ATLASED);
@@ -507,7 +507,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 			}
 			catch (Exception ex)
 			{
-				if ((atlas?.Textures != null) && (Atlas != atlas))
+				if ((atlas?.Textures is not null) && (Atlas != atlas))
 				{
 					UnloadAtlasTextures();
 				}
@@ -517,7 +517,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 			finally
 			{
 				// We no longer need the textures.
-				if (_sprites != null)
+				if (_sprites is not null)
 				{
 					foreach (GorgonTexture2DView texture in _sprites.Values.Select(item => item.Texture))
 					{
@@ -535,7 +535,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		/// <returns><b>true</b> if possible, <b>false</b> if not.</returns>
 		private bool CanNextPreview()
 		{
-			if ((Atlas?.Textures == null) || (Atlas.Textures.Count == 0))
+			if ((Atlas?.Textures is null) || (Atlas.Textures.Count == 0))
 			{
 				return false;
 			}
@@ -574,7 +574,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		/// Function to determine we can move to the next preview image.
 		/// </summary>
 		/// <returns><b>true</b> if possible, <b>false</b> if not.</returns>
-		private bool CanPrevPreview() => (Atlas?.Textures != null) && (Atlas.Textures.Count != 0) && ((PreviewArrayIndex - 1 >= 0) || (PreviewTextureIndex - 1 >= 0));
+		private bool CanPrevPreview() => (Atlas?.Textures is not null) && (Atlas.Textures.Count != 0) && ((PreviewArrayIndex - 1 >= 0) || (PreviewTextureIndex - 1 >= 0));
 
 		/// <summary>
 		/// Function to move to the next index in the preview.
@@ -604,7 +604,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		/// </summary>
 		/// <param name="args">The arguments to pass to the command.</param>
 		/// <returns><b>true</b> if the data can be committed, <b>false</b> if not.</returns>
-		private bool CanCommitAtlas(CancelEventArgs args) => (Atlas?.Textures != null) && (Atlas.Textures.Count > 0) && (_sprites.Count > 0);
+		private bool CanCommitAtlas(CancelEventArgs args) => (Atlas?.Textures is not null) && (Atlas.Textures.Count > 0) && (_sprites.Count > 0);
 
 		/// <summary>
 		/// Function to commit the atlas data back to the file system.
@@ -617,7 +617,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 			// Function to unload the textures from the atlas.
 			void UnloadTextures()
 			{
-				if ((atlas == null) || (atlas == Atlas))
+				if ((atlas is null) || (atlas == Atlas))
 				{
 					return;
 				}
@@ -692,7 +692,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		{
 			base.OnLoad();
 
-			if (SpriteFiles != null)
+			if (SpriteFiles is not null)
 			{
 				SpriteFiles.ConfirmLoadCommand = new EditorCommand<object>(DoLoadSprites, CanLoadSprites);
 			}
@@ -701,7 +701,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		/// <summary>Function called when the associated view is unloaded.</summary>
 		public override void OnUnload()
 		{
-			if (SpriteFiles != null)
+			if (SpriteFiles is not null)
 			{
 				SpriteFiles.ConfirmLoadCommand = null;
 			}

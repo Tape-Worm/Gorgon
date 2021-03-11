@@ -51,7 +51,7 @@ namespace Gorgon.Renderers
         #region Variables.
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
-        internal PolySpriteRenderable Renderable = new PolySpriteRenderable
+        internal PolySpriteRenderable Renderable = new()
         {
             WorldMatrix = Matrix4x4.Identity,
             TextureTransform = new Vector4(0, 0, 1, 1)
@@ -149,7 +149,7 @@ namespace Gorgon.Renderers
         /// </summary>
         public Vector2 TextureOffset
         {
-            get => new Vector2(Renderable.TextureTransform.X, Renderable.TextureTransform.Y);
+            get => new(Renderable.TextureTransform.X, Renderable.TextureTransform.Y);
             set
             {
                 if ((Renderable.TextureTransform.X == value.X)
@@ -168,7 +168,7 @@ namespace Gorgon.Renderers
         /// </summary>
         public Vector2 TextureScale
         {
-            get => new Vector2(Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
+            get => new(Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
             set
             {
                 if ((Renderable.TextureTransform.Z == value.X)
@@ -229,7 +229,7 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public Vector2 Position
         {
-            get => new Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
+            get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
@@ -382,7 +382,7 @@ namespace Gorgon.Renderers
             set
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (value == null)
+                if (value is null)
                 {
                     if (Renderable.AlphaTestData.IsEnabled == 0)
                     {
@@ -607,17 +607,17 @@ namespace Gorgon.Renderers
             float maxX = float.MinValue;
             float maxY = float.MinValue;
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (vertices == null)
+            if (vertices is null)
             {
                 throw new ArgumentNullException(nameof(vertices));
             }
 
-            if (indices == null)
+            if (indices is null)
             {
                 throw new ArgumentNullException(nameof(indices));
             }

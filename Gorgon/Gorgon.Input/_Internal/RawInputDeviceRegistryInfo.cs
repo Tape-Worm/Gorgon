@@ -52,10 +52,10 @@ namespace Gorgon.Input
 
             string[] regValue = deviceName.Split('#');
 
-            regValue[0] = regValue[0].Substring(4);
+            regValue[0] = regValue[0][4..];
 
             // Don't add RDP devices.
-            if ((log != null) &&
+            if ((log is not null) &&
                 (regValue.Length > 0) &&
                 (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
             {
@@ -63,18 +63,16 @@ namespace Gorgon.Input
                 return string.Empty;
             }
 
-            using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
-                                                                            false))
+            using RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
+                                                                            false);
+            if (deviceKey?.GetValue("DeviceDesc") is null)
             {
-                if (deviceKey?.GetValue("DeviceDesc") == null)
-                {
-                    return string.Empty;
-                }
-
-                regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
-
-                return regValue[regValue.Length - 1];
+                return string.Empty;
             }
+
+            regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
+
+            return regValue[^1];
         }
 
         /// <summary>
@@ -92,10 +90,10 @@ namespace Gorgon.Input
 
             string[] regValue = deviceName.Split('#');
 
-            regValue[0] = regValue[0].Substring(4);
+            regValue[0] = regValue[0][4..];
 
             // Don't add RDP devices.
-            if ((log != null) &&
+            if ((log is not null) &&
                 (regValue.Length > 0) &&
                 (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
             {
@@ -103,37 +101,33 @@ namespace Gorgon.Input
                 return string.Empty;
             }
 
-            using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
-                                                                            false))
+            using RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
+                                                                            false);
+            if (deviceKey?.GetValue("DeviceDesc") is null)
             {
-                if (deviceKey?.GetValue("DeviceDesc") == null)
-                {
-                    return string.Empty;
-                }
-
-                if (deviceKey.GetValue("Class") != null)
-                {
-                    return deviceKey.GetValue("Class").ToString();
-                }
-
-                // Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
-                if (deviceKey.GetValue("ClassGUID") == null)
-                {
-                    return string.Empty;
-                }
-
-                string classGUID = deviceKey.GetValue("ClassGUID").ToString();
-
-                if (string.IsNullOrWhiteSpace(classGUID))
-                {
-                    return string.Empty;
-                }
-
-                using (RegistryKey classKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Control\Class\{classGUID}"))
-                {
-                    return classKey?.GetValue("Class") == null ? string.Empty : classKey.GetValue("Class").ToString();
-                }
+                return string.Empty;
             }
+
+            if (deviceKey.GetValue("Class") is not null)
+            {
+                return deviceKey.GetValue("Class").ToString();
+            }
+
+            // Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
+            if (deviceKey.GetValue("ClassGUID") is null)
+            {
+                return string.Empty;
+            }
+
+            string classGUID = deviceKey.GetValue("ClassGUID").ToString();
+
+            if (string.IsNullOrWhiteSpace(classGUID))
+            {
+                return string.Empty;
+            }
+
+            using RegistryKey classKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Control\Class\{classGUID}");
+            return classKey?.GetValue("Class") is null ? string.Empty : classKey.GetValue("Class").ToString();
         }
     }
 }

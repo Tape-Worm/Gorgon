@@ -161,7 +161,7 @@ namespace Gorgon.PlugIns
         // The application log file.
         private readonly IGorgonLog _log;
         // List of previously loaded plugins.
-        private readonly ConcurrentDictionary<string, Lazy<GorgonPlugIn, IDictionary<string, object>>> _loadedPlugIns = new ConcurrentDictionary<string, Lazy<GorgonPlugIn, IDictionary<string, object>>>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, Lazy<GorgonPlugIn, IDictionary<string, object>>> _loadedPlugIns = new(StringComparer.OrdinalIgnoreCase);
         // Flag to indicate whether or not the plugins have been scanned.
         private int _scanned;
         #endregion
@@ -180,7 +180,7 @@ namespace Gorgon.PlugIns
         /// <param name="plugin">The plugin to remove.</param>
         private void DisposePlugIn(GorgonPlugIn plugin)
         {
-            if (!(plugin is IDisposable disposable))
+            if (plugin is not IDisposable disposable)
             {
                 return;
             }
@@ -199,7 +199,7 @@ namespace Gorgon.PlugIns
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
         public T GetPlugIn<T>(string pluginName) where T : GorgonPlugIn
         {
-            if (pluginName == null)
+            if (pluginName is null)
             {
                 throw new ArgumentNullException(nameof(pluginName));
             }
@@ -239,7 +239,7 @@ namespace Gorgon.PlugIns
                 ScanPlugIns();
             }
 
-            return assemblyName == null
+            return assemblyName is null
                 ? _loadedPlugIns.Keys.ToArray()
                 : _loadedPlugIns.Where(item =>
                                         {
@@ -247,7 +247,7 @@ namespace Gorgon.PlugIns
 
                                             var name = item.Value.Metadata["Assembly"] as AssemblyName;
 
-                                            Debug.Assert(name != null, "Assembly name is null.");
+                                            Debug.Assert(name is not null, "Assembly name is null.");
 
                                             return AssemblyName.ReferenceMatchesDefinition(name, assemblyName);
                                         })
@@ -273,7 +273,7 @@ namespace Gorgon.PlugIns
                 ScanPlugIns();
             }
 
-            return assemblyName == null
+            return assemblyName is null
                 ? _loadedPlugIns.Values.Select(item => item.Value).OfType<T>().ToArray()
                 : _loadedPlugIns.Where(item =>
                                         {
@@ -281,7 +281,7 @@ namespace Gorgon.PlugIns
 
                                             var name = item.Value.Metadata["Assembly"] as AssemblyName;
 
-                                            Debug.Assert(name != null, "Assembly name is null.");
+                                            Debug.Assert(name is not null, "Assembly name is null.");
 
                                             return AssemblyName.ReferenceMatchesDefinition(name, assemblyName);
                                         })
@@ -371,7 +371,7 @@ namespace Gorgon.PlugIns
         /// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
         public bool Unload(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

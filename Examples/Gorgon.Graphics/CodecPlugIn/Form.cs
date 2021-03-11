@@ -119,7 +119,7 @@ namespace Graphics.Examples
             // Find the plugin.
             GorgonImageCodecPlugIn plugIn = pluginService.GetPlugIn<GorgonImageCodecPlugIn>(pluginName);
 
-            if ((plugIn == null) || (plugIn.Codecs.Count == 0))
+            if ((plugIn is null) || (plugIn.Codecs.Count == 0))
             {
                 return false;
             }
@@ -127,7 +127,7 @@ namespace Graphics.Examples
             // Normally you would enumerate the plug ins, but in this case we know there's only one.
             _customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
 
-            return _customCodec != null;
+            return _customCodec is not null;
         }
 
         /// <summary>

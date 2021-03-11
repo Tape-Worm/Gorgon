@@ -218,10 +218,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCnEncoder", "Dependencies\BCnEncoder.NET\BCnEnc.Net\BCnEncoder.csproj", "{428E3CBC-348D-4DE9-8CF3-728445E986BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Graphics.Wpf", "Gorgon\Gorgon.Graphics.Wpf\Gorgon.Graphics.Wpf.csproj", "{27DCCBD4-6C5A-4E35-81BD-C4254D430322}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlassCube.WPF", "Examples\Gorgon.Graphics\GlassCube.WPF\GlassCube.WPF.csproj", "{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -536,14 +532,6 @@ Global
 		{428E3CBC-348D-4DE9-8CF3-728445E986BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{428E3CBC-348D-4DE9-8CF3-728445E986BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{428E3CBC-348D-4DE9-8CF3-728445E986BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{27DCCBD4-6C5A-4E35-81BD-C4254D430322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{27DCCBD4-6C5A-4E35-81BD-C4254D430322}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{27DCCBD4-6C5A-4E35-81BD-C4254D430322}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{27DCCBD4-6C5A-4E35-81BD-C4254D430322}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -622,7 +610,6 @@ Global
 		{0352D073-8FB9-42D0-9A41-B49B5611352E} = {838F5E4C-79E1-4D2E-9554-3345214D2426}
 		{3DA6AAE8-D596-455F-B4A5-0DCF7223E921} = {838F5E4C-79E1-4D2E-9554-3345214D2426}
 		{428E3CBC-348D-4DE9-8CF3-728445E986BB} = {5A7D31B0-3DCD-46AB-8980-98E5985E44F2}
-		{A1AE17DE-FAEB-47EA-AAD5-DD08F3678CA1} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}

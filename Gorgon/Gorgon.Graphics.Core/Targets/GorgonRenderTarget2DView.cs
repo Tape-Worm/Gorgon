@@ -469,7 +469,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public override void Dispose()
 		{
-			if (OwnerFactory != null)
+			if (OwnerFactory is not null)
 			{
 				OwnerFactory.Return(this);
 				return;
@@ -502,12 +502,12 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonTexture2D"/>
 		public static GorgonRenderTarget2DView CreateRenderTarget(GorgonGraphics graphics, IGorgonTexture2DInfo info, int arrayIndex = 0, int? arrayCount = null)
 		{
-			if (graphics == null)
+			if (graphics is null)
 			{
 				throw new ArgumentNullException(nameof(graphics));
 			}
 
-			if (info == null)
+			if (info is null)
 			{
 				throw new ArgumentNullException(nameof(info));
 			}
@@ -561,7 +561,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
 		public static GorgonRenderTarget2DView CreateInteropRenderTarget(GorgonGraphics graphics, IntPtr surface, string name)
 		{
-			if (graphics == null)
+			if (graphics is null)
 			{
 				throw new ArgumentNullException(nameof(graphics));
 			}

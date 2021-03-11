@@ -297,21 +297,15 @@ namespace Gorgon.Graphics.Imaging
                 }
             }
 
-            switch (format)
+            return format switch
             {
-                case BufferFormat.R8G8B8A8_UNorm_SRgb:
-                    return PixelFormat.Format32bppRGBA;
-                case BufferFormat.D32_Float:
-                    return PixelFormat.Format32bppGrayFloat;
-                case BufferFormat.D16_UNorm:
-                    return PixelFormat.Format16bppGray;
-                case BufferFormat.B8G8R8A8_UNorm_SRgb:
-                    return PixelFormat.Format32bppBGRA;
-                case BufferFormat.B8G8R8X8_UNorm_SRgb:
-                    return PixelFormat.Format32bppBGR;
-            }
-
-            return Guid.Empty;
+                BufferFormat.R8G8B8A8_UNorm_SRgb => PixelFormat.Format32bppRGBA,
+                BufferFormat.D32_Float => PixelFormat.Format32bppGrayFloat,
+                BufferFormat.D16_UNorm => PixelFormat.Format16bppGray,
+                BufferFormat.B8G8R8A8_UNorm_SRgb => PixelFormat.Format32bppBGRA,
+                BufferFormat.B8G8R8X8_UNorm_SRgb => PixelFormat.Format32bppBGR,
+                _ => Guid.Empty,
+            };
         }
 
         /// <summary>
@@ -345,7 +339,7 @@ namespace Gorgon.Graphics.Imaging
                 throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, "WICGuid{" + targetFormat + "}"));
             }
 
-            if (palette != null)
+            if (palette is not null)
             {
                 // Change dithering from ordered to error diffusion when we use 8 bit palettes.
                 switch (dither)
@@ -424,12 +418,12 @@ namespace Gorgon.Graphics.Imaging
         private (Palette Palette, float Alpha)? GetDecoderPalette(BitmapFrameDecode frame, IGorgonWicDecodingOptions options)
         {
             // If there's no palette option on the decoder, then we do nothing.
-            if ((options != null) && (!options.Options.Contains(DecOptPalette)))
+            if ((options is not null) && (!options.Options.Contains(DecOptPalette)))
             {
                 return null;
             }
 
-            if (frame == null)
+            if (frame is null)
             {
                 return null;
             }
@@ -477,12 +471,12 @@ namespace Gorgon.Graphics.Imaging
         private (Palette Palette, float Alpha)? GetEncoderPalette(Bitmap frame, IGorgonWicEncodingOptions options)
         {
             // If there's no palette option on the decoder, then we do nothing.
-            if ((options != null) && (!options.Options.Contains(DecOptPalette)))
+            if ((options is not null) && (!options.Options.Contains(DecOptPalette)))
             {
                 return null;
             }
 
-            if (frame == null)
+            if (frame is null)
             {
                 return null;
             }
@@ -532,17 +526,15 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="encoderFrame">The frame being encoded.</param>
         private static void EncodeMetaData(IReadOnlyDictionary<string, object> metaData, BitmapFrameEncode encoderFrame)
         {
-            using (MetadataQueryWriter writer = encoderFrame.MetadataQueryWriter)
+            using MetadataQueryWriter writer = encoderFrame.MetadataQueryWriter;
+            foreach (KeyValuePair<string, object> item in metaData)
             {
-                foreach (KeyValuePair<string, object> item in metaData)
+                if (string.IsNullOrWhiteSpace(item.Key))
                 {
-                    if (string.IsNullOrWhiteSpace(item.Key))
-                    {
-                        continue;
-                    }
-
-                    writer.SetMetadataByName(item.Key, item.Value);
+                    continue;
                 }
+
+                writer.SetMetadataByName(item.Key, item.Value);
             }
         }
 
@@ -575,12 +567,12 @@ namespace Gorgon.Graphics.Imaging
 
                 // We expect these values to be set to their defaults.  If they are not, then we will have an error.
                 // These are for PNG only.
-                if (options != null)
+                if (options is not null)
                 {
                     SetFrameOptions(frame, options);
                 }
 
-                if ((metaData != null) && (metaData.Count > 0))
+                if ((metaData is not null) && (metaData.Count > 0))
                 {
                     EncodeMetaData(metaData, frame);
                 }
@@ -600,10 +592,8 @@ namespace Gorgon.Graphics.Imaging
                         frame.Palette = paletteInfo?.Palette;
                     }
 
-                    using (BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None, paletteInfo?.Palette, paletteInfo?.Alpha ?? 0.0f))
-                    {
-                        frame.WriteSource(converter);
-                    }
+                    using BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None, paletteInfo?.Palette, paletteInfo?.Alpha ?? 0.0f);
+                    frame.WriteSource(converter);
                 }
                 else
                 {
@@ -704,7 +694,7 @@ namespace Gorgon.Graphics.Imaging
             bool readAllFrames = decoder.DecoderInfo.IsMultiframeSupported;
 
             if ((readAllFrames)
-                && (options != null))
+                && (options is not null))
             {
                 readAllFrames = options.ReadAllFrames;
             }
@@ -755,7 +745,7 @@ namespace Gorgon.Graphics.Imaging
                 bool saveAllFrames = encoderInfo.IsMultiframeSupported && imageData.ArrayCount > 1;
 
                 if ((saveAllFrames)
-                    && (options != null)
+                    && (options is not null)
                     && (options.Options.Contains(nameof(IGorgonWicEncodingOptions.SaveAllFrames))))
                 {
                     saveAllFrames = options.SaveAllFrames;
@@ -863,7 +853,7 @@ namespace Gorgon.Graphics.Imaging
                     paletteInfo = GetDecoderPalette(frame, decodingOptions);
                 }
 
-                if (paletteInfo != null)
+                if (paletteInfo is not null)
                 {
                     // Create a temporary bitmap to convert our indexed image.
                     tempBitmap = new Bitmap(_factory, frame, BitmapCreateCacheOption.NoCache)
@@ -898,23 +888,19 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="filter">The filter to apply when smoothing the image during scaling.</param>
         private void ScaleBitmapData(BitmapSource bitmap, IGorgonImageBuffer buffer, int width, int height, ImageFilter filter)
         {
-            using (var scaler = new BitmapScaler(_factory))
+            using var scaler = new BitmapScaler(_factory);
+            scaler.Initialize(bitmap, width, height, (BitmapInterpolationMode)filter);
+
+            if (bitmap.PixelFormat == scaler.PixelFormat)
             {
-                scaler.Initialize(bitmap, width, height, (BitmapInterpolationMode)filter);
-
-                if (bitmap.PixelFormat == scaler.PixelFormat)
-                {
-                    scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
-                    return;
-                }
-
-                // There's a chance that, due the filter applied, that the format is now different. 
-                // So we'll need to convert.
-                using (FormatConverter converter = GetFormatConverter(scaler, bitmap.PixelFormat, ImageDithering.None, null, 0))
-                {
-                    converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
-                }
+                scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
+                return;
             }
+
+            // There's a chance that, due the filter applied, that the format is now different. 
+            // So we'll need to convert.
+            using FormatConverter converter = GetFormatConverter(scaler, bitmap.PixelFormat, ImageDithering.None, null, 0);
+            converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
         }
 
         /// <summary>
@@ -942,20 +928,18 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="height">The new height of the image data.</param>
         private void CropBitmapData(BitmapSource bitmap, IGorgonImageBuffer buffer, int offsetX, int offsetY, int width, int height)
         {
-            using (var clipper = new BitmapClipper(_factory))
+            using var clipper = new BitmapClipper(_factory);
+            var rect = DX.Rectangle.Intersect(new DX.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+                                                       new DX.Rectangle(offsetX, offsetY, width, height));
+
+            if (rect.IsEmpty)
             {
-                var rect = DX.Rectangle.Intersect(new DX.Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height),
-                                                           new DX.Rectangle(offsetX, offsetY, width, height));
-
-                if (rect.IsEmpty)
-                {
-                    return;
-                }
-
-                // Intersect our clipping rectangle with the buffer size.
-                clipper.Initialize(bitmap, rect);
-                clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
+                return;
             }
+
+            // Intersect our clipping rectangle with the buffer size.
+            clipper.Initialize(bitmap, rect);
+            clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
         }
 
         /// <summary>
@@ -966,24 +950,22 @@ namespace Gorgon.Graphics.Imaging
         /// <returns>The offset for the frame.</returns>
         private static DX.Point GetFrameOffsetMetadataItems(BitmapFrameDecode frame, IReadOnlyList<string> metadataNames)
         {
-            using (MetadataQueryReader reader = frame.MetadataQueryReader)
+            using MetadataQueryReader reader = frame.MetadataQueryReader;
+
+            reader.TryGetMetadataByName(metadataNames[0], out object xValue);
+            reader.TryGetMetadataByName(metadataNames[1], out object yValue);
+
+            if (xValue is null)
             {
-
-                reader.TryGetMetadataByName(metadataNames[0], out object xValue);
-                reader.TryGetMetadataByName(metadataNames[1], out object yValue);
-
-                if (xValue == null)
-                {
-                    xValue = 0;
-                }
-
-                if (yValue == null)
-                {
-                    yValue = 0;
-                }
-
-                return new DX.Point(Convert.ToInt32(xValue), Convert.ToInt32(yValue));
+                xValue = 0;
             }
+
+            if (yValue is null)
+            {
+                yValue = 0;
+            }
+
+            return new DX.Point(Convert.ToInt32(xValue), Convert.ToInt32(yValue));
         }
 
         /// <summary>
@@ -1096,7 +1078,7 @@ namespace Gorgon.Graphics.Imaging
             {
                 metaData = GetImageMetaData(stream, imageFileFormat, decodingOptions);
 
-                if (metaData.ImageInfo == null)
+                if (metaData.ImageInfo is null)
                 {
                     return null;
                 }
@@ -1419,7 +1401,7 @@ namespace Gorgon.Graphics.Imaging
 
                     frame.MetadataQueryReader.TryGetMetadataByName(delayMetaDataName, out object value);
 
-                    if (value == null)
+                    if (value is null)
                     {
                         continue;
                     }

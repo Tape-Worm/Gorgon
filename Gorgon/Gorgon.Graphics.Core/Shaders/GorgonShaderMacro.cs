@@ -124,7 +124,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         public GorgonShaderMacro(string name, string value = null)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

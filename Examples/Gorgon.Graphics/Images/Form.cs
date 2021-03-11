@@ -130,7 +130,7 @@ namespace Gorgon.Examples
         {
             base.OnFormClosing(e);
 
-            if (_gifAnim == null)
+            if (_gifAnim is null)
             {
                 return;
             }

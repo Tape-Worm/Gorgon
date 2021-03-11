@@ -90,7 +90,7 @@ namespace Gorgon.Renderers
         // The previous size of the output.
         private DX.Size2 _prevOutputSize;
         // The builders used to manage state for the effect.
-        private readonly EffectBuilders _effectBuilders = new EffectBuilders();
+        private readonly EffectBuilders _effectBuilders = new();
         // Flag to indicate that the batch state for the effect pass needs updating.
         private bool _needsStateUpdate = true;
         // The state of the current rendering pass.
@@ -392,7 +392,7 @@ namespace Gorgon.Renderers
         {
             output.ValidateObject(nameof(output));
 
-            if (_currentEffect != null)
+            if (_currentEffect is not null)
             {
                 throw new GorgonException(GorgonResult.AlreadyInitialized, string.Format(Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED, _currentEffect));
             }
@@ -467,7 +467,7 @@ namespace Gorgon.Renderers
             output.ValidateObject(nameof(output));
             index.ValidateRange(nameof(index), 0, PassCount);
 
-            if (_currentEffect == null)
+            if (_currentEffect is null)
             {
                 throw new GorgonException(GorgonResult.NotInitialized, Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_NOT_CALLED);
             }
@@ -520,14 +520,14 @@ namespace Gorgon.Renderers
         {
             index.ValidateRange(nameof(index), 0, PassCount);
 
-            if ((!_isRenderingPass) || (_currentEffect == null))
+            if ((!_isRenderingPass) || (_currentEffect is null))
             {
                 return;
             }
 
             try
             {
-                if (output == null)
+                if (output is null)
                 {
                     return;
                 }
@@ -576,7 +576,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected void EndRender(GorgonRenderTargetView output)
         {
-            if (_currentEffect == null)
+            if (_currentEffect is null)
             {
                 return;
             }
@@ -590,12 +590,12 @@ namespace Gorgon.Renderers
                 }
 
                 // Set the output render target so effects can just dump their contents to the output.
-                if ((output != null) && (Graphics.RenderTargets[0] != output))
+                if ((output is not null) && (Graphics.RenderTargets[0] != output))
                 {
                     Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
                 }
 
-                if (output == null)
+                if (output is null)
                 {
                     return;
                 }

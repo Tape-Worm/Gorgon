@@ -70,10 +70,10 @@ namespace Gorgon.Renderers
         // The indices of the normal/specular map when using an array.
         private (int normalIndex, int specularIndex) _indices;
         // The macro sent to the shader to enable using array indices.
-        private readonly GorgonShaderMacro _useArrayMacro = new GorgonShaderMacro("USE_ARRAY");
+        private readonly GorgonShaderMacro _useArrayMacro = new("USE_ARRAY");
         
         // The texture information for the main GBuffer targets.
-        private readonly GorgonTexture2DInfo _mainInfo = new GorgonTexture2DInfo("GBuffer")
+        private readonly GorgonTexture2DInfo _mainInfo = new("GBuffer")
         {
             ArrayCount = 3,
             Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
@@ -204,13 +204,13 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool defaultStatesChanged)
         {
-            if (_vertexShaderState == null)
+            if (_vertexShaderState is null)
             {                
                 _vertexShaderState = builders.VertexShaderBuilder.Shader(_vertexShader)
                                                                  .Build();
             }
 
-            if (_pixelShader == null)
+            if (_pixelShader is null)
             {
                 Macros.Clear();
                 if (_useArray)
@@ -222,7 +222,7 @@ namespace Gorgon.Renderers
                 _pixelShaderState = null;
             }
 
-            if (_pixelShaderState == null)
+            if (_pixelShaderState is null)
             {
                 builders.PixelShaderBuilder.Clear()
                                            .Shader(_pixelShader);
@@ -242,7 +242,7 @@ namespace Gorgon.Renderers
                 _gbufferState = null;
             }
 
-            if ((_gbufferState == null) || (defaultStatesChanged))
+            if ((_gbufferState is null) || (defaultStatesChanged))
             {
                 _gbufferState = builders.BatchBuilder.PixelShaderState(_pixelShaderState)
                                                      .VertexShaderState(_vertexShaderState)

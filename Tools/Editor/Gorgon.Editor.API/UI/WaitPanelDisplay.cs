@@ -51,7 +51,7 @@ namespace Gorgon.Editor.UI
         /// </summary>
         private void UnassignEvents()
         {
-            if (_viewModel == null)
+            if (_viewModel is null)
             {
                 return;
             }
@@ -91,7 +91,7 @@ namespace Gorgon.Editor.UI
 
             _viewModel = dataContext;
 
-            if (_viewModel == null)
+            if (_viewModel is null)
             {
                 return;
             }

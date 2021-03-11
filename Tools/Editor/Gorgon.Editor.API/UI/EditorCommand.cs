@@ -57,7 +57,7 @@ namespace Gorgon.Editor.UI
         /// </summary>
         /// <param name="args">The arguments to check.</param>
         /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
-        public bool CanExecute(T args) => (_canExecute == null) && (_canExecuteNoArgs == null) || (_canExecute != null ? _canExecute(args) : _canExecuteNoArgs());
+        public bool CanExecute(T args) => (_canExecute is null) && (_canExecuteNoArgs is null) || (_canExecute is not null ? _canExecute(args) : _canExecuteNoArgs());
 
         /// <summary>
         /// Function to execute the command.
@@ -65,7 +65,7 @@ namespace Gorgon.Editor.UI
         /// <param name="args">The arguments to pass to the command.</param>
         public void Execute(T args)
         {
-            if (_execute != null)
+            if (_execute is not null)
             {
                 _execute(args);
                 return;

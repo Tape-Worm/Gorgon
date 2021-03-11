@@ -65,7 +65,7 @@ namespace Gorgon.Editor.UI.Views
     {
         #region Variables.
         // A list of renderers used to draw our content to the UI.
-        private readonly Dictionary<string, IContentRenderer> _renderers = new Dictionary<string, IContentRenderer>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IContentRenderer> _renderers = new(StringComparer.OrdinalIgnoreCase);
         // Flag for event transformation registration.
         private int _transformEventRegister;
         // The data context for the view.
@@ -100,7 +100,7 @@ namespace Gorgon.Editor.UI.Views
                 ScrollHorizontal.Visible = value;
                 ButtonCenter.Visible = ScrollHorizontal.Visible && ScrollVertical.Visible;
 
-                if (Renderer != null)
+                if (Renderer is not null)
                 {
                     Renderer.CanPanHorizontally = value;
                     Renderer.SetOffset(Vector2.Zero);
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.UI.Views
                 ScrollVertical.Visible = value;
                 ButtonCenter.Visible = ScrollHorizontal.Visible && ScrollVertical.Visible;
 
-                if (Renderer != null)
+                if (Renderer is not null)
                 {
                     Renderer.CanPanVertically = value;
                     Renderer.SetOffset(Vector2.Zero);
@@ -194,7 +194,7 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ScrollVertical_ValueChanged(object sender, EventArgs e)
         {
-            if (Renderer == null)
+            if (Renderer is null)
             {
                 return;
             }
@@ -208,7 +208,7 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ScrollHorizontal_ValueChanged(object sender, EventArgs e)
         {
-            if (Renderer == null)
+            if (Renderer is null)
             {
                 return;
             }
@@ -248,7 +248,7 @@ namespace Gorgon.Editor.UI.Views
 
             try
             {
-                if ((Renderer == null) || (RenderControl == null))
+                if ((Renderer is null) || (RenderControl is null))
                 {
                     ScrollVertical.Enabled = ScrollHorizontal.Enabled = false;
                     return;
@@ -309,7 +309,7 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void PanelRenderWindow_Resize(object sender, EventArgs e)
         {
-            if (Renderer == null)
+            if (Renderer is null)
             {
                 return;
             }
@@ -356,7 +356,7 @@ namespace Gorgon.Editor.UI.Views
         {
             base.OnResize(e);
 
-            if (Renderer == null)
+            if (Renderer is null)
             {
                 return;
             }
@@ -374,7 +374,7 @@ namespace Gorgon.Editor.UI.Views
             switch (propertyName)
             {
                 case nameof(IVisualEditorContent.CurrentPanel):
-                    if (_dataContext.CurrentPanel == null)
+                    if (_dataContext.CurrentPanel is null)
                     {
                         break;
                     }
@@ -382,7 +382,7 @@ namespace Gorgon.Editor.UI.Views
                     string viewModelTypeName = _dataContext.CurrentPanel.GetType().FullName;
                     Control hostControl = GetRegisteredPanel<EditorSubPanelCommon>(viewModelTypeName);
 
-                    if (hostControl != null)
+                    if (hostControl is not null)
                     {
                         hostControl.Visible = false;
                     }
@@ -402,7 +402,7 @@ namespace Gorgon.Editor.UI.Views
             switch (propertyName)
             {
                 case nameof(IVisualEditorContent.CurrentPanel):
-                    if (_dataContext.CurrentPanel == null)
+                    if (_dataContext.CurrentPanel is null)
                     {
                         HideHostedPanels();
                         SetupScrollBars();
@@ -475,7 +475,7 @@ namespace Gorgon.Editor.UI.Views
         /// <seealso cref="IContentRenderer"/>
         protected void AddRenderer(string name, IContentRenderer renderer)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -501,7 +501,7 @@ namespace Gorgon.Editor.UI.Views
         protected bool HasRenderer(string name)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -525,7 +525,7 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected void SwitchRenderer(string name, bool resetZoom)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -544,7 +544,7 @@ namespace Gorgon.Editor.UI.Views
             ZoomLevels zoomLevel = ZoomLevels.ToWindow;
 
             // Blow away any temporary resources registered to the renderer.
-            if (Renderer != null)
+            if (Renderer is not null)
             {
                 offset = Renderer.Offset;
                 zoomLevel = Renderer.ZoomLevel;
@@ -566,7 +566,7 @@ namespace Gorgon.Editor.UI.Views
             // Reset the current renderer back to the default zoom level.
             SetupScrollBars();
 
-            if ((resetZoom) || (offset == null))
+            if ((resetZoom) || (offset is null))
             {                
                 Renderer.MoveTo(new Vector2(ClientSize.Width * 0.5f, ClientSize.Height * 0.5f), -1);
             }
@@ -615,7 +615,7 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            if (Renderer == null)
+            if (Renderer is null)
             {
                 _renderers["null"].IsEnabled = true;
                 SwitchRenderer("null", true);

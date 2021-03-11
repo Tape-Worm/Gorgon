@@ -58,7 +58,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckUnsupported_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckAnimatePrimaryBg_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -84,7 +84,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckOnionSkin_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -97,7 +97,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckAddTextureTrack_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -110,7 +110,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericXRes_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -137,7 +137,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="dataContext">The data context to apply.</param>
         private void InitializeFromDataContext(ISettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;

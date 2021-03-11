@@ -94,7 +94,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (DataContext?.Texture == null)
+            if (DataContext?.Texture is null)
             {
                 return;
             }

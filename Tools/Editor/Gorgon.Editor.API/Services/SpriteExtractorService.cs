@@ -171,8 +171,7 @@ namespace Gorgon.Editor.Services
         {
             IGorgonImage imageData = data.Texture.Texture.ToImage();
 
-            if ((imageData.Format == BufferFormat.R8G8B8A8_UNorm)
-                || (imageData.Format == BufferFormat.R8G8B8A8_UNorm_SRgb))
+            if (imageData.Format is BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb)
             {
                 return imageData;
             }
@@ -290,7 +289,7 @@ namespace Gorgon.Editor.Services
 
                 IContentFile file = _fileManager.GetFile(filePath);
 
-                Debug.Assert(file != null, $"Sprite file '{filePath}' was not created!");
+                Debug.Assert(file is not null, $"Sprite file '{filePath}' was not created!");
 
                 file.LinkContent(textureFile);
             }

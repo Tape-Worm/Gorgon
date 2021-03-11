@@ -91,7 +91,7 @@ namespace Gorgon.Examples
         // Flag to indicate that the help text should be shown.
         private static bool _showHelp = true;
         // The cloaking animation controller.
-        private static readonly CloakController _cloakController = new CloakController();
+        private static readonly CloakController _cloakController = new();
         // Final render target brightness.
         private static float _finalBrightness = 1.0f;
         #endregion
@@ -209,7 +209,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void InitializeBackgroundTexturePositioning()
         {
-            if (_randomOffset == null)
+            if (_randomOffset is null)
             {
                 _randomOffset = new Vector2(GorgonRandom.RandomSingle(_background.Width - _postTarget1.Width),
                                                GorgonRandom.RandomSingle(_background.Height - _postTarget1.Height));

@@ -95,7 +95,7 @@ namespace Gorgon.UI
 
                 if ((inIndex > -1) && (pathIndex > -1))
                 {
-                    lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
+                    lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i][(pathIndex + 1)..];
                 }
 
                 result.Append(lines[i]);
@@ -113,7 +113,7 @@ namespace Gorgon.UI
         /// <returns>A string containing the details of the exception.</returns>
         private static string GetDetailsFromException(Exception innerException)
         {
-            if (innerException == null)
+            if (innerException is null)
             {
                 return Resources.GOR_EXCEPT_NO_MSG;
             }
@@ -122,7 +122,7 @@ namespace Gorgon.UI
             var errorText = new StringBuilder(1024);
             Exception nextException = innerException;
 
-            while (nextException != null)
+            while (nextException is not null)
             {
                 errorText.AppendFormat("{0}: {1}\n{2}:  {3}",
                                        Resources.GOR_EXCEPT_DETAILS_MSG,
@@ -130,12 +130,12 @@ namespace Gorgon.UI
                                        Resources.GOR_EXCEPT_EXCEPT_TYPE,
                                        nextException.GetType().FullName);
 
-                if (nextException.Source != null)
+                if (nextException.Source is not null)
                 {
                     errorText.AppendFormat("\n{0}:  {1}", Resources.GOR_EXCEPT_SRC, nextException.Source);
                 }
 
-                if (nextException.TargetSite?.DeclaringType != null)
+                if (nextException.TargetSite?.DeclaringType is not null)
                 {
                     errorText.AppendFormat("\n{0}:  {1}.{2}",
                                            Resources.GOR_EXCEPT_TARGET_SITE,
@@ -166,7 +166,7 @@ namespace Gorgon.UI
                             customData.Append('\n');
                         }
 
-                        if (item.Value != null)
+                        if (item.Value is not null)
                         {
                             customData.AppendFormat("{0}: {1}", item.Key, item.Value);
                         }
@@ -189,7 +189,7 @@ namespace Gorgon.UI
 
                 nextException = nextException.InnerException;
 
-                if (nextException != null)
+                if (nextException is not null)
                 {
                     errorText.AppendFormat("\n{0}:\n===============\n", Resources.GOR_EXCEPT_NEXT_EXCEPTION);
                 }
@@ -278,7 +278,7 @@ namespace Gorgon.UI
                 errorDialog.ShowDialog(parentForm);
 
                 // If the owner form is null or not available, center on screen.
-                if ((parentForm == null) || (parentForm.WindowState == FormWindowState.Minimized) || (!parentForm.Visible))
+                if ((parentForm is null) || (parentForm.WindowState == FormWindowState.Minimized) || (!parentForm.Visible))
                 {
                     errorDialog.StartPosition = FormStartPosition.CenterScreen;
                 }
@@ -366,7 +366,7 @@ namespace Gorgon.UI
                 }
 
                 // If the owner form is null or not available, center on screen.
-                if ((!(owner is Form form)) || (form.WindowState == FormWindowState.Minimized) || (!form.Visible))
+                if ((owner is not Form form) || (form.WindowState == FormWindowState.Minimized) || (!form.Visible))
                 {
                     warningDialog.StartPosition = FormStartPosition.CenterScreen;
                 }

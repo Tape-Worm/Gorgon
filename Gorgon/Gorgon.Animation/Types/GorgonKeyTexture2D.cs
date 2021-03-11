@@ -76,7 +76,7 @@ namespace Gorgon.Animation
 
                 _value = value;
 
-                if (_value != null)
+                if (_value is not null)
                 {
                     TextureName = _value.Texture.Name;
                 }
@@ -158,7 +158,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public GorgonKeyTexture2D(float time, string textureName, DX.RectangleF textureCoordinates, int textureArrayIndex)
         {
-            if (textureName == null)
+            if (textureName is null)
             {
                 throw new ArgumentNullException(nameof(textureName));
             }

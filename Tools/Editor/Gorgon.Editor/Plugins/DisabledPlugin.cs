@@ -75,7 +75,7 @@ namespace Gorgon.Editor.PlugIns
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName" /> parameter is empty.</exception>
         public DisabledPlugIn(DisabledReasonCode reasonCode, string pluginName, string desc, string path)
         {
-            if (pluginName == null)
+            if (pluginName is null)
             {
                 throw new ArgumentNullException(nameof(pluginName));
             }

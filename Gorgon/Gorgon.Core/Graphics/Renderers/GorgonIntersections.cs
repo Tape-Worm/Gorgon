@@ -757,7 +757,7 @@ namespace Gorgon.Renderers
             triangleU *= inversedeterminant;
 
             //Make sure it is inside the triangle.
-            if (triangleU < 0f || triangleU > 1f)
+            if (triangleU is < 0f or > 1f)
             {
                 distance = 0f;
                 return false;
@@ -1504,13 +1504,11 @@ namespace Gorgon.Renderers
                 }
             }
 
-            switch (result)
+            return result switch
             {
-                case PlaneIntersection.Intersecting: 
-                    return Containment.Intersects;
-                default: 
-                    return Containment.Contains;
-            }
+                PlaneIntersection.Intersecting => Containment.Intersects,
+                _ => Containment.Contains,
+            };
         }
 
         /// <summary>

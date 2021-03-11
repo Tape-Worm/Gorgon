@@ -130,7 +130,7 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// These values are in texel coordinates.
         /// </remarks>
-        public DX.RectangleF TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+        public DX.RectangleF TextureRegion = new(0, 0, 1, 1);
 
         /// <summary>
         /// Property to set or return the scale factor to apply to the sprite.
@@ -171,7 +171,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the alpha test data.
         /// </summary>
-        public AlphaTestData AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+        public AlphaTestData AlphaTestData = new(true, GorgonRangeF.Empty);
 
         /// <summary>
         /// Property to set or return the vertices for this renderable.

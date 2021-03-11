@@ -121,7 +121,7 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                if (value == null)
+                if (value is null)
                 {
                     OnPropertyChanging();
                     Array.Clear(_vertices, 0, _vertices.Length);
@@ -201,7 +201,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             finally
             {
-                if (defaultPos != null)
+                if (defaultPos is not null)
                 {
                     ArrayPool<Vector2>.Shared.Return(defaultPos);
                 }

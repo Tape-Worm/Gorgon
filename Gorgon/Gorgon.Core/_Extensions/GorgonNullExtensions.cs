@@ -43,7 +43,7 @@ namespace Gorgon.Core
         /// This will check an object for <b>null</b> and <see cref="DBNull"/>.
         /// </para>
         /// </remarks>
-        public static bool IsNull(this object value) => (value == null) || (value == DBNull.Value);
+        public static bool IsNull(this object value) => (value is null) || (value == DBNull.Value);
 
         /// <summary>
         /// Function to check an object for <b>null</b> or <see cref="DBNull"/> and return a substitute value.

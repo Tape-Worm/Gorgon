@@ -75,7 +75,7 @@ namespace Gorgon.Editor
         private static (bool hasSwitch, string switchValue) GetCommandLineArgument(string[] args, string argument)
         {
             if ((string.IsNullOrWhiteSpace(argument))
-                || (args == null)
+                || (args is null)
                 || (args.Length == 0))
             {
                 return (false, string.Empty);
@@ -184,6 +184,7 @@ namespace Gorgon.Editor
         static void Main(string[] args)
         {
             Boot booter = null;
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

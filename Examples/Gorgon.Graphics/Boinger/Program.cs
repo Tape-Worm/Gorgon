@@ -167,7 +167,7 @@ namespace Gorgon.Examples
                 position.Y -= 4.0f * GorgonTiming.Delta * (_dropSpeed / 20f);
             }
 
-            if ((position.X < -2.3f) || (position.X > 2.3f))
+            if (position.X is < (-2.3f) or > 2.3f)
             {
                 _bounceH = !_bounceH;
                 if (_bounceH)
@@ -180,7 +180,7 @@ namespace Gorgon.Examples
                 }
             }
 
-            if ((position.Y > 2.0f) || (position.Y < -2.5f))
+            if (position.Y is > 2.0f or < (-2.5f))
             {
                 _bounceV = !_bounceV;
                 if (!_bounceV)
@@ -362,7 +362,7 @@ namespace Gorgon.Examples
             }
 
             // If, somehow, we are on a device from the dark ages, then we can't continue.
-            if (selectedDevice != null)
+            if (selectedDevice is not null)
             {
                 return graphics;
             }
@@ -398,7 +398,7 @@ namespace Gorgon.Examples
             _graphics = CreateGraphicsInterface();
 
             // If we couldn't create the graphics interface, then leave.
-            if (_graphics == null)
+            if (_graphics is null)
             {
                 return;
             }
@@ -666,6 +666,7 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -687,7 +688,7 @@ namespace Gorgon.Examples
                 // Always call dispose so we can free the native memory allocated for the backing graphics API.
                 _sphere?.Dispose();
 
-                if (_planes != null)
+                if (_planes is not null)
                 {
                     foreach (Plane plane in _planes)
                     {

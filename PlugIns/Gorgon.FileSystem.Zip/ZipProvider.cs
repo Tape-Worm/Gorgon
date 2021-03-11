@@ -85,7 +85,7 @@ namespace Gorgon.IO.Zip
             {
                 ZipEntry entry;
 
-                while ((entry = zipStream.GetNextEntry()) != null)
+                while ((entry = zipStream.GetNextEntry()) is not null)
                 {
                     if (!entry.IsDirectory)
                     {

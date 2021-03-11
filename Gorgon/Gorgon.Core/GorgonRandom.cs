@@ -98,7 +98,7 @@ namespace Gorgon.Core
             get => Noise.Perm;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }

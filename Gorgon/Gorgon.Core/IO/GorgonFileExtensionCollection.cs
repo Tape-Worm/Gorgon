@@ -47,7 +47,7 @@ namespace Gorgon.IO
             {
                 if (extension.StartsWith(".", StringComparison.Ordinal))
                 {
-                    extension = extension.Substring(1);
+                    extension = extension[1..];
                 }
 
                 return !Contains(extension)
@@ -58,7 +58,7 @@ namespace Gorgon.IO
             {
                 if (extension.StartsWith(".", StringComparison.Ordinal))
                 {
-                    extension = extension.Substring(1);
+                    extension = extension[1..];
                 }
 
                 if (!Contains(extension))
@@ -79,7 +79,7 @@ namespace Gorgon.IO
         /// <param name="extension">Extension to add to the collection.</param>
         public void Add(GorgonFileExtension extension)
         {
-            if (extension.Extension == null)
+            if (extension.Extension is null)
             {
                 extension = new GorgonFileExtension(string.Empty, extension.Description);
             }
@@ -100,14 +100,14 @@ namespace Gorgon.IO
         /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="extension"/> could not be found in the collection.</exception>
         public void Remove(string extension)
         {
-            if (extension == null)
+            if (extension is null)
             {
                 throw new ArgumentNullException(nameof(extension));
             }
 
             if (extension.StartsWith(".", StringComparison.Ordinal))
             {
-                extension = extension.Substring(1);
+                extension = extension[1..];
             }
 
             if (!Contains(extension))

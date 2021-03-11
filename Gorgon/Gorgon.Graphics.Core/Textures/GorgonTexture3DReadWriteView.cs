@@ -247,7 +247,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * DepthSliceCount));
             }
@@ -285,7 +285,7 @@ namespace Gorgon.Graphics.Core
 
             depth = depth.Min(DepthSliceCount + StartDepthSlice).Max(StartDepthSlice);
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
             }
@@ -314,7 +314,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
             }
@@ -342,7 +342,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
             }
@@ -422,12 +422,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonTexture3D"/>
         public static GorgonTexture3DReadWriteView CreateTexture(GorgonGraphics graphics, IGorgonTexture3DInfo info, IGorgonImage initialData = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
@@ -440,7 +440,7 @@ namespace Gorgon.Graphics.Core
                                              : info.Binding) & ~TextureBinding.DepthStencil // There's now way we can build a depth/stencil from this method.
             };
 
-            if (initialData != null)
+            if (initialData is not null)
             {
                 if ((initialData.Width > info.Width)
                     || (initialData.Height > info.Height)
@@ -461,7 +461,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            GorgonTexture3D texture = initialData == null
+            GorgonTexture3D texture = initialData is null
                                           ? new GorgonTexture3D(graphics, newInfo)
                                           : initialData.ToTexture3D(graphics,
                                                                     new GorgonTextureLoadOptions
@@ -531,17 +531,17 @@ namespace Gorgon.Graphics.Core
                                                     long? size = null,
                                                     GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -551,7 +551,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -561,13 +561,11 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            using (IGorgonImage image = codec.FromStream(stream, size))
-            {
-                GorgonTexture3D texture = image.ToTexture3D(graphics, options);
-                GorgonTexture3DReadWriteView view = texture.GetReadWriteView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromStream(stream, size);
+            GorgonTexture3D texture = image.ToTexture3D(graphics, options);
+            GorgonTexture3DReadWriteView view = texture.GetReadWriteView();
+            view.OwnsResource = true;
+            return view;
         }
 
         /// <summary>
@@ -614,12 +612,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture3DReadWriteView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -629,18 +627,16 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            using (IGorgonImage image = codec.FromFile(filePath))
-            {
-                GorgonTexture3D texture = image.ToTexture3D(graphics, options);
-                GorgonTexture3DReadWriteView view = texture.GetReadWriteView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromFile(filePath);
+            GorgonTexture3D texture = image.ToTexture3D(graphics, options);
+            GorgonTexture3DReadWriteView view = texture.GetReadWriteView();
+            view.OwnsResource = true;
+            return view;
         }
         #endregion
 

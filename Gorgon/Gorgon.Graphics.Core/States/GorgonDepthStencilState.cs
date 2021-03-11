@@ -56,12 +56,12 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// The default depth/stencil state.
         /// </summary>
-        public static readonly GorgonDepthStencilState Default = new GorgonDepthStencilState();
+        public static readonly GorgonDepthStencilState Default = new();
 
         /// <summary>
         /// Depth/stencil enabled.
         /// </summary>
-        public static readonly GorgonDepthStencilState DepthStencilEnabled = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthStencilEnabled = new()
         {
             IsDepthEnabled = true,
             IsStencilEnabled = true,
@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Depth/stencil enabled, depth write disbled.
         /// </summary>
-        public static readonly GorgonDepthStencilState DepthStencilEnabledNoWrite = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthStencilEnabledNoWrite = new()
         {
             IsDepthEnabled = true,
             IsStencilEnabled = true,
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Depth only enabled.
         /// </summary>
-        public static readonly GorgonDepthStencilState DepthEnabled = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthEnabled = new()
         {
             IsDepthEnabled = true,
             IsDepthWriteEnabled = true
@@ -90,7 +90,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Depth only enabled, depth write disabled.
         /// </summary>
-        public static readonly GorgonDepthStencilState DepthEnabledNoWrite = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthEnabledNoWrite = new()
         {
             IsDepthEnabled = true,
             IsDepthWriteEnabled = false
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
         /// </remarks>
-        public static readonly GorgonDepthStencilState DepthLessEqualStencilEnabled = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthLessEqualStencilEnabled = new()
         {
             IsDepthEnabled = true,
             IsStencilEnabled = true,
@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
         /// </remarks>
-        public static readonly GorgonDepthStencilState DepthLessEqualStencilEnabledNoWrite = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthLessEqualStencilEnabledNoWrite = new()
         {
             IsDepthEnabled = true,
             IsStencilEnabled = true,
@@ -130,7 +130,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
         /// </remarks>
-        public static readonly GorgonDepthStencilState DepthLessEqualEnabled = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthLessEqualEnabled = new()
         {
             IsDepthEnabled = true,
             IsDepthWriteEnabled = true,
@@ -143,7 +143,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
         /// </remarks>
-        public static readonly GorgonDepthStencilState DepthLessEqualEnabledNoWrite = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthLessEqualEnabledNoWrite = new()
         {
             IsDepthEnabled = true,
             IsDepthWriteEnabled = false,
@@ -153,7 +153,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Stencil only enabled.
         /// </summary>
-        public static readonly GorgonDepthStencilState StencilEnabled = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState StencilEnabled = new()
         {
             IsStencilEnabled = true,
             IsDepthWriteEnabled = true
@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Core
         /// <a href="https://developer.nvidia.com/content/depth-precision-visualized">https://developer.nvidia.com/content/depth-precision-visualized</a> for more information.
         /// </para>
         /// </remarks>
-        public static readonly GorgonDepthStencilState DepthStencilEnabledGreaterEqual = new GorgonDepthStencilState
+        public static readonly GorgonDepthStencilState DepthStencilEnabledGreaterEqual = new()
         {
             IsDepthWriteEnabled = true,
             IsDepthEnabled = true,
@@ -324,7 +324,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <returns>true if the current object is equal to the <paramref name="info" /> parameter; otherwise, false.</returns>
         /// <param name="info">An object to compare with this object.</param>
-        public bool Equals(GorgonDepthStencilState info) => (info == this) || ((info != null)
+        public bool Equals(GorgonDepthStencilState info) => (info == this) || ((info is not null)
                                       && (BackFaceStencilOp.Equals(info.BackFaceStencilOp))
                                       && (FrontFaceStencilOp.Equals(info.FrontFaceStencilOp))
                                       && (DepthComparison == info.DepthComparison)

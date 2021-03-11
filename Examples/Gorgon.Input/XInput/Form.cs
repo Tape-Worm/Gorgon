@@ -234,7 +234,7 @@ namespace Gorgon.Examples
         /// </summary>
         private async Task CheckForConnectedDevices()
         {
-            while ((GorgonApplication.IsRunning) && (_controllers != null))
+            while ((GorgonApplication.IsRunning) && (_controllers is not null))
             {
                 if (_controllers.Any(item => item.IsConnected))
                 {
@@ -398,7 +398,7 @@ namespace Gorgon.Examples
         {
             base.OnFormClosing(e);
 
-            if (_controllers != null)
+            if (_controllers is not null)
             {
                 foreach (IGorgonGamingDevice controller in _controllers)
                 {
@@ -408,7 +408,7 @@ namespace Gorgon.Examples
 
             _assemblies?.Dispose();
 
-            if (_surface == null)
+            if (_surface is null)
             {
                 return;
             }

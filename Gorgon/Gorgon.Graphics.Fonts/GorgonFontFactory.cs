@@ -68,13 +68,13 @@ namespace Gorgon.Graphics.Fonts
     {
         #region Variables.
         // The cache used to hold previously created font data.
-        private readonly Dictionary<string, GorgonFont> _fontCache = new Dictionary<string, GorgonFont>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, GorgonFont> _fontCache = new(StringComparer.OrdinalIgnoreCase);
         // The list of external fonts loaded from the file system.
-        private PrivateFontCollection _externalFonts = new PrivateFontCollection();
+        private PrivateFontCollection _externalFonts = new();
         // The default font.
         private Lazy<GorgonFont> _defaultFont;
         // Synchronization object for multiple threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         #endregion
 
         #region Properties.
@@ -147,7 +147,7 @@ namespace Gorgon.Graphics.Fonts
         /// <exception cref="ArgumentException">Thrown if the <paramref name="font"/> is already registered in the factory cache.</exception>
         internal void RegisterFont(GorgonFont font)
         {
-            if (font == null)
+            if (font is null)
             {
                 throw new ArgumentNullException(nameof(font));
             }
@@ -188,7 +188,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         internal void UnregisterFont(GorgonFont font)
         {
-            if (font == null)
+            if (font is null)
             {
                 throw new ArgumentException(nameof(font));
             }
@@ -254,7 +254,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         public bool HasFont(IGorgonFontInfo fontInfo)
         {
-            if (fontInfo == null)
+            if (fontInfo is null)
             {
                 throw new ArgumentNullException(nameof(fontInfo));
             }
@@ -287,7 +287,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
 	    public FontFamily LoadTrueTypeFontFamily(Stream stream, int? size = null)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -297,7 +297,7 @@ namespace Gorgon.Graphics.Fonts
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = (int)stream.Length;
             }
@@ -352,7 +352,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
 	    public FontFamily LoadTrueTypeFontFamily(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -400,7 +400,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         public GorgonFont GetFont(IGorgonFontInfo fontInfo)
         {
-            if (fontInfo == null)
+            if (fontInfo is null)
             {
                 throw new ArgumentNullException(nameof(fontInfo));
             }
@@ -414,7 +414,7 @@ namespace Gorgon.Graphics.Fonts
                     return result;
                 }
 
-                if (result != null)
+                if (result is not null)
                 {
                     throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_EXISTS, fontInfo.Name), nameof(fontInfo));
                 }
@@ -477,7 +477,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         public async Task<GorgonFont> GetFontAsync(IGorgonFontInfo fontInfo)
         {
-            if (fontInfo == null)
+            if (fontInfo is null)
             {
                 throw new ArgumentNullException(nameof(fontInfo));
             }
@@ -489,7 +489,7 @@ namespace Gorgon.Graphics.Fonts
                 return result;
             }
 
-            if (result != null)
+            if (result is not null)
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_EXISTS, fontInfo.Name), nameof(fontInfo));
             }
@@ -528,7 +528,7 @@ namespace Gorgon.Graphics.Fonts
             PrivateFontCollection ttFonts = Interlocked.Exchange(ref _externalFonts, null);
             Lazy<GorgonFont> defaultFont = Interlocked.Exchange(ref _defaultFont, null);
 
-            if ((defaultFont != null) && (defaultFont.IsValueCreated))
+            if ((defaultFont is not null) && (defaultFont.IsValueCreated))
             {
                 defaultFont.Value.Dispose();
             }

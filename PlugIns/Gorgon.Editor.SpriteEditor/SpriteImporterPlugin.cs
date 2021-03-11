@@ -85,10 +85,8 @@ namespace Gorgon.Editor.SpriteEditor
                 return null;
             }
 
-            using (Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return results.Select(item => item.codec).FirstOrDefault(item => item.IsReadable(stream));
-            }
+            using Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return results.Select(item => item.codec).FirstOrDefault(item => item.IsReadable(stream));
         }
 
         /// <summary>Function to retrieve the settings interface for this plug in.</summary>
@@ -117,7 +115,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             SpriteImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteImportSettings>(SettingsFilename);
 
-            if (settings == null)
+            if (settings is null)
             {
                 settings = new SpriteImportSettings();
             }
@@ -135,7 +133,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             try
             {
-                if ((_settings?.WriteSettingsCommand != null) && (_settings.WriteSettingsCommand.CanExecute(null)))
+                if ((_settings?.WriteSettingsCommand is not null) && (_settings.WriteSettingsCommand.CanExecute(null)))
                 {
                     // Persist any settings.
                     _settings.WriteSettingsCommand.Execute(null);
@@ -178,7 +176,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Implementors may use whatever method they desire to determine if the file can be opened (e.g. checking file extensions, examining file headers, etc...).
         /// </para>
         /// </remarks>
-        protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) != null;
+        protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) is not null;
         #endregion
 
         #region Constructor/Finalizer.

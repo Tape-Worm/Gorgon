@@ -123,11 +123,11 @@ namespace Gorgon.Editor.AnimationEditor
             _time = injectionParameters.Time;
             DataType = injectionParameters.KeyType;
 
-            if ((DataType == AnimationTrackKeyType.Texture2D) && (injectionParameters.TextureValue != null))
+            if ((DataType == AnimationTrackKeyType.Texture2D) && (injectionParameters.TextureValue is not null))
             {
                 _texture = injectionParameters.TextureValue.Value;
             }
-            else if (injectionParameters.FloatValues != null)
+            else if (injectionParameters.FloatValues is not null)
             {
                 _floatValues = injectionParameters.FloatValues.Value;
             }

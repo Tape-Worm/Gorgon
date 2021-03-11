@@ -44,9 +44,9 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The controller for animating the content.
-        private readonly ImageAnimationController _animController = new ImageAnimationController();
+        private readonly ImageAnimationController _animController = new();
         private IGorgonAnimation _opacityAnimation;
-        private readonly GorgonAnimationBuilder _animationBuilder = new GorgonAnimationBuilder();
+        private readonly GorgonAnimationBuilder _animationBuilder = new();
         #endregion
 
         #region Properties.
@@ -196,7 +196,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (DataContext?.Texture == null)
+            if (DataContext?.Texture is null)
             {
                 return;
             }

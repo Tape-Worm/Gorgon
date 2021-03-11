@@ -63,7 +63,7 @@ namespace Gorgon.Editor.ImageSplitTool
 		{
 			_previewImage?.Dispose();
 
-			if (image == null)
+			if (image is null)
 			{
 				_previewImage = null;
 				return;
@@ -156,7 +156,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
 			Renderer.Begin();
 			Renderer.DrawFilledRectangle(renderRegion, 
-										 ((DataContext.PreviewImage == null) || (_loading)) ? (GorgonColor)DarkFormsRenderer.DarkBackground : GorgonColor.White, 
+										 ((DataContext.PreviewImage is null) || (_loading)) ? (GorgonColor)DarkFormsRenderer.DarkBackground : GorgonColor.White, 
 										 _backgroundImage, 
 										 new DX.RectangleF(0, 0, renderRegion.Width / _backgroundImage.Width, renderRegion.Height / _backgroundImage.Height));
 			Renderer.End();
@@ -174,7 +174,7 @@ namespace Gorgon.Editor.ImageSplitTool
 			Renderer.Begin();
 
 			// Render the image.
-			if ((DataContext.PreviewImage != null) && (!_loading))
+			if ((DataContext.PreviewImage is not null) && (!_loading))
 			{
 				float scale = (renderRegion.Width / DataContext.PreviewImage.Width).Min(renderRegion.Height / DataContext.PreviewImage.Height);
 				float width = DataContext.PreviewImage.Width * scale;
@@ -221,7 +221,7 @@ namespace Gorgon.Editor.ImageSplitTool
 				}, image);
 			}
 
-			if (DataContext.PreviewImage != null)
+			if (DataContext.PreviewImage is not null)
 			{
 				UpdateRenderImage(DataContext.PreviewImage);
 			}

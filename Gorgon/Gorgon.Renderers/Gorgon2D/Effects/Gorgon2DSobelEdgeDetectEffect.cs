@@ -60,7 +60,7 @@ namespace Gorgon.Renderers
             /// <summary>
             /// Property to return the size of a texel.
             /// </summary>
-            public Vector2 TexelSize => new Vector2(_texelThreshold.X, _texelThreshold.Y);
+            public Vector2 TexelSize => new(_texelThreshold.X, _texelThreshold.Y);
 
             /// <summary>
             /// Property to return the threshold for the effect.
@@ -96,7 +96,7 @@ namespace Gorgon.Renderers
         // The thickness of the lines.
         private float _lineThickness = 1.0f;
         // The texture size used to calculate the line thickness.
-        private DX.Size2F _textureSize = new DX.Size2F(512.0f, 512.0f);
+        private DX.Size2F _textureSize = new(512.0f, 512.0f);
         #endregion
 
         #region Properties.
@@ -209,9 +209,9 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if ((_batchState == null) || (statesChanged))
+            if ((_batchState is null) || (statesChanged))
             {
-                if (_sobelState == null)
+                if (_sobelState is null)
                 {
                     _sobelState = builders.PixelShaderBuilder
                               .ConstantBuffer(_sobelBuffer, 1)
@@ -274,7 +274,7 @@ namespace Gorgon.Renderers
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -290,7 +290,7 @@ namespace Gorgon.Renderers
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -306,7 +306,7 @@ namespace Gorgon.Renderers
         /// <param name="output">The render target that will receive the final output.</param>
         public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
         {
-            if ((texture == null) || (output == null))
+            if ((texture is null) || (output is null))
             {
                 return;
             }

@@ -68,7 +68,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 OnPropertyChanging();
                 _workingSprite = value;
-                if (_editTrack != null)
+                if (_editTrack is not null)
                 {
                     Value = _workingSprite?.GetFloatValues(_editTrack.Track.SpriteProperty) ?? Vector4.Zero;
                 }
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 _floatValues = value;
                 
-                if ((_editTrack != null) && (_workingSprite != null))
+                if ((_editTrack is not null) && (_workingSprite is not null))
                 {
                     _workingSprite.SetFloatValues(_editTrack.Track.SpriteProperty, _floatValues);
                 }

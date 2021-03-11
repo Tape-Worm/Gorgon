@@ -123,7 +123,7 @@ namespace Gorgon.Examples
         // Current blending mode.
         private Gorgon2DBatchState _currentBlend;
         // The builder used for building batch states for the blending modes.
-        private readonly Gorgon2DBatchStateBuilder _blendBuilder = new Gorgon2DBatchStateBuilder();
+        private readonly Gorgon2DBatchStateBuilder _blendBuilder = new();
         // Our assembly cache for our plugins.
         private GorgonMefPlugInCache _assemblyCache;
         #endregion
@@ -196,7 +196,7 @@ namespace Gorgon.Examples
                         break;
                     }
 
-                    if ((_joystickList.Count == 0) || ((_counter >= _joystickList.Count) && (_joystick != null)))
+                    if ((_joystickList.Count == 0) || ((_counter >= _joystickList.Count) && (_joystick is not null)))
                     {
                         if (!_useWinFormsInput)
                         {
@@ -333,7 +333,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
         private void MouseInput(object sender, GorgonMouseEventArgs e)
         {
-            if (_joystick != null)
+            if (_joystick is not null)
             {
                 return;
             }
@@ -429,7 +429,7 @@ namespace Gorgon.Examples
             _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _backBuffer.Width, _backBuffer.Height), GorgonColor.White, _backBufferView, new DX.RectangleF(0, 0, 1, 1));
             _2D.End();
 
-            if (_joystick != null)
+            if (_joystick is not null)
             {
                 // Poll the joystick.
                 _joystick.Poll();
@@ -469,7 +469,7 @@ namespace Gorgon.Examples
             _2D.End();
 
             // If we have a joystick button down, then draw a black dot.
-            if ((_joystick != null) && (_joystick.Button[0] == GamingDeviceButtonState.Down))
+            if ((_joystick is not null) && (_joystick.Button[0] == GamingDeviceButtonState.Down))
             {
                 var penPosition = new DX.RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
                 _graphics.SetRenderTarget(_backBuffer);
@@ -577,7 +577,7 @@ namespace Gorgon.Examples
 
             // Always dispose your devices when the window is shutting down.
             // Failure to do so can lead to unpredictable results.
-            if (_joystickList != null)
+            if (_joystickList is not null)
             {
                 foreach (IGorgonGamingDevice joystick in _joystickList)
                 {
@@ -585,7 +585,7 @@ namespace Gorgon.Examples
                 }
             }
 
-            if (_drivers != null)
+            if (_drivers is not null)
             {
                 foreach (IGorgonGamingDeviceDriver driver in _drivers)
                 {

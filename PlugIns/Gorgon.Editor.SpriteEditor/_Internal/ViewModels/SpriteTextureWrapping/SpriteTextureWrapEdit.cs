@@ -115,7 +115,7 @@ namespace Gorgon.Editor.SpriteEditor
             get => _current;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = GorgonSamplerState.Default;
                 }

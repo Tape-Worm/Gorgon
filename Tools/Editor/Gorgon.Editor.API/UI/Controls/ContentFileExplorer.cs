@@ -161,12 +161,12 @@ namespace Gorgon.Editor.UI.Controls
         // The list of file explorer entries.
         private IReadOnlyList<ContentFileExplorerDirectoryEntry> _entries = new List<ContentFileExplorerDirectoryEntry>();
         // Cross reference for rows and entries.
-        private readonly Dictionary<DataGridViewRow, ContentFileExplorerFileEntry> _rowFilesXref = new Dictionary<DataGridViewRow, ContentFileExplorerFileEntry>();
-        private readonly Dictionary<DataGridViewRow, ContentFileExplorerDirectoryEntry> _rowDirsXref = new Dictionary<DataGridViewRow, ContentFileExplorerDirectoryEntry>();
-        private readonly Dictionary<ContentFileExplorerFileEntry, DataGridViewRow> _fileRowsXref = new Dictionary<ContentFileExplorerFileEntry, DataGridViewRow>();
-        private readonly Dictionary<ContentFileExplorerDirectoryEntry, DataGridViewRow> _dirRowsXref = new Dictionary<ContentFileExplorerDirectoryEntry, DataGridViewRow>();
+        private readonly Dictionary<DataGridViewRow, ContentFileExplorerFileEntry> _rowFilesXref = new();
+        private readonly Dictionary<DataGridViewRow, ContentFileExplorerDirectoryEntry> _rowDirsXref = new();
+        private readonly Dictionary<ContentFileExplorerFileEntry, DataGridViewRow> _fileRowsXref = new();
+        private readonly Dictionary<ContentFileExplorerDirectoryEntry, DataGridViewRow> _dirRowsXref = new();
         // Icon associations with the files.
-        private readonly Dictionary<string, Image> _icons = new Dictionary<string, Image>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Image> _icons = new(StringComparer.OrdinalIgnoreCase);
         // The checkbox in the grid header.
         private CheckBox _checkBoxHeader;
         #endregion
@@ -260,7 +260,7 @@ namespace Gorgon.Editor.UI.Controls
 
             _icons.Clear();
 
-            if ((_entries == null) || (_entries.Count == 0))
+            if ((_entries is null) || (_entries.Count == 0))
             {
                 return;
             }
@@ -269,7 +269,7 @@ namespace Gorgon.Editor.UI.Controls
 
             foreach (ContentFileExplorerFileEntry file in files)
             {
-                if ((string.IsNullOrWhiteSpace(file.AssociationType)) || (_icons.ContainsKey(file.AssociationType)) || (file.FileIcon == null))
+                if ((string.IsNullOrWhiteSpace(file.AssociationType)) || (_icons.ContainsKey(file.AssociationType)) || (file.FileIcon is null))
                 {
                     continue;
                 }
@@ -283,7 +283,7 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         private void UnassignEvents()
         {
-            if (_entries == null)
+            if (_entries is null)
             {
                 return;
             }
@@ -310,7 +310,7 @@ namespace Gorgon.Editor.UI.Controls
             _fileRowsXref.Clear();
             _dirRowsXref.Clear();
 
-            if ((_entries == null) || (_entries.Count == 0))
+            if ((_entries is null) || (_entries.Count == 0))
             {
                 BuildIconCache();
                 LabelNoFiles.Visible = true;
@@ -359,7 +359,7 @@ namespace Gorgon.Editor.UI.Controls
 
             if (selected.Count > 0)
             {
-                GridFiles.FirstDisplayedScrollingRowIndex = selected[selected.Count - 1].Index;
+                GridFiles.FirstDisplayedScrollingRowIndex = selected[^1].Index;
             }
 
             SetCheckState();
@@ -441,7 +441,7 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         private void GetCheckboxHeader()
         {
-            if (_checkBoxHeader != null)
+            if (_checkBoxHeader is not null)
             {
                 _checkBoxHeader.Click -= CheckboxHeader_Click;
                 GridFiles.Controls.Remove(_checkBoxHeader);
@@ -585,7 +585,7 @@ namespace Gorgon.Editor.UI.Controls
 
             DataGridView.HitTestInfo hitTest = GridFiles.HitTest(mousePos.X, mousePos.Y);
 
-            if ((hitTest == null) || (hitTest.ColumnIndex != ColumnLocation.Index) || (hitTest.RowIndex < 0))
+            if ((hitTest is null) || (hitTest.ColumnIndex != ColumnLocation.Index) || (hitTest.RowIndex < 0))
             {
                 return;
             }
@@ -656,7 +656,7 @@ namespace Gorgon.Editor.UI.Controls
         /// </summary>
         private void SetCheckState()
         {
-            if ((_checkBoxHeader == null) || (!MultiSelect))
+            if ((_checkBoxHeader is null) || (!MultiSelect))
             {
                 return;
             }
@@ -737,7 +737,7 @@ namespace Gorgon.Editor.UI.Controls
                 }
             }
 
-            if (fileEntry == null)
+            if (fileEntry is null)
             {
                 return;
             }
@@ -906,7 +906,7 @@ namespace Gorgon.Editor.UI.Controls
 
             if (e.ColumnIndex == 0)
             {
-                if (dirEntry != null)
+                if (dirEntry is not null)
                 {
                     DrawExpando(dirEntry, dpiScale, e);
                 }
@@ -917,7 +917,7 @@ namespace Gorgon.Editor.UI.Controls
                 return;
             }
 
-            if (fileEntry != null)
+            if (fileEntry is not null)
             {
                 DrawFileRow(fileEntry, dpiScale, e);
             }

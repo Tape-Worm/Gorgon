@@ -235,7 +235,7 @@ namespace Gorgon.Editor.PlugIns
         public void RegisterSearchKeywords<T>(ISearchService<T> searchService)
             where T : IGorgonNamedObject
         {
-            if (searchService == null)
+            if (searchService is null)
             {
                 throw new ArgumentNullException(nameof(searchService));
             }
@@ -317,17 +317,17 @@ namespace Gorgon.Editor.PlugIns
         /// <exception cref="GorgonException">Thrown if the <see cref="OnOpenContentAsync"/> method returns <b>null</b>.</exception>
         public async Task<IEditorContent> OpenContentAsync(IContentFile file, IContentFileManager fileManager, IProject project, IUndoService undoService)
         {
-            if (file == null)
+            if (file is null)
             {
                 throw new ArgumentNullException(nameof(file));
             }
 
-            if (fileManager == null)
+            if (fileManager is null)
             {
                 throw new ArgumentNullException(nameof(fileManager));
             }
 
-            if (project == null)
+            if (project is null)
             {
                 throw new ArgumentNullException(nameof(project));
             }
@@ -337,7 +337,7 @@ namespace Gorgon.Editor.PlugIns
 
             IEditorContent content = await OnOpenContentAsync(file, fileManager, TemporaryFileSystem, undoService);
 
-            if (content == null)
+            if (content is null)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN, Name));
             }

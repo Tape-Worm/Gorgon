@@ -58,7 +58,7 @@ namespace Gorgon.Editor.UI
         {
             _progressCancelAction?.Invoke();
 
-            if (_viewModel == null)
+            if (_viewModel is null)
             {
                 return;
             }
@@ -83,7 +83,7 @@ namespace Gorgon.Editor.UI
         {
             // Drop the message if it's been less than 10 milliseconds since our last call.
             // This will keep us from flooding the window message queue with very fast operations.            
-            if ((_progressTimer != null) && (_progressTimer.Milliseconds < 10) && (e.PercentageComplete < 1) && (e.PercentageComplete > 0))
+            if ((_progressTimer is not null) && (_progressTimer.Milliseconds < 10) && (e.PercentageComplete < 1) && (e.PercentageComplete > 0))
             {
                 return;
             }
@@ -109,7 +109,7 @@ namespace Gorgon.Editor.UI
 
             _viewModel = dataContext;
 
-            if (_viewModel == null)
+            if (_viewModel is null)
             {
                 return;
             }

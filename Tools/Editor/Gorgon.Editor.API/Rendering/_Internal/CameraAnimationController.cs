@@ -45,11 +45,11 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// The track registration for the position.
         /// </summary>
-        public static readonly GorgonTrackRegistration PositionTrack = new GorgonTrackRegistration(nameof(GorgonOrthoCamera.Position), null, AnimationTrackKeyType.Vector3);
+        public static readonly GorgonTrackRegistration PositionTrack = new(nameof(GorgonOrthoCamera.Position), null, AnimationTrackKeyType.Vector3);
         /// <summary>
         /// The track registration for the scale..
         /// </summary>
-        public static readonly GorgonTrackRegistration ZoomTrack = new GorgonTrackRegistration(nameof(GorgonOrthoCamera.Zoom), null, AnimationTrackKeyType.Vector2);
+        public static readonly GorgonTrackRegistration ZoomTrack = new(nameof(GorgonOrthoCamera.Zoom), null, AnimationTrackKeyType.Vector2);
 
         // The renderer that is animating.
         private readonly DefaultContentRenderer<T> _renderer;

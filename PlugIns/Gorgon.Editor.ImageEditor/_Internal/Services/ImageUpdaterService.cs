@@ -59,27 +59,18 @@ namespace Gorgon.Editor.ImageEditor
                 destSize.Width = srcSize.Width;
             }
 
-            switch (alignment)
+            return alignment switch
             {
-                case Alignment.UpperCenter:
-                    return new DX.Point(srcSize.Width / 2 - destSize.Width / 2, 0);
-                case Alignment.UpperRight:
-                    return new DX.Point(srcSize.Width - destSize.Width, 0);
-                case Alignment.CenterLeft:
-                    return new DX.Point(0, srcSize.Height / 2 - destSize.Height / 2);
-                case Alignment.Center:
-                    return new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height / 2 - destSize.Height / 2);
-                case Alignment.CenterRight:
-                    return new DX.Point(srcSize.Width - destSize.Width, srcSize.Height / 2 - destSize.Height / 2);
-                case Alignment.LowerLeft:
-                    return new DX.Point(0, srcSize.Height - destSize.Height);
-                case Alignment.LowerCenter:
-                    return new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height - destSize.Height);
-                case Alignment.LowerRight:
-                    return new DX.Point(srcSize.Width - destSize.Width, srcSize.Height - destSize.Height);
-                default:
-                    return DX.Point.Zero;
-            }
+                Alignment.UpperCenter => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, 0),
+                Alignment.UpperRight => new DX.Point(srcSize.Width - destSize.Width, 0),
+                Alignment.CenterLeft => new DX.Point(0, srcSize.Height / 2 - destSize.Height / 2),
+                Alignment.Center => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height / 2 - destSize.Height / 2),
+                Alignment.CenterRight => new DX.Point(srcSize.Width - destSize.Width, srcSize.Height / 2 - destSize.Height / 2),
+                Alignment.LowerLeft => new DX.Point(0, srcSize.Height - destSize.Height),
+                Alignment.LowerCenter => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height - destSize.Height),
+                Alignment.LowerRight => new DX.Point(srcSize.Width - destSize.Width, srcSize.Height - destSize.Height),
+                _ => DX.Point.Zero,
+            };
         }
 
         /// <summary>

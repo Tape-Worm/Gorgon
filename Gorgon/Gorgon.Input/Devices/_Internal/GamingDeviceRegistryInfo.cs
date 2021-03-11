@@ -87,7 +87,7 @@ namespace Gorgon.Input
                     return null;
                 }
 
-                subKeyName = subKeyName.Substring(lastAmp);
+                subKeyName = subKeyName[lastAmp..];
 
                 if (subKeyName.IndexOf("&IG_", StringComparison.OrdinalIgnoreCase) == 0)
                 {
@@ -105,22 +105,18 @@ namespace Gorgon.Input
             // between operating systems.
             const string regKeyPath = @"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\";
 
-            using (RegistryKey joystickOemKey = Registry.CurrentUser.OpenSubKey(regKeyPath, false))
+            using RegistryKey joystickOemKey = Registry.CurrentUser.OpenSubKey(regKeyPath, false);
+            string joystickDeviceKeyName = joystickOemKey?.GetSubKeyNames().First(item => parts[1].StartsWith(item, StringComparison.OrdinalIgnoreCase));
+
+            if (string.IsNullOrWhiteSpace(joystickDeviceKeyName))
             {
-                string joystickDeviceKeyName = joystickOemKey?.GetSubKeyNames().First(item => parts[1].StartsWith(item, StringComparison.OrdinalIgnoreCase));
-
-                if (string.IsNullOrWhiteSpace(joystickDeviceKeyName))
-                {
-                    return string.Empty;
-                }
-
-                using (RegistryKey joystickVidKey = joystickOemKey.OpenSubKey(subKeyName, false))
-                {
-                    object value = joystickVidKey?.GetValue("OEMName");
-
-                    return value?.ToString() ?? string.Empty;
-                }
+                return string.Empty;
             }
+
+            using RegistryKey joystickVidKey = joystickOemKey.OpenSubKey(subKeyName, false);
+            object value = joystickVidKey?.GetValue("OEMName");
+
+            return value?.ToString() ?? string.Empty;
         }
 
         /// <summary>
@@ -147,14 +143,14 @@ namespace Gorgon.Input
                 lookup = rootKey.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\MediaResources\Joystick\" + registryKey + @"\CurrentJoystickSettings");
 
                 // Try the local machine key as a root if that lookup failed.
-                if (lookup == null)
+                if (lookup is null)
                 {
                     rootKey.Close();
                     rootKey = Registry.LocalMachine;
                     lookup = rootKey.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\MediaResources\Joystick\" + registryKey + @"\CurrentJoystickSettings");
                 }
 
-                if (lookup != null)
+                if (lookup is not null)
                 {
                     // Key name.
                     string key = lookup.GetValue("Joystick" + (joystickID + 1) + "OEMName", string.Empty).ToString();

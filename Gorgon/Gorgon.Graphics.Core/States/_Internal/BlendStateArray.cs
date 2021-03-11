@@ -55,7 +55,7 @@ namespace Gorgon.Graphics.Core
             {
                 GorgonBlendState state = this[indices.start + i];
 
-                if (state == null)
+                if (state is null)
                 {
                     continue;
                 }

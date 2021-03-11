@@ -51,15 +51,15 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The constant buffers, with read/write access.
         /// </summary>
-        internal GorgonArray<GorgonConstantBufferView> RwConstantBuffers = new GorgonArray<GorgonConstantBufferView>(GorgonConstantBuffers.MaximumConstantBufferCount);
+        internal GorgonArray<GorgonConstantBufferView> RwConstantBuffers = new(GorgonConstantBuffers.MaximumConstantBufferCount);
         /// <summary>
         /// The texture samplers, with read/write access.
         /// </summary>
-        internal GorgonArray<GorgonSamplerState> RwSamplers = new GorgonArray<GorgonSamplerState>(GorgonSamplerStates.MaximumSamplerStateCount);
+        internal GorgonArray<GorgonSamplerState> RwSamplers = new(GorgonSamplerStates.MaximumSamplerStateCount);
         /// <summary>
         /// The shader resource views, with read/write access.
         /// </summary>
-        internal GorgonArray<GorgonShaderResourceView> RwSrvs = new GorgonArray<GorgonShaderResourceView>(16);
+        internal GorgonArray<GorgonShaderResourceView> RwSrvs = new(16);
         #endregion
 
         #region Properties.

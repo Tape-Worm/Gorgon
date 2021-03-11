@@ -99,7 +99,7 @@ namespace Gorgon.Examples
 
             try
             {
-                if (!(e.Node?.Tag is IGorgonVirtualFile))
+                if (e.Node?.Tag is not IGorgonVirtualFile)
                 {
                     splitFileSystem.Panel2.Controls.Add(_instructions);
                     return;
@@ -112,43 +112,41 @@ namespace Gorgon.Examples
                 // Here we load the image from the file system.
                 // Note that we don't care if it's from the zip file
                 // or the folder.  It's all the same to us.
-                using (Stream fileStream = file.OpenStream())
+                using Stream fileStream = file.OpenStream();
+                // If it's a picture, then load it.
+                switch (file.Extension.ToLower())
                 {
-                    // If it's a picture, then load it.
-                    switch (file.Extension.ToLower())
-                    {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".bmp":
-                        case ".png":
-                            if (_image != null)
-                            {
-                                _image.Dispose();
-                                _image = null;
-                            }
+                    case ".jpg":
+                    case ".jpeg":
+                    case ".bmp":
+                    case ".png":
+                        if (_image is not null)
+                        {
+                            _image.Dispose();
+                            _image = null;
+                        }
 
-                            _image = Image.FromStream(fileStream);
-                            _picture.Image = _image;
-                            _picture.SizeMode = PictureBoxSizeMode.Zoom;
+                        _image = Image.FromStream(fileStream);
+                        _picture.Image = _image;
+                        _picture.SizeMode = PictureBoxSizeMode.Zoom;
 
-                            // Add to control.
-                            splitFileSystem.Panel2.Controls.Add(_picture);
-                            _picture.Dock = DockStyle.Fill;
-                            break;
-                        default:
-                            // Get data in the file stream.
-                            byte[] textData = new byte[fileStream.Length];
-                            fileStream.Read(textData, 0, textData.Length);
+                        // Add to control.
+                        splitFileSystem.Panel2.Controls.Add(_picture);
+                        _picture.Dock = DockStyle.Fill;
+                        break;
+                    default:
+                        // Get data in the file stream.
+                        byte[] textData = new byte[fileStream.Length];
+                        fileStream.Read(textData, 0, textData.Length);
 
-                            // Convert to a string.
-                            _textDisplay.Text = Encoding.UTF8.GetString(textData);
-                            _textDisplay.Multiline = true;
-                            _textDisplay.ReadOnly = true;
-                            _textDisplay.ScrollBars = ScrollBars.Both;
-                            _textDisplay.Dock = DockStyle.Fill;
-                            splitFileSystem.Panel2.Controls.Add(_textDisplay);
-                            break;
-                    }
+                        // Convert to a string.
+                        _textDisplay.Text = Encoding.UTF8.GetString(textData);
+                        _textDisplay.Multiline = true;
+                        _textDisplay.ReadOnly = true;
+                        _textDisplay.ScrollBars = ScrollBars.Both;
+                        _textDisplay.Dock = DockStyle.Fill;
+                        splitFileSystem.Panel2.Controls.Add(_textDisplay);
+                        break;
                 }
             }
             catch (Exception ex)
@@ -168,7 +166,7 @@ namespace Gorgon.Examples
 
             try
             {
-                if (!(e.Node.Tag is IGorgonVirtualDirectory directory))
+                if (e.Node.Tag is not IGorgonVirtualDirectory directory)
                 {
                     e.Cancel = true;
                     return;
@@ -233,7 +231,7 @@ namespace Gorgon.Examples
             TreeNodeCollection nodes;
             TreeNode parentNode;
 
-            if (directory == null)
+            if (directory is null)
             {
                 directory = _fileSystem.RootDirectory;
                 nodes = treeFileSystem.Nodes;
@@ -278,7 +276,7 @@ namespace Gorgon.Examples
 
                 // Enumerate the data.  For the purposed of this example, we will filter out known binary files from our file system.				
                 IOrderedEnumerable<IGorgonVirtualDirectory> directories = directory.Directories.OrderBy(item => item.Name);
-                IEnumerable<IGorgonVirtualFile> files = directory.Files.OrderBy(item => item.Name).Where(item => item.Extension != ".gorSprite" && item.Extension != ".gal");
+                IEnumerable<IGorgonVirtualFile> files = directory.Files.OrderBy(item => item.Name).Where(item => item.Extension is not ".gorSprite" and not ".gal");
 
                 // Get directories.
                 foreach (IGorgonVirtualDirectory subDirectory in directories)
@@ -304,7 +302,7 @@ namespace Gorgon.Examples
                     }
 
                     // Add a dummy node if there are files or sub directories.
-                    if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count(item => item.Extension != ".gorSprite" && item.Extension != ".gal") > 0))
+                    if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count(item => item.Extension is not ".gorSprite" and not ".gal") > 0))
                     {
                         directoryNode.Nodes.Add(new TreeNode("This is a dummy node."));
                     }

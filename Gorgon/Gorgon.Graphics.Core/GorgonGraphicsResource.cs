@@ -158,7 +158,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // Custom application data.
-        private readonly Dictionary<Guid, object> _appData = new Dictionary<Guid, object>();
+        private readonly Dictionary<Guid, object> _appData = new();
         // The Direct 3D 11 resource.
         private D3D11.Resource _resource;
         #endregion
@@ -192,7 +192,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return whether or not the resource is disposed.
         /// </summary>
-        public bool IsDisposed => _resource == null;
+        public bool IsDisposed => _resource is null;
 
         /// <summary>
         /// Property to return the usage for the resource.
@@ -223,10 +223,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public EvictionPriority EvictionPriority
         {
-            get => D3DResource == null ? EvictionPriority.Minimum : (EvictionPriority)D3DResource.EvictionPriority;
+            get => D3DResource is null ? EvictionPriority.Minimum : (EvictionPriority)D3DResource.EvictionPriority;
             set
             {
-                if (D3DResource != null)
+                if (D3DResource is not null)
                 {
                     D3DResource.EvictionPriority = (int)value;
                 }
@@ -292,12 +292,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void SetApplicationData(Guid guid, object data)
         {
-            if (D3DResource == null)
+            if (D3DResource is null)
             {
                 return;
             }
 
-            if (data == null)
+            if (data is null)
             {
                 _appData.Remove(guid);
                 return;

@@ -42,9 +42,9 @@ namespace Gorgon.Input
     {
         #region Variables.
         // The list of available axes.
-        private readonly List<GamingDeviceAxis> _axisList = new List<GamingDeviceAxis>();
+        private readonly List<GamingDeviceAxis> _axisList = new();
         // The list of information about each axis.
-        private readonly Dictionary<GamingDeviceAxis, T> _infoList = new Dictionary<GamingDeviceAxis, T>();
+        private readonly Dictionary<GamingDeviceAxis, T> _infoList = new();
         #endregion
 
         #region Properties.

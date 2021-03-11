@@ -50,13 +50,13 @@ namespace Gorgon.Editor.AnimationEditor
     {
         #region Variables.
         // The list of menu items associated with the zoom level.
-        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
+        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = new();
         // The buttons on the ribbon.
-        private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new List<WeakReference<KryptonRibbonGroupButton>>();
+        private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = new();
         // The numeric controls on the ribbon.
-        private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = new List<WeakReference<KryptonRibbonGroupNumericUpDown>>();
+        private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = new();
         // A list of buttons mapped to the tool structure.
-        private readonly Dictionary<string, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new Dictionary<string, WeakReference<KryptonRibbonGroupButton>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
         // The currently selected zoom level
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
         // The renderer for the content.
@@ -90,14 +90,14 @@ namespace Gorgon.Editor.AnimationEditor
                     return;
                 }
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
                 }
 
                 _contentRenderer = value;
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged += ContentRenderer_ZoomScale;
                     _zoomLevel = _contentRenderer.ZoomLevel;
@@ -132,7 +132,7 @@ namespace Gorgon.Editor.AnimationEditor
                 case nameof(IAnimationContent.CommandContext):
                     SetToolStates(DataContext);
 
-                    if (DataContext.CommandContext == null)
+                    if (DataContext.CommandContext is null)
                     {
                         _currentUndoHandler = DataContext;
                     }
@@ -174,7 +174,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimStop_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.StopAnimationCommand == null) || (!DataContext.StopAnimationCommand.CanExecute(null)))
+            if ((DataContext?.StopAnimationCommand is null) || (!DataContext.StopAnimationCommand.CanExecute(null)))
             {
                 return;
             }
@@ -188,7 +188,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimPlay_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.PlayAnimationCommand == null) || (!DataContext.PlayAnimationCommand.CanExecute(null)))
+            if ((DataContext?.PlayAnimationCommand is null) || (!DataContext.PlayAnimationCommand.CanExecute(null)))
             {
                 return;
             }
@@ -202,7 +202,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAddTrack_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ShowAddTrackCommand == null) || (!DataContext.ShowAddTrackCommand.CanExecute(null)))
+            if ((DataContext?.ShowAddTrackCommand is null) || (!DataContext.ShowAddTrackCommand.CanExecute(null)))
             {
                 return;
             }
@@ -216,7 +216,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonRemoveTrack_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.DeleteTrackCommand == null) || (!DataContext.DeleteTrackCommand.CanExecute(null)))
+            if ((DataContext?.DeleteTrackCommand is null) || (!DataContext.DeleteTrackCommand.CanExecute(null)))
             {
                 return;
             }
@@ -230,7 +230,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationClear_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ClearAnimationCommand == null) || (!DataContext.ClearAnimationCommand.CanExecute(null)))
+            if ((DataContext?.ClearAnimationCommand is null) || (!DataContext.ClearAnimationCommand.CanExecute(null)))
             {
                 return;
             }
@@ -244,7 +244,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationUndo_Click(object sender, EventArgs e)
         {
-            if ((_currentUndoHandler?.UndoCommand == null) || (!_currentUndoHandler.UndoCommand.CanExecute(null)))
+            if ((_currentUndoHandler?.UndoCommand is null) || (!_currentUndoHandler.UndoCommand.CanExecute(null)))
             {
                 return;
             }
@@ -258,7 +258,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationRedo_Click(object sender, EventArgs e)
         {
-            if ((_currentUndoHandler?.RedoCommand == null) || (!_currentUndoHandler.RedoCommand.CanExecute(null)))
+            if ((_currentUndoHandler?.RedoCommand is null) || (!_currentUndoHandler.RedoCommand.CanExecute(null)))
             {
                 return;
             }
@@ -272,7 +272,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonAnimationLoadBack_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.LoadBackgroundImageCommand == null) || (!DataContext.LoadBackgroundImageCommand.CanExecute(null)))
+            if ((DataContext?.LoadBackgroundImageCommand is null) || (!DataContext.LoadBackgroundImageCommand.CanExecute(null)))
             {
                 return;
             }
@@ -286,7 +286,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationClearBack_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ClearBackgroundImageCommand == null) || (!DataContext.ClearBackgroundImageCommand.CanExecute(null)))
+            if ((DataContext?.ClearBackgroundImageCommand is null) || (!DataContext.ClearBackgroundImageCommand.CanExecute(null)))
             {
                 return;
             }
@@ -300,7 +300,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonAnimationSprite_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.LoadSpriteCommand == null) || (!DataContext.LoadSpriteCommand.CanExecute(null)))
+            if ((DataContext?.LoadSpriteCommand is null) || (!DataContext.LoadSpriteCommand.CanExecute(null)))
             {
                 return;
             }
@@ -314,7 +314,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevKey_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.PrevKeyCommand == null) || (!DataContext.PrevKeyCommand.CanExecute(null)))
+            if ((DataContext?.PrevKeyCommand is null) || (!DataContext.PrevKeyCommand.CanExecute(null)))
             {
                 return;
             }
@@ -328,7 +328,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextKey_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.NextKeyCommand == null) || (!DataContext.NextKeyCommand.CanExecute(null)))
+            if ((DataContext?.NextKeyCommand is null) || (!DataContext.NextKeyCommand.CanExecute(null)))
             {
                 return;
             }
@@ -342,7 +342,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFirstKey_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.FirstKeyCommand == null) && (DataContext.FirstKeyCommand.CanExecute(null)))
+            if ((DataContext?.FirstKeyCommand is null) && (DataContext.FirstKeyCommand.CanExecute(null)))
             {
                 return;
             }
@@ -356,7 +356,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonLastKey_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.LastKeyCommand == null) && (DataContext.LastKeyCommand.CanExecute(null)))
+            if ((DataContext?.LastKeyCommand is null) && (DataContext.LastKeyCommand.CanExecute(null)))
             {
                 return;
             }
@@ -370,7 +370,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationProperties_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ShowAnimationPropertiesCommand == null) || (!DataContext.ShowAnimationPropertiesCommand.CanExecute(null)))
+            if ((DataContext?.ShowAnimationPropertiesCommand is null) || (!DataContext.ShowAnimationPropertiesCommand.CanExecute(null)))
             {
                 return;
             }
@@ -385,7 +385,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonAnimationSetKeyframe_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.KeyEditor?.SetKeyCommand == null) || (!DataContext.KeyEditor.SetKeyCommand.CanExecute(null)))
+            if ((DataContext?.KeyEditor?.SetKeyCommand is null) || (!DataContext.KeyEditor.SetKeyCommand.CanExecute(null)))
             {
                 return;
             }
@@ -399,7 +399,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationRemoveKeyframes_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.KeyEditor?.RemoveKeyCommand == null) || (!DataContext.KeyEditor.RemoveKeyCommand.CanExecute(null)))
+            if ((DataContext?.KeyEditor?.RemoveKeyCommand is null) || (!DataContext.KeyEditor.RemoveKeyCommand.CanExecute(null)))
             {
                 return;
             }
@@ -413,7 +413,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationClearKeyframes_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.KeyEditor?.ClearKeysCommand == null) || (!DataContext.KeyEditor.ClearKeysCommand.CanExecute(null)))
+            if ((DataContext?.KeyEditor?.ClearKeysCommand is null) || (!DataContext.KeyEditor.ClearKeysCommand.CanExecute(null)))
             {
                 return;
             }
@@ -427,7 +427,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonSaveAnimation_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+            if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
             {
                 return;
             }
@@ -441,7 +441,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonNewAnimation_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.NewAnimationCommand == null) || (!DataContext.NewAnimationCommand.CanExecute(null)))
+            if ((DataContext?.NewAnimationCommand is null) || (!DataContext.NewAnimationCommand.CanExecute(null)))
             {
                 return;
             }
@@ -455,7 +455,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonAnimationPaste_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.KeyEditor?.PasteDataCommand == null) || (!DataContext.KeyEditor.PasteDataCommand.CanExecute(null)))
+            if ((DataContext?.KeyEditor?.PasteDataCommand is null) || (!DataContext.KeyEditor.PasteDataCommand.CanExecute(null)))
             {
                 return;
             }
@@ -468,7 +468,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationCopy_Click(object sender, EventArgs e)
         {
-            if (DataContext?.KeyEditor?.CopyDataCommand == null)
+            if (DataContext?.KeyEditor?.CopyDataCommand is null)
             {
                 return;
             }
@@ -492,7 +492,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonAnimationCut_Click(object sender, EventArgs e)
         {
-            if (DataContext?.KeyEditor?.CopyDataCommand == null)
+            if (DataContext?.KeyEditor?.CopyDataCommand is null)
             {
                 return;
             }
@@ -516,7 +516,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckAnimationEditTrack_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ActivateKeyEditorCommand == null) || (!DataContext.ActivateKeyEditorCommand.CanExecute(null)))
+            if ((DataContext?.ActivateKeyEditorCommand is null) || (!DataContext.ActivateKeyEditorCommand.CanExecute(null)))
             {
                 return;
             }
@@ -530,7 +530,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckAnimationLoop_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -547,7 +547,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             KryptonRibbonGroupButton button;
 
-            if (dataContext.CommandContext == null)
+            if (dataContext.CommandContext is null)
             {
                 foreach (KeyValuePair<string, WeakReference<KryptonRibbonGroupButton>> buttonItem in _toolButtons)
                 {
@@ -670,7 +670,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -697,7 +697,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="dataContext">The data context used to initialize.</param>
         private void InitializeFromDataContext(IAnimationContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -715,7 +715,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             var item = (ToolStripMenuItem)sender;
 
-            if ((item.Tag == null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
+            if ((item.Tag is null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
             {
                 item.Checked = false;
                 return;
@@ -756,13 +756,13 @@ namespace Gorgon.Editor.AnimationEditor
         {
             EnableRibbon(false);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {                
                 return;
             }
 
             ButtonZoomAnimation.Enabled = true;
-            CheckAnimationLoop.Enabled = DataContext?.CurrentPanel == null;
+            CheckAnimationLoop.Enabled = DataContext?.CurrentPanel is null;
             
             ButtonNewAnimation.Enabled = DataContext?.NewAnimationCommand?.CanExecute(null) ?? false;
             ButtonSaveAnimation.Enabled = DataContext?.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
@@ -818,7 +818,7 @@ namespace Gorgon.Editor.AnimationEditor
             DataContext = dataContext;
             ValidateButtons();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

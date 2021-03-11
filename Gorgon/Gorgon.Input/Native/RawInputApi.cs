@@ -509,7 +509,7 @@ namespace Gorgon.Native
             {
                 int errCode = GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceInfo, null, ref dataSize);
 
-                if ((errCode != -1) && (errCode != 0))
+                if (errCode is not (-1) and not 0)
                 {
                     int win32Error = Marshal.GetLastWin32Error();
                     throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));

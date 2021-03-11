@@ -101,7 +101,7 @@ namespace Gorgon.Renderers.Cameras
         /// This represents the boundaries of viewable space for the camera using its coordinate system. The upper left of the region corresponds with the upper left of the active render target at minimum
         /// Z depth, and the lower right of the region corresponds with the lower right of the active render target at minimum Z depth.
         /// </remarks>
-        public override DX.RectangleF ViewableRegion => new DX.RectangleF(-1, -1, 2, 2);
+        public override DX.RectangleF ViewableRegion => new(-1, -1, 2, 2);
         #endregion
 
         #region Methods.

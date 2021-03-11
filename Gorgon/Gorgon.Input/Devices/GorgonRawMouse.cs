@@ -92,7 +92,7 @@ namespace Gorgon.Input
         // The last known position for the mouse.
         private DX.Point? _lastPosition;
         // A synchronization object for multiple threads.
-        private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new();
         // The device handle.
         private readonly IntPtr _deviceHandle;
         #endregion
@@ -499,7 +499,7 @@ namespace Gorgon.Input
             {
                 newPosition = new DX.Point(x, y);
 
-                if (_lastPosition != null)
+                if (_lastPosition is not null)
                 {
                     RelativePositionOffset = new DX.Point((newPosition.X - _lastPosition.Value.X), ((newPosition.Y - _lastPosition.Value.Y)));
                 }
@@ -681,7 +681,7 @@ namespace Gorgon.Input
         /// </remarks>
         public GorgonRawMouse(IGorgonMouseInfo mouseInfo = null)
         {
-            if (mouseInfo == null)
+            if (mouseInfo is null)
             {
                 mouseInfo = new RawMouseInfo(IntPtr.Zero,
                                              "System Mouse",

@@ -47,16 +47,16 @@ namespace Gorgon.Editor.UI.Views
     {
         #region Variables.
         // Synchronization objects for events.
-        private readonly object _closeEventLock = new object();
-        private readonly object _dragEnterEventLock = new object();
-        private readonly object _dragOverEventLock = new object();
-        private readonly object _dragDropEventLock = new object();
+        private readonly object _closeEventLock = new();
+        private readonly object _dragEnterEventLock = new();
+        private readonly object _dragOverEventLock = new();
+        private readonly object _dragDropEventLock = new();
         // The swap chain for the control.
         private GorgonSwapChain _swapChain;
         // The data context for the editor context.
         private IEditorContent _dataContext;
         // A list of child panel views identified by name.
-        private readonly Dictionary<string, Control> _panelViews = new Dictionary<string, Control>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Control> _panelViews = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Events.
@@ -79,7 +79,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_closeEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         ContentClosedEvent = null;
                         return;
@@ -92,7 +92,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_closeEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragEnterEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         BubbleDragEnterEvent = null;
                         return;
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragEnterEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -145,7 +145,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragOverEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         BubbleDragOverEvent = null;
                         return;
@@ -158,7 +158,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragOverEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -178,7 +178,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragDropEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         BubbleDragDropEvent = null;
                         return;
@@ -191,7 +191,7 @@ namespace Gorgon.Editor.UI.Views
             {
                 lock (_dragDropEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -291,7 +291,7 @@ namespace Gorgon.Editor.UI.Views
             EventHandler handler = null;
             var args = new CloseContentArgs(true);
 
-            if ((_dataContext?.CloseContentCommand != null) && (_dataContext.CloseContentCommand.CanExecute(args)))
+            if ((_dataContext?.CloseContentCommand is not null) && (_dataContext.CloseContentCommand.CanExecute(args)))
             {
                 await _dataContext.CloseContentCommand.ExecuteAsync(args);
             }
@@ -316,7 +316,7 @@ namespace Gorgon.Editor.UI.Views
             switch (e.PropertyName)
             {
                 case nameof(IEditorContent.CloseContentCommand):
-                    ButtonClose.Visible = _dataContext.CloseContentCommand != null;
+                    ButtonClose.Visible = _dataContext.CloseContentCommand is not null;
 
                     if (!PanelContentName.Visible)
                     {
@@ -343,13 +343,13 @@ namespace Gorgon.Editor.UI.Views
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeFromDataContext(IEditorContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
             }
 
-            ButtonClose.Visible = dataContext.CloseContentCommand != null;
+            ButtonClose.Visible = dataContext.CloseContentCommand is not null;
             SetContentName(dataContext);
         }
 
@@ -365,7 +365,7 @@ namespace Gorgon.Editor.UI.Views
             OnShutdown();
 
             // Return the swap chain to the pool.
-            if (_swapChain != null)
+            if (_swapChain is not null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref _swapChain);
             }
@@ -380,7 +380,7 @@ namespace Gorgon.Editor.UI.Views
             if (string.IsNullOrWhiteSpace(dataContext?.File?.Name))
             {
                 LabelHeader.Text = string.Empty;
-                if (dataContext?.CloseContentCommand == null)
+                if (dataContext?.CloseContentCommand is null)
                 {
                     PanelContentName.Visible = false;
                 }
@@ -407,7 +407,7 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected void ShowHostedPanel(Control control)
         {
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }
@@ -416,7 +416,7 @@ namespace Gorgon.Editor.UI.Views
 
             try
             {
-                while (hostParent != null)
+                while (hostParent is not null)
                 {
                     hostParent.SuspendLayout();
                     hostParent = hostParent.Parent;
@@ -457,7 +457,7 @@ namespace Gorgon.Editor.UI.Views
             finally
             {
                 hostParent = control;
-                while (hostParent != null)
+                while (hostParent is not null)
                 {
                     hostParent.ResumeLayout();
                     hostParent = hostParent.Parent;
@@ -511,7 +511,7 @@ namespace Gorgon.Editor.UI.Views
                 return null;
             }
 
-            if (!(e.Data.GetData(contentFileDragDataType.FullName, true) is IContentFileDragData dragData))
+            if (e.Data.GetData(contentFileDragDataType.FullName, true) is not IContentFileDragData dragData)
             {
                 e.Effect = DragDropEffects.None;
                 return null;
@@ -628,7 +628,7 @@ namespace Gorgon.Editor.UI.Views
         /// </summary>
         protected virtual void UnassignEvents()
         {
-            if (_dataContext == null)
+            if (_dataContext is null)
             {
                 return;
             }
@@ -642,7 +642,7 @@ namespace Gorgon.Editor.UI.Views
         /// </summary>
         protected virtual void ResetDataContext()
         {
-            if (_dataContext == null)
+            if (_dataContext is null)
             {
                 return;
             }
@@ -672,7 +672,7 @@ namespace Gorgon.Editor.UI.Views
             InitializeFromDataContext(dataContext);
             _dataContext = dataContext;
 
-            if (_dataContext == null)
+            if (_dataContext is null)
             {
                 return;
             }
@@ -709,7 +709,7 @@ namespace Gorgon.Editor.UI.Views
             where T : Control
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (id == null)
+            if (id is null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
@@ -729,7 +729,7 @@ namespace Gorgon.Editor.UI.Views
         /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="id"/> is not registered.</exception>
         protected void UnregisterChildPanel(string id)
         {
-            if (id == null)
+            if (id is null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
@@ -757,12 +757,12 @@ namespace Gorgon.Editor.UI.Views
         /// <exception cref="ArgumentException">Thrown when the <paramref name="id"/> is already registered.</exception>
         protected void RegisterChildPanel(string id, Control control)
         {
-            if (id == null)
+            if (id is null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }
@@ -816,18 +816,18 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            if (context == null)
+            if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }
 
             // If we've made no change, then do nothing.
-            if ((context == GraphicsContext) && (_swapChain != null) && (_swapChain.Window == RenderControl))
+            if ((context == GraphicsContext) && (_swapChain is not null) && (_swapChain.Window == RenderControl))
             {
                 return;
             }
 
-            if (_swapChain != null)
+            if (_swapChain is not null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref _swapChain);
             }
@@ -835,7 +835,7 @@ namespace Gorgon.Editor.UI.Views
             GorgonSwapChain swapChain = null;
 
             // If we've defined a render control, then lease a swap chain from the swap chain pool.
-            if ((context != null) && (RenderControl != null))
+            if ((context is not null) && (RenderControl is not null))
             {
                 swapChain = context.LeaseSwapPresenter(RenderControl);
             }

@@ -49,8 +49,8 @@ namespace Gorgon.Core
         public static void Catch<T>(this T ex, Action<T> handler, IGorgonLog log = null)
             where T : Exception
         {
-            if ((ex == null)
-                || (handler == null))
+            if ((ex is null)
+                || (handler is null))
             {
                 return;
             }
@@ -69,7 +69,7 @@ namespace Gorgon.Core
         /// <returns>A new Gorgon exception to throw.</returns>
         /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
-        public static GorgonException Repackage(this Exception ex, GorgonResult result, string message) => ex == null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(result, message, ex);
+        public static GorgonException Repackage(this Exception ex, GorgonResult result, string message) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(result, message, ex);
 
         /// <summary>
         /// Function to repackage an arbitrary exception as an Gorgon exception.
@@ -79,7 +79,7 @@ namespace Gorgon.Core
         /// <returns>A new Gorgon exception to throw.</returns>
         /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
-        public static GorgonException Repackage(this Exception ex, GorgonResult result) => ex == null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(result, ex);
+        public static GorgonException Repackage(this Exception ex, GorgonResult result) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(result, ex);
 
         /// <summary>
         /// Function to repackage an arbitrary exception as an Gorgon exception.
@@ -89,6 +89,6 @@ namespace Gorgon.Core
         /// <returns>A new Gorgon exception to throw.</returns>
         /// <remarks>The original exception will be the inner exception of the new <see cref="GorgonException"/>.</remarks>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is <b>null</b>.</exception>
-        public static GorgonException Repackage(this Exception ex, string message) => ex == null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(message, ex);
+        public static GorgonException Repackage(this Exception ex, string message) => ex is null ? throw new ArgumentNullException(nameof(ex)) : new GorgonException(message, ex);
     }
 }

@@ -53,7 +53,7 @@ namespace Gorgon.IO
         /// <summary>
         /// The previous version for animation serialization.
         /// </summary>
-        internal static readonly Version Version30 = new Version(3, 0);
+        internal static readonly Version Version30 = new(3, 0);
         #endregion
 
         #region Properties.
@@ -104,7 +104,7 @@ namespace Gorgon.IO
                 {
                     ulong? id = (ulong?)reader.ReadAsDecimal();
 
-                    if ((id == null) || (id != FileHeader30))
+                    if ((id is null) || (id != FileHeader30))
                     {
                         return false;
                     }
@@ -258,7 +258,7 @@ namespace Gorgon.IO
 
                     GorgonKeyTexture2D key = converter.ReadJson(reader, type, null, false, null);
 
-                    if (key != null)
+                    if (key is not null)
                     {
                         keys.Add(key);
                     }
@@ -401,7 +401,7 @@ namespace Gorgon.IO
         /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
         protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
         {
-            IReadOnlyList<string> ReadTextureNames(JsonReader reader)
+            static IReadOnlyList<string> ReadTextureNames(JsonReader reader)
             {
                 var names = new List<string>();
 
@@ -505,12 +505,12 @@ namespace Gorgon.IO
         /// <exception cref="GorgonException">Thrown if the JSON string does not contain animation data, or there is a version mismatch.</exception>
         public IGorgonAnimation FromJson(Gorgon2D renderer, string json)
         {
-            if (renderer == null)
+            if (renderer is null)
             {
                 throw new ArgumentNullException(nameof(renderer));
             }
 
-            if (json == null)
+            if (json is null)
             {
                 throw new ArgumentNullException(nameof(json));
             }
@@ -609,7 +609,7 @@ namespace Gorgon.IO
 
             var builder = new GorgonAnimationBuilder();
 
-            if ((positions != null) && (positions.Count > 0))
+            if ((positions is not null) && (positions.Count > 0))
             {
                 builder.EditVector2("Position")
                        .SetInterpolationMode(posInterp)
@@ -617,7 +617,7 @@ namespace Gorgon.IO
                        .EndEdit();
             }
 
-            if ((scales != null) && (scales.Count > 0))
+            if ((scales is not null) && (scales.Count > 0))
             {
                 builder.EditVector2("Scale")
                        .SetInterpolationMode(scaleInterp)
@@ -625,7 +625,7 @@ namespace Gorgon.IO
                        .EndEdit();
             }
 
-            if ((rotations != null) && (rotations.Count > 0))
+            if ((rotations is not null) && (rotations.Count > 0))
             {
                 builder.EditSingle("Angle")
                        .SetInterpolationMode(rotInterp)
@@ -633,7 +633,7 @@ namespace Gorgon.IO
                        .EndEdit();
             }
 
-            if ((sizes != null) && (sizes.Count > 0))
+            if ((sizes is not null) && (sizes.Count > 0))
             {
                 builder.EditVector2("Size")
                        .SetInterpolationMode(sizeInterp)
@@ -641,7 +641,7 @@ namespace Gorgon.IO
                        .EndEdit();
             }
 
-            if ((colors != null) && (colors.Count > 0))
+            if ((colors is not null) && (colors.Count > 0))
             {
                 builder.EditColor("Color")
                        .SetInterpolationMode(colorInterp)
@@ -649,7 +649,7 @@ namespace Gorgon.IO
                        .EndEdit();
             }
 
-            if ((bounds != null) && (bounds.Count > 0))
+            if ((bounds is not null) && (bounds.Count > 0))
             {
                 builder.EditRectangle("Bounds")
                        .SetInterpolationMode(boundInterp)
@@ -657,7 +657,7 @@ namespace Gorgon.IO
                        .EndEdit();
             }
 
-            if ((textures != null) && (textures.Count > 0))
+            if ((textures is not null) && (textures.Count > 0))
             {
                 builder.Edit2DTexture("Texture")
                        .SetKeys(textures)
@@ -690,14 +690,10 @@ namespace Gorgon.IO
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
         protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
         {
-            using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
-            {
-                using (var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
-                {
-                    string jsonString = reader.ReadToEnd();
-                    return FromJson(Renderer, jsonString);
-                }
-            }
+            using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
+            using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
+            string jsonString = reader.ReadToEnd();
+            return FromJson(Renderer, jsonString);
         }
 
         /// <summary>

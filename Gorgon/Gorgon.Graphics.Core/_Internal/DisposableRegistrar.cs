@@ -36,9 +36,9 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // The list of disposable objects.
-        private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = new Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>>();
+        private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = new();
         // Synchronization object for multiple threads.
-        private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new();
         #endregion
 
         #region Methods.
@@ -62,8 +62,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="graphics">The graphics object that the IDisposable belongs with.</param>
         public static void RegisterDisposable(this IDisposable disposable, GorgonGraphics graphics)
         {
-            if ((disposable == null)
-                || (graphics == null))
+            if ((disposable is null)
+                || (graphics is null))
             {
                 return;
             }
@@ -86,8 +86,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="graphics">The graphics object that the IDisposable belonged to.</param>
         public static void UnregisterDisposable(this IDisposable disposable, GorgonGraphics graphics)
         {
-            if ((disposable == null)
-                || (graphics == null))
+            if ((disposable is null)
+                || (graphics is null))
             {
                 return;
             }
@@ -99,7 +99,7 @@ namespace Gorgon.Graphics.Core
                     return;
                 }
 
-                if ((disposables == null)
+                if ((disposables is null)
                     || (disposables.Count == 0))
                 {
                     _disposables.Remove(graphics);
@@ -123,7 +123,7 @@ namespace Gorgon.Graphics.Core
             lock (_syncLock)
             {
                 if ((!_disposables.TryGetValue(graphics, out List<WeakReference<IDisposable>> disposables))
-                    || (disposables == null))
+                    || (disposables is null))
                 {
                     return;
                 }

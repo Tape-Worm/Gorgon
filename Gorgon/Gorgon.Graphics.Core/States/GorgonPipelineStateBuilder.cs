@@ -64,7 +64,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // The working state.
-        private readonly GorgonPipelineState _workState = new GorgonPipelineState();
+        private readonly GorgonPipelineState _workState = new();
         #endregion
 
         #region Properties.
@@ -229,7 +229,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 8.</exception>
         public GorgonPipelineStateBuilder BlendState(GorgonBlendState state, int slot = 0)
         {
-            if ((slot < 0) || (slot >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount))
+            if (slot is < 0 or >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_BLEND_SLOT_INVALID, D3D11.OutputMergerStage.SimultaneousRenderTargetCount));
             }
@@ -247,7 +247,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to 8.</exception>
         public GorgonPipelineStateBuilder BlendStates(IReadOnlyList<GorgonBlendState> states, int startSlot = 0)
         {
-            if ((startSlot < 0) || (startSlot >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount))
+            if (startSlot is < 0 or >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_BLEND_SLOT_INVALID, D3D11.OutputMergerStage.SimultaneousRenderTargetCount));
             }
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent interface for the builder.</returns>
         public GorgonPipelineStateBuilder ResetTo(GorgonPipelineState pipeState)
         {
-            if (pipeState == null)
+            if (pipeState is null)
             {
                 Clear();
                 return this;

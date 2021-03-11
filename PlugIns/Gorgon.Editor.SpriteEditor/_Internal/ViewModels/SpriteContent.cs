@@ -133,7 +133,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Property to return whether the sprite will use nearest neighbour filtering, or bilinear filtering.</summary>
-        public bool IsPixellated => (_sprite.TextureSampler != null) && (_sprite.TextureSampler.Filter == SampleFilter.MinMagMipPoint);
+        public bool IsPixellated => (_sprite.TextureSampler is not null) && (_sprite.TextureSampler.Filter == SampleFilter.MinMagMipPoint);
 
         /// <summary>
         /// Property to return the current sampler state for the sprite.
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                if (value == null)
+                if (value is null)
                 {
                     value = _defaultColor;
                 }
@@ -306,7 +306,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to return whether the currently loaded texture supports array changes.
         /// </summary>
-        public bool SupportsArrayChange => (Texture != null) && (Texture.Texture.ArrayCount > 1) && ((CommandContext == SpriteClipContext));// || (CurrentTool == SpriteEditTool.SpriteClip));
+        public bool SupportsArrayChange => (Texture is not null) && (Texture.Texture.ArrayCount > 1) && ((CommandContext == SpriteClipContext));// || (CurrentTool == SpriteEditTool.SpriteClip));
 
         /// <summary>
         /// Property to set or return the size of the sprite.
@@ -444,7 +444,7 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                if (_currentPanel != null)
+                if (_currentPanel is not null)
                 {
                     _currentPanel.PropertyChanged -= CurrentPanel_PropertyChanged;
                     _currentPanel.IsActive = false;
@@ -454,7 +454,7 @@ namespace Gorgon.Editor.SpriteEditor
                 _currentPanel = value;
                 OnPropertyChanged();
 
-                if (_currentPanel != null)
+                if (_currentPanel is not null)
                 {
                     _currentPanel.IsActive = true;
                     _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
@@ -470,7 +470,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             get
             {
-                if (Texture == null)
+                if (Texture is null)
                 {
                     return string.Empty;
                 }
@@ -523,14 +523,14 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="textureFile">The current texture file.</param>
         private void SetupTextureFile(IContentFile spriteFile, IContentFile textureFile)
         {
-            if (_textureFile != null)
+            if (_textureFile is not null)
             {
                 _textureFile.IsOpen = false;
             }
 
             _textureFile = textureFile;
 
-            if (_textureFile == null)
+            if (_textureFile is null)
             {
                 return;
             }
@@ -548,7 +548,7 @@ namespace Gorgon.Editor.SpriteEditor
         private bool CanSetTexture(SetTextureArgs args)
         {
             if ((string.IsNullOrWhiteSpace(args.TextureFilePath))
-                || (CommandContext != null)
+                || (CommandContext is not null)
                 || (!ContentFileManager.FileExists(args.TextureFilePath)))
             {
                 args.Cancel = true;
@@ -565,7 +565,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             IGorgonImageInfo metadata = _contentServices.TextureService.GetImageMetadata(file);
 
-            args.Cancel = (metadata.ImageType != ImageType.Image2D) && (metadata.ImageType != ImageType.ImageCube);
+            args.Cancel = metadata.ImageType is not ImageType.Image2D and not ImageType.ImageCube;
 
             return !args.Cancel;
         }
@@ -584,13 +584,13 @@ namespace Gorgon.Editor.SpriteEditor
 
             imageInfo = _contentServices.TextureService.GetImageMetadata(textureFile);
 
-            if (imageInfo == null)
+            if (imageInfo is null)
             {
                 HostServices.MessageDisplay.ShowError(string.Format(Resources.GORSPR_ERR_NOT_AN_IMAGE, textureFile.Path));
                 return false;
             }
 
-            if ((imageInfo.ImageType == ImageType.Image1D) || (imageInfo.ImageType == ImageType.Image3D))
+            if (imageInfo.ImageType is ImageType.Image1D or ImageType.Image3D)
             {
                 HostServices.MessageDisplay.ShowError(Resources.GORSPR_ERR_NOT_2D_IMAGE);
                 return false;
@@ -602,7 +602,7 @@ namespace Gorgon.Editor.SpriteEditor
             Texture = texture;
 
             // Copy the image data.
-            if ((SpritePickContext?.GetImageDataCommand != null) && (SpritePickContext.GetImageDataCommand.CanExecute(null)))
+            if ((SpritePickContext?.GetImageDataCommand is not null) && (SpritePickContext.GetImageDataCommand.CanExecute(null)))
             {
                 await SpritePickContext.GetImageDataCommand.ExecuteAsync(null);
             }
@@ -705,13 +705,13 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => (_contentServices.UndoService.CanUndo) && (CommandContext == null) && (CurrentPanel == null);
+        private bool CanUndo() => (_contentServices.UndoService.CanUndo) && (CommandContext is null) && (CurrentPanel is null);
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => (_contentServices.UndoService.CanRedo) && (CommandContext == null) && (CurrentPanel == null);
+        private bool CanRedo() => (_contentServices.UndoService.CanRedo) && (CommandContext is null) && (CurrentPanel is null);
 
         /// <summary>
         /// Function called when a redo operation is requested.
@@ -747,7 +747,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if a new sprite can be created.
         /// </summary>
         /// <returns><b>true</b> if a new sprite can be created, <b>false</b> if not.</returns>
-        private bool CanCreateSprite() => (CommandContext == null) && (CurrentPanel == null);
+        private bool CanCreateSprite() => (CommandContext is null) && (CurrentPanel is null);
 
         /// <summary>
         /// Function to create a new sprite based on the current sprite.
@@ -784,7 +784,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 (string newName, IContentFile textureFile, DX.Size2F size) = _contentServices.NewSpriteService.GetNewSpriteName(File, _textureFile, _sprite.Size);
 
-                if (newName == null)
+                if (newName is null)
                 {
                     return;
                 }
@@ -799,7 +799,7 @@ namespace Gorgon.Editor.SpriteEditor
                 string spritePath = spriteDirectory + newName.FormatFileName();
 
                 IContentFile existingFile = ContentFileManager.GetFile(spritePath);
-                if (existingFile != null)
+                if (existingFile is not null)
                 {
                     // We cannot overwrite a file that's already open for editing.
                     if (existingFile.IsOpen)
@@ -824,7 +824,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 IContentFile file = ContentFileManager.GetFile(spritePath);
 
-                if (file == null)
+                if (file is null)
                 {
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GORSPR_ERR_SPRITE_NOT_FOUND, newName));
                     await CloseContentCommand.ExecuteAsync(new CloseContentArgs(false));
@@ -885,7 +885,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the current color can be comitted.
         /// </summary>
         /// <returns><b>true</b> if the color can be comitted, <b>false</b> if not.</returns>
-        private bool CanCommitColorChange() => (ColorEditor != null) && (!ColorEditor.SpriteColor.SequenceEqual(ColorEditor.OriginalSpriteColor));
+        private bool CanCommitColorChange() => (ColorEditor is not null) && (!ColorEditor.SpriteColor.SequenceEqual(ColorEditor.OriginalSpriteColor));
 
         /// <summary>
         /// Function called to change the color of the sprite.
@@ -946,7 +946,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the current vertex offset changes can be comitted.
         /// </summary>
         /// <returns><b>true</b> if the vertex offset changes can be comitted, <b>false</b> if not.</returns>
-        private bool CanCommitVertexOffsets() => (CurrentPanel == null) 
+        private bool CanCommitVertexOffsets() => (CurrentPanel is null) 
                                               && (!_sprite.CornerOffsets.Select(item => new Vector2(item.X, item.Y))
                                                                         .SequenceEqual(SpriteVertexEditContext.Vertices));
 
@@ -1012,7 +1012,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="saveReason">The reason why the content is being saved.</param>
         /// <returns><b>true</b> if the content can be saved, <b>false</b> if not.</returns>
         private bool CanSaveSprite(SaveReason saveReason) => (ContentState != ContentState.Unmodified)
-                                                            && (((CommandContext == null) && (CurrentPanel == null)) || (saveReason != SaveReason.UserSave));
+                                                            && (((CommandContext is null) && (CurrentPanel is null)) || (saveReason != SaveReason.UserSave));
 
         /// <summary>
         /// Function to save the sprite back to the project file system.
@@ -1066,7 +1066,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the coordinates can be applied, <b>false</b> if not.</returns>
         private bool CanApplyPick()
         {
-            if ((Texture == null) || (CurrentPanel != null) || (CommandContext != SpritePickContext))
+            if ((Texture is null) || (CurrentPanel is not null) || (CommandContext != SpritePickContext))
             {
                 return false;
             }
@@ -1144,7 +1144,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the coordinates can be applied, <b>false</b> if not.</returns>
         private bool CanApplyClip()
         {
-            if ((Texture == null) || (CurrentPanel != null) || (CommandContext != SpriteClipContext))
+            if ((Texture is null) || (CurrentPanel is not null) || (CommandContext != SpriteClipContext))
             {
                 return false;
             }
@@ -1218,9 +1218,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the sprite picker can activate or not.
         /// </summary>
         /// <returns><b>true</b> if it can activate, <b>false</b> if not.</returns>
-        private bool CanSpritePick() => ((CommandContext == null) || (CommandContext == SpritePickContext))
-                                            && (Texture != null)
-                                            && (CurrentPanel == null);
+        private bool CanSpritePick() => ((CommandContext is null) || (CommandContext == SpritePickContext))
+                                            && (Texture is not null)
+                                            && (CurrentPanel is null);
 
         /// <summary>
         /// Function to activate (or deactivate) the sprite picker tool.
@@ -1253,9 +1253,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if a sprite can be clipped.
         /// </summary>
         /// <returns><b>true</b> if the sprite can be clipped, <b>false</b> if not.</returns>
-        private bool CanSpriteClip() => ((CommandContext == null) || (CommandContext == SpriteClipContext))
-                                            && (Texture != null)
-                                            && (CurrentPanel == null);
+        private bool CanSpriteClip() => ((CommandContext is null) || (CommandContext == SpriteClipContext))
+                                            && (Texture is not null)
+                                            && (CurrentPanel is null);
 
         /// <summary>
         /// Function to activate (or deactivate) the sprite clipper tool.
@@ -1281,7 +1281,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the sprite vertex offsets can be adjusted.
         /// </summary>
         /// <returns><b>true</b> if the vertices can be adjusted, <b>false</b> if not.</returns>
-        private bool CanSpriteVertexOffset() => (Texture != null) && ((CommandContext == null) || (CommandContext == SpriteVertexEditContext)) && (CurrentPanel == null);
+        private bool CanSpriteVertexOffset() => (Texture is not null) && ((CommandContext is null) || (CommandContext == SpriteVertexEditContext)) && (CurrentPanel is null);
 
         /// <summary>
         /// Function to activate the sprite vertex editing functionality.
@@ -1308,7 +1308,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the color editor panel can be shown.
         /// </summary>
         /// <returns><b>true</b> if the color editor panel can be shown, <b>false</b> if not.</returns>
-        private bool CanShowColorEditor() => (Texture != null) && (CommandContext == null) && (CurrentPanel == null);
+        private bool CanShowColorEditor() => (Texture is not null) && (CommandContext is null) && (CurrentPanel is null);
 
         /// <summary>
         /// Function to show or hide the sprite color editor.
@@ -1330,7 +1330,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the anchor editor panel can be shown.
         /// </summary>
         /// <returns><b>true</b> if the anchor editor can be shown, or <b>false</b> if not.</returns>
-        private bool CanShowAnchorEditor() => (Texture != null) && (CommandContext == null) && (CurrentPanel == null);
+        private bool CanShowAnchorEditor() => (Texture is not null) && (CommandContext is null) && (CurrentPanel is null);
 
         /// <summary>
         /// Function to show or hide the sprite anchor editor.
@@ -1351,7 +1351,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the sprite texture wrapping editor panel can be shown.
         /// </summary>
         /// <returns><b>true</b> if the texture wrapping editor panel can be shown, <b>false</b> if not.</returns>
-        private bool CanShowWrappingEditor() => (Texture != null) && (CommandContext == null) && (CurrentPanel == null);
+        private bool CanShowWrappingEditor() => (Texture is not null) && (CommandContext is null) && (CurrentPanel is null);
 
         /// <summary>
         /// Function to show or hide the sprite texture wrapping editor.
@@ -1373,7 +1373,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to determine if the changes to sprite texture wrapping can be committed back to the sprite.
         /// </summary>
         /// <returns><b>true</b> if the changes can be committed, <b>false</b> if not.</returns>
-        private bool CanCommitWrappingChange() => ((WrappingEditor != null) && (Texture != null) 
+        private bool CanCommitWrappingChange() => ((WrappingEditor is not null) && (Texture is not null) 
             && ((SamplerState.WrapU != WrappingEditor.HorizontalWrapping)
                  || (SamplerState.WrapV != WrappingEditor.VerticalWrapping)
                  || (!SamplerState.BorderColor.Equals(WrappingEditor.BorderColor))));
@@ -1439,7 +1439,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the anchor value can be comitted, <b>false</b> if not.</returns>
         private bool CanCommitAnchorChange()
         {
-            if ((AnchorEditor == null) || (Texture == null))
+            if ((AnchorEditor is null) || (Texture is null))
             {
                 return false;
             }
@@ -1512,7 +1512,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <param name="state">The sampler state.</param>
         /// <returns><b>true</b> if the filter can be set, <b>false</b> if not.</returns>
-        private bool CanSetTextureFilter(SampleFilter state) => (CurrentPanel == null) && (CommandContext == null);
+        private bool CanSetTextureFilter(SampleFilter state) => (CurrentPanel is null) && (CommandContext is null);
 
         /// <summary>
         /// Function to set the texture sampler filter on the sprite.
@@ -1556,7 +1556,7 @@ namespace Gorgon.Editor.SpriteEditor
             switch (filter)
             {
                 case SampleFilter.MinMagMipPoint:
-                    if ((SamplerState == GorgonSamplerState.Default) || (SamplerState == null))
+                    if ((SamplerState == GorgonSamplerState.Default) || (SamplerState is null))
                     {
                         newState = GorgonSamplerState.PointFiltering;
                     }
@@ -1596,7 +1596,7 @@ namespace Gorgon.Editor.SpriteEditor
             switch (e.PropertyName)
             {
                 case nameof(IHostedPanelViewModel.IsActive):
-                    if (CurrentPanel != null)
+                    if (CurrentPanel is not null)
                     {
                         CurrentPanel = null;
                     }
@@ -1642,7 +1642,7 @@ namespace Gorgon.Editor.SpriteEditor
             base.OnLoad();
 
             // Mark this file as open in the editor.
-            if (_textureFile != null)
+            if (_textureFile is not null)
             {
                 _textureFile.IsOpen = true;
             }
@@ -1665,29 +1665,29 @@ namespace Gorgon.Editor.SpriteEditor
             SpritePickContext?.OnUnload();
             SpriteClipContext?.OnUnload();
 
-            if (CurrentPanel != null)
+            if (CurrentPanel is not null)
             {
                 CurrentPanel = null;
             }
 
-            if (SpriteClipContext != null)
+            if (SpriteClipContext is not null)
             {
                 SpriteClipContext.ApplyCommand = null;
             }
 
-            if (SpritePickContext != null)
+            if (SpritePickContext is not null)
             {
                 SpritePickContext.ApplyCommand = null;
             }
 
             CurrentPanel = null;
 
-            if (AnchorEditor != null)
+            if (AnchorEditor is not null)
             {
                 AnchorEditor.OkCommand = null;
             }
 
-            if (ColorEditor != null)
+            if (ColorEditor is not null)
             {
                 ColorEditor.OkCommand = null;
             }

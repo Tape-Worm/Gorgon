@@ -148,7 +148,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
                 IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, FrameOffsetMetadataNames);
 
-                if (result == null)
+                if (result is null)
                 {
                     throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
                 }
@@ -187,12 +187,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public override void Save(IGorgonImage imageData, Stream stream)
         {
-            if (imageData == null)
+            if (imageData is null)
             {
                 throw new ArgumentNullException(nameof(imageData));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -258,7 +258,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         public IGorgonImageInfo GetMetaData(Stream stream, IGorgonWicDecodingOptions options)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -310,7 +310,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IReadOnlyList<DX.Point> GetFrameOffsets(string fileName)
         {
-            if (fileName == null)
+            if (fileName is null)
             {
                 throw new ArgumentNullException(nameof(fileName));
             }
@@ -320,10 +320,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentEmptyException(nameof(fileName));
             }
 
-            using (FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return GetFrameOffsets(stream);
-            }
+            using FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return GetFrameOffsets(stream);
         }
 
         /// <summary>
@@ -354,7 +352,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             try
             {
-                if ((FrameOffsetMetadataNames == null) || (FrameOffsetMetadataNames.Count == 0))
+                if ((FrameOffsetMetadataNames is null) || (FrameOffsetMetadataNames.Count == 0))
                 {
                     return Array.Empty<DX.Point>();
                 }
@@ -388,7 +386,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public override bool IsReadable(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -409,7 +407,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             {
                 GorgonImageInfo info = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, null);
 
-                return info != null && info.Format != BufferFormat.Unknown;
+                return info is not null && info.Format != BufferFormat.Unknown;
             }
             catch (DX.SharpDXException)
             {
@@ -437,7 +435,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         protected GorgonCodecWic(string codec, string description, IReadOnlyList<string> extensions, Guid containerGUID, TWicEncOpt encodingOptions, TWicDecOpt decodingOptions)
             : base(encodingOptions, decodingOptions)
         {
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }

@@ -35,11 +35,11 @@ namespace GorgonTriangulator
     internal class Triangulator
     {
         #region Fields
-        private readonly IndexableCyclicalLinkedList<Vertex> _polygonVertices = new IndexableCyclicalLinkedList<Vertex>();
-        private readonly IndexableCyclicalLinkedList<Vertex> _earVertices = new IndexableCyclicalLinkedList<Vertex>();
-        private readonly CyclicalList<Vertex> _convexVertices = new CyclicalList<Vertex>();
-        private readonly CyclicalList<Vertex> _reflexVertices = new CyclicalList<Vertex>();
-        private readonly List<Triangle> _triangles = new List<Triangle>();
+        private readonly IndexableCyclicalLinkedList<Vertex> _polygonVertices = new();
+        private readonly IndexableCyclicalLinkedList<Vertex> _earVertices = new();
+        private readonly CyclicalList<Vertex> _convexVertices = new();
+        private readonly CyclicalList<Vertex> _reflexVertices = new();
+        private readonly List<Triangle> _triangles = new();
         // The log used for debug messages.
         private readonly IGorgonLog _log;
         #endregion

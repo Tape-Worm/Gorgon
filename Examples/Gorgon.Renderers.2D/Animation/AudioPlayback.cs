@@ -54,7 +54,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return whether or not the audio is playing.
         /// </summary>
-        public bool IsPlaying => (_tokenSource != null) && (_tokenSource.Token.IsCancellationRequested);
+        public bool IsPlaying => (_tokenSource is not null) && (_tokenSource.Token.IsCancellationRequested);
         #endregion
 
         #region Methods.
@@ -63,7 +63,7 @@ namespace Gorgon.Examples
         /// </summary>
         public void Stop()
         {
-            if (_tokenSource != null)
+            if (_tokenSource is not null)
             {
                 _tokenSource.Cancel();
             }
@@ -78,7 +78,7 @@ namespace Gorgon.Examples
         /// <param name="path">The path to the mp3 file.</param>
         public async Task PlayMp3Async(string path)
         {
-            if (_currentPlayback != null)
+            if (_currentPlayback is not null)
             {
                 await _currentPlayback;
                 return;

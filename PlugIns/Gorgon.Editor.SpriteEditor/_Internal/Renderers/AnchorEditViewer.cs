@@ -147,11 +147,11 @@ namespace Gorgon.Editor.SpriteEditor
                     DataContext.AnchorEditor.PreviewRotation = !DataContext.AnchorEditor.PreviewRotation;
                     args.IsInputKey = true;
                     break;
-                case Keys.Enter when ((DataContext.AnchorEditor.OkCommand != null) && (DataContext.AnchorEditor.OkCommand.CanExecute(null))):
+                case Keys.Enter when ((DataContext.AnchorEditor.OkCommand is not null) && (DataContext.AnchorEditor.OkCommand.CanExecute(null))):
                     DataContext.AnchorEditor.OkCommand.Execute(null);
                     args.IsInputKey = true;
                     break;
-                case Keys.Escape when ((DataContext.AnchorEditor.CancelCommand != null) && (DataContext.AnchorEditor.CancelCommand.CanExecute(null))):
+                case Keys.Escape when ((DataContext.AnchorEditor.CancelCommand is not null) && (DataContext.AnchorEditor.CancelCommand.CanExecute(null))):
                     DataContext.AnchorEditor.CancelCommand.Execute(null);
                     args.IsInputKey = true;
                     break;

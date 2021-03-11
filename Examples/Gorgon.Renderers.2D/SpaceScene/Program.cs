@@ -85,7 +85,7 @@ namespace Gorgon.Examples
         // The base resolution for our display.  
         // This is used to ensure that the display area scales correctly when the window is resized.  We ensure that the sprites and whatnot remain at the same size no matter what the actual 
         // screen size is by locking our scale to a base of the resolution set here. 
-        private static readonly Vector2 _baseResolution = new Vector2(1920, 1080);
+        private static readonly DX.Vector2 _baseResolution = new(1920, 1080);
         // The font used to draw the help text.
         private static GorgonFont _helpFont;
         // Text sprite for instructions.
@@ -103,7 +103,7 @@ namespace Gorgon.Examples
             switch (e.Key)
             {
                 case Keys.C:
-                    if (_ship.LayerController != null)
+                    if (_ship.LayerController is not null)
                     {
                         LayerCamera controller = _ship.LayerController;
                         _ship.LayerController = null;
@@ -147,7 +147,7 @@ namespace Gorgon.Examples
                 _renderer.DrawTextSprite(_textSprite);
             }
 
-            float speed = _ship.LayerController != null ? _ship.Speed : _shipDeux.Speed;
+            float speed = _ship.LayerController is not null ? _ship.Speed : _shipDeux.Speed;
             float maxSpeed = renderArea.Width * 0.12f * speed;
             var speedRegion = new DX.RectangleF(renderArea.Left + 5, renderArea.Bottom - 30, renderArea.Width * 0.12f, 25);
             var speedBar = new DX.RectangleF(speedRegion.X, speedRegion.Y, maxSpeed, speedRegion.Height);
@@ -409,7 +409,7 @@ namespace Gorgon.Examples
             finally
             {
                 // Always perform your clean up.
-                if (_keyboard != null)
+                if (_keyboard is not null)
                 {
                     _keyboard.KeyUp -= Keyboard_KeyUp;
                 }
@@ -418,7 +418,7 @@ namespace Gorgon.Examples
 
                 GorgonExample.UnloadResources();
 
-                if (_keyboard != null)
+                if (_keyboard is not null)
                 {
                     _input?.UnregisterDevice(_keyboard);
                 }

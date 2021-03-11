@@ -90,7 +90,7 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonDepthStencilState OnCreateState() => new GorgonDepthStencilState(WorkingState);
+        protected override GorgonDepthStencilState OnCreateState() => new(WorkingState);
 
         /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
         /// <param name="state">The state to update.</param>

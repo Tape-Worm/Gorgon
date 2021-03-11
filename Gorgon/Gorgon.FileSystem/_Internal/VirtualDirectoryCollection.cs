@@ -42,7 +42,7 @@ namespace Gorgon.IO
     {
         #region Variables.
         // The backing store for the directories.
-        private readonly Dictionary<string, VirtualDirectory> _directories = new Dictionary<string, VirtualDirectory>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, VirtualDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
         // The parent directory that owns this collection.
         private readonly VirtualDirectory _parent;
         #endregion
@@ -92,7 +92,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentException">Thrown when this collection already contains a directory with the same name as the <paramref name="item"/> parameter.</exception>
         public void Add(VirtualDirectory item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -114,7 +114,7 @@ namespace Gorgon.IO
         /// </returns>
         public bool Remove(VirtualDirectory item)
         {
-            if (item == null)
+            if (item is null)
             {
                 return false;
             }

@@ -152,7 +152,7 @@ namespace Gorgon.Examples
 			}
 
 			// Create ball array.
-			if (_ballList == null)
+			if (_ballList is null)
 			{
 				_ballList = new Ball[1048576];
 			}
@@ -223,7 +223,7 @@ namespace Gorgon.Examples
 				}
 
 				// Adjust scale.
-				if ((currentBall.Scale > 2.0f) || (currentBall.Scale < 0.5f))
+				if (currentBall.Scale is > 2.0f or < 0.5f)
 				{
 					currentBall.ScaleDelta = -currentBall.ScaleDelta;
 
@@ -234,8 +234,7 @@ namespace Gorgon.Examples
 				}
 
 				// Adjust opacity.
-				if ((currentBall.Opacity <= 1.0f)
-					&& (currentBall.Opacity >= 0.0f))
+				if (currentBall.Opacity is <= 1.0f and >= 0.0f)
 				{
 					continue;
 				}
@@ -654,7 +653,7 @@ namespace Gorgon.Examples
 						{
 							IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[_window.Handle];
 
-							if (output == null)
+							if (output is null)
 							{
 								_mainScreen.EnterFullScreen();
 							}
@@ -708,6 +707,7 @@ namespace Gorgon.Examples
 		{
 			try
 			{
+				Application.SetHighDpiMode(HighDpiMode.SystemAware);
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 

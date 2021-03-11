@@ -226,7 +226,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to draw the animation.</summary>
         protected override void DrawAnimation()
         {
-            if (DataContext.KeyEditor.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor.CurrentEditor?.Track is null)
             {
                 return;
             }
@@ -253,7 +253,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (Sprite == null)
+            if (Sprite is null)
             {
                 return;
             }

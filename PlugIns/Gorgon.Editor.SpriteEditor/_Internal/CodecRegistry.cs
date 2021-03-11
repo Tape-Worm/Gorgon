@@ -116,7 +116,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     IGorgonSpriteCodec codec = plugin.CreateCodec(desc.Name, _renderer);
 
-                    if (codec == null)
+                    if (codec is null)
                     {
                         _log.Print($"ERROR: The sprite codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                         continue;
@@ -133,7 +133,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="plugin">The plug in to remove.</param>
         public void RemoveCodecPlugIn(GorgonSpriteCodecPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -147,7 +147,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 IGorgonSpriteCodec codec = Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
-                if (codec != null)
+                if (codec is not null)
                 {
                     Codecs.Remove(codec);
                 }
@@ -234,7 +234,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                     IGorgonSpriteCodec spriteCodec = plugin.CreateCodec(desc.Name, _renderer);
 
-                    if (spriteCodec == null)
+                    if (spriteCodec is null)
                     {
                         _log.Print($"ERROR: Could not create sprite codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                         localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_LOAD_FAIL, desc.Name));

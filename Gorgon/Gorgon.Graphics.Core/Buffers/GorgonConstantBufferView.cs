@@ -171,7 +171,7 @@ namespace Gorgon.Graphics.Core
         {
             GorgonConstantBuffer buffer = Interlocked.Exchange(ref _buffer, null);
 
-            if ((buffer == null) || (!_ownsBuffer))
+            if ((buffer is null) || (!_ownsBuffer))
             {
                 return;
             }
@@ -214,12 +214,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonConstantBuffer"/>
         public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, IGorgonConstantBufferInfo info, int startConstant = 0, int constantCount = 0)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
@@ -272,7 +272,7 @@ namespace Gorgon.Graphics.Core
         public static GorgonConstantBufferView CreateConstantBuffer<T>(GorgonGraphics graphics, in T value, string name = null, ResourceUsage usage = ResourceUsage.Default, int firstElement = 0, int elementCount = 0)
             where T : unmanaged
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
@@ -330,14 +330,9 @@ namespace Gorgon.Graphics.Core
         public static GorgonConstantBufferView CreateConstantBuffer<T>(GorgonGraphics graphics, ReadOnlySpan<T> value, string name = null, ResourceUsage usage = ResourceUsage.Default, int firstElement = 0, int elementCount = 0)
             where T : unmanaged
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
-            }
-
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
             }
 
             var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(name)

@@ -100,22 +100,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="imageType">The image type to evaluate.</param>
         /// <returns><b>true</b> if suitable, <b>false</b> if not.</returns>
-        public bool IsTextureFormat(ImageType imageType)
+        public bool IsTextureFormat(ImageType imageType) => imageType switch
         {
-            switch (imageType)
-            {
-                case ImageType.Image1D:
-                    return (FormatSupport & BufferFormatSupport.Texture1D) == BufferFormatSupport.Texture1D;
-                case ImageType.Image2D:
-                    return (FormatSupport & BufferFormatSupport.Texture2D) == BufferFormatSupport.Texture2D;
-                case ImageType.Image3D:
-                    return (FormatSupport & BufferFormatSupport.Texture3D) == BufferFormatSupport.Texture3D;
-                case ImageType.ImageCube:
-                    return (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube;
-                default:
-                    return false;
-            }
-        }
+            ImageType.Image1D => (FormatSupport & BufferFormatSupport.Texture1D) == BufferFormatSupport.Texture1D,
+            ImageType.Image2D => (FormatSupport & BufferFormatSupport.Texture2D) == BufferFormatSupport.Texture2D,
+            ImageType.Image3D => (FormatSupport & BufferFormatSupport.Texture3D) == BufferFormatSupport.Texture3D,
+            ImageType.ImageCube => (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube,
+            _ => false,
+        };
         #endregion
 
         #region Constructor/Finalizer.

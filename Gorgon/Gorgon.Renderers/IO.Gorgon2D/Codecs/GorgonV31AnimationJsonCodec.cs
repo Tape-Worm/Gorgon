@@ -94,7 +94,7 @@ namespace Gorgon.IO
                 {
                     ulong? id = (ulong?)reader.ReadAsDecimal();
 
-                    if ((id == null) || (id != CurrentFileHeader))
+                    if ((id is null) || (id != CurrentFileHeader))
                     {
                         return false;
                     }
@@ -332,12 +332,12 @@ namespace Gorgon.IO
         /// <exception cref="GorgonException">Thrown if the JSON string does not contain animation data, or there is a version mismatch.</exception>
         public IGorgonAnimation FromJson(Gorgon2D renderer, string json, string name = null)
         {
-            if (renderer == null)
+            if (renderer is null)
             {
                 throw new ArgumentNullException(nameof(renderer));
             }
 
-            if (json == null)
+            if (json is null)
             {
                 throw new ArgumentNullException(nameof(json));
             }
@@ -534,10 +534,8 @@ namespace Gorgon.IO
         /// <param name="stream">The stream that will contain the animation.</param>
         protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream)
         {
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
-            {
-                writer.Write(animation.ToJson());
-            }
+            using var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true);
+            writer.Write(animation.ToJson());
         }
 
         /// <summary>
@@ -549,14 +547,10 @@ namespace Gorgon.IO
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
         protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount)
         {
-            using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
-            {
-                using (var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
-                {
-                    string jsonString = reader.ReadToEnd();
-                    return FromJson(Renderer, name, jsonString);
-                }
-            }
+            using var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false);
+            using var reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true);
+            string jsonString = reader.ReadToEnd();
+            return FromJson(Renderer, name, jsonString);
         }
 
         /// <summary>

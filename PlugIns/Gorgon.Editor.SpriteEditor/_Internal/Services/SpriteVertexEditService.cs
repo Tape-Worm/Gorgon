@@ -99,7 +99,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     VerticesChangedEvent = null;
                     return;
@@ -109,7 +109,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     VertexSelectedEvent = null;
                     return;
@@ -135,7 +135,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -151,7 +151,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     KeyboardIconClickedEvent = null;
                     return;
@@ -161,7 +161,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -200,7 +200,7 @@ namespace Gorgon.Editor.SpriteEditor
             get => _vertices;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     Array.Clear(_vertices, 0, _vertices.Length);
                     return;
@@ -338,7 +338,7 @@ namespace Gorgon.Editor.SpriteEditor
         private void SetupHandles()
         {
             // Convert to client space.
-            if (Camera != null)
+            if (Camera is not null)
             {
                 var half = new Vector3(SpriteBounds.Width * 0.5f, SpriteBounds.Height * 0.5f, 0);
 
@@ -574,7 +574,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return true;
             }
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 3))
+            if (_activeHandleIndex is (-1) or > 3)
             {
                 SelectedVertexIndex = -1;
                 return false;
@@ -663,7 +663,7 @@ namespace Gorgon.Editor.SpriteEditor
                     _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
                 }
 
-                if (texture == null)
+                if (texture is null)
                 {
                     _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
                     _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);

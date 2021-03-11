@@ -72,9 +72,9 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The working sprite.
-        private readonly GorgonPolySprite _workingSprite = new GorgonPolySprite();
+        private readonly GorgonPolySprite _workingSprite = new();
         // The triangulator used to convert the polygon into a triangle mesh.
-        private readonly Triangulator _triangulator = new Triangulator(null);
+        private readonly Triangulator _triangulator = new(null);
         #endregion
 
         #region Properties.
@@ -173,7 +173,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="vertex"/> is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder RemoveVertex(GorgonPolySpriteVertex vertex)
         {
-            if (vertex == null)
+            if (vertex is null)
             {
                 throw new ArgumentNullException(nameof(vertex));
             }
@@ -208,7 +208,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="vertex"/> parameter is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder MoveVertex(GorgonPolySpriteVertex vertex, int newIndex)
         {
-            if (vertex == null)
+            if (vertex is null)
             {
                 throw new ArgumentNullException(nameof(vertex));
             }
@@ -252,7 +252,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name=" vertex"/> parameter is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder InsertVertex(int index, GorgonPolySpriteVertex vertex)
         {
-            if (vertex == null)
+            if (vertex is null)
             {
                 throw new ArgumentNullException(nameof(vertex));
             }
@@ -270,7 +270,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name=" vertices"/> parameter is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder InsertVertices(int index, IEnumerable<GorgonPolySpriteVertex> vertices)
         {
-            if (vertices == null)
+            if (vertices is null)
             {
                 throw new ArgumentNullException(nameof(vertices));
             }
@@ -287,7 +287,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="vertices"/> is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder AddVertices(IEnumerable<GorgonPolySpriteVertex> vertices)
         {
-            if (vertices == null)
+            if (vertices is null)
             {
                 throw new ArgumentNullException(nameof(vertices));
             }
@@ -304,7 +304,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="vertex"/> is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder AddVertex(GorgonPolySpriteVertex vertex)
         {
-            if (vertex == null)
+            if (vertex is null)
             {
                 throw new ArgumentNullException(nameof(vertex));
             }
@@ -490,7 +490,7 @@ namespace Gorgon.Renderers
             CopySprite(newSprite, _workingSprite);
 
             newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
-            if ((newSprite.Renderable.Vertices == null) || (newSprite.Renderable.Vertices.Length < newSprite.RwVertices.Count))
+            if ((newSprite.Renderable.Vertices is null) || (newSprite.Renderable.Vertices.Length < newSprite.RwVertices.Count))
             {
                 newSprite.Renderable.Vertices = new Gorgon2DVertex[newSprite.RwVertices.Count];
             }
@@ -560,7 +560,7 @@ namespace Gorgon.Renderers
         /// <returns>The fluent builder interface.</returns>
         public GorgonPolySpriteBuilder ResetTo(GorgonPolySprite builderObject = null)
         {
-            if (builderObject == null)
+            if (builderObject is null)
             {
                 Clear();
                 return this;

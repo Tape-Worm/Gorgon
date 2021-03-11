@@ -53,7 +53,7 @@ namespace Gorgon.Renderers
 #pragma warning restore IDE0032 // Use auto property
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
-        internal readonly BatchRenderable Renderable = new BatchRenderable();
+        internal readonly BatchRenderable Renderable = new();
         #endregion
 
         #region Properties.
@@ -155,7 +155,7 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public Vector2 Position
         {
-            get => new Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
+            get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
@@ -395,7 +395,7 @@ namespace Gorgon.Renderers
             set
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (value == null)
+                if (value is null)
                 {
                     if (Renderable.AlphaTestData.IsEnabled == 0)
                     {
@@ -463,7 +463,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
         public void CopyTo(GorgonSprite sprite)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 throw new ArgumentNullException(nameof(sprite));
             }
@@ -509,7 +509,7 @@ namespace Gorgon.Renderers
         public GorgonSprite(GorgonSprite clone)
             : this()
         {
-            if (clone == null)
+            if (clone is null)
             {
                 throw new ArgumentNullException(nameof(clone));
             }

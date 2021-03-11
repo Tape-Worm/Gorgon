@@ -69,7 +69,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 		{            
 			OnRenderBackground();
 
-			if ((DataContext.Atlas == null) || (DataContext.Atlas.Textures.Count == 0))
+			if ((DataContext.Atlas is null) || (DataContext.Atlas.Textures.Count == 0))
 			{
 				DrawMessage();
 				return;
@@ -102,13 +102,13 @@ namespace Gorgon.Editor.TextureAtlasTool
 				Anchor = new Vector2(0.5f, 0.5f)
 			};
 
-			GorgonTexture2DView texture = (DataContext.Atlas != null) && (DataContext.Atlas.Textures.Count > 0) ? DataContext.Atlas.Textures[0] : null;
+			GorgonTexture2DView texture = (DataContext.Atlas is not null) && (DataContext.Atlas.Textures.Count > 0) ? DataContext.Atlas.Textures[0] : null;
 
 			_textureSprite = new GorgonSprite
 			{
 				Texture = texture,
 				TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-				Size = new DX.Size2F(texture != null ? texture.Width : 1, texture != null ? texture.Height : 1),
+				Size = new DX.Size2F(texture is not null ? texture.Width : 1, texture is not null ? texture.Height : 1),
 				TextureSampler = GorgonSamplerState.PointFiltering
 			};
 		}

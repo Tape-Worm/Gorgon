@@ -41,9 +41,9 @@ namespace Gorgon.Editor.SpriteEditor
     {
         #region Variables.
         // The controller for animating the content.
-        private readonly ImageAnimationController _animController = new ImageAnimationController();
+        private readonly ImageAnimationController _animController = new();
         private IGorgonAnimation _opacityAnimation;
-        private readonly GorgonAnimationBuilder _animationBuilder = new GorgonAnimationBuilder();
+        private readonly GorgonAnimationBuilder _animationBuilder = new();
         #endregion
 
         #region Properties.

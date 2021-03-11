@@ -159,7 +159,7 @@ namespace Gorgon.Editor.SpriteEditor
             get => _spriteBounds;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     OnPropertyChanging();
                     Array.Clear(_spriteBounds, 0, _spriteBounds.Length);

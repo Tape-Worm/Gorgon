@@ -284,7 +284,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, format);
             GorgonIndexBufferReadWriteView result = GetReadWriteView<GorgonIndexBufferReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }

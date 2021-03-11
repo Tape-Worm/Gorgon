@@ -92,7 +92,7 @@ namespace Gorgon.Examples
         // The compute engine.
         private static GorgonComputeEngine _engine;
         // The dispatch call builder.
-        private static readonly GorgonDispatchCallBuilder _dispatchBuilder = new GorgonDispatchCallBuilder();
+        private static readonly GorgonDispatchCallBuilder _dispatchBuilder = new();
         #endregion
 
         #region Methods.
@@ -165,7 +165,7 @@ namespace Gorgon.Examples
 
             // If a device with a feature set of at least 12.0 not found, then we cannot run this example. The compute engine requires a minimum 
             // of feature level 12.0 to run.
-            if (firstDevice == null)
+            if (firstDevice is null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No Level 11.2 or better adapters found in the system. This example requires a FeatureLevel 11.2 or better adapter.");

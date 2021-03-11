@@ -71,8 +71,7 @@ namespace Gorgon.Graphics.Fonts
                 }
 
                 // Skip out on carriage returns and newlines.
-                if ((character == '\r')
-                    || (character == '\n'))
+                if (character is '\r' or '\n')
                 {
                     continue;
                 }
@@ -165,7 +164,7 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         public static string WordWrap(this string text, GorgonFont font, float wordWrapWidth)
         {
-            if (font == null)
+            if (font is null)
             {
                 throw new ArgumentNullException(nameof(font));
             }
@@ -192,8 +191,7 @@ namespace Gorgon.Graphics.Fonts
                 char character = wordText[index];
 
                 // Don't count newline or carriage return.
-                if ((character == '\n')
-                    || (character == '\r'))
+                if (character is '\n' or '\r')
                 {
                     firstChar = true;
                     position = 0;
@@ -312,7 +310,7 @@ namespace Gorgon.Graphics.Fonts
         /// <seealso cref="MeasureText"/>
         public static DX.Size2F MeasureLine(this string text, GorgonFont font, bool useOutline = false, float lineSpacing = 1.0f)
         {
-            if (font == null)
+            if (font is null)
             {
                 throw new ArgumentNullException(nameof(font));
             }
@@ -367,7 +365,7 @@ namespace Gorgon.Graphics.Fonts
         /// <seealso cref="MeasureLine"/>
         public static DX.Size2F MeasureText(this string text, GorgonFont font, bool useOutline = false, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
         {
-            if (font == null)
+            if (font is null)
             {
                 throw new ArgumentNullException(nameof(font));
             }
@@ -386,7 +384,7 @@ namespace Gorgon.Graphics.Fonts
 
             DX.Size2F result = DX.Size2F.Zero;
 
-            if (wordWrapWidth != null)
+            if (wordWrapWidth is not null)
             {
                 formattedText = WordWrap(formattedText, font, wordWrapWidth.Value);
             }

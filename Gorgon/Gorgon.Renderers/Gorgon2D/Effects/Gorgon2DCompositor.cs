@@ -63,9 +63,9 @@ namespace Gorgon.Renderers
         // The texture view for the pong target.
         private GorgonTexture2DView _pongTexture;
         // The ordered list where the actual passes are stored.
-        private readonly GorgonNamedObjectList<CompositionPass> _passes = new GorgonNamedObjectList<CompositionPass>();
+        private readonly GorgonNamedObjectList<CompositionPass> _passes = new();
         // The unique list of effects
-        private readonly Dictionary<string, int> _passLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, int> _passLookup = new(StringComparer.OrdinalIgnoreCase);
         // The color used to clear the initial render target.
         private GorgonColor? _initialClear = GorgonColor.BlackTransparent;
         // The color used to clear the final render target.
@@ -124,7 +124,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="outputTarget">The final render output target.</param>
         /// <returns><b>true</b> if the resources need updating, or <b>false</b> if not.</returns>
-        private bool NeedsResourceUpdate(GorgonRenderTargetView outputTarget) => (_final == null)
+        private bool NeedsResourceUpdate(GorgonRenderTargetView outputTarget) => (_final is null)
                                                                                  || (_pingTarget.Width != outputTarget.Width)
                                                                                  || (_pingTarget.Height != outputTarget.Height)
                                                                                  || (_pingTarget.Format != outputTarget.Format);
@@ -176,7 +176,7 @@ namespace Gorgon.Renderers
         {
             Graphics.SetRenderTarget(_final);
 
-            if (_finalClear != null)
+            if (_finalClear is not null)
             {
                 _final.Clear(_finalClear.Value);
             }
@@ -217,7 +217,7 @@ namespace Gorgon.Renderers
         /// <seealso cref="CompositionPass"/>
         private Gorgon2DCompositor Pass(CompositionPass pass)
         {
-            if (pass == null)
+            if (pass is null)
             {
                 throw new ArgumentNullException(nameof(pass));
             }
@@ -344,7 +344,7 @@ namespace Gorgon.Renderers
         /// <returns>The fluent interface for the effects processor.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="effect"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        public Gorgon2DCompositor EffectPass(string name, IGorgon2DCompositorEffect effect) => effect == null
+        public Gorgon2DCompositor EffectPass(string name, IGorgon2DCompositorEffect effect) => effect is null
                 ? throw new ArgumentNullException(nameof(effect))
                 : Pass(new CompositionPass(name)
                 {
@@ -379,7 +379,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         public Gorgon2DCompositor RenderingPass(string name, Action<Gorgon2D, GorgonTexture2DView, GorgonRenderTargetView> renderMethod, Gorgon2DBatchState batchState = null, GorgonCameraCommon camera = null)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -389,7 +389,7 @@ namespace Gorgon.Renderers
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (renderMethod == null)
+            if (renderMethod is null)
             {
                 throw new ArgumentNullException(nameof(renderMethod));
             }
@@ -482,7 +482,7 @@ namespace Gorgon.Renderers
                 return this;
             }
 
-            if (_initialClear != null)
+            if (_initialClear is not null)
             {
                 _pingTarget.Clear(_initialClear.Value);
                 _pongTarget.Clear(_initialClear.Value);
@@ -505,12 +505,12 @@ namespace Gorgon.Renderers
                 GorgonTexture2DView nextTexture = ((currentTexture == source) || (currentTexture == _pongTexture)) ? _pingTexture : _pongTexture;
                 GorgonRenderTarget2DView nextTarget = current.target == _pingTarget ? _pongTarget : _pingTarget;
 
-                if (pass.ClearColor != null)
+                if (pass.ClearColor is not null)
                 {
                     currentTarget.Clear(pass.ClearColor.Value);
                 }
 
-                if (pass.Effect != null)
+                if (pass.Effect is not null)
                 {
                     pass.Effect.Render(currentTexture, currentTarget);
                 }

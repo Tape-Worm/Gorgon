@@ -159,7 +159,7 @@ namespace Gorgon.Renderers
                 _noiseFrequency = value;
 
                 // Prepare the random data texture for update.
-                if (_randomTexture == null)
+                if (_randomTexture is null)
                 {
                     return;
                 }
@@ -388,48 +388,46 @@ namespace Gorgon.Renderers
         {
             int textureSize = NoiseTextureSize.Min(128).Max(16);
 
-            using (var image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8_UNorm)
+            using var image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8_UNorm)
             {
                 Width = textureSize,
                 Height = textureSize
-            }))
+            });
+            IGorgonImageBuffer imageBuffer = image.Buffers[0];
+
+            for (int y = 0; y < textureSize; ++y)
             {
-                IGorgonImageBuffer imageBuffer = image.Buffers[0];
-
-                for (int y = 0; y < textureSize; ++y)
+                for (int x = 0; x < textureSize; ++x)
                 {
-                    for (int x = 0; x < textureSize; ++x)
+                    float simplexNoise = GorgonRandom.SimplexNoise(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency));
+
+                    if (simplexNoise < -0.75f)
                     {
-                        float simplexNoise = GorgonRandom.SimplexNoise(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency));
-
-                        if (simplexNoise < -0.75f)
-                        {
-                            simplexNoise *= -1;
-                        }
-                        else
-                        {
-                            simplexNoise *= 0.95f;
-                        }
-
-                        if (simplexNoise < 0.125f)
-                        {
-                            simplexNoise = 0.0f;
-                        }
-
-
-                        image.Buffers[0].Data[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
+                        simplexNoise *= -1;
                     }
-                }
+                    else
+                    {
+                        simplexNoise *= 0.95f;
+                    }
 
-                _randomTexture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("Gorgon2D Old Film Effect Random Noise Texture")
-                {
-                    Width = textureSize,
-                    Height = textureSize,
-                    Usage = ResourceUsage.Immutable,
-                    Binding = TextureBinding.ShaderResource,
-                    Format = BufferFormat.R8_UNorm
-                }, image);
+                    if (simplexNoise < 0.125f)
+                    {
+                        simplexNoise = 0.0f;
+                    }
+
+
+                    image.Buffers[0].Data[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
+                }
             }
+
+            _randomTexture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("Gorgon2D Old Film Effect Random Noise Texture")
+            {
+                Width = textureSize,
+                Height = textureSize,
+                Usage = ResourceUsage.Immutable,
+                Binding = TextureBinding.ShaderResource,
+                Format = BufferFormat.R8_UNorm
+            }, image);
         }
 
         /// <summary>
@@ -498,7 +496,7 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if (_batchState == null)
+            if (_batchState is null)
             {
                 _filmState = builders.PixelShaderBuilder
                               .ConstantBuffer(_timingBuffer, 1)

@@ -189,25 +189,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     reader = fontFile.OpenChunk(BrushChunk);
                     var brushType = (GlyphBrushType)reader.ReadInt32();
 
-                    switch (brushType)
+                    fontInfo.Brush = brushType switch
                     {
-                        case GlyphBrushType.Hatched:
-                            fontInfo.Brush = new GorgonGlyphHatchBrush();
-                            break;
-                        case GlyphBrushType.LinearGradient:
-                            fontInfo.Brush = new GorgonGlyphLinearGradientBrush();
-                            break;
-                        case GlyphBrushType.PathGradient:
-                            fontInfo.Brush = new GorgonGlyphPathGradientBrush();
-                            break;
-                        case GlyphBrushType.Texture:
-                            fontInfo.Brush = new GorgonGlyphTextureBrush();
-                            break;
-                        default:
-                            fontInfo.Brush = new GorgonGlyphSolidBrush();
-                            break;
-                    }
-
+                        GlyphBrushType.Hatched => new GorgonGlyphHatchBrush(),
+                        GlyphBrushType.LinearGradient => new GorgonGlyphLinearGradientBrush(),
+                        GlyphBrushType.PathGradient => new GorgonGlyphPathGradientBrush(),
+                        GlyphBrushType.Texture => new GorgonGlyphTextureBrush(),
+                        _ => new GorgonGlyphSolidBrush(),
+                    };
                     fontInfo.Brush.ReadBrushData(reader);
                     fontFile.CloseChunk();
                 }
@@ -261,25 +250,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     reader = fontFile.OpenChunk(BrushChunk);
                     var brushType = (GlyphBrushType)reader.ReadInt32();
 
-                    switch (brushType)
+                    fontInfo.Brush = brushType switch
                     {
-                        case GlyphBrushType.Hatched:
-                            fontInfo.Brush = new GorgonGlyphHatchBrush();
-                            break;
-                        case GlyphBrushType.LinearGradient:
-                            fontInfo.Brush = new GorgonGlyphLinearGradientBrush();
-                            break;
-                        case GlyphBrushType.PathGradient:
-                            fontInfo.Brush = new GorgonGlyphPathGradientBrush();
-                            break;
-                        case GlyphBrushType.Texture:
-                            fontInfo.Brush = new GorgonGlyphTextureBrush();
-                            break;
-                        default:
-                            fontInfo.Brush = new GorgonGlyphSolidBrush();
-                            break;
-                    }
-
+                        GlyphBrushType.Hatched => new GorgonGlyphHatchBrush(),
+                        GlyphBrushType.LinearGradient => new GorgonGlyphLinearGradientBrush(),
+                        GlyphBrushType.PathGradient => new GorgonGlyphPathGradientBrush(),
+                        GlyphBrushType.Texture => new GorgonGlyphTextureBrush(),
+                        _ => new GorgonGlyphSolidBrush(),
+                    };
                     fontInfo.Brush.ReadBrushData(reader);
                     fontFile.CloseChunk();
                 }
@@ -315,7 +293,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         {
             ulong fileHeaderID = FileHeader.ChunkID();
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

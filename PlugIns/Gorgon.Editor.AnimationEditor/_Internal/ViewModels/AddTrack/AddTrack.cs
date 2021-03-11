@@ -41,7 +41,7 @@ namespace Gorgon.Editor.AnimationEditor
     {
         #region Variables.
         // The list of selected tracks.
-        private readonly List<GorgonTrackRegistration> _selectedTracks = new List<GorgonTrackRegistration>();
+        private readonly List<GorgonTrackRegistration> _selectedTracks = new();
         #endregion
 
         #region Properties.
@@ -70,7 +70,7 @@ namespace Gorgon.Editor.AnimationEditor
                 OnPropertyChanging();
                 _selectedTracks.Clear();
 
-                if (value != null)
+                if (value is not null)
                 {
                     _selectedTracks.AddRange(value);
                 }

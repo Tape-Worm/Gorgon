@@ -59,13 +59,13 @@ namespace Gorgon.Examples
         /// <param name="threshold">The threshold used to determine an edge.</param>
         public void Process(GorgonTexture2DView texture, GorgonTexture2DReadWriteView outputTexture, int thickness, float threshold)
         {
-            if ((texture == null)
-                || (outputTexture == null))
+            if ((texture is null)
+                || (outputTexture is null))
             {
                 return;
             }
 
-            if ((_dispatch == null) || (_dispatch.ShaderResources[0] != texture) || (_dispatch.ReadWriteViews[0].ReadWriteView != outputTexture))
+            if ((_dispatch is null) || (_dispatch.ShaderResources[0] != texture) || (_dispatch.ReadWriteViews[0].ReadWriteView != outputTexture))
             {
                 _dispatch = _dispatchBuilder.ReadWriteView(new GorgonReadWriteViewBinding(outputTexture))
                                             .ShaderResource(texture)
@@ -95,7 +95,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="sobelShader"/> parameter is <b>null</b>.</exception>
         public Sobel(GorgonGraphics graphics, GorgonComputeShader sobelShader)
         {
-            if (sobelShader == null)
+            if (sobelShader is null)
             {
                 throw new ArgumentNullException(nameof(sobelShader));
             }

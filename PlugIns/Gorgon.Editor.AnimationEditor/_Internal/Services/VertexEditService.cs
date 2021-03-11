@@ -83,7 +83,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     VerticesChangedEvent = null;
                     return;
@@ -93,7 +93,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -132,7 +132,7 @@ namespace Gorgon.Editor.AnimationEditor
             get => _vertices;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     Array.Clear(_vertices, 0, _vertices.Length);
                     return;
@@ -201,22 +201,14 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to retrieve the vertex index from the selected sprite corner.
         /// </summary>
         /// <returns>The index of the sprite.</returns>
-        private int GetIndex()
+        private int GetIndex() => _selectedCorner switch
         {
-            switch (_selectedCorner)
-            {
-                case TrackSpriteProperty.UpperLeft:
-                    return 0;
-                case TrackSpriteProperty.UpperRight:
-                    return 1;
-                case TrackSpriteProperty.LowerLeft:
-                    return 3;
-                case TrackSpriteProperty.LowerRight:
-                    return 2;
-                default:
-                    return -1;
-            }
-        }
+            TrackSpriteProperty.UpperLeft => 0,
+            TrackSpriteProperty.UpperRight => 1,
+            TrackSpriteProperty.LowerLeft => 3,
+            TrackSpriteProperty.LowerRight => 2,
+            _ => -1,
+        };
 
         /// <summary>
         /// Function to perform the dragging on the handles or the body of the selection.
@@ -287,7 +279,7 @@ namespace Gorgon.Editor.AnimationEditor
         private void SetupHandles()
         {
             // Convert to client space.
-            if (Camera != null)
+            if (Camera is not null)
             {
                 for (int i = 0; i < _screenVertices.Length; ++i)
                 {

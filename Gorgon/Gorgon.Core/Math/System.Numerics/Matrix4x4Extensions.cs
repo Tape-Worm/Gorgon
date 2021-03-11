@@ -42,7 +42,7 @@ namespace System.Numerics
         /// </summary>
         /// <param name="matrix">The matrix to read.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 GetUpVector(this in Matrix4x4 matrix) => new Vector3(matrix.M21, matrix.M22, matrix.M23);
+        public static Vector3 GetUpVector(this in Matrix4x4 matrix) => new(matrix.M21, matrix.M22, matrix.M23);
 
         /// <summary>
         /// Function to set the up <see cref="Vector3"/> of the matrix; that is M21, M22, and M23.
@@ -62,7 +62,7 @@ namespace System.Numerics
         /// </summary>
         /// <param name="matrix">The matrix to read.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 GetRightVector(this in Matrix4x4 matrix) => new Vector3(matrix.M11, matrix.M12, matrix.M13);
+        public static Vector3 GetRightVector(this in Matrix4x4 matrix) => new(matrix.M11, matrix.M12, matrix.M13);
 
         /// <summary>
         /// Function to set the right <see cref="Vector3"/> of the matrix; that is M11, M12, and M13.
@@ -82,7 +82,7 @@ namespace System.Numerics
         /// </summary>
         /// <param name="matrix">The matrix to read.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 GetForwardVector(this in Matrix4x4 matrix) => new Vector3(-matrix.M31, -matrix.M32, -matrix.M33);
+        public static Vector3 GetForwardVector(this in Matrix4x4 matrix) => new(-matrix.M31, -matrix.M32, -matrix.M33);
 
         /// <summary>
         /// Function to set the forward <see cref="Vector3"/> of the matrix; that is -M31, -M32, and -M33.
@@ -114,7 +114,7 @@ namespace System.Numerics
         /// </summary>
         /// <param name="matrix">The matrix to read.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 GetTranslation(this in Matrix4x4 matrix) => new Vector3(matrix.M41, matrix.M42, matrix.M43);
+        public static Vector3 GetTranslation(this in Matrix4x4 matrix) => new(matrix.M41, matrix.M42, matrix.M43);
 
         /// <summary>
         /// Function to set the scale vector on the matrix.
@@ -134,7 +134,7 @@ namespace System.Numerics
         /// </summary>
         /// <param name="matrix">The matrix to read.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 GetScale(this in Matrix4x4 matrix) => new Vector3(matrix.M41, matrix.M42, matrix.M43);
+        public static Vector3 GetScale(this in Matrix4x4 matrix) => new(matrix.M41, matrix.M42, matrix.M43);
 
         /// <summary>
         /// Function to retrieve a row for the matrix as a 4D vector.
@@ -143,22 +143,14 @@ namespace System.Numerics
         /// <param name="rowIndex">The index of the row to retrieve (0 - 3).</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="rowIndex"/> is less than 0, or greater than 3.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 GetRow(this in Matrix4x4 matrix, int rowIndex)
+        public static Vector4 GetRow(this in Matrix4x4 matrix, int rowIndex) => rowIndex switch
         {
-            switch (rowIndex)
-            {
-                case 0:
-                    return new Vector4(matrix.M11, matrix.M12, matrix.M13, matrix.M14);                    
-                case 1:
-                    return new Vector4(matrix.M21, matrix.M22, matrix.M23, matrix.M24);
-                case 2:
-                    return new Vector4(matrix.M31, matrix.M32, matrix.M33, matrix.M34);
-                case 3:
-                    return new Vector4(matrix.M41, matrix.M42, matrix.M43, matrix.M44);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(rowIndex));
-            }
-        }
+            0 => new Vector4(matrix.M11, matrix.M12, matrix.M13, matrix.M14),
+            1 => new Vector4(matrix.M21, matrix.M22, matrix.M23, matrix.M24),
+            2 => new Vector4(matrix.M31, matrix.M32, matrix.M33, matrix.M34),
+            3 => new Vector4(matrix.M41, matrix.M42, matrix.M43, matrix.M44),
+            _ => throw new ArgumentOutOfRangeException(nameof(rowIndex)),
+        };
 
         /// <summary>
         /// Function to assign a row to the matrix with a 4D vector.
@@ -208,22 +200,14 @@ namespace System.Numerics
         /// <param name="columnIndex">The index of the column to retrieve (0 - 3).</param>
         /// <exception cref="ArgumentOutOfRangeException">Thcolumnn when the <paramref name="columnIndex"/> is less than 0, or greater than 3.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector4 GetColumn(this in Matrix4x4 matrix, int columnIndex)
+        public static Vector4 GetColumn(this in Matrix4x4 matrix, int columnIndex) => columnIndex switch
         {
-            switch (columnIndex)
-            {
-                case 0:
-                    return new Vector4(matrix.M11, matrix.M21, matrix.M31, matrix.M41);
-                case 1:
-                    return new Vector4(matrix.M12, matrix.M22, matrix.M32, matrix.M42);
-                case 2:
-                    return new Vector4(matrix.M13, matrix.M23, matrix.M33, matrix.M43);
-                case 3:
-                    return new Vector4(matrix.M14, matrix.M24, matrix.M34, matrix.M44);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(columnIndex));
-            }
-        }
+            0 => new Vector4(matrix.M11, matrix.M21, matrix.M31, matrix.M41),
+            1 => new Vector4(matrix.M12, matrix.M22, matrix.M32, matrix.M42),
+            2 => new Vector4(matrix.M13, matrix.M23, matrix.M33, matrix.M43),
+            3 => new Vector4(matrix.M14, matrix.M24, matrix.M34, matrix.M44),
+            _ => throw new ArgumentOutOfRangeException(nameof(columnIndex)),
+        };
 
         /// <summary>
         /// Function to assign a column to the matrix with a 4D vector.

@@ -74,7 +74,7 @@ namespace Gorgon.Examples
         // The batch state for drawing our render target.
         private static Gorgon2DBatchState _targetBatchState;
         // Player for our mp3.
-        private static readonly AudioPlayback _mp3Player = new AudioPlayback();
+        private static readonly AudioPlayback _mp3Player = new();
         // The task used while playing audio.
         private static Task _audioTask;
         #endregion
@@ -285,7 +285,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static async void PlayAudio()
         {
-            if (_audioTask != null)
+            if (_audioTask is not null)
             {
                 await _audioTask;
             }
@@ -307,7 +307,7 @@ namespace Gorgon.Examples
                 PlayAudio();
             }
 
-            if (_animController.CurrentAnimation == null)
+            if (_animController.CurrentAnimation is null)
             {
                 _animController.Play(_animatedSprite, _animation);
             }
@@ -349,7 +349,7 @@ namespace Gorgon.Examples
 
                 GorgonApplication.Run(Initialize(), Idle);
 
-                if (_mp3Player != null)
+                if (_mp3Player is not null)
                 {
                     _mp3Player.Stop();
                 }

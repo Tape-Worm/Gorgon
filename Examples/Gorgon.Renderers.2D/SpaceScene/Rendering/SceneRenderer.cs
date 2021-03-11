@@ -54,10 +54,10 @@ namespace Gorgon.Examples
         // The screen buffer.
         private GorgonRenderTarget2DView _screen;
         // The list of layers to render.
-        private readonly List<Layer> _layers = new List<Layer>();
+        private readonly List<Layer> _layers = new();
         // Post processing groups.  Use to render specific layers with post processing effects.
-        private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new List<(string name, Gorgon2DCompositor compositor)>();
-        private readonly Dictionary<string, List<Layer>> _postProcessLayers = new Dictionary<string, List<Layer>>(StringComparer.OrdinalIgnoreCase);
+        private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new();
+        private readonly Dictionary<string, List<Layer>> _postProcessLayers = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Methods.
@@ -161,7 +161,7 @@ namespace Gorgon.Examples
                         layers[j].Render();
                     }
 
-                    if (compositor == null)
+                    if (compositor is null)
                     {
                         FlipToScreen(sceneSrv);
                     }
@@ -183,7 +183,7 @@ namespace Gorgon.Examples
         {
             _screen = screen;
 
-            if (_screen == null)
+            if (_screen is null)
             {
                 return;
             }

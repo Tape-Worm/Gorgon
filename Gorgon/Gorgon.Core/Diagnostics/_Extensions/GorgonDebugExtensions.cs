@@ -56,7 +56,7 @@ namespace Gorgon.Diagnostics
         [Conditional("DEBUG"), DebuggerStepThrough]
         public static void ValidateString(this string value, string paramName, bool keepWhitespace = false)
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(paramName);
             }
@@ -458,7 +458,7 @@ namespace Gorgon.Diagnostics
         [Conditional("DEBUG"), DebuggerStepThrough]
         public static void ValidateIndex(this ICollection collection, int index)
         {
-            if (collection == null)
+            if (collection is null)
             {
                 throw new ArgumentNullException(nameof(collection));
             }
@@ -486,7 +486,7 @@ namespace Gorgon.Diagnostics
         [Conditional("DEBUG"), DebuggerStepThrough]
         public static void ValidateObject<T>(this T value, string paramName) where T : class
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(paramName);
             }
@@ -509,7 +509,7 @@ namespace Gorgon.Diagnostics
         [Conditional("DEBUG"), DebuggerStepThrough]
         public static void ValidateNullable<T>(this T? value, string paramName) where T : struct
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(paramName);
             }

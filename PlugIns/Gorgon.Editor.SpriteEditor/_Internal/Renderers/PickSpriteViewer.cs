@@ -61,7 +61,7 @@ namespace Gorgon.Editor.SpriteEditor
         // The sprite texture to display in the background.
         private GorgonTexture2DView _spriteTexture;
         // The sprite to render.
-        private readonly GorgonSprite _sprite = new GorgonSprite();
+        private readonly GorgonSprite _sprite = new();
         // The region for the sprite.
         private DX.RectangleF _spriteRegion;
         #endregion
@@ -150,7 +150,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnMouseDown(args);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -160,7 +160,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DX.RectangleF? newRect = _picker.Pick(position, DataContext.Settings.ClipMaskValue, DataContext.Settings.ClipMaskType);
 
-            if (newRect == null)
+            if (newRect is null)
             {
                 Cursor.Current = Cursors.Default;
                 return;

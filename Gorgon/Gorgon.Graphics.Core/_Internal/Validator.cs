@@ -43,19 +43,19 @@ namespace Gorgon.Graphics.Core
 		/// <param name="currentTargets">The current list of render targets.</param>
 		public static void ValidateRtvAndDsv(GorgonDepthStencil2DView dsv, GorgonRenderTargetView firstTarget, ReadOnlySpan<GorgonRenderTargetView> currentTargets)
 		{
-			if ((firstTarget == null)
-				&& (dsv == null))
+			if ((firstTarget is null)
+				&& (dsv is null))
 			{
 				return;
 			}
 
-			if (firstTarget != null)
+			if (firstTarget is not null)
 			{
 				// Ensure our dimensions match, and multi-sample settings match.
 				for (int i = 0; i < currentTargets.Length; ++i)
 				{
 					GorgonRenderTargetView rtv = currentTargets[i];
-					if ((rtv == null) || (rtv == firstTarget))
+					if ((rtv is null) || (rtv == firstTarget))
 					{
 						continue;
 					}
@@ -113,8 +113,8 @@ namespace Gorgon.Graphics.Core
 				}
 			}
 
-			if ((firstTarget == null)
-				|| (dsv == null))
+			if ((firstTarget is null)
+				|| (dsv is null))
 			{
 				return;
 			}

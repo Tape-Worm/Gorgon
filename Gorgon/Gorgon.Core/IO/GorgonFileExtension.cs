@@ -233,14 +233,14 @@ namespace Gorgon.IO
 		/// <param name="description">The description.</param>
 		public GorgonFileExtension(string extension, string description)
 		{
-			if (extension == null)
+			if (extension is null)
 			{
 				throw new ArgumentNullException(nameof(extension));
 			}
 
 			if (extension.StartsWith(".", StringComparison.Ordinal))
 			{
-				extension = extension.Substring(1);
+				extension = extension[1..];
 			}
 
 			if (string.IsNullOrWhiteSpace(extension))

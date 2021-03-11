@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>
@@ -74,6 +74,6 @@ This assembly contains a plug in that will read a zip file as a file system.</De
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="REM Copy&#xD;&#xA;copy &quot;$(TargetDir)ICSharpCode.SharpZipLib.dll&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;&#xD;&#xA;&#xD;&#xA;REM Editor copy.&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\net472\PlugIns\FileSystem&quot;&#xD;&#xA;copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\net472\PlugIns\FileSystem&quot;&#xD;&#xA;copy &quot;$(TargetDir)ICSharpCode.SharpZipLib.dll&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\bin\$(ConfigurationName)\net472\PlugIns\FileSystem&quot;" />
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\FileSystem&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0" />
   </Target>
 </Project>

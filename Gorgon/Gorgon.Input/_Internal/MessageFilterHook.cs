@@ -54,7 +54,7 @@ namespace Gorgon.Input
 
         #region Variables.
         // A list of message hooks registered to varying windows.
-        private static readonly Dictionary<IntPtr, MessageFilterHook> _registeredHooks = new Dictionary<IntPtr, MessageFilterHook>(new GorgonIntPtrEqualityComparer());
+        private static readonly Dictionary<IntPtr, MessageFilterHook> _registeredHooks = new(new GorgonIntPtrEqualityComparer());
         // Default window procedure.
         private IntPtr _defaultWndProc;
         // Window to hook.
@@ -65,7 +65,7 @@ namespace Gorgon.Input
         // The new window procedure method.
         private WndProc _newWndProc;
         // The list of message filters.
-        private List<RawInputMessageFilter> _messageFilters = new List<RawInputMessageFilter>();
+        private List<RawInputMessageFilter> _messageFilters = new();
         // Flag to indicate whether the hook is installed.
         private bool _hooked;
         #endregion
@@ -199,7 +199,7 @@ namespace Gorgon.Input
                 throw new ArgumentNullException(nameof(hwnd));
             }
 
-            if (filter == null)
+            if (filter is null)
             {
                 throw new ArgumentNullException(nameof(filter));
             }

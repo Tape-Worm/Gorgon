@@ -205,7 +205,7 @@ namespace Gorgon.Editor.ViewModels
 
                 foreach (IFile file in Files)
                 {
-                    if ((file.ParentRenamedCommand != null) && (file.ParentRenamedCommand.CanExecute(null)))
+                    if ((file.ParentRenamedCommand is not null) && (file.ParentRenamedCommand.CanExecute(null)))
                     {
                         file.ParentRenamedCommand.Execute(null);
                     }
@@ -213,7 +213,7 @@ namespace Gorgon.Editor.ViewModels
 
                 foreach (IDirectory directory in Directories)
                 {
-                    if ((directory.ParentRenamedCommand != null) && (directory.ParentRenamedCommand.CanExecute(null)))
+                    if ((directory.ParentRenamedCommand is not null) && (directory.ParentRenamedCommand.CanExecute(null)))
                     {
                         directory.ParentRenamedCommand.Execute(null);
                     }
@@ -246,7 +246,7 @@ namespace Gorgon.Editor.ViewModels
 
                 foreach (IDirectory subDir in Directories)
                 {
-                    if ((subDir.ParentRenamedCommand != null) && (subDir.ParentRenamedCommand.CanExecute(null)))
+                    if ((subDir.ParentRenamedCommand is not null) && (subDir.ParentRenamedCommand.CanExecute(null)))
                     {
                         subDir.ParentRenamedCommand.Execute(null);
                     }
@@ -254,7 +254,7 @@ namespace Gorgon.Editor.ViewModels
 
                 foreach (IFile file in Files)
                 {
-                    if ((file.ParentRenamedCommand != null) && (file.ParentRenamedCommand.CanExecute(null)))
+                    if ((file.ParentRenamedCommand is not null) && (file.ParentRenamedCommand.CanExecute(null)))
                     {
                         file.ParentRenamedCommand.Execute(null);
                     }

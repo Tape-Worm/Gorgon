@@ -98,12 +98,10 @@ namespace Gorgon.Examples
                     return;
                 }
 
-                using (Stream stream = _writer.OpenStream("/SomeText.txt", FileMode.Create))
-                {
-                    byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
-                    stream.Write(data, 0, data.Length);
-                    _changedText = textDisplay.Text;
-                }
+                using Stream stream = _writer.OpenStream("/SomeText.txt", FileMode.Create);
+                byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
+                stream.Write(data, 0, data.Length);
+                _changedText = textDisplay.Text;
             }
             catch (Exception ex)
             {

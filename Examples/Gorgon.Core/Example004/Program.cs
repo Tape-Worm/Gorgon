@@ -114,7 +114,7 @@ namespace Gorgon.Examples
                 // Create our plugin instances, we'll limit to 9 entries just for giggles.
                 TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPlugInNames()
                                              let plugin = pluginService.GetPlugIn<TextColorPlugIn>(pluginName)
-                                             where plugin != null
+                                             where plugin is not null
                                              select plugin).ToArray();
 
                 // Display a list of the available plugins.

@@ -124,7 +124,7 @@ namespace Gorgon.Renderers.Cameras
                     return;
                 }
 
-                if (value == null)
+                if (value is null)
                 {
                     _target = null;
                     Changes = CameraChange.None;
@@ -304,7 +304,7 @@ namespace Gorgon.Renderers.Cameras
         /// Function to retrieve the render target assigned to this camera.
         /// </summary>
         /// <returns>The render target bound to the camera.</returns>
-        protected GorgonRenderTargetView GetTarget() => (_target == null) || (!_target.TryGetTarget(out GorgonRenderTargetView target)) ? Graphics.RenderTargets[0] : target;
+        protected GorgonRenderTargetView GetTarget() => (_target is null) || (!_target.TryGetTarget(out GorgonRenderTargetView target)) ? Graphics.RenderTargets[0] : target;
 
         /// <summary>
         /// Function to update the view matrix.
@@ -324,6 +324,13 @@ namespace Gorgon.Renderers.Cameras
         /// <returns>A read only reference to the view matrix.</returns>        
         public ref readonly Matrix4x4 GetViewMatrix()
         {
+            GorgonRenderTargetView target = GetTarget();
+
+            if (target is null)
+            {
+                return ref _viewMatrix;
+            }
+
             if ((Changes & CameraChange.View) == CameraChange.View)
             {
                 UpdateViewMatrix(ref _viewMatrix);
@@ -339,6 +346,13 @@ namespace Gorgon.Renderers.Cameras
         /// <returns>A read only reference to the projection matrix.</returns>
         public ref readonly Matrix4x4 GetProjectionMatrix()
         {
+            GorgonRenderTargetView target = GetTarget();
+
+            if (target is null)
+            {
+                return ref _projectionMatrix;
+            }
+
             if ((Changes & CameraChange.Projection) == CameraChange.Projection)
             {
                 UpdateProjectionMatrix(ref _projectionMatrix);

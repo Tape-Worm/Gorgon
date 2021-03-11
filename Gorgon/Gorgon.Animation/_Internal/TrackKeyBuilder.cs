@@ -115,7 +115,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<T> SetKey(T key)
         {
-            if (key == null)
+            if (key is null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
@@ -123,7 +123,7 @@ namespace Gorgon.Animation
             int? index = IndexOfFrame(key);
 
             // Do not allow the same key to added again.
-            if (index == null)
+            if (index is null)
             {
                 throw new ArgumentException(string.Format(Resources.GORANM_ERR_KEY_ALREADY_IN_TRACK, key.Time), nameof(key));
             }
@@ -155,7 +155,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<T> SetKeys(IEnumerable<T> keys)
         {
-            if (keys == null)
+            if (keys is null)
             {
                 throw new ArgumentNullException(nameof(keys));
             }

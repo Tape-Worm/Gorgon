@@ -80,17 +80,15 @@ namespace Gorgon.Editor.SpriteEditor.Services
             {
                 IGorgonVirtualFile textureFile = _projectFileSystem.GetFile(textureName);
 
-                if (textureFile == null)
+                if (textureFile is null)
                 {
                     return null;
                 }
 
-                using (Stream imgFileStream = textureFile.OpenStream())
+                using Stream imgFileStream = textureFile.OpenStream();
+                if (_ddsCodec.IsReadable(imgFileStream))
                 {
-                    if (_ddsCodec.IsReadable(imgFileStream))
-                    {
-                        return textureFile;
-                    }
+                    return textureFile;
                 }
             }
 
@@ -105,47 +103,43 @@ namespace Gorgon.Editor.SpriteEditor.Services
         /// <returns>The texture being imported.</returns>
         private GorgonTexture2DView GetTexture(string sourceFilePath, IGorgonSpriteCodec codec)
         {
-            using (Stream fileStream = File.Open(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using Stream fileStream = File.Open(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            string textureName = codec.GetAssociatedTextureName(fileStream);
+            GorgonTexture2DView textureForSprite = null;
+
+            // Let's try and load the texture into memory.
+            if (string.IsNullOrWhiteSpace(textureName))
             {
-                string textureName = codec.GetAssociatedTextureName(fileStream);
-                GorgonTexture2DView textureForSprite = null;
-
-                // Let's try and load the texture into memory.
-                if (string.IsNullOrWhiteSpace(textureName))
-                {
-                    return null;
-                }
-                IGorgonVirtualFile textureFile = LocateTextureFile(textureName);
-
-                // We couldn't load the file, so, let's try again without a file extension since we strip those.
-                int extensionDot = textureName.LastIndexOf('.');
-                if ((textureFile == null) && (extensionDot > 1))
-                {
-                    textureName = textureName.Substring(0, extensionDot);
-                    textureFile = LocateTextureFile(textureName);
-                }
-
-                // We have not loaded the texture yet.  Do so now.
-                // ReSharper disable once InvertIf
-                if (textureFile != null)
-                {
-                    using (Stream textureStream = textureFile.OpenStream())
-                    {
-                        textureForSprite = GorgonTexture2DView.FromStream(_renderer.Graphics,
-                                                                            textureStream,
-                                                                            _ddsCodec,
-                                                                            textureFile.Size,
-                                                                            new GorgonTexture2DLoadOptions
-                                                                            {
-                                                                                Name = textureFile.FullPath,
-                                                                                Usage = ResourceUsage.Default,
-                                                                                Binding = TextureBinding.ShaderResource
-                                                                            });
-                    }
-                }
-
-                return textureForSprite;
+                return null;
             }
+            IGorgonVirtualFile textureFile = LocateTextureFile(textureName);
+
+            // We couldn't load the file, so, let's try again without a file extension since we strip those.
+            int extensionDot = textureName.LastIndexOf('.');
+            if ((textureFile is null) && (extensionDot > 1))
+            {
+                textureName = textureName.Substring(0, extensionDot);
+                textureFile = LocateTextureFile(textureName);
+            }
+
+            // We have not loaded the texture yet.  Do so now.
+            // ReSharper disable once InvertIf
+            if (textureFile is not null)
+            {
+                using Stream textureStream = textureFile.OpenStream();
+                textureForSprite = GorgonTexture2DView.FromStream(_renderer.Graphics,
+                                                                    textureStream,
+                                                                    _ddsCodec,
+                                                                    textureFile.Size,
+                                                                    new GorgonTexture2DLoadOptions
+                                                                    {
+                                                                        Name = textureFile.FullPath,
+                                                                        Usage = ResourceUsage.Default,
+                                                                        Binding = TextureBinding.ShaderResource
+                                                                    });
+            }
+
+            return textureForSprite;
         }
 
         /// <summary>Function to import content.</summary>
@@ -165,7 +159,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
                 _log.Print("Importing associated texture for sprite...", LoggingLevel.Simple);
 
                 IGorgonSpriteCodec sourceCodec = SpriteImporterPlugIn.GetCodec(physicalFilePath, _codecs);
-                Debug.Assert(sourceCodec != null, "We shouldn't be able to get this far without a codec.");
+                Debug.Assert(sourceCodec is not null, "We shouldn't be able to get this far without a codec.");
                                 
                 texture = GetTexture(physicalFilePath, sourceCodec);
 
@@ -216,7 +210,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
         {
             IGorgonVirtualDirectory directory = _tempFileSystem.FileSystem.GetDirectory(_tempDirPath);
 
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }

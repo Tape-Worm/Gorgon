@@ -92,7 +92,7 @@ namespace System.Windows.Forms
 
             try
             {
-                ColumnHeader header = listView.Columns[listView.Columns.Count - 1];
+                ColumnHeader header = listView.Columns[^1];
                 Drawing.Rectangle bounds = GetHeaderBounds(listView);
                 var ncBounds = Drawing.Rectangle.FromLTRB(bounds.Right - header.Width, bounds.Top, bounds.Right, bounds.Height);
                 g.FillRectangle(brush, ncBounds);

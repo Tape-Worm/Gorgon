@@ -149,7 +149,7 @@ namespace Gorgon.IO.Zip
 
             _zipStream = new ZipInputStream(stream);
 
-            while ((entry = _zipStream.GetNextEntry()) != null)
+            while ((entry = _zipStream.GetNextEntry()) is not null)
             {
                 if (!entry.IsFile)
                 {
@@ -157,7 +157,7 @@ namespace Gorgon.IO.Zip
                 }
 
                 string newPath = entry.Name;
-                string filePath = file.PhysicalFile.FullPath.Substring(file.PhysicalFile.FullPath.LastIndexOf(':') + 1);
+                string filePath = file.PhysicalFile.FullPath[(file.PhysicalFile.FullPath.LastIndexOf(':') + 1)..];
 
                 if (!newPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 {

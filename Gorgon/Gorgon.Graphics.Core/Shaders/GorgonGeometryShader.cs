@@ -97,7 +97,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonGeometryShader ToStreamOut(GorgonStreamOutLayout streamOutLayout, IEnumerable<int> strides = null)
         {
-            if (streamOutLayout == null)
+            if (streamOutLayout is null)
             {
                 throw new ArgumentNullException(nameof(streamOutLayout));
             }
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Core
         {
             D3D11.GeometryShader shader = Interlocked.Exchange(ref _shader, null);
 
-            if (shader != null)
+            if (shader is not null)
             {
                 Graphics.Log.Print($"Destroying {ShaderType} '{Name}' ({ID})", LoggingLevel.Verbose);
                 shader.Dispose();

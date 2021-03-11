@@ -171,12 +171,12 @@ namespace Gorgon.Renderers
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
             if ((_useSimple != FullScreen)
-                || ((LookupTexture == null) && (_currentLut != _defaultLut))
-                || ((LookupTexture != null) && (LookupTexture != _currentLut))
-                || (_chromeAbBatchState == null)
-                || (_chromeAbShaderState == null))
+                || ((LookupTexture is null) && (_currentLut != _defaultLut))
+                || ((LookupTexture is not null) && (LookupTexture != _currentLut))
+                || (_chromeAbBatchState is null)
+                || (_chromeAbShaderState is null))
             {
-                if (_chromeAbShaderState == null)
+                if (_chromeAbShaderState is null)
                 {
                     _currentLut = LookupTexture ?? _defaultLut;
                     _chromeAbShaderState = builders.PixelShaderBuilder.Clear()

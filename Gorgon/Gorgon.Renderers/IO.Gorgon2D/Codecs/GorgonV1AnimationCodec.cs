@@ -368,7 +368,7 @@ namespace Gorgon.IO
                 GorgonTexture2D texture = Graphics.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault();
                 GorgonTexture2DView view = texture?.GetShaderResourceView();
 
-                if ((view == null) && (string.IsNullOrWhiteSpace(name)))
+                if ((view is null) && (string.IsNullOrWhiteSpace(name)))
                 {
                     Graphics.Log.Print("The animation has texture keys, but no applicable textures were found, and no name for the texture was given.", LoggingLevel.Verbose);
                     continue;
@@ -376,7 +376,7 @@ namespace Gorgon.IO
 
                 DX.RectangleF uv;
 
-                if (view != null)
+                if (view is not null)
                 {
                     uv = new DX.RectangleF(uvOffset.X / texture.Width,
                                            uvOffset.Y / texture.Height,
@@ -523,7 +523,7 @@ namespace Gorgon.IO
                             if (textures.Count > 0)
                             {
                                 builder.Edit2DTexture("Texture")
-                                       .SetKeys(textures.Select(item => item.texture == null
+                                       .SetKeys(textures.Select(item => item.texture is null
                                                                             ? new GorgonKeyTexture2D(item.time, item.name, item.uv, 0)
                                                                             : new GorgonKeyTexture2D(item.time, item.texture, item.uv, 0)))
                                        .EndEdit();
@@ -589,69 +589,57 @@ namespace Gorgon.IO
         {
             var builder = new GorgonAnimationBuilder();
 
-            using (var reader = new GorgonBinaryReader(stream, true))
+            using var reader = new GorgonBinaryReader(stream, true);
+            string headerVersion = reader.ReadString();
+            if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
+                || (headerVersion.Length < 7)
+                || (headerVersion.Length > 9))
             {
-                string headerVersion = reader.ReadString();
-                if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
-                    || (headerVersion.Length < 7)
-                    || (headerVersion.Length > 9))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
-                }
-
-                // Get the version information.
-                Version version;
-                switch (headerVersion.ToUpperInvariant())
-                {
-                    case "GORSPR1":
-                        version = new Version(1, 0);
-                        break;
-                    case "GORSPR1.1":
-                        version = new Version(1, 1);
-                        break;
-                    case "GORSPR1.2":
-                        version = new Version(1, 2);
-                        break;
-                    default:
-                        throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_VERSION_MISMATCH, headerVersion));
-                }
-
-                SkipToAnimationSection(reader, version);
-
-                // If we have less than 1 int value left to the stream, it's likely that we don't have animations.
-                // So get out.
-                if ((stream.Length - stream.Position) < sizeof(int))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE);
-                }
-
-                int animationCount = reader.ReadInt32();
-
-                if (animationCount == 0)
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE);
-                }
-
-                IReadOnlyList<IGorgonAnimation> animations;
-
-                if (firstOnly)
-                {
-                    animationCount = 1;
-                }
-
-                if ((version.Major == 1) && (version.Minor >= 1))
-                {
-                    animations = ReadLatestVersion(reader, builder, animationCount);
-                }
-                else
-                {
-                    animations = ReadV10AnimationData(reader, builder, animationCount);
-                }
-
-                return (animations == null) || (animations.Count == 0)
-                    ? throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE)
-                    : animations;
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
             }
+
+            Version version = headerVersion.ToUpperInvariant() switch
+            {
+                "GORSPR1" => new Version(1, 0),
+                "GORSPR1.1" => new Version(1, 1),
+                "GORSPR1.2" => new Version(1, 2),
+                _ => throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_VERSION_MISMATCH, headerVersion)),
+            };
+            SkipToAnimationSection(reader, version);
+
+            // If we have less than 1 int value left to the stream, it's likely that we don't have animations.
+            // So get out.
+            if ((stream.Length - stream.Position) < sizeof(int))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE);
+            }
+
+            int animationCount = reader.ReadInt32();
+
+            if (animationCount == 0)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE);
+            }
+
+            IReadOnlyList<IGorgonAnimation> animations;
+
+            if (firstOnly)
+            {
+                animationCount = 1;
+            }
+
+            if ((version.Major == 1) && (version.Minor >= 1))
+            {
+                animations = ReadLatestVersion(reader, builder, animationCount);
+            }
+            else
+            {
+                animations = ReadV10AnimationData(reader, builder, animationCount);
+            }
+
+            return (animations is null) || (animations.Count == 0)
+                ? throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE)
+                : animations;
         }
 
         /// <summary>
@@ -766,7 +754,7 @@ namespace Gorgon.IO
                     }
 
                     // We cannot locate the texture, so do not add the key.
-                    if (view == null)
+                    if (view is null)
                     {
                         Graphics.Log.Print($"The animation has texture keys and the texture '{imageName}' is required, but was not found in the loaded resources. The texture coordinates will most likely be incorrect for this frame.", LoggingLevel.Verbose);
                     }
@@ -776,7 +764,7 @@ namespace Gorgon.IO
                     }
 
                     builder.Edit2DTexture("Texture")
-                           .SetKey((view == null) && (!string.IsNullOrWhiteSpace(imageName)) ? new GorgonKeyTexture2D(time, imageName, texCoords, 0) : new GorgonKeyTexture2D(time, view, texCoords, 0))
+                           .SetKey((view is null) && (!string.IsNullOrWhiteSpace(imageName)) ? new GorgonKeyTexture2D(time, imageName, texCoords, 0) : new GorgonKeyTexture2D(time, view, texCoords, 0))
                            .EndEdit();
                 }
 
@@ -888,64 +876,62 @@ namespace Gorgon.IO
         /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
         protected override bool OnIsReadable(Stream stream)
         {
-            using (var reader = new GorgonBinaryReader(stream, true))
+            using var reader = new GorgonBinaryReader(stream, true);
+            // If we don't have at least 10 bytes, then this file is not valid.
+            if ((stream.Length - stream.Position) < 16)
             {
-                // If we don't have at least 10 bytes, then this file is not valid.
-                if ((stream.Length - stream.Position) < 16)
-                {
-                    return false;
-                }
-
-                string headerVersion = reader.ReadString();
-                if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
-                    || (headerVersion.Length < 7)
-                    || (headerVersion.Length > 9))
-                {
-                    return false;
-                }
-
-                Version version;
-
-                // Get the version information.
-                switch (headerVersion.ToUpperInvariant())
-                {
-                    case "GORSPR1":
-                        version = new Version(1, 0);
-                        break;
-                    case "GORSPR1.1":
-                        version = new Version(1, 1);
-                        break;
-                    case "GORSPR1.2":
-                        version = new Version(1, 2);
-                        break;
-                    default:
-                        return false;
-                }
-
-                try
-                {
-                    SkipToAnimationSection(reader, version);
-                }
-                catch (EndOfStreamException)
-                {
-                    return false;
-                }
-
-                if (stream.Length - stream.Position < sizeof(int))
-                {
-                    return false;
-                }
-
-                int animCount = reader.ReadInt32();
-                if (version.Minor == 0)
-                {
-                    return animCount > 0;
-                }
-
-                string header = reader.ReadString();
-
-                return (animCount > 0) && (string.Equals(header, "GORANM11", StringComparison.OrdinalIgnoreCase));
+                return false;
             }
+
+            string headerVersion = reader.ReadString();
+            if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
+                || (headerVersion.Length < 7)
+                || (headerVersion.Length > 9))
+            {
+                return false;
+            }
+
+            Version version;
+
+            // Get the version information.
+            switch (headerVersion.ToUpperInvariant())
+            {
+                case "GORSPR1":
+                    version = new Version(1, 0);
+                    break;
+                case "GORSPR1.1":
+                    version = new Version(1, 1);
+                    break;
+                case "GORSPR1.2":
+                    version = new Version(1, 2);
+                    break;
+                default:
+                    return false;
+            }
+
+            try
+            {
+                SkipToAnimationSection(reader, version);
+            }
+            catch (EndOfStreamException)
+            {
+                return false;
+            }
+
+            if (stream.Length - stream.Position < sizeof(int))
+            {
+                return false;
+            }
+
+            int animCount = reader.ReadInt32();
+            if (version.Minor == 0)
+            {
+                return animCount > 0;
+            }
+
+            string header = reader.ReadString();
+
+            return (animCount > 0) && (string.Equals(header, "GORANM11", StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -957,10 +943,8 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         public IReadOnlyList<IGorgonAnimation> AllFromFile(string filePath)
         {
-            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return AllFromStream(stream);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return AllFromStream(stream);
         }
 
         /// <summary>
@@ -979,7 +963,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -989,7 +973,7 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
             }
 
-            if (byteCount == null)
+            if (byteCount is null)
             {
                 byteCount = (int)stream.Length;
             }

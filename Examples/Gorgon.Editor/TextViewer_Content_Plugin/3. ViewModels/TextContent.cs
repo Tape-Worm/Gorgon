@@ -102,7 +102,7 @@ namespace Gorgon.Examples
                     return;
                 }
 
-                if (_currentPanel != null)
+                if (_currentPanel is not null)
                 {
                     _currentPanel.PropertyChanged -= TextColor_PropertyChanged;
                     _currentPanel.IsActive = false;
@@ -112,7 +112,7 @@ namespace Gorgon.Examples
                 _currentPanel = value;
                 OnPropertyChanged();
 
-                if (_currentPanel != null)
+                if (_currentPanel is not null)
                 {
                     _currentPanel.IsActive = true;
                     _currentPanel.PropertyChanged += TextColor_PropertyChanged;
@@ -307,7 +307,7 @@ namespace Gorgon.Examples
         /// Function to determine if the text can be changed or not.
         /// </summary>
         /// <returns><b>true</b> if the text can be changed, <b>false</b> if not.</returns>
-        private bool CanChangeText() => CurrentPanel == null;
+        private bool CanChangeText() => CurrentPanel is null;
 
         /// <summary>
         /// Function to alter the text content.
@@ -369,7 +369,7 @@ namespace Gorgon.Examples
                 return Task.CompletedTask;
             }
 
-            if (redoArgs.Text == null)
+            if (redoArgs.Text is null)
             {
                 return;
             }
@@ -409,7 +409,7 @@ namespace Gorgon.Examples
         /// Function to determine if the text color editor can be activated.
         /// </summary>
         /// <returns><b>true</b> if the editor can activate, <b>false</b> if not.</returns>
-        private bool CanActivateTextColorEditor() => CurrentPanel == null;
+        private bool CanActivateTextColorEditor() => CurrentPanel is null;
 
         /// <summary>
         /// Function to activate the text color editor.
@@ -426,7 +426,7 @@ namespace Gorgon.Examples
             // minimum. 
             try
             {
-                if (CurrentPanel != null)
+                if (CurrentPanel is not null)
                 {
                     CurrentPanel = null;
                     return;
@@ -450,7 +450,7 @@ namespace Gorgon.Examples
         /// <param name="saveReason">The reason that the content is being saved.</param>
         /// <returns><b>true</b> if the content can be saved, <b>false</b> if not.</returns>
         private bool CanSave(SaveReason saveReason) => (ContentState != ContentState.Unmodified)
-                                                            && (((CommandContext == null) && (CurrentPanel == null)) || (saveReason != SaveReason.UserSave));
+                                                            && (((CommandContext is null) && (CurrentPanel is null)) || (saveReason != SaveReason.UserSave));
 
         /// <summary>
         /// Function to save the content.
@@ -483,13 +483,13 @@ namespace Gorgon.Examples
         /// Function to determine if an undo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be undone, <b>false</b> if not.</returns>
-        private bool CanUndo() => (_undoService.CanUndo) && (CurrentPanel == null);
+        private bool CanUndo() => (_undoService.CanUndo) && (CurrentPanel is null);
 
         /// <summary>
         /// Function to determine if a redo operation is possible.
         /// </summary>
         /// <returns><b>true</b> if the last action can be redone, <b>false</b> if not.</returns>
-        private bool CanRedo() => (_undoService.CanRedo) && (CurrentPanel == null);
+        private bool CanRedo() => (_undoService.CanRedo) && (CurrentPanel is null);
 
         /// <summary>
         /// Function called when a redo operation is requested.

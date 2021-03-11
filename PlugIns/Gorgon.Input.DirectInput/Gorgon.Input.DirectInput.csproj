@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>
@@ -61,9 +62,7 @@ This assembly contains a plug in that will use Microsoft DirectInput to allow ac
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
+
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -78,6 +77,6 @@ This assembly contains a plug in that will use Microsoft DirectInput to allow ac
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;&#xD;&#xA;copy &quot;$(TargetDir)SharpDX*.dll&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\&quot;" />
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)&quot; $(TargetFileName) $(TargetName).pdb SharpDX*.dll /Z&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0" />
   </Target>
 </Project>

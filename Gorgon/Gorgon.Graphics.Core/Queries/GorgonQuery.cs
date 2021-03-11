@@ -202,14 +202,13 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            if (_d3dQuery == null)
+            if (_d3dQuery is null)
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_QUERY_NOT_INITIALIZED, Name));
             }
 
             // These events don't really require a Begin call.
-            if ((QueryType == QueryType.Event)
-                || (QueryType == QueryType.Timestamp))
+            if (QueryType is QueryType.Event or QueryType.Timestamp)
             {
                 return;
             }

@@ -49,7 +49,7 @@ namespace Gorgon.Input
         // Pre parsed data for this device.
         private GorgonNativeBuffer<byte> _preParsedData;
         // Synchronization for multiple threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         #endregion
 
         #region Events.
@@ -119,7 +119,7 @@ namespace Gorgon.Input
             {
                 lock (_syncLock)
                 {
-                    if (_preParsedData == null)
+                    if (_preParsedData is null)
                     {
                         _preParsedData = RawInputApi.GetPreparsedDeviceInfoData(Handle);
                     }

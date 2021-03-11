@@ -108,10 +108,10 @@ namespace Gorgon.Editor.ViewModels
         private bool CanPasteData()
         {
             if ((!HasData) 
-                || (_fileExplorer?.CopyDirectoryCommand == null) 
-                || (_fileExplorer.CopyFileCommand == null)
-                || (_fileExplorer.MoveDirectoryCommand == null)
-                || (_fileExplorer.MoveFileCommand == null))
+                || (_fileExplorer?.CopyDirectoryCommand is null) 
+                || (_fileExplorer.CopyFileCommand is null)
+                || (_fileExplorer.MoveDirectoryCommand is null)
+                || (_fileExplorer.MoveFileCommand is null))
             {
                 return false;
             }
@@ -121,30 +121,24 @@ namespace Gorgon.Editor.ViewModels
                 FileCopyMoveData data = _clipboardService.GetData<FileCopyMoveData>();
                 data.DestinationDirectory = _fileExplorer.SelectedDirectory?.ID ?? string.Empty;
 
-                switch (data.Operation)
+                return data.Operation switch
                 {
-                    case CopyMoveOperation.Copy:
-                        return _fileExplorer.CopyFileCommand.CanExecute(data);
-                    case CopyMoveOperation.Move:
-                        return _fileExplorer.MoveFileCommand.CanExecute(data);
-                    default:
-                        return false;
-                }
+                    CopyMoveOperation.Copy => _fileExplorer.CopyFileCommand.CanExecute(data),
+                    CopyMoveOperation.Move => _fileExplorer.MoveFileCommand.CanExecute(data),
+                    _ => false,
+                };
             }
             else if (_clipboardService.IsType<DirectoryCopyMoveData>())
             {
                 DirectoryCopyMoveData data = _clipboardService.GetData<DirectoryCopyMoveData>();
                 data.DestinationDirectory = _fileExplorer.SelectedDirectory?.ID ?? string.Empty;
 
-                switch (data.Operation)
+                return data.Operation switch
                 {
-                    case CopyMoveOperation.Copy:
-                        return _fileExplorer.CopyDirectoryCommand.CanExecute(data);
-                    case CopyMoveOperation.Move:
-                        return _fileExplorer.MoveDirectoryCommand.CanExecute(data);
-                    default:
-                        return false;
-                }
+                    CopyMoveOperation.Copy => _fileExplorer.CopyDirectoryCommand.CanExecute(data),
+                    CopyMoveOperation.Move => _fileExplorer.MoveDirectoryCommand.CanExecute(data),
+                    _ => false,
+                };
             }
 
             return false;
@@ -161,7 +155,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     DirectoryCopyMoveData directoryData = _clipboardService.GetData<DirectoryCopyMoveData>();                    
 
-                    if (directoryData == null)
+                    if (directoryData is null)
                     {
                         return;
                     }
@@ -195,7 +189,7 @@ namespace Gorgon.Editor.ViewModels
 
                 FileCopyMoveData fileData = _clipboardService.GetData<FileCopyMoveData>();
 
-                if (fileData == null)
+                if (fileData is null)
                 {
                     return;
                 }
@@ -257,7 +251,7 @@ namespace Gorgon.Editor.ViewModels
         {
             Type argsType = args?.GetType();
 
-            if (argsType == null)
+            if (argsType is null)
             {                
                 return true;
             }
@@ -265,7 +259,7 @@ namespace Gorgon.Editor.ViewModels
             if (_supportedDataTypeFile.IsAssignableFrom(argsType))
             {
                 var fileData = (FileCopyMoveData)args;                
-                return (fileData.SourceFiles != null) && (fileData.SourceFiles.Count > 0);
+                return (fileData.SourceFiles is not null) && (fileData.SourceFiles.Count > 0);
             }
 
             if (!_supportedDataTypeDirectory.IsAssignableFrom(argsType))
@@ -275,7 +269,7 @@ namespace Gorgon.Editor.ViewModels
 
             var dirData = (DirectoryCopyMoveData)args;
 
-            return ((dirData != null) && (!string.IsNullOrWhiteSpace(dirData.SourceDirectory))
+            return ((dirData is not null) && (!string.IsNullOrWhiteSpace(dirData.SourceDirectory))
                 && ((dirData.Operation != CopyMoveOperation.Move) || (!string.Equals(dirData.SourceDirectory, _fileExplorer.Root.ID, StringComparison.OrdinalIgnoreCase))));
         }
 
@@ -289,7 +283,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 DoClearClipboard();
 
-                if (args == null)
+                if (args is null)
                 {
                     return;
                 }

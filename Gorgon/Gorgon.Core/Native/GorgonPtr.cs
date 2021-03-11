@@ -220,7 +220,7 @@ namespace Gorgon.Native
         /// <param name="buffer">The data buffer to convert.</param>
         /// <returns>A pointer wrapping the buffer data.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator GorgonPtr<T>(DX.DataBuffer buffer) => new GorgonPtr<T>(buffer);
+        public static implicit operator GorgonPtr<T>(DX.DataBuffer buffer) => new(buffer);
 
         /// <summary>
         /// Operator to convert this SharpDX data stream into a <see cref="GorgonPtr{T}"/>..
@@ -228,7 +228,7 @@ namespace Gorgon.Native
         /// <param name="stream">The data stream convert.</param>
         /// <returns>The pointer wrapping the stream data.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator GorgonPtr<T>(DX.DataStream stream) => new GorgonPtr<T>(stream);
+        public static implicit operator GorgonPtr<T>(DX.DataStream stream) => new(stream);
 
         /// <summary>
         /// Operator to convert this SharpDX data pointer.
@@ -236,7 +236,7 @@ namespace Gorgon.Native
         /// <param name="ptr">The pointer to convert.</param>
         /// <returns>A pointer wrapping the SharpDX Pointer data.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator GorgonPtr<T>(DX.DataPointer ptr) => new GorgonPtr<T>(ptr);
+        public static implicit operator GorgonPtr<T>(DX.DataPointer ptr) => new(ptr);
 
         /// <summary>
         /// Operator to convert this buffer to a SharpDX data buffer.
@@ -338,7 +338,7 @@ namespace Gorgon.Native
         /// <typeparam name="Tc">The type to convert to. Must be an unmanaged value type.</typeparam>
         /// <returns>The casted pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new GorgonPtr<Tc>((Tc *)_ptr, SizeInBytes / Unsafe.SizeOf<Tc>());
+        public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new((Tc *)_ptr, SizeInBytes / Unsafe.SizeOf<Tc>());
 
         /// <summary>
         /// Operator to increment the pointer by the given index offset.
@@ -802,13 +802,11 @@ namespace Gorgon.Native
             {
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, startIndex, count.Value));
             }
-                        
-            using (var writer = new GorgonBinaryWriter(stream, true))
-            {                
-                for (int i = 0; i < count.Value; ++i)
-                {
-                    writer.WriteValue(ref this[i + startIndex]);
-                }
+
+            using var writer = new GorgonBinaryWriter(stream, true);
+            for (int i = 0; i < count.Value; ++i)
+            {
+                writer.WriteValue(ref this[i + startIndex]);
             }
         }
 

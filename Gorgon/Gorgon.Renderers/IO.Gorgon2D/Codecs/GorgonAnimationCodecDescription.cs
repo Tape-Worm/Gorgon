@@ -101,7 +101,7 @@ namespace Gorgon.IO
         /// <param name="type">The type of codec object.</param>
         public GorgonAnimationCodecDescription(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }

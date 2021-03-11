@@ -58,7 +58,7 @@ namespace Gorgon.Renderers
         // Flag to indicate that the parameters were updated.
         private bool _isUpdated = true;
         // The texture size used to calculate the emboss/sharpen edges.
-        private DX.Size2F _textureSize = new DX.Size2F(512.0f, 512.0f);
+        private DX.Size2F _textureSize = new(512.0f, 512.0f);
         #endregion
 
         #region Properties.
@@ -137,9 +137,9 @@ namespace Gorgon.Renderers
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
             // ReSharper disable once InvertIf
-            if ((_sharpenBatchState == null) || (_embossBatchState == null) || (statesChanged))
+            if ((_sharpenBatchState is null) || (_embossBatchState is null) || (statesChanged))
             {
-                if (_sharpenState == null)
+                if (_sharpenState is null)
                 {
                     _sharpenState = builders.PixelShaderBuilder
                                      .ConstantBuffer(_sharpenEmbossBuffer, 1)
@@ -147,7 +147,7 @@ namespace Gorgon.Renderers
                                      .Build();
                 }
 
-                if (_embossState == null)
+                if (_embossState is null)
                 {
                     _embossState = builders.PixelShaderBuilder
                                     .ConstantBuffer(_sharpenEmbossBuffer, 1)
@@ -217,7 +217,7 @@ namespace Gorgon.Renderers
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -233,7 +233,7 @@ namespace Gorgon.Renderers
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -249,7 +249,7 @@ namespace Gorgon.Renderers
         /// <param name="output">The render target that will receive the final output.</param>
         public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
         {
-            if ((texture == null) || (output == null))
+            if ((texture is null) || (output is null))
             {
                 return;
             }

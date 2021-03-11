@@ -90,7 +90,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         ControlContextChangedEvent = null;
                         return;
@@ -103,7 +103,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -123,7 +123,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         IsRenamingChangedEvent = null;
                         return;
@@ -136,7 +136,7 @@ namespace Gorgon.Editor.Views
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -149,21 +149,21 @@ namespace Gorgon.Editor.Views
 
         #region Variables.
         // The synchronization lock for the control context changed event.
-        private readonly object _eventLock = new object();
+        private readonly object _eventLock = new();
         // Flag to indicate that the events for the tree are hooked up.
         private int _treeEventsHooked;
         // Flag to indicate that the events for the grid are hooked up.
         private int _gridEventsHooked;
         // The nodes for a directory.
-        private readonly Dictionary<string, DirectoryTreeNode> _directoryNodes = new Dictionary<string, DirectoryTreeNode>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, DirectoryTreeNode> _directoryNodes = new(StringComparer.OrdinalIgnoreCase);
         // The root node for the directory tree.
         private DirectoryTreeNode _rootNode;
         // The font used for open files.
         private readonly Font _openFileFont;
         // Arguments used when validating clipboard menu items.
-        private readonly GetClipboardDataTypeArgs _clipboardValidationArgs = new GetClipboardDataTypeArgs();
-        private readonly DeleteArgs _deleteValidationArgs = new DeleteArgs(null);
-        private readonly CreateDirectoryArgs _createDirectoryValidationArgs = new CreateDirectoryArgs();
+        private readonly GetClipboardDataTypeArgs _clipboardValidationArgs = new();
+        private readonly DeleteArgs _deleteValidationArgs = new(null);
+        private readonly CreateDirectoryArgs _createDirectoryValidationArgs = new();
         private readonly string[] _validationFiles = { "Dummy " };
         // The styles for file states.
         private readonly DataGridViewCellStyle _cutCellStyle;
@@ -260,7 +260,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
         private void SplitFileSystem_SplitterMoved(object sender, SplitterEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -322,20 +322,20 @@ namespace Gorgon.Editor.Views
                 }
             }
 
-            if (dataContext == null) 
+            if (dataContext is null) 
             {
                 DisableAllDirectoryItems();
                 DisableAllFileItems();
                 return;
             }
 
-            if (dataContext.SelectedDirectory == null)
+            if (dataContext.SelectedDirectory is null)
             {
                 DisableAllDirectoryItems();
             }
 
 
-            if ((dataContext.Clipboard?.GetClipboardDataTypeCommand != null) && (dataContext.Clipboard.GetClipboardDataTypeCommand.CanExecute(_clipboardValidationArgs)))
+            if ((dataContext.Clipboard?.GetClipboardDataTypeCommand is not null) && (dataContext.Clipboard.GetClipboardDataTypeCommand.CanExecute(_clipboardValidationArgs)))
             {
                 dataContext.Clipboard.GetClipboardDataTypeCommand.Execute(_clipboardValidationArgs);
             }
@@ -345,7 +345,7 @@ namespace Gorgon.Editor.Views
                 MenuItemExportDirectoryTo.Available = dataContext.ExportDirectoryCommand?.CanExecute(null) ?? false;
                 MenuItemCutDirectory.Available =
                 MenuItemCopyDirectory.Available =
-                MenuItemPasteDirectory.Available = (dataContext.Clipboard != null) &&  (TreeDirectories.SelectedNode != null) && (TreeDirectories.ContainsFocus);
+                MenuItemPasteDirectory.Available = (dataContext.Clipboard is not null) &&  (TreeDirectories.SelectedNode is not null) && (TreeDirectories.ContainsFocus);
                 MenuItemDeleteDirectory.Available = dataContext.DeleteDirectoryCommand?.CanExecute(_deleteValidationArgs) ?? false;
                 MenuItemRenameDirectory.Available = dataContext.RenameDirectoryCommand?.CanExecute(null) ?? false;
                 MenuItemCreateDirectory.Available = dataContext.CreateDirectoryCommand?.CanExecute(_createDirectoryValidationArgs) ?? false;
@@ -369,7 +369,7 @@ namespace Gorgon.Editor.Views
                 MenuSepDirOrganize.Available = (MenuItemCutDirectory.Available) || (MenuItemCopyDirectory.Available) || (MenuItemPasteDirectory.Available);
                 MenuSepDirNew.Available = (MenuItemCreateDirectory.Available) && ((MenuItemRenameDirectory.Available) || (MenuItemDeleteDirectory.Available));
 
-                if ((dataContext.SelectedDirectory != null)
+                if ((dataContext.SelectedDirectory is not null)
                     && ((dataContext.SelectedDirectory.AvailableActions & DirectoryActions.ExcludeFromPackedFile) == DirectoryActions.ExcludeFromPackedFile))
                 {
                     var excludable = (IExcludable)DataContext.SelectedDirectory;
@@ -390,8 +390,8 @@ namespace Gorgon.Editor.Views
                 MenuItemOpen.Available = dataContext.SelectedFiles.Count != 0;
                 MenuItemExportFiles.Available = dataContext.ExportFilesCommand?.CanExecute(null) ?? false;
                 MenuItemCutFiles.Available = 
-                MenuItemCopyFiles.Available = (dataContext.SelectedFiles.Count > 0) && (dataContext.Clipboard != null) && (dataContext.SearchResults == null) && (GridFiles.ContainsFocus);
-                MenuItemPasteFiles.Available = (dataContext.Clipboard != null) && (dataContext.SearchResults == null) && (GridFiles.ContainsFocus);
+                MenuItemCopyFiles.Available = (dataContext.SelectedFiles.Count > 0) && (dataContext.Clipboard is not null) && (dataContext.SearchResults is null) && (GridFiles.ContainsFocus);
+                MenuItemPasteFiles.Available = (dataContext.Clipboard is not null) && (dataContext.SearchResults is null) && (GridFiles.ContainsFocus);
                 MenuItemDeleteFiles.Available = dataContext.DeleteFileCommand?.CanExecute(_deleteValidationArgs) ?? false;
                 MenuItemRenameFile.Available = dataContext.RenameFileCommand?.CanExecute(null) ?? false;
 
@@ -417,7 +417,7 @@ namespace Gorgon.Editor.Views
                                             &&  ((MenuItemCutFiles.Available) || (MenuItemCopyFiles.Available) || (MenuItemPasteFiles.Available));                
             }
 
-            if (dataContext.SelectedDirectory != null)
+            if (dataContext.SelectedDirectory is not null)
             {
                 ValidateDirectoryItems();
             }
@@ -436,7 +436,7 @@ namespace Gorgon.Editor.Views
             try
             {
                 var args = new DeleteArgs(null);
-                if ((DataContext?.DeleteFileCommand == null) || (!DataContext.DeleteFileCommand.CanExecute(args)))
+                if ((DataContext?.DeleteFileCommand is null) || (!DataContext.DeleteFileCommand.CanExecute(args)))
                 {
                     return;
                 }
@@ -458,7 +458,7 @@ namespace Gorgon.Editor.Views
             try
             {
                 var args = new CreateDirectoryArgs();
-                if ((DataContext?.CreateDirectoryCommand == null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
+                if ((DataContext?.CreateDirectoryCommand is null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
                 {
                     return;
                 }
@@ -469,7 +469,7 @@ namespace Gorgon.Editor.Views
                 IDirectory directory = args.Directory;
                 DirectoryTreeNode node = null;
 
-                while (node == null)
+                while (node is null)
                 {
                     // Walk up the parents and keep expanding.
                     // This should never be more than 1 level as it's physically impossible to create a directory from the UI
@@ -518,7 +518,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void MenuItemRenameDirectory_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.RenameDirectoryCommand == null) || (!DataContext.RenameDirectoryCommand.CanExecute(null)))
+            if ((DataContext?.RenameDirectoryCommand is null) || (!DataContext.RenameDirectoryCommand.CanExecute(null)))
             {
                 return;
             }
@@ -532,7 +532,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void MenuItemRenameFile_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.RenameFileCommand == null) || (!DataContext.RenameFileCommand.CanExecute(null)))
+            if ((DataContext?.RenameFileCommand is null) || (!DataContext.RenameFileCommand.CanExecute(null)))
             {
                 return;
             }
@@ -551,7 +551,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MenuItemExportDirectoryTo_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ExportDirectoryCommand == null) || (!DataContext.ExportDirectoryCommand.CanExecute(null)))
+            if ((DataContext?.ExportDirectoryCommand is null) || (!DataContext.ExportDirectoryCommand.CanExecute(null)))
             {
                 return;
             }
@@ -564,7 +564,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MenuItemExportFiles_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ExportFilesCommand == null) || (!DataContext.ExportFilesCommand.CanExecute(null)))
+            if ((DataContext?.ExportFilesCommand is null) || (!DataContext.ExportFilesCommand.CanExecute(null)))
             {
                 return;
             }
@@ -597,7 +597,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MenuItemPasteDirectory_Click(object sender, EventArgs e)
         {
-            if (DataContext?.Clipboard == null)
+            if (DataContext?.Clipboard is null)
             {
                 return;
             }
@@ -605,7 +605,7 @@ namespace Gorgon.Editor.Views
             try
             {
                 IClipboardHandler handler = DataContext.Clipboard;
-                if ((handler.PasteDataCommand == null) || (!handler.PasteDataCommand.CanExecute(null)))
+                if ((handler.PasteDataCommand is null) || (!handler.PasteDataCommand.CanExecute(null)))
                 {
                     return;
                 }
@@ -623,25 +623,25 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MenuItemCopyTo_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
 
             try
             {
-                if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (DataContext.CopyFileCommand != null) && (DataContext.CopyFileCommand.CanExecute(rowData)))
+                if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (DataContext.CopyFileCommand is not null) && (DataContext.CopyFileCommand.CanExecute(rowData)))
                 {
                     await DataContext.CopyFileCommand.ExecuteAsync(rowData);
                 }
 
-                if (!(MenuCopyMove.Tag is TreeNodeDragData nodeData))
+                if (MenuCopyMove.Tag is not TreeNodeDragData nodeData)
                 {
                     MenuCopyMove.Tag = null;
                     return;
                 }
 
-                if ((DataContext.CopyDirectoryCommand != null) && (DataContext.CopyDirectoryCommand.CanExecute(nodeData)))
+                if ((DataContext.CopyDirectoryCommand is not null) && (DataContext.CopyDirectoryCommand.CanExecute(nodeData)))
                 {
                     await DataContext.CopyDirectoryCommand.ExecuteAsync(nodeData);
                 }
@@ -659,25 +659,25 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MenuItemMoveTo_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
 
             try
             {
-                if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (DataContext.MoveFileCommand != null) && (DataContext.MoveFileCommand.CanExecute(rowData)))
+                if ((MenuCopyMove.Tag is GridRowsDragData rowData) && (DataContext.MoveFileCommand is not null) && (DataContext.MoveFileCommand.CanExecute(rowData)))
                 {
                     await DataContext.MoveFileCommand.ExecuteAsync(rowData);
                 }
 
-                if (!(MenuCopyMove.Tag is TreeNodeDragData data))
+                if (MenuCopyMove.Tag is not TreeNodeDragData data)
                 {
                     MenuCopyMove.Tag = null;
                     return;
                 }
 
-                if ((DataContext.MoveDirectoryCommand != null) && (DataContext.MoveDirectoryCommand.CanExecute(data)))
+                if ((DataContext.MoveDirectoryCommand is not null) && (DataContext.MoveDirectoryCommand.CanExecute(data)))
                 {
                     await DataContext.MoveDirectoryCommand.ExecuteAsync(data);
                 }
@@ -705,7 +705,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void MenuItemOpen_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.OpenContentFileCommand == null) || (!DataContext.OpenContentFileCommand.CanExecute(null)))
+            if ((DataContext?.OpenContentFileCommand is null) || (!DataContext.OpenContentFileCommand.CanExecute(null)))
             {
                 return;
             }
@@ -719,7 +719,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void MenuItemExcludeFromPackfile_Click(object sender, EventArgs e)
         {
-            if (DataContext?.SelectedDirectory == null)
+            if (DataContext?.SelectedDirectory is null)
             {
                 return;
             }
@@ -800,7 +800,7 @@ namespace Gorgon.Editor.Views
                     case NotifyCollectionChangedAction.Add:
                         file = e.NewItems.OfType<IFile>().FirstOrDefault();
 
-                        if ((file == null) || (file.Parent != DataContext.SelectedDirectory))
+                        if ((file is null) || (file.Parent != DataContext.SelectedDirectory))
                         {
                             break;
                         }
@@ -821,13 +821,13 @@ namespace Gorgon.Editor.Views
                     case NotifyCollectionChangedAction.Remove:
                         file = e.OldItems.OfType<IFile>().FirstOrDefault();
 
-                        if ((file == null) || (file.Parent != DataContext.SelectedDirectory))
+                        if ((file is null) || (file.Parent != DataContext.SelectedDirectory))
                         {
                             break;
                         }
 
                         DataGridViewRow fileRow = FindFileRow(file);
-                        if (fileRow != null)
+                        if (fileRow is not null)
                         {
                             GridFiles.Rows.Remove(fileRow);
                         }
@@ -919,7 +919,7 @@ namespace Gorgon.Editor.Views
                     directory.Directories.CollectionChanged -= Directories_CollectionChanged;
                     directory.Files.CollectionChanged -= Files_CollectionChanged;                    
 
-                    childNodes = _directoryNodes.Where(item => (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)) && (item.Value.DataContext != null))
+                    childNodes = _directoryNodes.Where(item => (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)) && (item.Value.DataContext is not null))
                                                 .Select(item => item.Value)
                                                 .ToArray();
 
@@ -936,12 +936,12 @@ namespace Gorgon.Editor.Views
                 case NotifyCollectionChangedAction.Reset:
                     directoryNode = _directoryNodes.Values.FirstOrDefault(d => d.DataContext.Directories == sender);
 
-                    if (directoryNode == null)
+                    if (directoryNode is null)
                     {
                         break;
                     }
 
-                    childNodes = _directoryNodes.Where(item => (item.Value != directoryNode)  && (item.Value.DataContext != null)
+                    childNodes = _directoryNodes.Where(item => (item.Value != directoryNode)  && (item.Value.DataContext is not null)
                                                             && (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)))
                                                 .Select(item => item.Value)
                                                 .ToArray();
@@ -967,7 +967,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void Clipboard_PropertyChanged(object sender, PropertyChangedEventArgs e) 
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -988,19 +988,19 @@ namespace Gorgon.Editor.Views
                     DataContext.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
                     break;
                 case nameof(IFileExplorer.Clipboard):
-                    if (DataContext.Clipboard != null)
+                    if (DataContext.Clipboard is not null)
                     {
                         DataContext.Clipboard.PropertyChanged -= Clipboard_PropertyChanged;
                     }
                     break;
                 case nameof(IFileExplorer.SearchResults):
-                    if (DataContext.SearchResults != null)
+                    if (DataContext.SearchResults is not null)
                     {
                         RemoveFileEvents(DataContext.SearchResults);
                     }
                     break;
                 case nameof(IFileExplorer.SelectedDirectory):
-                    if (DataContext.SelectedDirectory == null)
+                    if (DataContext.SelectedDirectory is null)
                     {
                         return;
                     }
@@ -1023,7 +1023,7 @@ namespace Gorgon.Editor.Views
             {
                 GridFiles.ClearSelection();
 
-                if (dataContext == null)
+                if (dataContext is null)
                 {
                     return;
                 }
@@ -1064,13 +1064,13 @@ namespace Gorgon.Editor.Views
             switch (e.PropertyName)
             {
                 case nameof(IFileExplorer.Clipboard):
-                    if (DataContext.Clipboard != null)
+                    if (DataContext.Clipboard is not null)
                     {
                         DataContext.Clipboard.PropertyChanged += Clipboard_PropertyChanged;
                     }
                     break;
                 case nameof(IFileExplorer.SearchResults):
-                    if (DataContext.SearchResults != null)
+                    if (DataContext.SearchResults is not null)
                     {
                         SplitFileSystem.Panel1Collapsed = true;
                         TreeDirectories.Visible = false;
@@ -1089,7 +1089,7 @@ namespace Gorgon.Editor.Views
                     break;
                 case nameof(IFileExplorer.SelectedDirectory):
 
-                    if (DataContext.SelectedDirectory != null)                             
+                    if (DataContext.SelectedDirectory is not null)                             
                     {
                         if (_directoryNodes.TryGetValue(DataContext.SelectedDirectory.ID, out DirectoryTreeNode node))
                         {
@@ -1113,7 +1113,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void Directory_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if ((!(sender is IDirectory directory)) || (!_directoryNodes.TryGetValue(directory.ID, out DirectoryTreeNode treeNode)))
+            if ((sender is not IDirectory directory) || (!_directoryNodes.TryGetValue(directory.ID, out DirectoryTreeNode treeNode)))
             {
                 return;
             }
@@ -1143,7 +1143,7 @@ namespace Gorgon.Editor.Views
             var file = (IFile)sender;
 
             // If we've no directory selected, or the currently selected directory is not the same as the directory for the file, then we have nothing to look up and refresh.
-            if ((!(TreeDirectories.SelectedNode is DirectoryTreeNode selectedDir)) || (file.Parent != selectedDir.DataContext))
+            if ((TreeDirectories.SelectedNode is not DirectoryTreeNode selectedDir) || (file.Parent != selectedDir.DataContext))
             {
                 return;
             }
@@ -1152,7 +1152,7 @@ namespace Gorgon.Editor.Views
             DataGridViewRow row = FindFileRow(file);
 
             // The file isn't here.
-            if (row == null)
+            if (row is null)
             {
                 return;
             }
@@ -1213,7 +1213,7 @@ namespace Gorgon.Editor.Views
         /// <returns>The cells for the row.</returns>
         private DataGridViewRow FindFileRow(IFile file)
         {
-            if (file == null)
+            if (file is null)
             {
                 return null;
             }
@@ -1238,18 +1238,18 @@ namespace Gorgon.Editor.Views
         /// <param name="node">The node to select.</param>
         private void SelectNode(DirectoryTreeNode node)
         {
-            if ((DataContext?.SelectDirectoryCommand == null) || (!DataContext.SelectDirectoryCommand.CanExecute(node?.Name ?? string.Empty)))
+            if ((DataContext?.SelectDirectoryCommand is null) || (!DataContext.SelectDirectoryCommand.CanExecute(node?.Name ?? string.Empty)))
             {
                 return;
             }
 
-            if ((TreeDirectories.SelectedNode != null) && (TreeDirectories.SelectedNode != node))
+            if ((TreeDirectories.SelectedNode is not null) && (TreeDirectories.SelectedNode != node))
             {
                 var currentNode = (DirectoryTreeNode)TreeDirectories.SelectedNode;
                 RemoveFileEvents(currentNode.DataContext.Files);
             }
 
-            if (node == null)
+            if (node is null)
             {
                 TreeDirectories.SelectedNode = null;
             }
@@ -1271,7 +1271,7 @@ namespace Gorgon.Editor.Views
         /// <param name="files">The list of files to update.</param>
         private void RemoveFileEvents(IReadOnlyList<IFile> files)
         {
-            if (files == null)
+            if (files is null)
             {
                 return;
             }
@@ -1287,7 +1287,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void ResetDataContext()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1325,19 +1325,19 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
 
-            if (DataContext.Clipboard != null)
+            if (DataContext.Clipboard is not null)
             {
                 DataContext.Clipboard.PropertyChanged -= Clipboard_PropertyChanged;
             }
 
             DataContext.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
 
-            if (DataContext.SelectedDirectory != null)
+            if (DataContext.SelectedDirectory is not null)
             {
                 DataContext.SelectedDirectory.PropertyChanged -= Directory_PropertyChanged;
                 DataContext.SelectedDirectory.Directories.CollectionChanged -= Directories_CollectionChanged;
@@ -1368,7 +1368,7 @@ namespace Gorgon.Editor.Views
 
             foreach (DirectoryTreeNode treeNode in childNodes)
             {
-                if (treeNode.DataContext != null)
+                if (treeNode.DataContext is not null)
                 {
                     treeNode.DataContext.PropertyChanged -= Directory_PropertyChanged;
                     treeNode.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
@@ -1386,7 +1386,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if (dirNode.DataContext != null)
+            if (dirNode.DataContext is not null)
             {
                 dirNode.DataContext.PropertyChanged -= Directory_PropertyChanged;
                 dirNode.DataContext.Directories.CollectionChanged -= Directories_CollectionChanged;
@@ -1468,7 +1468,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private void GridFiles_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((DataContext == null) || (GridFiles.IsCurrentCellInEditMode))
+            if ((DataContext is null) || (GridFiles.IsCurrentCellInEditMode))
             {
                 return;
             }
@@ -1543,12 +1543,12 @@ namespace Gorgon.Editor.Views
                         e.SuppressKeyPress = true;
                         break;
                     case Keys.F2:
-                        if ((DataContext?.RenameFileCommand == null) || (!DataContext.RenameFileCommand.CanExecute(null)))
+                        if ((DataContext?.RenameFileCommand is null) || (!DataContext.RenameFileCommand.CanExecute(null)))
                         {
                             return;
                         }
 
-                        if (GridFiles.CurrentRow != null)
+                        if (GridFiles.CurrentRow is not null)
                         {
                             DataGridViewCell currentCell = GridFiles.Rows[GridFiles.CurrentRow.Index].Cells[ColumnFilename.Index];
                             if (GridFiles.CurrentCell != currentCell)
@@ -1589,7 +1589,7 @@ namespace Gorgon.Editor.Views
         {
             try
             {
-                if ((DataContext?.RenameFileCommand == null) || (e.ColumnIndex != ColumnFilename.Index))
+                if ((DataContext?.RenameFileCommand is null) || (e.ColumnIndex != ColumnFilename.Index))
                 {
                     return;
                 }
@@ -1632,7 +1632,7 @@ namespace Gorgon.Editor.Views
                                                      .Select(item => item.Cells[ColumnID.Index].Value.ToString())                                                     
                                                      .ToArray();
 
-                if ((DataContext?.SelectFileCommand == null) || (!DataContext.SelectFileCommand.CanExecute(ids)))
+                if ((DataContext?.SelectFileCommand is null) || (!DataContext.SelectFileCommand.CanExecute(ids)))
                 {
                     return;
                 }
@@ -1657,7 +1657,7 @@ namespace Gorgon.Editor.Views
 
             DataGridViewRow row = GridFiles.Rows[e.RowIndex];
 
-            if (!(row.Cells[ColumnFile.Index].Value is IFile file))
+            if (row.Cells[ColumnFile.Index].Value is not IFile file)
             {
                 return;
             }
@@ -1684,7 +1684,7 @@ namespace Gorgon.Editor.Views
            
             if (!file.IsOpen)
             {
-                if (file.Metadata?.ContentMetadata == null)
+                if (file.Metadata?.ContentMetadata is null)
                 {
                     e.CellStyle = _unknownFileStyle;
                 }
@@ -1700,7 +1700,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="RowsDragEventArgs"/> instance containing the event data.</param>
         private void GridFiles_RowsDrag(object sender, RowsDragEventArgs e)
         {
-            if (DataContext?.SearchResults != null)
+            if (DataContext?.SearchResults is not null)
             {
                 return;
             }
@@ -1712,7 +1712,7 @@ namespace Gorgon.Editor.Views
 
             GridFiles.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
 
-            if (dragData.TargetNode != null)
+            if (dragData.TargetNode is not null)
             {
                 dragData.TargetNode.ForeColor = Color.Empty;
                 dragData.TargetNode.BackColor = Color.Empty;
@@ -1724,7 +1724,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void GridFiles_DragEnter(object sender, DragEventArgs e)
         {
-            if ((DataContext?.SelectedDirectory == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+            if ((DataContext?.SelectedDirectory is null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
             {
                 return;
             }
@@ -1747,7 +1747,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void GridFiles_DragDrop(object sender, DragEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1761,7 +1761,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if ((_explorerImportData == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+            if ((_explorerImportData is null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
             {
                 return;
             }
@@ -1774,7 +1774,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void GridFiles_DragOver(object sender, DragEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1859,7 +1859,7 @@ namespace Gorgon.Editor.Views
                 var node = e.Node as DirectoryTreeNode;
 
                 var args = new RenameArgs(e.Label, node.Text);
-                if ((DataContext?.RenameDirectoryCommand == null) || (!DataContext.RenameDirectoryCommand.CanExecute(args)))
+                if ((DataContext?.RenameDirectoryCommand is null) || (!DataContext.RenameDirectoryCommand.CanExecute(args)))
                 {
                     e.CancelEdit = true;
                     IsRenaming = false;
@@ -1884,7 +1884,7 @@ namespace Gorgon.Editor.Views
 
             try
             {
-                if ((DataContext?.SelectDirectoryCommand == null) || (!DataContext.SelectDirectoryCommand.CanExecute(id)))
+                if ((DataContext?.SelectDirectoryCommand is null) || (!DataContext.SelectDirectoryCommand.CanExecute(id)))
                 {
                     return;
                 }
@@ -1902,7 +1902,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
         private void TreeDirectories_AfterCollapse(object sender, TreeViewEventArgs e)
         {
-            if (!(e.Node is DirectoryTreeNode node))
+            if (e.Node is not DirectoryTreeNode node)
             {
                 return;
             }
@@ -1913,7 +1913,7 @@ namespace Gorgon.Editor.Views
             {
                 IDirectory directory = node.DataContext;
 
-                if (directory == null)
+                if (directory is null)
                 {
                     return;
                 }
@@ -1938,7 +1938,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
         private void TreeDirectories_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            if (!(e.Node is DirectoryTreeNode node))
+            if (e.Node is not DirectoryTreeNode node)
             {
                 return;
             }
@@ -1952,7 +1952,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="TreeViewCancelEventArgs"/> instance containing the event data.</param>
         private void TreeDirectories_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            if (!(e.Node is DirectoryTreeNode node))
+            if (e.Node is not DirectoryTreeNode node)
             {
                 return;
             }
@@ -1963,7 +1963,7 @@ namespace Gorgon.Editor.Views
             {
                 IDirectory directory = node.DataContext;
 
-                if (directory == null)
+                if (directory is null)
                 {
                     return;
                 }                
@@ -1982,7 +1982,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
         private async void TreeDirectories_KeyUp(object sender, KeyEventArgs e)
         {
-            if ((DataContext == null) || (TreeDirectories.SelectedNode == null))
+            if ((DataContext is null) || (TreeDirectories.SelectedNode is null))
             {
                 return;
             }
@@ -2010,7 +2010,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="ItemDragEventArgs"/> instance containing the event data.</param>
         private void TreeDirectories_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            if (!(e.Item is DirectoryTreeNode node))
+            if (e.Item is not DirectoryTreeNode node)
             {
                 return;
             }
@@ -2022,7 +2022,7 @@ namespace Gorgon.Editor.Views
 
             TreeDirectories.DoDragDrop(data, DragDropEffects.Move | DragDropEffects.Copy);
 
-            if (dragData.TargetNode != null)
+            if (dragData.TargetNode is not null)
             {
                 dragData.TargetNode.ForeColor = Color.Empty;
                 dragData.TargetNode.BackColor = Color.Empty;
@@ -2034,7 +2034,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TreeDirectories_DragLeave(object sender, EventArgs e)
         {
-            if (_explorerImportData?.TargetNode == null)
+            if (_explorerImportData?.TargetNode is null)
             {
                 return;
             }
@@ -2050,9 +2050,9 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The event arguments.</param>
         private async void DirectoryNodes_DragDrop(TreeNodeDragData data, DragEventArgs e)
         {
-            if ((data == null) 
+            if ((data is null) 
                 || (e.Effect == DragDropEffects.None)
-                || (DataContext == null))
+                || (DataContext is null))
             {
                 return;
             }
@@ -2069,13 +2069,13 @@ namespace Gorgon.Editor.Views
                 switch (data.Operation)
                 {
                     case CopyMoveOperation.Copy:
-                        if ((DataContext.CopyDirectoryCommand != null) && (DataContext.CopyDirectoryCommand.CanExecute(data)))
+                        if ((DataContext.CopyDirectoryCommand is not null) && (DataContext.CopyDirectoryCommand.CanExecute(data)))
                         {
                             await DataContext.CopyDirectoryCommand.ExecuteAsync(data);
                         }
                         break;
                     case CopyMoveOperation.Move:
-                        if ((DataContext.MoveDirectoryCommand != null) && (DataContext.MoveDirectoryCommand.CanExecute(data)))
+                        if ((DataContext.MoveDirectoryCommand is not null) && (DataContext.MoveDirectoryCommand.CanExecute(data)))
                         {
                             await DataContext.MoveDirectoryCommand.ExecuteAsync(data);
                         }
@@ -2104,7 +2104,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The event arguments.</param>
         private void DirectoryNodes_DragOver(TreeNodeDragData data, DragEventArgs e)
         {
-            if ((data == null) || (DataContext?.CopyDirectoryCommand == null) || (DataContext?.MoveDirectoryCommand == null))
+            if ((data is null) || (DataContext?.CopyDirectoryCommand is null) || (DataContext?.MoveDirectoryCommand is null))
             {
                 e.Effect = DragDropEffects.None;
                 return;
@@ -2114,14 +2114,14 @@ namespace Gorgon.Editor.Views
             TreeViewHitTestInfo hitResult = TreeDirectories.HitTest(TreeDirectories.PointToClient(new Point(e.X, e.Y)));
             data.TargetNode = (DirectoryTreeNode)hitResult.Node;
 
-            if (hitResult.Node == null)
+            if (hitResult.Node is null)
             {
                 data.TargetNode = _rootNode;
             }
 
             if (data.TargetNode != prevTargetNode)
             {
-                if (prevTargetNode != null)
+                if (prevTargetNode is not null)
                 {
                     prevTargetNode.ForeColor = Color.Empty;
                     prevTargetNode.BackColor = Color.Empty;
@@ -2177,7 +2177,7 @@ namespace Gorgon.Editor.Views
         {
             try
             {
-                if ((_explorerImportData == null) || (DataContext?.ImportCommand == null))
+                if ((_explorerImportData is null) || (DataContext?.ImportCommand is null))
                 {
                     e.Effect = DragDropEffects.None;
                     return;
@@ -2202,7 +2202,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The event parameters.</param>
         private void Explorer_DragOverDirectory(DragEventArgs e)
         {
-            if ((_explorerImportData == null) || (DataContext?.ImportCommand == null))
+            if ((_explorerImportData is null) || (DataContext?.ImportCommand is null))
             {
                 e.Effect = DragDropEffects.None;
                 return;
@@ -2215,7 +2215,7 @@ namespace Gorgon.Editor.Views
 
             if (_explorerImportData.TargetNode != prevTargetNode)
             {
-                if (prevTargetNode != null)
+                if (prevTargetNode is not null)
                 {
                     prevTargetNode.ForeColor = Color.Empty;
                     prevTargetNode.BackColor = Color.Empty;
@@ -2255,9 +2255,9 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The event arguments.</param>
         private async void FileRows_DragDrop(GridRowsDragData data, DragEventArgs e)
         {
-            if ((data == null)
+            if ((data is null)
                 || (e.Effect == DragDropEffects.None)
-                || (DataContext == null))
+                || (DataContext is null))
             {
                 return;
             }
@@ -2267,13 +2267,13 @@ namespace Gorgon.Editor.Views
                 switch (data.Operation)
                 {
                     case CopyMoveOperation.Copy:
-                        if ((DataContext.CopyFileCommand != null) && (DataContext.CopyFileCommand.CanExecute(data)))
+                        if ((DataContext.CopyFileCommand is not null) && (DataContext.CopyFileCommand.CanExecute(data)))
                         {
                             await DataContext.CopyFileCommand.ExecuteAsync(data);
                         }
                         break;
                     case CopyMoveOperation.Move:
-                        if ((DataContext.MoveFileCommand != null) && (DataContext.MoveFileCommand.CanExecute(data)))
+                        if ((DataContext.MoveFileCommand is not null) && (DataContext.MoveFileCommand.CanExecute(data)))
                         {
                             await DataContext.MoveFileCommand.ExecuteAsync(data);
                         }
@@ -2302,9 +2302,9 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The event arguments.</param>
         private async void FileRows_ToTree_DragDrop(GridRowsDragData data, DragEventArgs e)
         {
-            if ((data == null)
+            if ((data is null)
                 || (e.Effect == DragDropEffects.None)
-                || (DataContext == null))
+                || (DataContext is null))
             {
                 return;
             }
@@ -2321,13 +2321,13 @@ namespace Gorgon.Editor.Views
                 switch (data.Operation)
                 {
                     case CopyMoveOperation.Copy:
-                        if ((DataContext.CopyFileCommand != null) && (DataContext.CopyFileCommand.CanExecute(data)))
+                        if ((DataContext.CopyFileCommand is not null) && (DataContext.CopyFileCommand.CanExecute(data)))
                         {
                             await DataContext.CopyFileCommand.ExecuteAsync(data);
                         }
                         break;
                     case CopyMoveOperation.Move:
-                        if ((DataContext.MoveFileCommand != null) && (DataContext.MoveFileCommand.CanExecute(data)))
+                        if ((DataContext.MoveFileCommand is not null) && (DataContext.MoveFileCommand.CanExecute(data)))
                         {
                             await DataContext.MoveFileCommand.ExecuteAsync(data);
                         }
@@ -2356,7 +2356,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The event arguments.</param>
         private void FileRows_ToTree_DragOver(GridRowsDragData rowData, DragEventArgs e)
         {
-            if ((rowData == null) || (DataContext?.CopyFileCommand == null) || (DataContext?.MoveFileCommand == null))
+            if ((rowData is null) || (DataContext?.CopyFileCommand is null) || (DataContext?.MoveFileCommand is null))
             {
                 e.Effect = DragDropEffects.None;
                 return;
@@ -2366,14 +2366,14 @@ namespace Gorgon.Editor.Views
             TreeViewHitTestInfo hitResult = TreeDirectories.HitTest(TreeDirectories.PointToClient(new Point(e.X, e.Y)));
             rowData.TargetNode = (DirectoryTreeNode)hitResult.Node;
 
-            if (hitResult.Node == null)
+            if (hitResult.Node is null)
             {
                 rowData.TargetNode = _rootNode;
             }
 
             if (rowData.TargetNode != prevTargetNode)
             {
-                if (prevTargetNode != null)
+                if (prevTargetNode is not null)
                 {
                     prevTargetNode.ForeColor = Color.Empty;
                     prevTargetNode.BackColor = Color.Empty;
@@ -2430,7 +2430,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void TreeDirectories_DragOver(object sender, DragEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -2461,7 +2461,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void TreeDirectories_DragEnter(object sender, DragEventArgs e)
         {
-            if ((DataContext == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+            if ((DataContext is null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
             {
                 return;
             }
@@ -2471,7 +2471,7 @@ namespace Gorgon.Editor.Views
             TreeViewHitTestInfo hitResult = TreeDirectories.HitTest(TreeDirectories.PointToClient(new Point(e.X, e.Y)));
             DirectoryTreeNode targetTreeNode = (hitResult.Node as DirectoryTreeNode) ?? _rootNode;
 
-            if (targetTreeNode != null)
+            if (targetTreeNode is not null)
             {
                 targetTreeNode.ForeColor = DarkFormsRenderer.FocusedForeground;
                 targetTreeNode.BackColor = DarkFormsRenderer.FocusedBackground;
@@ -2487,7 +2487,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
         private void TreeDirectories_DragDrop(object sender, DragEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -2504,7 +2504,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if ((_explorerImportData == null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
+            if ((_explorerImportData is null) || (!e.Data.GetDataPresent(DataFormats.FileDrop, false)))
             {
                 return;
             }
@@ -2518,7 +2518,7 @@ namespace Gorgon.Editor.Views
         /// <param name="searchText">The text to search for.</param>
         private void SendSearchCommand(string searchText)
         {
-            if ((DataContext?.SearchCommand == null) || (!DataContext.SearchCommand.CanExecute(searchText)))
+            if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(searchText)))
             {
                 ValidateMenuItems(DataContext);
                 return;
@@ -2563,7 +2563,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private async Task DeleteDirectoryAsync()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -2571,7 +2571,7 @@ namespace Gorgon.Editor.Views
             try
             {
                 var args = new DeleteArgs(null);
-                if (DataContext?.DeleteDirectoryCommand != null)
+                if (DataContext?.DeleteDirectoryCommand is not null)
                 {
                     if (!DataContext.DeleteDirectoryCommand.CanExecute(args))
                     {
@@ -2627,7 +2627,7 @@ namespace Gorgon.Editor.Views
 
                 GridFiles.Rows.Clear();
 
-                if ((directory == null) || (files == null) || (files.Count == 0))
+                if ((directory is null) || (files is null) || (files.Count == 0))
                 {
                     return;
                 }
@@ -2667,13 +2667,13 @@ namespace Gorgon.Editor.Views
                     selected.Selected = true;
                 }
 
-                if (sortColumn != null)
+                if (sortColumn is not null)
                 {
                     GridFiles.Sort(sortColumn, sortOrder == SortOrder.Descending ? ListSortDirection.Descending : ListSortDirection.Ascending);
                 }
 
-                ColumnPath.Visible = dataContext?.SearchResults != null;
-                GridFiles.MultiSelect = dataContext?.SearchResults == null;
+                ColumnPath.Visible = dataContext?.SearchResults is not null;
+                GridFiles.MultiSelect = dataContext?.SearchResults is null;
             }
             finally
             {
@@ -2750,7 +2750,7 @@ namespace Gorgon.Editor.Views
                 }
 
                 // If this is a root node, then ensure it gets tacked on the tree if it's not already in there.
-                if ((parentDirectory.Parent == null) && (!TreeDirectories.Nodes.ContainsKey(parentDirectory.ID)))
+                if ((parentDirectory.Parent is null) && (!TreeDirectories.Nodes.ContainsKey(parentDirectory.ID)))
                 {
                     // Root nodes should stay expanded.
                     parentNode.Expand();
@@ -2795,7 +2795,7 @@ namespace Gorgon.Editor.Views
             {
                 ResetDataContext();
 
-                if (dataContext == null)
+                if (dataContext is null)
                 {                    
                     return;
                 }
@@ -2822,7 +2822,7 @@ namespace Gorgon.Editor.Views
                 FillFiles(dataContext, dataContext.Root, dataContext.Root.Files);
 
                 DirectoryTreeNode selectedNode = null;
-                if (dataContext.SelectedDirectory != null)
+                if (dataContext.SelectedDirectory is not null)
                 {
                     dataContext.SelectedDirectory.Files.CollectionChanged += Files_CollectionChanged;
                     _directoryNodes.TryGetValue(dataContext.SelectedDirectory.ID, out selectedNode);
@@ -2892,7 +2892,7 @@ namespace Gorgon.Editor.Views
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if ((IsDesignTime) || (DataContext == null))
+            if ((IsDesignTime) || (DataContext is null))
             {
                 return;
             }
@@ -2900,7 +2900,7 @@ namespace Gorgon.Editor.Views
             DataContext.PropertyChanging += DataContext_PropertyChanging;
             DataContext.PropertyChanged += DataContext_PropertyChanged;
             DataContext.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
-            if (DataContext.Clipboard != null)
+            if (DataContext.Clipboard is not null)
             {
                 DataContext.Clipboard.PropertyChanged += Clipboard_PropertyChanged;
             }
@@ -2937,7 +2937,7 @@ namespace Gorgon.Editor.Views
         /// <returns>A task for asynchronous operation.</returns>
         public async Task ExportDirectoryAsync()
         {
-            if ((DataContext?.ExportDirectoryCommand == null)
+            if ((DataContext?.ExportDirectoryCommand is null)
                 || (!DataContext.ExportDirectoryCommand.CanExecute(null)))
             {
                 return;
@@ -2952,7 +2952,7 @@ namespace Gorgon.Editor.Views
         /// <returns>A task for asynchronous operation.</returns>
         public async Task ExportFilesAsync()
         {
-            if ((DataContext?.ExportFilesCommand == null)
+            if ((DataContext?.ExportFilesCommand is null)
                 || (!DataContext.ExportFilesCommand.CanExecute(null)))
             {
                 return;
@@ -2969,7 +2969,7 @@ namespace Gorgon.Editor.Views
         {
             IDirectory selectedDirectory = DataContext.SelectedDirectory;
 
-            if ((DataContext?.Clipboard == null) || (selectedDirectory == null))
+            if ((DataContext?.Clipboard is null) || (selectedDirectory is null))
             {
                 return;
             }
@@ -2984,7 +2984,7 @@ namespace Gorgon.Editor.Views
                     SourceDirectory = selectedDirectory.ID
                 };
 
-                if ((handler.CopyDataCommand == null) || (!handler.CopyDataCommand.CanExecute(directoryCopyData)))
+                if ((handler.CopyDataCommand is null) || (!handler.CopyDataCommand.CanExecute(directoryCopyData)))
                 {
                     return;
                 }
@@ -3006,7 +3006,7 @@ namespace Gorgon.Editor.Views
         {
             IReadOnlyList<IFile> selectedFiles = DataContext.SelectedFiles;
 
-            if ((DataContext?.Clipboard == null) || (selectedFiles.Count == 0))
+            if ((DataContext?.Clipboard is null) || (selectedFiles.Count == 0))
             {
                 return;
             }
@@ -3021,7 +3021,7 @@ namespace Gorgon.Editor.Views
                     SourceFiles = selectedFiles.Select(item => item.ID).ToArray()
                 };
 
-                if ((handler.CopyDataCommand == null) || (!handler.CopyDataCommand.CanExecute(fileCopyData)))
+                if ((handler.CopyDataCommand is null) || (!handler.CopyDataCommand.CanExecute(fileCopyData)))
                 {
                     return;
                 }
@@ -3050,7 +3050,7 @@ namespace Gorgon.Editor.Views
         /// <returns>A task for asynchronous operation.</returns>
         public async Task ImportAsync()
         {
-            if (DataContext?.ImportCommand == null)
+            if (DataContext?.ImportCommand is null)
             {
                 return;
             }
@@ -3060,7 +3060,7 @@ namespace Gorgon.Editor.Views
                 Destination = DataContext.SelectedDirectory
             };
 
-            if ((DataContext?.ImportCommand == null) || (!DataContext.ImportCommand.CanExecute(importData)))
+            if ((DataContext?.ImportCommand is null) || (!DataContext.ImportCommand.CanExecute(importData)))
             {
                 return;
             }
@@ -3069,7 +3069,7 @@ namespace Gorgon.Editor.Views
 
             if ((!importData.ItemsImported)
                 || (!_directoryNodes.TryGetValue(DataContext.SelectedDirectory.ID, out DirectoryTreeNode node))
-                || ((DataContext?.SelectDirectoryCommand != null) && (DataContext.SelectDirectoryCommand.CanExecute(node.Name))))
+                || ((DataContext?.SelectDirectoryCommand is not null) && (DataContext.SelectDirectoryCommand.CanExecute(node.Name))))
             {                
                 return;
             }

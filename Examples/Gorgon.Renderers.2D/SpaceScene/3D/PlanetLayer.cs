@@ -114,7 +114,7 @@ namespace Gorgon.Examples
         // A combination of both matrices. This is calculated on every frame update when the view/projection is updated.
         private Matrix4x4 _viewProjection;
         // Flag to indicate that we can draw the planet or not.
-        private readonly List<Planet> _drawPlanets = new List<Planet>();
+        private readonly List<Planet> _drawPlanets = new();
         #endregion
 
         #region Properties.
@@ -259,7 +259,7 @@ namespace Gorgon.Examples
             {
                 Light light = ActiveLights[i];
 
-                if (light == null)
+                if (light is null)
                 {
                     continue;
                 }
@@ -308,7 +308,7 @@ namespace Gorgon.Examples
                     GorgonPixelShader pixelShader = _resources.PixelShaders[layer.Mesh.Material.PixelShader];
 
                     // Create our vertex layout now.
-                    if (_vertexLayout == null)
+                    if (_vertexLayout is null)
                     {
                         _vertexLayout = _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
                     }
@@ -363,7 +363,7 @@ namespace Gorgon.Examples
             _viewProjection = Matrix4x4.Transpose(Matrix4x4.Multiply(_viewMatrix, _projectionMatrix));
             _viewProjectionBuffer?.Buffer.SetData(in _viewProjection);
 
-            if (_cameraBuffer == null)
+            if (_cameraBuffer is null)
             {
                 return;
             }

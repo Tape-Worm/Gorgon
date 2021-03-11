@@ -59,7 +59,7 @@ namespace Gorgon.Editor.ImageSplitTool
         // The service used to search through the files.
         private ISearchService<IContentFileExplorerSearchEntry> _searchService;
         // The list of selected files.
-        private readonly List<ContentFileExplorerFileEntry> _selected = new List<ContentFileExplorerFileEntry>();
+        private readonly List<ContentFileExplorerFileEntry> _selected = new();
         // The task used to load the preview.
         private Task<IGorgonImage> _loadPreviewTask;
         // The cancellation source.
@@ -110,7 +110,7 @@ namespace Gorgon.Editor.ImageSplitTool
             get => _settings.LastOutputDir;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = string.Empty;
                 }
@@ -141,7 +141,7 @@ namespace Gorgon.Editor.ImageSplitTool
             get => _selected;
             private set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = Array.Empty<ContentFileExplorerFileEntry>();
                 }
@@ -255,12 +255,12 @@ namespace Gorgon.Editor.ImageSplitTool
 
                 IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(ThumbnailPath);
 
-                if (thumbDirectory == null)
+                if (thumbDirectory is null)
                 {
                     thumbDirectory = _tempFileSystem.CreateDirectory(ThumbnailPath);
                 }
 
-                if (_loadPreviewTask != null)
+                if (_loadPreviewTask is not null)
                 {
                     if (_loadPreviewTask.Status == TaskStatus.Faulted)
                     {
@@ -279,7 +279,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
                 _previewImage?.Dispose();                
 
-                if ((files == null) || (files.Count == 0))
+                if ((files is null) || (files.Count == 0))
                 {
                     _previewImage = null;
                     NotifyPropertyChanged(nameof(PreviewImage));
@@ -288,7 +288,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
                 IContentFile previewFile = files[files.Count - 1]?.File;
 
-                if (previewFile == null)
+                if (previewFile is null)
                 {
                     _previewImage = null;
                     NotifyPropertyChanged(nameof(PreviewImage));
@@ -454,7 +454,7 @@ namespace Gorgon.Editor.ImageSplitTool
         {
             try
             {
-                if (_splitCancelSource == null)
+                if (_splitCancelSource is null)
                 {
                     return;
                 }
@@ -466,7 +466,7 @@ namespace Gorgon.Editor.ImageSplitTool
                     args.Cancel = true;
                 }
 
-                if (_splitTask != null)
+                if (_splitTask is not null)
                 {
                     await _splitTask;
                 }
@@ -519,12 +519,12 @@ namespace Gorgon.Editor.ImageSplitTool
                 file.PropertyChanged -= File_PropertyChanged;
             }
 
-            if (_splitCancelSource != null)
+            if (_splitCancelSource is not null)
             {
                 _splitCancelSource.Cancel();
             }
 
-            if (_previewCancelSource != null)
+            if (_previewCancelSource is not null)
             {
                 _previewCancelSource.Cancel();
             }

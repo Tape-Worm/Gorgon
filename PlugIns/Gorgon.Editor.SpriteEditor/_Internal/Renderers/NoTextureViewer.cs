@@ -89,14 +89,12 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnCreateResources();
 
-            using (var stream = new MemoryStream(Resources.SpriteEditor_Bg_1024x1024))
+            using var stream = new MemoryStream(Resources.SpriteEditor_Bg_1024x1024);
+            _noImage = GorgonTexture2DView.FromStream(Graphics, stream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
             {
-                _noImage = GorgonTexture2DView.FromStream(Graphics, stream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
-                {
-                    Name = "Sprite Editor - No texture default texture",
-                    Usage = ResourceUsage.Immutable
-                });
-            }
+                Name = "Sprite Editor - No texture default texture",
+                Usage = ResourceUsage.Immutable
+            });
         }
 
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>

@@ -53,7 +53,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericBlurAmount_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -73,7 +73,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnSubmit();
 
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
             {
                 return;
             }
@@ -86,7 +86,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnCancel();
 
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 return;
             }
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -126,7 +126,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(IFxBlur dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 NumericBlurAmount.ValueChanged -= NumericBlurAmount_ValueChanged;
                 NumericBlurAmount.Value = 1;
@@ -148,7 +148,7 @@ namespace Gorgon.Editor.ImageEditor
 
             DataContext = dataContext;
 
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }

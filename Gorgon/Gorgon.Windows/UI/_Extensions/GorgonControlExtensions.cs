@@ -42,16 +42,16 @@ namespace System.Windows.Forms
         public static T GetFirstAncestor<T>(this Control control)
             where T : Control
         {
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }
 
             Control parent = control.Parent;
 
-            while (parent != null)
+            while (parent is not null)
             {
-                if ((parent.Parent == null) && (parent is T))
+                if ((parent.Parent is null) && (parent is T))
                 {
                     break;
                 }
@@ -72,16 +72,16 @@ namespace System.Windows.Forms
         public static T GetAncestor<T>(this Control control)
             where T : Control
         {
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }
 
             Control parent = control.Parent;
 
-            while (parent != null)
+            while (parent is not null)
             {
-                if (parent.Parent == null)
+                if (parent.Parent is null)
                 {
                     return null;
                 }
@@ -105,6 +105,6 @@ namespace System.Windows.Forms
         /// <returns>The <see cref="Form"/> of type <typeparamref name="T"/> if found, <b>null</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
         public static T GetForm<T>(this Control control)
-            where T : Form => control == null ? throw new ArgumentNullException(nameof(control)) : control.FindForm() as T;
+            where T : Form => control is null ? throw new ArgumentNullException(nameof(control)) : control.FindForm() as T;
     }
 }

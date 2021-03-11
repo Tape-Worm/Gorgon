@@ -39,7 +39,7 @@ namespace Gorgon.Input
     {
         #region Variables.
         // Keyboard key state.
-        private readonly Dictionary<Keys, KeyState> _keys = new Dictionary<Keys, KeyState>(new GorgonKeysEqualityComparer());
+        private readonly Dictionary<Keys, KeyState> _keys = new(new GorgonKeysEqualityComparer());
         #endregion
 
         #region Properties.

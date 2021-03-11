@@ -56,7 +56,7 @@ namespace Gorgon.UI
         {
             base.OnShown(e);
 
-            if (Parent == null)
+            if (Parent is null)
             {
                 return;
             }

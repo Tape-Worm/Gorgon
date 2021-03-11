@@ -70,7 +70,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 lock (_selectedChangedEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         SelectedFilesChangedEvent = null;
                         return;
@@ -83,7 +83,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 lock (_selectedChangedEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -102,7 +102,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 lock (_fsUpdatedEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -114,7 +114,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 lock (_fsUpdatedEventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         FileSystemUpdatedEvent = null;
                         return;
@@ -128,8 +128,8 @@ namespace Gorgon.Editor.ViewModels
 
         #region Variables.
         // The synchronization locks for the file system events.
-        private readonly object _fsUpdatedEventLock = new object();
-        private readonly object _selectedChangedEventLock = new object();
+        private readonly object _fsUpdatedEventLock = new();
+        private readonly object _selectedChangedEventLock = new();
         // Flag to indicate that the view model is loaded.
         private int _isLoaded;
         // The project file system and writer.
@@ -143,8 +143,8 @@ namespace Gorgon.Editor.ViewModels
         // The selected directory.
         private IDirectory _selectedDir;
         // Cached list of directories and files (referenced by full path).
-        private readonly Dictionary<string, IDirectory> _directories = new Dictionary<string, IDirectory>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, IFile> _files = new Dictionary<string, IFile>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IFile> _files = new(StringComparer.OrdinalIgnoreCase);
         // The main thread synchronization context.
         private SynchronizationContext _syncContext;
         // The service used to search through the file system.
@@ -154,7 +154,7 @@ namespace Gorgon.Editor.ViewModels
         // The application settings.
         private Editor.EditorSettings _settings;
         // The list of selected files.
-        private ObservableCollection<IFile> _selectedFiles = new ObservableCollection<IFile>();
+        private ObservableCollection<IFile> _selectedFiles = new();
         // The clipboard handler.
         private IClipboardHandler _clipboardHandler;
         #endregion
@@ -205,7 +205,7 @@ namespace Gorgon.Editor.ViewModels
             get => _selectedFiles;
             private set
             {
-                if (value == null)
+                if (value is null)
                 {
                     _selectedFiles.Clear();
                     return;
@@ -358,9 +358,9 @@ namespace Gorgon.Editor.ViewModels
 
                 OnPropertyChanging();
 
-                if (value != null)
+                if (value is not null)
                 {
-                    if (_searchFiles == null)
+                    if (_searchFiles is null)
                     {
                         _searchFiles = new List<IFile>(value);
                     }
@@ -474,7 +474,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 directory = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, directoryPath, StringComparison.OrdinalIgnoreCase));
 
-                if (directory == null)
+                if (directory is null)
                 {
                     throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directoryPath));
                 }
@@ -487,18 +487,18 @@ namespace Gorgon.Editor.ViewModels
             {
                 if ((searchMask.StartsWith("*", StringComparison.OrdinalIgnoreCase)) && (searchMask.EndsWith("*", StringComparison.OrdinalIgnoreCase)))
                 {
-                    searchMask = searchMask.Substring(1);
-                    searchMask = searchMask.Substring(0, searchMask.Length - 1);
+                    searchMask = searchMask[1..];
+                    searchMask = searchMask[0..^1];
                     searchPatternState = 3;
                 }
                 else if (searchMask.StartsWith("*", StringComparison.OrdinalIgnoreCase))
                 {
-                    searchMask = searchMask.Substring(1);
+                    searchMask = searchMask[1..];
                     searchPatternState = 1;
                 }
                 else if (searchMask.EndsWith("*", StringComparison.OrdinalIgnoreCase))
                 {
-                    searchMask = searchMask.Substring(0, searchMask.Length - 1);
+                    searchMask = searchMask[0..^1];
                     searchPatternState = 2;
                 }
             }
@@ -516,13 +516,13 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
         private bool AssignContentPlugIn(string filePath, ProjectItemMetadata metadata, bool metadataOnly)
         {
-            if (metadata == null)
+            if (metadata is null)
             {
                 throw new ArgumentNullException(nameof(metadata));
             }
 
             // This node is already associated.
-            if (metadata?.ContentMetadata != null)
+            if (metadata?.ContentMetadata is not null)
             {
                 return false;
             }
@@ -552,7 +552,7 @@ namespace Gorgon.Editor.ViewModels
             // Attempt to associate a content plug in with the node.            
             foreach (KeyValuePair<string, ContentPlugIn> servicePlugIn in HostServices.ContentPlugInService.PlugIns)
             {
-                if ((!(servicePlugIn.Value is IContentPlugInMetadata pluginMetadata))
+                if ((servicePlugIn.Value is not IContentPlugInMetadata pluginMetadata)
                     || (!pluginMetadata.CanOpenContent(filePath)))
                 {
                     continue;
@@ -574,14 +574,14 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
         private bool AssignContentPlugIn(IFile contentFile, bool metadataOnly)
         {
-            if (contentFile == null)
+            if (contentFile is null)
             {
                 throw new ArgumentNullException(nameof(contentFile));
             }
 
             bool result = AssignContentPlugIn(contentFile.FullPath, contentFile.Metadata, metadataOnly);
 
-            if ((result) && (contentFile.RefreshCommand != null) && (contentFile.RefreshCommand.CanExecute(null)))
+            if ((result) && (contentFile.RefreshCommand is not null) && (contentFile.RefreshCommand.CanExecute(null)))
             {            
                 contentFile.RefreshCommand.Execute(null);
             }
@@ -625,9 +625,9 @@ namespace Gorgon.Editor.ViewModels
                     IDirectory destDirectory = _directories.FirstOrDefault(item => string.Equals(item.Value.FullPath, destDirectoryPath, StringComparison.OrdinalIgnoreCase)).Value;
                     IFile destFile = _files.FirstOrDefault(item => string.Equals(item.Value.FullPath, destItem, StringComparison.OrdinalIgnoreCase)).Value;
 
-                    if (destDirectory == null)
+                    if (destDirectory is null)
                     {
-                        if ((destFile != null) && (destFile.IsOpen))
+                        if ((destFile is not null) && (destFile.IsOpen))
                         {
                             response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GOREDIT_CONFIRM_OPEN_CONTENT_CANT_OVERWRITE, destFile.Name), allowCancel: true);
                         }
@@ -656,7 +656,7 @@ namespace Gorgon.Editor.ViewModels
                     string fileName; 
                     string dirName;
 
-                    if (destFile == null)
+                    if (destFile is null)
                     {
                         fileName = Path.GetFileName(destItem);
                         dirName = Path.GetDirectoryName(destItem).FormatDirectory('/').Ellipses(40, true);
@@ -807,9 +807,9 @@ namespace Gorgon.Editor.ViewModels
                     IDirectory destDirectory = _directories.FirstOrDefault(item => string.Equals(item.Value.FullPath, destDirectoryPath, StringComparison.OrdinalIgnoreCase)).Value;
                     IFile destFile = _files.FirstOrDefault(item => string.Equals(item.Value.FullPath, destItem, StringComparison.OrdinalIgnoreCase)).Value;
 
-                    if (destDirectory == null)
+                    if (destDirectory is null)
                     {
-                        if ((destFile != null) && (destFile.IsOpen))
+                        if ((destFile is not null) && (destFile.IsOpen))
                         {
                             HostServices.MessageDisplay.ShowWarning(string.Format(Resources.GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE_SKIP, destFile.Name));
                             result = FileConflictResolution.Skip;
@@ -938,7 +938,7 @@ namespace Gorgon.Editor.ViewModels
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     IDirectory parent = _directories.FirstOrDefault(item => item.Value.Directories == directories).Value;
-                    if (parent != null)
+                    if (parent is not null)
                     {
                         RemoveDirectoryFromCache(parent);
                     }
@@ -961,7 +961,7 @@ namespace Gorgon.Editor.ViewModels
                     _files[file.ID] = file;
 
                     // Force a refresh on the file so we've got the most up to date.
-                    if ((file.RefreshCommand != null) && (file.RefreshCommand.CanExecute(null)))
+                    if ((file.RefreshCommand is not null) && (file.RefreshCommand.CanExecute(null)))
                     {
                         file.RefreshCommand.Execute(null);
                     }
@@ -975,7 +975,7 @@ namespace Gorgon.Editor.ViewModels
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     IDirectory parent = _directories.FirstOrDefault(item => item.Value.Files == files).Value;
-                    if (parent != null)
+                    if (parent is not null)
                     {
                         RemoveFilesFromCache(parent);
                     }                    
@@ -1117,7 +1117,7 @@ namespace Gorgon.Editor.ViewModels
             foreach ((IGorgonVirtualFile src, IGorgonVirtualFile dest) in files)
             {
                 IFile sourceFile = _files.FirstOrDefault(item => string.Equals(item.Value.FullPath, src.FullPath, StringComparison.OrdinalIgnoreCase)).Value;
-                if (sourceFile == null)
+                if (sourceFile is null)
                 {
                     continue;
                 }
@@ -1132,7 +1132,7 @@ namespace Gorgon.Editor.ViewModels
                 // If we've got the same file name in here, then we'll need to remove it prior to adding.
                 IFile existingFile = parentDir.Files.FirstOrDefault(item => string.Equals(item.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase));                
 
-                if (existingFile == null)
+                if (existingFile is null)
                 {
                     parentDir.Files.Add(newFile);
                     existingFile = newFile;
@@ -1159,7 +1159,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the directory can be created, <b>false</b> if not.</returns>
-        private bool CanCreateDirectory(CreateDirectoryArgs args) => (args?.ParentDirectory ?? SelectedDirectory) != null;
+        private bool CanCreateDirectory(CreateDirectoryArgs args) => (args?.ParentDirectory ?? SelectedDirectory) is not null;
 
         /// <summary>Function to create a new directory.</summary>
         /// <param name="args">The arguments for the command.</param>
@@ -1206,7 +1206,7 @@ namespace Gorgon.Editor.ViewModels
         {
             IDirectory dir;
 
-            if ((args != null) && (string.Equals(args.DeleteID, Root.ID, StringComparison.OrdinalIgnoreCase)))
+            if ((args is not null) && (string.Equals(args.DeleteID, Root.ID, StringComparison.OrdinalIgnoreCase)))
             {
                 return (Root.Directories.Count > 0) || (Root.Files.Count > 0);
             }
@@ -1220,7 +1220,7 @@ namespace Gorgon.Editor.ViewModels
                 _directories.TryGetValue(args.DeleteID, out dir);
             }
 
-            return (dir != null) && (dir.AvailableActions & DirectoryActions.Delete) == DirectoryActions.Delete;
+            return (dir is not null) && (dir.AvailableActions & DirectoryActions.Delete) == DirectoryActions.Delete;
         }
 
         /// <summary>
@@ -1235,7 +1235,7 @@ namespace Gorgon.Editor.ViewModels
 
             // If we've provided a progress callback, then we don't need to to use the code below.
             // Otherwise we'd end up with a cross thread error as the UI would be updated on a separate thread.
-            if (progressCallback != null)
+            if (progressCallback is not null)
             {
                 return;
             }
@@ -1266,13 +1266,13 @@ namespace Gorgon.Editor.ViewModels
             {
                 foreach (IGorgonVirtualDirectory dir in e.VirtualDirectories)
                 {
-                    if (dir.Parent == null)
+                    if (dir.Parent is null)
                     {
                         continue;
                     }
 
                     IDirectory dirViewModel = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, dir.FullPath, StringComparison.OrdinalIgnoreCase));
-                    if (dirViewModel != null)
+                    if (dirViewModel is not null)
                     {
                         deletedDirs.Add(dirViewModel);
                     }
@@ -1284,7 +1284,7 @@ namespace Gorgon.Editor.ViewModels
                 foreach (IGorgonVirtualFile file in e.VirtualFiles)
                 {
                     IFile fileViewModel = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, file.FullPath, StringComparison.OrdinalIgnoreCase));
-                    if (fileViewModel != null)
+                    if (fileViewModel is not null)
                     {
                         deletedFiles.Add(fileViewModel);
                     }
@@ -1322,7 +1322,7 @@ namespace Gorgon.Editor.ViewModels
                 IFile openFile = CheckForOpenFile(directory);
                 args.ItemsDeleted = false;
 
-                if (openFile != null)
+                if (openFile is not null)
                 {
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_DIRECTORY_LOCKED, directory.FullPath, openFile.Name));                    
                     return;
@@ -1457,7 +1457,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     IFile deletedFile = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.VirtualFiles[i].FullPath, StringComparison.OrdinalIgnoreCase));
 
-                    if (deletedFile != null)
+                    if (deletedFile is not null)
                     {
                         deletedFiles.Add(deletedFile);
                     }
@@ -1467,7 +1467,7 @@ namespace Gorgon.Editor.ViewModels
             try
             {
                 IFile lockedFile = SelectedFiles.FirstOrDefault(item => item.IsOpen);
-                if (lockedFile != null)
+                if (lockedFile is not null)
                 {
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_FILE_LOCKED, lockedFile.FullPath));
                     return;
@@ -1521,8 +1521,8 @@ namespace Gorgon.Editor.ViewModels
                 }
                 _fileSystemWriter.VirtualFileDeleted -= OnDeleted;
 
-                args.ItemsDeleted = (deletedFiles != null) && (deletedFiles.Count > 0);
-                if ((deletedFiles == null) || (deletedFiles.Count == 0))
+                args.ItemsDeleted = (deletedFiles is not null) && (deletedFiles.Count > 0);
+                if ((deletedFiles is null) || (deletedFiles.Count == 0))
                 {
                     return;
                 }
@@ -1533,7 +1533,7 @@ namespace Gorgon.Editor.ViewModels
                     IFile file = deletedFiles[i];
                     file.Parent.Files.Remove(file);
 
-                    if (_searchFiles != null)
+                    if (_searchFiles is not null)
                     {
                         if (_searchFiles.Remove(file))
                         {
@@ -1556,7 +1556,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                args.ItemsDeleted = (deletedFiles != null) && (deletedFiles.Count > 0);
+                args.ItemsDeleted = (deletedFiles is not null) && (deletedFiles.Count > 0);
                 HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETE, currentFilePath));
             }
             finally
@@ -1584,7 +1584,7 @@ namespace Gorgon.Editor.ViewModels
         {
             if (string.IsNullOrWhiteSpace(id))
             {                
-                return SelectedDirectory != null;
+                return SelectedDirectory is not null;
             }
 
             if (!_directories.ContainsKey(id))
@@ -1592,7 +1592,7 @@ namespace Gorgon.Editor.ViewModels
                 return false;
             }
 
-            return (SelectedDirectory == null) || (!string.Equals(id, SelectedDirectory.ID, StringComparison.OrdinalIgnoreCase));
+            return (SelectedDirectory is null) || (!string.Equals(id, SelectedDirectory.ID, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -1639,7 +1639,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="ids">The list of file IDs to select.</param>
         /// <returns><b>true</b> if the paths can be selected, or <b>false</b> if not.</returns>
-        private bool CanSelectFile(IReadOnlyList<string> ids) => (ids != null) && (SelectedDirectory != null) && (SelectedDirectory.Files.Count > 0);
+        private bool CanSelectFile(IReadOnlyList<string> ids) => (ids is not null) && (SelectedDirectory is not null) && (SelectedDirectory.Files.Count > 0);
 
         /// <summary>
         /// Function to set the currently selected file(s).
@@ -1715,7 +1715,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Ensure that we can actually update the virtual directory object.
-                if ((selected.RenameCommand == null) || (!selected.RenameCommand.CanExecute(args)))
+                if ((selected.RenameCommand is null) || (!selected.RenameCommand.CanExecute(args)))
                 {
                     args.Cancel = true;
                     return;
@@ -1752,7 +1752,7 @@ namespace Gorgon.Editor.ViewModels
                 _directories.TryGetValue(args.ID, out dir);
             }
 
-            return (dir != null) && ((dir.AvailableActions & DirectoryActions.Rename) == DirectoryActions.Rename);
+            return (dir is not null) && ((dir.AvailableActions & DirectoryActions.Rename) == DirectoryActions.Rename);
         }
 
         /// <summary>
@@ -1783,7 +1783,7 @@ namespace Gorgon.Editor.ViewModels
 
                 IFile openFile = CheckForOpenFile(selected);
 
-                if (openFile != null)
+                if (openFile is not null)
                 {
                     args.Cancel = true;
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_RENAME_DIR_OPEN_FILE, selected.Name, openFile.Name));
@@ -1791,7 +1791,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Ensure that we can actually update the virtual directory object.
-                if ((selected.RenameCommand == null) || (!selected.RenameCommand.CanExecute(args)))
+                if ((selected.RenameCommand is null) || (!selected.RenameCommand.CanExecute(args)))
                 {
                     args.Cancel = true;
                     return;
@@ -1851,13 +1851,13 @@ namespace Gorgon.Editor.ViewModels
             IDirectory parent = destDirectory.Parent;
 
             // We can move any directory into the root (except itself, which is handled above).
-            if (parent == null)
+            if (parent is null)
             {
                 return true;
             }
 
             // Ensure that the directory being moved is not an ancestor of the destination.
-            while (parent != null)
+            while (parent is not null)
             {
                 if (parent == srcDirectory)
                 {
@@ -1891,7 +1891,7 @@ namespace Gorgon.Editor.ViewModels
                 IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
                 IFile file = null;
 
-                if (dir == null)
+                if (dir is null)
                 {
                     file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
                 }
@@ -1934,7 +1934,7 @@ namespace Gorgon.Editor.ViewModels
 
                 IFile openFile = CheckForOpenFile(srcDirectory);
 
-                if (openFile != null)
+                if (openFile is not null)
                 {                    
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_DIR_OPEN_FILE, srcDirectory.Name, openFile.Name));
                     return;
@@ -1953,7 +1953,7 @@ namespace Gorgon.Editor.ViewModels
                 _fileSystemWriter.VirtualDirectoryMoved -= DirectoryMoved;
                 HideProgress();
 
-                copyData.DirectoriesCopied = ((movedDirs != null) && (movedDirs.Count > 0)) || ((movedFiles != null) && (movedFiles.Count > 0));
+                copyData.DirectoriesCopied = ((movedDirs is not null) && (movedDirs.Count > 0)) || ((movedFiles is not null) && (movedFiles.Count > 0));
                 if (!copyData.DirectoriesCopied)
                 {
                     return;
@@ -1962,7 +1962,7 @@ namespace Gorgon.Editor.ViewModels
                 // Change to a different progress screen for our enumeration.
                 UpdateMarequeeProgress(Resources.GOREDIT_TEXT_MOVING);
 
-                UpdateDirectoryViewModels(movedDirs.Where(item => item.dest != null).Select(item => item.dest), destDirectory);
+                UpdateDirectoryViewModels(movedDirs.Where(item => item.dest is not null).Select(item => item.dest), destDirectory);
                 UpdateFileViewModels(movedFiles, destDirectory, false);
                 
                 // Remove the source files/directories from the view if it's subscribed.
@@ -1971,7 +1971,7 @@ namespace Gorgon.Editor.ViewModels
                     // Since the file system service uses absolute physical paths, we'll have to associate by physical path names.
                     IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, movedFile.FullPath, StringComparison.OrdinalIgnoreCase));
 
-                    if (file == null)
+                    if (file is null)
                     {
                         continue;
                     }
@@ -1984,7 +1984,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     IDirectory src = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, srcDir.FullPath, StringComparison.OrdinalIgnoreCase));
 
-                    if (src == null)
+                    if (src is null)
                     {
                         continue;
                     }
@@ -1998,7 +1998,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                copyData.DirectoriesCopied = ((movedDirs != null) && (movedDirs.Count > 0)) || ((movedFiles != null) && (movedFiles.Count > 0));
+                copyData.DirectoriesCopied = ((movedDirs is not null) && (movedDirs.Count > 0)) || ((movedFiles is not null) && (movedFiles.Count > 0));
                 HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE, srcDirectory?.FullPath, destDirectory?.FullPath));
             }
             finally
@@ -2023,7 +2023,7 @@ namespace Gorgon.Editor.ViewModels
         {
             IDirectory destDirectory = null;
 
-            if ((copyData.DestinationDirectory != null) && (!_directories.TryGetValue(copyData.DestinationDirectory ?? string.Empty, out destDirectory)))
+            if ((copyData.DestinationDirectory is not null) && (!_directories.TryGetValue(copyData.DestinationDirectory ?? string.Empty, out destDirectory)))
             {
                 return false;
             }
@@ -2104,7 +2104,7 @@ namespace Gorgon.Editor.ViewModels
 
                 IFile openFile = srcFiles.FirstOrDefault(item => item.IsOpen);
 
-                if (openFile != null)
+                if (openFile is not null)
                 {
                     HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_FILE_OPEN_FILE, openFile.Name));                    
                     return;
@@ -2125,7 +2125,7 @@ namespace Gorgon.Editor.ViewModels
                 _fileSystemWriter.VirtualFileMoved -= FilesMoved;
                 HideProgress();
 
-                args.FilesCopied = (movedFiles != null) && (movedFiles.Count > 0);
+                args.FilesCopied = (movedFiles is not null) && (movedFiles.Count > 0);
                 
                 if (!args.FilesCopied)
                 {
@@ -2142,7 +2142,7 @@ namespace Gorgon.Editor.ViewModels
                     // Since the file system service uses absolute physical paths, we'll have to associate by physical path names.
                     IFile sourceFile = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, movedFile.FullPath, StringComparison.OrdinalIgnoreCase));
 
-                    if (sourceFile == null) 
+                    if (sourceFile is null) 
                     {
                         continue;
                     }                   
@@ -2157,7 +2157,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                args.FilesCopied = (movedFiles != null) && (movedFiles.Count > 0);
+                args.FilesCopied = (movedFiles is not null) && (movedFiles.Count > 0);
                 HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE, currentFile, destDirectory?.FullPath));
             }
             finally
@@ -2252,7 +2252,7 @@ namespace Gorgon.Editor.ViewModels
                 // Change to a different progress screen for our enumeration.
                 UpdateMarequeeProgress(Resources.GOREDIT_TEXT_COPYING);
 
-                args.FilesCopied = (copiedFiles != null) && (copiedFiles.Count > 0);
+                args.FilesCopied = (copiedFiles is not null) && (copiedFiles.Count > 0);
                 if (!args.FilesCopied)
                 {                    
                     return;
@@ -2266,7 +2266,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                args.FilesCopied = (copiedFiles != null) && (copiedFiles.Count > 0);
+                args.FilesCopied = (copiedFiles is not null) && (copiedFiles.Count > 0);
                 HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_COPY, currentFile, args.DestinationDirectory));                
             }
             finally
@@ -2321,7 +2321,7 @@ namespace Gorgon.Editor.ViewModels
                 IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
                 IFile file = null;
 
-                if (dir == null)
+                if (dir is null)
                 {
                     file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
                 }
@@ -2378,7 +2378,7 @@ namespace Gorgon.Editor.ViewModels
                 // Change to a different progress screen for our enumeration.
                 UpdateMarequeeProgress(Resources.GOREDIT_TEXT_COPYING);
 
-                copyData.DirectoriesCopied = ((copiedDirs != null) && (copiedDirs.Count > 0)) || ((copiedFiles != null) && (copiedFiles.Count > 0));
+                copyData.DirectoriesCopied = ((copiedDirs is not null) && (copiedDirs.Count > 0)) || ((copiedFiles is not null) && (copiedFiles.Count > 0));
                 if (!copyData.DirectoriesCopied)
                 {
                     return;
@@ -2393,7 +2393,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                copyData.DirectoriesCopied = ((copiedDirs != null) && (copiedDirs.Count > 0)) || ((copiedFiles != null) && (copiedFiles.Count > 0));
+                copyData.DirectoriesCopied = ((copiedDirs is not null) && (copiedDirs.Count > 0)) || ((copiedFiles is not null) && (copiedFiles.Count > 0));
                 HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_COPY, srcDirectory?.Name ?? string.Empty, destDirectory?.Name ?? string.Empty));
             }
             finally
@@ -2442,7 +2442,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to determine if the selected files can be exported.
         /// </summary>
         /// <returns><b>true</b> if the selected files can be exported, <b>false</b> if not.</returns>
-        private bool CanExportFiles() => (SelectedDirectory != null) 
+        private bool CanExportFiles() => (SelectedDirectory is not null) 
                                         && (_directories.ContainsKey(SelectedDirectory.ID)) 
                                         && (SelectedFiles.Count != 0)
                                         && (SelectedFiles.All(item => _files.ContainsKey(item.ID)));
@@ -2494,7 +2494,7 @@ namespace Gorgon.Editor.ViewModels
 
                 DirectoryInfo destDirectory = _directoryLocator.GetDirectory(new DirectoryInfo(initialPathTemp), Resources.GOREDIT_TEXT_EXPORT_TO);
 
-                if (destDirectory == null)
+                if (destDirectory is null)
                 {
                     return;
                 }
@@ -2530,7 +2530,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function to determine if a directory can be exported.
         /// </summary>
         /// <returns><b>true</b> if the directory can be exported, <b>false</b> if not.</returns>
-        private bool CanExportDirectory() => (SelectedDirectory != null) && (_directories.ContainsKey(SelectedDirectory.ID)) 
+        private bool CanExportDirectory() => (SelectedDirectory is not null) && (_directories.ContainsKey(SelectedDirectory.ID)) 
                                         && ((SelectedDirectory.Directories.Count > 0) || (SelectedDirectory.Files.Count > 0));
 
         /// <summary>
@@ -2555,7 +2555,7 @@ namespace Gorgon.Editor.ViewModels
                 IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
                 IFile file = null;
 
-                if (dir == null)
+                if (dir is null)
                 {
                     file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
                 }
@@ -2585,7 +2585,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 destDir = _directoryLocator.GetDirectory(new DirectoryInfo(_settings.LastOpenSavePath.FormatDirectory(Path.DirectorySeparatorChar)), Resources.GOREDIT_TEXT_EXPORT_TO);
 
-                if (destDir == null)
+                if (destDir is null)
                 {
                     return;
                 }
@@ -2622,7 +2622,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The command arguments.</param>
         /// <returns><b>true</b> if the import can proceed, <b>false</b> if not.</returns>
-        private bool CanImport(IImportData args) => (SearchResults == null)
+        private bool CanImport(IImportData args) => (SearchResults is null)
                                                          && (_directories.ContainsKey(args.DestinationDirectory))
                                                          && (!string.IsNullOrWhiteSpace(args.DestinationDirectory));
 
@@ -2684,7 +2684,7 @@ namespace Gorgon.Editor.ViewModels
                 IEditorContentImporter importer = HostServices.ContentPlugInService.GetContentImporter(e.PhysicalFilePath);
 
                 // No importer, no conversion possible.
-                if (importer == null)
+                if (importer is null)
                 {
                     return;
                 }
@@ -2695,7 +2695,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // If we have no importer plug in for the current file, then leave.
-                if (importer == null)
+                if (importer is null)
                 {
                     importedFilePaths[originalPath] = originalPath;
                     return;
@@ -2705,7 +2705,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     IGorgonVirtualFile file = importer.ImportData(e.PhysicalFilePath, CancellationToken.None);
 
-                    if (file == null)
+                    if (file is null)
                     {
                         importedFilePaths[originalPath] = originalPath;
                         return;
@@ -2736,7 +2736,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     sourceDir = _directoryLocator.GetDirectory(new DirectoryInfo(_settings.LastOpenSavePath.FormatDirectory(Path.DirectorySeparatorChar)), Resources.GOREDIT_TEXT_IMPORT_FROM);
 
-                    if (sourceDir == null)
+                    if (sourceDir is null)
                     {                        
                         return;
                     }
@@ -2775,7 +2775,7 @@ namespace Gorgon.Editor.ViewModels
                 // Change to a different progress screen for our enumeration.
                 UpdateMarequeeProgress(Resources.GOREDIT_TEXT_IMPORTING);
 
-                args.ItemsImported = ((copiedDirs != null) && (copiedDirs.Count > 0)) || ((copiedFiles != null) && (copiedFiles.Count > 0));
+                args.ItemsImported = ((copiedDirs is not null) && (copiedDirs.Count > 0)) || ((copiedFiles is not null) && (copiedFiles.Count > 0));
                 if (!args.ItemsImported)
                 {
                     return;
@@ -2798,7 +2798,7 @@ namespace Gorgon.Editor.ViewModels
                     // probably have changed.
                     IFile existingFile = parentDir.Files.FirstOrDefault(item => string.Equals(item.FullPath, file.FullPath, StringComparison.OrdinalIgnoreCase));
 
-                    if (existingFile == null)
+                    if (existingFile is null)
                     {
                         parentDir.Files.Add(file);
                         existingFile = file;
@@ -2817,7 +2817,7 @@ namespace Gorgon.Editor.ViewModels
             }
             catch (Exception ex)
             {
-                args.ItemsImported = ((copiedDirs != null) && (copiedDirs.Count > 0)) || ((copiedFiles != null) && (copiedFiles.Count > 0));
+                args.ItemsImported = ((copiedDirs is not null) && (copiedDirs.Count > 0)) || ((copiedFiles is not null) && (copiedFiles.Count > 0));
                 HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_IMPORT, destDirectory?.Name ?? string.Empty));
             }
             finally
@@ -2844,7 +2844,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 ShowWaitPanel(Resources.GOREDIT_TEXT_PLEASE_WAIT);
 
-                IReadOnlyList<IFile> files = _files.Values.Where(item => (item.RefreshCommand != null) && (item.RefreshCommand.CanExecute(null)))
+                IReadOnlyList<IFile> files = _files.Values.Where(item => (item.RefreshCommand is not null) && (item.RefreshCommand.CanExecute(null)))
                                                           .ToArray();
 
                 await Task.Run(() =>
@@ -2866,7 +2866,7 @@ namespace Gorgon.Editor.ViewModels
 
                 SelectedFiles.Clear();
                 DoSelectDirectory(Root.ID);
-                if ((SelectedDirectory == null) || (SelectedDirectory.Files.Count == 0))
+                if ((SelectedDirectory is null) || (SelectedDirectory.Files.Count == 0))
                 {
                     OnFileSystemUpdated();
                     return;
@@ -2892,7 +2892,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the directory can be retrieved, <b>false</b> if not.</returns>
-        private bool CanGetDirectory(GetDirectoryArgs args) => (args != null) && (!string.IsNullOrWhiteSpace(args.Path));
+        private bool CanGetDirectory(GetDirectoryArgs args) => (args is not null) && (!string.IsNullOrWhiteSpace(args.Path));
 
         /// <summary>
         /// Function to retrieve a directory object by its path.
@@ -3003,7 +3003,7 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="IOException">Thrown if the <paramref name="directory"/> points to an existing file on the file system.</exception>
         bool IContentFileManager.CreateDirectory(string directory)
         {
-            if (directory == null)
+            if (directory is null)
             {
                 throw new ArgumentNullException(nameof(directory));
             }
@@ -3025,15 +3025,15 @@ namespace Gorgon.Editor.ViewModels
                 return false;
             }
 
-            string filePath = directory.Substring(0, directory.Length - 1);
-            if (_fileSystemWriter.FileSystem.GetFile(filePath) != null)
+            string filePath = directory[0..^1];
+            if (_fileSystemWriter.FileSystem.GetFile(filePath) is not null)
             {
                 throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_FILE, filePath));
             }
 
             IGorgonVirtualDirectory virtDirectory = _fileSystemWriter.FileSystem.GetDirectory(directory);
 
-            if (virtDirectory != null)
+            if (virtDirectory is not null)
             {
                 return true;
             }
@@ -3071,7 +3071,7 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         bool IContentFileManager.DeleteDirectory(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -3090,7 +3090,7 @@ namespace Gorgon.Editor.ViewModels
 
             IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, actualPath, StringComparison.OrdinalIgnoreCase));
 
-            if (dir == null)
+            if (dir is null)
             {
                 return false;
             }
@@ -3120,14 +3120,14 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="path">The path to the directory.</param>
         /// <returns>
         ///   <b>true</b> if the directory exists, <b>false</b> if not.</returns>
-        bool IContentFileManager.DirectoryExists(string path) => _fileSystemWriter.FileSystem.GetDirectory(path) != null;
+        bool IContentFileManager.DirectoryExists(string path) => _fileSystemWriter.FileSystem.GetDirectory(path) is not null;
 
         /// <summary>
         /// Function to determine if a file exists or not.
         /// </summary>
         /// <param name="path">The path to the file.</param>
         /// <returns><b>true</b> if the file exists, <b>false</b> if not.</returns>
-        bool IContentFileManager.FileExists(string path) => _fileSystemWriter.FileSystem.GetFile(path) != null;
+        bool IContentFileManager.FileExists(string path) => _fileSystemWriter.FileSystem.GetFile(path) is not null;
 
         /// <summary>Function to retrieve a file based on the path specified.</summary>
         /// <param name="path">The path to the file.</param>
@@ -3137,7 +3137,7 @@ namespace Gorgon.Editor.ViewModels
         IContentFile IContentFileManager.GetFile(string path)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -3160,7 +3160,7 @@ namespace Gorgon.Editor.ViewModels
         /// <returns>A file stream for the virtual file.</returns>
         Stream IContentFileManager.OpenStream(string path, FileMode mode)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -3170,17 +3170,17 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(path));
             }            
 
-            if ((mode == FileMode.Open) || (mode == FileMode.OpenOrCreate))
+            if (mode is FileMode.Open or FileMode.OpenOrCreate)
             {
                 IGorgonVirtualFile file = _fileSystemWriter.FileSystem.GetFile(path);
 
-                return file == null ? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path)) : file.OpenStream();
+                return file is null ? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path)) : file.OpenStream();
             }
 
             // We cannot write to a file that's already open for editing.
             IFile fileViewModel = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
 
-            if ((fileViewModel != null) && (fileViewModel.IsOpen))
+            if ((fileViewModel is not null) && (fileViewModel.IsOpen))
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CANNOT_OPEN_CONTENT, path));
             }
@@ -3191,13 +3191,13 @@ namespace Gorgon.Editor.ViewModels
                 var e = (VirtualFileClosedEventArgs)ctx;
                 IDirectory parent = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.VirtualFile.Directory.FullPath, StringComparison.OrdinalIgnoreCase));                
 
-                if (fileViewModel == null)
+                if (fileViewModel is null)
                 {
-                    if ((parent != null) && (e.Created))
+                    if ((parent is not null) && (e.Created))
                     {
                         fileViewModel = _factory.CreateFile(e.VirtualFile, parent);
 
-                        if (fileViewModel == null)
+                        if (fileViewModel is null)
                         {
                             return;
                         }
@@ -3212,7 +3212,7 @@ namespace Gorgon.Editor.ViewModels
                     }
                 }
 
-                if ((fileViewModel.RefreshCommand != null) && (fileViewModel.RefreshCommand.CanExecute(null)))
+                if ((fileViewModel.RefreshCommand is not null) && (fileViewModel.RefreshCommand.CanExecute(null)))
                 {
                     fileViewModel.RefreshCommand.Execute(null);                    
                 }
@@ -3258,7 +3258,7 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         IEnumerable<IContentFile> IContentFileManager.EnumerateContentFiles(string directoryPath, string searchMask, bool recursive)
         {
-            if (directoryPath == null)
+            if (directoryPath is null)
             {
                 throw new ArgumentNullException(nameof(directoryPath));
             }
@@ -3285,17 +3285,13 @@ namespace Gorgon.Editor.ViewModels
                                               .Cast<IContentFile>());
             }
 
-            switch (searchPatternState)
+            return searchPatternState switch
             {
-                case 1:
-                    return paths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase));
-                case 2:
-                    return paths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase));
-                case 3:
-                    return paths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1);
-                default:
-                    return usePattern ? paths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)) : paths;
-            }
+                1 => paths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase)),
+                2 => paths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase)),
+                3 => paths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1),
+                _ => usePattern ? paths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)) : paths,
+            };
         }
 
         /// <summary>Function to retrieve the content sub directories for a given directory path.</summary>
@@ -3316,7 +3312,7 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         IEnumerable<string> IContentFileManager.EnumerateDirectories(string directoryPath, string searchMask, bool recursive)
         {
-            if (directoryPath == null)
+            if (directoryPath is null)
             {
                 throw new ArgumentNullException(nameof(directoryPath));
             }
@@ -3337,18 +3333,14 @@ namespace Gorgon.Editor.ViewModels
                                                                  .Traverse(d => d.Directories)
                                                       : parentDir.Directories;
 
-            switch (searchPatternState)
+            return searchPatternState switch
             {
-                case 1:
-                    return paths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath);
-                case 2:
-                    return paths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath);
-                case 3:
-                    return paths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath);
-                default:
-                    return usePattern ? paths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
-                                      : paths.Select(item => item.FullPath);
-            }
+                1 => paths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
+                2 => paths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
+                3 => paths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath),
+                _ => usePattern ? paths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
+: paths.Select(item => item.FullPath),
+            };
         }
 
         /// <summary>Function to retrieve the paths under a given directory.</summary>
@@ -3369,7 +3361,7 @@ namespace Gorgon.Editor.ViewModels
         /// </remarks>
         IEnumerable<string> IContentFileManager.EnumeratePaths(string directoryPath, string searchMask, bool recursive)
         {
-            if (directoryPath == null)
+            if (directoryPath is null)
             {
                 throw new ArgumentNullException(nameof(directoryPath));
             }
@@ -3394,18 +3386,14 @@ namespace Gorgon.Editor.ViewModels
                                                           .Concat(paths.Select(item => new { item.FullPath, item.Name })
                                                                        .Concat(paths.SelectMany(item => item.Files).Select(item => new { item.FullPath, item.Name })));
 
-            switch (searchPatternState)
+            return searchPatternState switch
             {
-                case 1:
-                    return allPaths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath);
-                case 2:
-                    return allPaths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath);
-                case 3:
-                    return allPaths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath);
-                default:
-                    return usePattern ? allPaths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
-                                      : allPaths.Select(item => item.FullPath);
-            }
+                1 => allPaths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
+                2 => allPaths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
+                3 => allPaths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath),
+                _ => usePattern ? allPaths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
+: allPaths.Select(item => item.FullPath),
+            };
         }
 
         /// <summary>Function to delete a file.</summary>
@@ -3416,7 +3404,7 @@ namespace Gorgon.Editor.ViewModels
         /// <exception cref="GorgonException">Thrown if the file specified in the <paramref name="path"/> is open in the editor.</exception>
         void IContentFileManager.DeleteFile(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -3427,7 +3415,7 @@ namespace Gorgon.Editor.ViewModels
             }
 
             IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
-            if (file == null)
+            if (file is null)
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
             }
@@ -3445,7 +3433,7 @@ namespace Gorgon.Editor.ViewModels
                 OnFileSystemUpdated();
                 file.Parent.Files.Remove(file);
 
-                if ((_searchFiles == null) || (!_searchFiles.Remove(file)))
+                if ((_searchFiles is null) || (!_searchFiles.Remove(file)))
                 {
                     return;
                 }

@@ -58,7 +58,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Property to return whether the overlay is active or not.
         /// </summary>
-        public bool IsActive => _overlayForm != null;
+        public bool IsActive => _overlayForm is not null;
 
         /// <summary>
         /// Property to set or return the amount of transparency.
@@ -85,16 +85,16 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_GotFocus(object sender, EventArgs e)
         {
-            if ((_overlayForm == null)
-                || (_parentForm == null)
-                || (_parent == null)
+            if ((_overlayForm is null)
+                || (_parentForm is null)
+                || (_parent is null)
                 || (!_parentForm.TryGetTarget(out Form parentForm))
                 || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
 
-            if (parentForm.ActiveControl == null)
+            if (parentForm.ActiveControl is null)
             {
                 return;
             }
@@ -124,7 +124,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ParentForm_Layout(object sender, LayoutEventArgs e)
         {
-            if ((_overlayForm == null) || (_parentForm == null) || (!_parentForm.TryGetTarget(out Form form)))
+            if ((_overlayForm is null) || (_parentForm is null) || (!_parentForm.TryGetTarget(out Form form)))
             {
                 return;
             }
@@ -134,15 +134,11 @@ namespace Gorgon.UI
                 return;
             }
 
-            switch (form.WindowState)
+            _overlayForm.Visible = form.WindowState switch
             {
-                case FormWindowState.Minimized:
-                    _overlayForm.Visible = false;
-                    break;
-                default:
-                    _overlayForm.Visible = true;
-                    break;
-            }
+                FormWindowState.Minimized => false,
+                _ => true,
+            };
         }
 
         /// <summary>Handles the EnabledChanged event of the Parent control.</summary>
@@ -150,7 +146,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_EnabledChanged(object sender, EventArgs e)
         {
-            if ((_overlayForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)))
+            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
@@ -168,7 +164,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_VisibleChanged(object sender, EventArgs e)
         {
-            if ((_overlayForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)))
+            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
@@ -186,7 +182,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_Layout(object sender, LayoutEventArgs e)
         {
-            if ((_overlayForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)))
+            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
@@ -205,7 +201,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ParentForm_Move(object sender, EventArgs e)
         {
-            if ((_overlayForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)))
+            if ((_overlayForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)))
             {
                 return;
             }
@@ -223,7 +219,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void OverlayForm_Activated(object sender, EventArgs e)
         {
-            if ((_parentForm == null) || (_parent == null) || (!_parentForm.TryGetTarget(out Form form)))
+            if ((_parentForm is null) || (_parent is null) || (!_parentForm.TryGetTarget(out Form form)))
             {
                 return;
             }
@@ -248,7 +244,7 @@ namespace Gorgon.UI
         {
             Hide();
 
-            if (!(parentWindow is Control parent))
+            if (parentWindow is not Control parent)
             {
                 return null;
             }
@@ -263,7 +259,7 @@ namespace Gorgon.UI
             _parent = new WeakReference<Control>(parent);
             Form parentForm = parent.FindForm();
 
-            if (parentForm != null)
+            if (parentForm is not null)
             {
                 _parentForm = new WeakReference<Form>(parentForm);
             }
@@ -282,7 +278,7 @@ namespace Gorgon.UI
                 child.GotFocus += Parent_GotFocus;
             }
 
-            if ((parentForm != null) && (parentForm != parent))
+            if ((parentForm is not null) && (parentForm != parent))
             {
                 parentForm.FormClosed += ParentForm_FormClosed;
                 parentForm.Move += ParentForm_Move;
@@ -306,29 +302,29 @@ namespace Gorgon.UI
             Form parentForm = null;
             Control parent = null;
 
-            if (formRef != null)
+            if (formRef is not null)
             {
                 formRef.TryGetTarget(out parentForm);
             }
 
-            if (controlRef != null)
+            if (controlRef is not null)
             {
                 controlRef.TryGetTarget(out parent);
             }
 
-            if (overlayForm != null)
+            if (overlayForm is not null)
             {
                 overlayForm.Activated -= OverlayForm_Activated;
             }
 
-            if (parentForm != null)
+            if (parentForm is not null)
             {
                 parentForm.Layout -= ParentForm_Layout;
                 parentForm.Move -= ParentForm_Move;
                 parentForm.FormClosed -= ParentForm_FormClosed;
             }
 
-            if (parent != null)
+            if (parent is not null)
             {
                 foreach (Control child in parent.Controls.OfType<Control>().Traverse(c => c.Controls.OfType<Control>()))
                 {

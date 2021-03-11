@@ -65,7 +65,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="IOException">Thrown if no <see cref="FileSystemRoot"/> is set.</exception>
         public string GetFolderPath(string initialPath, string caption, string description)
         {
-            if (initialPath == null)
+            if (initialPath is null)
             {
                 throw new ArgumentNullException(nameof(initialPath));
             }
@@ -75,7 +75,7 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(initialPath));
             }
 
-            if (_mainViewModel.CurrentProject?.FileExplorer == null)
+            if (_mainViewModel.CurrentProject?.FileExplorer is null)
             {
                 throw new IOException(Resources.GOREDIT_ERR_NO_ROOT);
             }
@@ -84,21 +84,19 @@ namespace Gorgon.Editor.Services
                                                              : _mainViewModel.CurrentProject?.FileExplorer.Root.Directories.Traverse(d => d.Directories)
                                                                     .FirstOrDefault(d => string.Equals(d.FullPath, initialPath, StringComparison.OrdinalIgnoreCase));
 
-            if (initialDirectory == null)
+            if (initialDirectory is null)
             {
                 initialDirectory = _mainViewModel.CurrentProject?.FileExplorer.Root;
             }
 
-            using (var browser = new FormFileSystemFolderBrowser()
+            using var browser = new FormFileSystemFolderBrowser()
             {
                 Text = caption,
                 Description = description
-            })
-            {
-                browser.SetDataContext(_mainViewModel.CurrentProject?.FileExplorer);
-                browser.SetInitialPath(initialDirectory);
-                return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
-            }
+            };
+            browser.SetDataContext(_mainViewModel.CurrentProject?.FileExplorer);
+            browser.SetInitialPath(initialDirectory);
+            return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
         }
         #endregion
 

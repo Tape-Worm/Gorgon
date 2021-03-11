@@ -147,7 +147,7 @@ namespace Gorgon.Native
         /// <param name="count">The number of items in the array to map to the buffer.</param>
         internal static void ValidateArrayParams<TArrayType>(TArrayType[] array, int index, int count)
         {
-            if (array == null)
+            if (array is null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
@@ -238,7 +238,7 @@ namespace Gorgon.Native
         /// </remarks>
         public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0) 
         {
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
@@ -268,7 +268,7 @@ namespace Gorgon.Native
         /// </remarks>
         public void CopyTo(T[] destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
         {
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
@@ -303,7 +303,7 @@ namespace Gorgon.Native
         /// </remarks>
         public static GorgonNativeBuffer<T> Pin(T[] array, int index = 0, int? count = null)
         {
-            if (count == null)
+            if (count is null)
             {
                 count = array.Length - index;
             }
@@ -396,7 +396,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         public GorgonNativeBuffer<TCastType> To<TCastType>()
-            where TCastType : unmanaged => new GorgonNativeBuffer<TCastType>(_memoryBlock.To<TCastType>());
+            where TCastType : unmanaged => new(_memoryBlock.To<TCastType>());
 
         /// <summary>
         /// Implicit operator to return the pointer to the underlying data in the buffer.
@@ -442,7 +442,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static unsafe void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer == null ? null : (void *)buffer._memoryBlock;
+        public static unsafe void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer is null ? null : (void *)buffer._memoryBlock;
 
         /// <summary>
         /// Implicit operator to return the pointer to the underlying data in the buffer.
@@ -488,7 +488,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static IntPtr ToIntPtr(GorgonNativeBuffer<T> buffer) => buffer == null ? IntPtr.Zero : buffer._memoryBlock;
+        public static IntPtr ToIntPtr(GorgonNativeBuffer<T> buffer) => buffer is null ? IntPtr.Zero : buffer._memoryBlock;
 
         /// <summary>
         /// Operator to implicitly convert this buffer to a span.
@@ -501,7 +501,7 @@ namespace Gorgon.Native
         /// </summary>
         /// <param name="buffer">The buffer to access.</param>
         /// <returns>A span for the buffer.</returns>
-        public static Span<T> ToSpan(GorgonNativeBuffer<T> buffer) => buffer == null ? default : buffer._memoryBlock.ToSpan();
+        public static Span<T> ToSpan(GorgonNativeBuffer<T> buffer) => buffer is null ? default : buffer._memoryBlock.ToSpan();
 
         /// <summary>
         /// Operator to implicitly convert this buffer to a span.
@@ -514,7 +514,7 @@ namespace Gorgon.Native
         /// </summary>
         /// <param name="buffer">The buffer to access.</param>
         /// <returns>A span for the buffer.</returns>
-        public static ReadOnlySpan<T> ToReadOnlySpan(GorgonNativeBuffer<T> buffer) => buffer == null ? default : buffer.ToSpan();
+        public static ReadOnlySpan<T> ToReadOnlySpan(GorgonNativeBuffer<T> buffer) => buffer is null ? default : buffer.ToSpan();
 
         /// <summary>
         /// Function to access a native buffer as a span slice.
@@ -553,7 +553,7 @@ namespace Gorgon.Native
         /// <param name="buffer">The buffer to containing the pointer.</param>
         /// <returns>The underlying <see cref="GorgonPtr{T}"/> for the buffer.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-        public static GorgonPtr<T> ToGorgonPtr(GorgonNativeBuffer<T> buffer) => buffer == null
+        public static GorgonPtr<T> ToGorgonPtr(GorgonNativeBuffer<T> buffer) => buffer is null
                 ? throw new ArgumentNullException(nameof(buffer))
                 : buffer._memoryBlock;
 

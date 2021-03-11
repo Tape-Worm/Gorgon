@@ -151,7 +151,7 @@ namespace Gorgon.Examples
         {
             base.OnPaint(e);
 
-            if (_renderer == null)
+            if (_renderer is null)
             {
                 return;
             }

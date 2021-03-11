@@ -260,7 +260,7 @@ namespace Gorgon.Renderers
             int vertexCount = characterCount * 4;
 
             // The vertices do not need to be adjusted at this time.
-            if ((vertices != null) && (vertexCount <= vertices.Length))
+            if ((vertices is not null) && (vertexCount <= vertices.Length))
             {
                 return;
             }
@@ -268,7 +268,7 @@ namespace Gorgon.Renderers
 
             int oldSize = 0;
             int newSize = (((characterCount + (characterCount / 2)) + 63) & ~63) * 4;
-            if (vertices != null)
+            if (vertices is not null)
             {
                 oldSize = vertices.Length;
                 Array.Resize(ref vertices, newSize);

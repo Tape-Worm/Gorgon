@@ -154,7 +154,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
             }
 
             result[lineItems.Substring(0, keySep).Trim()] = string.Empty;
-            lineItems = lineItems.Substring(keySep + 1).Trim();
+            lineItems = lineItems[(keySep + 1)..].Trim();
 
             // Parse items.
             while (lineItems.Length > 0)
@@ -169,7 +169,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 string key = lineItems.Substring(0, valueSep).Trim();
                 string value = string.Empty;
                 
-                lineItems = lineItems.Substring(valueSep + 1).Trim();
+                lineItems = lineItems[(valueSep + 1)..].Trim();
 
                 if (lineItems.Length == 0)
                 {
@@ -191,7 +191,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                         break;
                     }
 
-                    lineItems = lineItems.Substring(start + 1).Trim();
+                    lineItems = lineItems[(start + 1)..].Trim();
                 }
                 else
                 {
@@ -200,7 +200,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     if (valueEndSep != -1)
                     {
                         value = lineItems.Substring(0, valueEndSep).Trim();
-                        lineItems = lineItems.Substring(valueEndSep + 1).Trim();
+                        lineItems = lineItems[(valueEndSep + 1)..].Trim();
                     }
                     else 
                     {
@@ -440,16 +440,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </returns>
         protected override IGorgonFontInfo OnGetMetaData(Stream stream)
         {
-            using (var reader = new StreamReader(stream, Encoding.ASCII, true, 80000, true))
-            {
-                GorgonFontInfo result = ParseInfoLine(reader.ReadLine());
-                ParseCommonLine(result, reader.ReadLine(), out int textureLineSkip);
-                SkipTextures(reader, textureLineSkip);
-                ParseCharacters(result, reader);
-                ParseKerning(result, reader);
+            using var reader = new StreamReader(stream, Encoding.ASCII, true, 80000, true);
+            GorgonFontInfo result = ParseInfoLine(reader.ReadLine());
+            ParseCommonLine(result, reader.ReadLine(), out int textureLineSkip);
+            SkipTextures(reader, textureLineSkip);
+            ParseCharacters(result, reader);
+            ParseKerning(result, reader);
 
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
@@ -460,7 +458,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
         protected override Task<GorgonFont> OnLoadFromStreamAsync(string name, Stream stream)
         {
-            if (!(stream is FileStream fileStream))
+            if (stream is not FileStream fileStream)
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM);
             }
@@ -478,7 +476,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
         protected override GorgonFont OnLoadFromStream(string name, Stream stream)
         {
-            if (!(stream is FileStream fileStream))
+            if (stream is not FileStream fileStream)
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM);
             }
@@ -503,7 +501,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </remarks>
         public override bool IsReadable(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

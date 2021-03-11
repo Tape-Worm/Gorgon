@@ -63,7 +63,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return whether or not the object is disposed.
         /// </summary>
-        public bool IsDisposed => Resource == null;
+        public bool IsDisposed => Resource is null;
 
         /// <summary>
         /// Property to return the resource bound to the view.
@@ -97,7 +97,7 @@ namespace Gorgon.Graphics.Core
         internal void CreateNativeView()
         {
             _view = OnCreateNativeView();
-            Debug.Assert(_view != null, "No view was created.");
+            Debug.Assert(_view is not null, "No view was created.");
         }
 
         /// <summary>
@@ -108,12 +108,12 @@ namespace Gorgon.Graphics.Core
             D3D11.ResourceView view = Interlocked.Exchange(ref _view, null);
             GorgonGraphicsResource resource = Interlocked.Exchange(ref _resource, null);
 
-            if ((view == null) && (resource == null))
+            if ((view is null) && (resource is null))
             {
                 return;
             }
 
-            if (resource != null)
+            if (resource is not null)
             {
                 Log.Print($"Resource View '{resource.Name}': Releasing D3D11 resource view.", LoggingLevel.Simple);
 
@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Core
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public bool Equals(GorgonResourceView other)
         {
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }

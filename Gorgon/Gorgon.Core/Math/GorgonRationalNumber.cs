@@ -153,7 +153,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static GorgonRationalNumber ToGorgonRationalNumber(int value) => new GorgonRationalNumber(value, 1);
+        public static GorgonRationalNumber ToGorgonRationalNumber(int value) => new(value, 1);
 
         /// <summary>
         /// Function to perform an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="int"/>.

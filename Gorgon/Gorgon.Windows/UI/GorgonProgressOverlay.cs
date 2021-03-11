@@ -40,7 +40,7 @@ namespace Gorgon.UI
     {
         #region Variables.
         // The overlay used to dim the background.
-        private readonly Lazy<GorgonOverlay> _overlay = new Lazy<GorgonOverlay>(() => new GorgonOverlay(), true);
+        private readonly Lazy<GorgonOverlay> _overlay = new(() => new GorgonOverlay(), true);
 
         // The form used to display the progress meter.
         private FormProgress _progressForm;
@@ -56,7 +56,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Property to return whether the overlay is active or not.
         /// </summary>
-        public bool IsActive => _progressForm != null;
+        public bool IsActive => _progressForm is not null;
 
         /// <summary>
         /// Property to set or return the amount of transparency.
@@ -83,7 +83,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_Layout(object sender, LayoutEventArgs e)
         {
-            if ((_progressForm == null) || (_parent == null) || (!IsActive))
+            if ((_progressForm is null) || (_parent is null) || (!IsActive))
             {
                 return;
             }
@@ -101,7 +101,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_Move(object sender, EventArgs e)
         {
-            if ((_progressForm == null) || (_parent == null) || (!IsActive))
+            if ((_progressForm is null) || (_parent is null) || (!IsActive))
             {
                 return;
             }
@@ -119,7 +119,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void Parent_VisibleChanged(object sender, EventArgs e)
         {
-            if ((_progressForm == null) || (_parent == null) || (!_parent.TryGetTarget(out Control parent)) || (!IsActive))
+            if ((_progressForm is null) || (_parent is null) || (!_parent.TryGetTarget(out Control parent)) || (!IsActive))
             {
                 return;
             }
@@ -142,7 +142,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ParentForm_Layout(object sender, LayoutEventArgs e)
         {
-            if ((_progressForm == null) || (_parentForm == null) || (!_parentForm.TryGetTarget(out Form form)) || (!IsActive))
+            if ((_progressForm is null) || (_parentForm is null) || (!_parentForm.TryGetTarget(out Form form)) || (!IsActive))
             {
                 return;
             }
@@ -181,17 +181,17 @@ namespace Gorgon.UI
         /// </remarks>
         public void UpdateProgress(float? value, string message = null)
         {
-            if ((_progressForm == null) || (_progressForm.IsDisposed) || (_progressForm.Disposing))
+            if ((_progressForm is null) || (_progressForm.IsDisposed) || (_progressForm.Disposing))
             {
                 return;
             }
 
-            if (value != null)
+            if (value is not null)
             {
                 _progressForm.Progress.CurrentValue = value.Value.Min(1.0f).Max(0);
             }
 
-            if (message != null)
+            if (message is not null)
             {
                 _progressForm.Progress.ProgressMessage = message;
             }
@@ -222,7 +222,7 @@ namespace Gorgon.UI
         {
             Hide();
 
-            if (!(parentWindow is Control parent))
+            if (parentWindow is not Control parent)
             {
                 return null;
             }
@@ -231,12 +231,12 @@ namespace Gorgon.UI
 
             _progressForm = new FormProgress();
             _progressForm.Progress.ProgressTitle = title;
-            _progressForm.Progress.AllowCancellation = cancelAction != null;
+            _progressForm.Progress.AllowCancellation = cancelAction is not null;
             _progressForm.Progress.CurrentValue = initialValue.Max(0).Min(1.0f);
             _progressForm.Progress.MeterStyle = meterStyle;
             _progressForm.Progress.ProgressMessage = message;
 
-            if (cancelAction != null)
+            if (cancelAction is not null)
             {
                 _progressForm.Progress.OperationCancelled += CancelEvent;
             }
@@ -246,7 +246,7 @@ namespace Gorgon.UI
             _parent = new WeakReference<Control>(parent);
 
             Form parentForm = parent.FindForm();
-            if (parentForm != null)
+            if (parentForm is not null)
             {
                 _parentForm = new WeakReference<Form>(parentForm);
                 parentForm.Move += Parent_Move;
@@ -272,24 +272,24 @@ namespace Gorgon.UI
             Control parent = null;
             Form parentForm = null;
 
-            if (controlRef != null)
+            if (controlRef is not null)
             {
                 controlRef.TryGetTarget(out parent);
             }
 
-            if (formRef != null)
+            if (formRef is not null)
             {
                 formRef.TryGetTarget(out parentForm);
             }
 
-            if (parentForm != null)
+            if (parentForm is not null)
             {
                 parentForm.Layout -= ParentForm_Layout;
                 parentForm.FormClosed -= ParentForm_FormClosed;
                 parentForm.Move -= Parent_Move;
             }
 
-            if (parent != null)
+            if (parent is not null)
             {
                 parent.Layout -= Parent_Layout;
                 parent.Move -= Parent_Move;

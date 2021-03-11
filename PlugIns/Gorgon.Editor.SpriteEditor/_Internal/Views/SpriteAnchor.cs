@@ -77,7 +77,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericHorizontal_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -91,7 +91,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericVertical_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -105,7 +105,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckRotate_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -119,7 +119,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckScale_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -133,7 +133,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Alignment_AlignmentChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -228,7 +228,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 Alignment.Alignment = Gorgon.UI.Alignment.None;
 
-                if (dataContext == null)
+                if (dataContext is null)
                 {
                     return;
                 }
@@ -291,7 +291,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -304,7 +304,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void ResetDataContext()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -320,7 +320,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function called to validate the OK button.</summary>
         /// <returns>
         ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
          
         /// <summary>
         /// Function to initialize the control from the data context.
@@ -328,7 +328,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeDataContext(ISpriteAnchorEdit dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -359,7 +359,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnSubmit();
 
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
             {
                 return;
             }
@@ -374,7 +374,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnCancel();
 
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 return;
             }
@@ -405,7 +405,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

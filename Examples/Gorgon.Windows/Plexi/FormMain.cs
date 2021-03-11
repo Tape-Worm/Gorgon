@@ -59,7 +59,7 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // An overlay without any other windows or decoration, just sits on top of the control.
-        private readonly GorgonOverlay _overlay = new GorgonOverlay
+        private readonly GorgonOverlay _overlay = new()
         {
             TransparencyPercent = 75
         };

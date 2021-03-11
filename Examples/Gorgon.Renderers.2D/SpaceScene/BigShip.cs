@@ -83,7 +83,7 @@ namespace Gorgon.Examples
         /// </summary>
         private void UpdateEntityPositions()
         {
-            if (_ship == null)
+            if (_ship is null)
             {
                 return;
             }

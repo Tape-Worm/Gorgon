@@ -171,32 +171,32 @@ namespace Gorgon.Renderers.Data
         /// <summary>
         /// Property to return the top right point at the front of the AABB.
         /// </summary>
-        public Vector3 TopRightFront => new Vector3(Maximum.X, Minimum.Y, Minimum.Z);
+        public Vector3 TopRightFront => new(Maximum.X, Minimum.Y, Minimum.Z);
 
         /// <summary>
         /// Property to return the bottom left point at the front of the AABB.
         /// </summary>
-        public Vector3 BottomLeftFront => new Vector3(Minimum.X, Maximum.Y, Minimum.Z);
+        public Vector3 BottomLeftFront => new(Minimum.X, Maximum.Y, Minimum.Z);
 
         /// <summary>
         /// Property to return the bottom right point at the front of the AABB.
         /// </summary>
-        public Vector3 BottomRightFront => new Vector3(Maximum.X, Maximum.Y, Minimum.Z);
+        public Vector3 BottomRightFront => new(Maximum.X, Maximum.Y, Minimum.Z);
 
         /// <summary>
         /// Property to return the top left point at the rear of the AABB.
         /// </summary>
-        public Vector3 TopLeftBack => new Vector3(Minimum.X, Minimum.Y, Maximum.Z);
+        public Vector3 TopLeftBack => new(Minimum.X, Minimum.Y, Maximum.Z);
 
         /// <summary>
         /// Property to return the top right point at the rear of the AABB.
         /// </summary>
-        public Vector3 TopRightBack => new Vector3(Maximum.X, Minimum.Y, Maximum.Z);
+        public Vector3 TopRightBack => new(Maximum.X, Minimum.Y, Maximum.Z);
 
         /// <summary>
         /// Property to return the bottom left point at the rear of the AABB.
         /// </summary>
-        public Vector3 BottomLeftBack => new Vector3(Minimum.X, Maximum.Y, Maximum.Z);
+        public Vector3 BottomLeftBack => new(Minimum.X, Maximum.Y, Maximum.Z);
 
         /// <summary>
         /// Property to return the bottom right point at the rear of the AABB.
@@ -211,33 +211,18 @@ namespace Gorgon.Renderers.Data
         /// <summary>
         /// Property to return each of the 8 corners for the AABB.
         /// </summary>
-        public Vector3 this[int index]
+        public Vector3 this[int index] => index switch
         {
-            get
-            {
-                switch (index)
-                {
-                    case 0:
-                        return Minimum;
-                    case 1:
-                        return TopRightFront;
-                    case 2:
-                        return BottomLeftFront;
-                    case 3:
-                        return BottomRightFront;
-                    case 4:
-                        return TopLeftBack;
-                    case 5:
-                        return TopRightBack;
-                    case 6:
-                        return BottomLeftBack;
-                    case 7:
-                        return Maximum;
-                }
-
-                return new Vector3(float.NaN);
-            }
-        }
+            0 => Minimum,
+            1 => TopRightFront,
+            2 => BottomLeftFront,
+            3 => BottomRightFront,
+            4 => TopLeftBack,
+            5 => TopRightBack,
+            6 => BottomLeftBack,
+            7 => Maximum,
+            _ => new Vector3(float.NaN),
+        };
         #endregion
 
         #region Methods.

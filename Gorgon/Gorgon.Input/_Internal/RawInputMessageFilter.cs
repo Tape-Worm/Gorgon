@@ -263,7 +263,7 @@ namespace Gorgon.Native
                 case RawInputType.Keyboard:
                     IGorgonRawInputDeviceData<GorgonRawKeyboardData> keyboard = GetRawInputKeyboardDevice(key, _rawInput.Header.Device);
 
-                    if (keyboard == null)
+                    if (keyboard is null)
                     {
                         return false;
                     }
@@ -273,7 +273,7 @@ namespace Gorgon.Native
                 case RawInputType.Mouse:
                     IGorgonRawInputDeviceData<GorgonRawMouseData> mouse = GetRawInputMouseDevice(key, _rawInput.Header.Device);
 
-                    if (mouse == null)
+                    if (mouse is null)
                     {
                         return false;
                     }
@@ -283,7 +283,7 @@ namespace Gorgon.Native
                 case RawInputType.HID:
                     IGorgonRawInputDeviceData<GorgonRawHIDData> hid = GetRawInputHid(key, _rawInput.Header.Device);
 
-                    if (hid == null)
+                    if (hid is null)
                     {
                         return false;
                     }

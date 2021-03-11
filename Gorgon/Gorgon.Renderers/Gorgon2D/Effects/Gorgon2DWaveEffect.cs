@@ -284,9 +284,9 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if ((_batchState == null) || (statesChanged))
+            if ((_batchState is null) || (statesChanged))
             {
-                if (_waveState == null)
+                if (_waveState is null)
                 {
                     _waveState = builders.PixelShaderBuilder
                                   .Shader(_waveShader)
@@ -313,7 +313,7 @@ namespace Gorgon.Renderers
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -329,7 +329,7 @@ namespace Gorgon.Renderers
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -345,7 +345,7 @@ namespace Gorgon.Renderers
         /// <param name="output">The render target that will receive the final output.</param>
         public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
         {
-            if ((texture == null) || (output == null))
+            if ((texture is null) || (output is null))
             {
                 return;
             }

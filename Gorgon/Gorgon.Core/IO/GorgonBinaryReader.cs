@@ -311,7 +311,7 @@ namespace Gorgon.IO
                 throw new ArgumentNullException(nameof(pointer));
             }
 
-            if (count == null)
+            if (count is null)
             {
                 count = pointer.Length - startIndex;
             }
@@ -375,12 +375,12 @@ namespace Gorgon.IO
         public void ReadRange<T>(T[] value, int startIndex = 0, int? count = null)
             where T : unmanaged
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
 
-            if (count == null)
+            if (count is null)
             {
                 count = value.Length - startIndex;
             }

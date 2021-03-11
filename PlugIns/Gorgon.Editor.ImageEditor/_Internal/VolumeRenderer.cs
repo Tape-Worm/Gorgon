@@ -182,7 +182,7 @@ namespace Gorgon.Editor.ImageEditor
             _projection = Matrix4x4.CreatePerspectiveFieldOfView(60.0f.ToRadians(), (float)clientSize.Width / clientSize.Height, 0.1f, 1000.0f);
             _cubeView = new DX.ViewportF(VolumeRegion.Left, VolumeRegion.Top, VolumeRegion.Width, VolumeRegion.Height, 0, 1);
 
-            if (_textureView == null)
+            if (_textureView is null)
             {
                 return;
             }

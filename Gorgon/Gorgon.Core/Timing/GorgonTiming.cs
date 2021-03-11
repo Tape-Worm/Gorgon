@@ -135,7 +135,7 @@ namespace Gorgon.Timing
         /// </para>
         /// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
         /// </remarks>
-        public static float SecondsSinceStart => _appTimer == null ? 0 : MillisecondsSinceStart / 1000.0f;
+        public static float SecondsSinceStart => _appTimer is null ? 0 : MillisecondsSinceStart / 1000.0f;
 
         /// <summary>
         /// Property to return the number of milliseconds since a Gorgon application was started.
@@ -147,7 +147,7 @@ namespace Gorgon.Timing
         /// </para>
         /// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
         /// </remarks>
-        public static float MillisecondsSinceStart => _appTimer == null ? 0 : (float)_appTimer.Milliseconds;
+        public static float MillisecondsSinceStart => _appTimer is null ? 0 : (float)_appTimer.Milliseconds;
 
         /// <summary>
         /// Property to return the number of seconds to run the idle loop for a single iteration.
@@ -368,7 +368,7 @@ namespace Gorgon.Timing
             double frameDelta;          // Frame delta.
 
             // If we've not assigned a timer yet, then just leave, we can't gather anything meaningful without one.
-            if (_timer == null)
+            if (_timer is null)
             {
                 return;
             }
@@ -378,7 +378,7 @@ namespace Gorgon.Timing
                 theTime = _timer.Milliseconds;
                 frameDelta = (theTime - _lastTimerValue);
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-            } while ((frameDelta < 0.000001) && (frameDelta != 0.0));
+            } while (frameDelta is < 0.000001 and not 0.0);
 
             Delta = (float)frameDelta / 1000.0f;
 

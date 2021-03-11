@@ -124,7 +124,7 @@ namespace Gorgon.IO
             // Locate the texture resource.
             GorgonTexture2D texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
-            if (texture == null)
+            if (texture is null)
             {
                 return null;
             }
@@ -151,13 +151,11 @@ namespace Gorgon.IO
                 return false;
             }
 
-            using (GorgonBinaryReader binReader = reader.OpenChunk(VersionData))
-            {
-                var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
-                reader.CloseChunk();
+            using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
+            var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+            reader.CloseChunk();
 
-                return Version.Equals(fileVersion);
-            }
+            return Version.Equals(fileVersion);
         }
 
         /// <summary>Function to retrieve the names of the associated textures.</summary>
@@ -380,7 +378,7 @@ namespace Gorgon.IO
                     {
                         texture = LoadTexture(binReader, out textureName);
 
-                        if ((texture == null) && (string.IsNullOrWhiteSpace(textureName)))
+                        if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                         {
                             Renderer.Log.Print("Attempted to load a texture from the data, but the texture was not in memory and the name is unknown.",
                                                  LoggingLevel.Verbose);
@@ -388,7 +386,7 @@ namespace Gorgon.IO
                         }
                     }
 
-                    if ((texture == null) && (hasTexture != 0))
+                    if ((texture is null) && (hasTexture is not 0))
                     {
                         textureTrack.SetKey(new GorgonKeyTexture2D(time, textureName, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
                     }

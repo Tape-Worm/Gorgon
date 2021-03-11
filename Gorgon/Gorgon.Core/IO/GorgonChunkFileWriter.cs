@@ -104,7 +104,7 @@ namespace Gorgon.IO
     ///			// chunk table will not be persisted.
     ///			file.Close();
     /// 
-    ///			if (myStream != null)
+    ///			if (myStream is not null)
     ///			{
     ///				myStream.Dispose();
     ///			}
@@ -135,19 +135,17 @@ namespace Gorgon.IO
         /// </summary>
         protected override void OnOpen()
         {
-            using (var writer = new GorgonBinaryWriter(Stream, true))
-            {
-                writer.Write(FileFormatHeaderIDv0100);
-                writer.Write(_appHeaderId);
+            using var writer = new GorgonBinaryWriter(Stream, true);
+            writer.Write(FileFormatHeaderIDv0100);
+            writer.Write(_appHeaderId);
 
-                // Write these as placeholders, we'll be back to fill it when we close the file.
-                _placeHolderStartPosition = Stream.Position;
-                writer.Write((long)0);
-                writer.Write((long)0);
+            // Write these as placeholders, we'll be back to fill it when we close the file.
+            _placeHolderStartPosition = Stream.Position;
+            writer.Write((long)0);
+            writer.Write((long)0);
 
-                // Record where the header has ended.
-                _headerEnd = Stream.Position;
-            }
+            // Record where the header has ended.
+            _headerEnd = Stream.Position;
         }
 
         /// <summary>

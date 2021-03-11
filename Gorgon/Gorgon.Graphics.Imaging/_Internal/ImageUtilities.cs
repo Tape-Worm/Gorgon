@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Imaging
             ushort* srcPtr = (ushort*)src;
             uint* destPtr = (uint*)dest;
 
-            if ((srcFormat != BufferFormat.B5G5R5A1_UNorm) && (srcFormat != BufferFormat.B5G6R5_UNorm) && (srcFormat != BufferFormat.B4G4R4A4_UNorm))
+            if (srcFormat is not BufferFormat.B5G5R5A1_UNorm and not BufferFormat.B5G6R5_UNorm and not BufferFormat.B4G4R4A4_UNorm)
             {
                 throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_IS_NOT_16BPP, srcFormat), nameof(srcFormat));
             }
@@ -399,7 +399,7 @@ namespace Gorgon.Graphics.Imaging
                 case BufferFormat.B8G8R8A8_Typeless:
                 case BufferFormat.B8G8R8A8_UNorm_SRgb:
                     {
-                        uint alphaMask = ((format == BufferFormat.R8G8B8A8_SInt) || (format == BufferFormat.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
+                        uint alphaMask = (format is BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8B8A8_SNorm) ? 0x7F000000 : 0xFF000000;
 
                         uint* srcPtr = (uint*)src;
                         uint* destPtr = (uint*)dest;
@@ -650,7 +650,7 @@ namespace Gorgon.Graphics.Imaging
                     case BufferFormat.B8G8R8A8_Typeless:
                     case BufferFormat.B8G8R8A8_UNorm_SRgb:
                         {
-                            uint alpha = ((format == BufferFormat.R8G8B8A8_SInt) || (format == BufferFormat.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
+                            uint alpha = (format is BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8B8A8_SNorm) ? 0x7F000000 : 0xFF000000;
 
                             uint* srcPtr = (uint*)src;
                             uint* destPtr = (uint*)dest;

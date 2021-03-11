@@ -27,7 +27,7 @@ namespace Gorgon.Examples
         /// </summary>
         public void Update()
         {
-            if ((GorgonTiming.SecondsSinceStart < 10) || (Ship == null))
+            if ((GorgonTiming.SecondsSinceStart < 10) || (Ship is null))
             {
                 return;
             }

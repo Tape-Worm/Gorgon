@@ -88,7 +88,7 @@ namespace Gorgon.Examples
                 MoveableMesh mesh = Layers[meshIndex].Mesh;
                 IGorgonAnimation animation = Layers[meshIndex].Animation;
 
-                if (animation == null)
+                if (animation is null)
                 {
                     mesh.Rotation = Rotation;
                 }
@@ -96,7 +96,7 @@ namespace Gorgon.Examples
                 mesh.Position = new Vector3(_position.X, _position.Y, depth);
                 mesh.Rotation = Rotation;
 
-                if ((animation != null) && (controller.State != AnimationState.Playing))
+                if ((animation is not null) && (controller.State != AnimationState.Playing))
                 {
                     controller.Play(mesh, animation);
                 }

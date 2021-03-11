@@ -305,7 +305,7 @@ namespace Gorgon.Graphics.Imaging
         /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
         /// </para>
         /// </remarks>
-        public static int CalculateSizeInBytes(IGorgonImageInfo info, PitchFlags pitchFlags = PitchFlags.None) => info == null
+        public static int CalculateSizeInBytes(IGorgonImageInfo info, PitchFlags pitchFlags = PitchFlags.None) => info is null
                 ? 0
                 : CalculateSizeInBytes(info.ImageType,
                                   info.Width,
@@ -320,7 +320,7 @@ namespace Gorgon.Graphics.Imaging
         /// </summary>
         /// <param name="info">The <see cref="IGorgonImageInfo"/> used to describe the image.</param>
         /// <returns>The number of possible mip-map levels in the image.</returns>
-        public static int CalculateMaxMipCount(IGorgonImageInfo info) => info == null ? 0 : CalculateMaxMipCount(info.Width, info.Height, info.Depth);
+        public static int CalculateMaxMipCount(IGorgonImageInfo info) => info is null ? 0 : CalculateMaxMipCount(info.Width, info.Height, info.Depth);
 
         /// <summary>
         /// Function to return the maximum number of mip levels supported in for an image.
@@ -426,14 +426,12 @@ namespace Gorgon.Graphics.Imaging
                 sourceFormat = BufferFormat.B8G8R8A8_UNorm;
             }
 
-            using (var wic = new WicUtilities())
-            {
-                return wic.CanConvertFormats(sourceFormat,
-                                             new[]
-                                             {
+            using var wic = new WicUtilities();
+            return wic.CanConvertFormats(sourceFormat,
+                                         new[]
+                                         {
                                                  format
-                                             }).Count > 0;
-            }
+                                         }).Count > 0;
         }
 
         /// <summary>
@@ -443,7 +441,7 @@ namespace Gorgon.Graphics.Imaging
         /// <returns>A list of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
         public IReadOnlyList<BufferFormat> CanConvertToFormats(IReadOnlyList<BufferFormat> destFormats)
         {
-            if ((destFormats == null)
+            if ((destFormats is null)
                 || (destFormats.Count == 0))
             {
                 return Array.Empty<BufferFormat>();
@@ -452,10 +450,8 @@ namespace Gorgon.Graphics.Imaging
             // If we're converting from B4G4R4A4, then we need to use another path.
             if (_imageInfo.Format == BufferFormat.B4G4R4A4_UNorm)
             {
-                using (var wic = new WicUtilities())
-                {
-                    return wic.CanConvertFormats(BufferFormat.B8G8R8A8_UNorm, destFormats);
-                }
+                using var wic = new WicUtilities();
+                return wic.CanConvertFormats(BufferFormat.B8G8R8A8_UNorm, destFormats);
             }
 
             using (var wic = new WicUtilities())
@@ -479,7 +475,7 @@ namespace Gorgon.Graphics.Imaging
         /// <seealso cref="IGorgonImageBuffer"/>
         public void Copy(IGorgonImage image)
         {
-            if (image == null)
+            if (image is null)
             {
                 throw new ArgumentNullException(nameof(image));
             }
@@ -548,7 +544,7 @@ namespace Gorgon.Graphics.Imaging
         /// <seealso cref="BeginUpdate"/>
         public IGorgonImageUpdateFluent Decompress(bool useBC1Alpha)
         {
-            if ((_isEditing) || (_wic != null))
+            if ((_isEditing) || (_wic is not null))
             {
                 throw new InvalidOperationException(Resources.GORIMG_ERR_ALREADY_EDITING);
             }
@@ -593,11 +589,9 @@ namespace Gorgon.Graphics.Imaging
                                 int depthArrayIndex = ImageType != ImageType.Image3D ? arrayIndex : depthSlice;
                                 IGorgonImageBuffer buffer = Buffers[mip, depthArrayIndex];
 
-                                using (GorgonNativeBuffer<byte> decompressedData = decoder.Decode(buffer.Data, buffer.Width, buffer.Height, useBC1Alpha, Format))
-                                {
-                                    // Replace the data in the source image buffer with our newly compressed data.
-                                    decompressedData.CopyTo((Span<byte>)bufferList[mip, depthArrayIndex].Data);
-                                }
+                                using GorgonNativeBuffer<byte> decompressedData = decoder.Decode(buffer.Data, buffer.Width, buffer.Height, useBC1Alpha, Format);
+                                // Replace the data in the source image buffer with our newly compressed data.
+                                decompressedData.CopyTo((Span<byte>)bufferList[mip, depthArrayIndex].Data);
                             }
                         }
                     }
@@ -657,7 +651,7 @@ namespace Gorgon.Graphics.Imaging
                 throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
             }
 
-            if ((_isEditing) || (_wic != null))
+            if ((_isEditing) || (_wic is not null))
             {
                 throw new InvalidOperationException(Resources.GORIMG_ERR_ALREADY_EDITING);
             }
@@ -696,7 +690,7 @@ namespace Gorgon.Graphics.Imaging
         /// </remarks>
         public GorgonImage(IGorgonImage source)
         {
-            if (source == null)
+            if (source is null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
@@ -731,7 +725,7 @@ namespace Gorgon.Graphics.Imaging
         /// </remarks>
         public GorgonImage(IGorgonImageInfo info, ReadOnlySpan<byte> data = default)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }

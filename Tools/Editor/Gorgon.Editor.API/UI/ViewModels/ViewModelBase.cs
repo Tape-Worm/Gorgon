@@ -152,7 +152,7 @@ namespace Gorgon.Editor.UI
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="args"/> parameter is <b>null</b>.</exception>
         protected void UpdateProgress(ProgressPanelUpdateArgs args)
         {
-            if (args == null)
+            if (args is null)
             {
                 throw new ArgumentNullException(nameof(args));
             }
@@ -192,7 +192,7 @@ namespace Gorgon.Editor.UI
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="args"/> parameter is <b>null</b>.</exception>
         protected void ShowWaitPanel(WaitPanelActivateArgs args)
         {
-            if (args == null)
+            if (args is null)
             {
                 throw new ArgumentNullException(nameof(args));
             }
@@ -279,7 +279,7 @@ namespace Gorgon.Editor.UI
         /// </remarks>
         public void Initialize(T injectionParameters)
         {
-            if (injectionParameters == null)
+            if (injectionParameters is null)
             {
                 throw new ArgumentNullException(nameof(injectionParameters));
             }

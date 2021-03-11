@@ -52,7 +52,7 @@ namespace Gorgon.Examples
 
             _default = new ExampleConfig();
 
-            if (section == null)
+            if (section is null)
             {
                 return;
             }
@@ -67,7 +67,7 @@ namespace Gorgon.Examples
         {
             get
             {
-                if (_default == null)
+                if (_default is null)
                 {
                     LoadConfig();
                 }

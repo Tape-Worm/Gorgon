@@ -507,7 +507,7 @@ namespace Gorgon.Graphics.Fonts
             // it is absolutely necessary to change and should improve performance when rendering.
             foreach (KeyValuePair<Bitmap, IEnumerable<GlyphInfo>> glyphBitmap in glyphData)
             {
-                if ((image == null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
+                if ((image is null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
                 {
                     imageSettings.ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount);
                     arrayIndex = 0;
@@ -538,7 +538,7 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="images">The images containing the data to upload to the GPU.</param>
         private void GenerateTextures(IReadOnlyList<(IGorgonImage, IEnumerable<GlyphInfo>)> images)
         {
-            if ((images == null) || (images.Count == 0))
+            if ((images is null) || (images.Count == 0))
             {
                 return;
             }
@@ -713,7 +713,7 @@ namespace Gorgon.Graphics.Fonts
             Factory?.UnregisterFont(this);
 
             foreach (GorgonTexture2D glyphTexture in Glyphs.Select(item => item?.TextureView?.Texture)
-                                                           .Where(item => item != null))
+                                                           .Where(item => item is not null))
             {
                 glyphTexture.Dispose();
             }
@@ -762,7 +762,7 @@ namespace Gorgon.Graphics.Fonts
                 (fontData, abcAdvances, glyphBitmaps) = await Task.Run(GetFontData);
 
                 groupedByBitmap = (from glyphBitmap in glyphBitmaps
-                                  where glyphBitmap.Value.GlyphBitmap != null
+                                  where glyphBitmap.Value.GlyphBitmap is not null
                                   group glyphBitmap.Value by glyphBitmap.Value.GlyphBitmap).ToDictionary(k => k.Key, v => v.Select(item => item));
 
                 // Generate textures from the bitmaps. 
@@ -785,7 +785,7 @@ namespace Gorgon.Graphics.Fonts
             {
                 fontData?.Dispose();
 
-                if (images != null)
+                if (images is not null)
                 {
                     foreach ((IGorgonImage image, _) in images)
                     {
@@ -793,7 +793,7 @@ namespace Gorgon.Graphics.Fonts
                     }
                 }
 
-                if (groupedByBitmap != null)
+                if (groupedByBitmap is not null)
                 {
                     foreach (Bitmap glyphBitmap in groupedByBitmap.Keys)
                     {
@@ -837,7 +837,7 @@ namespace Gorgon.Graphics.Fonts
                 (fontData, abcAdvances, glyphBitmaps) = GenerateFontData(externalFontCollection);
 
                 groupedByBitmap = (from glyphBitmap in glyphBitmaps
-                                   where glyphBitmap.Value.GlyphBitmap != null
+                                   where glyphBitmap.Value.GlyphBitmap is not null
                                    group glyphBitmap.Value by glyphBitmap.Value.GlyphBitmap).ToDictionary(k => k.Key, v => v.Select(item => item));
 
                 // Generate textures from the bitmaps. 
@@ -859,7 +859,7 @@ namespace Gorgon.Graphics.Fonts
             {
                 fontData?.Dispose();
 
-                if (images != null)
+                if (images is not null)
                 {
                     foreach ((IGorgonImage image, _) in images)
                     {
@@ -867,7 +867,7 @@ namespace Gorgon.Graphics.Fonts
                     }
                 }
 
-                if (groupedByBitmap != null)
+                if (groupedByBitmap is not null)
                 {
                     foreach (Bitmap glyphBitmap in groupedByBitmap.Keys)
                     {

@@ -43,7 +43,7 @@ namespace Gorgon.Renderers.Debug
     {
         #region Variables.        
         // The builders used to build draw calls.
-        private readonly GorgonDrawCallBuilder _builder = new GorgonDrawCallBuilder();
+        private readonly GorgonDrawCallBuilder _builder = new();
         private GorgonPipelineStateBuilder _psoBuilder;
         // The draw call to submit to the graphics interface.
         private GorgonDrawCall _drawCall;
@@ -74,9 +74,7 @@ namespace Gorgon.Renderers.Debug
         /// Function to build the draw call.
         /// </summary>
         /// <param name="depthStencilState">The depth/stencil state to apply.</param>
-        private void BuildDrawCall(GorgonDepthStencilState depthStencilState)
-        {
-            _drawCall = _builder.ConstantBuffer(ShaderType.Vertex, _constantBuffer)
+        private void BuildDrawCall(GorgonDepthStencilState depthStencilState) => _drawCall = _builder.ConstantBuffer(ShaderType.Vertex, _constantBuffer)
                                 .VertexBuffer(_inputLayout, _vertexBuffer)
                                 .VertexRange(0, _lineVertices.Length)
                                 .PipelineState(_psoBuilder.VertexShader(_vertexShader)
@@ -86,8 +84,6 @@ namespace Gorgon.Renderers.Debug
                                                          .DepthStencilState(depthStencilState)
                                                          .Build())
                                 .Build();
-
-        }
 
         /// <summary>
         /// Function to initialize the visual.

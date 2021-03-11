@@ -57,8 +57,8 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // Type mapping for types.
-        private static readonly Dictionary<Type, BufferFormat> _typeMapping = new Dictionary<Type, BufferFormat>
-            {
+        private static readonly Dictionary<Type, BufferFormat> _typeMapping = new()
+        {
                 {
                     typeof(byte), BufferFormat.R8_UInt
                 },
@@ -258,7 +258,7 @@ namespace Gorgon.Graphics.Core
                 FieldInfo member = members[i];
                 InputElementAttribute attribute = member.GetCustomAttribute<InputElementAttribute>();
 
-                if (attribute == null)
+                if (attribute is null)
                 {
                     continue;
                 }
@@ -446,12 +446,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
         public static GorgonInputLayout CreateUsingType(GorgonGraphics graphics, Type type, GorgonVertexShader shader)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -461,7 +461,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_LAYOUT_NOT_SEQUENTIAL_EXPLICIT, type.FullName));
             }
 
-            if (shader == null)
+            if (shader is null)
             {
                 throw new ArgumentNullException(nameof(shader));
             }
@@ -580,14 +580,14 @@ namespace Gorgon.Graphics.Core
         /// <returns>The size of the elements in the slot, in bytes.</returns>
         public int GetSlotSize(int slot)
         {
-            if ((_slotSizes != null) && (_slotSizes.Count != 0))
+            if ((_slotSizes is not null) && (_slotSizes.Count != 0))
             {
                 return _slotSizes[slot];
             }
 
             UpdateVertexSize();
 
-            Debug.Assert(_slotSizes != null, "_slotSizes != null");
+            Debug.Assert(_slotSizes is not null, "_slotSizes is not null");
 
             return _slotSizes[slot];
         }
@@ -651,7 +651,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the <paramref name="elements"/> parameter.</exception>
         public GorgonInputLayout(GorgonGraphics graphics, string name, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

@@ -42,7 +42,7 @@ namespace Gorgon.IO
         // The graphics object to use for resource look up.
         private readonly GorgonGraphics _graphics;
         // The property names for the object.
-        private readonly HashSet<string> _propNames = new HashSet<string>(StringComparer.Ordinal)
+        private readonly HashSet<string> _propNames = new(StringComparer.Ordinal)
                                                       {
                                                           "borderColor",
                                                           "compareFunc",
@@ -62,7 +62,7 @@ namespace Gorgon.IO
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, GorgonSamplerState value, JsonSerializer serializer)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;
@@ -123,7 +123,7 @@ namespace Gorgon.IO
         public override GorgonSamplerState ReadJson(JsonReader reader, Type objectType, GorgonSamplerState existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if ((reader.TokenType != JsonToken.StartObject)
-                || (_graphics == null))
+                || (_graphics is null))
             {
                 return null;
             }

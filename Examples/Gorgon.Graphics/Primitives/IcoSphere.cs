@@ -26,10 +26,10 @@
 
 using System.Numerics;
 using System.Collections.Generic;
+using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -43,8 +43,8 @@ namespace Gorgon.Examples
         // Initial orientation.
         private Matrix4x4 _orientation;
         // A list of previously performed splits.
-        private readonly Dictionary<long, int> _cachedSplits = new Dictionary<long, int>();
-        private readonly List<Vector3> _vertices = new List<Vector3>();
+        private readonly Dictionary<long, int> _cachedSplits = new();
+        private readonly List<Vector3> _vertices = new();
         private int _index;
         #endregion
 
@@ -96,8 +96,8 @@ namespace Gorgon.Examples
         /// Function to return the base indices for the icosphere.
         /// </summary>
         /// <returns>A list of triangle indices.</returns>
-        private static List<int[]> GetBaseIndices() => new List<int[]>
-                   {
+        private static List<int[]> GetBaseIndices() => new()
+        {
                        new[]
                        {
                            0, 11, 5

@@ -109,16 +109,16 @@ namespace Gorgon.Renderers
         private int _initialized = Uninitialized;
         // World matrix vertex shader.
         private GorgonVertexShader _polyTransformVertexShader;
-        private readonly Gorgon2DShaderState<GorgonVertexShader> _polyTransformVertexState = new Gorgon2DShaderState<GorgonVertexShader>();
+        private readonly Gorgon2DShaderState<GorgonVertexShader> _polyTransformVertexState = new();
         // The default pixel shader used by the renderer.
         private GorgonPixelShader _polyPixelShader;
-        private readonly Gorgon2DShaderState<GorgonPixelShader> _polyPixelState = new Gorgon2DShaderState<GorgonPixelShader>();
+        private readonly Gorgon2DShaderState<GorgonPixelShader> _polyPixelState = new();
         // The default vertex shader used by the renderer.
         private GorgonVertexShader _defaultVertexShader;
-        private readonly Gorgon2DShaderState<GorgonVertexShader> _defaultVertexState = new Gorgon2DShaderState<GorgonVertexShader>();
+        private readonly Gorgon2DShaderState<GorgonVertexShader> _defaultVertexState = new();
         // The default pixel shader used by the renderer.
         private GorgonPixelShader _defaultPixelShader;
-        private readonly Gorgon2DShaderState<GorgonPixelShader> _defaultPixelState = new Gorgon2DShaderState<GorgonPixelShader>();
+        private readonly Gorgon2DShaderState<GorgonPixelShader> _defaultPixelState = new();
         // The layout used to define a vertex to the vertex shader.
         private GorgonInputLayout _vertexLayout;
         // The renderer used to draw batched renderable items.
@@ -140,7 +140,7 @@ namespace Gorgon.Renderers
         // The currently active draw call (no indexing).
         private GorgonDrawCall _currentDrawCall;
         // The previously assigned batch state.
-        private readonly Gorgon2DBatchState _currentBatchState = new Gorgon2DBatchState();
+        private readonly Gorgon2DBatchState _currentBatchState = new();
         // The last sprite that was put into the system.
         private BatchRenderable _lastRenderable;
         // The current alpha test data.
@@ -148,13 +148,13 @@ namespace Gorgon.Renderers
         // Flag to indicate that the begin method has been called.
         private int _beginCalled;
         // A buffer used for text manipulation in the DrawText method.
-        private readonly StringBuilder _textBuffer = new StringBuilder(256);
+        private readonly StringBuilder _textBuffer = new(256);
         // The default font.
         private Lazy<GorgonFontFactory> _defaultFontFactory;
         // The default text sprite for rendering strings.
         private GorgonTextSprite _defaultTextSprite;
         // The renderable for primitives (lines, rectangles, etc...)
-        private readonly BatchRenderable _primitiveRenderable = new BatchRenderable
+        private readonly BatchRenderable _primitiveRenderable = new()
         {
             Vertices = new Gorgon2DVertex[4]
         };
@@ -163,7 +163,7 @@ namespace Gorgon.Renderers
         // The world matrix buffer for objects that use a world matrix.
         private GorgonConstantBufferView _polySpriteDataBuffer;
         // The transformer used for polygons.
-        private readonly PolySpriteTransformer _polyTransformer = new PolySpriteTransformer();
+        private readonly PolySpriteTransformer _polyTransformer = new();
         #endregion
 
         #region Properties.
@@ -258,21 +258,21 @@ namespace Gorgon.Renderers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Flush()
         {
-            if ((_currentDrawCall == null) && (_currentDrawIndexCall == null))
+            if ((_currentDrawCall is null) && (_currentDrawIndexCall is null))
             {
                 return;
             }
 
-            if (_lastRenderable != null)
+            if (_lastRenderable is not null)
             {
                 UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
             }
 
-            if (_currentDrawIndexCall != null)
+            if (_currentDrawIndexCall is not null)
             {
                 _batchRenderer.RenderBatches(_currentDrawIndexCall);
             }
-            else if (_currentDrawCall != null)
+            else if (_currentDrawCall is not null)
             {
                 _batchRenderer.RenderBatches(_currentDrawCall);
             }
@@ -285,7 +285,7 @@ namespace Gorgon.Renderers
         private void RenderBatchOnChange(PolySpriteRenderable renderable)
         {
             // If the vertex buffer is different than the previous buffer
-            if ((_currentDrawIndexCall != null)
+            if ((_currentDrawIndexCall is not null)
                 && (_currentDrawIndexCall.IndexBuffer == _batchRenderer.IndexBuffer)
                 && (_currentDrawIndexCall.VertexBufferBindings[0].Equals(_batchRenderer.VertexBuffer)))
             {
@@ -310,9 +310,9 @@ namespace Gorgon.Renderers
         {
             // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
             if ((!flush) 
-                && (((useIndices) && (_currentDrawIndexCall != null)) || ((!useIndices) && (_currentDrawCall != null))))                
+                && (((useIndices) && (_currentDrawIndexCall is not null)) || ((!useIndices) && (_currentDrawCall is not null))))                
             {
-                if ((_lastRenderable != null) && (renderable != null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))                    
+                if ((_lastRenderable is not null) && (renderable is not null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))                    
                 {
                     return;
                 }
@@ -655,27 +655,27 @@ namespace Gorgon.Renderers
             _currentBatchState.DepthStencilState = batchState?.DepthStencilState ?? GorgonDepthStencilState.Default;
 
             // If we didn't assign shaders, then use our defaults.
-            if (_currentBatchState.PixelShaderState.Shader == null)
+            if (_currentBatchState.PixelShaderState.Shader is null)
             {
                 _currentBatchState.PixelShaderState.Shader = _defaultPixelShader;
             }
 
-            if (_currentBatchState.PixelShaderState.RwConstantBuffers[0] == null)
+            if (_currentBatchState.PixelShaderState.RwConstantBuffers[0] is null)
             {
                 _currentBatchState.PixelShaderState.RwConstantBuffers[0] = _alphaTest;
             }
 
-            if (_currentBatchState.VertexShaderState.Shader == null)
+            if (_currentBatchState.VertexShaderState.Shader is null)
             {
                 _currentBatchState.VertexShaderState.Shader = _defaultVertexShader;
             }
 
-            if (_currentBatchState.VertexShaderState.RwConstantBuffers[0] == null)
+            if (_currentBatchState.VertexShaderState.RwConstantBuffers[0] is null)
             {
                 _currentBatchState.VertexShaderState.RwConstantBuffers[0] = _cameraController.CameraBuffer;
             }
 
-            if (_currentBatchState.VertexShaderState.RwConstantBuffers[1] == null)
+            if (_currentBatchState.VertexShaderState.RwConstantBuffers[1] is null)
             {
                 _currentBatchState.VertexShaderState.RwConstantBuffers[1] = _polySpriteDataBuffer;
             }
@@ -789,12 +789,12 @@ namespace Gorgon.Renderers
             // This type is drawn immediately since it uses its own vertex/index buffer.  
 
             // Remember our previous vertex shader (assuming we haven't overridden it elsewhere).
-            if ((_currentBatchState.VertexShaderState == null) || (_currentBatchState.VertexShaderState == _defaultVertexState))
+            if ((_currentBatchState.VertexShaderState is null) || (_currentBatchState.VertexShaderState == _defaultVertexState))
             {
                 _currentBatchState.VertexShaderState = _polyTransformVertexState;
             }
 
-            if ((_currentBatchState.PixelShaderState == null) || (_currentBatchState.PixelShaderState == _defaultPixelState))
+            if ((_currentBatchState.PixelShaderState is null) || (_currentBatchState.PixelShaderState == _defaultPixelState))
             {
                 _currentBatchState.PixelShaderState = _polyPixelState;
             }
@@ -811,7 +811,7 @@ namespace Gorgon.Renderers
 
             _polySpriteDataBuffer.Buffer.SetData(in polyData);
 
-            if ((_currentDrawIndexCall == null)
+            if ((_currentDrawIndexCall is null)
                 || (!_currentDrawIndexCall.VertexBufferBindings[0].Equals(in renderable.VertexBuffer))
                 || (_currentDrawIndexCall.IndexBuffer != renderable.IndexBuffer))
             {
@@ -823,13 +823,13 @@ namespace Gorgon.Renderers
 
             Graphics.Submit(_currentDrawIndexCall);
 
-            if (prevVShader != null)
+            if (prevVShader is not null)
             {
                 // Restore the shader.
                 _currentBatchState.VertexShaderState = prevVShader;
             }
 
-            if (prevPShader == null)
+            if (prevPShader is null)
             {
                 return this;
             }
@@ -942,7 +942,7 @@ namespace Gorgon.Renderers
 
                         // Handle whitespace by just advancing our position, we don't need geometry for this.
                         if ((char.IsWhiteSpace(character))
-                            || (glyph.TextureView == null))
+                            || (glyph.TextureView is null))
                         {
                             if (character == '\t')
                             {
@@ -1073,7 +1073,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
         public ref readonly Gorgon2DVertex[] GetVertices(GorgonSprite sprite)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 throw new ArgumentNullException(nameof(sprite));
             }
@@ -1302,7 +1302,7 @@ namespace Gorgon.Renderers
 
                         // Handle whitespace by just advancing our position, we don't need geometry for this.
                         if ((char.IsWhiteSpace(character))
-                            || (glyph.TextureView == null))
+                            || (glyph.TextureView is null))
                         {
                             if (character == '\t')
                             {
@@ -1323,7 +1323,7 @@ namespace Gorgon.Renderers
                         }
 
                         // If we have a change of texture, then we need to let the renderer know that we need a flush.
-                        if ((renderable.Texture != null) && (renderable.Texture != glyph.TextureView))
+                        if ((renderable.Texture is not null) && (renderable.Texture != glyph.TextureView))
                         {
                             RenderBatchOnChange(renderable, true);
                             renderable.HasTextureChanges = true;
@@ -1338,7 +1338,7 @@ namespace Gorgon.Renderers
                                 blockColor = _batchRenderer.TextSpriteTransformer.GetColorForCharacter(charCount, colorBlocks);
                             }
 
-                            if ((blockColor != null) && (!renderable.HasVertexColorChanges))
+                            if ((blockColor is not null) && (!renderable.HasVertexColorChanges))
                             {
                                 renderable.HasVertexColorChanges = true;
                             }
@@ -1425,16 +1425,16 @@ namespace Gorgon.Renderers
             ref Gorgon2DVertex v2 = ref _primitiveRenderable.Vertices[2];
             ref Gorgon2DVertex v3 = ref _primitiveRenderable.Vertices[3];
 
-            if (textureSampler == null)
+            if (textureSampler is null)
             {
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            if (texture != null)
+            if (texture is not null)
             {
                 textureArrayIndex = textureArrayIndex.Max(0);
 
-                if (textureRegion == null)
+                if (textureRegion is null)
                 {
                     // Calculate the texture.
                     v0.UV = new Vector4(region.Left / texture.Width, region.Top / texture.Height, textureArrayIndex, 1);
@@ -1470,7 +1470,7 @@ namespace Gorgon.Renderers
             v2.Position = new Vector4(region.Left, region.Bottom, depth, 1.0f);
             v3.Position = new Vector4(region.Right, region.Bottom, depth, 1.0f);
 
-            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
@@ -1509,12 +1509,12 @@ namespace Gorgon.Renderers
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
 #endif
-            if (textureSampler == null)
+            if (textureSampler is null)
             {
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
             _primitiveRenderable.ActualVertexCount = 3;
@@ -1523,19 +1523,19 @@ namespace Gorgon.Renderers
             {
                 Color = point1.Color,
                 Position = new Vector4(point1.Position, depth, 1.0f),
-                UV = texture != null ? new Vector4(point1.TextureCoordinate, point1.TextureArrayIndex, 1) : Vector4.UnitW
+                UV = texture is not null ? new Vector4(point1.TextureCoordinate, point1.TextureArrayIndex, 1) : Vector4.UnitW
             };
             _primitiveRenderable.Vertices[1] = new Gorgon2DVertex
             {
                 Color = point2.Color,
                 Position = new Vector4(point2.Position, depth, 1.0f),
-                UV = texture != null ? new Vector4(point2.TextureCoordinate, point2.TextureArrayIndex, 1) : Vector4.UnitW
+                UV = texture is not null ? new Vector4(point2.TextureCoordinate, point2.TextureArrayIndex, 1) : Vector4.UnitW
             };
             _primitiveRenderable.Vertices[2] = new Gorgon2DVertex
             {
                 Color = point3.Color,
                 Position = new Vector4(point3.Position, depth, 1.0f),
-                UV = texture != null ? new Vector4(point3.TextureCoordinate, point3.TextureArrayIndex, 1) : Vector4.UnitW
+                UV = texture is not null ? new Vector4(point3.TextureCoordinate, point3.TextureArrayIndex, 1) : Vector4.UnitW
             };
             _primitiveRenderable.AlphaTestData = alphaTestData;
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
@@ -1595,7 +1595,7 @@ namespace Gorgon.Renderers
             DX.RectangleF? rightDown = null;
 
             // If we supply our own texture coordinates, then ensure that the individual lines are mapped appropriately.
-            if ((textureRegion != null) && (texture != null))
+            if (texture is not null and not null)
             {
                 var innerRect = new DX.RectangleF(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
 
@@ -1713,7 +1713,7 @@ namespace Gorgon.Renderers
             ref Gorgon2DVertex v2 = ref _primitiveRenderable.Vertices[2];
             ref Gorgon2DVertex v3 = ref _primitiveRenderable.Vertices[3];
 
-            if (textureSampler == null)
+            if (textureSampler is null)
             {
                 textureSampler = GorgonSamplerState.Wrapping;
             }
@@ -1739,11 +1739,11 @@ namespace Gorgon.Renderers
             v2.Position = new Vector4(start2, startDepth, 1.0f);
             v3.Position = new Vector4(end2, endDepth, 1.0f);
 
-            if (texture != null)
+            if (texture is not null)
             {
                 textureArrayIndex = textureArrayIndex.Max(0);
 
-                if (textureRegion == null)
+                if (textureRegion is null)
                 {
                     // Calculate the texture.
                     v0.UV = new Vector4(start1.X / texture.Width, start1.Y / texture.Height, textureArrayIndex, 1);
@@ -1801,7 +1801,7 @@ namespace Gorgon.Renderers
             v2.Color = color;
             v3.Color = color;
 
-            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
@@ -1853,7 +1853,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
-            if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
+            if ((_primitiveRenderable.Vertices is null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
             {
                 _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
             }
@@ -1864,9 +1864,9 @@ namespace Gorgon.Renderers
 
             Vector4 uvCenter = Vector4.UnitW;
 
-            if (texture != null)
+            if (texture is not null)
             {
-                uvCenter = textureRegion == null
+                uvCenter = textureRegion is null
                                ? new Vector4(centerPoint.X / texture.Width, centerPoint.Y / texture.Height, textureArrayIndex, 1)
                                : new Vector4((((centerPoint.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                                 (((centerPoint.Y - region.Top) / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
@@ -1885,9 +1885,9 @@ namespace Gorgon.Renderers
 
                 Vector4 uv = Vector4.UnitW;
 
-                if (texture != null)
+                if (texture is not null)
                 {
-                    uv = textureRegion == null
+                    uv = textureRegion is null
                              ? new Vector4(point.X / texture.Width,
                                               point.Y / texture.Height,
                                               textureArrayIndex, 1)
@@ -1908,12 +1908,12 @@ namespace Gorgon.Renderers
                 c.UV = uvCenter;
             }
 
-            if (textureSampler == null)
+            if (textureSampler is null)
             {
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
@@ -1967,7 +1967,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
-            if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
+            if ((_primitiveRenderable.Vertices is null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
             {
                 _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
             }
@@ -1991,9 +1991,9 @@ namespace Gorgon.Renderers
                 Vector4 uvInner = Vector4.UnitW;
                 Vector4 uvOuter = Vector4.UnitW;
 
-                if (texture != null)
+                if (texture is not null)
                 {
-                    if (textureRegion == null)
+                    if (textureRegion is null)
                     {
                         uvOuter = new Vector4(outerPoint.X / texture.Width,
                                                  outerPoint.Y / texture.Height,
@@ -2027,12 +2027,12 @@ namespace Gorgon.Renderers
                 vInner.UV = uvInner;
             }
 
-            if (textureSampler == null)
+            if (textureSampler is null)
             {
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
@@ -2085,7 +2085,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
-            if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
+            if ((_primitiveRenderable.Vertices is null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
             {
                 _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
             }
@@ -2096,9 +2096,9 @@ namespace Gorgon.Renderers
 
             Vector4 uvCenter = Vector4.UnitW;
 
-            if (texture != null)
+            if (texture is not null)
             {
-                uvCenter = textureRegion == null
+                uvCenter = textureRegion is null
                                ? new Vector4(centerPoint.X / texture.Width, centerPoint.Y / texture.Height, textureArrayIndex, 1)
                                : new Vector4((((centerPoint.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                                 (((centerPoint.Y - region.Top) / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
@@ -2117,9 +2117,9 @@ namespace Gorgon.Renderers
 
                 Vector4 uv = Vector4.UnitW;
 
-                if (texture != null)
+                if (texture is not null)
                 {
-                    uv = textureRegion == null
+                    uv = textureRegion is null
                              ? new Vector4(point.X / texture.Width,
                                               point.Y / texture.Height,
                                               textureArrayIndex, 1)
@@ -2140,12 +2140,12 @@ namespace Gorgon.Renderers
                 c.UV = uvCenter;
             }
 
-            if (textureSampler == null)
+            if (textureSampler is null)
             {
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
@@ -2195,7 +2195,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
-            if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
+            if ((_primitiveRenderable.Vertices is null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
             {
                 _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
             }
@@ -2218,9 +2218,9 @@ namespace Gorgon.Renderers
                 Vector4 uvInner = Vector4.UnitW;
                 Vector4 uvOuter = Vector4.UnitW;
 
-                if (texture != null)
+                if (texture is not null)
                 {
-                    if (textureRegion == null)
+                    if (textureRegion is null)
                     {
                         uvOuter = new Vector4(outerPoint.X / texture.Width,
                                                  outerPoint.Y / texture.Height,
@@ -2254,12 +2254,12 @@ namespace Gorgon.Renderers
                 vInner.UV = uvInner;
             }
 
-            if (textureSampler == null)
+            if (textureSampler is null)
             {
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            AlphaTestData alphaTestData = PrimitiveAlphaTestRange == null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+            AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
             CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
@@ -2416,7 +2416,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="expression"/> parameter is <b>null</b>.</exception>
         IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawIf(Func<bool> expression, Action<IGorgon2DDrawingFluent> drawCommands)
         {
-            if (expression == null)
+            if (expression is null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }
@@ -2445,12 +2445,12 @@ namespace Gorgon.Renderers
         /// </remarks>
         IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawEach<T>(IEnumerable<T> items, Func<T, IGorgon2DDrawingFluent, bool> drawCommands)
         {
-            if (items == null)
+            if (items is null)
             {
                 throw new ArgumentNullException(nameof(items));
             }
 
-            if (drawCommands == null)
+            if (drawCommands is null)
             {
                 return this;
             }
@@ -2480,7 +2480,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawLoop(int count, Func<int, IGorgon2DDrawingFluent, bool> drawCommands)
         {
-            if (drawCommands == null)
+            if (drawCommands is null)
             {
                 return this;
             }

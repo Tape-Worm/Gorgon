@@ -11,7 +11,7 @@ namespace System.Composition.Diagnostics
     {
         public static void Registration_ConstructorConventionOverridden(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new Exception(SR.Diagnostic_InternalExceptionMessage);
             }
@@ -26,7 +26,7 @@ namespace System.Composition.Diagnostics
 
         public static void Registration_TypeExportConventionOverridden(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new Exception(SR.Diagnostic_InternalExceptionMessage);
             }
@@ -41,12 +41,12 @@ namespace System.Composition.Diagnostics
 
         public static void Registration_MemberExportConventionOverridden(Type type, MemberInfo member)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (member == null)
+            if (member is null)
             {
                 throw new ArgumentNullException(nameof(member));
             }
@@ -61,12 +61,12 @@ namespace System.Composition.Diagnostics
 
         public static void Registration_MemberImportConventionOverridden(Type type, MemberInfo member)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (member == null)
+            if (member is null)
             {
                 throw new ArgumentNullException(nameof(member));
             }
@@ -81,12 +81,12 @@ namespace System.Composition.Diagnostics
 
         public static void Registration_OnSatisfiedImportNotificationOverridden(Type type, MemberInfo member)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (member == null)
+            if (member is null)
             {
                 throw new ArgumentNullException(nameof(member));
             }
@@ -101,7 +101,7 @@ namespace System.Composition.Diagnostics
 
         public static void Registration_PartCreationConventionOverridden(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -116,12 +116,12 @@ namespace System.Composition.Diagnostics
 
         public static void Registration_MemberImportConventionMatchedTwice(Type type, MemberInfo member)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (member == null)
+            if (member is null)
             {
                 throw new ArgumentNullException(nameof(member));
             }
@@ -136,7 +136,7 @@ namespace System.Composition.Diagnostics
 
         public static void Registration_PartMetadataConventionOverridden(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -151,12 +151,12 @@ namespace System.Composition.Diagnostics
 
         public static void Registration_ParameterImportConventionOverridden(ParameterInfo parameter, ConstructorInfo constructor)
         {
-            if (parameter == null)
+            if (parameter is null)
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            if (constructor == null)
+            if (constructor is null)
             {
                 throw new ArgumentNullException(nameof(constructor));
             }

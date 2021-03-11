@@ -49,7 +49,7 @@ namespace Gorgon.Editor.UI.Controls
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     ColorChangedEvent = null;
                     return;
@@ -59,7 +59,7 @@ namespace Gorgon.Editor.UI.Controls
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }

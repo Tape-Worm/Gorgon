@@ -116,7 +116,7 @@ namespace Gorgon.IO
     ///			// chunk table will not be persisted.
     ///			file.Close();
     /// 
-    ///			if (myStream != null)
+    ///			if (myStream is not null)
     ///			{
     ///				myStream.Dispose();
     ///			}
@@ -193,46 +193,44 @@ namespace Gorgon.IO
         /// </exception>
         protected override void OnOpen()
         {
-            using (var reader = new GorgonBinaryReader(Stream, true))
+            using var reader = new GorgonBinaryReader(Stream, true);
+            ulong headerID = reader.ReadUInt64();
+
+            if (headerID != FileFormatHeaderIDv0100)
             {
-                ulong headerID = reader.ReadUInt64();
-
-                if (headerID != FileFormatHeaderIDv0100)
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_FILE_HEADER_MISMATCH, headerID));
-                }
-
-                ulong appHeaderID = reader.ReadUInt64();
-
-                if (!_appSpecificIds.Contains(appHeaderID))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_FILE_HEADER_MISMATCH, appHeaderID));
-                }
-
-                // Get the size of the file, in bytes.
-                _fileSize = reader.ReadInt64();
-
-                // The offset of the chunk table in the file.
-                long tablePosition = reader.ReadInt64();
-
-                // Record the end of the header.
-                _headerEnd = Stream.Position;
-
-                // Ensure our file size is somewhat realistic.
-                if (_fileSize < _headerEnd)
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID, _fileSize.FormatMemory()));
-                }
-
-                // Ensure that our table position is not less than our header position.
-                if ((tablePosition <= _headerEnd)
-                    || (tablePosition >= _fileSize))
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID);
-                }
-
-                ReadChunkTable(reader, tablePosition);
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_FILE_HEADER_MISMATCH, headerID));
             }
+
+            ulong appHeaderID = reader.ReadUInt64();
+
+            if (!_appSpecificIds.Contains(appHeaderID))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_FILE_HEADER_MISMATCH, appHeaderID));
+            }
+
+            // Get the size of the file, in bytes.
+            _fileSize = reader.ReadInt64();
+
+            // The offset of the chunk table in the file.
+            long tablePosition = reader.ReadInt64();
+
+            // Record the end of the header.
+            _headerEnd = Stream.Position;
+
+            // Ensure our file size is somewhat realistic.
+            if (_fileSize < _headerEnd)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID, _fileSize.FormatMemory()));
+            }
+
+            // Ensure that our table position is not less than our header position.
+            if ((tablePosition <= _headerEnd)
+                || (tablePosition >= _fileSize))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID);
+            }
+
+            ReadChunkTable(reader, tablePosition);
         }
 
         /// <summary>
@@ -271,7 +269,7 @@ namespace Gorgon.IO
         /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only.</exception>
         public static bool IsReadable(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -425,7 +423,7 @@ namespace Gorgon.IO
                 throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
             }
 
-            if (appSpecificIds == null)
+            if (appSpecificIds is null)
             {
                 throw new ArgumentNullException(nameof(appSpecificIds));
             }

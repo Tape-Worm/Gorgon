@@ -195,7 +195,7 @@ namespace Gorgon.Timing
         /// <exception cref="Win32Exception">Thrown when the <paramref name="period"/> value is out of range.</exception>
         public static void BeginTiming(int period = 1)
         {
-            if (_lastPeriod != null)
+            if (_lastPeriod is not null)
             {
                 EndTiming();
             }
@@ -228,7 +228,7 @@ namespace Gorgon.Timing
         /// <exception cref="Win32Exception">Thrown when the last known period value is out of range.</exception>
         public static void EndTiming()
         {
-            if (_lastPeriod == null)
+            if (_lastPeriod is null)
             {
                 return;
             }
@@ -252,7 +252,7 @@ namespace Gorgon.Timing
                 throw new Win32Exception(Resources.GOR_ERR_TIME_CANNOT_BEGIN);
             }
 
-            if (_lastPeriod != null)
+            if (_lastPeriod is not null)
             {
                 int period = _lastPeriod.Value;
                 EndTiming();

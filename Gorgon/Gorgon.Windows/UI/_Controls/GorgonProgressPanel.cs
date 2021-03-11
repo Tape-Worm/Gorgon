@@ -62,7 +62,7 @@ namespace Gorgon.UI
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     OperationCancelledEvent = value;
                     return;
@@ -72,7 +72,7 @@ namespace Gorgon.UI
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -234,7 +234,7 @@ namespace Gorgon.UI
                 return;
             }
 
-            if ((_syncContext != null) && (InvokeRequired))
+            if ((_syncContext is not null) && (InvokeRequired))
             {
                 _syncContext.Post(_ => UnassignCancelEvent(), null);
                 return;
@@ -261,7 +261,7 @@ namespace Gorgon.UI
                 return;
             }
 
-            if ((_syncContext != null) && (InvokeRequired))
+            if ((_syncContext is not null) && (InvokeRequired))
             {
                 _syncContext.Post(_ => UnassignCancelEvent(), null);
                 return;
@@ -293,7 +293,7 @@ namespace Gorgon.UI
         /// <param name="message">The mess to assign.</param>
         private void SetProgressMessage(string message)
         {
-            if ((_syncContext != null) && (InvokeRequired))
+            if ((_syncContext is not null) && (InvokeRequired))
             {
                 _syncContext.Post(m => SetProgressMessage(m?.ToString()), message);
                 return;
@@ -316,7 +316,7 @@ namespace Gorgon.UI
         {
             _progress = value.Min(1.0f).Max(0);
 
-            if ((_syncContext != null) && (InvokeRequired))
+            if ((_syncContext is not null) && (InvokeRequired))
             {
                 _syncContext.Post(progValue => SetProgressValue((float)progValue), _progress);
                 return;

@@ -413,7 +413,7 @@ namespace Gorgon.Graphics.Fonts
         {
             var brush = other as GorgonGlyphHatchBrush;
 
-            return ((brush == this) || ((brush != null)
+            return ((brush == this) || ((brush is not null)
                 && (brush.HatchStyle == HatchStyle)
                 && (brush.BackgroundColor == BackgroundColor)
                 && (brush.ForegroundColor == ForegroundColor)));

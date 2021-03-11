@@ -72,7 +72,7 @@ namespace Gorgon.Examples
         // The controller for the animation on the right.
         private GorgonSpriteAnimationController _controllerRight;
         // The scale of the left sprite.
-        private Vector2 _scale = new Vector2(2, 2);
+        private Vector2 _scale = new(2, 2);
         // The original size of the left panel.
         private Vector2 _originalSize;
         #endregion
@@ -85,7 +85,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="SplitterEventArgs"/> instance containing the event data.</param>
         private void SplitViews_SplitterMoved(object sender, SplitterEventArgs e)
         {
-            if (_graphics == null)
+            if (_graphics is null)
             {
                 return;
             }

@@ -80,19 +80,19 @@ namespace Gorgon.Renderers
         // Text with embedded codes.
         private string _encodedText;
         // The formatted text.
-        private readonly StringBuilder _formattedText = new StringBuilder(256);
+        private readonly StringBuilder _formattedText = new(256);
         // The area for used for text layout.
         private DX.Size2F? _layoutArea;
         // Flag to allow or disallow control codes in the text.
         private bool _allowCodes;
         // The parser used to parse out the codes from text assigned to this object.
-        private readonly TextCodeParser _parser = new TextCodeParser();
+        private readonly TextCodeParser _parser = new();
 
         /// <summary>
         /// The renderable data for this sprite.
         /// It is exposed an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
         /// </summary>
-        internal readonly TextRenderable Renderable = new TextRenderable();
+        internal readonly TextRenderable Renderable = new();
         #endregion
 
         #region Properties.
@@ -287,7 +287,7 @@ namespace Gorgon.Renderers
             get => _allowCodes ? _encodedText : _text;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = string.Empty;
                 }
@@ -394,14 +394,14 @@ namespace Gorgon.Renderers
             set
             {
                 if ((Renderable.Font == value)
-                    || (value == null))
+                    || (value is null))
                 {
                     return;
                 }
 
                 Renderable.Font = value;
                 // Default to the first glyph texture.
-                Renderable.Texture = value.Glyphs.FirstOrDefault(item => item.TextureView != null)?.TextureView;
+                Renderable.Texture = value.Glyphs.FirstOrDefault(item => item.TextureView is not null)?.TextureView;
                 Renderable.HasVertexChanges = true;
                 Renderable.HasTextureChanges = true;
                 Renderable.HasVertexColorChanges = true;
@@ -421,7 +421,7 @@ namespace Gorgon.Renderers
         /// </summary>
         public Vector2 Position
         {
-            get => new Vector2(Renderable.Bounds.Left, Renderable.Bounds.Top);
+            get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
@@ -568,7 +568,7 @@ namespace Gorgon.Renderers
             {
                 BatchRenderable renderable = Renderable;
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (value == null)
+                if (value is null)
                 {
                     if (renderable.AlphaTestData.IsEnabled == 0)
                     {
@@ -618,7 +618,7 @@ namespace Gorgon.Renderers
             int estimatedVertexCount = _formattedText.Length * (Renderable.DrawMode == TextDrawMode.OutlinedGlyphs ? 8 : 4);
 
             Renderable.HasVertexChanges = true;
-            Renderable.VertexCountChanged = (Renderable.Vertices == null) || (estimatedVertexCount > Renderable.Vertices.Length);
+            Renderable.VertexCountChanged = (Renderable.Vertices is null) || (estimatedVertexCount > Renderable.Vertices.Length);
         }
         #endregion
 

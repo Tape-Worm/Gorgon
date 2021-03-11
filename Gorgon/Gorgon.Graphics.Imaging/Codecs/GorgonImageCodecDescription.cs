@@ -101,7 +101,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <param name="type">The type of codec object.</param>
         public GorgonImageCodecDescription(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }

@@ -47,7 +47,7 @@ namespace Gorgon.Graphics.Core
         // A list of cached pipeline states.
         private GorgonSamplerState[] _cachedSamplers = new GorgonSamplerState[InitialCacheSize];
         // A syncrhonization lock for multiple thread when dealing with the sampler cache.
-        private readonly object _samplerLock = new object();
+        private readonly object _samplerLock = new();
         #endregion
 
         #region Methods.
@@ -58,7 +58,7 @@ namespace Gorgon.Graphics.Core
         {
             foreach (GorgonSamplerState sampler in _cachedSamplers)
             {
-                if (sampler == null)
+                if (sampler is null)
                 {
                     break;
                 }
@@ -84,11 +84,11 @@ namespace Gorgon.Graphics.Core
         {
             lock (_samplerLock)
             {
-                if ((newState.ID >= 0) && (newState.ID < _cachedSamplers.Length) && (_cachedSamplers[newState.ID] != null))
+                if ((newState.ID >= 0) && (newState.ID < _cachedSamplers.Length) && (_cachedSamplers[newState.ID] is not null))
                 {
                     GorgonSamplerState state = _cachedSamplers[newState.ID];
 
-                    if ((newState.Native != null) && (newState.Native == state.Native))
+                    if ((newState.Native is not null) && (newState.Native == state.Native))
                     {
                         return state;
                     }
@@ -96,7 +96,7 @@ namespace Gorgon.Graphics.Core
                     newState.ID = int.MinValue;
                 }
 
-                if (_cachedSamplers[_cachedSamplers.Length - 1] != null)
+                if (_cachedSamplers[^1] is not null)
                 {
                     Array.Resize(ref _cachedSamplers, _cachedSamplers.Length + InitialCacheSize);
                 }
@@ -106,7 +106,7 @@ namespace Gorgon.Graphics.Core
                 {
                     GorgonSamplerState cached = _cachedSamplers[index];
 
-                    if (cached == null)
+                    if (cached is null)
                     {
                         break;
                     }

@@ -1,7 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+<<<<<<< HEAD
+    <TargetFramework>net5.0-windows</TargetFramework>
+=======
+    <TargetFramework>net48</TargetFramework>
+>>>>>>> v3_2
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <UseWPF>true</UseWPF>
     <Version>3.2.0</Version>

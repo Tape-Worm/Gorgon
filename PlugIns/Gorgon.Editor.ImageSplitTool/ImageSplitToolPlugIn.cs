@@ -64,11 +64,11 @@ namespace Gorgon.Editor.ImageSplitTool
             IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
             IEnumerable<IContentFile> imageFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                            && (item.Metadata.ContentMetadata != null)
+                                                            && (item.Metadata.ContentMetadata is not null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
             IEnumerable<IContentFile> spriteFiles = ContentFileManager.EnumerateContentFiles("/", "*", true)
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                            && (item.Metadata.ContentMetadata != null)
+                                                            && (item.Metadata.ContentMetadata is not null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase)));
             IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
             var imagesAndSprites = new Dictionary<IContentFile, IReadOnlyList<IContentFile>>();
@@ -131,7 +131,7 @@ namespace Gorgon.Editor.ImageSplitTool
             {
                 imageFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                            && (item.Metadata.ContentMetadata != null)
+                                                            && (item.Metadata.ContentMetadata is not null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
 
                 if (!imageFiles.Any())
@@ -204,7 +204,7 @@ namespace Gorgon.Editor.ImageSplitTool
             {
                 settings = HostToolServices.ToolPlugInService.ReadContentSettings<ImageSplitToolSettings>(typeof(ImageSplitToolPlugIn).FullName);
 
-                if (settings == null)
+                if (settings is null)
                 {                    
                     settings = new ImageSplitToolSettings();
                 }
@@ -271,12 +271,12 @@ namespace Gorgon.Editor.ImageSplitTool
         /// </remarks>
         protected override IToolPlugInRibbonButton OnGetToolButton()
         {
-            if (_button.ClickCallback == null)
+            if (_button.ClickCallback is null)
             {
                 _button.ClickCallback = ShowForm;
             }
             
-            if (_button.CanExecute == null)
+            if (_button.CanExecute is null)
             {
                 _button.CanExecute = CanShowForm;
             }
@@ -299,7 +299,7 @@ namespace Gorgon.Editor.ImageSplitTool
         protected override void OnShutdown()
         {
             // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
-            if (_button != null)
+            if (_button is not null)
             {
                 _button.CanExecute = null;
                 _button.ClickCallback = null;

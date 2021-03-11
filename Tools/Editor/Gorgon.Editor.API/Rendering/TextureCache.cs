@@ -91,7 +91,7 @@ namespace Gorgon.Editor.Rendering
             public void Dispose()
             {
                 WeakReference<GorgonTexture2DView> textureRef = Interlocked.Exchange(ref Texture, null);
-                if ((textureRef == null) || (!textureRef.TryGetTarget(out GorgonTexture2DView texture)))
+                if ((textureRef is null) || (!textureRef.TryGetTarget(out GorgonTexture2DView texture)))
                 {
                     return;
                 }
@@ -115,7 +115,7 @@ namespace Gorgon.Editor.Rendering
         // The writer used to write files to the temporary area.
         private readonly IGorgonFileSystemWriter<Stream> _tempWriter;
         // The cache that holds the textures and redirected file name.
-        private readonly Dictionary<IContentFile, TextureEntry> _cache = new Dictionary<IContentFile, TextureEntry>();
+        private readonly Dictionary<IContentFile, TextureEntry> _cache = new();
         // The codec used to load the image.
         private readonly IGorgonImageCodec _codec;
         // The directory for the cached files.
@@ -133,7 +133,7 @@ namespace Gorgon.Editor.Rendering
         private async Task<GorgonTexture2DView> LoadTextureAsync(TextureEntry entry)
         {
             // If, for some reason, the file does not exist, then we need to remove the cache entry and rebuild it.
-            if (_tempWriter.FileSystem.GetFile(entry.CachedFile.FullPath) == null)
+            if (_tempWriter.FileSystem.GetFile(entry.CachedFile.FullPath) is null)
             {
                 _log.Print($"Texture '{entry.TextureFile.Path}' exists in cache, but the cache file was not found. Rebuilding cache entry.", LoggingLevel.Verbose);
                 _cache.Remove(entry.TextureFile);
@@ -146,7 +146,7 @@ namespace Gorgon.Editor.Rendering
             result = _graphics.LocateResourcesByName<GorgonTexture2D>(entry.TextureFile.Path, comparisonType: StringComparison.OrdinalIgnoreCase)
                               .FirstOrDefault()?.GetShaderResourceView();
 
-            if (result != null)
+            if (result is not null)
             {
                 entry.Texture = new WeakReference<GorgonTexture2DView>(result);
                 Interlocked.Increment(ref entry.Users);
@@ -156,15 +156,13 @@ namespace Gorgon.Editor.Rendering
 
             IGorgonImage image = await Task.Run(() =>
             {
-                using (Stream textureStream = _tempWriter.OpenStream(entry.CachedFile.FullPath, FileMode.Open))
+                using Stream textureStream = _tempWriter.OpenStream(entry.CachedFile.FullPath, FileMode.Open);
+                if (!_codec.IsReadable(textureStream))
                 {
-                    if (!_codec.IsReadable(textureStream))
-                    {
-                        _log.Print($"ERROR: Texture '{entry.TextureFile.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
-                    }
-
-                    return _codec.FromStream(textureStream);
+                    _log.Print($"ERROR: Texture '{entry.TextureFile.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
                 }
+
+                return _codec.FromStream(textureStream);
             });
 
             using (image)
@@ -208,7 +206,7 @@ namespace Gorgon.Editor.Rendering
             result = _graphics.LocateResourcesByName<GorgonTexture2D>(file.Path, comparisonType: StringComparison.OrdinalIgnoreCase)
                               .FirstOrDefault()?.GetShaderResourceView();
 
-            if (result != null)
+            if (result is not null)
             {
                 _log.Print($"Texture '{file.Path}' was already loaded, but not in the cache. Added to cache with 1 user.", LoggingLevel.Verbose);
                 _cache[file] = new TextureEntry
@@ -236,13 +234,11 @@ namespace Gorgon.Editor.Rendering
                     inStream.CopyTo(outStream);
                 }
 
-                using (Stream textureStream = _tempWriter.OpenStream(cacheFilePath, FileMode.Open))
-                {
-                    return _codec.FromStream(textureStream);
-                }
+                using Stream textureStream = _tempWriter.OpenStream(cacheFilePath, FileMode.Open);
+                return _codec.FromStream(textureStream);
             });
 
-            if (image == null)
+            if (image is null)
             {
                 return null;
             }
@@ -293,17 +289,17 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         public bool ReturnTexture(GorgonTexture2DView texture)
         {
-            if (texture == null)
+            if (texture is null)
             {
                 return false;
             }
 
-            TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture != null) 
+            TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture is not null) 
                                                                    && (item.Texture.TryGetTarget(out GorgonTexture2DView itemTexture)) 
                                                                    && (itemTexture == texture) 
-                                                                   && (itemTexture.Texture != null));
+                                                                   && (itemTexture.Texture is not null));
 
-            if (entry == null)
+            if (entry is null)
             {
                 _log.Print($"WARNING: Texture '{texture?.Texture?.Name}' not found in cache.", LoggingLevel.Verbose);
                 return false;
@@ -358,14 +354,14 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         public async Task<GorgonTexture2DView> GetTextureAsync(IContentFile file)
         {
-            if (file == null)
+            if (file is null)
             {
                 return null;
             }
 
             _log.Print($"Retrieving texture '{file.Path}'.", LoggingLevel.Verbose);
 
-            if ((_cache.TryGetValue(file, out TextureEntry entry)) && (entry.Texture != null) && (entry.Texture.TryGetTarget(out GorgonTexture2DView textureRef)))
+            if ((_cache.TryGetValue(file, out TextureEntry entry)) && (entry.Texture is not null) && (entry.Texture.TryGetTarget(out GorgonTexture2DView textureRef)))
             {
                 Interlocked.Increment(ref entry.Users);
                 _log.Print($"Texture '{file.Path}' exists in cache with {entry.Users} users.", LoggingLevel.Verbose);
@@ -373,7 +369,7 @@ namespace Gorgon.Editor.Rendering
             }
 
             // If we are at this point, then the reference is dead, so clear it out before loading.
-            if (entry?.Texture != null)
+            if (entry?.Texture is not null)
             {
                 entry.Users = 0;
                 entry.Texture = null;
@@ -382,12 +378,12 @@ namespace Gorgon.Editor.Rendering
             // Ensure that the cache directory is available.
             _cacheDirectory = _tempWriter.FileSystem.GetDirectory(CacheDirectory);
 
-            if (_cacheDirectory == null)
+            if (_cacheDirectory is null)
             {
                 _cacheDirectory = _tempWriter.CreateDirectory(CacheDirectory);
             }
 
-            if (entry?.CachedFile != null)
+            if (entry?.CachedFile is not null)
             {
                 _log.Print($"Texture '{file.Path}' not available, reloading...", LoggingLevel.Verbose);
                 return await LoadTextureAsync(entry);
@@ -411,7 +407,7 @@ namespace Gorgon.Editor.Rendering
 
             IGorgonVirtualDirectory dir = Interlocked.Exchange(ref _cacheDirectory, null);
 
-            if (dir == null)
+            if (dir is null)
             {
                 return;
             }
@@ -423,7 +419,7 @@ namespace Gorgon.Editor.Rendering
             {
                 try
                 {
-                    if (_tempWriter.FileSystem.GetDirectory(dir.FullPath) != null)
+                    if (_tempWriter.FileSystem.GetDirectory(dir.FullPath) is not null)
                     {
                         _tempWriter.DeleteDirectory(dir.FullPath);
                     }
@@ -468,14 +464,14 @@ namespace Gorgon.Editor.Rendering
         /// </remarks>
         public async Task<int> AddTextureAsync(GorgonTexture2DView texture)
         {
-            if (texture == null)
+            if (texture is null)
             {
                 throw new ArgumentNullException(nameof(texture));
             }
 
             IContentFile file = _fileManager.GetFile(texture.Texture.Name);
 
-            if (file == null)
+            if (file is null)
             {
                 _log.Print($"ERROR: File '{texture.Texture.Name}' does not exist.", LoggingLevel.Verbose);
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, texture.Texture.Name));
@@ -485,7 +481,7 @@ namespace Gorgon.Editor.Rendering
             {
                 Interlocked.Increment(ref entry.Users);
 
-                if ((entry.Texture != null) && (entry.Texture.TryGetTarget(out _)))
+                if ((entry.Texture is not null) && (entry.Texture.TryGetTarget(out _)))
                 {
                     _log.Print($"Texture '{file.Path}' exists in cache with {entry.Users} users.", LoggingLevel.Verbose);
                     return entry.Users;
@@ -542,17 +538,17 @@ namespace Gorgon.Editor.Rendering
         /// <returns>The number of users for the texture.</returns>
         public int GetUserCount(GorgonTexture2DView texture)
         {
-            if (texture == null)
+            if (texture is null)
             {
                 return 0;
             }
 
-            TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture != null)
+            TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture is not null)
                                                                    && (item.Texture.TryGetTarget(out GorgonTexture2DView itemTexture))
                                                                    && (itemTexture == texture)
-                                                                   && (itemTexture.Texture != null));
+                                                                   && (itemTexture.Texture is not null));
 
-            if (entry == null)
+            if (entry is null)
             {
                 return 0;
             }

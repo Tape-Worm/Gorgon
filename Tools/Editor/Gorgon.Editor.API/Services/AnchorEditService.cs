@@ -54,7 +54,7 @@ namespace Gorgon.Editor.Services
         // The current position of the icon when drag starts.
         private Vector2 _dragStartPosition;
         // The animation controller used to update the opacity of the icon over time.
-        private readonly GorgonSpriteAnimationController _animController = new GorgonSpriteAnimationController();
+        private readonly GorgonSpriteAnimationController _animController = new();
         // The icon opacity animation.
         private readonly IGorgonAnimation _animation;
         // The current mouse position.

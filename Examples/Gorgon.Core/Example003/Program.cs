@@ -46,7 +46,7 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // Random number generator.
-        private static readonly Random _rnd = new Random();
+        private static readonly Random _rnd = new();
         // Last horizontal coordinate.
         private static int _lastX;
         // Last vertical coordinate.

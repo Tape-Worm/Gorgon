@@ -35,32 +35,24 @@ namespace Gorgon.Input.XInput
     internal static class XInputExtensions
     {
         // Mappings for the GUIDs -> user indices.
-        private static readonly Guid _one = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        private static readonly Guid _two = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-        private static readonly Guid _three = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
-        private static readonly Guid _four = new Guid(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4);
+        private static readonly Guid _one = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        private static readonly Guid _two = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
+        private static readonly Guid _three = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
+        private static readonly Guid _four = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4);
 
         /// <summary>
         /// Function to convert an XInput user index into a GUID.
         /// </summary>
         /// <param name="userindex">The user index to convert.</param>
         /// <returns>The guid associated with the user index.</returns>
-        public static Guid ToGuid(this XI.UserIndex userindex)
+        public static Guid ToGuid(this XI.UserIndex userindex) => userindex switch
         {
-            switch (userindex)
-            {
-                case XI.UserIndex.One:
-                    return _one;
-                case XI.UserIndex.Two:
-                    return _two;
-                case XI.UserIndex.Three:
-                    return _three;
-                case XI.UserIndex.Four:
-                    return _four;
-                default:
-                    return Guid.Empty;
-            }
-        }
+            XI.UserIndex.One => _one,
+            XI.UserIndex.Two => _two,
+            XI.UserIndex.Three => _three,
+            XI.UserIndex.Four => _four,
+            _ => Guid.Empty,
+        };
 
         /// <summary>
         /// Function to conver a GUID to an XInput user index.

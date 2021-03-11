@@ -109,7 +109,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 _imageData = value;
 
-                if (value == null)
+                if (value is null)
                 {
                     _pixels = Array.Empty<bool>();
                     return;
@@ -227,7 +227,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </remarks>
         public DX.RectangleF? Pick(Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
         {
-            if (ImageData == null)
+            if (ImageData is null)
             {
                 return null;
             }

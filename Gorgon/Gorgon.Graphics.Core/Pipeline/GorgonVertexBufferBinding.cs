@@ -86,12 +86,12 @@ namespace Gorgon.Graphics.Core
         public static GorgonVertexBufferBinding CreateVertexBuffer<T>(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default, int bindingIndex = 0)
             where T : unmanaged
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
@@ -135,7 +135,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
         /// </returns>
-        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_VERTEXBUFFER_BINDING, Stride, Offset, (VertexBuffer?.Native == null) ? "(NULL)" : VertexBuffer.Name);
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_VERTEXBUFFER_BINDING, Stride, Offset, (VertexBuffer?.Native is null) ? "(NULL)" : VertexBuffer.Name);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -143,7 +143,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => VertexBuffer == null
+        public override int GetHashCode() => VertexBuffer is null
                        ? 281.GenerateHash(Stride).GenerateHash(Offset)
                        : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
 

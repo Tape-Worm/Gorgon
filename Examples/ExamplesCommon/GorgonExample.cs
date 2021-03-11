@@ -61,7 +61,7 @@ namespace Gorgon.Examples
         // Blitter for displaying rendering.
         private static GorgonTextureBlitter _blitter;
         // The string containing our statistics.
-        private static readonly StringBuilder _statsText = new StringBuilder();
+        private static readonly StringBuilder _statsText = new();
         // The main window for the application.
         private static FormMain _mainForm;
         #endregion
@@ -169,7 +169,7 @@ namespace Gorgon.Examples
         /// </summary>
         public static void EndInit()
         {
-            if (_mainForm != null)
+            if (_mainForm is not null)
             {
                 _mainForm.IsLoaded = true;
             }
@@ -185,7 +185,7 @@ namespace Gorgon.Examples
         {
             GorgonRenderTargetView currentRtv = graphics.RenderTargets[0];
 
-            if ((currentRtv == null) || (_logo == null))
+            if ((currentRtv is null) || (_logo is null))
             {
                 return;
             }
@@ -200,7 +200,7 @@ namespace Gorgon.Examples
         /// <param name="ex">The exception to handle.</param>
         public static void HandleException(Exception ex)
         {
-            if (ex == null)
+            if (ex is null)
             {
                 return;
             }
@@ -219,7 +219,7 @@ namespace Gorgon.Examples
 
             GorgonRenderTargetView currentRtv = renderer.Graphics.RenderTargets[0];
 
-            if ((currentRtv == null) || (_logo == null) || (_statsFont == null))
+            if ((currentRtv is null) || (_logo is null) || (_statsFont is null))
             {
                 return;
             }
@@ -261,7 +261,7 @@ namespace Gorgon.Examples
 
             GorgonRenderTargetView currentRtv = renderer.Graphics.RenderTargets[0];
 
-            if ((currentRtv == null) || (_logo == null) || (_statsFont == null))
+            if ((currentRtv is null) || (_logo is null) || (_statsFont is null))
             {
                 return;
             }
@@ -318,7 +318,7 @@ namespace Gorgon.Examples
         /// <param name="graphics">The graphics interface to use.</param>
         public static void LoadResources(GorgonGraphics graphics)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
@@ -336,17 +336,15 @@ namespace Gorgon.Examples
                 TextureWidth = 512,
                 TextureHeight = 256
             });
-            
-            using (var stream = new MemoryStream(Resources.Gorgon_Logo_Small))
+
+            using var stream = new MemoryStream(Resources.Gorgon_Logo_Small);
+            var ddsCodec = new GorgonCodecDds();
+            _logo = GorgonTexture2DView.FromStream(graphics, stream, ddsCodec, options: new GorgonTexture2DLoadOptions
             {
-                var ddsCodec = new GorgonCodecDds();
-                _logo = GorgonTexture2DView.FromStream(graphics, stream, ddsCodec, options: new GorgonTexture2DLoadOptions
-                {
-                    Name = "Gorgon Logo Texture",
-                    Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Immutable
-                });
-            }
+                Name = "Gorgon Logo Texture",
+                Binding = TextureBinding.ShaderResource,
+                Usage = ResourceUsage.Immutable
+            });
         }
         
         /// <summary>
@@ -364,7 +362,7 @@ namespace Gorgon.Examples
                 ClientSize = new Drawing.Size(resolution.Width, resolution.Height)
             };
 
-            if (formLoad != null)
+            if (formLoad is not null)
             {
                 _mainForm.Load += formLoad;
             }

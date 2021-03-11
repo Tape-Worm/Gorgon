@@ -55,7 +55,7 @@ namespace Gorgon.Editor.UI.Views
     {
         #region Variables.
         // A list of renderers used to draw our content to the UI.
-        private readonly Dictionary<string, IToolRenderer> _renderers = new Dictionary<string, IToolRenderer>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IToolRenderer> _renderers = new(StringComparer.OrdinalIgnoreCase);
         // The control that will receive rendering output.
         private Control _renderControl;
         // Previous idle method.
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.UI.Views
             OnAfterRender();
 
             // Render on other controls as well.
-            if ((GorgonApplication.AllowBackground) && (_oldIdle != null))
+            if ((GorgonApplication.AllowBackground) && (_oldIdle is not null))
             {
                 if (!_oldIdle())
                 {
@@ -182,7 +182,7 @@ namespace Gorgon.Editor.UI.Views
         /// </summary>
         private void ShutdownGraphics()
         {
-            if (_graphicsContext == null)
+            if (_graphicsContext is null)
             {
                 return;
             }
@@ -203,7 +203,7 @@ namespace Gorgon.Editor.UI.Views
 
             GorgonApplication.AllowBackground = _oldBackgroundState;
 
-            if (swapChain != null)
+            if (swapChain is not null)
             {
                 context?.ReturnSwapPresenter(ref swapChain);
             }
@@ -214,7 +214,7 @@ namespace Gorgon.Editor.UI.Views
         /// </summary>
         private void ResetDataContext()
         {
-            if ((_dataContext == null) || (Disposing))
+            if ((_dataContext is null) || (Disposing))
             {
                 return;
             }
@@ -227,7 +227,7 @@ namespace Gorgon.Editor.UI.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (_dataContext == null)
+            if (_dataContext is null)
             {
                 return;
             }
@@ -362,7 +362,7 @@ namespace Gorgon.Editor.UI.Views
         /// <seealso cref="IToolRenderer"/>
         protected void AddRenderer(string name, IToolRenderer renderer)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -388,7 +388,7 @@ namespace Gorgon.Editor.UI.Views
         protected bool HasRenderer(string name)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -411,7 +411,7 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         protected void SwitchRenderer(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -427,7 +427,7 @@ namespace Gorgon.Editor.UI.Views
             }
 
             // Blow away any temporary resources registered to the renderer.
-            if (Renderer != null)
+            if (Renderer is not null)
             {
                 Renderer.UnloadResources();
                 OnSwitchRenderer(null);
@@ -518,7 +518,7 @@ namespace Gorgon.Editor.UI.Views
 
             _dataContext = dataContext;
 
-            if (_dataContext == null)
+            if (_dataContext is null)
             {
                 return;
             }
@@ -545,7 +545,7 @@ namespace Gorgon.Editor.UI.Views
 
             var args = new CloseToolArgs(true);
 
-            if ((_dataContext?.CloseToolCommand!= null) && (_dataContext.CloseToolCommand.CanExecute(args)))
+            if ((_dataContext?.CloseToolCommand is not null) && (_dataContext.CloseToolCommand.CanExecute(args)))
             {
                 await _dataContext.CloseToolCommand.ExecuteAsync(args);
             }
@@ -608,12 +608,12 @@ namespace Gorgon.Editor.UI.Views
         /// </remarks>
         public void SetupGraphics(IGraphicsContext context, bool allowBackgroundRendering = true)
         {
-            if (context == null)
+            if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (RenderControl == null)
+            if (RenderControl is null)
             {
                 throw new GorgonException(GorgonResult.NotInitialized, Resources.GOREDIT_ERR_NO_RENDER_CONTROL);
             }
@@ -624,12 +624,12 @@ namespace Gorgon.Editor.UI.Views
             }
 
             // If we've made no change, then do nothing.
-            if ((context == _graphicsContext) && (_swapChain != null) && (_swapChain.Window == RenderControl))
+            if ((context == _graphicsContext) && (_swapChain is not null) && (_swapChain.Window == RenderControl))
             {
                 return;
             }
 
-            if (_swapChain != null)
+            if (_swapChain is not null)
             {
                 _graphicsContext?.ReturnSwapPresenter(ref _swapChain);
                 _graphicsContext = null;
@@ -653,7 +653,7 @@ namespace Gorgon.Editor.UI.Views
 
             OnSetupGraphics(context, swapChain);
 
-            if (Renderer == null)
+            if (Renderer is null)
             {
                 _renderers["null"].IsEnabled = true;
                 SwitchRenderer("null");

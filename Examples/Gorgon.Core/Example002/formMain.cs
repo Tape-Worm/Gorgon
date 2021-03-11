@@ -89,7 +89,7 @@ namespace Gorgon.Examples
 
             try
             {
-                if (_bitmap == null)
+                if (_bitmap is null)
                 {
                     return;
                 }
@@ -137,7 +137,7 @@ namespace Gorgon.Examples
         /// <param name="color">Color of the pixel.</param>
         public void Draw(int lastX, int lastY, int x, int y, Color color)
         {
-            if (_bitmap == null)
+            if (_bitmap is null)
             {
                 return;
             }
@@ -148,10 +148,8 @@ namespace Gorgon.Examples
             }
             else
             {
-                using (var pen = new Pen(color))
-                {
-                    _graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
-                }
+                using var pen = new Pen(color);
+                _graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
             }
         }
 

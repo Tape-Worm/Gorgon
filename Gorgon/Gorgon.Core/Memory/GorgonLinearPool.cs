@@ -118,12 +118,12 @@ namespace Gorgon.Memory
 
             T item = _items[nextIndex];
 
-            if ((ItemAllocator != null) && (item == null))
+            if ((ItemAllocator is not null) && (item is null))
             {
                 item = _items[nextIndex] = ItemAllocator();
             }
 
-            if (item != null)
+            if (item is not null)
             {
                 initializer?.Invoke(item);
             }

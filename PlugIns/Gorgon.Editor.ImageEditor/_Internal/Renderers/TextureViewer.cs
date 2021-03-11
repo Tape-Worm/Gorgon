@@ -83,9 +83,9 @@ namespace Gorgon.Editor.ImageEditor
         // The slots available for textures on the shader.
         private readonly GorgonShaderResourceView[] _slots = new GorgonShaderResourceView[2];
         // The controller for animating the content.
-        private readonly ImageAnimationController _animController = new ImageAnimationController();
+        private readonly ImageAnimationController _animController = new();
         private IGorgonAnimation _opacityAnimation;
-        private readonly GorgonAnimationBuilder _animationBuilder = new GorgonAnimationBuilder();
+        private readonly GorgonAnimationBuilder _animationBuilder = new();
         // Flag to indicate that the texture needs refreshing.
         private bool _textureNeedsUpdate = true;
         #endregion
@@ -141,7 +141,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void UpdateTextureParameters()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -165,7 +165,7 @@ namespace Gorgon.Editor.ImageEditor
                 GorgonPixelShader shader = Interlocked.Exchange(ref _imageShader, null);
                 GorgonConstantBufferView cBuffer = Interlocked.Exchange(ref _textureParameters, null);
 
-                if (shader == null)
+                if (shader is null)
                 {
                     return;
                 }

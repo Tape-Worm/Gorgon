@@ -91,7 +91,7 @@ namespace Gorgon.Editor.UI
             {
                 object settingsData = OnGetSettings();
 
-                if (settingsData == null)
+                if (settingsData is null)
                 {
                     return;
                 }

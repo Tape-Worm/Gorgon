@@ -124,11 +124,11 @@ namespace Gorgon.Graphics.Fonts
                     break;
             }
 
-            FontFamily fontFamily = (externalFonts != null ? externalFonts.Families.Concat(FontFamily.Families) : FontFamily.Families)
+            FontFamily fontFamily = (externalFonts is not null ? externalFonts.Families.Concat(FontFamily.Families) : FontFamily.Families)
                                     .FirstOrDefault(item => string.Equals(fontInfo.FontFamilyName, item.Name, StringComparison.InvariantCultureIgnoreCase));
 
             // If we cannot locate the font family by name, then fall back.
-            if (fontFamily == null)
+            if (fontFamily is null)
             {
                 fontFamily = FontFamily.GenericSerif;
             }

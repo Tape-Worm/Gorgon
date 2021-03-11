@@ -88,7 +88,7 @@ namespace Gorgon.Editor.Services
         /// Function to return the dialog.
         /// </summary>
         /// <returns>The save file dialog.</returns>
-        private SaveFileDialog GetDialog() => new SaveFileDialog
+        private SaveFileDialog GetDialog() => new()
         {
             Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TITLE_SAVE_FILE : DialogTitle,
             FileName = string.IsNullOrWhiteSpace(InitialFilePath) ? string.Empty : InitialFilePath,

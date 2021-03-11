@@ -54,7 +54,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     ToggleManualInputEvent = null;
                     return;
@@ -64,7 +64,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -121,8 +121,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void VertexEditor_VerticesChanged(object sender, EventArgs e)
         {
-            if ((DataContext.SpriteVertexEditContext.SelectedVertexIndex < 0)
-                || (DataContext.SpriteVertexEditContext.SelectedVertexIndex > 3))
+            if (DataContext.SpriteVertexEditContext.SelectedVertexIndex is < 0 or > 3)
             {
                 return;
             }

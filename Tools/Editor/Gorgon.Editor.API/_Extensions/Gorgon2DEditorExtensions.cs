@@ -75,7 +75,7 @@ namespace Gorgon.IO
                 { typeof(GorgonV1SpriteBinaryCodec).FullName, new GorgonV1SpriteBinaryCodec(renderer) }
             };
 
-            if (spriteCodecs != null)
+            if (spriteCodecs is not null)
             {
                 foreach (IGorgonSpriteCodec codec in spriteCodecs)
                 {
@@ -110,7 +110,7 @@ namespace Gorgon.IO
                 { typeof(GorgonCodecBmp).FullName, new GorgonCodecBmp() }
             };
 
-            if (imageCodecs != null)
+            if (imageCodecs is not null)
             {
                 foreach (IGorgonImageCodec codec in imageCodecs)
                 {
@@ -145,7 +145,7 @@ namespace Gorgon.IO
             // First, check to see if this texture isn't already loaded into memory.
             GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(imagePath).FirstOrDefault();
 
-            if (texture != null)
+            if (texture is not null)
             {
                 return texture;
             }
@@ -170,7 +170,7 @@ namespace Gorgon.IO
 
             IGorgonVirtualFile file = fileSystem.GetFile(imagePath);
 
-            if (file == null)
+            if (file is null)
             {
                 return null;
             }
@@ -233,12 +233,12 @@ namespace Gorgon.IO
         [Obsolete("This method is no longer used. Please use the IGorgonFileSystem.CreateEditorLoader method and use the resulting object to load images.")]
         public static IGorgonImage LoadImage(this IGorgonFileSystem fileSystem, string path, IReadOnlyList<IGorgonImageCodec> imageCodecs = null)
         {
-            if (fileSystem == null)
+            if (fileSystem is null)
             {
                 throw new ArgumentNullException(nameof(fileSystem));
             }
 
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -275,7 +275,7 @@ namespace Gorgon.IO
 
             IGorgonVirtualFile file = fileSystem.GetFile(path);
 
-            if (file == null)
+            if (file is null)
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
             }
@@ -287,10 +287,8 @@ namespace Gorgon.IO
                 bool.TryParse(isPremultiplied, out shouldConvertToPremultiplied);
             }
 
-            using (Stream stream = file.OpenStream())
-            {
-                return shouldConvertToPremultiplied ? imageCodec.FromStream(stream, (int)file.Size).BeginUpdate().ConvertToPremultipliedAlpha().EndUpdate() : imageCodec.FromStream(stream, (int)file.Size);
-            }
+            using Stream stream = file.OpenStream();
+            return shouldConvertToPremultiplied ? imageCodec.FromStream(stream, (int)file.Size).BeginUpdate().ConvertToPremultipliedAlpha().EndUpdate() : imageCodec.FromStream(stream, (int)file.Size);
         }
 
         /// <summary>
@@ -361,17 +359,17 @@ namespace Gorgon.IO
         [Obsolete("This method is no longer used. Please use the IGorgonFileSystem.CreateEditorLoader method and use the resulting object to load sprites.")]
         public static (GorgonSprite sprite, GorgonTexture2D texture) LoadSprite(this IGorgonFileSystem fileSystem, Gorgon2D renderer, string path, ResourceUsage textureUsage = ResourceUsage.Default, IReadOnlyList<IGorgonSpriteCodec> spriteCodecs = null, IReadOnlyList<IGorgonImageCodec> imageCodecs = null, GorgonTexture2DView overrideTexture = null)
         {
-            if (fileSystem == null)
+            if (fileSystem is null)
             {
                 throw new ArgumentNullException(nameof(fileSystem));
             }
 
-            if (renderer == null)
+            if (renderer is null)
             {
                 throw new ArgumentNullException(nameof(renderer));
             }
 
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -409,17 +407,17 @@ namespace Gorgon.IO
 
             IGorgonVirtualFile file = fileSystem.GetFile(path);
 
-            if (file == null)
+            if (file is null)
             {
                 throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
             }
 
             GorgonTexture2D texture = null;
-            if (overrideTexture == null)
+            if (overrideTexture is null)
             {
                 if (fileMetadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> imagePaths))
                 {
-                    if ((imagePaths != null) && (imagePaths.Count > 0))
+                    if ((imagePaths is not null) && (imagePaths.Count > 0))
                     {
                         texture = GetTexture(renderer.Graphics, fileSystem, metaData, imagePaths[0], textureUsage, supportedImageCodecs);
                         overrideTexture = texture.GetShaderResourceView();
@@ -427,10 +425,8 @@ namespace Gorgon.IO
                 }
             }
 
-            using (Stream stream = file.OpenStream())
-            {
-                return (spriteCodec.FromStream(stream, overrideTexture, (int)file.Size), texture);
-            }
+            using Stream stream = file.OpenStream();
+            return (spriteCodec.FromStream(stream, overrideTexture, (int)file.Size), texture);
         }
         #endregion
 
@@ -445,18 +441,18 @@ namespace Gorgon.IO
         /// <exception cref="GorgonException">Thrown if the <paramref name="fileSystem"/> is not a Gorgon Editor file system, or is an unsupported version.</exception>
         public static IGorgonContentLoader CreateContentLoader(this IGorgonFileSystem fileSystem, Gorgon2D renderer, GorgonTextureCache<GorgonTexture2D> textureCache)
         {
-            if (fileSystem == null)
+            if (fileSystem is null)
             {
                 throw new ArgumentNullException(nameof(fileSystem));
             }
 
-            if (renderer == null)
+            if (renderer is null)
             {
                 throw new ArgumentNullException(nameof(renderer));
 
             }
 
-            if (textureCache == null)
+            if (textureCache is null)
             {
                 throw new ArgumentNullException(nameof(textureCache));
             }

@@ -53,7 +53,7 @@ namespace Gorgon.Diagnostics.LogProviders
         {
             StreamWriter stream = null;
 
-            Debug.Assert(_filePath.Directory != null, $"Directory not found for '{_filePath.FullName}'");
+            Debug.Assert(_filePath.Directory is not null, $"Directory not found for '{_filePath.FullName}'");
 
             try
             {
@@ -91,7 +91,7 @@ namespace Gorgon.Diagnostics.LogProviders
                 return;
             }
 
-            if (message == null)
+            if (message is null)
             {
                 message = string.Empty;
             }
@@ -146,7 +146,7 @@ namespace Gorgon.Diagnostics.LogProviders
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         public LogTextFileProvider(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }

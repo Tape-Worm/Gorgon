@@ -83,7 +83,7 @@ namespace Gorgon.Examples
         // Our 2D renderer.
         private static Gorgon2D _renderer;
         // The list of textures for the sprite.
-        private static readonly List<GorgonTexture2D> _textures = new List<GorgonTexture2D>();
+        private static readonly List<GorgonTexture2D> _textures = new();
         // The size of the tiled screen.
         private static DX.Size2 _tileSize;
         // The tile used for the snow layer.
@@ -95,7 +95,7 @@ namespace Gorgon.Examples
         // The position of the guy.
         private static Vector2 _guyPosition;
         // Up animation.
-        private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new Dictionary<AnimationName, IGorgonAnimation>();
+        private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new();
         // The animation controller.
         private static GorgonSpriteAnimationController _controller;
         // The current animation.
@@ -210,7 +210,7 @@ namespace Gorgon.Examples
         private static bool Idle()
         {
             // If the controller is not initialized, then we haven't finished loading our data yet.
-            if (_controller == null)
+            if (_controller is null)
             {
                 return true;
             }

@@ -89,7 +89,7 @@ namespace Gorgon.Editor.ImageEditor
 
                     IGorgonImageCodec codec = plugin.CreateCodec(desc.Name);
 
-                    if (codec == null)
+                    if (codec is null)
                     {
                         _log.Print($"ERROR: The image codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                         continue;
@@ -106,7 +106,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="plugin">The plug in to remove.</param>
         public void RemoveCodecPlugIn(GorgonImageCodecPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -120,7 +120,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 IGorgonImageCodec codec = Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
-                if (codec != null)
+                if (codec is not null)
                 {
                     Codecs.Remove(codec);
                 }
@@ -207,7 +207,7 @@ namespace Gorgon.Editor.ImageEditor
 
                     IGorgonImageCodec imageCodec = plugin.CreateCodec(desc.Name);
 
-                    if (imageCodec == null)
+                    if (imageCodec is null)
                     {
                         _log.Print($"ERROR: Could not create image codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                         localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_LOAD_FAIL, desc.Name));

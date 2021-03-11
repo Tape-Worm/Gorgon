@@ -47,11 +47,11 @@ namespace Gorgon.Diagnostics
         // Logging filter.
         private LoggingLevel _filterLevel = LoggingLevel.All;
         // Buffer used to send data to the log file.
-        private readonly List<string> _outputBuffer = new List<string>(1024);
+        private readonly List<string> _outputBuffer = new(1024);
         // The thread buffers used to store messages per thread.
-        private readonly ConcurrentDictionary<int, List<string>> _threadBuffers = new ConcurrentDictionary<int, List<string>>();
+        private readonly ConcurrentDictionary<int, List<string>> _threadBuffers = new();
         // Synchronization lock for multiple threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         // The application version.
         private readonly Version _appVersion;
 
@@ -139,7 +139,7 @@ namespace Gorgon.Diagnostics
 
                 if ((inIndex > -1) && (pathIndex > -1))
                 {
-                    lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
+                    lines[i] = lines[i][..(inIndex + 5)] + lines[i][(pathIndex + 1)..];
                 }
 
                 resultMessage.AppendFormat("{1}{0}\r\n", lines[i], indicator);
@@ -191,7 +191,7 @@ namespace Gorgon.Diagnostics
             string branch = string.Empty; // Branching character.
             var exception = new StringBuilder(1024);
 
-            if ((ex == null)
+            if ((ex is null)
                 || (LogFilterLevel == LoggingLevel.NoLogging))
             {
                 return;
@@ -206,7 +206,7 @@ namespace Gorgon.Diagnostics
 
                 Exception inner = ex;
 
-                while (inner != null)
+                while (inner is not null)
                 {
 
                     if ((inner == ex) || (LogFilterLevel == LoggingLevel.Verbose) || (LogFilterLevel == LoggingLevel.All))
@@ -218,12 +218,12 @@ namespace Gorgon.Diagnostics
                                     indicator,
                                     Resources.GOR_EXCEPT_EXCEPT_TYPE);
 
-                        if (inner.Source != null)
+                        if (inner.Source is not null)
                         {
                             exception.AppendFormat("{1}{2}: {0}\r\n", inner.Source, indicator, Resources.GOR_EXCEPT_SRC);
                         }
 
-                        if (inner.TargetSite?.DeclaringType != null)
+                        if (inner.TargetSite?.DeclaringType is not null)
                         {
                             exception.AppendFormat("{2}{3}: {0}.{1}\r\n",
                                         inner.TargetSite.DeclaringType.FullName,
@@ -255,7 +255,7 @@ namespace Gorgon.Diagnostics
 
                         foreach (DictionaryEntry item in extraInfo)
                         {
-                            if (item.Value != null)
+                            if (item.Value is not null)
                             {
                                 exception.AppendFormat("{0}{1}:  {2}\r\n", indicator, item.Key, item.Value);
                             }
@@ -270,7 +270,7 @@ namespace Gorgon.Diagnostics
                         FormatStackTrace(inner.StackTrace, indicator, exception);
                     }
 
-                    if ((inner.InnerException != null) && ((LogFilterLevel == LoggingLevel.Verbose)
+                    if ((inner.InnerException is not null) && ((LogFilterLevel == LoggingLevel.Verbose)
                                                               || (LogFilterLevel == LoggingLevel.All)))
                     {
                         if (!string.IsNullOrWhiteSpace(indicator))
@@ -304,7 +304,7 @@ namespace Gorgon.Diagnostics
         /// <param name="lines">The lines to flush out</param>
         private void FlushLines(List<string> lines)
         {
-            if (lines == null)
+            if (lines is null)
             {
                 return;
             }
@@ -450,7 +450,7 @@ namespace Gorgon.Diagnostics
         /// </remarks>
         protected GorgonLog(string appName, Version version = null)
         {
-            if (appName == null)
+            if (appName is null)
             {
                 throw new ArgumentNullException(nameof(appName));
             }

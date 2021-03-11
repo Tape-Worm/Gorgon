@@ -127,8 +127,8 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         /// <param name="file">The file to evaluate.</param>
         /// <returns><b>true</b> if the file is an image, supported by this editor, or <b>false</b> if not.</returns>
-        public bool IsContentImage(IContentFile file) => ((file != null)
-                && (file.Metadata != null)
+        public bool IsContentImage(IContentFile file) => ((file is not null)
+                && (file.Metadata is not null)
                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
                 && (string.Equals(contentType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
 
@@ -139,8 +139,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             IGorgonImage imageData = texture.Texture.ToImage();
 
-            if ((imageData.Format == BufferFormat.R8G8B8A8_UNorm)
-                || (imageData.Format == BufferFormat.R8G8B8A8_UNorm_SRgb))
+            if (imageData.Format is BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb)
             {
                 return imageData;
             }
@@ -167,7 +166,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>The texture associated with the sprite, and the content file associated with that texture, or <b>null</b> if no sprite texture was found.</returns>
         public async Task<(GorgonTexture2DView, IContentFile)> LoadFromSpriteContentAsync(IContentFile spriteContent)
         {
-            Debug.Assert(spriteContent.Metadata != null, "No meta data for sprite content!");
+            Debug.Assert(spriteContent.Metadata is not null, "No meta data for sprite content!");
 
             _log.Print($"Loading sprite texture for '{spriteContent.Path}'...", LoggingLevel.Verbose);
             (IGorgonImage imageData, IContentFile file) = await Task.Run(() =>
@@ -177,19 +176,17 @@ namespace Gorgon.Editor.SpriteEditor
                 {
                     _log.Print("WARNING: No sprite texture dependency found, interrogating sprite data...", LoggingLevel.Verbose);
                     // If there's no linkage, then see if the sprite has the path information embedded within its data.
-                    using (Stream spriteStream = _fileManager.OpenStream(spriteContent.Path, FileMode.Open))
-                    {
-                        string textureName = _spriteCodec.GetAssociatedTextureName(spriteStream);                        
+                    using Stream spriteStream = _fileManager.OpenStream(spriteContent.Path, FileMode.Open);
+                    string textureName = _spriteCodec.GetAssociatedTextureName(spriteStream);
 
-                        if ((string.IsNullOrWhiteSpace(textureName))
-                            || (!_fileManager.FileExists(textureName)))
-                        {
-                            
-                            return (null, null);
-                        }
-                        
-                        dependency = new List<string> { textureName };
-                    }                    
+                    if ((string.IsNullOrWhiteSpace(textureName))
+                        || (!_fileManager.FileExists(textureName)))
+                    {
+
+                        return (null, null);
+                    }
+
+                    dependency = new List<string> { textureName };
                 }
 
                 _log.Print($"Found sprite texture '{dependency[0]}'...", LoggingLevel.Verbose);
@@ -201,22 +198,20 @@ namespace Gorgon.Editor.SpriteEditor
                     return (null, null);
                 }
 
-                using (Stream stream = _fileManager.OpenStream(imageFile.Path, FileMode.Open))
+                using Stream stream = _fileManager.OpenStream(imageFile.Path, FileMode.Open);
+                if (!_imageCodec.IsReadable(stream))
                 {
-                    if (!_imageCodec.IsReadable(stream))
-                    {
-                        _log.Print($"ERROR: '{dependency[0]}' is not a {_imageCodec.Name} file.", LoggingLevel.Simple);
-                        return ((IGorgonImage, IContentFile imageFile))(null, null);
-                    }
-                    else
-                    {
-                        _log.Print($"Texture '{dependency[0]}' found and loaded.", LoggingLevel.Verbose);
-                        return (_imageCodec.FromStream(stream), imageFile);
-                    }
+                    _log.Print($"ERROR: '{dependency[0]}' is not a {_imageCodec.Name} file.", LoggingLevel.Simple);
+                    return ((IGorgonImage, IContentFile imageFile))(null, null);
+                }
+                else
+                {
+                    _log.Print($"Texture '{dependency[0]}' found and loaded.", LoggingLevel.Verbose);
+                    return (_imageCodec.FromStream(stream), imageFile);
                 }
             });
 
-            if ((imageData == null) || (file == null))
+            if ((imageData is null) || (file is null))
             {
                 return (null, null);
             }
@@ -254,12 +249,10 @@ namespace Gorgon.Editor.SpriteEditor
 
             IGorgonImage LoadImage()
             {
-                using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
-                {
-                    return !_imageCodec.IsReadable(stream)
-                        ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORSPR_ERR_TEXTURE_CANNOT_READ, file.Path))
-                        : _imageCodec.FromStream(stream);
-                }
+                using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
+                return !_imageCodec.IsReadable(stream)
+                    ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORSPR_ERR_TEXTURE_CANNOT_READ, file.Path))
+                    : _imageCodec.FromStream(stream);
             }
 
             IGorgonImage imageData = await Task.Run(LoadImage);
@@ -287,12 +280,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns>The metadata for the file, or <b>null</b> if the file is not an image.</returns>        
         public IGorgonImageInfo GetImageMetadata(IContentFile file)
         {
-            using (Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open))
-            {
-                return ((!_imageCodec.IsReadable(stream)) || (!IsContentImage(file)))
-                    ? null
-                    : _imageCodec.GetMetaData(stream);
-            }
+            using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
+            return ((!_imageCodec.IsReadable(stream)) || (!IsContentImage(file)))
+                ? null
+                : _imageCodec.GetMetaData(stream);
         }
         #endregion
 

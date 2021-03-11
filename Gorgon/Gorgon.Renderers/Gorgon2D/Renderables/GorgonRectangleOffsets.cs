@@ -52,22 +52,14 @@ namespace Gorgon.Renderers
         /// </remarks>
         public Vector3 this[int index]
         {
-            get
+            get => index switch
             {
-                switch (index)
-                {
-                    case 0:
-                        return _renderable.UpperLeftOffset;
-                    case 1:
-                        return _renderable.UpperRightOffset;
-                    case 2:
-                        return _renderable.LowerRightOffset;
-                    case 3:
-                        return _renderable.LowerLeftOffset;
-                }
-
-                throw new ArgumentOutOfRangeException();
-            }
+                0 => _renderable.UpperLeftOffset,
+                1 => _renderable.UpperRightOffset,
+                2 => _renderable.LowerRightOffset,
+                3 => _renderable.LowerLeftOffset,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
             set
             {
                 switch (index)
@@ -212,7 +204,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
         public void CopyTo(GorgonRectangleOffsets destination)
         {
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }

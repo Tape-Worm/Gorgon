@@ -103,39 +103,37 @@ namespace Gorgon.Renderers
         private void CreateBuffers()
         {
             // We don't need to update the index buffer ever.  So we can set up the indices right now.            
-            using (var indices = new GorgonNativeBuffer<ushort>(MaxSpriteCount * 6))
+            using var indices = new GorgonNativeBuffer<ushort>(MaxSpriteCount * 6);
+            int indexOffset = 0;
+            ushort index = 0;
+            for (int i = 0; i < MaxSpriteCount; ++i)
             {
-                int indexOffset = 0;
-                ushort index = 0;
-                for (int i = 0; i < MaxSpriteCount; ++i)
-                {
-                    indices[indexOffset++] = index;
-                    indices[indexOffset++] = (ushort)(index + 1);
-                    indices[indexOffset++] = (ushort)(index + 2);
-                    indices[indexOffset++] = (ushort)(index + 1);
-                    indices[indexOffset++] = (ushort)(index + 3);
-                    indices[indexOffset++] = (ushort)(index + 2);
+                indices[indexOffset++] = index;
+                indices[indexOffset++] = (ushort)(index + 1);
+                indices[indexOffset++] = (ushort)(index + 2);
+                indices[indexOffset++] = (ushort)(index + 1);
+                indices[indexOffset++] = (ushort)(index + 3);
+                indices[indexOffset++] = (ushort)(index + 2);
 
-                    index += 4;
-                }
-
-                VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics,
-                                                                                             new GorgonVertexBufferInfo
-                                                                                             {
-                                                                                                 Usage = ResourceUsage.Dynamic,
-                                                                                                 Binding = VertexIndexBufferBinding.None,
-                                                                                                 SizeInBytes = Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4)
-                                                                                             });
-
-                IndexBuffer = new GorgonIndexBuffer(Graphics,
-                                                    new GorgonIndexBufferInfo
-                                                    {
-                                                        Usage = ResourceUsage.Immutable,
-                                                        Binding = VertexIndexBufferBinding.None,
-                                                        IndexCount = indices.Length
-                                                    },
-                                                    indices.ToSpan());
+                index += 4;
             }
+
+            VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics,
+                                                                                         new GorgonVertexBufferInfo
+                                                                                         {
+                                                                                             Usage = ResourceUsage.Dynamic,
+                                                                                             Binding = VertexIndexBufferBinding.None,
+                                                                                             SizeInBytes = Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4)
+                                                                                         });
+
+            IndexBuffer = new GorgonIndexBuffer(Graphics,
+                                                new GorgonIndexBufferInfo
+                                                {
+                                                    Usage = ResourceUsage.Immutable,
+                                                    Binding = VertexIndexBufferBinding.None,
+                                                    IndexCount = indices.Length
+                                                },
+                                                indices.ToSpan());
         }
 
         /// <summary>

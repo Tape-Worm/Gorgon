@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
     public static class GorgonImageTextureExtensions
     {
         // Default load options.
-        private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new GorgonTexture2DLoadOptions();
+        private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new();
 
         /// <summary>
         /// Function to create a <see cref="GorgonTexture2D"/> from a GDI+ bitmap.
@@ -83,17 +83,17 @@ namespace Gorgon.Graphics.Core
                                                   GorgonGraphics graphics,
                                                   GorgonTexture2DLoadOptions options = null)
         {
-            if (gdiBitmap == null)
+            if (gdiBitmap is null)
             {
                 throw new ArgumentNullException(nameof(gdiBitmap));
             }
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -103,17 +103,15 @@ namespace Gorgon.Graphics.Core
                 options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture2D.NamePrefix);
             }
 
-            using (IGorgonImage image = gdiBitmap.ToGorgonImage())
+            using IGorgonImage image = gdiBitmap.ToGorgonImage();
+            if (options.ConvertToPremultipliedAlpha)
             {
-                if (options.ConvertToPremultipliedAlpha)
-                {
-                    image.BeginUpdate()
-                         .ConvertToPremultipliedAlpha()
-                         .EndUpdate();
-                }
-
-                return new GorgonTexture2D(graphics, image, options);
+                image.BeginUpdate()
+                     .ConvertToPremultipliedAlpha()
+                     .EndUpdate();
             }
+
+            return new GorgonTexture2D(graphics, image, options);
         }
 
         /// <summary>
@@ -156,17 +154,17 @@ namespace Gorgon.Graphics.Core
                                                   GorgonGraphics graphics,
                                                   GorgonTextureLoadOptions options = null)
         {
-            if (image == null)
+            if (image is null)
             {
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -226,17 +224,17 @@ namespace Gorgon.Graphics.Core
                                                   GorgonGraphics graphics,
                                                   GorgonTexture2DLoadOptions options = null)
         {
-            if (image == null)
+            if (image is null)
             {
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -296,17 +294,17 @@ namespace Gorgon.Graphics.Core
                                                   GorgonGraphics graphics,
                                                   GorgonTextureLoadOptions options = null)
         {
-            if (image == null)
+            if (image is null)
             {
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }

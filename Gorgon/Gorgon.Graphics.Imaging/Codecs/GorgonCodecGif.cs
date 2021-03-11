@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         {
             var result = new Dictionary<string, object>();
 
-            if (EncodingOptions?.Palette != null)
+            if (EncodingOptions?.Palette is not null)
             {
                 for (int i = 0; i < EncodingOptions.Palette.Count; ++i)
                 {
@@ -100,7 +100,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             bool saveAllFrames = EncodingOptions?.SaveAllFrames ?? true;
 
-            if ((settings == null)
+            if ((settings is null)
                 || (settings.ArrayCount < 2)
                 || (!saveAllFrames))
             {
@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             // Write out frame delays.
             ushort delayValue = 0;
 
-            if ((EncodingOptions?.FrameDelays != null) && (frameIndex >= 0) && (frameIndex < EncodingOptions.FrameDelays.Count))
+            if ((EncodingOptions?.FrameDelays is not null) && (frameIndex >= 0) && (frameIndex < EncodingOptions.FrameDelays.Count))
             {
                 delayValue = (ushort)EncodingOptions.FrameDelays[frameIndex];
             }
@@ -142,7 +142,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IReadOnlyList<int> GetFrameDelays(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -152,10 +152,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return GetFrameDelays(fileStream);
-            }
+            using FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return GetFrameDelays(fileStream);
         }
 
         /// <summary>
@@ -178,7 +176,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IReadOnlyList<int> GetFrameDelays(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

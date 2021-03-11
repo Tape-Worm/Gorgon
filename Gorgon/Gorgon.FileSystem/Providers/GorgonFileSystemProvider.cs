@@ -243,7 +243,7 @@ namespace Gorgon.IO.Providers
 
             if (virtualPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
-                virtualPath = virtualPath.Substring(1);
+                virtualPath = virtualPath[1..];
             }
 
             return string.IsNullOrWhiteSpace(virtualPath) ? mountPoint.PhysicalPath : OnGetPhysicalPath(virtualPath, mountPoint);
@@ -270,14 +270,14 @@ namespace Gorgon.IO.Providers
         /// </remarks>
         public GorgonPhysicalFileSystemData Enumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
-            if (physicalLocation == null)
+            if (physicalLocation is null)
             {
                 throw new ArgumentNullException(nameof(physicalLocation));
             }
 
 #pragma warning disable IDE0046 // Convert to conditional expression
 
-            if (mountPoint == null)
+            if (mountPoint is null)
             {
                 throw new ArgumentNullException(nameof(mountPoint));
             }
@@ -309,13 +309,13 @@ namespace Gorgon.IO.Providers
         /// </remarks>
         public IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
-            if (physicalLocation == null)
+            if (physicalLocation is null)
             {
                 throw new ArgumentNullException(nameof(physicalLocation));
             }
 
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (mountPoint == null)
+            if (mountPoint is null)
             {
                 throw new ArgumentNullException(nameof(mountPoint));
             }
@@ -338,7 +338,7 @@ namespace Gorgon.IO.Providers
         /// responsibility of the user to close the stream when finished.
         /// </para>
         /// </remarks>
-        public Stream OpenFileStream(IGorgonVirtualFile file) => file == null ? throw new ArgumentNullException(nameof(file)) : OnOpenFileStream(file);
+        public Stream OpenFileStream(IGorgonVirtualFile file) => file is null ? throw new ArgumentNullException(nameof(file)) : OnOpenFileStream(file);
 
         /// <summary>
         /// Function to determine if a physical file system can be read by this provider.
@@ -356,7 +356,7 @@ namespace Gorgon.IO.Providers
         public bool CanReadFileSystem(string physicalPath)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (physicalPath == null)
+            if (physicalPath is null)
             {
                 throw new ArgumentNullException(nameof(physicalPath));
             }

@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Core
         {
             dest.Clear();
 
-            if (src == null)
+            if (src is null)
             {
                 return;
             }
@@ -79,7 +79,7 @@ namespace Gorgon.Graphics.Core
         {
             destStates.Clear();
 
-            if (srcStates == null)
+            if (srcStates is null)
             {
                 return;
             }
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Core
         {
             destStates.Clear();
 
-            if (srcStates == null)
+            if (srcStates is null)
             {
                 return;
             }
@@ -125,7 +125,7 @@ namespace Gorgon.Graphics.Core
         {
             destStates.Clear();
 
-            if (srcStates == null)
+            if (srcStates is null)
             {
                 return;
             }
@@ -148,7 +148,7 @@ namespace Gorgon.Graphics.Core
         {
             dest.Clear();
 
-            if (src == null)
+            if (src is null)
             {
                 return;
             }
@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Core
         {
             destBindings.Clear();
 
-            if (srcBindings == null)
+            if (srcBindings is null)
             {
                 return;
             }
@@ -194,7 +194,7 @@ namespace Gorgon.Graphics.Core
             destBindings.Clear();
             destBindings.InputLayout = layout;
 
-            if (srcBindings == null)
+            if (srcBindings is null)
             {
                 return;
             }

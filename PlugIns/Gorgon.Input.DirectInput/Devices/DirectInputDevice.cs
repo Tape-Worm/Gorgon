@@ -50,7 +50,7 @@ namespace Gorgon.Input.DirectInput
         // Device information.
         private readonly IGorgonGamingDeviceInfo _info;
         // Device state.
-        private DI.JoystickState _state = new DI.JoystickState();
+        private DI.JoystickState _state = new();
         // The axis to Direct Input property mappings.
         private readonly IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> _axisMappings;
         #endregion
@@ -154,7 +154,7 @@ namespace Gorgon.Input.DirectInput
                 GorgonGamingDeviceAxisInfo info = Info.AxisInfo[axis.Axis];
                 DI.ObjectProperties properties = result.GetObjectPropertiesById(_axisMappings[axis.Axis]);
 
-                if (properties == null)
+                if (properties is null)
                 {
                     continue;
                 }
@@ -179,7 +179,7 @@ namespace Gorgon.Input.DirectInput
         private static IntPtr FindMainApplicationWindow()
         {
             // Try to get the window handle from the GorgonApplication class.
-            if (GorgonApplication.MainForm != null)
+            if (GorgonApplication.MainForm is not null)
             {
                 return GorgonApplication.MainForm.Handle;
             }
@@ -191,7 +191,7 @@ namespace Gorgon.Input.DirectInput
                 // First, attempt to locate the window with keyboard focus.
                 Form window = Form.ActiveForm;
 
-                if (window != null)
+                if (window is not null)
                 {
                     return window.Handle;
                 }
@@ -199,7 +199,7 @@ namespace Gorgon.Input.DirectInput
                 // If we have open forms, then assume the first in the list is the primary form.
                 window = Application.OpenForms.Count > 0 ? Application.OpenForms[0] : null;
 
-                if (window != null)
+                if (window is not null)
                 {
                     return window.Handle;
                 }

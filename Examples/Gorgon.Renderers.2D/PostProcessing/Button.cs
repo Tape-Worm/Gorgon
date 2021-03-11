@@ -60,15 +60,15 @@ namespace Gorgon.Examples
 
         #region Variables.
         // Disabled background color
-        private readonly GorgonColor _disabledBackColor = new GorgonColor(0, 0, 0, 0.3f);
+        private readonly GorgonColor _disabledBackColor = new(0, 0, 0, 0.3f);
         // Disabled foreground color
-        private readonly GorgonColor _disabledForeColor = new GorgonColor(1, 1, 1, 0.5f);
+        private readonly GorgonColor _disabledForeColor = new(1, 1, 1, 0.5f);
         // Hovered background color
-        private readonly GorgonColor _hoverBackColor = new GorgonColor(0, 0, 0.7f, 0.85f);
+        private readonly GorgonColor _hoverBackColor = new(0, 0, 0.7f, 0.85f);
         // Hovered foreground color
-        private readonly GorgonColor _hoverForeColor = new GorgonColor(0, 1, 1, 1.0f);
+        private readonly GorgonColor _hoverForeColor = new(0, 1, 1, 1.0f);
         // The standard background color.
-        private readonly GorgonColor _backColor = new GorgonColor(0, 0, 0, 0.85f);
+        private readonly GorgonColor _backColor = new(0, 0, 0, 0.85f);
         // The standard foreground color.
         private readonly GorgonColor _foreColor = GorgonColor.White;
         #endregion
@@ -94,36 +94,20 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to return the foreground color.
         /// </summary>
-        public GorgonColor ForeColor
+        public GorgonColor ForeColor => State switch
         {
-            get
-            {
-                switch (State)
-                {
-                    case ButtonState.Hovered:
-                        return IsDragging ? _foreColor : _hoverForeColor;
-                    default:
-                        return ((Pass.Enabled) || (IsDragging)) ? _foreColor : _disabledForeColor;
-                }
-            }
-        }
+            ButtonState.Hovered => IsDragging ? _foreColor : _hoverForeColor,
+            _ => ((Pass.Enabled) || (IsDragging)) ? _foreColor : _disabledForeColor,
+        };
 
         /// <summary>
         /// Property to return the background color.
         /// </summary>
-        public GorgonColor BackColor
+        public GorgonColor BackColor => State switch
         {
-            get
-            {
-                switch (State)
-                {
-                    case ButtonState.Hovered:
-                        return IsDragging ? _backColor : _hoverBackColor;
-                    default:
-                        return ((Pass.Enabled) || (IsDragging)) ? _backColor : _disabledBackColor;
-                }
-            }
-        }
+            ButtonState.Hovered => IsDragging ? _backColor : _hoverBackColor,
+            _ => ((Pass.Enabled) || (IsDragging)) ? _backColor : _disabledBackColor,
+        };
 
         /// <summary>
         /// Property to set or return whether the button is dragging or not.

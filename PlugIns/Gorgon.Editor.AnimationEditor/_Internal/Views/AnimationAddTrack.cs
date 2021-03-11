@@ -98,9 +98,9 @@ namespace Gorgon.Editor.AnimationEditor
                     case NotifyCollectionChangedAction.Add:
                         var added = (GorgonTrackRegistration)e.NewItems[0];
 
-                        Debug.Assert(added != null, "Must have a value to add to the list.");
+                        Debug.Assert(added is not null, "Must have a value to add to the list.");
 
-                        if (ListTracks.Items.OfType<TrackListItem>().FirstOrDefault(item => item.TrackRegistration == added) != null)
+                        if (ListTracks.Items.OfType<TrackListItem>().FirstOrDefault(item => item.TrackRegistration == added) is not null)
                         {
                             return;
                         }
@@ -110,10 +110,10 @@ namespace Gorgon.Editor.AnimationEditor
                     case NotifyCollectionChangedAction.Remove:
                         var removed = (GorgonTrackRegistration)e.OldItems[0];
 
-                        Debug.Assert(removed != null, "Must have a value to remove from the list.");
+                        Debug.Assert(removed is not null, "Must have a value to remove from the list.");
 
                         TrackListItem listItem = ListTracks.Items.OfType<TrackListItem>().FirstOrDefault(item => item.TrackRegistration == removed);
-                        if (listItem == null)
+                        if (listItem is null)
                         {
                             return;
                         }
@@ -138,7 +138,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -153,7 +153,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             IReadOnlyList<GorgonTrackRegistration> selectedTracks = ListTracks.SelectedItems.OfType<TrackListItem>().Select(item => item.TrackRegistration).ToArray();
 
-            if ((DataContext?.SelectTracksCommand == null) || (!DataContext.SelectTracksCommand.CanExecute(selectedTracks)))
+            if ((DataContext?.SelectTracksCommand is null) || (!DataContext.SelectTracksCommand.CanExecute(selectedTracks)))
             {
                 return;
             }
@@ -167,7 +167,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ListTracks_DoubleClick(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -186,7 +186,7 @@ namespace Gorgon.Editor.AnimationEditor
             ListTracks.Items.Clear();
             try
             {
-                if (dataContext == null)
+                if (dataContext is null)
                 {
                     return;
                 }
@@ -213,7 +213,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="dataContext">The data context to assign.</param>
         private void InitializeFromDataContext(IAddTrack dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -227,7 +227,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             base.OnSubmit();
 
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
             {
                 return;
             }
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             base.OnCancel();
 
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 return;
             }
@@ -252,7 +252,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to validate the state of the OK button.
         /// </summary>
         /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
         
         /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
@@ -279,7 +279,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 ValidateOk();
                 return;

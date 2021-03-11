@@ -88,7 +88,7 @@ namespace Gorgon.Graphics.Core
             public void Dispose()
             {
                 WeakReference<T> textureRef = Interlocked.Exchange(ref Texture, null);
-                if ((textureRef == null) || (!textureRef.TryGetTarget(out T texture)))
+                if ((textureRef is null) || (!textureRef.TryGetTarget(out T texture)))
                 {
                     return;
                 }
@@ -102,11 +102,11 @@ namespace Gorgon.Graphics.Core
         // The graphics interface used to create the textures.
         private readonly GorgonGraphics _graphics;
         // The cache that holds the textures and redirected file name.
-        private readonly ConcurrentDictionary<string, Lazy<TextureEntry>> _cache = new ConcurrentDictionary<string, Lazy<TextureEntry>>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, Lazy<TextureEntry>> _cache = new(StringComparer.OrdinalIgnoreCase);
         // The lock for updating the cache concurrently.
-        private SemaphoreSlim _cacheLock = new SemaphoreSlim(1, 1);
+        private SemaphoreSlim _cacheLock = new(1, 1);
         // The list of textures to that are currently being loaded.
-        private readonly List<string> _scheduledTextures = new List<string>();
+        private readonly List<string> _scheduledTextures = new();
         #endregion
 
         #region Properties.
@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public bool ReturnTexture(T texture)
         {
-            if (texture == null)
+            if (texture is null)
             {
                 return false;
             }
@@ -164,14 +164,14 @@ namespace Gorgon.Graphics.Core
 
             // If the texture was collected, then we can dump it now.
             T textureRef = null;
-            if ((entry?.Value?.Texture != null) && (!entry.Value.Texture.TryGetTarget(out textureRef)))
+            if ((entry?.Value?.Texture is not null) && (!entry.Value.Texture.TryGetTarget(out textureRef)))
             {
                 Interlocked.Exchange(ref entry.Value.Users, 0);
                 Interlocked.Exchange(ref entry.Value.Texture, null);
                 return true;
             }
 
-            if (entry?.Value == null)
+            if (entry?.Value is null)
             {
                 return true;
             }
@@ -236,7 +236,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public async Task<T> GetTextureAsync(string textureName, Func<string, Task<T>> missingTextureAction = null)
         {
-            if (textureName == null)
+            if (textureName is null)
             {
                 throw new ArgumentNullException(nameof(textureName));                
             }
@@ -246,7 +246,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(textureName));
             }
 
-            if (missingTextureAction == null)
+            if (missingTextureAction is null)
             {
                 _graphics.Log.Print("Defaulting to internal resource search method.", LoggingLevel.Verbose);
                 missingTextureAction = DefaultTextureLocator;
@@ -257,7 +257,7 @@ namespace Gorgon.Graphics.Core
             {
                 texture = null;
 
-                if ((_cache.TryGetValue(textureName, out entry)) && (entry?.Value?.Texture != null))
+                if ((_cache.TryGetValue(textureName, out entry)) && (entry?.Value?.Texture is not null))
                 {
                     if (entry.Value.Texture.TryGetTarget(out T textureRef))
                     {
@@ -289,7 +289,7 @@ namespace Gorgon.Graphics.Core
                     await Task.Run(() => SpinWait.SpinUntil(() => (!_scheduledTextures.Contains(textureName)) || (GetTextureFromCache(out result, out _))));
                 }
 
-                if ((result != null) || ((GetTextureFromCache(out result, out Lazy<TextureEntry> entry)) && (result != null)))
+                if ((result is not null) || ((GetTextureFromCache(out result, out Lazy<TextureEntry> entry)) && (result is not null)))
                 {
                     return result;
                 }
@@ -299,7 +299,7 @@ namespace Gorgon.Graphics.Core
                 _cacheLock.Release();
 
                 // If we are at this point, then the reference is dead, so clear it out before loading.
-                if (entry?.Value?.Texture != null)
+                if (entry?.Value?.Texture is not null)
                 {
                     entry.Value.Texture = null;
                     entry.Value.Users = 0;
@@ -313,7 +313,7 @@ namespace Gorgon.Graphics.Core
 
                     texture = await missingTextureAction(textureName);
 
-                    if (texture == null)
+                    if (texture is null)
                     {
                         _graphics.Log.Print($"WARNING: The texture '{textureName}' was not loaded and not added to cache.", LoggingLevel.Intermediate);
                         return null;
@@ -330,7 +330,7 @@ namespace Gorgon.Graphics.Core
                 _graphics.Log.Print($"Texture '{textureName}' not found, adding to cache...", LoggingLevel.Verbose);
                 texture = await missingTextureAction(textureName);
 
-                if (texture == null)
+                if (texture is null)
                 {
                     _graphics.Log.Print($"WARNING: The texture '{textureName}' was not loaded and not added to cache.", LoggingLevel.Intermediate);
                     return null;
@@ -395,7 +395,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public int AddTexture(T texture)
         {
-            if (texture == null)
+            if (texture is null)
             {
                 throw new ArgumentNullException(nameof(texture));
             }
@@ -413,14 +413,14 @@ namespace Gorgon.Graphics.Core
 
             Lazy<TextureEntry> entry = _cache.GetOrAdd(texture.Name, new Lazy<TextureEntry>(GenerateEntry, LazyThreadSafetyMode.ExecutionAndPublication));
 
-            if (entry?.Value == null)
+            if (entry?.Value is null)
             {
                 return 0;
             }
 
             Interlocked.Increment(ref entry.Value.Users);
 
-            if ((entry.Value.Texture != null) && (entry.Value.Texture.TryGetTarget(out _)))
+            if ((entry.Value.Texture is not null) && (entry.Value.Texture.TryGetTarget(out _)))
             {
                 _graphics.Log.Print($"Texture '{texture.Name}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
                 return entry.Value.Users;
@@ -446,16 +446,16 @@ namespace Gorgon.Graphics.Core
         /// <returns>The number of users for the texture.</returns>
         public int GetUserCount(T texture)
         {
-            if (texture == null)
+            if (texture is null)
             {
                 return 0;
             }
 
-            Lazy<TextureEntry> entry = _cache.Values.FirstOrDefault(item => (item?.Value?.Texture != null)
+            Lazy<TextureEntry> entry = _cache.Values.FirstOrDefault(item => (item?.Value?.Texture is not null)
                                                                    && (item.Value.Texture.TryGetTarget(out T itemTexture))
                                                                    && (itemTexture == texture));
 
-            if (entry?.Value == null)
+            if (entry?.Value is null)
             {
                 return 0;
             }
@@ -509,7 +509,7 @@ namespace Gorgon.Graphics.Core
         {
             foreach (KeyValuePair<string, Lazy<TextureEntry>> entry in _cache)
             {
-                if ((entry.Value?.Value?.Texture != null) && (entry.Value.Value.Texture.TryGetTarget(out T texture)))
+                if ((entry.Value?.Value?.Texture is not null) && (entry.Value.Value.Texture.TryGetTarget(out T texture)))
                 {
                     yield return texture;
                 }

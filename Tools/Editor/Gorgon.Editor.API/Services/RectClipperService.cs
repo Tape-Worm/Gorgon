@@ -92,7 +92,7 @@ namespace Gorgon.Editor.Services
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     KeyboardIconClickedEvent = null;
                     return;
@@ -102,7 +102,7 @@ namespace Gorgon.Editor.Services
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -118,7 +118,7 @@ namespace Gorgon.Editor.Services
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     RectChangedEvent = null;
                     return;
@@ -128,7 +128,7 @@ namespace Gorgon.Editor.Services
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -535,7 +535,7 @@ namespace Gorgon.Editor.Services
 
             GetActiveHandle();
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 8))
+            if (_activeHandleIndex is (-1) or > 8)
             {
                 return false;
             }
@@ -564,7 +564,7 @@ namespace Gorgon.Editor.Services
             _localMousePosition = mouseArgs.CameraSpacePosition;
             GetActiveHandle();
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 8))
+            if (_activeHandleIndex is (-1) or > 8)
             {
                 return false;
             }
@@ -618,7 +618,7 @@ namespace Gorgon.Editor.Services
         {
             GetActiveHandle();
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 8))
+            if (_activeHandleIndex is (-1) or > 8)
             {
                 return false;
             }
@@ -723,7 +723,7 @@ namespace Gorgon.Editor.Services
                     _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
                 }
 
-                if (texture == null)
+                if (texture is null)
                 {
                     _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
                     _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);

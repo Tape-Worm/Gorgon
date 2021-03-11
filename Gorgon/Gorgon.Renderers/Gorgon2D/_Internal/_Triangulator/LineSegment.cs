@@ -28,7 +28,7 @@ namespace GorgonTriangulator
             Vector2? intersection = FindIntersection(this, raySegment);
             float? value = null;
 
-            if (intersection != null)
+            if (intersection is not null)
             {
                 value = Vector2.Distance(origin, intersection.Value);
             }

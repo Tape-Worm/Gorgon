@@ -144,7 +144,7 @@ namespace Gorgon.Editor.UI.Controls
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fullPath"/> parameter is empty.</exception>
         public ContentFileExplorerDirectoryEntry(string fullPath, IReadOnlyList<ContentFileExplorerFileEntry> files)
         {
-            if (fullPath == null)
+            if (fullPath is null)
             {
                 throw new ArgumentNullException(nameof(fullPath));
             }

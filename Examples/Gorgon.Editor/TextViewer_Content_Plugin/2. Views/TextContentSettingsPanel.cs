@@ -62,7 +62,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Radio_CheckedChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -92,7 +92,7 @@ namespace Gorgon.Examples
         /// <param name="dataContext">The data context to apply.</param>
         private void InitializeFromDataContext(ISettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;

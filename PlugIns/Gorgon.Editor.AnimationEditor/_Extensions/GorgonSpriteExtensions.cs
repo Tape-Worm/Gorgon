@@ -41,53 +41,29 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="sprite">The sprite to read.</param>
         /// <param name="property">The property to read.</param>
         /// <returns>The floating point values.</returns>
-        public static Vector4 GetFloatValues(this GorgonSprite sprite, TrackSpriteProperty property)
+        public static Vector4 GetFloatValues(this GorgonSprite sprite, TrackSpriteProperty property) => sprite is null
+                ? Vector4.Zero
+                : property switch
         {
-            if (sprite == null)
-            {
-                return Vector4.Zero;
-            }
-
-            switch (property)
-            {
-                case TrackSpriteProperty.Angle:
-                    return new Vector4(sprite.Angle, 0, 0, 0);
-                case TrackSpriteProperty.Opacity:
-                    return new Vector4(sprite.Color.Alpha, 0, 0, 0);
-                case TrackSpriteProperty.Color:
-                    return sprite.Color;
-                case TrackSpriteProperty.UpperLeftColor:
-                    return sprite.CornerColors.UpperLeft;
-                case TrackSpriteProperty.UpperRightColor:
-                    return sprite.CornerColors.UpperRight;
-                case TrackSpriteProperty.LowerLeftColor:
-                    return sprite.CornerColors.LowerLeft;
-                case TrackSpriteProperty.LowerRightColor:
-                    return sprite.CornerColors.LowerRight;
-                case TrackSpriteProperty.Anchor:                
-                    return new Vector4(sprite.Anchor, 0, 0);
-                case TrackSpriteProperty.AnchorAbsolute:
-                    return new Vector4(sprite.AbsoluteAnchor, 0, 0);
-                case TrackSpriteProperty.UpperLeft:
-                    return new Vector4(sprite.CornerOffsets.UpperLeft, 0);                    
-                case TrackSpriteProperty.UpperRight:
-                    return new Vector4(sprite.CornerOffsets.UpperRight, 0);                    
-                case TrackSpriteProperty.LowerLeft:
-                    return new Vector4(sprite.CornerOffsets.LowerLeft, 0);                    
-                case TrackSpriteProperty.LowerRight:
-                    return new Vector4(sprite.CornerOffsets.LowerRight, 0);
-                case TrackSpriteProperty.Position:
-                    return new Vector4(sprite.Position, 0, 0);
-                case TrackSpriteProperty.Size:
-                    return new Vector4(sprite.Size.Width, sprite.Size.Height, 0, 0);
-                case TrackSpriteProperty.Scale:
-                    return new Vector4(sprite.Scale, 0, 0);
-                case TrackSpriteProperty.ScaledSize:
-                    return new Vector4(sprite.ScaledSize.Width, sprite.ScaledSize.Height, 0, 0);
-                default:
-                    return Vector4.Zero;
-            }
-        }
+                    TrackSpriteProperty.Angle => new Vector4(sprite.Angle, 0, 0, 0),
+                    TrackSpriteProperty.Opacity => new Vector4(sprite.Color.Alpha, 0, 0, 0),
+                    TrackSpriteProperty.Color => sprite.Color,
+                    TrackSpriteProperty.UpperLeftColor => sprite.CornerColors.UpperLeft,
+                    TrackSpriteProperty.UpperRightColor => sprite.CornerColors.UpperRight,
+                    TrackSpriteProperty.LowerLeftColor => sprite.CornerColors.LowerLeft,
+                    TrackSpriteProperty.LowerRightColor => sprite.CornerColors.LowerRight,
+                    TrackSpriteProperty.Anchor => new Vector4(sprite.Anchor, 0, 0),
+                    TrackSpriteProperty.AnchorAbsolute => new Vector4(sprite.AbsoluteAnchor, 0, 0),
+                    TrackSpriteProperty.UpperLeft => new Vector4(sprite.CornerOffsets.UpperLeft, 0),
+                    TrackSpriteProperty.UpperRight => new Vector4(sprite.CornerOffsets.UpperRight, 0),
+                    TrackSpriteProperty.LowerLeft => new Vector4(sprite.CornerOffsets.LowerLeft, 0),
+                    TrackSpriteProperty.LowerRight => new Vector4(sprite.CornerOffsets.LowerRight, 0),
+                    TrackSpriteProperty.Position => new Vector4(sprite.Position, 0, 0),
+                    TrackSpriteProperty.Size => new Vector4(sprite.Size.Width, sprite.Size.Height, 0, 0),
+                    TrackSpriteProperty.Scale => new Vector4(sprite.Scale, 0, 0),
+                    TrackSpriteProperty.ScaledSize => new Vector4(sprite.ScaledSize.Width, sprite.ScaledSize.Height, 0, 0),
+                    _ => Vector4.Zero,
+                };
 
         /// <summary>
         /// Function to assign a sprite property value based on the track property and values from the keyframe.
@@ -97,7 +73,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="values">The values to assign.</param>
         public static void SetFloatValues(this GorgonSprite sprite, TrackSpriteProperty property, Vector4 values)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 return;
             }

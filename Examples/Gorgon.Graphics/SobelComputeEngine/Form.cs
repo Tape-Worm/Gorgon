@@ -157,7 +157,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TrackThreshold_ValueChanged(object sender, EventArgs e)
         {
-            if (_sourceTexture == null)
+            if (_sourceTexture is null)
             {
                 return;
             }
@@ -172,14 +172,12 @@ namespace Gorgon.Examples
                 _sobel.Process(_sourceTexture, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);
 
                 var png = new GorgonCodecPng();
-                using (var tempTexture = new GorgonTexture2D(_graphics, new GorgonTexture2DInfo(_outputTexture)
+                using var tempTexture = new GorgonTexture2D(_graphics, new GorgonTexture2DInfo(_outputTexture)
                 {
                     Format = BufferFormat.R8G8B8A8_UNorm
-                }))
-                {
+                });
 
-                    _outputTexture.CopyTo(tempTexture);
-                }
+                _outputTexture.CopyTo(tempTexture);
             }
             catch (Exception ex)
             {

@@ -261,7 +261,7 @@ namespace Gorgon.Graphics.Wpf
                 BuildRenderTarget(surfacePtr);
             }
 
-            if ((_window.WindowState == WindowState.Minimized) || (Idle == null))
+            if ((_window.WindowState == WindowState.Minimized) || (Idle is null))
             {
                 return;
             }
@@ -284,14 +284,14 @@ namespace Gorgon.Graphics.Wpf
             // Locate the render control for the D3D Image.
             _d3dImage = _info.RenderImage.Source as D3D11Image;
 
-            if (_d3dImage == null)
+            if (_d3dImage is null)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORWPF_NOT_A_D3DIMAGE);
             }
 
             _renderControl = VisualTreeHelper.GetParent(_info.RenderImage) as FrameworkElement;
 
-            if (_renderControl == null)
+            if (_renderControl is null)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORWPF_CANNOT_FIND_PARENT);
             }
@@ -299,7 +299,7 @@ namespace Gorgon.Graphics.Wpf
             // Locate the main window.
             _window = Window.GetWindow(_renderControl);
 
-            if (_window == null)
+            if (_window is null)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORWPF_NO_APP_WINDOW);
             }
@@ -337,14 +337,14 @@ namespace Gorgon.Graphics.Wpf
         /// </remarks>
         public void Run(Func<bool> renderMethod)
         {
-            if ((_d3dImage == null) || (Interlocked.Exchange(ref _started, 1) == 1))
+            if ((_d3dImage is null) || (Interlocked.Exchange(ref _started, 1) == 1))
             {
                 return;
             }
 
             Idle = renderMethod;
 
-            if (Idle == null)
+            if (Idle is null)
             {
                 Interlocked.Exchange(ref _started, 0);
                 return;
@@ -380,7 +380,7 @@ namespace Gorgon.Graphics.Wpf
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonWpfTarget(GorgonGraphics graphics, IGorgonWpfTargetInfo info)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }

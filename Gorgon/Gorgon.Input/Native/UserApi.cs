@@ -68,27 +68,18 @@ namespace Gorgon.Native
             {
                 int keyboardType = GetKeyboardType(0);
 
-                switch (keyboardType)
+                return keyboardType switch
                 {
-                    case 1:
-                        return KeyboardType.XT;
-                    case 2:
-                        return KeyboardType.OlivettiICO;
-                    case 3:
-                        return KeyboardType.AT;
-                    case 4:
-                        return KeyboardType.Enhanced;
-                    case 5:
-                        return KeyboardType.Nokia1050;
-                    case 6:
-                        return KeyboardType.Nokia9140;
-                    case 7:
-                        return KeyboardType.Japanese;
-                    case 81:
-                        return KeyboardType.USB;
-                    default:
-                        return KeyboardType.Unknown;
-                }
+                    1 => KeyboardType.XT,
+                    2 => KeyboardType.OlivettiICO,
+                    3 => KeyboardType.AT,
+                    4 => KeyboardType.Enhanced,
+                    5 => KeyboardType.Nokia1050,
+                    6 => KeyboardType.Nokia9140,
+                    7 => KeyboardType.Japanese,
+                    81 => KeyboardType.USB,
+                    _ => KeyboardType.Unknown,
+                };
             }
         }
         #endregion

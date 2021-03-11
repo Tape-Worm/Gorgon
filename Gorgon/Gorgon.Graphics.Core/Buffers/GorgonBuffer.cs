@@ -273,9 +273,7 @@ namespace Gorgon.Graphics.Core
                     result = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
                     break;
                 case ResourceUsage.Default:
-                    if ((binding != BufferBinding.Shader)
-                        && (binding != BufferBinding.ReadWrite)
-                        && (binding != (BufferBinding.Shader | BufferBinding.ReadWrite)))
+                    if (binding is not BufferBinding.Shader and not BufferBinding.ReadWrite and not (BufferBinding.Shader | BufferBinding.ReadWrite))
                     {
                         break;
                     }
@@ -298,7 +296,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, 1));
             }
 
-            if ((_info.Usage == ResourceUsage.Immutable) && (initialData == null))
+            if ((_info.Usage == ResourceUsage.Immutable) && (initialData.IsEmpty))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
@@ -579,7 +577,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, format);
             GorgonBufferReadWriteView result = GetReadWriteView<GorgonBufferReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
@@ -644,7 +642,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
             GorgonStructuredReadWriteView result = GetReadWriteView<GorgonStructuredReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
@@ -773,7 +771,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, elementType);
             GorgonRawReadWriteView result = GetReadWriteView<GorgonRawReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }

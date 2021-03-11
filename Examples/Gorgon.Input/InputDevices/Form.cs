@@ -111,14 +111,14 @@ namespace Gorgon.Examples
         // Flag to indicate whether to use polling or events.
         private bool _usePolling;
         // Timer used to refresh the labels.
-        private readonly GorgonTimerQpc _labelTimer = new GorgonTimerQpc();
+        private readonly GorgonTimerQpc _labelTimer = new();
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the mid point of the display panel size, in screen space.
         /// </summary>
-        private Point DisplayHalfSize => new Point(panelDisplay.ClientSize.Width / 2, panelDisplay.ClientSize.Height / 2);
+        private Point DisplayHalfSize => new(panelDisplay.ClientSize.Width / 2, panelDisplay.ClientSize.Height / 2);
         #endregion
 
         #region Methods.
@@ -129,15 +129,13 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="PaintEventArgs" /> instance containing the event data.</param>
         private void DevicePanelsPaint(object sender, PaintEventArgs e)
         {
-            if (!(sender is Control control))
+            if (sender is not Control control)
             {
                 return;
             }
 
-            using (var pen = new Pen(Color.Black, SystemInformation.BorderSize.Height))
-            {
-                e.Graphics.DrawLine(pen, new Point(0, 0), new Point(control.Width, 0));
-            }
+            using var pen = new Pen(Color.Black, SystemInformation.BorderSize.Height);
+            e.Graphics.DrawLine(pen, new Point(0, 0), new Point(control.Width, 0));
         }
 
         /// <summary>
@@ -463,7 +461,7 @@ namespace Gorgon.Examples
         {
             base.OnActivated(e);
 
-            if (_mouse == null)
+            if (_mouse is null)
             {
                 return;
             }
@@ -479,7 +477,7 @@ namespace Gorgon.Examples
         {
             base.OnDeactivate(e);
 
-            if (_mouse == null)
+            if (_mouse is null)
             {
                 return;
             }
@@ -500,13 +498,13 @@ namespace Gorgon.Examples
             GorgonRawMouse.CursorVisible = true;
 
             // Always dispose the raw input interface. 
-            if (_mouse != null)
+            if (_mouse is not null)
             {
                 _rawInput?.UnregisterDevice(_mouse);
                 _mouse = null;
             }
 
-            if (_keyboard != null)
+            if (_keyboard is not null)
             {
                 _rawInput?.UnregisterDevice(_keyboard);
             }

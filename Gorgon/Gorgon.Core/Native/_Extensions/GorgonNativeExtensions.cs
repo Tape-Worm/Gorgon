@@ -51,7 +51,7 @@ namespace Gorgon.Native
         public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this Stream stream, int? count = null)
             where T : unmanaged
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -68,7 +68,7 @@ namespace Gorgon.Native
 
             int typeSize = Unsafe.SizeOf<T>();
 
-            if (count == null)
+            if (count is null)
             {
                 if (typeSize == 1)
                 {
@@ -115,7 +115,7 @@ namespace Gorgon.Native
         public static void CopyTo<T>(this Stream stream, GorgonPtr<T> pointer, int index = 0, int? count = null)
             where T : unmanaged
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -135,7 +135,7 @@ namespace Gorgon.Native
                 throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
             }
 
-            if (count == null)
+            if (count is null)
             {
                 count = pointer.Length.Min((int)(stream.Length - stream.Position));
             }
@@ -153,13 +153,11 @@ namespace Gorgon.Native
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
             }            
 
-            var result = new GorgonNativeBuffer<T>(count.Value);            
-            using (var reader = new GorgonBinaryReader(stream, true))
-            {                
-                for (int i = 0; i < count.Value; ++i)
-                {
-                    reader.ReadValue(out result[i]);
-                }
+            var result = new GorgonNativeBuffer<T>(count.Value);
+            using var reader = new GorgonBinaryReader(stream, true);
+            for (int i = 0; i < count.Value; ++i)
+            {
+                reader.ReadValue(out result[i]);
             }
         }
 
@@ -270,7 +268,7 @@ namespace Gorgon.Native
         public static void CopyTo<T>(this T[] array, GorgonPtr<T> pointer, int arrayIndex = 0, int? count = null, int pointerIndex = 0)
             where T : unmanaged
         {
-            if (array == null)
+            if (array is null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
@@ -280,7 +278,7 @@ namespace Gorgon.Native
                 throw new ArgumentNullException(nameof(pointer));
             }
 
-            if (count == null)
+            if (count is null)
             {
                 count = array.Length - arrayIndex;
             }
@@ -335,7 +333,7 @@ namespace Gorgon.Native
         public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this T[] array, int index = 0, int? count = null)
             where T : unmanaged
         {
-            if (count == null)
+            if (count is null)
             {
                 count = array.Length - index;
             }
@@ -424,7 +422,7 @@ namespace Gorgon.Native
         public static GorgonNativeBuffer<T> ToPinned<T>(this T[] array, int index = 0, int? count = null)
             where T : unmanaged
         {
-            if (count == null)
+            if (count is null)
             {
                 count = array.Length - index;
             }

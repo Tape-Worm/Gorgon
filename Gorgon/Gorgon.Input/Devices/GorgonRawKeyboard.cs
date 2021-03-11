@@ -278,16 +278,12 @@ namespace Gorgon.Input
 
             int result = UserApi.ToUnicode((uint)key, 0, _charStates, _characterBuffer, _characterBuffer.Length, 0);
 
-            switch (result)
+            return result switch
             {
-                case -1:
-                case 0:
-                    return string.Empty;
-                case 1:
-                    return new string(_characterBuffer, 0, 1);
-                default:
-                    return string.Empty;
-            }
+                -1 or 0 => string.Empty,
+                1 => new string(_characterBuffer, 0, 1),
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -344,7 +340,7 @@ namespace Gorgon.Input
         /// </remarks>
         public GorgonRawKeyboard(IGorgonKeyboardInfo keyboardInfo = null)
         {
-            if (keyboardInfo == null)
+            if (keyboardInfo is null)
             {
                 keyboardInfo = GetSysKeyboardInfo();
             }

@@ -170,7 +170,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
-            if ((_displacementView == null) || (sizeChanged))
+            if ((_displacementView is null) || (sizeChanged))
             {
                 UpdateDisplacementMap(output);
             }
@@ -219,9 +219,9 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if ((_batchState == null) || (statesChanged))
+            if ((_batchState is null) || (statesChanged))
             {
-                if (_displacementState == null)
+                if (_displacementState is null)
                 {
                     _displacementState = builders.PixelShaderBuilder.Clear()
                                           .Shader(_displacementShader)
@@ -273,7 +273,7 @@ namespace Gorgon.Renderers
 
             _originalTarget = Graphics.RenderTargets[0];
 
-            if (_originalTarget == null)
+            if (_originalTarget is null)
             {
                 return;
             }

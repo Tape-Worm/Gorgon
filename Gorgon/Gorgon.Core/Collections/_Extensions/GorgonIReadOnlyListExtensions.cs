@@ -19,12 +19,12 @@ namespace Gorgon.Collections
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/>, or the <paramref name="predicate"/> parameter is <b>null</b>.</exception>
         public static int LastIndexOf<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
         {
-            if (list == null)
+            if (list is null)
             {
                 throw new ArgumentNullException(nameof(list));
             }
 
-            if (predicate == null)
+            if (predicate is null)
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
@@ -58,17 +58,17 @@ namespace Gorgon.Collections
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/>, or the <paramref name="predicate"/> parameter is <b>null</b>.</exception>
         public static int FirstIndexOf<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
         {
-            if (list == null)
+            if (list is null)
             {
                 throw new ArgumentNullException(nameof(list));
             }
 
-            if (predicate == null)
+            if (predicate is null)
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
 
-            if (predicate == null)
+            if (predicate is null)
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
@@ -258,12 +258,12 @@ namespace Gorgon.Collections
         /// <exception cref="ArgumentException">Thrown when the <paramref name="array"/> isn't large enough to support the entire list.</exception>
         public static void CopyTo<T>(this IReadOnlyList<T> list, T[] array)
         {
-            if (list == null)
+            if (list is null)
             {
                 throw new ArgumentNullException(nameof(list));
             }
 
-            if (array == null)
+            if (array is null)
             {
                 throw new ArgumentNullException(nameof(array));
             }

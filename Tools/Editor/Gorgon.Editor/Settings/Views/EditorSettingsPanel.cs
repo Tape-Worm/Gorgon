@@ -43,9 +43,9 @@ namespace Gorgon.Editor.Views
     {
         #region Variables.
         // The lookup used to locate categories.
-        private readonly Dictionary<string, string> _categoryLookup = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+        private readonly Dictionary<string, string> _categoryLookup = new(StringComparer.CurrentCultureIgnoreCase);
         // The lookup used to locate panels.
-        private readonly Dictionary<string, SettingsBaseControl> _panelLookup = new Dictionary<string, SettingsBaseControl>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, SettingsBaseControl> _panelLookup = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
@@ -75,7 +75,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            if ((DataContext?.SetCategoryCommand == null) || (!DataContext.SetCategoryCommand.CanExecute(id)))
+            if ((DataContext?.SetCategoryCommand is null) || (!DataContext.SetCategoryCommand.CanExecute(id)))
             {
                 return;
             }
@@ -120,7 +120,7 @@ namespace Gorgon.Editor.Views
             {
                 ClearExtraPanels(true);
 
-                if (dataContext == null)
+                if (dataContext is null)
                 {
                     return;
                 }
@@ -134,7 +134,7 @@ namespace Gorgon.Editor.Views
 
                     SettingsBaseControl panel = ViewFactory.CreateView<SettingsBaseControl>(category);
 
-                    if (panel == null)
+                    if (panel is null)
                     {
                         continue;
                     }
@@ -185,7 +185,7 @@ namespace Gorgon.Editor.Views
                     SplitSettingsNav.Panel2.Controls.Remove(control);
                 }
 
-                if ((listItem != null) && (ListCategories.Items.Contains(listItem)))
+                if ((listItem is not null) && (ListCategories.Items.Contains(listItem)))
                 {
                     ListCategories.Items.Remove(listItem);
                     _categoryLookup.Remove(listItem);
@@ -198,7 +198,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -221,7 +221,7 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(IEditorSettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -269,7 +269,7 @@ namespace Gorgon.Editor.Views
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

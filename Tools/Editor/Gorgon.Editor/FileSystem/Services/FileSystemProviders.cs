@@ -45,11 +45,11 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // A list of available file system reader providers.
-        private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IGorgonFileSystemProvider> _readers = new(StringComparer.OrdinalIgnoreCase);
         // A list of available file system writer providers.
-        private readonly Dictionary<string, FileWriterPlugIn> _writers = new Dictionary<string, FileWriterPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, FileWriterPlugIn> _writers = new(StringComparer.OrdinalIgnoreCase);
         // A list of disabled plug ins.
-        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
         // Common application services.
         private readonly IHostServices _hostServices;
         #endregion
@@ -98,7 +98,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="writerName" /> parameter is empty.</exception>
         public FileWriterPlugIn GetWriterByName(string writerName, bool useV2PlugInName = false)
         {
-            if (writerName == null)
+            if (writerName is null)
             {
                 throw new ArgumentNullException(nameof(writerName));
             }
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.Services
             {
                 FileWriterPlugIn v2PlugIn = _writers.FirstOrDefault(item => string.Equals(item.Value.V2PlugInName, writerName, StringComparison.OrdinalIgnoreCase)).Value;
 
-                if (v2PlugIn != null)
+                if (v2PlugIn is not null)
                 {
                     return v2PlugIn;
                 }
@@ -132,7 +132,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="file"/> parameter is empty.</exception>
         public IGorgonFileSystemProvider GetBestReader(string file)
         {
-            if (file == null)
+            if (file is null)
             {
                 throw new ArgumentNullException(nameof(file));
             }
@@ -149,7 +149,7 @@ namespace Gorgon.Editor.Services
                 .FirstOrDefault(item => item.PreferredExtensions.Contains(extension));
 
             // No provider is registered with that extension, fall back to trying to read each file.
-            if (result == null)
+            if (result is null)
             {
                 return GetBestFit(file);
             }
@@ -239,12 +239,12 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
         public void LoadProviders(GorgonMefPlugInCache pluginCache, string pluginDir)
         {
-            if (pluginCache == null)
+            if (pluginCache is null)
             {
                 throw new ArgumentNullException(nameof(pluginCache));
             }
 
-            if (pluginDir == null)
+            if (pluginDir is null)
             {
                 throw new ArgumentNullException(nameof(pluginDir));
             }

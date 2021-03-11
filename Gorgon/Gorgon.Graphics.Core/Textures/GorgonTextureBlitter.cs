@@ -68,21 +68,21 @@ namespace Gorgon.Graphics.Core
         // The draw call used to blit the full screen texture.
         private GorgonDrawCall _fullScreenDraw;
         // The builder used to create a draw call for blitting.
-        private readonly GorgonDrawCallBuilder _blitBuilder = new GorgonDrawCallBuilder();
+        private readonly GorgonDrawCallBuilder _blitBuilder = new();
         // The builder used to create a draw call for full screen rendering.
-        private readonly GorgonDrawCallBuilder _fsBuilder = new GorgonDrawCallBuilder();
+        private readonly GorgonDrawCallBuilder _fsBuilder = new();
         // The builder used to create a pipeline state object.
         private readonly GorgonPipelineStateBuilder _blitPsoBuilder;
         // The builder used to create a pipeline state object.
         private readonly GorgonPipelineStateBuilder _fsPsoBuilder;
         // The allocator used to create/recycle draw calls.
-        private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawCall>(128);
+        private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new(128);
         // The default pipeline state for blitting.
         private GorgonPipelineState _blitPso;
         // The default pipeline state for fullscreen blitting.
         private GorgonPipelineState _fsPso;
         // Constant buffers for the pixel shader
-        private readonly GorgonConstantBuffers _emptyPsConstants = new GorgonConstantBuffers();
+        private readonly GorgonConstantBuffers _emptyPsConstants = new();
         // The default texture.
         private GorgonTexture2DView _defaultTexture;
         // The camera space for blitting the texture.
@@ -98,10 +98,10 @@ namespace Gorgon.Graphics.Core
             try
             {
                 // We've been initialized, so leave.
-                if ((_blitVertexShader != null) || (Interlocked.Increment(ref _initializedFlag) > 1))
+                if ((_blitVertexShader is not null) || (Interlocked.Increment(ref _initializedFlag) > 1))
                 {
                     // Trap other threads until we're done initializing and then release them.
-                    while ((_blitVertexShader == null) && (_initializedFlag > 0))
+                    while ((_blitVertexShader is null) && (_initializedFlag > 0))
                     {
                         var wait = new SpinWait();
                         wait.SpinOnce();
@@ -203,7 +203,7 @@ namespace Gorgon.Graphics.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void UpdateProjection()
         {
-            if (_graphics.RenderTargets[0] == null)            
+            if (_graphics.RenderTargets[0] is null)            
             {
                 return;
             }
@@ -231,7 +231,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="samplerState">The sampler state to apply.</param>
         private void GetFullScreenDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState)
         {
-            if ((_fullScreenDraw != null) && (_fullScreenDraw.PixelShader.ShaderResources[0] == texture)
+            if ((_fullScreenDraw is not null) && (_fullScreenDraw.PixelShader.ShaderResources[0] == texture)
                 && (blendState == _fsPso.BlendStates[0])
                 && (samplerState == _fullScreenDraw.PixelShader.Samplers[0]))
             {
@@ -260,7 +260,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="constantBuffers">Constant buffers for the pixel shader, if required.</param>
 	    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
         {
-            if ((_blitDraw != null)
+            if ((_blitDraw is not null)
                 && (shader == _blitPixelShader)
                 && (_blitDraw.PixelShader.Samplers[0] == samplerState)
                 && (_blitPso.BlendStates[0] == blendState)
@@ -313,22 +313,22 @@ namespace Gorgon.Graphics.Core
                 Initialize();
             }
 
-            if (_graphics.RenderTargets[0] == null)
+            if (_graphics.RenderTargets[0] is null)
             {
                 return;
             }
 
-            if (texture == null)
+            if (texture is null)
             {
                 texture = _defaultTexture;
             }
 
-            if (blendState == null)
+            if (blendState is null)
             {
                 blendState = GorgonBlendState.NoBlending;
             }
 
-            if (samplerState == null)
+            if (samplerState is null)
             {
                 samplerState = GorgonSamplerState.PointFiltering;
             }
@@ -406,13 +406,13 @@ namespace Gorgon.Graphics.Core
 
             GorgonColor actualColor = color ?? GorgonColor.White;
 
-            if ((_graphics.RenderTargets[0] == null)
+            if ((_graphics.RenderTargets[0] is null)
                 || (actualColor.Alpha.EqualsEpsilon(0)))
             {
                 return;
             }
 
-            if (texture == null)
+            if (texture is null)
             {
                 texture = _defaultTexture;
             }
@@ -420,22 +420,22 @@ namespace Gorgon.Graphics.Core
             UpdateProjection();
 
             // Set to default states if not provided.
-            if (blendState == null)
+            if (blendState is null)
             {
                 blendState = GorgonBlendState.NoBlending;
             }
 
-            if (pixelShader == null)
+            if (pixelShader is null)
             {
                 pixelShader = _blitPixelShader;
             }
 
-            if (samplerState == null)
+            if (samplerState is null)
             {
                 samplerState = GorgonSamplerState.Default;
             }
 
-            if (pixelShaderConstants == null)
+            if (pixelShaderConstants is null)
             {
                 pixelShaderConstants = _emptyPsConstants;
             }

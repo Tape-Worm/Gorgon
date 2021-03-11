@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
         {
             ref readonly GorgonVideoMode result = ref _invalidMode;
 
-            if (videoModes == null)
+            if (videoModes is null)
             {
                 suggestedMode = result;
                 return;
@@ -93,23 +93,21 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            using (var factory = new Factory1())
-            using (Adapter1 adapter = factory.GetAdapter1(output.Adapter.Index))
-            using (Output giOutput = adapter.GetOutput(output.Index))
-            using (Output1 giOutput1 = giOutput.QueryInterface<Output1>())
-            using (var device = new D3D11.Device(adapter,
+            using var factory = new Factory1();
+            using Adapter1 adapter = factory.GetAdapter1(output.Adapter.Index);
+            using Output giOutput = adapter.GetOutput(output.Index);
+            using Output1 giOutput1 = giOutput.QueryInterface<Output1>();
+            using var device = new D3D11.Device(adapter,
                                                             GorgonGraphics.IsDebugEnabled
                                                                 ? D3D11.DeviceCreationFlags.Debug
                                                                 : D3D11.DeviceCreationFlags.None,
                                                             FeatureLevel.Level_12_1,
-                                                            FeatureLevel.Level_12_0))
-            {
-                ModeDescription1 matchMode = videoMode.ToModeDesc1();
+                                                            FeatureLevel.Level_12_0);
+            ModeDescription1 matchMode = videoMode.ToModeDesc1();
 
-                giOutput1.FindClosestMatchingMode1(ref matchMode, out ModeDescription1 mode, device);
+            giOutput1.FindClosestMatchingMode1(ref matchMode, out ModeDescription1 mode, device);
 
-                mode.ToGorgonVideoMode(out suggestedMode);
-            }
+            mode.ToGorgonVideoMode(out suggestedMode);
         }
     }
 }
