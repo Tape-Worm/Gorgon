@@ -59,7 +59,7 @@ jobs:
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Gorgon'
           Contents: | 
-            !**/net48/**/*
+            !net48/**/*
             **/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
