@@ -62,6 +62,7 @@ jobs:
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
           flattenFolders: true
+          Overwrite: true
 
       - task: CopyFiles@2
         displayName: 'Copying Windows specific to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
