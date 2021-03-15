@@ -40,6 +40,11 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\..\..\..\Gorgon\g.png">
       <Pack>True</Pack>
       <PackagePath>
@@ -49,9 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Example004.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\$(OutDir)&quot;" />

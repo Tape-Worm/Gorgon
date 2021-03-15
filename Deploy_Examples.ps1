@@ -1,55 +1,25 @@
-﻿function Patch-Config()
+﻿function Update-Config()
 {
     Param ([string]$configFile)
 
-    [xml]$xmlFile = [xml](Get-Content $configFile)
+    $configData = (Get-Content $configFile | ConvertFrom-Json)
+    $configData.ExampleConfig.ResourceLocation = "..\Resources\"
+    $configData.ExampleConfig.PlugInLocation = "..\PlugIns\"
 
-    $plugInPathNode = $xmlFile.SelectSingleNode("//setting[@name='PlugInLocation']")
-
-    while (($plugInPathNode -ne $null) -and ($plugInPathNode.Value.Contains("\\")))
-    {
-        $plugInPathNode.Value = $plugInPathNode.Value.Replace("\\", "\")
-    }
-
-    if ($plugInPathNode -ne $null)
-    {
-        $plugInPathNode.Value = $plugInPathNode.Value.Replace("\\", "\")
-        $plugInPathNode.Value = $plugInPathNode.Value.Replace("..\", [string]::Empty)
-        $plugInPathNode.Value = $plugInPathNode.Value.Replace("Bin\{0}", [string]::Empty)
-        $plugInPathNode.Value = "..\{0}" -f $plugInPathNode.Value
-    }
-
-    $plugInPathNode = $xmlFile.SelectSingleNode("//setting[@name='InputPlugInPath']")
-
-    if ($plugInPathNode -ne $null)
-    {
-        $plugInPathNode.Value = $plugInPathNode.Value.Replace("..\", [string]::Empty)
-        $plugInPathNode.Value = $plugInPathNode.Value.Replace("Bin\{0}", [string]::Empty)
-        $plugInPathNode.Value = "..\{0}" -f $plugInPathNode.Value
-    }
-
-    $resourcePathNode = $xmlFile.SelectSingleNode("//setting[@name='ResourceLocation']")
-
-    if ($resourcePathNode -ne $null)
-    {
-        $resourcePathNode.Value = $resourcePathNode.Value.Replace("..\", [string]::Empty)
-        $resourcePathNode.Value = "..\{0}" -f $resourcePathNode.Value
-    }
-
-    $xmlFile.Save($configFile)
+    (ConvertTo-Json $configData | Set-Content $configfile)
 }
 
 $artifactDir = "$env:BUILD_ARTIFACTSTAGINGDIRECTORY\\Examples"
+
 $artifactBin = "$artifactDir\\Bin\\"
 $artifactPlugIns = "$artifactDir\\PlugIns\\"
-$artifactResources = "$artifactDir\\Resources\\"
 $artifactImagesFolder = "$artifactBin\\Images\\"
 $baseSrcResources = "Resources\\"
 $baseSrcImages = "Examples\\Gorgon.Graphics\\Images\\Images\\*.*"
 
 if (Test-Path $artifactDir)
 {
-    rmdir $artifactDir -force -Recurse
+    Remove-Item $artifactDir -force -Recurse
 }
 
 mkdir $artifactDir
@@ -57,8 +27,8 @@ mkdir $artifactBin
 mkdir $artifactImagesFolder
 mkdir $artifactPlugIns
 
-$gorgonExamples = (Get-ChildItem "Examples\\" -include *.dll,*.exe, *.config, TextViewerContentExample_Installation.txt  -Recurse | where { $_.FullName -notmatch "app.config" -and $_.FullName -notmatch ".vshost.exe" -and $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "_Test" })
-$plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | where { $_.FullName -notmatch "\\debug\\" })
+$gorgonExamples = (Get-ChildItem "Examples\\" -include *.dll,*.exe,appsettings.json,*.runtimeconfig.json,TextViewerContentExample_Installation.txt  -Recurse | Where-Object {$_.FullName -match "\\bin\\" -and $_.FullName -notmatch "\\net48\\" -and $_.FullName -notmatch "app.config" -and $_.FullName -notmatch ".vshost.exe" -and $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "_Test" -and $_.FullName -notmatch "\\publish\\" -and $_.FullName -notmatch "\\ref\\" -and $_.FullName -notmatch "\\runtimes\\" })
+$plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | Where-Object { $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\net48\\" })
 
 Write-Output "$($gorgonExamples.Length) Example files to copy."
 Write-Output "$($plugInDlls.Length) Plug in files to copy."
@@ -66,11 +36,28 @@ Write-Output "$($plugInDlls.Length) Plug in files to copy."
 Copy-Item -Path $baseSrcResources -Exclude Krypton_DarkO2k10Theme.xml -Destination $artifactDir -Recurse -Container
 Copy-Item -Path $baseSrcImages -Destination $artifactImagesFolder -Container: $false
 
+$appsettingModified = $false
+
 ForEach ($example in $gorgonExamples)
 {
-    if ($example.FullName.EndsWith(".config"))
+    # Only update the settings file once, every app shares the same file.
+    if ($example.FullName.EndsWith("appsettings.json"))
     {
-        Patch-Config -configFile $example.FullName
+        if ($appsettingModified -eq $false)
+        {            
+            Update-Config -configFile $example.FullName
+            $appsettingModified = $true        
+        }
+        else
+        {
+            continue
+        }
+    }
+
+    # Don't waste time on files we already have.
+    if (Test-Path -Path "$artifactBin\\$($example.Name)")
+    {
+        continue
     }
 
     Copy-Item $example.FullName $artifactBin

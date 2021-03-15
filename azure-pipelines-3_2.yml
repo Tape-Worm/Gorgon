@@ -70,7 +70,7 @@ jobs:
         displayName: 'Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/'
-          Contents: '**/?(*.dll|*.xml|Gorgon*.pdb)'
+          Contents: '**/?(*.dll|Gorgon*.pdb)'
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
 

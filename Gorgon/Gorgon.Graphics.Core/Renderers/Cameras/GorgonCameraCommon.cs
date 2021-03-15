@@ -271,12 +271,12 @@ namespace Gorgon.Renderers.Cameras
         /// <summary>
         /// Property to return the width of the current target.
         /// </summary>
-        public int TargetWidth => GetTarget()?.Width ?? 0;
+        public int TargetWidth => GetTarget()?.Width ?? (int)ViewDimensions.Width;
 
         /// <summary>
         /// Property to return the height of the current target.
         /// </summary>
-        public int TargetHeight => GetTarget()?.Height ?? 0;
+        public int TargetHeight => GetTarget()?.Height ?? (int)ViewDimensions.Height;
 
         /// <summary>
         /// Property to return the name of this object.
@@ -324,13 +324,6 @@ namespace Gorgon.Renderers.Cameras
         /// <returns>A read only reference to the view matrix.</returns>        
         public ref readonly Matrix4x4 GetViewMatrix()
         {
-            GorgonRenderTargetView target = GetTarget();
-
-            if (target is null)
-            {
-                return ref _viewMatrix;
-            }
-
             if ((Changes & CameraChange.View) == CameraChange.View)
             {
                 UpdateViewMatrix(ref _viewMatrix);
@@ -346,13 +339,6 @@ namespace Gorgon.Renderers.Cameras
         /// <returns>A read only reference to the projection matrix.</returns>
         public ref readonly Matrix4x4 GetProjectionMatrix()
         {
-            GorgonRenderTargetView target = GetTarget();
-
-            if (target is null)
-            {
-                return ref _projectionMatrix;
-            }
-
             if ((Changes & CameraChange.Projection) == CameraChange.Projection)
             {
                 UpdateProjectionMatrix(ref _projectionMatrix);

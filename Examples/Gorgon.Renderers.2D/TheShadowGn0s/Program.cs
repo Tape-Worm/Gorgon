@@ -445,11 +445,14 @@ ESC - Quit.";
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
                 GorgonApplication.Run(Initialize(), Idle);
             }
             catch (Exception ex)

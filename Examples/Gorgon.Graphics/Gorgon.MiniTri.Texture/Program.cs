@@ -237,6 +237,7 @@ namespace Gorgon.Examples
                 {
                     DoNotAutoResizeBackBuffer = true
                 };
+                _graphics.SetRenderTarget(_swap.RenderTargetView);
 
                 // Create the shaders used to render the triangle.
                 // These shaders provide transformation and coloring for the output pixel data.
@@ -306,7 +307,9 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
+#if NET5_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

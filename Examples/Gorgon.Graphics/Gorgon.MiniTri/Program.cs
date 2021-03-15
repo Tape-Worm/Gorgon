@@ -151,16 +151,15 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to create a new constant buffer so we can upload data to the shaders on the GPU.
         /// </summary>
-        /// <param name="window">The application window.</param>
-        private static void CreateConstantBuffer(Form window)
+        private static void CreateConstantBuffer()
         {
             // Use a camera to build our projection matrix.
 
             // Build our projection matrix using a 65 degree field of view and an aspect ratio that matches our current window aspect ratio.
-            // Note that we depth a depth range from 0.001f up to 1000.0f.  This provides a near and far plane for clipping.  
+            // Note that we depth a depth range from 0.125f up to 1000.0f.  This provides a near and far plane for clipping.  
             // These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
             // linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-            var camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(window.ClientSize.Width, window.ClientSize.Height), 0.125f, 1000.0f)
+            var camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 0.125f, 1000.0f)
             {
                 Fov = 65.0f
             };            
@@ -231,6 +230,7 @@ namespace Gorgon.Examples
                 {
                     DoNotAutoResizeBackBuffer = true
                 };
+                _graphics.SetRenderTarget(_swap.RenderTargetView);
 
                 // Create the shaders used to render the triangle.
                 // These shaders provide transformation and coloring for the output pixel data.
@@ -249,7 +249,7 @@ namespace Gorgon.Examples
                 // Set up the constant buffer.
                 //
                 // This is used (but could be used for more) to transform the vertex data from 3D space into 2D space.
-                CreateConstantBuffer(window);
+                CreateConstantBuffer();
 
                 // This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
                 _graphics.SetRenderTarget(_swap.RenderTargetView);
@@ -292,7 +292,9 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
+#if NET5_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
