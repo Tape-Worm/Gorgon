@@ -58,7 +58,7 @@ jobs:
         displayName: 'Copying Core to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Gorgon'
-          Contents: '**/$(buildConfiguration)/?(*.dll|*.xml|Gorgon*.pdb)'
+          Contents: '**/$(buildConfiguration)/**/?(*.dll|*.xml|Gorgon*.pdb)'
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
 
