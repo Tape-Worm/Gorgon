@@ -58,9 +58,7 @@ jobs:
         displayName: 'Copying Lib to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Gorgon'
-          Contents: |
-            '**/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)'
-            !**/net48/**
+          Contents: '**/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)'
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
           flattenFolders: true
