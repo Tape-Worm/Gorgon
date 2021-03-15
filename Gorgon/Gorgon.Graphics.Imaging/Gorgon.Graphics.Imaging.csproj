@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net48;net5.0</TargetFrameworks>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -8,7 +8,8 @@
     <Product>Gorgon</Product>
     <Description>Functionality to read, write and manipulate image data using various common image formats.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
-    <PackageLicenseFile></PackageLicenseFile>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
@@ -16,10 +17,12 @@
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Graphics.Imaging</RootNamespace>
-    <NeutralLanguage></NeutralLanguage>
+    <NeutralLanguage>
+    </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <AssemblyVersion>3.2.0.0</AssemblyVersion>
     <FileVersion>3.2.0.0</FileVersion>
@@ -43,7 +46,8 @@
   <ItemGroup>
     <None Include="..\g.png">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath>
+      </PackagePath>
     </None>
     <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>

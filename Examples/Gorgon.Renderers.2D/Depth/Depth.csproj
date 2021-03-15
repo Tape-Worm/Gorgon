@@ -11,7 +11,8 @@
     <Product>Gorgon</Product>
     <Description>An example showing how to utilize the depth buffer for effects.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
-    <PackageLicenseFile></PackageLicenseFile>
+    <PackageLicenseFile>
+    </PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
@@ -19,16 +20,18 @@
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Examples</RootNamespace>
-    <NeutralLanguage></NeutralLanguage>
+    <NeutralLanguage>
+    </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
-    <StartupObject></StartupObject>
+    <StartupObject>
+    </StartupObject>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <AssemblyVersion>3.2.0.0</AssemblyVersion>
     <FileVersion>3.2.0.0</FileVersion>
-    
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -46,7 +49,8 @@
   <ItemGroup>
     <None Include="..\..\..\Gorgon\g.png">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath>
+      </PackagePath>
     </None>
     <None Include="..\..\app.manifest" Link="app.manifest" />
     <None Include="..\..\NoRules.ruleset" Link="NoRules.ruleset" />
@@ -62,7 +66,6 @@
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
