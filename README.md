@@ -32,7 +32,7 @@ Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 How far along are you?  Is it done yet?  How about now?
 -------------------------------------------------------
 
-Gorgon 3.1 is now available.
+Gorgon 3.2 is in development.
 
 What can it do?
 ---------------
@@ -68,6 +68,10 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   A "low-level" graphics API that sits on top of Direct 3D 11.2. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.
   
+  - [x] __[Gorgon.Graphics.WPF](Gorgon/Gorgon.Graphics.Wpf)__ 
+  
+  Functionality to allow Gorgon to render onto a WPF surface. This allows interoperabilty between Gorgon and WPF.
+
   - [x] __[Gorgon.Graphics.Imaging](Gorgon/Gorgon.Graphics.Imaging)__ 
   
   Functionality to read and write image formats. This also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc... 
@@ -127,19 +131,19 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 What's required?
 ----------------
 
-  * [.NET 4.7.2](https://www.microsoft.com/net/download/dotnet-framework-runtime)
+  * [.NET 5.0](https://www.microsoft.com/net/download/dotnet-framework-runtime)
   * Windows 10 (Build 15063 or later).
   * A video card that supports Microsoft DirectX 11.2 or better
 
 To compile the library
 ----------------------
 
-  * [Visual C# 2017](https://www.microsoft.com/en-us/store/b/visualstudio) [v15.8](https://docs.microsoft.com/en-us/visualstudio/releasenotes/vs2017-relnotes#whats-new-in-158) or later. 
+  * [Visual C# 2019](https://www.microsoft.com/en-us/store/b/visualstudio) [v16.9](https://docs.microsoft.com/en-us/visualstudio/releases/2019/release-notes) or later. 
 
 To use the library
 ------------------
 
-  * You may use any .NET 4.7.2 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
+  * You may use any .NET 5.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
 
 Source code
 -----------
