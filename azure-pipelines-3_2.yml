@@ -80,8 +80,8 @@ jobs:
           SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)'
           Contents: |
             **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
-            !**/TextViewerExample.*
-            !**/net48/**
+            !**/TextViewerContentExample.*
+            !**/net48/**/*
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/Tools'
           
