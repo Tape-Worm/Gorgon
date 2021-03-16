@@ -25,13 +25,14 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
+using Gorgon.Memory;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
@@ -72,11 +73,6 @@ namespace Gorgon.Graphics.Core
     public sealed class GorgonTexture2DReadWriteView
         : GorgonReadWriteView, IGorgonTexture2DInfo, IGorgonImageInfo
     {
-        #region Variables.
-        // Rectangles used for clearing the view.
-        private RawRectangle[] _clearRects;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the type of image data.
@@ -236,15 +232,19 @@ namespace Gorgon.Graphics.Core
         /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
         /// </summary>
         public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
+
+        /// <summary>
+        /// Property to return whether the resource used by this view can be shared or not.
+        /// </summary>
+        public bool Shared => Texture.Shared;
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to retrieve the view description for a 2D texture.
-        /// </summary>
-        /// <param name="texture">Texture to build a view description for.</param>
-        /// <returns>The shader view description.</returns>
-        private D3D11.UnorderedAccessViewDescription1 GetDesc2D(GorgonTexture2D texture) => texture.ArrayCount == 1
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>The D3D11 UAV descriptor.</returns>        
+        private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
+        {
+            UavDesc = Texture.ArrayCount == 1
                        ? new D3D11.UnorderedAccessViewDescription1
                        {
                            Format = (Format)Format,
@@ -268,41 +268,7 @@ namespace Gorgon.Graphics.Core
                              }
                        };
 
-        /// <summary>
-        /// Function to perform the creation of a specific kind of view.
-        /// </summary>
-        /// <returns>The view that was created.</returns>
-        private protected override D3D11.ResourceView OnCreateNativeView()
-        {
-            D3D11.UnorderedAccessViewDescription1 desc = GetDesc2D(Texture);
-
-            Graphics.Log.Print($"Creating D3D11 2D texture unordered access view for {Texture.Name}.", LoggingLevel.Verbose);
-
-            try
-            {
-                // Create our SRV.
-                Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                {
-                    DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_2D"
-                };
-
-                Graphics.Log.Print($"Unordered Access 2D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
-                                   LoggingLevel.Verbose);
-            }
-            catch (DX.SharpDXException sDXEx)
-            {
-                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-                                                            Texture.Format,
-                                                            Format));
-                }
-
-                throw;
-            }
-
-            return Native;
+            return ref UavDesc;
         }
 
         /// <summary>
@@ -323,7 +289,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Rectangle
                 {
@@ -364,7 +330,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.RectangleF
                 {
@@ -405,7 +371,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
             }
@@ -434,7 +400,7 @@ namespace Gorgon.Graphics.Core
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
             }
@@ -458,20 +424,20 @@ namespace Gorgon.Graphics.Core
         /// for the underlying <see cref="Texture"/> is used.
         /// </para>
         /// </remarks>
-        public DX.Vector2 ToTexel(DX.Vector2 pixelVector, int? mipLevel = null)
+        public Vector2 ToTexel(Vector2 pixelVector, int? mipLevel = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
-                return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+                return new Vector2(pixelVector.X / width, pixelVector.Y / height);
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+            return new Vector2(pixelVector.X / width, pixelVector.Y / height);
         }
 
         /// <summary>
@@ -487,20 +453,20 @@ namespace Gorgon.Graphics.Core
         /// for the underlying <see cref="Texture"/> is used.
         /// </para>
         /// </remarks>
-        public DX.Vector2 ToPixel(DX.Vector2 texelVector, int? mipLevel = null)
+        public Vector2 ToPixel(Vector2 texelVector, int? mipLevel = null)
         {
             float width = Texture.Width;
             float height = Texture.Height;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
-                return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+                return new Vector2(texelVector.X * width, texelVector.Y * height);
             }
 
             width = GetMipWidth(mipLevel.Value);
             height = GetMipHeight(mipLevel.Value);
 
-            return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+            return new Vector2(texelVector.X * width, texelVector.Y * height);
         }
 
         /// <summary>
@@ -552,25 +518,29 @@ namespace Gorgon.Graphics.Core
         /// If this method is called with a 3D texture bound to the view, and with regions specified, then the regions are ignored.
         /// </para>
         /// </remarks>
-        public void Clear(GorgonColor color, DX.Rectangle[] rectangles)
+        public void Clear(in GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
         {
-            if ((rectangles == null) || (rectangles.Length == 0))
+            if (rectangles.IsEmpty)
             {
                 Clear(color.Red, color.Green, color.Blue, color.Alpha);
                 return;
             }
 
-            if ((_clearRects == null) || (_clearRects.Length < rectangles.Length))
-            {
-                _clearRects = new RawRectangle[rectangles.Length];
-            }
+            RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
 
-            for (int i = 0; i < rectangles.Length; ++i)
+            try
             {
-                _clearRects[i] = rectangles[i];
-            }
+                for (int i = 0; i < rectangles.Length; ++i)
+                {
+                    clearRects[i] = rectangles[i];
+                }
 
-            Resource.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), _clearRects, rectangles.Length);
+                Resource.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), clearRects, rectangles.Length);
+            }
+            finally
+            {
+                GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects);
+            }
         }
 
         /// <summary>
@@ -599,12 +569,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonTexture2D"/>
         public static GorgonTexture2DReadWriteView CreateTexture(GorgonGraphics graphics, IGorgonTexture2DInfo info, IGorgonImage initialData = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
@@ -617,22 +587,26 @@ namespace Gorgon.Graphics.Core
                                              : info.Binding) & ~TextureBinding.DepthStencil
             };
 
-            if (initialData != null)
+            if (initialData is not null)
             {
                 if ((initialData.Width > info.Width)
                     || (initialData.Height > info.Height))
                 {
-                    initialData = initialData.Expand(info.Width, info.Height, 1);
+                    initialData = initialData.BeginUpdate()
+                                             .Expand(info.Width, info.Height, 1)
+                                             .EndUpdate();
                 }
 
                 if ((initialData.Width < info.Width)
                     || (initialData.Height < info.Height))
                 {
-                    initialData = initialData.Crop(new DX.Rectangle(0, 0, info.Width, info.Height), 1);
+                    initialData = initialData.BeginUpdate()
+                                             .Crop(new DX.Rectangle(0, 0, info.Width, info.Height), 1)
+                                             .EndUpdate();
                 }
             }
 
-            GorgonTexture2D texture = initialData == null
+            GorgonTexture2D texture = initialData is null
                                           ? new GorgonTexture2D(graphics, newInfo)
                                           : initialData.ToTexture2D(graphics,
                                                                     new GorgonTexture2DLoadOptions
@@ -700,17 +674,17 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture2DReadWriteView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTexture2DLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -720,7 +694,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -730,13 +704,11 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            using (IGorgonImage image = codec.FromStream(stream, size))
-            {
-                GorgonTexture2D texture = image.ToTexture2D(graphics, options);
-                GorgonTexture2DReadWriteView view = texture.GetReadWriteView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromStream(stream, size);
+            GorgonTexture2D texture = image.ToTexture2D(graphics, options);
+            GorgonTexture2DReadWriteView view = texture.GetReadWriteView();
+            view.OwnsResource = true;
+            return view;
         }
 
         /// <summary>
@@ -783,12 +755,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture2DReadWriteView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTexture2DLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -798,18 +770,16 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            using (IGorgonImage image = codec.FromFile(filePath))
-            {
-                GorgonTexture2D texture = image.ToTexture2D(graphics, options);
-                GorgonTexture2DReadWriteView view = texture.GetReadWriteView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromFile(filePath);
+            GorgonTexture2D texture = image.ToTexture2D(graphics, options);
+            GorgonTexture2DReadWriteView view = texture.GetReadWriteView();
+            view.OwnsResource = true;
+            return view;
         }
         #endregion
 

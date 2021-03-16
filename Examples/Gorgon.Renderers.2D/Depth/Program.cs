@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,12 +34,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
-using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Timing;
@@ -84,7 +83,7 @@ namespace Gorgon.Examples
         // Our 2D renderer.
         private static Gorgon2D _renderer;
         // The list of textures for the sprite.
-        private static readonly List<GorgonTexture2D> _textures = new List<GorgonTexture2D>();
+        private static readonly List<GorgonTexture2D> _textures = new();
         // The size of the tiled screen.
         private static DX.Size2 _tileSize;
         // The tile used for the snow layer.
@@ -94,9 +93,9 @@ namespace Gorgon.Examples
         // The icicle sprite.
         private static GorgonSprite _icicle;
         // The position of the guy.
-        private static DX.Vector2 _guyPosition;
+        private static Vector2 _guyPosition;
         // Up animation.
-        private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new Dictionary<AnimationName, IGorgonAnimation>();
+        private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new();
         // The animation controller.
         private static GorgonSpriteAnimationController _controller;
         // The current animation.
@@ -117,7 +116,7 @@ namespace Gorgon.Examples
             {
                 for (int x = 0; x < _tileSize.Width + 1; x++)
                 {
-                    _snowTile.Position = new DX.Vector2(x * _snowTile.ScaledSize.Width, y * _snowTile.ScaledSize.Height);
+                    _snowTile.Position = new Vector2(x * _snowTile.ScaledSize.Width, y * _snowTile.ScaledSize.Height);
                     _renderer.DrawSprite(_snowTile);
                 }
             }
@@ -128,7 +127,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void DrawIcicle()
         {
-            _icicle.Position = new DX.Vector2(((_tileSize.Width - 2) / 2) * _snowTile.ScaledSize.Width, ((_tileSize.Height - 2) / 2) * _snowTile.ScaledSize.Height);
+            _icicle.Position = new Vector2(((_tileSize.Width - 2) / 2) * _snowTile.ScaledSize.Width, ((_tileSize.Height - 2) / 2) * _snowTile.ScaledSize.Height);
             _renderer.DrawSprite(_icicle);
         }
 
@@ -188,13 +187,13 @@ namespace Gorgon.Examples
                         // If we reach the extreme left of the screen (and we're off screen), then move to the right side and continue this animation.						
                         if (_guyPosition.Y < _icicle.Position.Y + _snowTile.ScaledSize.Height)
                         {
-                            _guyPosition = new DX.Vector2(_screen.Width + _guySprite.ScaledSize.Width * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Height / 2.0f);
+                            _guyPosition = new Vector2(_screen.Width + _guySprite.ScaledSize.Width * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Height / 2.0f);
                         }
                         else
                         {
                             // Otherwise, reset and start over.
                             _current = AnimationName.WalkUp;
-                            _guyPosition = new DX.Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height + _snowTile.ScaledSize.Height);
+                            _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height + _snowTile.ScaledSize.Height);
                         }
 
                         // Ensure that the guy's depth value is less than the icicle so he'll appear in front of it.
@@ -211,7 +210,7 @@ namespace Gorgon.Examples
         private static bool Idle()
         {
             // If the controller is not initialized, then we haven't finished loading our data yet.
-            if (_controller == null)
+            if (_controller is null)
             {
                 return true;
             }
@@ -342,8 +341,8 @@ namespace Gorgon.Examples
         /// </summary>        
         private static async Task InitializeAsync(FormMain window)
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
             IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
 
@@ -360,8 +359,8 @@ namespace Gorgon.Examples
                                             window,
                                             new GorgonSwapChainInfo("Gorgon2D Depth Buffer Example")
                                             {
-                                                Width = Settings.Default.Resolution.Width,
-                                                Height = Settings.Default.Resolution.Height,
+                                                Width = ExampleConfig.Default.Resolution.Width,
+                                                Height = ExampleConfig.Default.Resolution.Height,
                                                 Format = BufferFormat.R8G8B8A8_UNorm
                                             });
 
@@ -381,12 +380,10 @@ namespace Gorgon.Examples
 
             // Load our packed file system plug in.
             _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
-            _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll");
-            IGorgonPlugInService plugIns = new GorgonMefPlugInService(_assemblyCache);
 
             // Load the file system containing our application data (sprites, images, etc...)
-            IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(plugIns, GorgonApplication.Log);
-            IGorgonFileSystemProvider provider = providerFactory.CreateProvider("Gorgon.IO.GorPack.GorPackProvider");
+            IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_assemblyCache, GorgonApplication.Log);
+            IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"), "Gorgon.IO.GorPack.GorPackProvider");
             IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
 
             // We can load the editor file system directly.
@@ -415,7 +412,7 @@ namespace Gorgon.Examples
                 GorgonSprite sprite = await loader.LoadSpriteAsync(file.FullPath);
 
                 // At super duper resolution, the example graphics would be really hard to see, so we'll scale them up.
-                sprite.Scale = new DX.Vector2((_screen.Width / (_screen.Height / 2)) * 2.0f);
+                sprite.Scale = new Vector2((_screen.Width / (_screen.Height / 2)) * 2.0f);
                 sprites[file.Name] = sprite;
             }
 
@@ -427,7 +424,7 @@ namespace Gorgon.Examples
 
             _guySprite = sprites["Guy_Up_0"];
             _guySprite.Depth = 0.1f;
-            _guyPosition = new DX.Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
+            _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
 
             BuildAnimations(sprites);
 
@@ -444,6 +441,9 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
@@ -451,7 +451,7 @@ namespace Gorgon.Examples
                 WindowsFormsSynchronizationContext.AutoInstall = false;
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
-                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Depth", 
+                FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Depth", 
                                                            async (o, _) => await InitializeAsync((FormMain)o));
 
                 GorgonApplication.Run(window, Idle);

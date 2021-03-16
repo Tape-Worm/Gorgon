@@ -97,7 +97,7 @@ namespace Gorgon.Examples
         // Our primary swap chain.
         private static GorgonSwapChain _swap;
         // The color to clear our swap chain with.
-        private static GorgonColor _clearColor = new GorgonColor(0, 0, 0);
+        private static GorgonColor _clearColor = new(0, 0, 0);
         // Which color channel are we animating? (R = 0, G = 1, B = 2).
         private static int _channel;
         // The value to apply to a specific color channel.
@@ -293,7 +293,7 @@ namespace Gorgon.Examples
         {
             if ((e.KeyCode != Keys.Enter)
                 || (!e.Alt)
-                || (_swap == null))
+                || (_swap is null))
             {
                 return;
             }
@@ -306,7 +306,7 @@ namespace Gorgon.Examples
 
             IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[GorgonApplication.MainForm.Handle];
 
-            if (output == null)
+            if (output is null)
             {
                 return;
             }
@@ -327,6 +327,9 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
+#if NET5_0_OR_GREATER
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

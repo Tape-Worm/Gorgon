@@ -95,7 +95,7 @@ namespace Gorgon.UI
 
                 if ((inIndex > -1) && (pathIndex > -1))
                 {
-                    lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
+                    lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i][(pathIndex + 1)..];
                 }
 
                 result.Append(lines[i]);
@@ -113,7 +113,7 @@ namespace Gorgon.UI
         /// <returns>A string containing the details of the exception.</returns>
         private static string GetDetailsFromException(Exception innerException)
         {
-            if (innerException == null)
+            if (innerException is null)
             {
                 return Resources.GOR_EXCEPT_NO_MSG;
             }
@@ -122,7 +122,7 @@ namespace Gorgon.UI
             var errorText = new StringBuilder(1024);
             Exception nextException = innerException;
 
-            while (nextException != null)
+            while (nextException is not null)
             {
                 errorText.AppendFormat("{0}: {1}\n{2}:  {3}",
                                        Resources.GOR_EXCEPT_DETAILS_MSG,
@@ -130,12 +130,12 @@ namespace Gorgon.UI
                                        Resources.GOR_EXCEPT_EXCEPT_TYPE,
                                        nextException.GetType().FullName);
 
-                if (nextException.Source != null)
+                if (nextException.Source is not null)
                 {
                     errorText.AppendFormat("\n{0}:  {1}", Resources.GOR_EXCEPT_SRC, nextException.Source);
                 }
 
-                if (nextException.TargetSite?.DeclaringType != null)
+                if (nextException.TargetSite?.DeclaringType is not null)
                 {
                     errorText.AppendFormat("\n{0}:  {1}.{2}",
                                            Resources.GOR_EXCEPT_TARGET_SITE,
@@ -166,7 +166,7 @@ namespace Gorgon.UI
                             customData.Append('\n');
                         }
 
-                        if (item.Value != null)
+                        if (item.Value is not null)
                         {
                             customData.AppendFormat("{0}: {1}", item.Key, item.Value);
                         }
@@ -189,7 +189,7 @@ namespace Gorgon.UI
 
                 nextException = nextException.InnerException;
 
-                if (nextException != null)
+                if (nextException is not null)
                 {
                     errorText.AppendFormat("\n{0}:\n===============\n", Resources.GOR_EXCEPT_NEXT_EXCEPTION);
                 }
@@ -215,7 +215,7 @@ namespace Gorgon.UI
         /// If the <paramref name="message"/> parameter is <b>null</b> or an empty string, then the <see cref="Exception.Message"/> property is used to display the error message.
         /// </para>
         /// </remarks>
-        public static void ErrorBox(Form owner, string message, string caption, Exception exception, bool autoShowDetails = false)
+        public static void ErrorBox(IWin32Window owner, string message, string caption, Exception exception, bool autoShowDetails = false)
         {
             if (string.IsNullOrEmpty(message))
             {
@@ -235,7 +235,7 @@ namespace Gorgon.UI
         /// This will display an enhanced error dialog with a details button that will have <paramref name="exception"/> information in the details pane.
         /// </para>
         /// </remarks>
-        public static void ErrorBox(Form owner, Exception exception) => ErrorBox(owner, null, null, exception);
+        public static void ErrorBox(IWin32Window owner, Exception exception) => ErrorBox(owner, null, null, exception);
 
         /// <summary>
         /// Function to display the enhanced error dialog.
@@ -255,7 +255,7 @@ namespace Gorgon.UI
         /// has information passed to it.
         /// </para>
         /// </remarks>
-        public static void ErrorBox(Form owner, string message, string caption = "", string details = "", bool autoShowDetails = false)
+        public static void ErrorBox(IWin32Window owner, string message, string caption = "", string details = "", bool autoShowDetails = false)
         {
             ErrorDialog errorDialog = null;
 
@@ -273,10 +273,12 @@ namespace Gorgon.UI
                     errorDialog.Text = caption;
                 }
 
-                errorDialog.ShowDialog(owner);
+                var parentForm = owner as Form;
+
+                errorDialog.ShowDialog(parentForm);
 
                 // If the owner form is null or not available, center on screen.
-                if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
+                if ((parentForm is null) || (parentForm.WindowState == FormWindowState.Minimized) || (!parentForm.Visible))
                 {
                     errorDialog.StartPosition = FormStartPosition.CenterScreen;
                 }
@@ -296,7 +298,7 @@ namespace Gorgon.UI
         /// <remarks>
         /// This will display an enhanced information dialog that is capable of showing more text than the standard <see cref="MessageBox"/>.
         /// </remarks>
-        public static void InfoBox(Form owner, string message, string caption = "")
+        public static void InfoBox(IWin32Window owner, string message, string caption = "")
         {
             BaseDialog dialog = null;
 
@@ -309,9 +311,9 @@ namespace Gorgon.UI
                     ButtonAction = DialogResult.OK
                 };
 
-                if (owner != null)
+                if (owner is Control control)
                 {
-                    dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height / 2;
+                    dialog.MessageHeight = Screen.FromControl(control).WorkingArea.Height / 2;
                 }
                 else
                 {
@@ -346,7 +348,7 @@ namespace Gorgon.UI
         /// has information passed to it.
         /// </para>
         /// </remarks>
-        public static void WarningBox(Form owner, string message, string caption = "", string details = "", bool autoShowDetails = false)
+        public static void WarningBox(IWin32Window owner, string message, string caption = "", string details = "", bool autoShowDetails = false)
         {
             WarningDialog warningDialog = null;
             try
@@ -363,8 +365,8 @@ namespace Gorgon.UI
                     warningDialog.Text = caption;
                 }
 
-                // If the owner form is <b>null</b> or not available, center on screen.
-                if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
+                // If the owner form is null or not available, center on screen.
+                if ((owner is not Form form) || (form.WindowState == FormWindowState.Minimized) || (!form.Visible))
                 {
                     warningDialog.StartPosition = FormStartPosition.CenterScreen;
                 }
@@ -405,7 +407,7 @@ namespace Gorgon.UI
         /// exclusive and is not combined with the <see cref="ConfirmationResult.ToAll"/> flag under any circumstances.
         /// </para>
         /// </remarks>
-        public static ConfirmationResult ConfirmBox(Form owner, string message, string caption = "", bool allowCancel = false, bool allowToAll = false)
+        public static ConfirmationResult ConfirmBox(IWin32Window owner, string message, string caption = "", bool allowCancel = false, bool allowToAll = false)
         {
             ConfirmationDialog confirm = null;
             ConfirmationResult result;

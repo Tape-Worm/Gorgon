@@ -66,6 +66,8 @@ namespace Gorgon.Examples
         private readonly int _dpi;
         // The image frames for the animated gif.
         private Bitmap _gifBuffer;
+        // Graphics context for the gif buffer.
+        private System.Drawing.Graphics _gifGraphics;
         // GIF animator.
         private readonly GifAnimator _gifAnim;
         // GIF position.
@@ -114,29 +116,26 @@ namespace Gorgon.Examples
             // Draw something pretty...
             float width = sourceImage.Width;
             float height = sourceImage.Height;
+            float aspect = width / height;
             for (int x = 0; x < sourceImage.Width; ++x)
             {
-                float rColorFade = ((x / width) * 1.5f).Cos();
+                float rColorFade = ((x / width) * aspect).Cos();
 
                 for (int y = 0; y < sourceImage.Height; ++y)
                 {
-                    float bColorFade = ((y / height) * 1.5f).Sin();
+                    float bColorFade = (y / height).Sin();
 
                     int pixelStride = sourceImage.Buffers[0].PitchInformation.RowPitch / sourceImage.Buffers[0].Width;
                     // This is the position inside of the buffer, in bytes.
                     int position = (y * sourceImage.Buffers[0].PitchInformation.RowPitch) + (x * pixelStride);
                     var color = new GorgonColor(rColorFade, 1.0f - rColorFade, bColorFade, 1.0f);
 
-                    // Notice we're using ReadAs here.  This allows us to read a value as another type.  In this case, we've chosen an 
+                    // Notice we're using AsRef here.  This allows us to read a value as another type.  In this case, we've chosen an 
                     // int32 value to represent an ARGB pixel. Because this value is a reference to the location in memory, we can assign 
                     // a new value to it. 
                     //
                     // Do note that the position is a byte address, and not an int address (i.e. position = 1 is 1 byte, not 1 int).
-                    ref int pixel = ref sourceImage.Buffers[0].Data.ReadAs<int>(position);
-                    pixel = color.ToARGB();
-
-                    // We could easily do this as well (although this could be considered less readable):
-                    //_image.Buffers[0].Data.ReadAs<int>(position) = color.ToARGB();
+                    sourceImage.Buffers[0].Data.AsRef<int>(position) = color.ToABGR();
                 }
             }
 
@@ -151,7 +150,9 @@ namespace Gorgon.Examples
             // newImage = image.Reize(...).Crop(...).ConvertFormat(...).GenerateMipMaps(...)
             //
             // In this case, we only need one operation, and that's a resize for the image to the new DPI.
-            _images[0] = sourceImage.Resize(_imageSize.Width, _imageSize.Height, 1, ImageFilter.Fant);
+            _images[0] = sourceImage.BeginUpdate()
+                                    .Resize(_imageSize.Width, _imageSize.Height, 1, ImageFilter.Fant)
+                                    .EndUpdate();
         }
 
         /// <summary>
@@ -171,14 +172,17 @@ namespace Gorgon.Examples
             // The GIF animation frames are stored in an image array, so in order to access them we need to index through 
             // the image array below.
             _gifBuffer = new Bitmap(_imageSize.Width, _imageSize.Height, PixelFormat.Format32bppArgb);
+            _gifGraphics = System.Drawing.Graphics.FromImage(_gifBuffer);
 
             float imageAspect = _images[3].Height / (float)_images[3].Width;
             var newSize = new Size(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
 
             // With this one, the source image isn't in the same aspect ratio as our thumbnail size.
             // So we need to expand the image boundaries to fit.  The expand method will do just that.
-            _images[3] = _images[3].Resize(newSize.Width, newSize.Height, 1)
-                                   .Expand(_imageSize.Width, _imageSize.Height, 1);
+            _images[3] = _images[3].BeginUpdate()
+                                   .Resize(newSize.Width, newSize.Height, 1)
+                                   .Expand(_imageSize.Width, _imageSize.Height, 1)
+                                   .EndUpdate();
 
             // Pass in the frame delays to the animation interface. 
             // This is we can control the rate of animation frame change.
@@ -192,7 +196,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         public void RefreshGif(System.Drawing.Graphics graphics)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
@@ -202,8 +206,6 @@ namespace Gorgon.Examples
                 graphics.CompositingMode = CompositingMode.SourceOver;
             }
 
-            var bufferGraphics = System.Drawing.Graphics.FromImage(_gifBuffer);
-
             try
             {
                 if (Interlocked.Increment(ref _isDrawing) > 1)
@@ -212,12 +214,11 @@ namespace Gorgon.Examples
                 }
 
                 _images[3].Buffers[0, _gifAnim.CurrentFrame].CopyTo(_gifBuffer);
-                DrawOutlinedText(bufferGraphics, 0, 0, _descriptions[3]);
+                DrawOutlinedText(_gifGraphics, 0, 0, _descriptions[3]);
                 graphics.DrawImage(_gifBuffer, _gifPosition.X, _gifPosition.Y);
             }
             finally
             {
-                bufferGraphics.Dispose();
                 Interlocked.Decrement(ref _isDrawing);
             }
         }
@@ -242,23 +243,31 @@ namespace Gorgon.Examples
             // Here we see how to use an image codec to read image data from a file.
             IGorgonImageCodec codec = new GorgonCodecDds();
             _images[1] = codec.FromFile(ddsFileInfo.FullName)
-                             .Resize(_imageSize.Width, _imageSize.Height, 1, ImageFilter.Fant);
+                              .BeginUpdate()
+                              .Resize(_imageSize.Width, _imageSize.Height, filter: ImageFilter.Fant)
+                              .EndUpdate();
 
             codec = new GorgonCodecTga();
             _images[2] = codec.FromFile(tgaFileInfo.FullName)
-                                  .Resize(_imageSize.Width, _imageSize.Height, 1)
-                                  .ConvertToFormat(BufferFormat.B8G8R8A8_UNorm);
+                              .BeginUpdate()
+                              .Resize(_imageSize.Width, _imageSize.Height)
+                              .ConvertToFormat(BufferFormat.B8G8R8A8_UNorm)
+                              .EndUpdate();
 
             // Because the GIF is animated, we need to load it in a special way.
             LoadAnimatedGif(gifFileInfo.FullName);
 
             codec = new GorgonCodecPng();
             _images[4] = codec.FromFile(pngFileInfo.FullName)
-                             .Resize(_imageSize.Width, _imageSize.Height, 1);
+                              .BeginUpdate()
+                              .Resize(_imageSize.Width, _imageSize.Height)
+                              .EndUpdate();
 
             codec = new GorgonCodecBmp();
             _images[5] = codec.FromFile(bmpFileInfo.FullName)
-                             .Resize(_imageSize.Width, _imageSize.Height, 1, ImageFilter.Linear);
+                              .BeginUpdate()
+                              .Resize(_imageSize.Width, _imageSize.Height, 1, ImageFilter.Linear)
+                              .EndUpdate();
 
             // This is going to be used to display the images on the screen.
             // We use GDI+ here simply because it's there.  
@@ -273,7 +282,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         public void DrawGallery(System.Drawing.Graphics graphics, Size clientSize)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
@@ -293,11 +302,6 @@ namespace Gorgon.Examples
                 for (int i = 0; i < _images.Length; ++i)
                 {
                     IGorgonImage image = _images[i];
-
-                    if (image == null)
-                    {
-                        continue;
-                    }
 
                     // Make a special case for the GIF file.
                     if (i == 3)
@@ -340,6 +344,7 @@ namespace Gorgon.Examples
                 image?.Dispose();
             }
 
+            _gifGraphics.Dispose();
             _boldContentFont.Dispose();
             _gifBuffer.Dispose();
             _destBitmap?.Dispose();
@@ -356,7 +361,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseFont"/>, or the <paramref name="animator"/> parameter is <b>null</b>.</exception>
         public ImageGallery(Font baseFont, int deviceDpi, GifAnimator animator)
         {
-            if (baseFont == null)
+            if (baseFont is null)
             {
                 throw new ArgumentNullException(nameof(baseFont));
             }

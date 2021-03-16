@@ -25,10 +25,9 @@
 #endregion
 
 using Gorgon.Core;
-using Gorgon.Diagnostics;
-using SharpDX.Direct3D;
-using SharpDX.DXGI;
+using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -136,13 +135,10 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to initialize the buffer view.
-        /// </summary>
-        private protected override D3D11.ResourceView OnCreateNativeView()
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>A shader resource view descriptor.</returns>
+        private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
         {
-            Graphics.Log.Print($"Creating D3D11 raw buffer shader resource view for {Buffer.Name}.", LoggingLevel.Simple);
-
             BufferFormat format = BufferFormat.Unknown;
 
             switch (ElementType)
@@ -158,10 +154,10 @@ namespace Gorgon.Graphics.Core
                     break;
             }
 
-            var desc = new D3D11.ShaderResourceViewDescription1
+            SrvDesc = new D3D11.ShaderResourceViewDescription1
             {
-                Format = (Format)format,
-                Dimension = ShaderResourceViewDimension.ExtendedBuffer,
+                Format = (DXGI.Format)format,
+                Dimension = D3D.ShaderResourceViewDimension.ExtendedBuffer,
                 BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
                 {
                     FirstElement = StartElement,
@@ -170,16 +166,7 @@ namespace Gorgon.Graphics.Core
                 }
             };
 
-            // Create our SRV.
-            Native = new D3D11.ShaderResourceView1(Buffer.Graphics.D3DDevice, Buffer.D3DResource, desc)
-            {
-                DebugName = $"'{Buffer.Name}'_D3D11ShaderResourceView1_Raw"
-            };
-
-            Graphics.Log.Print($"Shader Resource Raw Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}, ElementType(Format): {ElementType}({format})",
-                               LoggingLevel.Verbose);
-
-            return Native;
+            return ref SrvDesc;
         }
         #endregion
 

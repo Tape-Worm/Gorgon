@@ -34,6 +34,7 @@ using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.Input.Properties;
+using Gorgon.Memory;
 
 namespace Gorgon.Native
 {
@@ -318,7 +319,7 @@ namespace Gorgon.Native
         /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool RegisterRawInputDevices([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] RAWINPUTDEVICE[] pRawInputDevices, int uiNumDevices, int cbSize);
+        private unsafe static extern bool RegisterRawInputDevices(RAWINPUTDEVICE* pRawInputDevices, int uiNumDevices, int cbSize);
 
         /// <summary>
         /// Function to retrieve the raw input devices registered to this application.
@@ -328,7 +329,7 @@ namespace Gorgon.Native
         /// <param name="cbSize">The size of the raw input device struct, in bytes.</param>
         /// <returns>0 if successful, -1 if not.</returns>
         [DllImport("user32.dll")]
-        private static extern int GetRegisteredRawInputDevices(IntPtr pRawInputDevices, ref uint puiNumDevices, uint cbSize);
+        private unsafe static extern int GetRegisteredRawInputDevices(RAWINPUTDEVICE* pRawInputDevices, ref uint puiNumDevices, uint cbSize);
 
         /// <summary>
         /// Function to retrieve the preparsed HID data for a given device.
@@ -351,7 +352,7 @@ namespace Gorgon.Native
 
                 if (dataSize == 0)
                 {
-                    return default;
+                    return null;
                 }
 
                 var result = new GorgonNativeBuffer<byte>(dataSize);
@@ -372,19 +373,19 @@ namespace Gorgon.Native
         /// <param name="usage">The HID usage code to register.</param>
         /// <param name="targetWindow">The target window for the device.</param>
         /// <param name="flags">Flags used in device registration.</param>
-        public static void RegisterRawInputDevice(HIDUsage usage, IntPtr targetWindow, RawInputDeviceFlags flags)
+        public unsafe static void RegisterRawInputDevice(HIDUsage usage, IntPtr targetWindow, RawInputDeviceFlags flags)
         {
-            RAWINPUTDEVICE[] devices = {
-                              new RAWINPUTDEVICE
-                              {
-                                  Flags = flags,
-                                  Usage = (ushort)usage,
-                                  UsagePage = HIDUsagePage.Generic,
-                                  WindowHandle = targetWindow
-                              }
-                          };
+            RAWINPUTDEVICE* devices = stackalloc RAWINPUTDEVICE[1];
 
-            if (!RegisterRawInputDevices(devices, devices.Length, Unsafe.SizeOf<RAWINPUTDEVICE>()))
+            devices[0] = new RAWINPUTDEVICE
+            {
+                Flags = flags,
+                Usage = (ushort)usage,
+                UsagePage = HIDUsagePage.Generic,
+                WindowHandle = targetWindow
+            };
+
+            if (!RegisterRawInputDevices(devices, 1, sizeof(RAWINPUTDEVICE)))
             {
                 throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_REGISTER);
             }
@@ -397,19 +398,19 @@ namespace Gorgon.Native
         /// <returns>The raw input device structure if the device type was previously registered. Or <b>null</b> if not.</returns>
         public static RAWINPUTDEVICE? GetDeviceRegistration(HIDUsage usage)
         {
-            uint deviceCount = 0;
-            uint structSize = (uint)Unsafe.SizeOf<RAWINPUTDEVICE>();
+            uint deviceCount = 0;            
 
             unsafe
             {
-                if (GetRegisteredRawInputDevices(IntPtr.Zero, ref deviceCount, structSize) == -1)
+                uint structSize = (uint)sizeof(RAWINPUTDEVICE);
+                if (GetRegisteredRawInputDevices(null, ref deviceCount, structSize) == -1)
                 {
                     throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
                 }
 
                 RAWINPUTDEVICE* buffer = stackalloc RAWINPUTDEVICE[(int)deviceCount];
 
-                if (GetRegisteredRawInputDevices(new IntPtr(buffer), ref deviceCount, structSize) == -1)
+                if (GetRegisteredRawInputDevices(buffer, ref deviceCount, structSize) == -1)
                 {
                     throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
                 }
@@ -430,19 +431,19 @@ namespace Gorgon.Native
         /// Function to unregister a raw input device.
         /// </summary>
         /// <param name="usage">The HID usage code to unregister.</param>
-        public static void UnregisterRawInputDevice(HIDUsage usage)
+        public unsafe static void UnregisterRawInputDevice(HIDUsage usage)
         {
-            RAWINPUTDEVICE[] devices = {
-                              new RAWINPUTDEVICE
-                              {
-                                  Flags = RawInputDeviceFlags.Remove,
-                                  Usage = (ushort)usage,
-                                  UsagePage = HIDUsagePage.Generic,
-                                  WindowHandle = IntPtr.Zero
-                              }
-                          };
+            RAWINPUTDEVICE* devices = stackalloc RAWINPUTDEVICE[1];
 
-            if (!RegisterRawInputDevices(devices, devices.Length, Unsafe.SizeOf<RAWINPUTDEVICE>()))
+            devices[0] = new RAWINPUTDEVICE
+            {
+                Flags = RawInputDeviceFlags.Remove,
+                Usage = (ushort)usage,
+                UsagePage = HIDUsagePage.Generic,
+                WindowHandle = IntPtr.Zero
+            };
+              
+            if (!RegisterRawInputDevices(devices, 1, sizeof(RAWINPUTDEVICE)))
             {
                 throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_REGISTER);
             }
@@ -472,7 +473,8 @@ namespace Gorgon.Native
                     return Array.Empty<RAWINPUTDEVICELIST>();
                 }
 
-                RAWINPUTDEVICELIST[] deviceList = ArrayPool<RAWINPUTDEVICELIST>.Shared.Rent(deviceCount);
+                ArrayPool<RAWINPUTDEVICELIST> pool = GorgonArrayPool<RAWINPUTDEVICELIST>.GetBestPool(deviceCount);
+                RAWINPUTDEVICELIST[] deviceList = pool.Rent(deviceCount);
 
                 try
                 {
@@ -489,7 +491,7 @@ namespace Gorgon.Native
                 }
                 finally
                 {
-                    ArrayPool<RAWINPUTDEVICELIST>.Shared.Return(deviceList);
+                    pool.Return(deviceList);
                 }
             }
         }
@@ -507,7 +509,7 @@ namespace Gorgon.Native
             {
                 int errCode = GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceInfo, null, ref dataSize);
 
-                if ((errCode != -1) && (errCode != 0))
+                if (errCode is not (-1) and not 0)
                 {
                     int win32Error = Marshal.GetLastWin32Error();
                     throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
@@ -574,7 +576,8 @@ namespace Gorgon.Native
         /// Function to retrieve data for the raw input device message.
         /// </summary>
         /// <param name="rawInputStructHandle">Handle to a HRAWINPUT structure..</param>
-        public static RAWINPUT GetRawInputData(IntPtr rawInputStructHandle)
+        /// <param name="rawInput">The resulting raw input data.</param>
+        public static void GetRawInputData(IntPtr rawInputStructHandle, ref RAWINPUT rawInput)
         {
             int dataSize = 0;
 
@@ -588,15 +591,16 @@ namespace Gorgon.Native
                     throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
                 }
 
-                RAWINPUT rawInput;
-
                 // Get actual data.
-                retVal = GetRawInputData(rawInputStructHandle, RawInputCommand.Input, &rawInput, ref dataSize, _headerSize);
+                fixed (RAWINPUT* ptr = &rawInput)
+                {
+                    retVal = GetRawInputData(rawInputStructHandle, RawInputCommand.Input, ptr, ref dataSize, _headerSize);
+                }
 
-                return (retVal == -1)
-                    || (retVal != dataSize)
-                    ? throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA)
-                    : rawInput;
+                if ((retVal == -1) || (retVal != dataSize))
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
+                }
             }
         }
         #endregion

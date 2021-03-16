@@ -24,11 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {

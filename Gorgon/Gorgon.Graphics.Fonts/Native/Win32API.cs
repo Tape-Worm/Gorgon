@@ -52,7 +52,7 @@ namespace Gorgon.Native
         // Temporary font.
         private static Font _tempFont;
         // Synchronization object for threading.
-        private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new();
         #endregion
 
         #region Win32 Methods.

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -147,13 +148,11 @@ namespace Gorgon.IO
                 return false;
             }
 
-            using (GorgonBinaryReader binReader = reader.OpenChunk(VersionData))
-            {
-                var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
-                reader.CloseChunk();
+            using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
+            var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+            reader.CloseChunk();
 
-                return Version.Equals(fileVersion);
-            }
+            return Version.Equals(fileVersion);
         }
 
         /// <summary>
@@ -184,7 +183,7 @@ namespace Gorgon.IO
 
                     binWriter.Write(key.Time);
 
-                    if ((key.Value == null) && (string.IsNullOrWhiteSpace(key.TextureName)))
+                    if ((key.Value is null) && (string.IsNullOrWhiteSpace(key.TextureName)))
                     {
                         binWriter.WriteValue<byte>(0);
                     }
@@ -192,7 +191,7 @@ namespace Gorgon.IO
                     {
                         binWriter.WriteValue<byte>(1);                        
 
-                        if (key.Value != null)
+                        if (key.Value is not null)
                         {
                             binWriter.Write(key.Value.Texture.Name);
                             binWriter.Write(key.Value.Texture.Width);
@@ -306,14 +305,14 @@ namespace Gorgon.IO
                     {
                         texture = LoadTexture(binReader, out textureName);
 
-                        if ((texture == null) && (string.IsNullOrWhiteSpace(textureName)))
+                        if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                         {
                             Renderer.Log.Print("Attempted to load a texture from the data, but the texture was not in memory and the name is unknown.",
                                                  LoggingLevel.Verbose);
                         }
                     }
 
-                    if ((texture == null) && (hasTexture != 0))
+                    if ((texture is null) && (hasTexture is not 0))
                     {
                         trackBuilder.SetKey(new GorgonKeyTexture2D(time, textureName, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
                     }
@@ -509,9 +508,9 @@ namespace Gorgon.IO
                 reader.CloseChunk();
 
                 ReadTrackValues<GorgonKeySingle, float>(reader, SingleData, builder.EditSingle, (t, v) => new GorgonKeySingle(t, v));
-                ReadTrackValues<GorgonKeyVector2, DX.Vector2>(reader, Vector2Data, builder.EditVector2, (t, v) => new GorgonKeyVector2(t, v));
-                ReadTrackValues<GorgonKeyVector3, DX.Vector3>(reader, Vector3Data, builder.EditVector3, (t, v) => new GorgonKeyVector3(t, v));
-                ReadTrackValues<GorgonKeyVector4, DX.Vector4>(reader, Vector4Data, builder.EditVector4, (t, v) => new GorgonKeyVector4(t, v));
+                ReadTrackValues<GorgonKeyVector2, Vector2>(reader, Vector2Data, builder.EditVector2, (t, v) => new GorgonKeyVector2(t, v));
+                ReadTrackValues<GorgonKeyVector3, Vector3>(reader, Vector3Data, builder.EditVector3, (t, v) => new GorgonKeyVector3(t, v));
+                ReadTrackValues<GorgonKeyVector4, Vector4>(reader, Vector4Data, builder.EditVector4, (t, v) => new GorgonKeyVector4(t, v));
                 ReadTrackValues<GorgonKeyRectangle, DX.RectangleF>(reader, RectData, builder.EditRectangle, (t, v) => new GorgonKeyRectangle(t, v));
                 ReadTrackValues<GorgonKeyGorgonColor, GorgonColor>(reader, ColorData, builder.EditColor, (t, v) => new GorgonKeyGorgonColor(t, v));
                 ReadTextureTrackValues(reader, TextureData, builder);

@@ -274,7 +274,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the gaussian blur settings can be shown or not.
         /// </summary>
         /// <returns><b>true</b> if the settings can be shown, <b>false</b> if not.</returns>
-        private bool CanShowGaussBlurSettings() => _imageContent.CurrentPanel == null;
+        private bool CanShowGaussBlurSettings() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to show the gaussian blur effect settings.
@@ -346,7 +346,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the grayscale effect can be applied.
         /// </summary>
         /// <returns></returns>
-        private bool CanGrayScale() => _imageContent.CurrentPanel == null;
+        private bool CanGrayScale() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to apply the grayscale effect to the working image.
@@ -368,7 +368,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the invert effect can be applied.
         /// </summary>
         /// <returns><b>true</b> if the effect can be applied, <b>false</b> if not.</returns>
-        private bool CanInvert() => _imageContent.CurrentPanel == null;
+        private bool CanInvert() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to apply the invert effect to the working image.
@@ -390,7 +390,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the burn effect can be applied.
         /// </summary>
         /// <returns><b>true</b> if the effect can be applied, <b>false</b> if not.</returns>
-        private bool CanBurn() => _imageContent.CurrentPanel == null;
+        private bool CanBurn() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to apply the burn effect to the working image.
@@ -412,7 +412,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the dodge effect can be applied.
         /// </summary>
         /// <returns><b>true</b> if the effect can be applied, <b>false</b> if not.</returns>
-        private bool CanDodge() => _imageContent.CurrentPanel == null;
+        private bool CanDodge() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to apply the burn effect to the working image.
@@ -434,7 +434,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the sharpen settings can be shown.
         /// </summary>
         /// <returns><b>true</b> if they can be shown, <b>false</b> if not.</returns>
-        private bool CanShowSharpen() => _imageContent.CurrentPanel == null;
+        private bool CanShowSharpen() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to display the sharpen effect settings.
@@ -461,7 +461,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the emboss settings can be shown.
         /// </summary>
         /// <returns><b>true</b> if they can be shown, <b>false</b> if not.</returns>
-        private bool CanShowEmboss() => _imageContent.CurrentPanel == null;
+        private bool CanShowEmboss() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to display the emboss effect settings.
@@ -488,7 +488,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the posterize effect settings can be displayed.
         /// </summary>
         /// <returns><b>true</b> if the effect settings can be displayed, <b>false</b> if not.</returns>
-        private bool CanShowPosterize() => _imageContent.CurrentPanel == null;
+        private bool CanShowPosterize() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to show the posterize effect settings.
@@ -515,7 +515,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the 1 bit effect settings can be displayed.
         /// </summary>
         /// <returns><b>true</b> if the effect settings can be displayed, <b>false</b> if not.</returns>
-        private bool CanShowOneBit() => _imageContent.CurrentPanel == null;
+        private bool CanShowOneBit() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to show the 1 bit effect settings.
@@ -542,7 +542,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
         /// Function to determine if the edge detect effect settings can be displayed.
         /// </summary>
         /// <returns><b>true</b> if the effect settings can be displayed, <b>false</b> if not.</returns>
-        private bool CanShowEdgeDetect() => _imageContent.CurrentPanel == null;
+        private bool CanShowEdgeDetect() => _imageContent.CurrentPanel is null;
 
         /// <summary>
         /// Function to show the edge detection effect settings.

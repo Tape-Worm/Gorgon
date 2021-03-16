@@ -42,7 +42,7 @@ namespace Gorgon.IO
     {
         #region Variables.
         // The backing store for the directories.
-        private readonly Dictionary<string, VirtualDirectory> _directories = new Dictionary<string, VirtualDirectory>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, VirtualDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
         // The parent directory that owns this collection.
         private readonly VirtualDirectory _parent;
         #endregion
@@ -85,14 +85,14 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Adds an item to the <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// Adds an item to the <see cref="ICollection{T}" />.
         /// </summary>
-        /// <param name="item">The object to add to the <see cref="System.Collections.Generic.ICollection{T}" />.</param>
+        /// <param name="item">The object to add to the <see cref="ICollection{T}" />.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when this collection already contains a directory with the same name as the <paramref name="item"/> parameter.</exception>
         public void Add(VirtualDirectory item)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -106,15 +106,15 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// Removes the first occurrence of a specific object from the <see cref="ICollection{T}" />.
         /// </summary>
-        /// <param name="item">The object to remove from the <see cref="System.Collections.Generic.ICollection{T}" />.</param>
+        /// <param name="item">The object to remove from the <see cref="ICollection{T}" />.</param>
         /// <returns>
-        /// true if <paramref name="item" /> was successfully removed from the <see cref="System.Collections.Generic.ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// true if <paramref name="item" /> was successfully removed from the <see cref="ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="ICollection{T}" />.
         /// </returns>
         public bool Remove(VirtualDirectory item)
         {
-            if (item == null)
+            if (item is null)
             {
                 return false;
             }
@@ -149,7 +149,7 @@ namespace Gorgon.IO
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.
         /// </returns>
         IEnumerator<IGorgonVirtualDirectory> IEnumerable<IGorgonVirtualDirectory>.GetEnumerator()
         {
@@ -164,7 +164,7 @@ namespace Gorgon.IO
         /// Function to return an internal enumerator for manipulation of the directory structure.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<VirtualDirectory> GetEnumerator()
         {
@@ -187,7 +187,7 @@ namespace Gorgon.IO
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_directories.Values).GetEnumerator();
 
@@ -243,7 +243,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Removes all items from the <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// Removes all items from the <see cref="ICollection{T}" />.
         /// </summary>
         public void Clear() => _directories.Clear();
 

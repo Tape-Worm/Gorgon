@@ -80,7 +80,7 @@ namespace Gorgon.Editor
         private IDirectory GetDirectory(string path)
         {
             var args = new GetDirectoryArgs(path);
-            if ((DataContext?.GetDirectoryCommand == null) || (!DataContext.GetDirectoryCommand.CanExecute(args)))
+            if ((DataContext?.GetDirectoryCommand is null) || (!DataContext.GetDirectoryCommand.CanExecute(args)))
             {
                 return null;
             }
@@ -94,7 +94,7 @@ namespace Gorgon.Editor
         /// <param name="e">The event parameters.</param>
         private async void FolderBrowser_FolderDeleting(object sender, FolderDeleteArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 e.Cancel = true;
                 return;
@@ -102,7 +102,7 @@ namespace Gorgon.Editor
 
             IDirectory dir = GetDirectory(e.DirectoryPath);
 
-            if (dir == null)
+            if (dir is null)
             {
                 e.Cancel = true;
                 return;
@@ -110,7 +110,7 @@ namespace Gorgon.Editor
 
             var args = new DeleteArgs(dir.ID);
 
-            if ((DataContext.DeleteDirectoryCommand == null) || (!DataContext.DeleteDirectoryCommand.CanExecute(args)))
+            if ((DataContext.DeleteDirectoryCommand is null) || (!DataContext.DeleteDirectoryCommand.CanExecute(args)))
             {
                 return;
             }
@@ -129,7 +129,7 @@ namespace Gorgon.Editor
         /// <param name="e">The event parameters.</param>
         private void FolderBrowser_FolderAdding(object sender, FolderAddArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 e.Cancel = true;
                 return;
@@ -141,14 +141,14 @@ namespace Gorgon.Editor
                 ParentDirectory = _currentDirectory ?? DataContext.Root
             };
 
-            if ((DataContext.CreateDirectoryCommand == null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
+            if ((DataContext.CreateDirectoryCommand is null) || (!DataContext.CreateDirectoryCommand.CanExecute(args)))
             {
                 return;
             }
 
             DataContext.CreateDirectoryCommand.Execute(args);
 
-            if (args.Directory == null)
+            if (args.Directory is null)
             {
                 e.Cancel = true;
             }
@@ -161,7 +161,7 @@ namespace Gorgon.Editor
         /// <param name="e">The event parameters.</param>
         private void FolderBrowser_FolderRenaming(object sender, FolderRenameArgs e)
         {
-            if (DataContext?.RenameDirectoryCommand == null)
+            if (DataContext?.RenameDirectoryCommand is null)
             {
                 e.Cancel = true;
                 return;
@@ -169,7 +169,7 @@ namespace Gorgon.Editor
 
             IDirectory prevDir = GetDirectory(e.OldDirectoryPath);
 
-            if (prevDir == null)
+            if (prevDir is null)
             {
                 e.Cancel = true;
                 return;
@@ -202,7 +202,7 @@ namespace Gorgon.Editor
         /// <param name="e">The e.</param>
         private void FolderBrowser_FolderEntered(object sender, FolderSelectedArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -216,7 +216,7 @@ namespace Gorgon.Editor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -239,7 +239,7 @@ namespace Gorgon.Editor
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(IFileExplorer dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -264,7 +264,7 @@ namespace Gorgon.Editor
         /// <param name="directory">The node to use as the initial path.</param>
         public void SetInitialPath(IDirectory directory)
         {
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }

@@ -338,7 +338,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public IGorgonImage FromStream(Stream stream, long? size = null)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -360,7 +360,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             long basePosition = stream.Position;
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length;
             }
@@ -406,7 +406,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <exception cref="GorgonException">Thrown when the image data in the file has a pixel format that is unsupported.</exception>
         public IGorgonImage FromFile(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -416,10 +416,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return FromStream(stream);
-            }
+            using Stream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return FromStream(stream);
         }
 
         /// <summary>
@@ -455,7 +453,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         public void Save(IGorgonImage imageData, string filePath)
 
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -465,10 +463,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (Stream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                Save(imageData, stream);
-            }
+            using Stream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            Save(imageData, stream);
         }
 
         /// <summary>

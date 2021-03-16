@@ -28,9 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -54,13 +54,9 @@ namespace Gorgon.Graphics.Fonts
     /// </para>
     /// </remarks>
     public sealed class GorgonFont
-        : GorgonNamedObject, IDisposable
+        : GorgonNamedObject, IGorgonFontInfo, IDisposable
     {
         #region Variables.
-        // A worker buffer for formatting the string.
-        private readonly StringBuilder _workBuffer = new StringBuilder(256);
-        // A list of internal textures created by the font generator.
-        private readonly List<GorgonTexture2D> _internalTextures;
         // The information used to generate the font.
         private readonly GorgonFontInfo _info;
         #endregion
@@ -75,14 +71,9 @@ namespace Gorgon.Graphics.Fonts
         }
 
         /// <summary>
-        /// Property to return the number of textures used by this font.
-        /// </summary>
-        public int TextureCount => _internalTextures.Count;
-
-        /// <summary>
         /// Property to return whether there is an outline for this font.
         /// </summary>
-        public bool HasOutline => Info.OutlineSize > 0 && (Info.OutlineColor1.Alpha > 0 || Info.OutlineColor2.Alpha > 0);
+        public bool HasOutline => _info.OutlineSize > 0 && (_info.OutlineColor1.Alpha > 0 || _info.OutlineColor2.Alpha > 0);
 
         /// <summary>
         /// Property to return the list of kerning pairs associated with the font.
@@ -94,11 +85,6 @@ namespace Gorgon.Graphics.Fonts
         {
             get;
         }
-
-        /// <summary>
-        /// Property to return the information used to create this font.
-        /// </summary>
-        public IGorgonFontInfo Info => _info;
 
         /// <summary>
         /// Property to return the graphics interface used to create this font.
@@ -163,43 +149,225 @@ namespace Gorgon.Graphics.Fonts
             get;
             private set;
         }
+
+        /// <summary>Property to return whether the font height is in pixels or in points.</summary>
+        /// <remarks>
+        ///   <para>
+        /// When the font uses points for its height, the user must be aware of DPI scaling issues that may arise.
+        /// </para>
+        ///   <para>
+        /// This will affect the <see cref="Size" /> value in that it will alter the meaning of the units.
+        /// </para>
+        ///   <para>
+        /// The default value is <see cref="FontHeightMode.Pixels" />.
+        /// </para>
+        /// </remarks>
+        public FontHeightMode FontHeightMode => _info.FontHeightMode;
+
+        /// <summary>Property to return the font family name to generate the font from.</summary>
+        public string FontFamilyName => _info.FontFamilyName;
+
+        /// <summary>Property to return the font size.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This sets the height of the font.
+        /// </para>
+        ///   <para>
+        /// This is affected by the <see cref="Fonts.FontHeightMode" />. If the <see cref="FontHeightMode" /> is set to <see cref="FontHeightMode.Points" />, then this unit is the height
+        /// size height for the font. Otherwise, this represents the font height in <see cref="FontHeightMode.Pixels" />.
+        /// </para>
+        /// </remarks>
+        public float Size => _info.Size;
+
+        /// <summary>Property to return the width of the texture(s) used as the backing store for the bitmap font data.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This value will control the width of the textures created.  It can be used to decrease or increase the number of textures used for a font.  This is important because if the number of
+        /// requested glyphs cannot fit onto a single texture, a new texture will be created to store the remaining glyphs. Keeping as few textures as possible for a font is beneficial for performance.
+        /// </para>
+        ///   <para>
+        /// Font textures cannot be smaller than 256x256 and the maximum size is dependent upon <see cref="FeatureSet" /> for the <see cref="IGorgonVideoAdapterInfo" />.
+        /// </para>
+        ///   <para>
+        /// The default width is 256.
+        /// </para>
+        /// </remarks>
+        public int TextureWidth => _info.TextureWidth;
+
+        /// <summary>Property to return the height of the texture(s) used as the backing store for the bitmap font data.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This value will control the width of the textures created.  It can be used to decrease or increase the number of textures used for a font.  This is important because if the number of
+        /// requested glyphs cannot fit onto a single texture, a new texture will be created to store the remaining glyphs. Keeping as few textures as possible for a font is beneficial for performance.
+        /// </para>
+        ///   <para>
+        /// Font textures cannot be smaller than 256x256 and the maximum size is dependent upon <see cref="FeatureSet" /> for the <see cref="IGorgonVideoAdapterInfo" />.
+        /// </para>
+        ///   <para>
+        /// The default height is 256.
+        /// </para>
+        /// </remarks>
+        public int TextureHeight => _info.TextureHeight;
+
+        /// <summary>Property to return the list of available characters to use as glyphs within the font.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This will define what characters the font can display when rendering.  Any character not defined in this property will use the default character (typically a space).
+        /// </para>
+        ///   <para>
+        /// The default encompasses characters from ASCII character code 32 to 255.
+        /// </para>
+        /// </remarks>
+        public IEnumerable<char> Characters => _info.Characters;
+
+        /// <summary>Property to return the anti-aliasing mode for the font.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This defines the smoothness of font pixel edges.
+        /// </para>
+        ///   <para>
+        ///     <note type="important">
+        ///       <para>
+        /// Gorgon does not support clear type at this time.
+        /// </para>
+        ///     </note>
+        ///   </para>
+        ///   <para>
+        /// The default value is <see cref="FontAntiAliasMode.AntiAlias" />.
+        /// </para>
+        /// </remarks>
+        public FontAntiAliasMode AntiAliasingMode => _info.AntiAliasingMode;
+
+        /// <summary>Property to return the size of an outline.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This defines the thickness of an outline (in pixels) for each glyph in the font.  A value greater than 0 will draw an outline, 0 or less will turn outlining off.
+        /// </para>
+        ///   <para>
+        /// The default value is 0.
+        /// </para>
+        /// </remarks>
+        public int OutlineSize => _info.OutlineSize;
+
+        /// <summary>Property to return the starting color of the outline.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This defines the starting color for an outline around a font glyph. This can be used to give a gradient effect to the outline and allow for things like glowing effects and such.
+        /// </para>
+        ///   <para>
+        /// If the alpha channel is set to 0.0f and the <see cref="OutlineColor2" /> alpha channel is set to 0.0f, then outlining will be disabled since it will be invisible. This will also be ignored
+        /// if the <see cref="OutlineSize" /> value is not greater than 0.
+        /// </para>
+        ///   <para>
+        /// The default value is <see cref="GorgonColor.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+        /// </para>
+        /// </remarks>
+        public GorgonColor OutlineColor1 => _info.OutlineColor1;
+
+        /// <summary>Property to return the ending color of the outline.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This defines the ending color for an outline around a font glyph. This can be used to give a gradient effect to the outline and allow for things like glowing effects and such.
+        /// </para>
+        ///   <para>
+        /// If the alpha channel is set to 0.0f and the <see cref="OutlineColor1" /> alpha channel is set to 0.0f, then outlining will be disabled since it will be invisible. This will also be ignored
+        /// if the <see cref="OutlineSize" /> value is not greater than 3.
+        /// </para>
+        ///   <para>
+        /// The default value is <see cref="GorgonColor.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+        /// </para>
+        /// </remarks>
+        public GorgonColor OutlineColor2 => _info.OutlineColor2;
+
+        /// <summary>Property to return whether premultiplied textures are used when generating the glyphs for the font.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This defines whether the textures used to store the glyphs of the font will use premultiplied alpha. Premultiplied alpha is used to give a more accurate representation of blending between
+        /// colors, and is accomplished by multiplying the RGB values by the Alpha component of a pixel.
+        /// </para>
+        ///   <para>
+        /// If this value is <b>true</b>, then applications should use the <see cref="GorgonBlendState.Premultiplied" /> blending state when rendering text.
+        /// </para>
+        ///   <para>
+        /// The default value is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public bool UsePremultipliedTextures => _info.UsePremultipliedTextures;
+
+        /// <summary>Property to return a <see cref="GorgonGlyphBrush" /> to use for special effects on the glyphs for the font.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This value can be used to define how a glyph is rendered when the <see cref="T:Gorgon.Graphics.Fonts.GorgonFont" /> is generated. Applications can use brushes for gradients, textures, etc... to render the glyphs to give
+        /// them a unique look.
+        /// </para>
+        ///   <para>
+        /// This default value is <b>null</b>.
+        /// </para>
+        /// </remarks>
+        public GorgonGlyphBrush Brush => _info.Brush;
+
+        /// <summary>Property to return the style for the font.</summary>
+        /// <remarks>The default value is <see cref="System.Drawing.FontStyle.Regular" />.</remarks>
+        public FontStyle FontStyle => _info.FontStyle;
+
+        /// <summary>Property to return a default character to use in place of a character that cannot be found in the font.</summary>
+        /// <remarks>
+        ///   <para>
+        /// If some characters are unprintable (e.g. have no width/height), or they were not defined in the <see cref="Characters" /> property.  This character will be substituted in those cases.
+        /// </para>
+        ///   <para>
+        /// The default value is a space (' ').
+        /// </para>
+        /// </remarks>
+        public char DefaultCharacter => _info.DefaultCharacter;
+
+        /// <summary>Property to return the spacing (in pixels) used between font glyphs on the backing texture.</summary>
+        /// <remarks>
+        ///   <para>
+        /// This defines how much space to put between glyphs. Higher values will waste more space (and thus lead to more textures being created), but may resolve rendering issues.
+        /// </para>
+        ///   <para>
+        /// The valid values are between 0 and 8.
+        /// </para>
+        ///   <para>
+        /// The default value is 1 pixel.
+        /// </para>
+        /// </remarks>
+        public int PackingSpacing => _info.PackingSpacing;
+
+        /// <summary>Property to return whether to include kerning pair information in the font.</summary>
+        /// <remarks>
+        ///   <para>
+        /// Kerning pairs are used to define spacing between 2 characters in a font.  When this value is set to <b>true</b> the kerning information of the font is retrieved and added to the <see cref="T:Gorgon.Graphics.Fonts.GorgonFont" />
+        /// for use when rendering. This can be used to resolve rendering issues regarding horizontal font spacing.
+        /// </para>
+        ///   <para>
+        ///     <note type="note">
+        ///       <para>
+        /// Some fonts do not employ the use of kerning pairs, and consequently, this setting will be ignored if that is the case.
+        /// </para>
+        ///     </note>
+        ///   </para>
+        ///   <para>
+        /// The default value is <b>true</b>.
+        /// </para>
+        /// </remarks>
+        public bool UseKerningPairs => _info.UseKerningPairs;
+
+        /// <summary>Property to return the type of compression to apply to the font textures.</summary>
+        /// <remarks>
+        ///   <para>
+        /// Use compression to lower the amount of video RAM consumed by the font textures. It is recommended that <see cref="UsePremultipliedTextures" /> be set to <b>true</b> when using
+        /// compression.
+        /// </para>
+        ///   <para>
+        /// The default value is <see cref="FontTextureCompression.None" />.
+        /// </para>
+        /// </remarks>
+        public FontTextureCompression Compression => _info.Compression;
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to format a string for rendering using a <see cref="GorgonFont"/>.
-        /// </summary>
-        /// <param name="renderText">The text to render.</param>
-        /// <param name="tabSpacing">[Optional] The number of spaces used to replace a tab control character.</param>
-        /// <returns>The formatted text.</returns>
-        /// <remarks>
-        /// <para>
-        /// This method will format the string so that all control characters such as carriage return, and tabs are converted into spaces. 
-        /// </para>
-        /// <para>
-        /// If the <paramref name="tabSpacing"/> parameter is changed from its default of 4, then that will be the number of space substituted for the tab control character.
-        /// </para>
-        /// </remarks>
-        public string FormatStringForRendering(string renderText, int tabSpacing = 4)
-        {
-            if (string.IsNullOrEmpty(renderText))
-            {
-                return string.Empty;
-            }
-
-            tabSpacing = tabSpacing.Max(1);
-            _workBuffer.Length = 0;
-            _workBuffer.Append(renderText);
-
-            // Strip all carriage returns.
-            _workBuffer.Replace("\r", string.Empty);
-
-            // Convert tabs to spaces.
-            _workBuffer.Replace("\t", new string(' ', tabSpacing));
-
-            return _workBuffer.ToString();
-        }
-
         /// <summary>
         /// Function to copy bitmap data to a texture.
         /// </summary>
@@ -212,33 +380,31 @@ namespace Gorgon.Graphics.Fonts
 
             try
             {
-                int* pixels = (int*)sourcePixels.Scan0.ToPointer();
+                var pixels = new GorgonPtr<int>(sourcePixels.Scan0, bitmap.Width * bitmap.Height);
+                GorgonPtr<int> destBuffer = image.Buffers[0, arrayIndex].Data.To<int>();
 
+                // Both buffers should be the same size. If they are not, bad things happen.
                 for (int y = 0; y < bitmap.Height; y++)
                 {
-                    // We only need the width here, as our pointer will handle the stride by virtue of being an int.
-                    int* offset = pixels + (y * bitmap.Width);
-
-                    int destOffset = y * image.Buffers[0, arrayIndex].PitchInformation.RowPitch;
                     for (int x = 0; x < bitmap.Width; x++)
                     {
+                        ref readonly int srcColor = ref pixels[(y * bitmap.Width) + x];
+                        ref int destColor = ref destBuffer[(y * bitmap.Width) + x];
+
                         // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
                         // lowest, but in fact, it is lowest to highest.
                         // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
                         // (R at byte 0) to the highest byte (A at byte 3).
                         // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-                        var color = new GorgonColor(*offset);
+                        var color = new GorgonColor(srcColor);
 
-                        if (Info.UsePremultipliedTextures)
+                        if (_info.UsePremultipliedTextures)
                         {
                             // Convert to premultiplied.
                             color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
                         }
 
-                        int* destBuffer = (int*)(Unsafe.AsPointer(ref image.Buffers[0, arrayIndex].Data[destOffset]));
-                        *destBuffer = color.ToABGR();
-                        offset++;
-                        destOffset += image.FormatInfo.SizeInBytes;
+                        destColor = color.ToABGR();
                     }
                 }
             }
@@ -265,7 +431,7 @@ namespace Gorgon.Graphics.Fonts
             {
                 advancementInfo = Win32API.GetCharABCWidths(allowedCharacters[0], allowedCharacters[allowedCharacters.Count - 1]);
 
-                if (!Info.UseKerningPairs)
+                if (!_info.UseKerningPairs)
                 {
                     return advancementInfo;
                 }
@@ -299,7 +465,7 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>A new list of available characters, sorted by character.</returns>
         private List<char> GetAvailableCharacters()
         {
-            var result = (from character in Info.Characters
+            var result = (from character in _info.Characters
                           where (!char.IsControl(character))
                                 && (Convert.ToInt32(character) >= 32)
                                 && (!char.IsWhiteSpace(character))
@@ -307,9 +473,9 @@ namespace Gorgon.Graphics.Fonts
                           select character).ToList();
 
             // Ensure the default character is there.
-            if (!result.Contains(Info.DefaultCharacter))
+            if (!result.Contains(_info.DefaultCharacter))
             {
-                result.Insert(0, Info.DefaultCharacter);
+                result.Insert(0, _info.DefaultCharacter);
             }
 
             return result;
@@ -319,20 +485,69 @@ namespace Gorgon.Graphics.Fonts
         /// Function to generate textures based on the packed bitmaps generated for the glyphs.
         /// </summary>
         /// <param name="glyphData">The glyph data, grouped by packed bitmap.</param>
-        /// <returns>A dictionary of characters associated with a texture.</returns>
-        private void GenerateTextures(Dictionary<Bitmap, IEnumerable<GlyphInfo>> glyphData)
+        /// <returns>A list of images to upload to the GPU.</returns>
+        private IReadOnlyList<(IGorgonImage image, IEnumerable<GlyphInfo> glyphs)> GenerateImages(Dictionary<Bitmap, IEnumerable<GlyphInfo>> glyphData)
         {
+            var result = new List<(IGorgonImage, IEnumerable<GlyphInfo>)>();
+
             var imageSettings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
             {
-                Width = Info.TextureWidth,
-                Height = Info.TextureHeight,
+                Width = _info.TextureWidth,
+                Height = _info.TextureHeight,
                 Depth = 1
             };
+
+            GorgonImage image = null;
+            int arrayIndex = 0;
+            int bitmapCount = glyphData.Count;
+            var glyphs = new List<GlyphInfo>();
+
+            // We copy each bitmap into a texture array index until we've hit the max texture array size, and then 
+            // we move to a new texture.  This will keep our glyph textures inside of a single texture object until 
+            // it is absolutely necessary to change and should improve performance when rendering.
+            foreach (KeyValuePair<Bitmap, IEnumerable<GlyphInfo>> glyphBitmap in glyphData)
+            {
+                if ((image is null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
+                {
+                    imageSettings.ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount);
+                    arrayIndex = 0;
+
+                    glyphs = new List<GlyphInfo>();
+                    image = new GorgonImage(imageSettings);
+                    result.Add((image, glyphs));
+                }
+
+                CopyBitmap(glyphBitmap.Key, image, arrayIndex);
+
+                foreach (GlyphInfo info in glyphBitmap.Value)
+                {
+                    glyphs.Add(info);
+                    info.TextureArrayIndex = arrayIndex;
+                }
+
+                bitmapCount--;
+                arrayIndex++;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to generate textures based on the packed bitmaps generated for the glyphs.
+        /// </summary>
+        /// <param name="images">The images containing the data to upload to the GPU.</param>
+        private void GenerateTextures(IReadOnlyList<(IGorgonImage, IEnumerable<GlyphInfo>)> images)
+        {
+            if ((images is null) || (images.Count == 0))
+            {
+                return;
+            }
+
             var textureSettings = new GorgonTexture2DInfo
             {
                 Format = BufferFormat.R8G8B8A8_UNorm,
-                Width = Info.TextureWidth,
-                Height = Info.TextureHeight,
+                Width = _info.TextureWidth,
+                Height = _info.TextureHeight,
                 Usage = ResourceUsage.Default,
                 Binding = TextureBinding.ShaderResource,
                 IsCubeMap = false,
@@ -340,51 +555,33 @@ namespace Gorgon.Graphics.Fonts
                 MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling
             };
 
-            GorgonImage image = null;
-            GorgonTexture2D texture = null;
-            int arrayIndex = 0;
-            int bitmapCount = glyphData.Count;
-
-            try
+            foreach ((IGorgonImage image, IEnumerable<GlyphInfo> glyphs) in images)
             {
-                // We copy each bitmap into a texture array index until we've hit the max texture array size, and then 
-                // we move to a new texture.  This will keep our glyph textures inside of a single texture object until 
-                // it is absolutely necessary to change and should improve performance when rendering.
-                foreach (KeyValuePair<Bitmap, IEnumerable<GlyphInfo>> glyphBitmap in glyphData)
+                textureSettings.ArrayCount = image.ArrayCount;
+
+                switch (Compression)
                 {
-                    if ((image == null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
-                    {
-                        textureSettings.ArrayCount = imageSettings.ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount);
-                        arrayIndex = 0;
-
-                        image?.Dispose();
-                        image = new GorgonImage(imageSettings);
-
-                        texture = image.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions
-                        {
-                            Name = $"GorgonFont_{Name}_Internal_Texture_{Guid.NewGuid():N}"
-                        });
-                        _internalTextures.Add(texture);
-                    }
-
-                    CopyBitmap(glyphBitmap.Key, image, arrayIndex);
-
-                    // Send to our texture.
-                    texture.SetData(image.Buffers[0, arrayIndex], destArrayIndex: arrayIndex);
-
-                    foreach (GlyphInfo info in glyphBitmap.Value)
-                    {
-                        info.Texture = texture;
-                        info.TextureArrayIndex = arrayIndex;
-                    }
-
-                    bitmapCount--;
-                    arrayIndex++;
+                    case FontTextureCompression.Fast:
+                        image.BeginUpdate()
+                             .Compress(BufferFormat.BC3_UNorm, quality: BcCompressionQuality.Quality)
+                             .EndUpdate();
+                        break;
+                    case FontTextureCompression.Quality:
+                        image.BeginUpdate()
+                             .Compress(BufferFormat.BC7_UNorm, quality: BcCompressionQuality.Quality)
+                             .EndUpdate();
+                        break;
                 }
-            }
-            finally
-            {
-                image?.Dispose();
+
+                GorgonTexture2D texture = image.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions
+                {
+                    Name = $"GorgonFont_{Name.Replace(" ", "_")}_Internal_Texture_{Guid.NewGuid():N}"
+                });
+
+                foreach (GlyphInfo glyph in glyphs)
+                {
+                    glyph.Texture = texture;
+                }
             }
         }
 
@@ -427,79 +624,59 @@ namespace Gorgon.Graphics.Fonts
             }
         }
 
-
         /// <summary>
-        /// Function to measure the width of an individual line of text.
+        /// Function to generate font data.
         /// </summary>
-        /// <param name="line">The line to measure.</param>
-        /// <param name="useOutline"><b>true</b> to use the font outline, <b>false</b> to disregard it.</param>
-        /// <returns>The width of the line.</returns>
-        private float GetLineWidth(string line, bool useOutline)
+        /// <param name="externalFontCollection">External fonts loaded in by the user.</param>
+        /// <returns>A tuple containing the font information, advance information, and the bitmaps for the glyphs.</returns>
+        private (GdiFontData fontData, Dictionary<char, ABC> abcAdvances, Dictionary<char, GlyphInfo> glyphBitmaps) GenerateFontData(PrivateFontCollection externalFontCollection)
         {
-            float size = 0;
-            bool firstChar = true;
+            Bitmap setupBitmap = null;
+            System.Drawing.Graphics graphics = null;
+            GdiFontData fontData = default;
 
-            if (!Glyphs.TryGetValue(Info.DefaultCharacter, out GorgonGlyph defaultGlyph))
+            try
             {
-                throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter));
-            }
+                // Temporary bitmap used to gather a graphics context.
+                setupBitmap = new Bitmap(2, 2, PixelFormat.Format32bppArgb);
 
-            for (int i = 0; i < line.Length; i++)
+                // Get a context for the rasterizing surface.
+                graphics = System.Drawing.Graphics.FromImage(setupBitmap);
+                graphics.PageUnit = GraphicsUnit.Pixel;
+
+                // Build up the information using a GDI+ font.
+                fontData = GdiFontData.GetFontData(graphics, _info, externalFontCollection);
+
+                // Remove control characters and anything below a space.
+                List<char> availableCharacters = GetAvailableCharacters();
+
+                // Set up the code to draw glyphs to bitmaps.
+                var glyphDraw = new GlyphDraw(_info, fontData);
+
+                // Gather the boundaries for each glyph character.
+                Dictionary<char, GlyphRegions> glyphBounds = glyphDraw.GetGlyphRegions(availableCharacters, HasOutline);
+
+                // Because the dictionary above remaps characters (if they don't have a glyph or their rects are empty),
+                // we'll need to drop these from our main list of characters.
+                availableCharacters.RemoveAll(item => !glyphBounds.ContainsKey(item));
+
+                // Get kerning and glyph advancement information.
+                Dictionary<char, ABC> abc = GetKerningInformation(graphics, fontData.Font, availableCharacters);
+
+                // Put the glyphs on packed bitmaps.
+                Dictionary<char, GlyphInfo> glyphs = glyphDraw.DrawToPackedBitmaps(availableCharacters, glyphBounds, HasOutline);
+
+                return (fontData, abc, glyphs);
+            }
+            finally
             {
-                char character = line[i];
-
-                if (!Glyphs.TryGetValue(character, out GorgonGlyph glyph))
-                {
-                    glyph = defaultGlyph;
-                }
-
-                // Skip out on carriage returns and newlines.
-                if ((character == '\r')
-                    || (character == '\n'))
-                {
-                    continue;
-                }
-
-                // Whitespace will use the glyph width.
-                if (char.IsWhiteSpace(character))
-                {
-                    size += glyph.Advance;
-                    continue;
-                }
-
-                // Include the initial offset.
-                if (firstChar)
-                {
-                    size += (useOutline && glyph.OutlineCoordinates.Width > 0) ? glyph.OutlineOffset.X : glyph.Offset.X;
-                    firstChar = false;
-                }
-
-                size += glyph.Advance;
-
-                if (!Info.UseKerningPairs)
-                {
-                    continue;
-                }
-
-                if ((i == line.Length - 1)
-                    || (KerningPairs.Count == 0))
-                {
-                    continue;
-                }
-
-                var kerning = new GorgonKerningPair(character, line[i + 1]);
-
-                if (KerningPairs.TryGetValue(kerning, out int kernAmount))
-                {
-                    size += kernAmount;
-                }
+                graphics?.Dispose();
+                setupBitmap?.Dispose();
             }
-
-            return size;
         }
 
         /// <summary>
-        /// Function to retrieve the glyph used for the default character assigned in the font <see cref="Info"/>.
+        /// Function to retrieve the glyph used for the default character assigned to the font <see cref="DefaultCharacter"/>.
         /// </summary>
         /// <returns>The <see cref="GorgonGlyph"/> representing the default character.</returns>
         /// <exception cref="KeyNotFoundException">Thrown when no glyph could be located that matches the default character.</exception>
@@ -510,11 +687,11 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         /// <seealso cref="IGorgonFontInfo"/>
         public GorgonGlyph GetDefaultGlyph() => !TryGetDefaultGlyph(out GorgonGlyph glyph)
-                ? throw new KeyNotFoundException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter))
+                ? throw new KeyNotFoundException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, _info.DefaultCharacter))
                 : glyph;
 
         /// <summary>
-        /// Function to retrieve the glyph used for the default character assigned in the font <see cref="Info"/>.
+        /// Function to retrieve the glyph used for the default character assigned to the font <see cref="DefaultCharacter"/>.
         /// </summary>
         /// <param name="glyph">The default glyph, or <b>null</b> if not found.</param>
         /// <returns><b>true</b> if the glyph was found, or <b>false</b> if not.</returns>
@@ -525,284 +702,33 @@ namespace Gorgon.Graphics.Fonts
         /// </remarks>
         /// <seealso cref="IGorgonFontInfo"/>
         /// <seealso cref="GorgonGlyph"/>
-        public bool TryGetDefaultGlyph(out GorgonGlyph glyph) => Glyphs.TryGetValue(Info.DefaultCharacter, out glyph);
-
-        /// <summary>
-        /// Function to perform word wrapping on a string based on this font.
-        /// </summary>
-        /// <param name="text">The text to word wrap.</param>
-        /// <param name="wordWrapWidth">The maximum width, in pixels, that must be met for word wrapping to occur.</param>
-        /// <returns>The string with word wrapping.</returns>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="wordWrapWidth"/> is the maximum number of pixels required for word wrapping, if an individual font glyph cell width (the <see cref="GorgonGlyph.Offset"/> + 
-        /// <see cref="GorgonGlyph.Advance"/>) exceeds that of the <paramref name="wordWrapWidth"/>, then the parameter value is updated to glyph cell width.
-        /// </para>
-        /// </remarks>
-        public string WordWrap(string text, float wordWrapWidth)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return text;
-            }
-
-            var wordText = new StringBuilder(text);
-
-            if (!Glyphs.TryGetValue(Info.DefaultCharacter, out GorgonGlyph defaultGlyph))
-            {
-                throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter));
-            }
-
-            int maxLength = wordText.Length;
-            int index = 0;
-            float position = 0.0f;
-            bool firstChar = true;
-
-            while (index < maxLength)
-            {
-                char character = wordText[index];
-
-                // Don't count newline or carriage return.
-                if ((character == '\n')
-                    || (character == '\r'))
-                {
-                    firstChar = true;
-                    position = 0;
-                    ++index;
-                    continue;
-                }
-
-
-                if (!Glyphs.TryGetValue(character, out GorgonGlyph glyph))
-                {
-                    glyph = defaultGlyph;
-                }
-
-                float glyphCellWidth = glyph.Advance;
-
-                if (firstChar)
-                {
-                    glyphCellWidth += glyph.Offset.X;
-                    firstChar = false;
-                }
-
-                // If we're using kerning, then adjust for the kerning value.
-                if ((Info.UseKerningPairs)
-                    && (index < maxLength - 1))
-                {
-
-                    if (KerningPairs.TryGetValue(new GorgonKerningPair(character, wordText[index + 1]), out int kernValue))
-                    {
-                        glyphCellWidth += kernValue;
-                    }
-                }
-
-                position += glyphCellWidth;
-
-                // Update the word wrap boundary if the cell size exceeds it.
-                if (glyphCellWidth > wordWrapWidth)
-                {
-                    wordWrapWidth = glyphCellWidth;
-                }
-
-                // We're not at the break yet.
-                if (position < wordWrapWidth)
-                {
-                    ++index;
-                    continue;
-                }
-
-                int whiteSpaceIndex = index;
-
-                // If we hit the max width, then we need to find the previous whitespace and inject a newline.
-                while ((whiteSpaceIndex <= index) && (whiteSpaceIndex >= 0))
-                {
-                    char breakChar = wordText[whiteSpaceIndex];
-
-                    if ((char.IsWhiteSpace(breakChar))
-                        && (breakChar != '\n')
-                        && (breakChar != '\r'))
-                    {
-                        index = whiteSpaceIndex;
-                        break;
-                    }
-
-                    --whiteSpaceIndex;
-                }
-
-                // If we're at the beginning, then we cannot wrap this text, so we'll break it at the border specified.
-                if (index != whiteSpaceIndex)
-                {
-                    if (index != 0)
-                    {
-                        wordText.Insert(index, '\n');
-                        maxLength = wordText.Length;
-                        ++index;
-                    }
-                    position = 0;
-                    firstChar = true;
-                    // Move to next character.
-                    ++index;
-                    continue;
-                }
-
-                // Extract the space.
-                wordText[whiteSpaceIndex] = '\n';
-                position = 0;
-                firstChar = true;
-                index = whiteSpaceIndex + 1;
-            }
-
-            return wordText.ToString();
-        }
-
-        /// <summary>
-        /// Function to measure a single line of text using this font.
-        /// </summary>
-        /// <param name="text">The single line of text to measure.</param>
-        /// <param name="useOutline"><b>true</b> to include the outline in the measurement, <b>false</b> to exclude.</param>
-        /// <param name="lineSpacing">[Optional] The factor used to determine the amount of space between each line.</param>
-        /// <returns>A vector containing the width and height of the text line when rendered using this font.</returns>
-        /// <remarks>
-        /// <para>
-        /// This will measure the specified <paramref name="text"/> and return the size, in pixels, of the region containing the text. Unlike the <see cref="MeasureText"/> method, this method does not format 
-        /// the text or take into account newline/carriage returns. It is meant for a single line of text only.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="useOutline"/> parameter is <b>true</b>, then the outline size is taken into account when measuring, otherwise only the standard glyph size is taken into account. If the font 
-        /// <see cref="HasOutline"/> property is <b>false</b>, then this parameter is ignored.
-        /// </para>
-        /// <para>
-        /// The <paramref name="lineSpacing"/> parameter adjusts the amount of space between each line by multiplying it with the <see cref="FontHeight"/> value (and the <see cref="IGorgonFontInfo.OutlineSize"/> * 2 
-        /// if <paramref name="useOutline"/> is <b>true</b> and <see cref="HasOutline"/> is <b>true</b>). For example, to achieve a double spacing effect, change this value to 2.0f.
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="MeasureText"/>
-        public DX.Size2F MeasureLine(string text, bool useOutline, float lineSpacing = 1.0f)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return DX.Size2F.Zero;
-            }
-
-            float lineWidth = GetLineWidth(text, useOutline && HasOutline);
-
-            if ((HasOutline) && (useOutline))
-            {
-                lineWidth += Info.OutlineSize;
-            }
-
-            return new DX.Size2F(lineWidth, FontHeight.FastFloor() * lineSpacing);
-        }
-
-        /// <summary>
-        /// Function to measure the specified text using this font.
-        /// </summary>
-        /// <param name="text">The text to measure.</param>
-        /// <param name="useOutline"><b>true</b> to include the outline in the measurement, <b>false</b> to exclude.</param>
-        /// <param name="tabSpaceCount">[Optional] The number of spaces represented by a tab control character.</param>
-        /// <param name="lineSpacing">[Optional] The factor used to determine the amount of space between each line.</param>
-        /// <param name="wordWrapWidth">[Optional] The maximum width to return if word wrapping is required.</param>
-        /// <returns>A vector containing the width and height of the text when rendered using this font.</returns>
-        /// <remarks>
-        /// <para>
-        /// This will measure the specified <paramref name="text"/> and return the size, in pixels, of the region containing the text.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="wordWrapWidth"/> is specified and greater than zero, then word wrapping is assumed to be on and the text will be handled using word wrapping.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="useOutline"/> parameter is <b>true</b>, then the outline size is taken into account when measuring, otherwise only the standard glyph size is taken into account. If the font 
-        /// <see cref="HasOutline"/> property is <b>false</b>, then this parameter is ignored.
-        /// </para>
-        /// <para>
-        /// The <paramref name="lineSpacing"/> parameter adjusts the amount of space between each line by multiplying it with the <see cref="FontHeight"/> value (and the <see cref="IGorgonFontInfo.OutlineSize"/> * 2 
-        /// if <paramref name="useOutline"/> is <b>true</b> and <see cref="HasOutline"/> is <b>true</b>). For example, to achieve a double spacing effect, change this value to 2.0f.
-        /// </para>
-        /// <para>
-        /// If measuring a single line of text with no breaks (i.e. newline or carriage return), and no word wrapping, then call the <see cref="MeasureLine"/> method instead for better performance.
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="MeasureLine"/>
-        public DX.Size2F MeasureText(string text, bool useOutline, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return DX.Size2F.Zero;
-            }
-
-            string formattedText = FormatStringForRendering(text, tabSpaceCount);
-            DX.Size2F result = DX.Size2F.Zero;
-
-            if (wordWrapWidth != null)
-            {
-                formattedText = WordWrap(text, wordWrapWidth.Value);
-            }
-
-            string[] lines = formattedText.GetLines();
-            float fontHeight = FontHeight.FastFloor();
-
-            if (lines.Length == 0)
-            {
-                return result;
-            }
-
-            if (lineSpacing.EqualsEpsilon(1.0f))
-            {
-                result.Height = lines.Length * fontHeight;
-            }
-            else
-            {
-                // For a modified line spacing, we have to adjust for the last line not being affected by the line spacing.
-                result.Height = ((lines.Length - 1) * (((fontHeight) * lineSpacing))) + (fontHeight);
-            }
-
-            if ((HasOutline) && (useOutline))
-            {
-                result.Height += Info.OutlineSize * 0.5f;
-            }
-
-            // Get width.
-            // ReSharper disable once ForCanBeConvertedToForeach
-            for (int i = 0; i < lines.Length; ++i)
-            {
-                float lineWidth = GetLineWidth(lines[i], useOutline && HasOutline);
-
-                if ((HasOutline) && (useOutline))
-                {
-                    lineWidth += Info.OutlineSize;
-                }
-
-                result.Width = result.Width.Max(lineWidth);
-            }
-
-            return result;
-        }
+        public bool TryGetDefaultGlyph(out GorgonGlyph glyph) => Glyphs.TryGetValue(_info.DefaultCharacter, out glyph);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            // Get rid of this font from its factory cache when its disposed. Otherwise it'll live on in a half initialized state.
+            // Get rid of this font from its factory cache when its disposed. Otherwise it'll live on in an uninitialized state.
             Factory?.UnregisterFont(this);
 
-            foreach (GorgonTexture2D texture in _internalTextures)
+            foreach (GorgonTexture2D glyphTexture in Glyphs.Select(item => item?.TextureView?.Texture)
+                                                           .Where(item => item is not null))
             {
-                texture?.Dispose();
+                glyphTexture.Dispose();
             }
 
             var brush = _info.Brush as IDisposable;
             brush?.Dispose();
-            _internalTextures.Clear();
+
             KerningPairs.Clear();
             Glyphs.Clear();
         }
 
         /// <summary>
-        /// Function to create or update the font.
+        /// Function to asynchronously create or update the font.
         /// </summary>
-        /// <param name="externalFontCollections">The external font collections from the application.</param>
+        /// <param name="externalFontCollection">The external font collections from the application.</param>
         /// <remarks>
         /// <para>
         /// This is used to generate a new set of font textures, and essentially "create" the font object.
@@ -820,53 +746,32 @@ namespace Gorgon.Graphics.Fonts
         /// <para>-or-</para>
         /// <para>Thrown when the font family name is <b>null</b> or Empty.</para>
         /// </exception>
-        internal void GenerateFont(IEnumerable<System.Drawing.Text.PrivateFontCollection> externalFontCollections)
+        internal async Task GenerateFontAsync(PrivateFontCollection externalFontCollection)
         {
-            Bitmap setupBitmap = null;
-            System.Drawing.Graphics graphics = null;
-            GdiFontData fontData = default;
+            GdiFontData fontData = null;
+            Dictionary<char, ABC> abcAdvances;
+            Dictionary<char, GlyphInfo> glyphBitmaps;
             Dictionary<Bitmap, IEnumerable<GlyphInfo>> groupedByBitmap = null;
+            IReadOnlyList<(IGorgonImage, IEnumerable<GlyphInfo>)> images = null;
 
             try
             {
-                // Temporary bitmap used to gather a graphics context.				
-                setupBitmap = new Bitmap(2, 2, PixelFormat.Format32bppArgb);
+                (GdiFontData, Dictionary<char, ABC>, Dictionary<char, GlyphInfo>) GetFontData() => GenerateFontData(externalFontCollection);
+                IReadOnlyList<(IGorgonImage, IEnumerable<GlyphInfo>)> GetImages() => GenerateImages(groupedByBitmap);
 
-                // Get a context for the rasterizing surface.
-                graphics = System.Drawing.Graphics.FromImage(setupBitmap);
-                graphics.PageUnit = GraphicsUnit.Pixel;
-
-                // Build up the information using a GDI+ font.
-                fontData = GdiFontData.GetFontData(graphics, Info, externalFontCollections);
-
-                // Remove control characters and anything below a space.
-                List<char> availableCharacters = GetAvailableCharacters();
-
-                // Set up the code to draw glyphs to bitmaps.
-                var glyphDraw = new GlyphDraw(Info, fontData);
-
-                // Gather the boundaries for each glyph character.
-                Dictionary<char, GlyphRegions> glyphBounds = glyphDraw.GetGlyphRegions(availableCharacters, HasOutline);
-
-                // Because the dictionary above remaps characters (if they don't have a glyph or their rects are empty),
-                // we'll need to drop these from our main list of characters.
-                availableCharacters.RemoveAll(item => !glyphBounds.ContainsKey(item));
-
-                // Get kerning and glyph advancement information.
-                Dictionary<char, ABC> abcAdvances = GetKerningInformation(graphics, fontData.Font, availableCharacters);
-
-                // Put the glyphs on packed bitmaps.
-                Dictionary<char, GlyphInfo> glyphBitmaps = glyphDraw.DrawToPackedBitmaps(availableCharacters, glyphBounds, HasOutline);
+                (fontData, abcAdvances, glyphBitmaps) = await Task.Run(GetFontData);
 
                 groupedByBitmap = (from glyphBitmap in glyphBitmaps
-                                   where glyphBitmap.Value.GlyphBitmap != null
-                                   group glyphBitmap.Value by glyphBitmap.Value.GlyphBitmap).ToDictionary(k => k.Key, v => v.Select(item => item));
+                                  where glyphBitmap.Value.GlyphBitmap is not null
+                                  group glyphBitmap.Value by glyphBitmap.Value.GlyphBitmap).ToDictionary(k => k.Key, v => v.Select(item => item));
 
                 // Generate textures from the bitmaps. 
                 // We will pack each bitmap into a single arrayed texture up to the maximum number of array indices allowed.
                 // Once that limit is reached a new texture will be used. This should help performance a little, although it 
                 // is much better to resize the texture so that it has a single array index and single texture.
-                GenerateTextures(groupedByBitmap);
+                images = await Task.Run(GetImages);
+                // We do this on the calling thread because we can run into issues updating the textures from a separate thread.
+                GenerateTextures(images);
 
                 // Finally, generate our glyphs.
                 GenerateGlyphs(glyphBitmaps, abcAdvances);
@@ -878,12 +783,91 @@ namespace Gorgon.Graphics.Fonts
             }
             finally
             {
-                graphics?.Dispose();
-                setupBitmap?.Dispose();
-
                 fontData?.Dispose();
 
-                if (groupedByBitmap != null)
+                if (images is not null)
+                {
+                    foreach ((IGorgonImage image, _) in images)
+                    {
+                        image?.Dispose();
+                    }
+                }
+
+                if (groupedByBitmap is not null)
+                {
+                    foreach (Bitmap glyphBitmap in groupedByBitmap.Keys)
+                    {
+                        glyphBitmap.Dispose();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to create or update the font.
+        /// </summary>
+        /// <param name="externalFontCollection">The external font collections from the application.</param>
+        /// <remarks>
+        /// <para>
+        /// This is used to generate a new set of font textures, and essentially "create" the font object.
+        /// </para>
+        /// <para>
+        /// This method will clear all the glyphs and textures in the font and rebuild the font with the specified parameters. This means that any custom glyphs, texture mapping, and/or kerning will be lost. 
+        /// Users must find a way to remember and restore any custom font info when updating.
+        /// </para>
+        /// <para>
+        /// Internal textures used by the glyph will be destroyed.  However, if there's a user defined texture or glyph using a user defined texture, then it will not be destroyed and clean up will be the 
+        /// responsibility of the user.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="GorgonException">Thrown when the texture size in the settings exceeds that of the capabilities of the feature level.
+        /// <para>-or-</para>
+        /// <para>Thrown when the font family name is <b>null</b> or Empty.</para>
+        /// </exception>
+        internal void GenerateFont(PrivateFontCollection externalFontCollection)
+        {
+            GdiFontData fontData = default;
+            Dictionary<char, GlyphInfo> glyphBitmaps;
+            Dictionary<char, ABC> abcAdvances;
+            Dictionary<Bitmap, IEnumerable<GlyphInfo>> groupedByBitmap = null;
+            IReadOnlyList<(IGorgonImage, IEnumerable<GlyphInfo>)> images = null;
+
+            try
+            {
+                (fontData, abcAdvances, glyphBitmaps) = GenerateFontData(externalFontCollection);
+
+                groupedByBitmap = (from glyphBitmap in glyphBitmaps
+                                   where glyphBitmap.Value.GlyphBitmap is not null
+                                   group glyphBitmap.Value by glyphBitmap.Value.GlyphBitmap).ToDictionary(k => k.Key, v => v.Select(item => item));
+
+                // Generate textures from the bitmaps. 
+                // We will pack each bitmap into a single arrayed texture up to the maximum number of array indices allowed.
+                // Once that limit is reached a new texture will be used. This should help performance a little, although it 
+                // is much better to resize the texture so that it has a single array index and single texture.
+                images = GenerateImages(groupedByBitmap);
+                GenerateTextures(images);
+
+                // Finally, generate our glyphs.
+                GenerateGlyphs(glyphBitmaps, abcAdvances);
+
+                FontHeight = fontData.FontHeight;
+                Ascent = fontData.Ascent;
+                Descent = fontData.Descent;
+                LineHeight = fontData.LineHeight;
+            }
+            finally
+            {
+                fontData?.Dispose();
+
+                if (images is not null)
+                {
+                    foreach ((IGorgonImage image, _) in images)
+                    {
+                        image?.Dispose();
+                    }
+                }
+
+                if (groupedByBitmap is not null)
                 {
                     foreach (Bitmap glyphBitmap in groupedByBitmap.Keys)
                     {
@@ -899,46 +883,6 @@ namespace Gorgon.Graphics.Fonts
         /// Initializes a new instance of the <see cref="GorgonFont"/> class.
         /// </summary>
         /// <param name="name">The name of the font.</param>
-        /// <param name="factory">The factory that this font is registered with.</param>
-        /// <param name="info">The information used to create the font.</param>
-        /// <param name="fontHeight">The height of the font, in pixels.</param>
-        /// <param name="lineHeight">The height of a line, in pixels.</param>
-        /// <param name="ascent">The font ascent, in pixels.</param>
-        /// <param name="descent">The font descent, in pixels.</param>
-        /// <param name="glyphs">The glyphs for the font.</param>
-        /// <param name="textures">The textures for the font.</param>
-        /// <param name="kerningPairs">The kerning pairs for the font.</param>
-        internal GorgonFont(string name,
-                            GorgonFontFactory factory,
-                            IGorgonFontInfo info,
-                            float fontHeight,
-                            float lineHeight,
-                            float ascent,
-                            float descent,
-                            IReadOnlyList<GorgonGlyph> glyphs,
-                            IReadOnlyList<GorgonTexture2D> textures,
-                            IReadOnlyDictionary<GorgonKerningPair, int> kerningPairs)
-            : base(name)
-        {
-            Factory = factory;
-            _info = new GorgonFontInfo(info)
-            {
-                Brush = info.Brush.Clone()
-            };
-            Graphics = Factory.Graphics;
-            FontHeight = fontHeight;
-            LineHeight = lineHeight;
-            Ascent = ascent;
-            Descent = descent;
-            Glyphs = new GorgonGlyphCollection(glyphs);
-            KerningPairs = kerningPairs?.ToDictionary(k => k.Key, v => v.Value) ?? new Dictionary<GorgonKerningPair, int>();
-            _internalTextures = new List<GorgonTexture2D>(textures);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonFont"/> class.
-        /// </summary>
-        /// <param name="name">The name of the font.</param>
         /// <param name="factory">The factory that created this font.</param>
         /// <param name="info">The information used to generate the font.</param>
         internal GorgonFont(string name, GorgonFontFactory factory, IGorgonFontInfo info)
@@ -950,7 +894,7 @@ namespace Gorgon.Graphics.Fonts
             {
                 Brush = info.Brush?.Clone()
             };
-            _internalTextures = new List<GorgonTexture2D>();
+            
             Glyphs = new GorgonGlyphCollection();
             KerningPairs = new Dictionary<GorgonKerningPair, int>();
         }

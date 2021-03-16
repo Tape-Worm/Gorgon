@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Animation
 {
@@ -42,7 +42,7 @@ namespace Gorgon.Animation
         // The interpolation mode for the track.
         private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
         // The spline controller for the track.
-        private readonly GorgonCatmullRomSpline _splineController = new GorgonCatmullRomSpline();
+        private readonly GorgonCatmullRomSpline _splineController = new();
         #endregion
 
         #region Properties.
@@ -119,12 +119,12 @@ namespace Gorgon.Animation
 
             GorgonKeyVector3 result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
 
-            TrackKeyProcessor.TryUpdateVector3(this, timeIndex, out DX.Vector3 vec);
+            TrackKeyProcessor.TryUpdateVector3(this, timeIndex, out Vector3 vec);
 
             return new GorgonKeyVector3(timeIndex, vec);
         }
@@ -143,7 +143,7 @@ namespace Gorgon.Animation
             // Build the spline for the track.
             for (int i = 0; i < keyFrames.Count; ++i)
             {
-                _splineController.Points.Add(new DX.Vector4(keyFrames[i].Value, 1.0f));
+                _splineController.Points.Add(new Vector4(keyFrames[i].Value, 1.0f));
             }
 
             _splineController.UpdateTangents();

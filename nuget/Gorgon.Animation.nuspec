@@ -15,19 +15,14 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics Animation</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.7.2" >
-        <dependency id="SharpDX" version="4.2.0"/>
-        <dependency id="SharpDX.Mathematics" version="4.2.0"/>
-        <dependency id="NewtonSoft.Json" version="12.0.3"/>
-        <dependency id="System.Buffers" version="4.5.1"/>
-        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>
+      <group targetFramework="net5.0" >
         <dependency id="Gorgon.Graphics.Core" version="$version$"/>
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Animation.dll" target="lib\net472\Gorgon.Animation.dll" />
-    <file src="..\lib\Gorgon.Animation.xml" target="lib\net472\Gorgon.Animation.xml" />
+    <file src="..\lib\Gorgon.Animation.dll" target="lib\net5.0\Gorgon.Animation.dll" />
+    <file src="..\lib\Gorgon.Animation.xml" target="lib\net5.0\Gorgon.Animation.xml" />
   </files>
 </package>

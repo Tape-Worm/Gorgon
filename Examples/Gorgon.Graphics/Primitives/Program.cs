@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -37,6 +38,9 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
+using Gorgon.Renderers.Geometry;
+using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
@@ -53,7 +57,7 @@ namespace Gorgon.Examples
         // The main application window.
         private static FormMain _window;
         // Camera.
-        private static Camera _camera;
+        private static GorgonPerspectiveCamera _camera;
         // Rotation value.
         private static float _objRotation;
         // Rotation value.
@@ -65,7 +69,7 @@ namespace Gorgon.Examples
         // Mouse interface.
         private static GI.GorgonRawMouse _mouse;
         // Camera rotation amount.
-        private static DX.Vector3 _cameraRotation;
+        private static Vector3 _cameraRotation;
         // Lock to sphere.
         private static bool _lock;
         // Mouse sensitivity.
@@ -122,20 +126,20 @@ namespace Gorgon.Examples
                 _objRotation -= 359.9f;
             }
 
-            _triangle.Material.TextureOffset = new DX.Vector2(0, _triangle.Material.TextureOffset.Y - (0.125f * GorgonTiming.Delta));
+            _triangle.Material.TextureOffset = new Vector2(0, _triangle.Material.TextureOffset.Y - (0.125f * GorgonTiming.Delta));
 
             if (_triangle.Material.TextureOffset.Y < 0.0f)
             {
-                _triangle.Material.TextureOffset = new DX.Vector2(0, 1.0f + _triangle.Material.TextureOffset.Y);
+                _triangle.Material.TextureOffset = new Vector2(0, 1.0f + _triangle.Material.TextureOffset.Y);
             }
 
             _plane.Material.TextureOffset = _triangle.Material.TextureOffset;
 
-            _icoSphere.Rotation = new DX.Vector3(0, _icoSphere.Rotation.Y + (4.0f * GorgonTiming.Delta), 0);
-            _cube.Rotation = new DX.Vector3(_objRotation, _objRotation, _objRotation);
-            _sphere.Position = new DX.Vector3(-2.0f, (_objRotation.ToRadians().Sin().Abs() * 2.0f) - 1.10f, 0.75f);
-            _sphere.Rotation = new DX.Vector3(_objRotation, _objRotation, 0);
-            _clouds.Rotation = new DX.Vector3(0, _cloudRotation, 0);
+            _icoSphere.Rotation = new Vector3(0, _icoSphere.Rotation.Y + (4.0f * GorgonTiming.Delta), 0);
+            _cube.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
+            _sphere.Position = new Vector3(-2.0f, (_objRotation.ToRadians().Sin().Abs() * 2.0f) - 1.10f, 0.75f);
+            _sphere.Rotation = new Vector3(_objRotation, _objRotation, 0);
+            _clouds.Rotation = new Vector3(0, _cloudRotation, 0);
 
             _renderer.Render();
 
@@ -161,9 +165,7 @@ namespace Gorgon.Examples
         /// </summary>
 		private static void ProcessKeys()
         {
-            DX.Vector3 cameraDir = DX.Vector3.Zero;
-            DX.Vector3 lookAt = _camera.LookAt;
-            lookAt.Normalize();
+            Vector3 cameraDir = Vector3.Zero;
 
             if (_keyboard.KeyStates[Keys.Left] == GI.KeyState.Down)
             {
@@ -214,13 +216,69 @@ namespace Gorgon.Examples
                 cameraDir.Y = -2.0f * GorgonTiming.Delta;
             }
 
-            if (_lock)
+            _camera.RotateEuler(_cameraRotation.Y, _cameraRotation.X, _cameraRotation.Z);
+
+            Vector3 pos = _sphere.Position;
+            Quaternion camRotationQ = _camera.Rotation;
+            var camRotation = Matrix4x4.CreateFromQuaternion(camRotationQ);
+            Vector3 unitZ = Vector3.UnitZ;
+            var forward = Vector3.Transform(unitZ, camRotation);
+            Vector3 right;
+
+            if (!_lock)
             {
-                _camera.Target(_sphere.Position);
+                Vector3 unitX = Vector3.UnitX;
+                right = Vector3.Transform(unitX, camRotation);
+            }
+            else
+            {
+                right = Vector3.Transform(pos, camRotation);
+            }
+            var up = Vector3.Cross(forward, right);
+
+            right = Vector3.Multiply(right, cameraDir.X);
+            _camera.Position = Vector3.Add(_camera.Position, right);
+
+            forward = Vector3.Multiply(forward, cameraDir.Z);
+            _camera.Position = Vector3.Add(_camera.Position, forward);
+
+            up = Vector3.Multiply(up, cameraDir.Y);
+            _camera.Position = Vector3.Add(_camera.Position, up);
+
+            if (_camera.Position.X < -10.5f)
+            {
+                _camera.Position = new Vector3(-10.5f, _camera.Position.Y, _camera.Position.Z);
             }
 
-            _camera.Rotation = _cameraRotation;
-            _camera.Move(ref cameraDir);
+            if (_camera.Position.X > 10.5f)
+            {
+                _camera.Position = new Vector3(10.5f, _camera.Position.Y, _camera.Position.Z);
+            }
+
+            if (_camera.Position.Y < -1.35f)
+            {
+                _camera.Position = new Vector3(_camera.Position.X, -1.35f, _camera.Position.Z);
+            }
+
+            if (_camera.Position.Y > 25.0f)
+            {
+                _camera.Position = new Vector3(_camera.Position.X, 25.0f, _camera.Position.Z);
+            }
+
+            if (_camera.Position.Z > 13.25f)
+            {
+                _camera.Position = new Vector3(_camera.Position.X, _camera.Position.Y, 13.25f);
+            }
+
+            if (_camera.Position.Z < -10.5f)
+            {
+                _camera.Position = new Vector3(_camera.Position.X, _camera.Position.Y, -10.5f);
+            }
+
+            if (_lock)
+            {
+                _camera.LookAt(pos);
+            }
         }
 
         /// <summary>
@@ -257,13 +315,22 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="GI.GorgonKeyboardEventArgs" /> instance containing the event data.</param>
         private static void Keyboard_KeyDown(object sender, GI.GorgonKeyboardEventArgs e)
         {
+            if (e.Key == Keys.B)
+            {
+                _renderer.ShowAABB = !_renderer.ShowAABB;
+            }
+
             if (e.Key != Keys.L)
             {
                 return;
             }
 
             _lock = !_lock;
-            _camera.Target(_lock ? (DX.Vector3?)_sphere.Position : null);
+            if (_lock)
+            {
+                Vector3 spherePos = _sphere.Position;
+                _camera.LookAt(spherePos);
+            }
         }
 
         /// <summary>
@@ -273,8 +340,7 @@ namespace Gorgon.Examples
         /// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private static void Mouse_Down(object sender, MouseEventArgs args)
         {
-            if ((args.Button != MouseButtons.Right)
-                || (_mouse != null))
+            if ((args.Button is not MouseButtons.Right) || (_mouse is not null))
             {
                 return;
             }
@@ -298,7 +364,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="GI.GorgonMouseEventArgs" /> instance containing the event data.</param>
         private static void RawMouse_MouseMove(object sender, GI.GorgonMouseEventArgs e)
         {
-            Point delta = e.RelativePosition;
+            DX.Point delta = e.RelativePosition;
             _cameraRotation.X += delta.Y.Sign() * (_sensitivity);
             _cameraRotation.Y += delta.X.Sign() * (_sensitivity);
         }
@@ -311,7 +377,7 @@ namespace Gorgon.Examples
         private static void Mouse_Up(object sender, GI.GorgonMouseEventArgs args)
         {
             if (((args.Buttons & GI.MouseButtons.Right) != GI.MouseButtons.Right)
-                || (_mouse == null))
+                || (_mouse is null))
             {
                 return;
             }
@@ -369,6 +435,12 @@ namespace Gorgon.Examples
 	    private static void LoadTextures()
         {
             // Load standard images from the resource section.
+            _renderer.TextureCache["Black"] = Resources.black_2x2.ToTexture2D(_graphics,
+                                                                              new GorgonTexture2DLoadOptions
+                                                                              {
+                                                                                  Name = "Black"
+                                                                              }).GetShaderResourceView();
+
             _renderer.TextureCache["UV"] = Resources.UV.ToTexture2D(_graphics,
                                                                     new GorgonTexture2DLoadOptions
                                                                     {
@@ -438,29 +510,29 @@ namespace Gorgon.Examples
         /// </summary>
 	    private static void BuildMeshes()
         {
-            var fnU = new DX.Vector3(0.5f, 1.0f, 0);
-            var fnV = new DX.Vector3(1.0f, 1.0f, 0);
-            DX.Vector3.Cross(ref fnU, ref fnV, out DX.Vector3 faceNormal);
-            faceNormal.Normalize();
+            var fnU = new Vector3(0.5f, 1.0f, 0);
+            var fnV = new Vector3(1.0f, 1.0f, 0);
+            var faceNormal = Vector3.Cross(fnU, fnV);
+            faceNormal = Vector3.Normalize(faceNormal);
 
             _triangle = new Triangle(_graphics,
-                                     new Vertex3D
+                                     new GorgonVertexPosNormUvTangent
                                      {
-                                         Position = new DX.Vector4(-12.5f, -1.5f, 12.5f, 1),
+                                         Position = new Vector4(-12.5f, -1.5f, 12.5f, 1),
                                          Normal = faceNormal,
-                                         UV = new DX.Vector2(0, 1.0f)
+                                         UV = new Vector2(0, 1.0f)
                                      },
-                                     new Vertex3D
+                                     new GorgonVertexPosNormUvTangent
                                      {
-                                         Position = new DX.Vector4(0, 24.5f, 12.5f, 1),
+                                         Position = new Vector4(0, 24.5f, 12.5f, 1),
                                          Normal = faceNormal,
-                                         UV = new DX.Vector2(0.5f, 0.0f)
+                                         UV = new Vector2(0.5f, 0.0f)
                                      },
-                                     new Vertex3D
+                                     new GorgonVertexPosNormUvTangent
                                      {
-                                         Position = new DX.Vector4(12.5f, -1.5f, 12.5f, 1),
+                                         Position = new Vector4(12.5f, -1.5f, 12.5f, 1),
                                          Normal = faceNormal,
-                                         UV = new DX.Vector2(1.0f, 1.0f)
+                                         UV = new Vector2(1.0f, 1.0f)
                                      })
             {
                 Material =
@@ -474,13 +546,13 @@ namespace Gorgon.Examples
                                     [2] = "Water_Specular"
                                 }
                             },
-                Position = new DX.Vector3(0, 0, 1.0f)
+                Position = new Vector3(0, 0, 1.0f)
             };
             _renderer.Meshes.Add(_triangle);
 
-            _plane = new Plane(_graphics, new DX.Vector2(25.0f, 25.0f), new RectangleF(0, 0, 1.0f, 1.0f), new DX.Vector3(90, 0, 0), 32, 32)
+            _plane = new Plane(_graphics, new Vector2(25.0f, 25.0f), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(90, 0, 0), 32, 32)
             {
-                Position = new DX.Vector3(0, -1.5f, 1.0f),
+                Position = new Vector3(0, -1.5f, 1.0f),
                 Material =
                          {
                              PixelShader = "WaterShader",
@@ -495,9 +567,9 @@ namespace Gorgon.Examples
             };
             _renderer.Meshes.Add(_plane);
 
-            _cube = new Cube(_graphics, new DX.Vector3(1, 1, 1), new RectangleF(0, 0, 1.0f, 1.0f), new DX.Vector3(45.0f, 0, 0))
+            _cube = new Cube(_graphics, new Vector3(1, 1, 1), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(45.0f, 0, 0))
             {
-                Position = new DX.Vector3(0, 0, 1.5f),
+                Position = new Vector3(0, 0, 1.5f),
                 Material =
                         {
                             SpecularPower = 0,
@@ -506,15 +578,16 @@ namespace Gorgon.Examples
                             Textures =
                             {
                                 [0] = "UV",
-                                [1] = "GorgonNormalMap"
+                                [1] = "GorgonNormalMap",
+                                [2] = "Black"
                             }
                         }
             };
             _renderer.Meshes.Add(_cube);
 
-            _sphere = new Sphere(_graphics, 1.0f, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), DX.Vector3.Zero, 64, 64)
+            _sphere = new Sphere(_graphics, 1.0f, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), Vector3.Zero, 64, 64)
             {
-                Position = new DX.Vector3(-2.0f, 1.0f, 0.75f),
+                Position = new Vector3(-2.0f, 1.0f, 0.75f),
                 Material =
                           {
                               PixelShader = "PixelShader",
@@ -528,10 +601,10 @@ namespace Gorgon.Examples
             };
             _renderer.Meshes.Add(_sphere);
 
-            _icoSphere = new IcoSphere(_graphics, 5.0f, new DX.RectangleF(0, 0, 1, 1), DX.Vector3.Zero, 3)
+            _icoSphere = new IcoSphere(_graphics, 5.0f, new DX.RectangleF(0, 0, 1, 1), Vector3.Zero, 3)
             {
-                Rotation = new DX.Vector3(0, -45.0f, 0),
-                Position = new DX.Vector3(10, 2, 9.5f),
+                Rotation = new Vector3(0, -45.0f, 0),
+                Position = new Vector3(10, 2, 9.5f),
                 Material =
                              {
                                  PixelShader = "BumpMapShader",
@@ -546,9 +619,9 @@ namespace Gorgon.Examples
             };
             _renderer.Meshes.Add(_icoSphere);
 
-            _clouds = new Sphere(_graphics, 5.125f, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), DX.Vector3.Zero, 16)
+            _clouds = new Sphere(_graphics, 5.125f, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), Vector3.Zero, 16)
             {
-                Position = new DX.Vector3(10, 2, 9.5f),
+                Position = new Vector3(10, 2, 9.5f),
                 Material =
                           {
                               PixelShader = "PixelShader",
@@ -568,28 +641,27 @@ namespace Gorgon.Examples
         /// </summary>
 	    private static void BuildLights()
         {
-            _renderer.Lights[0] = new Light
+            _renderer.Lights[0] = new GorgonPointLight
             {
-                LightPosition = new DX.Vector3(1.0f, 1.0f, -1.0f),
-                SpecularPower = 256.0f
+                Position = new Vector3(1.0f, 2.0f, -3.0f),
+                SpecularPower = 256.0f,
+                Attenuation = 2.5f
             };
 
-            _renderer.Lights[1] = new Light
+            _renderer.Lights[1] = new GorgonPointLight
             {
-                LightPosition = new DX.Vector3(-5.0f, 5.0f, 8.0f),
-                LightColor = Color.Yellow,
-                SpecularColor = Color.Yellow,
-                SpecularPower = 2048.0f,
-                Attenuation = 10.0f
+                Position = new Vector3(-5.0f, 5.0f, 4.5f),
+                Color = Color.Yellow,
+                SpecularPower = 1024.0f,
+                Attenuation = 2.75f
             };
 
-            _renderer.Lights[2] = new Light
+            _renderer.Lights[2] = new GorgonPointLight
             {
-                LightPosition = new DX.Vector3(5.0f, 3.0f, 10.0f),
-                LightColor = Color.Red,
-                SpecularColor = Color.Red,
+                Position = new Vector3(5.0f, 6.25f, 9.5f),
+                Color = Color.Red,                
                 SpecularPower = 0.0f,
-                Attenuation = 16.0f
+                Attenuation = 6.0f
             };
         }
 
@@ -599,7 +671,7 @@ namespace Gorgon.Examples
         private static void Initialize()
         {
             GorgonExample.ShowStatistics = false;
-            _window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Primitives");
+            _window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Primitives");
 
             try
             {
@@ -636,11 +708,9 @@ namespace Gorgon.Examples
 
                 BuildMeshes();
 
-                _renderer.Camera = _camera = new Camera
+                _renderer.Camera = _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swapChain.Width, _swapChain.Height))
                 {
-                    Fov = 75.0f,
-                    ViewWidth = _swapChain.Width,
-                    ViewHeight = _swapChain.Height
+                    Fov = 75.0f
                 };
 
                 _input = new GI.GorgonRawInput(_window);
@@ -660,8 +730,7 @@ namespace Gorgon.Examples
                 // When we resize, update the projection and viewport to match our client size.
                 _swapChain.SwapChainResized += (sender, args) =>
                                                     {
-                                                        _camera.ViewWidth = args.Size.Width;
-                                                        _camera.ViewHeight = args.Size.Height;
+                                                        _camera.ViewDimensions = args.Size.ToSize2F();
 
                                                         BuildDepthBuffer(args.Size.Width, args.Size.Height);
 
@@ -697,6 +766,9 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
+#if NET5_0_OR_GREATER
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -718,7 +790,7 @@ namespace Gorgon.Examples
 
                 _input?.Dispose();
 
-                if (_renderer != null)
+                if (_renderer is not null)
                 {
                     foreach (Mesh mesh in _renderer.Meshes)
                     {

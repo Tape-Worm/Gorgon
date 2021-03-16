@@ -83,6 +83,25 @@ namespace Gorgon.Graphics.Fonts
     }
 
     /// <summary>
+    /// The type of compression to apply to font textures.
+    /// </summary>
+    public enum FontTextureCompression
+    {
+        /// <summary>
+        /// No compression.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Fast compression, lower quality.
+        /// </summary>
+        Fast = 1,
+        /// <summary>
+        /// Slow compression, higher quality.
+        /// </summary>
+        Quality = 2
+    }
+
+    /// <summary>
     /// Provides information used to create a new <see cref="GorgonFont"/>.
     /// </summary>
     /// <remarks>
@@ -380,6 +399,23 @@ namespace Gorgon.Graphics.Fonts
         /// </para>
         /// </remarks>
         bool UseKerningPairs
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the type of compression to apply to the font textures.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Use compression to lower the amount of video RAM consumed by the font textures. It is recommended that <see cref="UsePremultipliedTextures"/> be set to <b>true</b> when using 
+        /// compression.
+        /// </para>
+        /// <para>
+        /// The default value is <see cref="FontTextureCompression.None"/>.
+        /// </para>
+        /// </remarks>
+        FontTextureCompression Compression
         {
             get;
         }

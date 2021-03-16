@@ -25,11 +25,14 @@
 #endregion
 
 using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -168,12 +171,12 @@ namespace Gorgon.Renderers
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
             if ((_useSimple != FullScreen)
-                || ((LookupTexture == null) && (_currentLut != _defaultLut))
-                || ((LookupTexture != null) && (LookupTexture != _currentLut))
-                || (_chromeAbBatchState == null)
-                || (_chromeAbShaderState == null))
+                || ((LookupTexture is null) && (_currentLut != _defaultLut))
+                || ((LookupTexture is not null) && (LookupTexture != _currentLut))
+                || (_chromeAbBatchState is null)
+                || (_chromeAbShaderState is null))
             {
-                if (_chromeAbShaderState == null)
+                if (_chromeAbShaderState is null)
                 {
                     _currentLut = LookupTexture ?? _defaultLut;
                     _chromeAbShaderState = builders.PixelShaderBuilder.Clear()
@@ -203,12 +206,12 @@ namespace Gorgon.Renderers
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
         /// <seealso cref="PassContinuationState" />
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
-            DX.Vector2 intensity = FullScreen ? new DX.Vector2((Intensity * 16) * (1.0f / output.Width), (Intensity * 16) * (1.0f / output.Height))
-                : new DX.Vector2(Intensity * 0.05f, 0);
-            var settings = new DX.Vector4(intensity, output.Width, output.Height);
-            _settings.Buffer.SetData(ref settings);
+            Vector2 intensity = FullScreen ? new Vector2((Intensity * 16) * (1.0f / output.Width), (Intensity * 16) * (1.0f / output.Height))
+                : new Vector2(Intensity * 0.05f, 0);
+            var settings = new Vector4(intensity, output.Width, output.Height);
+            _settings.Buffer.SetData(in settings);
 
             Graphics.SetRenderTarget(output);
 
@@ -225,9 +228,9 @@ namespace Gorgon.Renderers
                 Width = 3
             }))
             {
-                image.ImageData.ReadAs<int>(0) = GorgonColor.RedPure.ToABGR();
-                image.ImageData.ReadAs<int>(4) = GorgonColor.BluePure.ToABGR();
-                image.ImageData.ReadAs<int>(8) = GorgonColor.GreenPure.ToABGR();
+                image.ImageData.AsRef<int>(0) = GorgonColor.RedPure.ToABGR();
+                image.ImageData.AsRef<int>(4) = GorgonColor.BluePure.ToABGR();
+                image.ImageData.AsRef<int>(8) = GorgonColor.GreenPure.ToABGR();
 
                 _defaultLut = GorgonTexture1DView.CreateTexture(Graphics, new GorgonTexture1DInfo("Default Spectral LUT")
                 {
@@ -242,7 +245,7 @@ namespace Gorgon.Renderers
 
             _settings = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Chromatic Aberration Settings Buffer")
             {
-                SizeInBytes = DX.Vector4.SizeInBytes,
+                SizeInBytes = Unsafe.SizeOf<Vector4>(),
                 Usage = ResourceUsage.Default
             });
         }

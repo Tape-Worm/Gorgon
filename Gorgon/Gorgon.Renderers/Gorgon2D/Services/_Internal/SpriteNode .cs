@@ -77,7 +77,7 @@ namespace Gorgon.Renderers.Services
         /// <summary>
         /// Property to return whether this node is a leaf node.
         /// </summary>
-        public bool IsLeaf => ((Left == null) && (Right == null));
+        public bool IsLeaf => ((Left is null) && (Right is null));
         #endregion
 
         #region Methods.

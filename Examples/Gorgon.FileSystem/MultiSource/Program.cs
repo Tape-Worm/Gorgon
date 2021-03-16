@@ -25,12 +25,9 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Examples.Properties;
-using Gorgon.IO;
 using Gorgon.UI;
 
 namespace Gorgon.Examples
@@ -50,81 +47,26 @@ namespace Gorgon.Examples
             get;
             private set;
         }
-
-        /// <summary>
-        /// Property to return the path to the plug ins.
-        /// </summary>
-        public static string PlugInPath
-        {
-            get
-            {
-                string path = Settings.Default.PlugInLocation;
-
-                if (path.Contains("{0}"))
-                {
-#if DEBUG
-                    path = string.Format(path, "Debug");
-#else
-					path = string.Format(path, "Release");					
-#endif
-                }
-
-                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                {
-                    path += Path.DirectorySeparatorChar.ToString();
-                }
-
-                return Path.GetFullPath(path);
-            }
-        }
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="resourceItem"/> parameter is <b>null</b> or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-        {
-            string path = Settings.Default.ResourceLocation;
-
-            if (string.IsNullOrEmpty(resourceItem))
-            {
-                throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
-            }
-
-            path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-            // If this is a directory, then sanitize it as such.
-            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                // Otherwise, format the file name.
-                path += resourceItem.FormatFileName();
-            }
-
-            // Ensure that we have an absolute path.
-            return Path.GetFullPath(path);
-        }
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         private static void Main()
         {
-            Log = new GorgonLog("MultiSource", "Tape_Worm");
+            Log = new GorgonTextFileLog("MultiSource", "Tape_Worm");
             Log.LogStart();
 
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new FormMain());
+                Application.Run(new Form());
             }
             catch (Exception ex)
             {

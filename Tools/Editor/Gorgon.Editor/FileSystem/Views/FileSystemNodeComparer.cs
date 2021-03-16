@@ -65,7 +65,7 @@ namespace Gorgon.Editor.Views
             var yNode = y as DirectoryTreeNode;
 #pragma warning restore IDE0019 // Use pattern matching
 
-            return ((xNode == null) || (yNode == null)) ? 0 : Compare(xNode, yNode);
+            return ((xNode is null) || (yNode is null)) ? 0 : Compare(xNode, yNode);
         }
         #endregion
     }

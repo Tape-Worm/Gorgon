@@ -29,22 +29,22 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A view to allow 2D texture based render targets to be bound to the pipeline.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
-	/// </para>
-	/// <para>
-	/// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
-	/// target. 
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="GorgonSwapChain"/>
-	/// <seealso cref="GorgonTexture2D"/>
-	/// <seealso cref="GorgonTexture3D"/>
-	public abstract class GorgonRenderTargetView
+    /// <summary>
+    /// A view to allow 2D texture based render targets to be bound to the pipeline.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
+    /// </para>
+    /// <para>
+    /// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
+    /// target. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonSwapChain"/>
+    /// <seealso cref="GorgonTexture2D"/>
+    /// <seealso cref="GorgonTexture3D"/>
+    public abstract class GorgonRenderTargetView
 		: GorgonResourceView
 	{
 		#region Properties.
@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Core
 		/// This will clear the render target view to the specified <paramref name="color"/>.  
 		/// </para>
 		/// </remarks>
-		public void Clear(GorgonColor color)
+		public void Clear(in GorgonColor color)
 		{
 			Graphics.D3DDeviceContext.ClearRenderTargetView(Native, color.ToRawColor4());
 

@@ -190,7 +190,7 @@ namespace Gorgon.Editor.Services
         {
             DirectoryInfo initialDirectory = InitialDirectory;
 
-            if ((InitialDirectory == null) || (!InitialDirectory.Exists))
+            if ((InitialDirectory is null) || (!InitialDirectory.Exists))
             {
                 initialDirectory = new DirectoryInfo(Settings.LastOpenSavePath);
             }

@@ -26,11 +26,12 @@
 
 using System.Runtime.InteropServices;
 using System.Threading;
-using DX = SharpDX;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -228,7 +229,7 @@ namespace Gorgon.Renderers
         protected override void OnInitialize()
         {
             _settings = new Settings(10.0f, 50.0f, 0.0f, 100.0f, WaveType.Horizontal);
-            _waveBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2DWaveEffect Constant Buffer", ResourceUsage.Dynamic);
+            _waveBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Gorgon2DWaveEffect Constant Buffer", ResourceUsage.Dynamic);
 
             Macros.Add(new GorgonShaderMacro("WAVE_EFFECT"));
             _waveShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderWaveEffect");
@@ -252,7 +253,7 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            _waveBuffer.Buffer.SetData(ref _settings);
+            _waveBuffer.Buffer.SetData(in _settings);
             _isUpdated = false;
         }
 
@@ -283,9 +284,9 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if ((_batchState == null) || (statesChanged))
+            if ((_batchState is null) || (statesChanged))
             {
-                if (_waveState == null)
+                if (_waveState is null)
                 {
                     _waveState = builders.PixelShaderBuilder
                                   .Shader(_waveShader)
@@ -308,11 +309,11 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        public void Begin(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -328,7 +329,7 @@ namespace Gorgon.Renderers
         {
             GorgonRenderTargetView target = Graphics.RenderTargets[0];
 
-            if (target == null)
+            if (target is null)
             {
                 return;
             }
@@ -344,7 +345,7 @@ namespace Gorgon.Renderers
         /// <param name="output">The render target that will receive the final output.</param>
         public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
         {
-            if ((texture == null) || (output == null))
+            if ((texture is null) || (output is null))
             {
                 return;
             }

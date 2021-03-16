@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using System.Text;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
 
@@ -46,13 +45,13 @@ namespace Gorgon.Examples
     /// This means when you update a file or add one, it will get rerouted to the write directory.  The write directory MUST be a 
     /// physical directory on your hard drive and must be able to be written into.
     /// 
-    /// Setting up a write directory is fairly simple:  Just set the WriteLocation property on your file system object.  Once this is
-    /// done the directory is automatically mounted into the file system.  Once a write location is set, the files in it will take precedence
-    /// over all files in the file system.  So, for example, if SomeText.txt exists in root of the mounted folder, and the same file
-    /// name exists in the root of the WriteLocation, then the version in the write location will be used for file I/O operations.
+    /// Setting up a write directory is fairly simple: Create an instance of a GorgonFileSystemWriter and pass in the file system 
+    /// that you wish to set up for writing, and the physical location on the windows file system where the data will be written into. 
+    /// Once a writer is setup, the files in it will take precedenceover all files in the file system.  So, for example, if 
+    /// SomeText.txt exists in root of the mounted folder, and the same file name exists in the physical file system directory, then 
+    /// the version in the physical file system directory will be used for file I/O operations.
     /// 
-    /// Here, we do exactly this.  We take the file from the root of the directory and read it in.  By assigning the write directory
-    /// after we can then load in the modified version of the file (if it exists).
+    /// Here, we do exactly this.  We take the file from the root of the directory and read it in.  
     /// </remarks>
     public partial class Form
         : System.Windows.Forms.Form
@@ -99,12 +98,10 @@ namespace Gorgon.Examples
                     return;
                 }
 
-                using (Stream stream = _writer.OpenStream("/SomeText.txt", FileMode.Create))
-                {
-                    byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
-                    stream.Write(data, 0, data.Length);
-                    _changedText = textDisplay.Text;
-                }
+                using Stream stream = _writer.OpenStream("/SomeText.txt", FileMode.Create);
+                byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
+                stream.Write(data, 0, data.Length);
+                _changedText = textDisplay.Text;
             }
             catch (Exception ex)
             {
@@ -156,7 +153,7 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+                ex.Catch(except => GorgonDialogs.ErrorBox(this, except), Program.Log);
             }
             finally
             {
@@ -181,7 +178,7 @@ namespace Gorgon.Examples
 		/// Function to update the information label.
 		/// </summary>
 		private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
-                                 ? $"Using original text from {GorgonExample.GetResourcePath(@"FolderSystem\").FullName.Ellipses(100, true)}"
+                                 ? $"Using original text from {GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)}"
                                  : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
 
         /// <summary>
@@ -189,7 +186,7 @@ namespace Gorgon.Examples
         /// </summary>
         private void LoadText()
         {
-            DirectoryInfo physicalPath = GorgonExample.GetResourcePath(@"FolderSystem\");
+            DirectoryInfo physicalPath = GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\");
 
             // Unload the mounted files.
             _writer.Unmount();
@@ -228,15 +225,15 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
             try
             {
-                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
-                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
                 // Create our virtual file system.
                 _fileSystem = new GorgonFileSystem(Program.Log);
@@ -244,7 +241,7 @@ namespace Gorgon.Examples
 
                 LoadText();
 
-                labelFileSystem.Text = $"{GorgonExample.GetResourcePath(@"FolderSystem\").FullName.Ellipses(100, true)} mounted as '/'.";
+                labelFileSystem.Text = $"{GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)} mounted as '/'.";
                 labelWriteLocation.Text = $"{Program.WriteDirectory.FullName.Ellipses(100, true)} mounted as '/'";
             }
             catch (Exception ex)

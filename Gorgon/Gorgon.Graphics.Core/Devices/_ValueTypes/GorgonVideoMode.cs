@@ -28,8 +28,8 @@ using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using SharpDX;
 using SharpDX.DXGI;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -121,7 +121,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the size for the video mode.
         /// </summary>
-        public Size2 Size => new Size2(Width, Height);
+        public DX.Size2 Size => new(Width, Height);
         #endregion
 
         #region Methods.

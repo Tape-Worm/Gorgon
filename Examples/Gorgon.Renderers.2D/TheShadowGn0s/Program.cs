@@ -25,11 +25,11 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
@@ -112,11 +112,11 @@ ESC - Quit.";
             _renderer.Begin(_rtvBlendState);
 
             // Background sprites should be smaller.
-            _bgSprite.Scale = new DX.Vector2(0.5f, 0.5f);
-            shadowSprite.Scale = new DX.Vector2(0.5f, 0.5f);
+            _bgSprite.Scale = new Vector2(0.5f, 0.5f);
+            shadowSprite.Scale = new Vector2(0.5f, 0.5f);
 
             shadowSprite.Position = _bgSprite.Position +
-                                    (new DX.Vector2(_bgSprite.Position.X - (_screen.Width / 2.0f), _bgSprite.Position.Y - (_screen.Height / 2.0f)) * _bgSprite.Scale * 0.075f);
+                                    (new Vector2(_bgSprite.Position.X - (_screen.Width / 2.0f), _bgSprite.Position.Y - (_screen.Height / 2.0f)) * _bgSprite.Scale * 0.075f);
 
             var bgRegion = new DX.RectangleF(0, 0, _screen.Width, _screen.Height);
             _renderer.DrawFilledRectangle(bgRegion,
@@ -179,7 +179,7 @@ ESC - Quit.";
             DrawBlurredBackground();
 
             // Reset scales for our sprites. Foreground sprites will be larger than our background ones.
-            shadowSprite.Scale = _fgSprite.Scale = DX.Vector2.One;
+            shadowSprite.Scale = _fgSprite.Scale = Vector2.One;
 
             // Ensure we're on the "screen" when we render.
             _graphics.SetRenderTarget(_screen.RenderTargetView);
@@ -198,14 +198,14 @@ ESC - Quit.";
 
             // Draw the sprite and its corresponding shadow.
             // We'll adjust the shadow position to be altered by our distance from the light source, and the quadrant of the screen that we're in.
-            shadowSprite.Position = _fgSprite.Position + (new DX.Vector2(_fgSprite.Position.X - (_screen.Width / 2.0f), _fgSprite.Position.Y - (_screen.Height / 2.0f)) * 0.125f);
+            shadowSprite.Position = _fgSprite.Position + (new Vector2(_fgSprite.Position.X - (_screen.Width / 2.0f), _fgSprite.Position.Y - (_screen.Height / 2.0f)) * 0.125f);
 
             _renderer.DrawSprite(shadowSprite);
             _renderer.DrawSprite(_fgSprite);
 
             if (_showHelp)
             {
-                _renderer.DrawString(HelpText, new DX.Vector2(2, 2), _helpFont, GorgonColor.White);
+                _renderer.DrawString(HelpText, new Vector2(2, 2), _helpFont, GorgonColor.White);
             }
 
             _renderer.End();
@@ -244,10 +244,10 @@ ESC - Quit.";
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
             GorgonExample.ShowStatistics = false;
 
-            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "The Shadow Gn0s");
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "The Shadow Gn0s");
 
             try
             {
@@ -264,8 +264,8 @@ ESC - Quit.";
                 // Create our "screen".
                 _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo("TheShadowGn0s Screen Swap chain")
                 {
-                    Width = Settings.Default.Resolution.Width,
-                    Height = Settings.Default.Resolution.Height,
+                    Width = ExampleConfig.Default.Resolution.Width,
+                    Height = ExampleConfig.Default.Resolution.Height,
                     Format = BufferFormat.R8G8B8A8_UNorm
                 });
 
@@ -319,8 +319,8 @@ ESC - Quit.";
                                              .DestinationBlend(alpha: Blend.InverseSourceAlpha))
                                  .Build();
 
-                _sprite2.Position = new DX.Vector2((int)(_screen.Width / 2.0f), (int)(_screen.Height / 4.0f));
-                _sprite1.Position = new DX.Vector2((int)(_screen.Width / 4.0f), (int)(_screen.Height / 5.0f));
+                _sprite2.Position = new Vector2((int)(_screen.Width / 2.0f), (int)(_screen.Height / 4.0f));
+                _sprite1.Position = new Vector2((int)(_screen.Width / 4.0f), (int)(_screen.Height / 5.0f));
 
                 _bgSprite = _sprite2;
                 _fgSprite = _sprite1;
@@ -415,8 +415,8 @@ ESC - Quit.";
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private static void Window_MouseUp(object sender, MouseEventArgs e)
         {
-            _bgSprite.Position = new DX.Vector2(e.X, e.Y);
-            _fgSprite.Position = new DX.Vector2(e.X, e.Y);
+            _bgSprite.Position = new Vector2(e.X, e.Y);
+            _fgSprite.Position = new Vector2(e.X, e.Y);
 
             if (_bgSprite == _sprite2)
             {
@@ -435,7 +435,7 @@ ESC - Quit.";
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private static void Window_MouseMove(object sender, MouseEventArgs e) => _fgSprite.Position = new DX.Vector2(e.X, e.Y);
+        private static void Window_MouseMove(object sender, MouseEventArgs e) => _fgSprite.Position = new Vector2(e.X, e.Y);
         #endregion
 
         #region Constructor/Finalizer.
@@ -445,11 +445,14 @@ ESC - Quit.";
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
                 GorgonApplication.Run(Initialize(), Idle);
             }
             catch (Exception ex)

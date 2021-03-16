@@ -5,7 +5,7 @@
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
 using Gorgon.Math;
-using SharpDX;
+using System.Numerics;
 
 namespace GorgonTriangulator
 {
@@ -28,7 +28,7 @@ namespace GorgonTriangulator
             Vector2? intersection = FindIntersection(this, raySegment);
             float? value = null;
 
-            if (intersection != null)
+            if (intersection is not null)
             {
                 value = Vector2.Distance(origin, intersection.Value);
             }

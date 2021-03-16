@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -67,7 +68,7 @@ namespace Gorgon.Editor.Rendering
         /// <summary>
         /// Property to return the offset of the image.
         /// </summary>
-        DX.Vector2 Offset
+        Vector2 Offset
         {
             get;
         }
@@ -159,7 +160,7 @@ namespace Gorgon.Editor.Rendering
         /// Function to set the offset of the view.
         /// </summary>
         /// <param name="offset">The offset to apply to the view, in world space.</param>
-        void SetOffset(DX.Vector2 offset);
+        void SetOffset(Vector2 offset);
 
         /// <summary>
         /// Function to set the zoom on the view.
@@ -182,7 +183,7 @@ namespace Gorgon.Editor.Rendering
         /// To zoom to the current window size, set the <paramref name="zoom"/> value to less than or equal to 0.
         /// </para>
         /// </remarks>
-        void MoveTo(DX.Vector2 offset, float zoom);
+        void MoveTo(Vector2 offset, float zoom);
 
         /// <summary>
         /// Function to render the content.

@@ -59,7 +59,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void RadioHWrapping_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -80,7 +80,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void RadioVWrapping_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -101,7 +101,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="Gorgon.Editor.UI.Controls.ColorChangedEventArgs"/> instance containing the event data.</param>
         private void Picker_ColorChanged(object sender, ColorChangedEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -115,7 +115,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -165,12 +165,12 @@ namespace Gorgon.Editor.SpriteEditor
             RadioButton hButton = TableHWrapping.Controls.OfType<RadioButton>().FirstOrDefault(item => ((TextureWrap)item.Tag) == dataContext.HorizontalWrapping);
             RadioButton vButton = TableVWrapping.Controls.OfType<RadioButton>().FirstOrDefault(item => ((TextureWrap)item.Tag) == dataContext.VerticalWrapping);
 
-            if (hButton != null)
+            if (hButton is not null)
             {
                 hButton.Checked = true;
             }
 
-            if (vButton != null)
+            if (vButton is not null)
             {
                 vButton.Checked = true;
             }
@@ -195,7 +195,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The data context to assign.</param>
         private void InitializeFromDataContext(ISpriteTextureWrapEdit dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -211,7 +211,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnSubmit();
 
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
             {
                 return;
             }
@@ -224,7 +224,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnCancel();
 
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 return;
             }
@@ -236,7 +236,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to validate the state of the OK button.
         /// </summary>
         /// <returns><b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
@@ -261,7 +261,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

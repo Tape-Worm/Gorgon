@@ -75,7 +75,7 @@ namespace Gorgon.Editor
         private static (bool hasSwitch, string switchValue) GetCommandLineArgument(string[] args, string argument)
         {
             if ((string.IsNullOrWhiteSpace(argument))
-                || (args == null)
+                || (args is null)
                 || (args.Length == 0))
             {
                 return (false, string.Empty);
@@ -148,7 +148,7 @@ namespace Gorgon.Editor
 
                 if (string.Equals(logType, "file", StringComparison.OrdinalIgnoreCase))
                 {
-                    Log = GorgonApplication.Log = new GorgonLog("Gorgon.Editor", @"Tape_Worm\Gorgon.Editor\Logging\", typeof(Program).Assembly.GetName().Version)
+                    Log = GorgonApplication.Log = new GorgonTextFileLog("Gorgon.Editor", @"Tape_Worm\Gorgon.Editor\Logging\", typeof(Program).Assembly.GetName().Version)
                     {
                         LogFilterLevel = level
                     };
@@ -184,6 +184,9 @@ namespace Gorgon.Editor
         static void Main(string[] args)
         {
             Boot booter = null;
+#if NET5_0_OR_GREATER
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -209,6 +212,6 @@ namespace Gorgon.Editor
                 CommonEditorResources.UnloadResources();
             }
         }
-        #endregion
+#endregion
     }
 }

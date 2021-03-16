@@ -25,17 +25,16 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
-using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
 
@@ -147,7 +146,7 @@ namespace Gorgon.Examples
             if (_showHelp)
             {
                 _renderer.Begin();
-                _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new DX.Vector2(0, 72), color: GorgonColor.YellowPure);
+                _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new Vector2(0, 72), color: GorgonColor.YellowPure);
                 _renderer.End();
             }
 
@@ -164,10 +163,10 @@ namespace Gorgon.Examples
         /// <returns>The form that will display our graphical scene.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Create the window, and size it to our resolution.
-            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Particles");
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Particles");
 
             try
             {
@@ -186,8 +185,8 @@ namespace Gorgon.Examples
                                               window,
                                               new GorgonSwapChainInfo("Gorgon2D Sprites Example Swap Chain")
                                               {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
+                                                  Width = ExampleConfig.Default.Resolution.Width,
+                                                  Height = ExampleConfig.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
 
@@ -216,11 +215,11 @@ namespace Gorgon.Examples
                     Texture = _circleTexture,
                     // Calculate the ship texture coordinates.
                     TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-                    Anchor = new DX.Vector2(0.5f, 0.5f)
+                    Anchor = new Vector2(0.5f, 0.5f)
                 };
 
                 // Create a new emitter that we can move around.
-                _emitter = new ParticleEmitter(_renderer, _particleSprite, new DX.Vector2(_screen.Width * 0.5f, _screen.Height * 0.5f));
+                _emitter = new ParticleEmitter(_renderer, _particleSprite, new Vector2(_screen.Width * 0.5f, _screen.Height * 0.5f));
                 UpdateEmitter();
 
                 // Create a bloom filter to intensify the glow for the particles.
@@ -311,7 +310,7 @@ namespace Gorgon.Examples
             }
             else
             {
-                _emitter.Position = new DX.Vector2(e.X, e.Y);
+                _emitter.Position = new Vector2(e.X, e.Y);
             }
         }
 
@@ -323,6 +322,9 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

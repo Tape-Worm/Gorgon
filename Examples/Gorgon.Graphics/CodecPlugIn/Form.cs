@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Examples;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -92,7 +91,7 @@ namespace Graphics.Examples
             // Find the position.
             var bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
-            _graphics.DrawTexture(_texture, bounds);
+            GorgonExample.Blitter.Blit(_texture, bounds);
 
             GorgonExample.BlitLogo(_graphics);
 
@@ -120,7 +119,7 @@ namespace Graphics.Examples
             // Find the plugin.
             GorgonImageCodecPlugIn plugIn = pluginService.GetPlugIn<GorgonImageCodecPlugIn>(pluginName);
 
-            if ((plugIn == null) || (plugIn.Codecs.Count == 0))
+            if ((plugIn is null) || (plugIn.Codecs.Count == 0))
             {
                 return false;
             }
@@ -128,7 +127,7 @@ namespace Graphics.Examples
             // Normally you would enumerate the plug ins, but in this case we know there's only one.
             _customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
 
-            return _customCodec != null;
+            return _customCodec is not null;
         }
 
         /// <summary>
@@ -142,7 +141,9 @@ namespace Graphics.Examples
             try
             {
                 // Save the current texture using our useless new custom codec.
-                _customCodec.Save(_image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm), tempPath);
+                _customCodec.Save(_image.BeginUpdate()
+                                        .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                                        .EndUpdate(), tempPath);
                 _image.Dispose();
                 _texture?.Dispose();
 
@@ -185,7 +186,7 @@ namespace Graphics.Examples
 
             GorgonExample.UnloadResources();
 
-            _pluginCache?.Dispose();
+            _pluginCache?.Dispose();            
             _texture?.Dispose();
             _swap?.Dispose();
             _graphics?.Dispose();
@@ -204,7 +205,7 @@ namespace Graphics.Examples
 
             try
             {
-                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+                GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
                 // Load the custom codec.
                 if (!LoadCodec())

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -71,12 +71,12 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericOffset_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
 
-            DataContext.Offset = new DX.Vector2((float)NumericX.Value, (float)NumericY.Value);
+            DataContext.Offset = new Vector2((float)NumericX.Value, (float)NumericY.Value);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             try
             {
-                if ((dataContext.SelectedVertexIndex < 0) || (dataContext.SelectedVertexIndex > 3))
+                if (dataContext.SelectedVertexIndex is < 0 or > 3)
                 {
                     tableLayoutPanel1.Enabled = false;
                     NumericX.Value = 0;
@@ -115,7 +115,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext"></param>
         private void InitializeFromDataContext(ISpriteVertexEditContext dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -158,7 +158,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

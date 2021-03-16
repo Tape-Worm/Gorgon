@@ -83,7 +83,7 @@ namespace Gorgon.Editor.Services
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         private static Form GetParentForm()
         {
-            if (Form.ActiveForm != null)
+            if (Form.ActiveForm is not null)
             {
                 return Form.ActiveForm;
             }
@@ -96,7 +96,7 @@ namespace Gorgon.Editor.Services
         /// </summary>
         /// <param name="allowMultiSelect"><b>true</b> to allow multiple file selection, or <b>false</b> to only allow single selection.</param>
         /// <returns>The open file dialog.</returns>
-        private OpenFileDialog GetDialog(bool allowMultiSelect) => new OpenFileDialog
+        private OpenFileDialog GetDialog(bool allowMultiSelect) => new()
         {
             Title = string.IsNullOrWhiteSpace(DialogTitle) ? Resources.GOREDIT_TITLE_OPEN_FILE : DialogTitle,
             ValidateNames = true,

@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// <para>
     /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the 
-    /// <see cref="GorgonGraphics.Submit(GorgonInstancedIndexCall, GorgonColor?, int, int)"/> method.  
+    /// <see cref="GorgonGraphics.Submit(GorgonInstancedIndexCall, in GorgonColor?, int, int)"/> method.  
     /// </para>
     /// <para>
     /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected override GorgonInstancedIndexCall OnCreate(IGorgonAllocator<GorgonInstancedIndexCall> allocator) => allocator == null ? new GorgonInstancedIndexCall() : allocator.Allocate();
+        protected override GorgonInstancedIndexCall OnCreate(IGorgonAllocator<GorgonInstancedIndexCall> allocator) => allocator is null ? new GorgonInstancedIndexCall() : allocator.Allocate();
 
         /// <summary>
         /// Function to reset the properties of the draw call to the draw call passed in.
@@ -131,7 +131,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(indexStart), Resources.GORGFX_ERR_INDEX_TOO_SMALL);
             }
 
-            if ((indexCountPerInstance != null) && (indexCountPerInstance < 1))
+            if (indexCountPerInstance is not null and < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexCountPerInstance), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
             }

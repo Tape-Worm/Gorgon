@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Gorgon.Math;
 
 namespace Gorgon.Collections
@@ -47,7 +48,7 @@ namespace Gorgon.Collections
     {
         #region Variables.
         // The indices that are dirty.
-        private int _dirtyIndices;
+        private long _dirtyIndices;
 
         // The last set of dirty items.
         private (int Start, int Count) _dirtyItems;
@@ -93,13 +94,13 @@ namespace Gorgon.Collections
             set
             {
                 if (((value == null) && (BackingArray[index] == null))
-                    || ((BackingArray[index] != null) && (value != null) && (value.Equals(BackingArray[index]))))
+                    || ((BackingArray[index] is not null) && (value is not null) && (value.Equals(BackingArray[index]))))
                 {
                     return;
                 }
 
                 BackingArray[index] = value;
-                _dirtyIndices |= 1 << index;
+                _dirtyIndices |= 1L << index;
             }
         }
         #endregion
@@ -149,6 +150,37 @@ namespace Gorgon.Collections
         }
 #endif
 
+        /// <summary>
+        /// Function to return a read only span for a slice of the array.
+        /// </summary>
+        /// <param name="start">The starting index for the array.</param>
+        /// <param name="count">The number of items to slice.</param>
+        /// <returns>The read only span for the array slice.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<T> AsSpan(int start, int count) => BackingArray.AsSpan(start, count);
+
+        /// <summary>
+        /// Function to return a read only span for the array.
+        /// </summary>
+        /// <returns>The read only span for the array.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<T> AsSpan() => BackingArray.AsSpan();
+
+        /// <summary>
+        /// Function to return read only memory for a slice of the array.
+        /// </summary>
+        /// <param name="start">The starting index for the array.</param>
+        /// <param name="count">The number of items to slice.</param>
+        /// <returns>The read only memory for the array slice.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlyMemory<T> AsMemory(int start, int count) => BackingArray.AsMemory(start, count);
+
+        /// <summary>
+        /// Function to return read only memory for a slice of the array.
+        /// </summary>
+        /// <returns>The read only memory for the array slice.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlyMemory<T> AsMemory() => BackingArray.AsMemory();
 
         /// <summary>
         /// Function to retrieve the dirty items in this list.
@@ -174,12 +206,12 @@ namespace Gorgon.Collections
                 return ref _dirtyItems;
             }
 
-            int dirtyState = _dirtyIndices;
+            long dirtyState = _dirtyIndices;
             int dirtyIndex = 0;
 
             for (int i = 0; dirtyState != 0 && i < BackingArray.Length; ++i)
             {
-                int dirtyMask = 1 << i;
+                long dirtyMask = 1 << i;
 
                 if (((dirtyState & dirtyMask) == dirtyMask) && (startSlot == -1))
                 {
@@ -235,7 +267,7 @@ namespace Gorgon.Collections
 
             T oldValue = BackingArray[index];
             BackingArray[index] = default;
-            _dirtyIndices &= ~(1 << index);
+            _dirtyIndices &= ~(1L << index);
 
             OnItemReset(index, oldValue);
         }
@@ -305,7 +337,7 @@ namespace Gorgon.Collections
         /// <param name="array">The one-dimensional <see cref="Array" /> that is the destination of the elements copied from <see cref="ICollection{T}" />. The <see cref="Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="array" /> is null.</exception>
+        /// <paramref name="array" /> == null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="arrayIndex" /> is less than 0.</exception>
         /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
@@ -314,7 +346,7 @@ namespace Gorgon.Collections
         /// <summary>Copies the elements of the <see cref="ICollection{T}" /> to an <see cref="Array" />, starting at a particular <see cref="Array" /> index.</summary>
         /// <param name="array">The one-dimensional <see cref="Array" /> that is the destination of the elements copied from <see cref="ICollection{T}" />. The <see cref="Array" /> must have zero-based indexing.</param>
         /// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="array" /> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="array" /> == null.</exception>
         public void CopyTo(GorgonArray<T> array, int destIndex = 0)
         {
             if (array == null)
@@ -465,58 +497,6 @@ namespace Gorgon.Collections
 
             // We have different dirty states, so this array is different than the other one.
         }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <param name="offset">[Optional] The offset in this array to start comparing from.</param>
-        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool DirtyEquals(GorgonArray<T> other, int offset = 0)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (IsDirty)
-            {
-                // Update the dirty item state on this instance so we can cut down on some checking.
-                GetDirtyItems();
-            }
-
-            // If the dirty state has already been updated for both arrays, then just check that.
-            if (((_dirtyIndices != 0) || (other._dirtyIndices != 0) || (_dirtyItems.Start != other._dirtyItems.Start) || (_dirtyItems.Count != other._dirtyItems.Count)) && (offset == 0))
-            {
-                return false;
-            }
-
-            for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count && i + offset < BackingArray.Length; ++i)
-            {
-                T thisItem = BackingArray[i + offset];
-                T otherItem = other[i];
-
-                // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if ((thisItem == null) && (otherItem == null))
-                {
-                    continue;
-                }
-
-                if (thisItem == null)
-                {
-                    return false;
-                }
-
-                if (!thisItem.Equals(otherItem))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-
-            // We have different dirty states, so this array is different than the other one.
-        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -524,10 +504,10 @@ namespace Gorgon.Collections
         /// Initializes a new instance of the <see cref="GorgonArray{T}"/> class.
         /// </summary>
         /// <param name="maxSize">The maximum size.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="maxSize"/> is less than 1.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="maxSize"/> is less than 1, or larger than 64.</exception>
         public GorgonArray(int maxSize)
         {
-            if ((maxSize < 1) || (maxSize > 64))
+            if (maxSize is < 1 or > 64)
             {
                 throw new ArgumentOutOfRangeException(nameof(maxSize));
             }

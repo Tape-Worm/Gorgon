@@ -201,7 +201,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.BackColorChanged"/> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnBackColorChanged(EventArgs e)
         {
             base.OnBackColorChanged(e);
@@ -209,7 +209,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.ForeColorChanged"/> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnForeColorChanged(EventArgs e)
         {
             base.OnForeColorChanged(e);
@@ -219,7 +219,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.ForeColorChanged"/> event when the <see cref="P:System.Windows.Forms.Control.ForeColor"/> property value of the control's container changes.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnParentForeColorChanged(EventArgs e)
         {
             base.OnParentForeColorChanged(e);
@@ -229,7 +229,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.BackColorChanged"/> event when the <see cref="P:System.Windows.Forms.Control.BackColor"/> property value of the control's container changes.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnParentBackColorChanged(EventArgs e)
         {
             base.OnParentBackColorChanged(e);
@@ -238,7 +238,7 @@ namespace Gorgon.UI
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.UI.GorgonSearchBox"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="GorgonSearchBox"/> class.</summary>
         public GorgonSearchBox() => InitializeComponent();
         #endregion
     }

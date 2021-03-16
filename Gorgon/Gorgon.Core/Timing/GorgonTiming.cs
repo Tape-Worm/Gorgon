@@ -49,7 +49,7 @@ namespace Gorgon.Timing
     /// {
     ///     Console.CursorLeft = 0;
     ///     Console.CursorTop = 0;
-    ///		Console.WriteLine("FPS: {0}", GorgonTiming.FPS);
+    ///		Console.WriteLine($"FPS: {GorgonTiming.FPS}");
     /// 
     ///		return true;
     /// }
@@ -135,7 +135,7 @@ namespace Gorgon.Timing
         /// </para>
         /// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
         /// </remarks>
-        public static float SecondsSinceStart => _appTimer == null ? 0 : MillisecondsSinceStart / 1000.0f;
+        public static float SecondsSinceStart => _appTimer is null ? 0 : MillisecondsSinceStart / 1000.0f;
 
         /// <summary>
         /// Property to return the number of milliseconds since a Gorgon application was started.
@@ -147,7 +147,7 @@ namespace Gorgon.Timing
         /// </para>
         /// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
         /// </remarks>
-        public static float MillisecondsSinceStart => _appTimer == null ? 0 : (float)_appTimer.Milliseconds;
+        public static float MillisecondsSinceStart => _appTimer is null ? 0 : (float)_appTimer.Milliseconds;
 
         /// <summary>
         /// Property to return the number of seconds to run the idle loop for a single iteration.
@@ -158,7 +158,7 @@ namespace Gorgon.Timing
         /// to read when checking for performance.
         /// </para>
         /// <para>
-        /// The article at <a href="https://www.mvps.org/directx/articles/fps_versus_frame_time.htm" target="_blank">https://www.mvps.org/directx/articles/fps_versus_frame_time.htm</a> has more 
+        /// The article at <a href="https://cgvr.cs.ut.ee/wp/index.php/frame-rate-vs-frame-time/" target="_blank">https://cgvr.cs.ut.ee/wp/index.php/frame-rate-vs-frame-time/</a> has more 
         /// information on using frame delta instead of frames per second. 
         /// </para>
         /// <para>
@@ -336,7 +336,7 @@ namespace Gorgon.Timing
         /// of the next frame.
         /// </para>
         /// <para>
-        /// See the article at <a href="https://www.mvps.org/directx/articles/fps_versus_frame_time.htm" target="_blank">https://www.mvps.org/directx/articles/fps_versus_frame_time.htm</a> for more 
+        /// See the article at <a href="https://cgvr.cs.ut.ee/wp/index.php/frame-rate-vs-frame-time/" target="_blank">https://cgvr.cs.ut.ee/wp/index.php/frame-rate-vs-frame-time/</a> for more 
         /// information on using frame delta instead of frames per second. 
         /// </para>
         /// </remarks>
@@ -368,7 +368,7 @@ namespace Gorgon.Timing
             double frameDelta;          // Frame delta.
 
             // If we've not assigned a timer yet, then just leave, we can't gather anything meaningful without one.
-            if (_timer == null)
+            if (_timer is null)
             {
                 return;
             }
@@ -378,7 +378,7 @@ namespace Gorgon.Timing
                 theTime = _timer.Milliseconds;
                 frameDelta = (theTime - _lastTimerValue);
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-            } while ((frameDelta < 0.000001) && (frameDelta != 0.0));
+            } while (frameDelta is < 0.000001 and not 0.0);
 
             Delta = (float)frameDelta / 1000.0f;
 

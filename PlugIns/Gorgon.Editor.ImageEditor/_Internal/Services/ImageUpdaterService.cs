@@ -59,27 +59,18 @@ namespace Gorgon.Editor.ImageEditor
                 destSize.Width = srcSize.Width;
             }
 
-            switch (alignment)
+            return alignment switch
             {
-                case Alignment.UpperCenter:
-                    return new DX.Point(srcSize.Width / 2 - destSize.Width / 2, 0);
-                case Alignment.UpperRight:
-                    return new DX.Point(srcSize.Width - destSize.Width, 0);
-                case Alignment.CenterLeft:
-                    return new DX.Point(0, srcSize.Height / 2 - destSize.Height / 2);
-                case Alignment.Center:
-                    return new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height / 2 - destSize.Height / 2);
-                case Alignment.CenterRight:
-                    return new DX.Point(srcSize.Width - destSize.Width, srcSize.Height / 2 - destSize.Height / 2);
-                case Alignment.LowerLeft:
-                    return new DX.Point(0, srcSize.Height - destSize.Height);
-                case Alignment.LowerCenter:
-                    return new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height - destSize.Height);
-                case Alignment.LowerRight:
-                    return new DX.Point(srcSize.Width - destSize.Width, srcSize.Height - destSize.Height);
-                default:
-                    return DX.Point.Zero;
-            }
+                Alignment.UpperCenter => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, 0),
+                Alignment.UpperRight => new DX.Point(srcSize.Width - destSize.Width, 0),
+                Alignment.CenterLeft => new DX.Point(0, srcSize.Height / 2 - destSize.Height / 2),
+                Alignment.Center => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height / 2 - destSize.Height / 2),
+                Alignment.CenterRight => new DX.Point(srcSize.Width - destSize.Width, srcSize.Height / 2 - destSize.Height / 2),
+                Alignment.LowerLeft => new DX.Point(0, srcSize.Height - destSize.Height),
+                Alignment.LowerCenter => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height - destSize.Height),
+                Alignment.LowerRight => new DX.Point(srcSize.Width - destSize.Width, srcSize.Height - destSize.Height),
+                _ => DX.Point.Zero,
+            };
         }
 
         /// <summary>
@@ -167,7 +158,9 @@ namespace Gorgon.Editor.ImageEditor
         public void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment)
         {
             DX.Point startLoc = GetAnchorStart(new DX.Size2(cropImage.Width, cropImage.Height), ref destSize, alignment);
-            cropImage.Crop(new DX.Rectangle(startLoc.X, startLoc.Y, destSize.Width, destSize.Height), cropImage.Depth);
+            cropImage.BeginUpdate()
+                     .Crop(new DX.Rectangle(startLoc.X, startLoc.Y, destSize.Width, destSize.Height), cropImage.Depth)
+                     .EndUpdate();
         }
 
         /// <summary>Function to resize the image to fit within the width and height specified.</summary>
@@ -183,7 +176,9 @@ namespace Gorgon.Editor.ImageEditor
                 newSize = new DX.Size2((int)(resizeImage.Width * imageScale), (int)(resizeImage.Height * imageScale));
             }
 
-            resizeImage.Resize(newSize.Width, newSize.Height, resizeImage.Depth, filter);
+            resizeImage.BeginUpdate()
+                       .Resize(newSize.Width, newSize.Height, resizeImage.Depth, filter)
+                       .EndUpdate();
         }
 
         /// <summary>

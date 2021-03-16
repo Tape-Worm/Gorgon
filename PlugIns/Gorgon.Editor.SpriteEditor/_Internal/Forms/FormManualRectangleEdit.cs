@@ -61,7 +61,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericLeft_ValueChanged(object sender, EventArgs e)
         {
-            if ((DataContext == null) || (_noValueEvent))
+            if ((DataContext is null) || (_noValueEvent))
             {
                 return;
             }
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 case nameof(ISpriteClipContext.FixedSize):
                     LabelRight.Enabled = LabelBottom.Enabled =
-                    NumericRight.Enabled = NumericBottom.Enabled = DataContext.FixedSize == null;
+                    NumericRight.Enabled = NumericBottom.Enabled = DataContext.FixedSize is null;
                     break;
                 case nameof(ISpriteClipContext.SpriteRectangle):
                     SetRectangleInputs(DataContext);
@@ -125,7 +125,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -149,14 +149,14 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeFromDataContext(ISpriteClipContext dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
             }
 
             LabelRight.Enabled = LabelBottom.Enabled =
-            NumericRight.Enabled = NumericBottom.Enabled = dataContext.FixedSize == null;
+            NumericRight.Enabled = NumericBottom.Enabled = dataContext.FixedSize is null;
 
             SetRectangleInputs(dataContext);
         }
@@ -167,7 +167,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnResizeBegin(e);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -181,7 +181,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnResizeEnd(e);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -213,7 +213,7 @@ namespace Gorgon.Editor.SpriteEditor
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

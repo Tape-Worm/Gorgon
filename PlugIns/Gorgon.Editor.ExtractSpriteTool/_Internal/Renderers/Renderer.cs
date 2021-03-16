@@ -24,12 +24,15 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
@@ -42,13 +45,13 @@ namespace Gorgon.Editor.ExtractSpriteTool
 	{
 		#region Variables.
 		// The camera for viewing the scene.
-		private IGorgon2DCamera _camera;
+		private GorgonOrthoCamera _camera;
 		// The sprite used to display the texture.
 		private GorgonSprite _textureSprite;
 		// Inverted rendering.
 		private Gorgon2DBatchState _inverted;
 		// The sprite to display for preview.
-		private readonly GorgonSprite _previewSprite = new GorgonSprite();
+		private readonly GorgonSprite _previewSprite = new();
 		#endregion
 
 		#region Methods.
@@ -86,8 +89,8 @@ namespace Gorgon.Editor.ExtractSpriteTool
 			ref readonly ProgressData prog = ref DataContext.ExtractTaskProgress;
 			string text = string.Format(Resources.GOREST_PROGRESS_SPR_GEN, prog.Current, prog.Total);
 
-			DX.Size2F textSize = Renderer.DefaultFont.MeasureText(text, false);
-			var pos = new DX.Vector2(MainRenderTarget.Width * 0.5f - textSize.Width * 0.5f, MainRenderTarget.Height * 0.5f - textSize.Height * 0.5f);
+			DX.Size2F textSize = text.MeasureText(Renderer.DefaultFont, false);
+			var pos = new Vector2(MainRenderTarget.Width * 0.5f - textSize.Width * 0.5f, MainRenderTarget.Height * 0.5f - textSize.Height * 0.5f);
 
 			float percent = (float)prog.Current / prog.Total;
 			var barOutline = new DX.RectangleF(pos.X, MainRenderTarget.Height * 0.5f - (textSize.Height + 4) * 0.5f,
@@ -98,7 +101,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 			Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, MainRenderTarget.Width, MainRenderTarget.Height),
 										new GorgonColor(GorgonColor.White, 0.80f));
 			Renderer.DrawString(text, pos, color: GorgonColor.Black);
-			Renderer.DrawString(Resources.GOREST_TEXT_GEN_CANCEL_MSG, new DX.Vector2(pos.X, bar.Bottom + 4), color: GorgonColor.Black);
+			Renderer.DrawString(Resources.GOREST_TEXT_GEN_CANCEL_MSG, new Vector2(pos.X, bar.Bottom + 4), color: GorgonColor.Black);
 			Renderer.DrawRectangle(barOutline, GorgonColor.Black, 2);
 			Renderer.End();
 
@@ -123,7 +126,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
 			float scale = CalculateScaling(new DX.Size2F(DataContext.Texture.Width + 8, DataContext.Texture.Height + 8), new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height));
 			_textureSprite.Size = new DX.Size2F(scale * DataContext.Texture.Width, scale * DataContext.Texture.Height).Truncate();
-			_textureSprite.Position = new DX.Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
+			_textureSprite.Position = new Vector2(-_textureSprite.Size.Width * 0.5f, -_textureSprite.Size.Height * 0.5f).Truncate();
 			
 			Renderer.Begin(camera: _camera);
 
@@ -133,7 +136,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 			Renderer.End();
 			
 			Renderer.Begin(_inverted, _camera);
-			var pos = new DX.Vector2(_textureSprite.Position.X + (DataContext.GridOffset.X * scale), _textureSprite.Position.Y + (DataContext.GridOffset.Y * scale));
+			var pos = new Vector2(_textureSprite.Position.X + (DataContext.GridOffset.X * scale), _textureSprite.Position.Y + (DataContext.GridOffset.Y * scale));
 
 			int maxWidth = (int)((DataContext.CellSize.Width * DataContext.GridSize.Width) * scale);
 			int maxHeight = (int)((DataContext.CellSize.Height * DataContext.GridSize.Height) * scale);
@@ -143,16 +146,16 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
 			for (int x = 1; x < DataContext.GridSize.Width; ++x)
 			{
-				var start = new DX.Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y);
-				var end = new DX.Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y + maxHeight);
+				var start = new Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y);
+				var end = new Vector2((int)((x * DataContext.CellSize.Width) * scale) + pos.X, pos.Y + maxHeight);
 
 				Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
 			}
 
 			for (int y = 1; y < DataContext.GridSize.Height; ++y)
 			{
-				var start = new DX.Vector2(pos.X, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
-				var end = new DX.Vector2(pos.X + maxWidth, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
+				var start = new Vector2(pos.X, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
+				var end = new Vector2(pos.X + maxWidth, (int)((y * DataContext.CellSize.Height) * scale) + pos.Y);
 
 				Renderer.DrawLine(start.X, start.Y, end.X, end.Y, GorgonColor.DeepPink);
 			}
@@ -174,9 +177,9 @@ namespace Gorgon.Editor.ExtractSpriteTool
 		{
 			base.OnLoad();
 
-			_camera = new Gorgon2DOrthoCamera(Renderer, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
+			_camera = new GorgonOrthoCamera(Graphics, new DX.Size2F(MainRenderTarget.Width, MainRenderTarget.Height))
 			{
-				Anchor = new DX.Vector2(0.5f, 0.5f)
+				Anchor = new Vector2(0.5f, 0.5f)
 			};
 
 			var builder = new Gorgon2DBatchStateBuilder();
@@ -203,7 +206,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 		public Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IExtract dataContext)
 			: base("Extract Renderer", renderer, swapChain, dataContext)
 		{
-			_previewSprite.Anchor = new DX.Vector2(0.5f, 0.5f);
+			_previewSprite.Anchor = new Vector2(0.5f, 0.5f);
 			_previewSprite.TextureSampler = GorgonSamplerState.PointFiltering;
 		}
 		#endregion

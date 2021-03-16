@@ -25,12 +25,14 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Math;
+using Gorgon.Memory;
 using Gorgon.Properties;
 
 namespace Gorgon.IO
@@ -49,13 +51,68 @@ namespace Gorgon.IO
         private static readonly char[] _illegalPathChars = Path.GetInvalidPathChars();
         // Illegal file name characters.
         private static readonly char[] _illegalFileChars = Path.GetInvalidFileNameChars();
-        // Buffer for reading a string back from a stream.
-        private static byte[] _buffer;
-        // Buffer to hold decoded characters when reading from a stream.
-        private static char[] _charBuffer;
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to read data into a span from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the data to read.</param>
+        /// <param name="buffer">The span to copy data into.</param>
+        /// <returns>The number of bytes read.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        public static int Read(this Stream stream, Span<byte> buffer)
+        {
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
+            byte[] readBuffer = pool.Rent(buffer.Length);
+            
+            try
+            {
+                int byteCount = stream.Read(readBuffer, 0, buffer.Length);
+                var readSpan = new ReadOnlySpan<byte>(readBuffer, 0, byteCount);
+
+                readSpan.CopyTo(buffer);
+
+                return byteCount;
+            }
+            finally
+            {
+                pool.Return(readBuffer);
+            }
+        }
+
+        /// <summary>
+        /// Function to write data from a span into a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the data to read.</param>
+        /// <param name="buffer">The span to copy data into.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        public static void Write(this Stream stream, ReadOnlySpan<byte> buffer)
+        {
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
+            byte[] writeBuffer = pool.Rent(buffer.Length);
+
+            try
+            {
+                buffer.CopyTo(writeBuffer);
+                stream.Write(writeBuffer, 0, buffer.Length);
+            }
+            finally
+            {
+                pool.Return(writeBuffer);
+            }
+        }
+
         /// <summary>
         /// Function to copy the contents of this stream into another stream, up to a specified byte count.
         /// </summary>
@@ -75,17 +132,17 @@ namespace Gorgon.IO
         /// </para>
         /// <para>
         /// The <paramref name="bufferSize"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. It is not recommended that the buffer 
-        /// exceeds than 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 
+        /// exceeds 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 
         /// </para>
         /// </remarks>
-        public static int CopyToStream(this Stream stream, Stream destination, int count, int bufferSize = 81920)
+        public static int CopyToStream(this Stream stream, Stream destination, int count, int bufferSize = 131072)
         {
             if (stream.Length <= stream.Position)
             {
                 return 0;
             }
 
-            byte[] buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(bufferSize);
+            byte[] buffer = GorgonArrayPool<byte>.SharedTiny.Rent(bufferSize);
 
             try
             {
@@ -93,7 +150,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(buffer);
             }
         }
 
@@ -117,12 +174,12 @@ namespace Gorgon.IO
         /// </para>
         /// <para>
         /// The <paramref name="buffer"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. It is not recommended that the buffer 
-        /// exceeds than 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 
+        /// exceeds 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 
         /// </para>
         /// </remarks>
         public static int CopyToStream(this Stream stream, Stream destination, int count, byte[] buffer)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -132,7 +189,7 @@ namespace Gorgon.IO
                 throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
             }
 
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
@@ -142,7 +199,7 @@ namespace Gorgon.IO
                 throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
             }
 
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
@@ -162,13 +219,13 @@ namespace Gorgon.IO
                 return 0;
             }
 
-            int bufferSize = buffer.Length;
+            int bufferSize = buffer.Length.Min(count);
             int result = 0;
             int bytesRead;
 
             while ((count > 0) && ((bytesRead = stream.Read(buffer, 0, count.Min(bufferSize))) != 0))
             {
-                destination.Write(buffer, 0, bytesRead);
+                destination.Write(buffer.AsSpan(0, bytesRead));
                 result += bytesRead;
                 count -= bytesRead;
             }
@@ -219,7 +276,7 @@ namespace Gorgon.IO
                 return 0;
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -229,7 +286,7 @@ namespace Gorgon.IO
                 throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
-            if (encoding == null)
+            if (encoding is null)
             {
                 encoding = Encoding.UTF8;
             }
@@ -330,12 +387,12 @@ namespace Gorgon.IO
         {
             int stringLength = 0;
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (encoding == null)
+            if (encoding is null)
             {
                 encoding = Encoding.UTF8;
             }
@@ -368,55 +425,54 @@ namespace Gorgon.IO
             // Find the number of bytes required for 4096 characters.
             int maxByteCount = encoding.GetMaxByteCount(4096);
             int maxCharCount = encoding.GetMaxCharCount(maxByteCount);
+            byte[] buffer = GorgonArrayPool<byte>.SharedTiny.Rent(maxByteCount);
+            char[] charBuffer = GorgonArrayPool<char>.SharedTiny.Rent(maxCharCount);
 
-            // If they've changed or haven't been allocated yet, then allocate our worker buffers.
-            if ((_buffer == null) || (_buffer.Length < maxByteCount))
+            try
             {
-                _buffer = new byte[maxByteCount];
-            }
+                Decoder decoder = encoding.GetDecoder();
+                StringBuilder result = null;
+                counter = 0;
 
-            if ((_charBuffer == null) || (_charBuffer.Length < maxCharCount))
-            {
-                _charBuffer = new char[maxCharCount];
-            }
-
-            Decoder decoder = encoding.GetDecoder();
-            StringBuilder result = null;
-            counter = 0;
-
-            // Buffer the string in, just in case it's super long.
-            while ((stream.Position < stream.Length) && (counter < stringLength))
-            {
-                // Fill the byte buffer.
-                int bytesRead = stream.Read(_buffer, 0, stringLength <= _buffer.Length ? stringLength : _buffer.Length);
-
-                if (bytesRead == 0)
+                // Buffer the string in, just in case it's super long.
+                while ((stream.Position < stream.Length) && (counter < stringLength))
                 {
-                    throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
+                    // Fill the byte buffer.
+                    int bytesRead = stream.Read(buffer, 0, stringLength <= buffer.Length ? stringLength : buffer.Length);
+
+                    if (bytesRead == 0)
+                    {
+                        throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
+                    }
+
+                    // Get the characters.
+                    int charsRead = decoder.GetChars(buffer, 0, bytesRead, charBuffer, 0);
+
+                    // If we've already read the entire string, just dump it back out now.
+                    if ((counter == 0) && (bytesRead == stringLength))
+                    {
+                        return new string(charBuffer, 0, charsRead);
+                    }
+
+                    // We'll need a bigger string. So allocate a string builder and use that.
+                    if (result is null)
+                    {
+                        // Try to max out the string builder size by the length of our string, in characters.
+                        result = new StringBuilder(encoding.GetMaxCharCount(stringLength));
+                    }
+
+                    result.Append(charBuffer, 0, charsRead);
+
+                    counter += bytesRead;
                 }
 
-                // Get the characters.
-                int charsRead = decoder.GetChars(_buffer, 0, bytesRead, _charBuffer, 0);
-
-                // If we've already read the entire string, just dump it back out now.
-                if ((counter == 0) && (bytesRead == stringLength))
-                {
-                    return new string(_charBuffer, 0, charsRead);
-                }
-
-                // We'll need a bigger string. So allocate a string builder and use that.
-                if (result == null)
-                {
-                    // Try to max out the string builder size by the length of our string, in characters.
-                    result = new StringBuilder(encoding.GetMaxCharCount(stringLength));
-                }
-
-                result.Append(_charBuffer, 0, charsRead);
-
-                counter += bytesRead;
+                return result?.ToString() ?? string.Empty;
             }
-
-            return result?.ToString() ?? string.Empty;
+            finally
+            {
+                GorgonArrayPool<byte>.SharedTiny.Return(buffer);
+                GorgonArrayPool<char>.SharedTiny.Return(charBuffer);
+            }
         }
 
         /// <summary>
@@ -479,7 +535,7 @@ namespace Gorgon.IO
         public static string FormatDirectory(this string path, char directorySeparator)
         {
             string directorySep = _directoryPathSeparator;
-            string doubleSeparator = new string(new[] { directorySeparator, directorySeparator });
+            string doubleSeparator = new(new[] { directorySeparator, directorySeparator });
 
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -505,7 +561,7 @@ namespace Gorgon.IO
                 directorySep = _altPathSeparator;
             }
 
-            if (output[output.Length - 1] != directorySeparator)
+            if (output[^1] != directorySeparator)
             {
                 output.Append(directorySeparator);
             }
@@ -676,7 +732,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
         public static ulong ChunkID(this string chunkName)
         {
-            if (chunkName == null)
+            if (chunkName is null)
             {
                 throw new ArgumentNullException(nameof(chunkName));
             }

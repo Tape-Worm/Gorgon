@@ -32,7 +32,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Input;
 using Gorgon.PlugIns;
 using Gorgon.Timing;
@@ -235,7 +234,7 @@ namespace Gorgon.Examples
         /// </summary>
         private async Task CheckForConnectedDevices()
         {
-            while ((GorgonApplication.IsRunning) && (_controllers != null))
+            while ((GorgonApplication.IsRunning) && (_controllers is not null))
             {
                 if (_controllers.Any(item => item.IsConnected))
                 {
@@ -349,27 +348,23 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
             try
             {
-                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+                GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
                 // Create the assembly cache.
                 _assemblies = new GorgonMefPlugInCache(GorgonApplication.Log);
-                _assemblies.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
-
-                // Create the plug services.
-                IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies);
 
                 // Create the gaming device driver factory.
-                var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
+                var factory = new GorgonGamingDeviceDriverFactory(_assemblies, GorgonApplication.Log);
 
                 // Create our factory.
-                _driver = factory.LoadDriver("Gorgon.Input.XInput.GorgonXInputDriver");
+                _driver = factory.LoadDriver(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll"), "Gorgon.Input.XInput.GorgonXInputDriver");
 
                 _stickPosition = new PointF[3];
                 _sprayStates = new SprayCan[3];
@@ -398,12 +393,12 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+        /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data.</param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
 
-            if (_controllers != null)
+            if (_controllers is not null)
             {
                 foreach (IGorgonGamingDevice controller in _controllers)
                 {
@@ -413,7 +408,7 @@ namespace Gorgon.Examples
 
             _assemblies?.Dispose();
 
-            if (_surface == null)
+            if (_surface is null)
             {
                 return;
             }

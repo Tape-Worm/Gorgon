@@ -219,7 +219,7 @@ namespace Gorgon.Editor.Services
         {
             DirectoryInfo initialDirectory = InitialDirectory;
 
-            if ((InitialDirectory == null) || (!InitialDirectory.Exists))
+            if ((InitialDirectory is null) || (!InitialDirectory.Exists))
             {
                 initialDirectory = new DirectoryInfo(Settings.LastOpenSavePath);
             }
@@ -229,7 +229,7 @@ namespace Gorgon.Editor.Services
                 initialDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
             }
 
-            if (CurrentWriter != null)
+            if (CurrentWriter is not null)
             {
                 FindCurrentWriterExtensionIndex(extensions);
             }

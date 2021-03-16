@@ -1,9 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <Version>3.1.0</Version>
+    <Version>3.2.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
@@ -28,6 +30,8 @@
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <FileVersion>3.2.0.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -42,6 +46,33 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Camera.cs" />
+    <Compile Remove="Light.cs" />
+    <Compile Remove="Vertex3D.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\earthbump1k_NRM.dds" />
+    <None Remove="Resources\earthcloudmap.png" />
+    <None Remove="Resources\earthmap1k.jpg" />
+    <None Remove="Resources\earthspec1k.jpg" />
+    <None Remove="Resources\normalmap.png" />
+    <None Remove="Resources\Rain_Height_NRM.dds" />
+    <None Remove="Resources\Rain_Height_SPEC.dds" />
+    <None Remove="Resources\Shaders.hlsl" />
+    <None Remove="Resources\UV.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\earthbump1k_NRM.dds" />
+    <EmbeddedResource Include="Resources\earthcloudmap.png" />
+    <EmbeddedResource Include="Resources\earthmap1k.jpg" />
+    <EmbeddedResource Include="Resources\earthspec1k.jpg" />
+    <EmbeddedResource Include="Resources\normalmap.png" />
+    <EmbeddedResource Include="Resources\Rain_Height_NRM.dds" />
+    <EmbeddedResource Include="Resources\Rain_Height_SPEC.dds" />
+    <EmbeddedResource Include="Resources\Shaders.hlsl" />
+    <EmbeddedResource Include="Resources\UV.png" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Gorgon\g.png">
       <Pack>True</Pack>
@@ -59,18 +90,14 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -80,9 +107,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

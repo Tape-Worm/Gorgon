@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Fonts
         {
             var brush = other as GorgonGlyphSolidBrush;
 
-            return ((brush == this) || ((brush != null) && (brush.Color == Color)));
+            return ((brush == this) || ((brush is not null) && (brush.Color == Color)));
         }
 
         #endregion

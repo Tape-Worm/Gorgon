@@ -36,7 +36,7 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Property to return whether the clipboard has any data.
         /// </summary>
-        public bool HasData => DataType != null;
+        public bool HasData => DataType is not null;
 
         /// <summary>
         /// Property to set or return the type of data on the clipboard.

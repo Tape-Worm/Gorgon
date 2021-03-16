@@ -26,7 +26,6 @@
 
 using System;
 using System.Windows.Forms;
-using Gorgon.Examples;
 using Gorgon.UI;
 
 namespace Gorgon.Examples
@@ -45,6 +44,9 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

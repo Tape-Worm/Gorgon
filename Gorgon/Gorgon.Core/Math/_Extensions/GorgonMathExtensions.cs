@@ -38,13 +38,15 @@ namespace Gorgon.Math
     /// methods from <see cref="System.Math"/>. This makes it easy to chain together several functions to retrieve a result, for example:
     /// </para>
     /// <code language="csharp">
+    /// <![CDATA[
     /// int myValueTooBig = 150;
     /// int myValueTooSmall = 5;
     /// 
     /// // Ensure the value does not exceed 100, but is greater than 10.
-    /// Console.WriteLine("{0}, {1}", myValueTooBig.Min(100).Max(10), myValueTooSmall.Min(100).Max(10));  
+    /// Console.WriteLine($"{myValueTooBig.Min(100).Max(10)}, {myValueTooSmall.Min(100).Max(10)}");  
     ///
     /// // Outputs: 100, 10
+    /// ]]>
     /// </code>
     /// <para>
     /// Other mathematical functions are included, such as <see cref="Sin(float)"/>, <see cref="Cos(float)"/>, <see cref="Tan(float)"/>, etc... 
@@ -1090,15 +1092,14 @@ namespace Gorgon.Math
                 min = temp;
             }
 
-            while (angle > max)
+            if (angle > max)
             {
-                angle -= 360.0f;
+                angle = max - angle;
             }
 
-            while (angle < min)
+            if (angle < min)
             {
-
-                angle += 360.0f;
+                angle -= min;
             }
 
             return angle;
@@ -1125,15 +1126,14 @@ namespace Gorgon.Math
                 min = temp;
             }
 
-            while (angle > max)
+            if (angle > max)
             {
-                angle -= 360;
+                angle = max - angle;
             }
 
-            while (angle < min)
+            if (angle < min)
             {
-
-                angle += 360;
+                angle -= min;
             }
 
             return angle;
@@ -1160,15 +1160,14 @@ namespace Gorgon.Math
                 min = temp;
             }
 
-            while (angle > max)
+            if (angle > max)
             {
-                angle -= 360.0M;
+                angle = max - angle;
             }
 
-            while (angle < min)
+            if (angle < min)
             {
-
-                angle += 360.0M;
+                angle -= min;
             }
 
             return angle;
@@ -1195,15 +1194,14 @@ namespace Gorgon.Math
                 min = temp;
             }
 
-            while (angle > max)
+            if (angle > max)
             {
-                angle -= 360;
+                angle = (short)(max - angle);
             }
 
-            while (angle < min)
+            if (angle < min)
             {
-
-                angle += 360;
+                angle -= min;
             }
 
             return angle;
@@ -1230,15 +1228,15 @@ namespace Gorgon.Math
                 min = temp;
             }
 
-            while (angle > max)
+
+            if (angle > max)
             {
-                angle -= 360;
+                angle = max - angle;
             }
 
-            while (angle < min)
+            if (angle < min)
             {
-
-                angle += 360;
+                angle -= min;
             }
 
             return angle;
@@ -1265,15 +1263,14 @@ namespace Gorgon.Math
                 min = temp;
             }
 
-            while (angle > max)
+            if (angle > max)
             {
-                angle -= 360;
+                angle = max - angle;
             }
 
-            while (angle < min)
+            if (angle < min)
             {
-
-                angle += 360;
+                angle -= min;
             }
 
             return angle;

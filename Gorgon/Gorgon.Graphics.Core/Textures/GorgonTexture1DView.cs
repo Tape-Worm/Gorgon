@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -212,53 +211,26 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to perform the creation of a specific kind of view.
-        /// </summary>
-        /// <returns>The view that was created.</returns>
-        private protected override D3D11.ResourceView OnCreateNativeView()
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>A shader resource view descriptor.</returns>
+        private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
         {
-            var desc = new D3D11.ShaderResourceViewDescription1
+            SrvDesc = new D3D11.ShaderResourceViewDescription1
             {
                 Format = (Format)Format,
                 Dimension = Texture.ArrayCount > 1
                                            ? D3D.ShaderResourceViewDimension.Texture1DArray
                                            : D3D.ShaderResourceViewDimension.Texture1D,
-                Texture1DArray =
-                           {
+                Texture1DArray = 
+                            {
                                MipLevels = MipCount,
                                MostDetailedMip = MipSlice,
                                FirstArraySlice = ArrayIndex,
                                ArraySize = ArrayCount
-                           }
+                            }
             };
 
-            try
-            {
-                Graphics.Log.Print($"Creating D3D11 1D texture shader resource view for {Texture.Name}.", LoggingLevel.Simple);
-
-                // Create our SRV.
-                Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-                {
-                    DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_1D"
-                };
-
-                Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}", LoggingLevel.Verbose);
-            }
-            catch (DX.SharpDXException sDXEx)
-            {
-                if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-                                                            Texture.Format,
-                                                            Format));
-                }
-
-                throw;
-            }
-
-            return Native;
+            return ref SrvDesc;
         }
 
         /// <summary>
@@ -288,7 +260,7 @@ namespace Gorgon.Graphics.Core
         {
             float width = Texture.Width;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
             }
@@ -315,7 +287,7 @@ namespace Gorgon.Graphics.Core
         {
             float width = Texture.Width;
 
-            if (mipLevel == null)
+            if (mipLevel is null)
             {
                 return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
             }
@@ -342,7 +314,7 @@ namespace Gorgon.Graphics.Core
         {
             float width = Texture.Width;
 
-            return mipLevel == null ? pixelOffset / width : pixelOffset / GetMipWidth(mipLevel.Value);
+            return mipLevel is null ? pixelOffset / width : pixelOffset / GetMipWidth(mipLevel.Value);
         }
 
         /// <summary>
@@ -362,7 +334,7 @@ namespace Gorgon.Graphics.Core
         {
             float width = Texture.Width;
 
-            return mipLevel == null ? (int)(texelOffset * width) : (int)(texelOffset * GetMipWidth(mipLevel.Value));
+            return mipLevel is null ? (int)(texelOffset * width) : (int)(texelOffset * GetMipWidth(mipLevel.Value));
         }
 
         /// <summary>
@@ -402,12 +374,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonTexture1D"/>
         public static GorgonTexture1DView CreateTexture(GorgonGraphics graphics, IGorgonTexture1DInfo info, IGorgonImage initialData = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
@@ -420,20 +392,24 @@ namespace Gorgon.Graphics.Core
                                             : info.Binding) & ~(TextureBinding.DepthStencil | TextureBinding.RenderTarget)
             };
 
-            if (initialData != null)
+            if (initialData is not null)
             {
                 if (initialData.Width < info.Width)
                 {
-                    initialData = initialData.Expand(info.Width, 1, 1);
+                    initialData = initialData.BeginUpdate()
+                                             .Expand(info.Width, 1, 1)
+                                             .EndUpdate();
                 }
 
                 if (initialData.Width > info.Width)
                 {
-                    initialData = initialData.Crop(new DX.Rectangle(0, 0, info.Width, 1), 1);
+                    initialData = initialData.BeginUpdate()
+                                             .Crop(new DX.Rectangle(0, 0, info.Width, 1), 1)
+                                             .EndUpdate();
                 }
             }
 
-            GorgonTexture1D texture = initialData == null
+            GorgonTexture1D texture = initialData is null
                                           ? new GorgonTexture1D(graphics, newInfo)
                                           : initialData.ToTexture1D(graphics,
                                                                     new GorgonTextureLoadOptions
@@ -499,17 +475,17 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture1DView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -519,7 +495,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -529,13 +505,11 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            using (IGorgonImage image = codec.FromStream(stream, size))
-            {
-                GorgonTexture1D texture = image.ToTexture1D(graphics, options);
-                GorgonTexture1DView view = texture.GetShaderResourceView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromStream(stream, size);
+            GorgonTexture1D texture = image.ToTexture1D(graphics, options);
+            GorgonTexture1DView view = texture.GetShaderResourceView();
+            view.OwnsResource = true;
+            return view;
         }
 
         /// <summary>
@@ -582,12 +556,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture1DView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -597,18 +571,16 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            using (IGorgonImage image = codec.FromFile(filePath))
-            {
-                GorgonTexture1D texture = image.ToTexture1D(graphics, options);
-                GorgonTexture1DView view = texture.GetShaderResourceView();
-                view.OwnsResource = true;
-                return view;
-            }
+            using IGorgonImage image = codec.FromFile(filePath);
+            GorgonTexture1D texture = image.ToTexture1D(graphics, options);
+            GorgonTexture1DView view = texture.GetShaderResourceView();
+            view.OwnsResource = true;
+            return view;
         }
         #endregion
 

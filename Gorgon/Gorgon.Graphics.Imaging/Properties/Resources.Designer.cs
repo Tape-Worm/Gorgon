@@ -115,6 +115,15 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The image is already being edited. Call EndUpdate before calling BeginUpdate to edit the image..
+        /// </summary>
+        internal static string GORIMG_ERR_ALREADY_EDITING {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_ALREADY_EDITING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The size of the bitmap ({0}x{1}) is not the same as the buffer ({2}x{3})..
         /// </summary>
         internal static string GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT {

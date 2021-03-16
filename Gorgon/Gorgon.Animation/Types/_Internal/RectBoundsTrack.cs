@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
@@ -42,7 +43,7 @@ namespace Gorgon.Animation
         // The interpolation mode for the track.
         private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
         // The spline controller for the track.
-        private readonly GorgonCatmullRomSpline _splineController = new GorgonCatmullRomSpline();
+        private readonly GorgonCatmullRomSpline _splineController = new();
         #endregion
 
         #region Properties.
@@ -120,7 +121,7 @@ namespace Gorgon.Animation
 
             GorgonKeyRectangle result = KeyFrames.FirstOrDefault(item => item.Time == timeIndex);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
@@ -145,7 +146,7 @@ namespace Gorgon.Animation
             // Build the spline for the track.
             for (int i = 0; i < keyFrames.Count; ++i)
             {
-                _splineController.Points.Add(new DX.Vector4(keyFrames[i].Value.X,
+                _splineController.Points.Add(new Vector4(keyFrames[i].Value.X,
                                                             keyFrames[i].Value.Y,
                                                             keyFrames[i].Value.Width,
                                                             keyFrames[i].Value.Height));

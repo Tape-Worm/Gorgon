@@ -25,12 +25,10 @@
 #endregion
 
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
@@ -67,82 +65,20 @@ namespace Gorgon.Examples
         #region Variables.
         // The plugin assemblies.
         private static GorgonMefPlugInCache _pluginAssemblies;
-        // The plugin service.
-        private static IGorgonPlugInService _pluginService;
         // File system.
         private static GorgonFileSystem _fileSystem;
         // The log file used for debug logging.
         private static IGorgonLog _log;
         #endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return the path to the plugins.
-        /// </summary>
-        public static string PlugInPath
-        {
-            get
-            {
-                string path = Settings.Default.PlugInLocation;
-
-                if (path.Contains("{0}"))
-                {
-#if DEBUG
-                    path = string.Format(path, "Debug");
-#else
-					path = string.Format(path, "Release");					
-#endif
-                }
-
-                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
-                {
-                    path += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-                }
-
-                return Path.GetFullPath(path);
-            }
-        }
-        #endregion
-
         #region Methods.
-        /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> parameter is <b>null</b> or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-        {
-            string path = Settings.Default.ResourceLocation;
-
-            if (string.IsNullOrEmpty(resourceItem))
-            {
-                throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
-            }
-
-            path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-            // If this is a directory, then sanitize it as such.
-            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                // Otherwise, format the file name.
-                path += resourceItem.FormatFileName();
-            }
-
-            // Ensure that we have an absolute path.
-            return Path.GetFullPath(path);
-        }
-
         /// <summary>
         /// Function to load the zip file provider plugin.
         /// </summary>
         /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
         private static bool LoadZipProviderPlugIn()
         {
-            var zipProviderFile = new FileInfo(Path.Combine(PlugInPath.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
+            var zipProviderFile = new FileInfo(Path.Combine(GorgonExample.GetPlugInPath().FullName.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
 
             // Check to see if the file exists.
             if (!zipProviderFile.Exists)
@@ -156,18 +92,15 @@ namespace Gorgon.Examples
                 return false;
             }
 
-            // Load the plugin assembly.
-            _pluginAssemblies.LoadPlugInAssemblies(zipProviderFile.Directory?.FullName, zipProviderFile.Name);
-
             // Create our file system provider factory so we can retrieve the zip file provider.
-            var providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
+            var providerFactory = new GorgonFileSystemProviderFactory(_pluginAssemblies, _log);
 
             // Get our zip file provider.
             GorgonFileSystemProvider provider;
 
             try
             {
-                provider = providerFactory.CreateProvider(PlugInName);
+                provider = providerFactory.CreateProvider(zipProviderFile.FullName, PlugInName);
             }
             catch (GorgonException gEx)
             {
@@ -191,13 +124,14 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Main()
         {
-            _log = new GorgonLog("ZipFileSystem", "Tape_Worm");
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+
+            _log = new GorgonTextFileLog("ZipFileSystem", "Tape_Worm");
             _log.LogStart();
 
             // Create the plugin assembly cache.
             _pluginAssemblies = new GorgonMefPlugInCache(_log);
-            // Create the plugin service.
-            _pluginService = new GorgonMefPlugInService(_pluginAssemblies);
 
             try
             {
@@ -231,7 +165,7 @@ namespace Gorgon.Examples
                 // would load files from the system into memory when mounting a 
                 // directory.  While this version only loads directory and file 
                 // information when mounting.  This is considerably more efficient.
-                string physicalPath = GetResourcePath(@"FileSystem.zip");
+                string physicalPath = Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "FileSystem.zip");
                 _fileSystem.Mount(physicalPath);
 
                 Console.Write("\nMounted: ");

@@ -142,7 +142,7 @@
     <value>The format for the view must not be [Unknown].</value>
   </data>
   <data name="GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT" xml:space="preserve">
-    <value>The format [{0}] is not compatiable or cannot be cast to [{1}].</value>
+    <value>The resource format is not compatiable or cannot be cast to [{0}].</value>
   </data>
   <data name="GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID" xml:space="preserve">
     <value>The array count for a cube texture must be a multiple of 6.</value>
@@ -532,5 +532,34 @@ This application will now exit.</value>
   </data>
   <data name="GORGFX_TEXT_FEATURE_SET_UNKNOWN" xml:space="preserve">
     <value>Unknown</value>
+  </data>
+  <data name="GORGFX_ERR_D3D_RESOURCE_IS_NOT_2D_TEXTURE" xml:space="preserve">
+    <value>The resource is not a 2D texture.</value>
+  </data>
+  <data name="GORGFX_ERR_DXGI_RESOURCE_IS_NOT_D3D_RESOURCE" xml:space="preserve">
+    <value>The DXGI resource is not a D3D resource.</value>
+  </data>
+  <data name="GORGFX_ERR_POINTER_NOT_COM_OBJECT" xml:space="preserve">
+    <value>The pointer cannot be wrapped into a COM object.</value>
+  </data>
+  <data name="GORGFX_ERR_POINTER_NOT_DXGI_RESOURCE" xml:space="preserve">
+    <value>The pointer is not a DXGI shared resource.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_RENDER_TARGET" xml:space="preserve">
+    <value>A render target is required, but not set.</value>
+  </data>
+  <data name="GORGFX_ERR_QUERY_NOT_INITIALIZED" xml:space="preserve">
+    <value>The query '{0}' has not been initialized.</value>
+  </data>
+  <data name="GORGFX_TOSTR_TIMESTAMP_DISJOINT" xml:space="preserve">
+    <value>Timestamp Frequency: {0}, Is Disjointed: {1}</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_SHARED_RES" xml:space="preserve">
+    <value>Cannot create a shared resource for the texture '{0}'. 
+
+Textures must be configured to share their data when they are first created.</value>
+  </data>
+  <data name="GORGFX_ERR_SHARED_RES_NOT_AVAILABLE" xml:space="preserve">
+    <value>The shared resource could not be created for the texture '{0}'.</value>
   </data>
 </root>

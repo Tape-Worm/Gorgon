@@ -46,7 +46,7 @@ namespace Gorgon.Editor.Rendering
     {
         #region Variables.
         // Leases for a swap chain.
-        private readonly Dictionary<string, WeakReference<GorgonSwapChain>> _swapChainLeases = new Dictionary<string, WeakReference<GorgonSwapChain>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, WeakReference<GorgonSwapChain>> _swapChainLeases = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
@@ -76,6 +76,14 @@ namespace Gorgon.Editor.Rendering
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the blitter used to arbitrarily render a full texture.
+        /// </summary>
+        public GorgonTextureBlitter Blitter
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -86,7 +94,7 @@ namespace Gorgon.Editor.Rendering
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="swapChain"/> parameter is <b>null</b>.</exception>
         public void ReturnSwapPresenter(ref GorgonSwapChain swapChain)
         {
-            if (swapChain == null)
+            if (swapChain is null)
             {
                 throw new ArgumentNullException(nameof(swapChain));
             }
@@ -120,7 +128,7 @@ namespace Gorgon.Editor.Rendering
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
         public GorgonSwapChain LeaseSwapPresenter(Control control)
         {
-            if (control == null)
+            if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
             }
@@ -190,8 +198,9 @@ namespace Gorgon.Editor.Rendering
 
             var graphics = new GorgonGraphics(adapter, log: log);
             var fontFactory = new GorgonFontFactory(graphics);
+            var blitter = new GorgonTextureBlitter(graphics);
 
-            return new GraphicsContext(graphics, fontFactory);
+            return new GraphicsContext(graphics, blitter, fontFactory);
         }
 
         /// <summary>
@@ -207,6 +216,7 @@ namespace Gorgon.Editor.Rendering
                 }
             }
 
+            Blitter.Dispose();
             FontFactory.Dispose();
             _swapChainLeases.Clear();
             Renderer2D?.Dispose();
@@ -219,10 +229,12 @@ namespace Gorgon.Editor.Rendering
         /// Initializes a new instance of the <see cref="GraphicsContext"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface.</param>
+        /// <param name="blitter">The blitter used to draw textures.</param>
         /// <param name="fontFactory">The font factory for the graphics context.</param>
-        private GraphicsContext(GorgonGraphics graphics, GorgonFontFactory fontFactory)
+        private GraphicsContext(GorgonGraphics graphics, GorgonTextureBlitter blitter, GorgonFontFactory fontFactory)
         {
             Graphics = graphics;
+            Blitter = blitter;
             FontFactory = fontFactory;
             Renderer2D = new Gorgon2D(graphics);
         }

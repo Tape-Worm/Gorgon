@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -104,7 +105,7 @@ namespace Gorgon.Editor.Views
                     UpdateImageTexture(DataContext.PreviewImage);
                     break;
                 case nameof(IContentPreview.Title):
-                    _titleText.Text = _titleFont.WordWrap(DataContext.Title, _swapChain.Width);
+                    _titleText.Text = DataContext.Title.WordWrap(_titleFont, _swapChain.Width);
                     RenderImage();
                     break;
             }
@@ -119,7 +120,7 @@ namespace Gorgon.Editor.Views
             _previewTexture?.Dispose();
             _previewTexture = null;
 
-            if ((image == null) || (GraphicsContext == null) || (_swapChain == null))
+            if ((image is null) || (GraphicsContext is null) || (_swapChain is null))
             {
                 RenderImage();
                 return;
@@ -147,7 +148,7 @@ namespace Gorgon.Editor.Views
             _loadingTexture?.Dispose();
             _defaultTexture?.Dispose();
 
-            if (_swapChain != null)
+            if (_swapChain is not null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref _swapChain);
             }
@@ -185,15 +186,13 @@ namespace Gorgon.Editor.Views
                 });
             }
 
-            using (var loadingStream = new MemoryStream(Resources.LoadingBg))
+            using var loadingStream = new MemoryStream(Resources.LoadingBg);
+            _loadingTexture = GorgonTexture2DView.FromStream(GraphicsContext.Graphics, loadingStream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
             {
-                _loadingTexture = GorgonTexture2DView.FromStream(GraphicsContext.Graphics, loadingStream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
-                {
-                    Name = "LoadingPreviewTexture",
-                    Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Immutable
-                });
-            }
+                Name = "LoadingPreviewTexture",
+                Binding = TextureBinding.ShaderResource,
+                Usage = ResourceUsage.Immutable
+            });
         }
 
         /// <summary>
@@ -201,7 +200,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -225,13 +224,13 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeFromDataContext(IContentPreview dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
             }
 
-            _titleText.Text = _titleFont.WordWrap(dataContext.Title, ClientSize.Width);
+            _titleText.Text = dataContext.Title.WordWrap(_titleFont, ClientSize.Width);
             UpdateImageTexture(dataContext.PreviewImage);
         }
 
@@ -240,7 +239,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void RenderImage()
         {
-            if ((IsDesignTime) || (_swapChain == null))
+            if ((IsDesignTime) || (_swapChain is null))
             {
                 return;
             }
@@ -258,7 +257,7 @@ namespace Gorgon.Editor.Views
 
             _renderer.Begin();
 
-            var halfClient = new DX.Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f);
+            var halfClient = new Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f);
             float scale = ((float)ClientSize.Width / image.Width).Min((float)ClientSize.Height / image.Height);
             float width = image.Width * scale;
             float height = image.Height * scale;
@@ -268,7 +267,7 @@ namespace Gorgon.Editor.Views
             _renderer.DrawFilledRectangle(new DX.RectangleF(x, y, width, height), GorgonColor.White, image, new DX.RectangleF(0, 0, 1, 1));
 
             _titleText.LayoutArea = new DX.Size2F(_swapChain.Width, _titleText.Size.Height * 1.5f);
-            _titleText.Position = new DX.Vector2(0, _swapChain.Height - (_titleText.Size.Height * 1.5f).Min(_swapChain.Height * 0.25f));// _swapChain.Height - _titleText.Size.Height);
+            _titleText.Position = new Vector2(0, _swapChain.Height - (_titleText.Size.Height * 1.5f).Min(_swapChain.Height * 0.25f));// _swapChain.Height - _titleText.Size.Height);
 
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, _titleText.Position.Y, _swapChain.Width, _titleText.LayoutArea.Value.Height), new GorgonColor(0, 0, 0, 0.5f));
 
@@ -325,7 +324,7 @@ namespace Gorgon.Editor.Views
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

@@ -78,7 +78,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
             IEnumerable<IContentFile> imageFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                && (item.Metadata.ContentMetadata != null)
+                                                && (item.Metadata.ContentMetadata is not null)
                                                 && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
             IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
@@ -104,7 +104,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             {
                 imageFiles = ContentFileManager.EnumerateContentFiles(subDir, "*")
                                                 .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
-                                                            && (item.Metadata.ContentMetadata != null)
+                                                            && (item.Metadata.ContentMetadata is not null)
                                                             && (string.Equals(fileType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)));
                 if (!imageFiles.Any())
                 {
@@ -146,19 +146,19 @@ namespace Gorgon.Editor.ImageAtlasTool
             {
                 settings = HostToolServices.ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(ImageAtlasToolPlugIn).FullName);
 
-                if (settings == null)
+                if (settings is null)
                 {
                     settings = new TextureAtlasSettings();
                 }
 
                 (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> entries) = GetFileEntries();
 
-                if (_fileVm == null)
+                if (_fileVm is null)
                 {
                     _fileVm = new ImageFiles();
                 }
 
-                if (_textureAtlas == null)
+                if (_textureAtlas is null)
                 {
                     _textureAtlas = new ImageAtlas();
                 }
@@ -204,7 +204,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// </remarks>
         protected override IToolPlugInRibbonButton OnGetToolButton()
         {
-            if (_button.ClickCallback == null)
+            if (_button.ClickCallback is null)
             {
                 _button.ClickCallback = ShowForm;
             }
@@ -230,7 +230,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         protected override void OnShutdown()
         {
             // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
-            if (_button != null)
+            if (_button is not null)
             {
                 _button.ClickCallback = null;
                 _button.Dispose();

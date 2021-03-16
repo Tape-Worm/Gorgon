@@ -85,7 +85,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="value">The dirty value.</param>
         protected override void OnAssignDirtyItem(int dirtyIndex, GorgonConstantBufferView value)
         {
-            Native[dirtyIndex] = value?.Buffer.Native;
+            Native[dirtyIndex] = value?.Buffer?.Native;
             ViewStart[dirtyIndex] = value?.StartElement * 16 ?? 0;
             ViewCount[dirtyIndex] = value?.ElementCount * 16 ?? 0;
         }
@@ -131,7 +131,7 @@ namespace Gorgon.Graphics.Core
         public GorgonConstantBuffers(IReadOnlyList<GorgonConstantBufferView> bufferViews = null)
             : base(MaximumConstantBufferCount)
         {
-            if (bufferViews == null)
+            if (bufferViews is null)
             {
                 return;
             }

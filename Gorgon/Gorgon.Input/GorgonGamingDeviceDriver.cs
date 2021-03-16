@@ -78,7 +78,7 @@ namespace Gorgon.Input
     /// 
     ///		foreach(IGorgonGamingDeviceInfo info in joysticks)
     ///		{
-    ///			Console.WriteLine("Controller: {0}", info.Description);
+    ///			Console.WriteLine($"Controller: {info.Description}");
     ///		}
     /// } 
     /// ]]>
@@ -99,6 +99,11 @@ namespace Gorgon.Input
         #endregion
 
         #region Methods.
+        /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
+        /// <param name="disposing">
+        ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected abstract void Dispose(bool disposing);
+        
         /// <summary>
         /// Function to enumerate the gaming devices supported by this driver.
         /// </summary>
@@ -138,7 +143,7 @@ namespace Gorgon.Input
         {
             IReadOnlyList<IGorgonGamingDeviceInfo> infoList = EnumerateGamingDevices(connectedOnly);
 
-            if ((infoList == null) || (infoList.Count == 0))
+            if ((infoList is null) || (infoList.Count == 0))
             {
                 return Array.Empty<GorgonGamingDevice>();
             }
@@ -168,7 +173,11 @@ namespace Gorgon.Input
         /// For implementors of a <see cref="GorgonGamingDeviceDriver"/> this dispose method is used to clean up any native resources that may be allocated by the driver. In such a case, put the clean up code for 
         /// the native resources in an override of this method. If the driver does not use native resources, then this method should be left alone.
         /// </remarks>
-        public virtual void Dispose() => GC.SuppressFinalize(this);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
         #endregion
 
         #region Constructor/Finalizer.

@@ -27,11 +27,11 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// This is used to render our image data for the application.
@@ -54,7 +54,7 @@ namespace Gorgon.Graphics.Example
         /// <param name="outputTexture">The output texture to render.</param>
         public void Render(GorgonTexture2DView texture, GorgonTexture2DView outputTexture)
         {
-            if (_swapChain == null)
+            if (_swapChain is null)
             {
                 return;
             }
@@ -66,8 +66,8 @@ namespace Gorgon.Graphics.Example
 
             _swapChain.RenderTargetView.Clear(Color.CornflowerBlue);
 
-            if ((texture == null)
-                || (outputTexture == null))
+            if ((texture is null)
+                || (outputTexture is null))
             {
                 _swapChain.Present(1);
                 return;
@@ -92,10 +92,10 @@ namespace Gorgon.Graphics.Example
             // Find the position.
             var bounds = new DX.Rectangle((_swapChain.Width / 4) - (size.Width / 2), ((_swapChain.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
-            _graphics.DrawTexture(texture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
+            GorgonExample.Blitter.Blit(texture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
 
             bounds = new DX.Rectangle((_swapChain.Width - (_swapChain.Width / 4)) - (size.Width / 2), ((_swapChain.Height / 2) - (size.Height / 2)), size.Width, size.Height);
-            _graphics.DrawTexture(outputTexture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
+            GorgonExample.Blitter.Blit(outputTexture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
 
             _swapChain.Present(1);
         }
@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Example
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="panel"/> parameter is <b>null</b>.</exception>
         public void SetPanel(Panel panel)
         {
-            if (panel == null)
+            if (panel is null)
             {
                 throw new ArgumentNullException(nameof(panel));
             }

@@ -25,11 +25,14 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -101,19 +104,19 @@ namespace Gorgon.Renderers
             /// <summary>
             /// The threshold and knee curve values used to filter the image.
             /// </summary>
-            public DX.Vector4 FilterValues;
+            public Vector4 FilterValues;
             /// <summary>
             /// The color to apply to the bloom.
             /// </summary>
-            public DX.Vector4 BloomColor;
+            public Vector4 BloomColor;
             /// <summary>
             /// The amount of blurring and bloom intensity/dirt intensity to apply (w is unused).
             /// </summary>
-            public DX.Vector4 BlurAndIntensity;
+            public Vector4 BlurAndIntensity;
             /// <summary>
             /// Transformation parameters for the dirt texture.
             /// </summary>
-            public DX.Vector4 DirtTransform;
+            public Vector4 DirtTransform;
         }
         #endregion
 
@@ -141,7 +144,7 @@ namespace Gorgon.Renderers
         // The shader resource for the scene.
         private GorgonTexture2DView _sceneSrv;
         // A builder used to create shader states.
-        private readonly Gorgon2DShaderStateBuilder<GorgonPixelShader> _shaderBuilder = new Gorgon2DShaderStateBuilder<GorgonPixelShader>();
+        private readonly Gorgon2DShaderStateBuilder<GorgonPixelShader> _shaderBuilder = new();
         // Information used to build render targets.
         private readonly GorgonTexture2DInfo _sceneTargetInfo;
         private readonly GorgonTexture2DInfo _blurTargetInfo;
@@ -163,10 +166,10 @@ namespace Gorgon.Renderers
         // The states that apply to each down sample target.
         private Gorgon2DBatchState[] _sampleTargetStates;
         // The allocators used to creating states for final pass.
-        private readonly Gorgon2DBatchStatePoolAllocator _finalPassBatchAllocator = new Gorgon2DBatchStatePoolAllocator(64);
-        private readonly Gorgon2DShaderStatePoolAllocator<GorgonPixelShader> _finalPassPixelShaderAllocator = new Gorgon2DShaderStatePoolAllocator<GorgonPixelShader>(64);
+        private readonly Gorgon2DBatchStatePoolAllocator _finalPassBatchAllocator = new(64);
+        private readonly Gorgon2DShaderStatePoolAllocator<GorgonPixelShader> _finalPassPixelShaderAllocator = new(64);
         // The batch state builder for downsampling.
-        private readonly Gorgon2DBatchStateBuilder _downSampleStateBuilder = new Gorgon2DBatchStateBuilder();
+        private readonly Gorgon2DBatchStateBuilder _downSampleStateBuilder = new();
         #endregion
 
         #region Properties.
@@ -267,7 +270,7 @@ namespace Gorgon.Renderers
         /// </summary>
         private void ReturnSampleTargets()
         {
-            if (_sampleTargets == null)
+            if (_sampleTargets is null)
             {
                 return;
             }
@@ -300,16 +303,16 @@ namespace Gorgon.Renderers
             int sampleIterations = (int)floorLog.Min(MaxIterations).Max(1);
             float knee = linearThreshold * BrightPassCurveKnee + 1e-5f;
 
-            settings.FilterValues = new DX.Vector4(linearThreshold, linearThreshold - knee, knee * 2, 0.25f / knee);
+            settings.FilterValues = new Vector4(linearThreshold, linearThreshold - knee, knee * 2, 0.25f / knee);
             settings.BloomColor = Color.ApplyGamma(ColorIntensity).ToLinear();
-            settings.BlurAndIntensity = new DX.Vector4(0.5f + logSize - floorLog, (2.0f.Pow(BloomIntensity / 10.0f)) - 1.0f, DirtIntensity, 0);
+            settings.BlurAndIntensity = new Vector4(0.5f + logSize - floorLog, (2.0f.Pow(BloomIntensity / 10.0f)) - 1.0f, DirtIntensity, 0);
 
             GorgonTexture2DView dirtTexture = DirtTexture ?? Renderer.EmptyBlackTexture;
 
             float screenAspect = outputSize.Width / (float)outputSize.Height;
             float dirtAspect = dirtTexture.Width / (float)dirtTexture.Height;
-            ref DX.Vector4 dirtTransform = ref _settings.DirtTransform;
-            dirtTransform = new DX.Vector4(0, 0, 1, 1);
+            ref Vector4 dirtTransform = ref _settings.DirtTransform;
+            dirtTransform = new Vector4(0, 0, 1, 1);
 
             if (screenAspect > dirtAspect)
             {
@@ -322,10 +325,10 @@ namespace Gorgon.Renderers
                 dirtTransform.X = (1 - dirtTransform.Z) * 0.5f;
             }
 
-            _settingsBuffer.Buffer.SetData(ref settings);
+            _settingsBuffer.Buffer.SetData(in settings);
 
             // Check target and state arrays for changes.
-            if ((_sampleTargets == null) || (_sampleTargets.Length != sampleIterations))
+            if ((_sampleTargets is null) || (_sampleTargets.Length != sampleIterations))
             {
                 Array.Resize(ref _sampleTargets, sampleIterations);
                 Array.Resize(ref _sampleTargetStates, sampleIterations);
@@ -349,8 +352,8 @@ namespace Gorgon.Renderers
                 (GorgonRenderTarget2DView up, GorgonRenderTarget2DView down) targets = (i == 0 ? _blurRtv : Graphics.TemporaryTargets.Rent(_targetInfo, $"UpSample_{i}", false),
                                                                                                             Graphics.TemporaryTargets.Rent(_targetInfo, $"DownSample_{i}", false));
 
-                var texelSize = new DX.Vector2(1.0f / src.Width, 1.0f / src.Height);
-                _textureSettingsBuffer.Buffer.SetData(ref texelSize);
+                var texelSize = new Vector2(1.0f / src.Width, 1.0f / src.Height);
+                _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
                 Graphics.SetRenderTarget(targets.down);
 
@@ -391,14 +394,14 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpSample()
         {
-            GorgonTexture2DView src = _sampleTargets[_sampleTargets.Length - 1].down.GetShaderResourceView();
+            GorgonTexture2DView src = _sampleTargets[^1].down.GetShaderResourceView();
 
             for (int i = _sampleTargets.Length - 2; i >= 0; --i)
             {
                 (GorgonRenderTarget2DView up, GorgonRenderTarget2DView _) = _sampleTargets[i];
 
-                var texelSize = new DX.Vector2(1.0f / src.Width, 1.0f / src.Height);
-                _textureSettingsBuffer.Buffer.SetData(ref texelSize);
+                var texelSize = new Vector2(1.0f / src.Width, 1.0f / src.Height);
+                _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
                 Graphics.SetRenderTarget(up);
 
@@ -446,7 +449,7 @@ namespace Gorgon.Renderers
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
 
-            if (_filterBatchState == null)
+            if (_filterBatchState is null)
             {
                 _filterBatchState = builders.BatchBuilder
                                                 .Clear()
@@ -459,7 +462,7 @@ namespace Gorgon.Renderers
                                                 .Build();
             }
 
-            if (_downSampleBatchState == null)
+            if (_downSampleBatchState is null)
             {
                 _downSampleBatchState = builders.BatchBuilder
                                                 .Clear()
@@ -475,7 +478,7 @@ namespace Gorgon.Renderers
             {
                 case 0:
                     // This state shouldn't change that often in typical use cases, so we'll not bother with an allocator here.
-                    if ((statesChanged) || (_pass0State == null))
+                    if ((statesChanged) || (_pass0State is null))
                     {
                         _pass0State = builders.BatchBuilder
                                                 .Clear()
@@ -485,7 +488,7 @@ namespace Gorgon.Renderers
 
                     return _pass0State;
                 case 1:
-                    if ((_finalPassBatchState != null) 
+                    if ((_finalPassBatchState is not null) 
                         && (_finalPassBatchState.PixelShaderState.ShaderResources[1] == _blurSrv)
                         && (_finalPassBatchState.PixelShaderState.ShaderResources[2] == DirtTexture))
                     {
@@ -560,7 +563,7 @@ namespace Gorgon.Renderers
         /// <param name="camera">The currently active camera.</param>
         /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             if ((_blurAmount.EqualsEpsilon(0)) || (_intensity.EqualsEpsilon(0)))
             {
@@ -573,8 +576,8 @@ namespace Gorgon.Renderers
                     Graphics.SetRenderTarget(_sceneRtv);
                     break;
                 case 1:
-                    var texelSize = new DX.Vector2(1.0f / _blurRtv.Width, 1.0f / _blurRtv.Height);
-                    _textureSettingsBuffer.Buffer.SetData(ref texelSize);
+                    var texelSize = new Vector2(1.0f / _blurRtv.Width, 1.0f / _blurRtv.Height);
+                    _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
                     Graphics.SetRenderTarget(output);
                     break;
@@ -632,10 +635,10 @@ namespace Gorgon.Renderers
         /// <remarks>Applications must implement this method to ensure that any required resources are created, and configured for the effect.</remarks>
         protected override void OnInitialize()
         {
-            _settingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Bloom Settings Buffer");
+            _settingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Bloom Settings Buffer");
             _textureSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Texture Settings Buffer")
             {
-                SizeInBytes = DX.Vector2.SizeInBytes,
+                SizeInBytes = Unsafe.SizeOf<Vector2>(),
                 Usage = ResourceUsage.Dynamic
             });
 

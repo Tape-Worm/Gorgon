@@ -28,8 +28,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Gorgon.Design;
-using Gorgon.Windows.Properties;
 
 namespace Gorgon.UI
 {
@@ -109,7 +107,7 @@ namespace Gorgon.UI
 
         #region Methods.        
         /// <summary>Raises the <see cref="RenderToBitmap"/> event.</summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
+        /// <param name="e">A <see cref="PaintEventArgs"/> that contains the event data.</param>
         protected override void OnPrint(PaintEventArgs e)
         {
             base.OnPrint(e);
@@ -121,7 +119,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="Control.Enter" /> event.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnEnter(EventArgs e)
         {
             Invalidate();
@@ -131,7 +129,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="Control.Leave" /> event.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnLeave(EventArgs e)
         {
             Invalidate();
@@ -159,7 +157,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="Control.Paint" /> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
+        /// <param name="e">A <see cref="PaintEventArgs" /> that contains the event data.</param>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -177,7 +175,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Function to process window messages.
         /// </summary>
-        /// <param name="m">The Windows <see cref="System.Windows.Forms.Message" /> to process.</param>
+        /// <param name="m">The Windows <see cref="Message" /> to process.</param>
         protected override void WndProc(ref Message m)
         {
             var message = (WindowMessages)m.Msg;

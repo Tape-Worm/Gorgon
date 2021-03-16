@@ -25,11 +25,11 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Properties;
 using DX = SharpDX;
@@ -61,8 +61,12 @@ namespace Gorgon.Native
     /// // Create a buffer of 10 DateTime objects
     /// GorgonNativeBuffer<DateTime> dateInBuffer = new GorgonNativeBuffer<DateTime>(10);
     /// 
+    /// // This will write today's date to the buffer at the second date/time index.
     /// dateInBuffer[1] = DateTime.Now;
+    /// 
     /// ref DateTime currentDateTime = ref dateInBuffer[1];
+    /// // This will write back today's date plus 5 years to the buffer.
+    /// currentDateTime = DateTime.Now.AddYears(5);
     /// ]]>
     /// </code>
     /// </para>
@@ -70,15 +74,13 @@ namespace Gorgon.Native
     /// The buffer can also be used to pin an array or value type and act on those items as native memory. Please note that the standard disclaimers about pinning still apply.
     /// </para>
     /// </remarks>
-    public sealed unsafe class GorgonNativeBuffer<T>
-        : IDisposable, IEquatable<GorgonNativeBuffer<T>>
+    public sealed class GorgonNativeBuffer<T>
+        : IDisposable, IReadOnlyList<T>
         where T : unmanaged
     {
         #region Variables.
-        // The size, in bytes, of the data type stored in the buffer.
-        private readonly int _typeSize;
-        // A pointer to native memory.
-        private byte* _memoryBlock;
+        // The pointer to unmanaged memory.
+        private GorgonPtr<T> _memoryBlock;
         // A pinned array.
         private GCHandle _pinnedArray;
         // Flag to indicate that we allocated this memory ourselves.
@@ -100,62 +102,65 @@ namespace Gorgon.Native
         public bool IsPinned => _pinnedArray.IsAllocated;
 
         /// <summary>
-        /// Property to return the number of bytes allocated for this buffer.
+        /// Property to return the size, in bytes, for the type parameter <typeparamref name="T"/>.
         /// </summary>
-        public int SizeInBytes
+        public int TypeSize
         {
             get;
         }
 
         /// <summary>
+        /// Property to return the number of bytes allocated for this buffer.
+        /// </summary>
+        public int SizeInBytes => _memoryBlock.SizeInBytes;
+
+        /// <summary>
         /// Property to return the number of items of type <typeparamref name="T"/> stored in this buffer.
         /// </summary>
-        public int Length
-        {
-            get;
-        }
+        public int Length => _memoryBlock.Length;
+
+        /// <summary>
+        /// Property to return the pointer to the block of memory allocated to the buffer.
+        /// </summary>
+        public ref readonly GorgonPtr<T> Pointer => ref _memoryBlock;
+
+        /// <summary>Gets the number of elements in the collection.</summary>
+        int IReadOnlyCollection<T>.Count => Length;
+
+        /// <summary>Gets the <typeparamref name="T"/> at the specified index.</summary>
+        T IReadOnlyList<T>.this[int index] => this[index];
 
         /// <summary>
         /// Property to return a reference to the item located at the specified index.
         /// </summary>
         /// <exception cref="IndexOutOfRangeException">Thrown if the index is less than 0, or greater than/equal to <see cref="Length"/>.</exception>
-        public ref T this[int index]
-        {
-            get
-            {
-                if ((index < 0) || (index >= Length))
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, 0, Length));
-                }
-
-                return ref Unsafe.AsRef<T>(_memoryBlock + (index * _typeSize));
-            }
-        }
+        public ref T this[int index] => ref _memoryBlock[index];
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to read a value from the buffer as the specified type.
+        /// Function to validate parameters used to create a native buffer from a managed array.
         /// </summary>
-        /// <typeparam name="TCastType">The type to cast to. Must be an unmanaged value type.</typeparam>
-        /// <param name="index">The index of the item in buffer to cast.</param>
-        /// <returns>The value in the buffer, casted to the required type.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="Length"/>.</exception>
-        /// <remarks>
-        /// <para>
-        /// This method returns a reference to the value in the buffer, so applications can immediately write back to the value and have it reflected in the buffer. This negates the need for a similar 
-        /// Write method.
-        /// </para>
-        /// </remarks>
-        public ref TCastType ReadAs<TCastType>(int index)
-            where TCastType : unmanaged
+        /// <typeparam name="TArrayType">The type of element in the array.</typeparam>
+        /// <param name="array">The array to validate.</param>
+        /// <param name="index">The index within in the array to map to the buffer.</param>
+        /// <param name="count">The number of items in the array to map to the buffer.</param>
+        internal static void ValidateArrayParams<TArrayType>(TArrayType[] array, int index, int count)
         {
-            if ((index < 0) || (index >= Length))
+            if (array is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, Length));
+                throw new ArgumentNullException(nameof(array));
             }
 
-            return ref Unsafe.AsRef<TCastType>(_memoryBlock + (index * _typeSize));
+            if (index < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+            }
+
+            if ((index + count) > array.Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
+            }
         }
 
         /// <summary>
@@ -172,45 +177,44 @@ namespace Gorgon.Native
             if (_pinnedArray.IsAllocated)
             {
                 _pinnedArray.Free();
-                return;
+                _memoryBlock = GorgonPtr<T>.NullPtr;
             }
 
             // Deallocate memory that we own.
             if ((!_ownsMemory)
-                || (_memoryBlock == null))
+                || (_memoryBlock == GorgonPtr<T>.NullPtr))
             {
                 return;
             }
 
-            DX.Utilities.FreeMemory((IntPtr)_memoryBlock);
+            DX.Utilities.FreeMemory(_memoryBlock);
             GC.RemoveMemoryPressure(SizeInBytes);
-            _memoryBlock = null;
+            _memoryBlock = GorgonPtr<T>.NullPtr;
         }
 
         /// <summary>
-        /// Function to validate parameters used to create a native buffer from a managed array.
+        /// Function to interpret a reference to the value at the index as the specified type.
         /// </summary>
-        /// <typeparam name="TArrayType">The type of element in the array.</typeparam>
-        /// <param name="array">The array to validate.</param>
-        /// <param name="index">The index within in the array to map to the buffer.</param>
-        /// <param name="count">The number of items in the array to map to the buffer.</param>
-        internal static void ValidateArrayParams<TArrayType>(TArrayType[] array, int index, int count)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if ((index + count) > array.Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
-            }
-        }
+        /// <typeparam name="TCastType">The type to cast to. Must be an unmanaged value type.</typeparam>
+        /// <param name="offset">[Optional] The offset, in bytes, within the memory pointed at this pointer to start at.</param>
+        /// <returns>The value in the buffer, casted to the required type.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0, or greater than/equal to <see cref="SizeInBytes"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method returns a reference to the value in the buffer, so applications can immediately write back to the value and have it reflected in the buffer:
+        /// <code lang="csharp">
+        /// <![CDATA[
+        /// GorgonNativeBuffer<int> buffer = ...;
+        /// byte newValue = 123;
+        /// 
+        /// // This will write the byte value 123 at the 2nd byte in the first integer (since the buffer expects a int values).
+        /// buffer.AsRef<byte>(1) = newValue;
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </remarks>
+        public ref TCastType AsRef<TCastType>(int offset = 0)
+            where TCastType : unmanaged => ref _memoryBlock.AsRef<TCastType>(offset);
 
         /// <summary>
         /// Function to copy the contents of this buffer into other.
@@ -232,44 +236,14 @@ namespace Gorgon.Native
         /// <paramref name="destination"/> buffer to accomodate the amount of data required.
         /// </para>
         /// </remarks>
-        public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
+        public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0) 
         {
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
 
-            if (sourceIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if (destIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if (count == null)
-            {
-                count = Length - sourceIndex;
-            }
-
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-            }
-
-            if (sourceIndex + count.Value > Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceIndex, count.Value));
-            }
-
-            if (destIndex + count.Value > destination.Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
-            }
-
-            Unsafe.CopyBlock(destination._memoryBlock + (destIndex * _typeSize), _memoryBlock + (sourceIndex * _typeSize), (uint)(count * _typeSize));
+            _memoryBlock.CopyTo(destination._memoryBlock, sourceIndex, count, destIndex);
         }
 
         /// <summary>
@@ -278,7 +252,7 @@ namespace Gorgon.Native
         /// <param name="destination">The destination array that will receive the data.</param>
         /// <param name="sourceIndex">[Optional] The first index to start copying from.</param>
         /// <param name="count">[Optional] The number of items to copy.</param>
-        /// <param name="destIndex">[Optional] The destination index in the destination arrayto start copying into.</param>
+        /// <param name="destIndex">[Optional] The destination index in the destination array to start copying into.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
         /// <exception cref="ArgumentException">
@@ -294,95 +268,12 @@ namespace Gorgon.Native
         /// </remarks>
         public void CopyTo(T[] destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
         {
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
 
-            if (sourceIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if (destIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if (count == null)
-            {
-                count = Length - sourceIndex;
-            }
-
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-            }
-
-            if (sourceIndex + count.Value > Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceIndex, count.Value));
-            }
-
-            if (destIndex + count.Value > destination.Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
-            }
-
-            fixed (T* destPtr = &destination[destIndex])
-            {
-                Unsafe.CopyBlock(destPtr, _memoryBlock + (sourceIndex * _typeSize), (uint)(count * _typeSize));
-            }
-        }
-
-        /// <summary>
-        /// Function to copy the contents of this native buffer into a managed array.
-        /// </summary>
-        /// <param name="startIndex">[Optional] The index to start copying from.</param>
-        /// <param name="count">[Optional] The number of items to copy.</param>
-        /// <returns>A new array, containing a copy of the contents of this buffer.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="startIndex"/> + <paramref name="count"/> is too big for this buffer.</exception>
-        /// <remarks>
-        /// <para>
-        /// If the <paramref name="count"/> method is ommitted, then the full length of the source buffer, minus the <paramref name="startIndex"/> is used. 
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// This makes a copy of the data and creates a new array object on the heap. This may impact performance if used heavily.
-        /// </note>
-        /// </para>
-        /// </remarks>
-        public T[] ToArray(int startIndex = 0, int? count = null)
-        {
-            if (startIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if (count == null)
-            {
-                count = Length - startIndex;
-            }
-
-            if (count < 0)
-            {
-                throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(count));
-            }
-
-            if (startIndex + count.Value > Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, startIndex, count.Value));
-            }
-
-            var result = new T[count.Value];
-
-            fixed (T* destPtr = &result[0])
-            {
-                Unsafe.CopyBlock(destPtr, _memoryBlock + (startIndex * _typeSize), (uint)(count * _typeSize));
-            }
-
-            return result;
+            _memoryBlock.CopyTo(destination, sourceIndex, count, destIndex);
         }
 
         /// <summary>
@@ -412,17 +303,17 @@ namespace Gorgon.Native
         /// </remarks>
         public static GorgonNativeBuffer<T> Pin(T[] array, int index = 0, int? count = null)
         {
-            if (count == null)
+            if (count is null)
             {
                 count = array.Length - index;
             }
-
+            
             ValidateArrayParams(array, index, count.Value);
 
             int typeSize = Unsafe.SizeOf<T>();
             var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
 
-            return new GorgonNativeBuffer<T>(handle, index * typeSize, count.Value * typeSize, count.Value, typeSize);
+            return new GorgonNativeBuffer<T>(handle, index * typeSize, count.Value * typeSize);
         }
 
         /// <summary>
@@ -446,7 +337,7 @@ namespace Gorgon.Native
             int srcSize = Unsafe.SizeOf<T>();
             var handle = GCHandle.Alloc(valueType, GCHandleType.Pinned);
 
-            return new GorgonNativeBuffer<byte>(handle, 0, srcSize, srcSize, sizeof(byte));
+            return new GorgonNativeBuffer<byte>(handle, 0, srcSize);
         }
 
         /// <summary>
@@ -466,47 +357,23 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         /// <seealso cref="ToStream(int, int?)"/>
-        public void CopyTo(Stream stream, int startIndex = 0, int? count = null)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
+        public void CopyTo(Stream stream, int startIndex = 0, int? count = null) => _memoryBlock.CopyTo(stream, startIndex, count);
 
-            if (!stream.CanWrite)
-            {
-                throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
+        /// <summary>
+        /// Function to copy the contents of this buffer into a span.
+        /// </summary>
+        /// <param name="span">The span to write into.</param>
+        /// <param name="index">[Optional] The offset within the buffer to start reading from.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
+        public void CopyTo(Span<T> span, int index = 0) => _memoryBlock.CopyTo(span, index);
 
-            if (startIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if (count == null)
-            {
-                count = Length - startIndex;
-            }
-
-
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-            }
-
-            if (startIndex + count.Value > Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, startIndex, count.Value));
-            }
-
-            using (var writer = new GorgonBinaryWriter(stream, true))
-            {
-                for (int i = 0; i < count.Value; ++i)
-                {
-                    writer.WriteValue(ref this[i + startIndex]);
-                }
-            }
-        }
+        /// <summary>
+        /// Function to copy the contents of this buffer into a span.
+        /// </summary>
+        /// <param name="memory">The span to write into.</param>
+        /// <param name="index">[Optional] The offset within the buffer to start reading from.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
+        public void CopyTo(Memory<T> memory, int index = 0) => CopyTo(memory.Span, index);
 
         /// <summary>
         /// Function to cast the type in this buffer to another type.
@@ -528,117 +395,11 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonNativeBuffer<TCastType> Cast<TCastType>()
-            where TCastType : unmanaged => new GorgonNativeBuffer<TCastType>(_memoryBlock, SizeInBytes);
+        public GorgonNativeBuffer<TCastType> To<TCastType>()
+            where TCastType : unmanaged => new(_memoryBlock.To<TCastType>());
 
         /// <summary>
-        /// Function to determine if this buffer is equal to another.
-        /// </summary>
-        /// <param name="other">The other buffer to compare.</param>
-        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// This method determines equality between two <see cref="GorgonNativeBuffer{T}"/> instances. The method of determining equality in this method is different from the standard <c>==</c> or <c>!=</c> 
-        /// operators or even the <see cref="object.Equals(object)"/> method. To determine equality, the set of rules below will be used to tell if two instances are equal or not.
-        /// </para>
-        /// <para>
-        /// <h3>Rules for determining equality</h3>
-        /// <list type="bullet">
-        /// <listheader>
-        ///     <term>Condition</term>
-        ///     <description>Returns</description>
-        /// </listheader>
-        /// <item>
-        ///     <term>If <paramref name="other"/> is the same reference as this instance.</term>
-        ///     <description><b>true</b></description>
-        /// </item>
-        /// <item>
-        ///     <term>If <paramref name="other"/> <b>false</b>.</term>
-        ///     <description><b>false</b></description>
-        /// </item>
-        /// <item>
-        ///     <term>If <paramref name="other"/> is not the same reference as this instance, and but has the same location in memory, and has the same <see cref="SizeInBytes"/>.</term>
-        ///     <description><b>true</b></description>
-        /// </item>
-        /// <item>
-        ///     <term>If <paramref name="other"/> is not the same reference as this instance, and does not have the same location in memory, or does not have the same <see cref="SizeInBytes"/>.</term>
-        ///     <description><b>false</b></description>
-        /// </item>
-        /// </list>
-        /// </para>
-        /// </remarks>
-        public bool Equals(GorgonNativeBuffer<T> other) => other == this || (other != null) && (other._memoryBlock == _memoryBlock) && (SizeInBytes == other.SizeInBytes);
-
-        /// <summary>
-        /// Function to determine if this buffer is equal to another.
-        /// </summary>
-        /// <param name="obj">The other buffer to compare.</param>
-        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        /// <remarks>
-        /// <para>
-        /// This method determines equality between two <see cref="GorgonNativeBuffer{T}"/> instances. The method of determining equality in this method is different from the standard <c>==</c> or <c>!=</c> 
-        /// operators or even the <see cref="object.Equals(object)"/> method. To determine equality, the set of rules below will be used to tell if two instances are equal or not.
-        /// </para>
-        /// <para>
-        /// <h3>Rules for determining equality</h3>
-        /// <list type="bullet">
-        /// <listheader>
-        ///     <term>Condition</term>
-        ///     <description>Returns</description>
-        /// </listheader>
-        /// <item>
-        ///     <term>If <paramref name="obj"/> is the same reference as this instance.</term>
-        ///     <description><b>true</b></description>
-        /// </item>
-        /// <item>
-        ///     <term>If <paramref name="obj"/> <b>false</b>.</term>
-        ///     <description><b>false</b></description>
-        /// </item>
-        /// <item>
-        ///     <term>If <paramref name="obj"/> is not the same reference as this instance, and but has the same location in memory, and has the same <see cref="SizeInBytes"/>.</term>
-        ///     <description><b>true</b></description>
-        /// </item>
-        /// <item>
-        ///     <term>If <paramref name="obj"/> is not the same reference as this instance, and does not have the same location in memory, or does not have the same <see cref="SizeInBytes"/>.</term>
-        ///     <description><b>false</b></description>
-        /// </item>
-        /// </list>
-        /// </para>
-        /// </remarks>
-        public override bool Equals(object obj) => Equals(obj as GorgonNativeBuffer<T>);
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => base.GetHashCode(); // Shut the analyzer up.
-
-        /// <summary>
-        /// Explicit operator to return a <see cref="GorgonReadOnlyPointer"/> to the underlying data in the buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
-        /// <returns>The void pointer to the underlying data in the buffer.</returns>
-        /// <remarks>
-        /// <para>
-        /// The pointer returned is read only, and has bounds checking. It should be safe for normal usage.
-        /// </para>
-        /// </remarks>
-        public static explicit operator GorgonReadOnlyPointer(GorgonNativeBuffer<T> buffer) => buffer._memoryBlock == null ? GorgonReadOnlyPointer.Null : new GorgonReadOnlyPointer(buffer._memoryBlock, buffer.SizeInBytes);
-
-        /// <summary>
-        /// Function to return a <see cref="GorgonReadOnlyPointer"/> to the underlying data in the buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
-        /// <returns>The void pointer to the underlying data in the buffer.</returns>
-        /// <remarks>
-        /// <para>
-        /// The pointer returned is read only, and has bounds checking. It should be safe for normal usage.
-        /// </para>
-        /// </remarks>
-        public static GorgonReadOnlyPointer ToGorgonReadOnlyPointer(GorgonNativeBuffer<T> buffer) => buffer._memoryBlock == null ? GorgonReadOnlyPointer.Null : new GorgonReadOnlyPointer(buffer._memoryBlock, buffer.SizeInBytes);
-
-        /// <summary>
-        /// Explicit operator to return the pointer to the underlying data in the buffer.
+        /// Implicit operator to return the pointer to the underlying data in the buffer.
         /// </summary>
         /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
         /// <returns>The void pointer to the underlying data in the buffer.</returns>
@@ -658,7 +419,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static explicit operator void*(GorgonNativeBuffer<T> buffer) => ToPointer(buffer);
+        public static unsafe explicit operator void*(GorgonNativeBuffer<T> buffer) => ToPointer(buffer);
 
         /// <summary>
         /// Function to return the pointer to the underlying data in the buffer.
@@ -681,13 +442,120 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer == null ? null : buffer._memoryBlock;
+        public static unsafe void* ToPointer(GorgonNativeBuffer<T> buffer) => buffer is null ? null : (void *)buffer._memoryBlock;
+
+        /// <summary>
+        /// Implicit operator to return the pointer to the underlying data in the buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
+        /// <returns>The void pointer to the underlying data in the buffer.</returns>
+        /// <remarks>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This operator returns the pointer to the memory address of this buffer. Developers should only use this for interop scenarios where a native call needs a pointer. Manipulation of this pointer is 
+        /// not advisable and may cause harm. 
+        /// </para>
+        /// <para>
+        /// No safety checks are done on this pointer, and as such, memory corruption is possible if the pointer is used without due care.
+        /// </para>
+        /// <para>
+        /// <h2><font color="#FF0000">Use this at your own risk.</font></h2>
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public static explicit operator IntPtr(GorgonNativeBuffer<T> buffer) => ToIntPtr(buffer);
+
+        /// <summary>
+        /// Function to return the pointer to the underlying data in the buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
+        /// <returns>The void pointer to the underlying data in the buffer.</returns>
+        /// <remarks>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This method returns the pointer to the memory address of this buffer. Developers should only use this for interop scenarios where a native call needs a pointer. Manipulation of this pointer is 
+        /// not advisable and may cause harm. 
+        /// </para>
+        /// <para>
+        /// No safety checks are done on this pointer, and as such, memory corruption is possible if the pointer is used without due care.
+        /// </para>
+        /// <para>
+        /// <h2><font color="#FF0000">Use this at your own risk.</font></h2>
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public static IntPtr ToIntPtr(GorgonNativeBuffer<T> buffer) => buffer is null ? IntPtr.Zero : buffer._memoryBlock;
+
+        /// <summary>
+        /// Operator to implicitly convert this buffer to a span.
+        /// </summary>
+        /// <param name="buffer">The buffer to convert.</param>
+        public static explicit operator Span<T>(GorgonNativeBuffer<T> buffer) => ToSpan(buffer);
+
+        /// <summary>
+        /// Function to access a native buffer as a span.
+        /// </summary>
+        /// <param name="buffer">The buffer to access.</param>
+        /// <returns>A span for the buffer.</returns>
+        public static Span<T> ToSpan(GorgonNativeBuffer<T> buffer) => buffer is null ? default : buffer._memoryBlock.ToSpan();
+
+        /// <summary>
+        /// Operator to implicitly convert this buffer to a span.
+        /// </summary>
+        /// <param name="buffer">The buffer to convert.</param>
+        public static explicit operator ReadOnlySpan<T>(GorgonNativeBuffer<T> buffer) => ToReadOnlySpan(buffer);
+
+        /// <summary>
+        /// Function to access a native buffer as a read only span.
+        /// </summary>
+        /// <param name="buffer">The buffer to access.</param>
+        /// <returns>A span for the buffer.</returns>
+        public static ReadOnlySpan<T> ToReadOnlySpan(GorgonNativeBuffer<T> buffer) => buffer is null ? default : buffer.ToSpan();
+
+        /// <summary>
+        /// Function to access a native buffer as a span slice.
+        /// </summary>
+        /// <param name="index">[Optional] The index of the item to start slicing at.</param>
+        /// <param name="count">[Optional] The number of items to slice.</param>
+        /// <returns>A span for the buffer.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
+        public Span<T> ToSpan(int index = 0, int? count = null) => _memoryBlock.ToSpan(index, count);
+
+        /// <summary>
+        /// Function to access a native buffer as a read only span slice.
+        /// </summary>
+        /// <param name="index">The index of the item to start slicing at.</param>
+        /// <param name="count">[Optional] The number of items to slice.</param>
+        /// <returns>A span for the buffer.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
+        public ReadOnlySpan<T> ToReadOnlySpan(int index, int? count = null) => _memoryBlock.ToReadOnlySpan(index, count);
 
         /// <summary>
         /// Function to fill the buffer with a specific value.
         /// </summary>
         /// <param name="clearValue">The value used to fill the buffer.</param>
-        public void Fill(byte clearValue) => Unsafe.InitBlock(_memoryBlock, clearValue, (uint)SizeInBytes);
+        public void Fill(byte clearValue) => _memoryBlock.Fill(clearValue);
+
+        /// <summary>
+        /// Operator to convert this buffer to a <see cref="GorgonPtr{T}"/>.
+        /// </summary>
+        /// <param name="buffer">The buffer to convert.</param>
+        /// <returns>The <see cref="GorgonPtr{T}"/> wrapping the buffer data.</returns>
+        public static implicit operator GorgonPtr<T>(GorgonNativeBuffer<T> buffer) => buffer?._memoryBlock ?? GorgonPtr<T>.NullPtr;
+
+        /// <summary>
+        /// Function to return the underlying <see cref="GorgonPtr{T}"/> for this buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to containing the pointer.</param>
+        /// <returns>The underlying <see cref="GorgonPtr{T}"/> for the buffer.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
+        public static GorgonPtr<T> ToGorgonPtr(GorgonNativeBuffer<T> buffer) => buffer is null
+                ? throw new ArgumentNullException(nameof(buffer))
+                : buffer._memoryBlock;
 
         /// <summary>
         /// Function to return a stream wrapping this buffer.
@@ -709,33 +577,21 @@ namespace Gorgon.Native
         /// <paramref name="count"/> is wrapped. If no parameters are supplied, then the entire buffer is wrapped.
         /// </para>
         /// </remarks>        
-        public Stream ToStream(int index = 0, int? count = null)
+        public Stream ToStream(int index = 0, int? count = null) => _memoryBlock.ToStream(index, count);
+
+        /// <summary>Returns an enumerator that iterates through the collection.</summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        public IEnumerator<T> GetEnumerator()
         {
-            if (index < 0)
+            for (int i = 0; i < Length; ++i)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+                yield return this[i];
             }
-
-            if (count == null)
-            {
-                count = Length - index;
-            }
-
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-            }
-
-            if (index + count.Value > Length)
-            {
-                throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
-            }
-
-            count *= _typeSize;
-            index *= _typeSize;
-
-            return new UnmanagedMemoryStream(_memoryBlock + index, count.Value, count.Value, FileAccess.ReadWrite);
         }
+
+        /// <summary>Returns an enumerator that iterates through a collection.</summary>
+        /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion
 
         #region Constructor/Finalizer.
@@ -745,22 +601,18 @@ namespace Gorgon.Native
         /// <param name="pinnedData">The handle to the pinned data.</param>
         /// <param name="offset">The offset within the pinned data to access.</param>
         /// <param name="size">The size, in bytes, of the pinned data.</param>
-        /// <param name="count">The count of items that are pinned.</param>
-        /// <param name="typeSize">The size of the data type.</param>
-        private GorgonNativeBuffer(GCHandle pinnedData, int offset, int size, int count, int typeSize)
+        private GorgonNativeBuffer(GCHandle pinnedData, int offset, int size)
         {
-            _typeSize = typeSize;
-            SizeInBytes = size;
-            Length = count;
+            TypeSize = Unsafe.SizeOf<T>();
             _pinnedArray = pinnedData;
-            _memoryBlock = (byte*)(_pinnedArray.AddrOfPinnedObject() + offset);
+            _memoryBlock = new GorgonPtr<T>(_pinnedArray.AddrOfPinnedObject() + offset, size);            
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonNativeBuffer{T}" /> class.
         /// </summary>
         /// <param name="count">The number of items of type <typeparamref name="T"/> to allocate in the buffer.</param>
-        /// <param name="alignment">[Optiona] The alignment of the buffer, in bytes.</param>
+        /// <param name="alignment">[Optional] The alignment of the buffer, in bytes.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> is less than 0.</exception>
         /// <remarks>
         /// <para>
@@ -775,10 +627,8 @@ namespace Gorgon.Native
                 throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
             }
 
-            _typeSize = Unsafe.SizeOf<T>();
-            Length = count;
-            SizeInBytes = _typeSize * count;
-            _memoryBlock = (byte*)DX.Utilities.AllocateClearedMemory(SizeInBytes, align: alignment.Max(0));
+            TypeSize = Unsafe.SizeOf<T>();
+            _memoryBlock = new GorgonPtr<T>(DX.Utilities.AllocateClearedMemory(TypeSize * count, align: alignment.Max(0)), count);
             _ownsMemory = true;
 
             GC.AddMemoryPressure(SizeInBytes);
@@ -787,62 +637,22 @@ namespace Gorgon.Native
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonNativeBuffer{T}" /> class.
         /// </summary>
-        /// <param name="pointer">The pointer to the memory to wrap in this buffer.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+        /// <param name="pointer">The pointer to wrap with the buffer interface.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// Use this constructor to wrap an existing pointer to memory in a native buffer so it can safely accessed. 
-        /// </para>
-        /// <para>
-        /// This constructor assumes that the developer has called <see cref="GC.AddMemoryPressure"/> prior to constructor. Failure to do so will cause the garbage collector to be unaware of the actual 
-        /// memory usage of the application, so it is recommended that the developer call <see cref="GC.AddMemoryPressure"/> prior to creating this object and <see cref="GC.RemoveMemoryPressure"/> after 
-        /// the object is disposed.
+        /// This construct is used to alias a <see cref="GorgonPtr{T}"/>. Because <paramref name="pointer"/> is aliased, the lifetime for the pointer is not controlled by the buffer and therefore 
+        /// is the responsibility of the user. If the <paramref name="pointer"/> memory is freed before the buffer is disposed, then undefined behavior will occur.
         /// </para>
         /// </remarks>
-        public GorgonNativeBuffer(GorgonReadOnlyPointer pointer)
+        public GorgonNativeBuffer(GorgonPtr<T> pointer)
         {
-            _typeSize = Unsafe.SizeOf<T>();
-            _memoryBlock = (byte*)pointer;
-            Length = pointer.SizeInBytes / _typeSize;
-            SizeInBytes = pointer.SizeInBytes;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonNativeBuffer{T}" /> class.
-        /// </summary>
-        /// <param name="pointer">The pointer to the memory to wrap in this buffer.</param>
-        /// <param name="sizeInBytes">The size, in bytes, of the memory to wrap.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sizeInBytes"/> is less than 0.</exception>
-        /// <remarks>
-        /// <para>
-        /// Use this constructor to wrap an existing pointer to memory in a native buffer so it can safely accessed. 
-        /// </para>
-        /// <para>
-        /// Ensure the <paramref name="sizeInBytes"/> is evenly divisible by the number of bytes in the type <typeparamref name="T"/>. Otherwise, the buffer may be too small to accomodate your data.
-        /// </para>
-        /// <para>
-        /// This constructor assumes that the developer has called <see cref="GC.AddMemoryPressure"/> prior to constructor. Failure to do so will cause the garbage collector to be unaware of the actual 
-        /// memory usage of the application, so it is recommended that the developer call <see cref="GC.AddMemoryPressure"/> prior to creating this object and <see cref="GC.RemoveMemoryPressure"/> after 
-        /// the object is disposed.
-        /// </para>
-        /// </remarks>
-        public GorgonNativeBuffer(void* pointer, int sizeInBytes)
-        {
-            if (pointer == null)
+            if (pointer == GorgonPtr<T>.NullPtr)
             {
                 throw new ArgumentNullException(nameof(pointer));
             }
 
-            if (sizeInBytes <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(sizeInBytes), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-            }
-
-            _typeSize = Unsafe.SizeOf<T>();
-            _memoryBlock = (byte*)pointer;
-            Length = sizeInBytes / _typeSize;
-            SizeInBytes = sizeInBytes;
+            _memoryBlock = pointer;
         }
 
         /// <summary>

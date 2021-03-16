@@ -78,7 +78,7 @@ namespace Gorgon.Input
     /// 
     ///		foreach(IGorgonGamingDeviceInfo info in joysticks)
     ///		{
-    ///			Console.WriteLine("Controller: {0}", info.Description);
+    ///			Console.WriteLine($"Controller: {info.Description}");
     ///		}
     /// } 
     /// ]]>

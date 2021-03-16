@@ -119,7 +119,7 @@ namespace Gorgon.Input
         /// ]]>
         /// </code>
         /// </example>
-        public GorgonGamingDeviceAxisList<GorgonGamingDeviceAxis> Axis
+        public GorgonGamingDeviceAxisList<IGorgonGamingDeviceAxis> Axis
         {
             get;
         }
@@ -233,19 +233,19 @@ namespace Gorgon.Input
             // Get POV direction.
             if (pov != -1)
             {
-                if ((pov < 18000) && (pov > 9000))
+                if (pov is < 18000 and > 9000)
                 {
                     _povDirections[povIndex] = Input.POVDirection.Down | Input.POVDirection.Right;
                 }
-                if ((pov > 18000) && (pov < 27000))
+                if (pov is > 18000 and < 27000)
                 {
                     _povDirections[povIndex] = Input.POVDirection.Down | Input.POVDirection.Left;
                 }
-                if ((pov > 27000) && (pov < 36000))
+                if (pov is > 27000 and < 36000)
                 {
                     _povDirections[povIndex] = Input.POVDirection.Up | Input.POVDirection.Left;
                 }
-                if ((pov > 0) && (pov < 9000))
+                if (pov is > 0 and < 9000)
                 {
                     _povDirections[povIndex] = Input.POVDirection.Up | Input.POVDirection.Right;
                 }
@@ -338,7 +338,7 @@ namespace Gorgon.Input
                 _povDirections[i] = Input.POVDirection.Center;
             }
 
-            foreach (GorgonGamingDeviceAxis axis in Axis)
+            foreach (GamingDeviceAxisProperties axis in Axis)
             {
                 axis.Value = Info.AxisInfo[axis.Axis].DefaultValue;
             }
@@ -428,7 +428,7 @@ namespace Gorgon.Input
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="deviceInfo"/> parameter is <b>null</b>.</exception>
         protected GorgonGamingDevice(IGorgonGamingDeviceInfo deviceInfo)
         {
-            if (deviceInfo == null)
+            if (deviceInfo is null)
             {
                 throw new ArgumentNullException(nameof(deviceInfo));
             }
@@ -438,7 +438,7 @@ namespace Gorgon.Input
             POV = new float[_povDirections.Length];
             Button = new GamingDeviceButtonState[deviceInfo.ButtonCount];
             Info = deviceInfo;
-            Axis = new GorgonGamingDeviceAxisList<GorgonGamingDeviceAxis>(deviceInfo.AxisInfo.Select(item => new GorgonGamingDeviceAxis(item)));
+            Axis = new GorgonGamingDeviceAxisList<IGorgonGamingDeviceAxis>(deviceInfo.AxisInfo.Select(item => new GamingDeviceAxisProperties(item.Value)));
         }
         #endregion
     }

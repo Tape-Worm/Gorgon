@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,6 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -58,14 +58,14 @@ namespace Gorgon.Editor.SpriteEditor
         // The index of the selected vertex.
         private int _selectedVertex = -1;
         // The list of vertices.
-        private readonly DX.Vector2[] _vertices = new DX.Vector2[4];
+        private readonly Vector2[] _vertices = new Vector2[4];
         #endregion
 
         #region Properties.
         /// <summary>Property to set or return the vertex offset for the selected vertex.</summary>
-        public DX.Vector2 Offset
+        public Vector2 Offset
         {
-            get => SelectedVertexIndex == -1 ? DX.Vector2.Zero : _vertices[SelectedVertexIndex];
+            get => SelectedVertexIndex == -1 ? Vector2.Zero : _vertices[SelectedVertexIndex];
             set
             {
                 if (SelectedVertexIndex == -1)
@@ -73,7 +73,7 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                if (_vertices[SelectedVertexIndex].Equals(ref value))
+                if (_vertices[SelectedVertexIndex].Equals(value))
                 {
                     return;
                 }
@@ -111,7 +111,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Property to set or return the vertices that are being edited.</summary>
-        public IReadOnlyList<DX.Vector2> Vertices
+        public IReadOnlyList<Vector2> Vertices
         {
             get => _vertices;
             set
@@ -121,7 +121,7 @@ namespace Gorgon.Editor.SpriteEditor
                     return;
                 }
 
-                if (value == null)
+                if (value is null)
                 {
                     OnPropertyChanging();
                     Array.Clear(_vertices, 0, _vertices.Length);
@@ -138,7 +138,7 @@ namespace Gorgon.Editor.SpriteEditor
                 OnPropertyChanging();
                 for (int i = 0; i < _vertices.Length; ++i)
                 {
-                    _vertices[i] = i < value.Count ? value[i] : DX.Vector2.Zero;
+                    _vertices[i] = i < value.Count ? value[i] : Vector2.Zero;
                 }
                 OnPropertyChanged();
 
@@ -178,19 +178,19 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void DoReset()
         {
-            DX.Vector2[] defaultPos = null;
+            Vector2[] defaultPos = null;
 
             try
             {
-                defaultPos = ArrayPool<DX.Vector2>.Shared.Rent(_vertices.Length);
+                defaultPos = ArrayPool<Vector2>.Shared.Rent(_vertices.Length);
                 for (int i = 0; i < _vertices.Length; ++i)
                 {
-                    defaultPos[i] = SelectedVertexIndex == -1 ? DX.Vector2.Zero : _vertices[i];
+                    defaultPos[i] = SelectedVertexIndex == -1 ? Vector2.Zero : _vertices[i];
                 }
 
                 if (SelectedVertexIndex != -1)
                 {
-                    defaultPos[SelectedVertexIndex] = DX.Vector2.Zero;
+                    defaultPos[SelectedVertexIndex] = Vector2.Zero;
                 }
 
                 Vertices = defaultPos;
@@ -201,9 +201,9 @@ namespace Gorgon.Editor.SpriteEditor
             }
             finally
             {
-                if (defaultPos != null)
+                if (defaultPos is not null)
                 {
-                    ArrayPool<DX.Vector2>.Shared.Return(defaultPos);
+                    ArrayPool<Vector2>.Shared.Return(defaultPos);
                 }
             }
         }
@@ -239,7 +239,7 @@ namespace Gorgon.Editor.SpriteEditor
             SelectedVertexIndex = -1;
             for (int i = 0; i < _vertices.Length; ++i)
             {
-                _vertices[i] = (DX.Vector2)_spriteContent.VertexOffsets[i];
+                _vertices[i] = new Vector2(_spriteContent.VertexOffsets[i].X, _spriteContent.VertexOffsets[i].Y);
             }
         }
 

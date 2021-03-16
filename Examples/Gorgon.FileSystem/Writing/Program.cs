@@ -64,12 +64,15 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
-            Log = new GorgonLog("Writing", "Tape_Worm");
+            Log = new GorgonTextFileLog("Writing", "Tape_Worm");
 
             Log.LogStart();
 
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

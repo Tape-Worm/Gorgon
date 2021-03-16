@@ -109,7 +109,7 @@ namespace Gorgon.Editor.Views
         {
             var button = (RecentItemButton)sender;
 
-            if ((DataContext?.DeleteItemCommand == null) || (!DataContext.DeleteItemCommand.CanExecute(button.RecentItem)))
+            if ((DataContext?.DeleteItemCommand is null) || (!DataContext.DeleteItemCommand.CanExecute(button.RecentItem)))
             {
                 return;
             }
@@ -124,7 +124,7 @@ namespace Gorgon.Editor.Views
         {
             var button = (RecentItemButton)sender;
 
-            if ((DataContext?.OpenProjectCommand == null) || (button.RecentItem == null))
+            if ((DataContext?.OpenProjectCommand is null) || (button.RecentItem is null))
             {
                 return;
             }
@@ -145,7 +145,7 @@ namespace Gorgon.Editor.Views
         {
             RecentItemButton theButton = PanelRecentItems.Controls.OfType<RecentItemButton>().FirstOrDefault(buttonItem => buttonItem.RecentItem == item);
 
-            if (theButton == null)
+            if (theButton is null)
             {
                 return;
             }
@@ -169,7 +169,7 @@ namespace Gorgon.Editor.Views
             IEnumerable<RecentItemButton> buttons = PanelRecentItems.Controls.OfType<RecentItemButton>();
             RecentItemButton button = buttons.FirstOrDefault(btn => string.Equals(btn.Name, item.FilePath, StringComparison.OrdinalIgnoreCase));
 
-            if (button == null)
+            if (button is null)
             {
                 button = new RecentItemButton
                 {
@@ -254,7 +254,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -285,7 +285,7 @@ namespace Gorgon.Editor.Views
 
             DataContext = dataContext;
 
-            if ((IsDesignTime) || (DataContext == null))
+            if ((IsDesignTime) || (DataContext is null))
             {
                 return;
             }

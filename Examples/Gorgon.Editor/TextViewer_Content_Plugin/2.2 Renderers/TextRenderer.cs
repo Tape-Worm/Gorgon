@@ -24,18 +24,13 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using DX = SharpDX;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using Gorgon.Graphics;
-using System.Windows.Forms;
 
 namespace Gorgon.Examples
 {
@@ -79,7 +74,7 @@ namespace Gorgon.Examples
                 case FontFace.Papyrus:
                     _textSprite.Font = _papyrus;
 
-                    if (_textSprite.Color == _papyrus.Info.OutlineColor1)
+                    if (_textSprite.Color == _papyrus.OutlineColor1)
                     {
                         // Reset to white if our outline color matches our text color.
                         // If we fail to do this, the text will be unreadable.
@@ -91,7 +86,7 @@ namespace Gorgon.Examples
                     break;
             }
 
-            _textSprite.Text = _textSprite.Font.WordWrap(DataContext.Text, RenderRegion.Width);           
+            _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);           
             
         }
 
@@ -146,13 +141,13 @@ namespace Gorgon.Examples
                     break;
                 case nameof(ITextContent.Text):
                     // If we alter the text on the view model, reflect that here now.
-                    _textSprite.Text = _textSprite.Font.WordWrap(DataContext.Text, RenderRegion.Width);
+                    _textSprite.Text = DataContext.Text.WordWrap(_textSprite.Font, RenderRegion.Width);
                     break;
                 case nameof(ITextContent.Color):
                     // If we change the color on the view model, then update our text sprite color.
                     _textSprite.Color = DataContext.Color;
 
-                    if (_textSprite.Color == _papyrus.Info.OutlineColor1)
+                    if (_textSprite.Color == _papyrus.OutlineColor1)
                     {
                         // Reset to white if our outline color matches our text color.
                         // If we fail to do this, the text will be unreadable.
@@ -238,7 +233,7 @@ namespace Gorgon.Examples
             // changed to whatever the user desires, but by default it uses the render region width and height, and 0x0 is 
             // in the center of the region (hence why we are positioning the text at negstive values, which correspond to the
             // upper left coordinates of the render region).
-            _textSprite.Position = new DX.Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
+            _textSprite.Position = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
             _textSprite.LayoutArea = RenderRegion.Size;
 
             ChangeFont();
@@ -277,7 +272,7 @@ namespace Gorgon.Examples
             _textSprite = new GorgonTextSprite(_timesNewRoman)
             {
                 AllowColorCodes = true,
-                Position = new DX.Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f),
+                Position = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f),
                 LayoutArea = RenderRegion.Size,
                 Color = GorgonColor.Black,
                 TextureSampler = GorgonSamplerState.PointFiltering,
@@ -288,7 +283,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to set the view to a default zoom level.
         /// </summary>
-        public void DefaultZoom() => MoveTo(DX.Vector2.Zero, 1);
+        public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
         #endregion
 
         #region Constructor/Finalizer.

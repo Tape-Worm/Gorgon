@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {
@@ -49,7 +49,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>
         /// Property to return the floating point values to animate.
         /// </summary>
-        public DX.Vector4? FloatValues
+        public Vector4? FloatValues
         {
             get;
         }
@@ -79,7 +79,7 @@ namespace Gorgon.Editor.AnimationEditor
             Time = key.Time;
             KeyType = AnimationTrackKeyType.Single;
             TextureValue = null;
-            FloatValues = new DX.Vector4(key.Value, 0, 0, 0);
+            FloatValues = new Vector4(key.Value, 0, 0, 0);
         }
 
         /// <summary>Initializes a new instance of the <see cref="KeyFrameParameters"/> class.</summary>
@@ -91,7 +91,7 @@ namespace Gorgon.Editor.AnimationEditor
             Time = key.Time;
             KeyType = AnimationTrackKeyType.Vector2;
             TextureValue = null;
-            FloatValues = new DX.Vector4(key.Value, 0, 0);
+            FloatValues = new Vector4(key.Value, 0, 0);
         }
 
         /// <summary>Initializes a new instance of the <see cref="KeyFrameParameters"/> class.</summary>
@@ -103,7 +103,7 @@ namespace Gorgon.Editor.AnimationEditor
             Time = key.Time;
             KeyType = AnimationTrackKeyType.Vector3;
             TextureValue = null;
-            FloatValues = new DX.Vector4(key.Value, 0);
+            FloatValues = new Vector4(key.Value, 0);
         }
 
         /// <summary>Initializes a new instance of the <see cref="KeyFrameParameters"/> class.</summary>
@@ -126,7 +126,7 @@ namespace Gorgon.Editor.AnimationEditor
             Time = key.Time;
             KeyType = AnimationTrackKeyType.Rectangle;
             TextureValue = null;
-            FloatValues = new DX.Vector4(key.Value.Left, key.Value.Top, key.Value.Right, key.Value.Bottom);
+            FloatValues = new Vector4(key.Value.Left, key.Value.Top, key.Value.Right, key.Value.Bottom);
         }
 
         /// <summary>Initializes a new instance of the <see cref="KeyFrameParameters"/> class.</summary>
@@ -138,7 +138,7 @@ namespace Gorgon.Editor.AnimationEditor
             Time = key.Time;
             KeyType = AnimationTrackKeyType.Color;
             TextureValue = null;
-            FloatValues = new DX.Vector4(key.Value.Red, key.Value.Green, key.Value.Blue, key.Value.Alpha);
+            FloatValues = new Vector4(key.Value.Red, key.Value.Green, key.Value.Blue, key.Value.Alpha);
         }
 
         /// <summary>Initializes a new instance of the <see cref="KeyFrameParameters"/> class.</summary>
@@ -158,7 +158,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="type">The type of data to store in the key.</param>
         /// <param name="value">The floating point values to assign.</param>
         /// <param name="hostServices">The host serivces.</param>
-        public KeyFrameParameters(float time, AnimationTrackKeyType type, DX.Vector4 value, IHostContentServices hostServices)
+        public KeyFrameParameters(float time, AnimationTrackKeyType type, Vector4 value, IHostContentServices hostServices)
             : base(hostServices)
         {
             Time = time;

@@ -24,11 +24,13 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Threading;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
 using DX = SharpDX;
@@ -64,7 +66,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to create the texture for the view.</summary>
         protected override void CreateTexture()
         {
-            if ((DataContext?.ImageData == null) || (DataContext.ImageType != ImageType.Image3D))
+            if ((DataContext?.ImageData is null) || (DataContext.ImageType != ImageType.Image3D))
             {
                 RenderRegion = DX.RectangleF.Empty;
                 return;
@@ -105,11 +107,11 @@ namespace Gorgon.Editor.ImageEditor
             DX.RectangleF volRegion = _volRenderer.VolumeRegion;
             Renderer.Begin();
 
-            DX.Size2F textArea = Renderer.DefaultFont.MeasureLine(Resources.GORIMG_TEXT_3DVIEW, false);
+            DX.Size2F textArea = Resources.GORIMG_TEXT_3DVIEW.MeasureLine(Renderer.DefaultFont, false);
             Renderer.DrawFilledRectangle(volRegion, new GorgonColor(GorgonColor.Black, 0.5f));
             Renderer.DrawFilledRectangle(new DX.RectangleF(volRegion.Left - 1, volRegion.Bottom, volRegion.Width + 2, textArea.Height + 6), GorgonColor.White);
             Renderer.DrawRectangle(new DX.RectangleF(volRegion.X - 1, volRegion.Y - 1, volRegion.Width + 2, volRegion.Height + 2), GorgonColor.White);
-            Renderer.DrawString("3D View", new DX.Vector2((volRegion.Right + volRegion.Left) / 2.0f - (textArea.Width / 2.0f), volRegion.Bottom + 3), color: GorgonColor.Black);
+            Renderer.DrawString("3D View", new Vector2((volRegion.Right + volRegion.Left) / 2.0f - (textArea.Width / 2.0f), volRegion.Bottom + 3), color: GorgonColor.Black);
 
             Renderer.End();
 

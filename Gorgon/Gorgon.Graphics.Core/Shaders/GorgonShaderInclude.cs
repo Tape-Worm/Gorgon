@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool Equals(GorgonShaderInclude left, GorgonShaderInclude right) => (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
+        public static bool Equals(in GorgonShaderInclude left, in GorgonShaderInclude right) => (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
 
         /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -156,7 +156,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentException">Thrown when the includeName parameter is empty.</exception>
         public GorgonShaderInclude(string includeName, string includeSourceFile)
         {
-            if (includeName == null)
+            if (includeName is null)
             {
                 throw new ArgumentNullException(nameof(includeName));
             }
@@ -166,7 +166,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(includeName));
             }
 
-            if (includeSourceFile == null)
+            if (includeSourceFile is null)
             {
                 includeSourceFile = string.Empty;
             }

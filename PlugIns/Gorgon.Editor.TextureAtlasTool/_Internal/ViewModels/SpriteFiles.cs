@@ -58,7 +58,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         // The service used to search through the files.
         private ISearchService<IContentFileExplorerSearchEntry> _searchService;
         // The list of selected files.
-        private readonly List<ContentFileExplorerFileEntry> _selected = new List<ContentFileExplorerFileEntry>();
+        private readonly List<ContentFileExplorerFileEntry> _selected = new();
         // The task used to load the preview.
         private Task<IGorgonImage> _loadPreviewTask;
         // The cancellation source.
@@ -85,7 +85,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             get => _selected;
             private set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = Array.Empty<ContentFileExplorerFileEntry>();
                 }
@@ -183,12 +183,12 @@ namespace Gorgon.Editor.TextureAtlasTool
             {
                 IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(ThumbnailPath);
 
-                if (thumbDirectory == null)
+                if (thumbDirectory is null)
                 {
                     thumbDirectory = _tempFileSystem.CreateDirectory(ThumbnailPath);
                 }
 
-                if (_loadPreviewTask != null)
+                if (_loadPreviewTask is not null)
                 {
                     if (_loadPreviewTask.Status == TaskStatus.Faulted)
                     {
@@ -205,7 +205,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                 PreviewImage?.Dispose();                
 
-                if ((files == null) || (files.Count == 0))
+                if ((files is null) || (files.Count == 0))
                 {
                     PreviewImage = null;
                     return;
@@ -213,7 +213,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
                 IContentFile previewFile = files[files.Count - 1]?.File;
 
-                if (previewFile?.Metadata?.ContentMetadata == null)
+                if (previewFile?.Metadata?.ContentMetadata is null)
                 {
                     PreviewImage = null;
                     return;
@@ -342,7 +342,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 file.PropertyChanged -= File_PropertyChanged;
             }
 
-            if (_cancelSource != null)
+            if (_cancelSource is not null)
             {
                 _cancelSource.Cancel();
             }

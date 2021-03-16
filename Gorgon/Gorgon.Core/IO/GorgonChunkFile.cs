@@ -32,21 +32,6 @@ using Gorgon.Properties;
 namespace Gorgon.IO
 {
     /// <summary>
-    /// Flag to indicate the mode that we're opening up the chunk file in.
-    /// </summary>
-    public enum ChunkFileMode
-    {
-        /// <summary>
-        /// Chunk file is open for reading.
-        /// </summary>
-        Read = 0,
-        /// <summary>
-        /// Chunk file is open for writing.
-        /// </summary>
-        Write = 1
-    }
-
-    /// <summary>
     /// Base class for a Gorgon chunked formatted data readers/writers.
     /// </summary>
     /// <typeparam name="T">The type of read/writer to use when deserializing or serializing the data.</typeparam>
@@ -91,15 +76,6 @@ namespace Gorgon.IO
 
         #region Properties.
         /// <summary>
-        /// Property to set or return the mode for accessing the chunk file format.
-        /// </summary>
-        protected ChunkFileMode Mode
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Property to return an editable list of chunks.
         /// </summary>
         internal GorgonChunkCollection ChunkList
@@ -135,11 +111,6 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Function to read in the header information from the chunk file and validate it.
-        /// </summary>
-        protected abstract void ReadHeaderValidate();
-
-        /// <summary>
         /// Function to perform validation against the requested chunk ID and the list of reserved values.
         /// </summary>
         /// <param name="chunkId">Chunk ID to evaluate.</param>
@@ -155,15 +126,15 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to write the header information for the chunk file.
-        /// </summary>
-        protected abstract void WriteHeader();
-
-        /// <summary>
         /// Function called when a chunk file is closing.
         /// </summary>
         /// <returns>The total number of bytes read or written.</returns>
         protected abstract long OnClose();
+
+        /// <summary>
+        /// Function called when a chunk file is opening.
+        /// </summary>
+        protected abstract void OnOpen();
 
         /// <summary>
         /// Function to open a chunked file within the stream.
@@ -205,17 +176,7 @@ namespace Gorgon.IO
 
             ChunkList.Clear();
 
-            switch (Mode)
-            {
-                case ChunkFileMode.Read:
-                    ReadHeaderValidate();
-                    break;
-                case ChunkFileMode.Write:
-                    WriteHeader();
-                    break;
-                default:
-                    throw new ArgumentException(Resources.GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE);
-            }
+            OnOpen();
 
             IsOpen = true;
         }
@@ -229,7 +190,7 @@ namespace Gorgon.IO
         public abstract void CloseChunk();
 
         /// <summary>
-        /// Function to open a chunk for reading or writing, depending on the <see cref="Mode"/>.
+        /// Function to open a chunk for reading or writing.
         /// </summary>
         /// <param name="chunkId">The ID of the chunk to open.</param>
         /// <returns>A <see cref="GorgonBinaryReader"/>, or <see cref="GorgonBinaryWriter"/> that will allow reading or writing within the chunk.</returns>
@@ -264,7 +225,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to open a chunk, by the text representation of its ID, for reading or writing, depending on the <see cref="Mode"/>.
+        /// Function to open a chunk, by the text representation of its ID, for reading or writing.
         /// </summary>
         /// <param name="chunkName">The name of the chunk.</param>
         /// <returns>A <see cref="GorgonBinaryReader"/>, or <see cref="GorgonBinaryWriter"/> that will allow reading or writing within the chunk.</returns>
@@ -275,7 +236,7 @@ namespace Gorgon.IO
         /// </remarks>
         /// <seealso cref="GorgonChunkFileReader.OpenChunk(ulong)"/>
         /// <seealso cref="GorgonChunkFileWriter.OpenChunk(ulong)"/>
-        public T OpenChunk(string chunkName) => chunkName == null
+        public T OpenChunk(string chunkName) => chunkName is null
                 ? throw new ArgumentNullException(nameof(chunkName))
                 : string.IsNullOrEmpty(chunkName) ? throw new ArgumentEmptyException(nameof(chunkName)) : OpenChunk(chunkName.ChunkID());
         #endregion
@@ -292,7 +253,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="Stream.CanSeek"/> property set to <b>false</b>.</exception>
         protected GorgonChunkFile(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

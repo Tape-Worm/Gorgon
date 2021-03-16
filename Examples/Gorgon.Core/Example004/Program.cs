@@ -79,7 +79,7 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main(string[] args)
         {
-            _log = new GorgonLog("Example 004", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
+            _log = new GorgonTextFileLog("Example 004", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
 
             // Set up the assembly cache.
             // We'll need the assemblies loaded into this object in order to load our plugin types.
@@ -101,7 +101,7 @@ namespace Gorgon.Examples
                 Console.ResetColor();
 
                 pluginCache.LoadPlugInAssemblies(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]).FormatDirectory(Path.DirectorySeparatorChar), "Example004.*PlugIn.dll");
-                Console.WriteLine("{0} plugin assemblies found.", pluginCache.PlugInAssemblies.Count);
+                Console.WriteLine($"{pluginCache.PlugInAssemblies.Count} plugin assemblies found.");
 
                 if (pluginCache.PlugInAssemblies.Count == 0)
                 {
@@ -114,15 +114,15 @@ namespace Gorgon.Examples
                 // Create our plugin instances, we'll limit to 9 entries just for giggles.
                 TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPlugInNames()
                                              let plugin = pluginService.GetPlugIn<TextColorPlugIn>(pluginName)
-                                             where plugin != null
+                                             where plugin is not null
                                              select plugin).ToArray();
 
                 // Display a list of the available plugins.
-                Console.WriteLine("\n{0} Plug-ins loaded:\n", plugins.Length);
+                Console.WriteLine($"\n{plugins.Length} Plug-ins loaded:\n");
                 for (int i = 0; i < plugins.Length; i++)
                 {
                     // Here's where we make use of our description.
-                    Console.WriteLine("{0}. {1} ({2})", i + 1, plugins[i].Description, plugins[i].GetType().FullName);
+                    Console.WriteLine($"{(i + 1)}. {plugins[i].Description} ({plugins[i].GetType().FullName})");
 
                     // Create the text writer interface and add it to the list.
                     writers.Add(plugins[i].CreateWriter());
@@ -173,7 +173,7 @@ namespace Gorgon.Examples
                          {
                              Console.Clear();
                              Console.ForegroundColor = ConsoleColor.Red;
-                             Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", ex.Message, ex.StackTrace);
+                             Console.WriteLine($"Exception:\n{ex.Message}\n\nStack Trace:{ex.StackTrace}");
                          },
                          _log);
                 Console.ResetColor();

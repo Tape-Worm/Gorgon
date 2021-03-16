@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -44,7 +44,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The texture value for the key.
         private TextureValue _texture;
         // The floating point values for the key.
-        private DX.Vector4 _floatValues;
+        private Vector4 _floatValues;
         #endregion
 
         #region Properties.
@@ -90,12 +90,12 @@ namespace Gorgon.Editor.AnimationEditor
         }
 
         /// <summary>Property to return one to four floating point values for the key frame.</summary>
-        public DX.Vector4 FloatValue
+        public Vector4 FloatValue
         {
             get => _floatValues;
             set
             {
-                if (_floatValues.Equals(ref value))
+                if (_floatValues.Equals(value))
                 {
                     return;
                 }
@@ -123,11 +123,11 @@ namespace Gorgon.Editor.AnimationEditor
             _time = injectionParameters.Time;
             DataType = injectionParameters.KeyType;
 
-            if ((DataType == AnimationTrackKeyType.Texture2D) && (injectionParameters.TextureValue != null))
+            if ((DataType == AnimationTrackKeyType.Texture2D) && (injectionParameters.TextureValue is not null))
             {
                 _texture = injectionParameters.TextureValue.Value;
             }
-            else if (injectionParameters.FloatValues != null)
+            else if (injectionParameters.FloatValues is not null)
             {
                 _floatValues = injectionParameters.FloatValues.Value;
             }

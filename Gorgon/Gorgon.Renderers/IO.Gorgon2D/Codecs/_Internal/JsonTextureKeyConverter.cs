@@ -41,7 +41,7 @@ namespace Gorgon.IO
         // The texture converter to serialize the texture.
         private readonly JsonTexture2DConverter _textureConverter;
         // The texture converter to serialize a rectangle.
-        private readonly JsonRectangleFConverter _rectConverter = new JsonRectangleFConverter();
+        private readonly JsonRectangleFConverter _rectConverter = new();
 
         /// <summary>Writes the JSON representation of the object.</summary>
         /// <param name="writer">The <see cref="Newtonsoft.Json.JsonWriter" /> to write to.</param>
@@ -49,7 +49,7 @@ namespace Gorgon.IO
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, GorgonKeyTexture2D value, JsonSerializer serializer)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;
@@ -107,7 +107,7 @@ namespace Gorgon.IO
                         reader.Read();
                         texture = _textureConverter.ReadTexture(reader, out textureName);
 
-                        if ((texture == null) && (string.IsNullOrWhiteSpace(textureName)))
+                        if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                         {
                             return null;
                         }
@@ -116,7 +116,7 @@ namespace Gorgon.IO
                 }
             }
 
-            return texture != null ? new GorgonKeyTexture2D(time, texture, uv, arrayIndex) : new GorgonKeyTexture2D(time, textureName, uv, arrayIndex);
+            return texture is not null ? new GorgonKeyTexture2D(time, texture, uv, arrayIndex) : new GorgonKeyTexture2D(time, textureName, uv, arrayIndex);
         }
 
         /// <summary>

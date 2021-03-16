@@ -71,7 +71,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSelect_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SelectProjectWorkspaceCommand == null) || (!DataContext.SelectProjectWorkspaceCommand.CanExecute(null)))
+            if ((DataContext?.SelectProjectWorkspaceCommand is null) || (!DataContext.SelectProjectWorkspaceCommand.CanExecute(null)))
             {
                 return;
             }
@@ -148,7 +148,7 @@ namespace Gorgon.Editor.Views
                     return;
                 }
 
-                if (DataContext?.SetProjectWorkspaceCommand == null)
+                if (DataContext?.SetProjectWorkspaceCommand is null)
                 {
                     return;
                 }
@@ -176,7 +176,7 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonCreate_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.CreateProjectCommand == null) || (!DataContext.CreateProjectCommand.CanExecute(null)))
+            if ((DataContext?.CreateProjectCommand is null) || (!DataContext.CreateProjectCommand.CanExecute(null)))
             {
                 return;
             }
@@ -247,7 +247,7 @@ namespace Gorgon.Editor.Views
         /// <param name="dataContext">The data context to assign.</param>
         private void InitializeFromDataContext(INewProject dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -266,7 +266,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -302,7 +302,7 @@ namespace Gorgon.Editor.Views
                 InitializeFromDataContext(dataContext);
                 DataContext = dataContext;
 
-                if ((IsDesignTime) || (DataContext == null))
+                if ((IsDesignTime) || (DataContext is null))
                 {
                     return;
                 }

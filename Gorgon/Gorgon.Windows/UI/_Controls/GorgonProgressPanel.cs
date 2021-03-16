@@ -51,11 +51,35 @@ namespace Gorgon.UI
         #endregion
 
         #region Events.
+        // The event triggered when the operation is cancelled.
+        private event EventHandler OperationCancelledEvent;
+
         /// <summary>
         /// Event triggered when an operation is cancelled.
         /// </summary>
         [Description("Triggered when an operation is cancelled via this panel."), Category("Behavior")]
-        public event EventHandler OperationCancelled;
+        public event EventHandler OperationCancelled
+        {
+            add
+            {
+                if (value is null)
+                {
+                    OperationCancelledEvent = value;
+                    return;
+                }
+
+                OperationCancelledEvent += value;
+            }
+            remove
+            {
+                if (value is null)
+                {
+                    return;
+                }
+
+                OperationCancelledEvent -= value;
+            }
+        }
         #endregion
 
         #region Properties.
@@ -93,21 +117,7 @@ namespace Gorgon.UI
         public string ProgressMessage
         {
             get => LabelProgressMessage.Text;
-            set
-            {
-                if (string.Equals(value, LabelProgressMessage.Text, StringComparison.CurrentCulture))
-                {
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(value))
-                {
-
-                }
-
-                LabelProgressMessage.Visible = !string.IsNullOrEmpty(value);
-                LabelProgressMessage.Text = value;
-            }
+            set => SetProgressMessage(value);
         }
 
         /// <summary>
@@ -224,6 +234,12 @@ namespace Gorgon.UI
                 return;
             }
 
+            if ((_syncContext is not null) && (InvokeRequired))
+            {
+                _syncContext.Post(_ => UnassignCancelEvent(), null);
+                return;
+            }
+
             if (!AllowCancellation)
             {
                 return;
@@ -245,6 +261,12 @@ namespace Gorgon.UI
                 return;
             }
 
+            if ((_syncContext is not null) && (InvokeRequired))
+            {
+                _syncContext.Post(_ => UnassignCancelEvent(), null);
+                return;
+            }
+
             if ((!AllowCancellation) || (Interlocked.Exchange(ref _cancelEvent, 1) == 1))
             {
                 return;
@@ -261,9 +283,29 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonCancel_Click(object sender, EventArgs e)
         {
-            UnassignCancelEvent();            
-            EventHandler handler = OperationCancelled;
-            OperationCancelled?.Invoke(this, EventArgs.Empty);
+            UnassignCancelEvent();
+            OperationCancelledEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Function to set the progress message.
+        /// </summary>
+        /// <param name="message">The mess to assign.</param>
+        private void SetProgressMessage(string message)
+        {
+            if ((_syncContext is not null) && (InvokeRequired))
+            {
+                _syncContext.Post(m => SetProgressMessage(m?.ToString()), message);
+                return;
+            }
+
+            if (string.Equals(message, LabelProgressMessage.Text, StringComparison.CurrentCulture))
+            {
+                return;
+            }
+
+            LabelProgressMessage.Visible = !string.IsNullOrEmpty(message);
+            LabelProgressMessage.Text = message;
         }
 
         /// <summary>
@@ -274,7 +316,7 @@ namespace Gorgon.UI
         {
             _progress = value.Min(1.0f).Max(0);
 
-            if ((_syncContext != null) && (InvokeRequired))
+            if ((_syncContext is not null) && (InvokeRequired))
             {
                 _syncContext.Post(progValue => SetProgressValue((float)progValue), _progress);
                 return;

@@ -25,9 +25,11 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Renderers
 {
@@ -100,40 +102,38 @@ namespace Gorgon.Renderers
         /// </summary>
         private void CreateBuffers()
         {
-            // We don't need to update the index buffer ever.  So we can set up the indices right now.
-            using (var indices = new GorgonNativeBuffer<ushort>(MaxSpriteCount * 6))
+            // We don't need to update the index buffer ever.  So we can set up the indices right now.            
+            using var indices = new GorgonNativeBuffer<ushort>(MaxSpriteCount * 6);
+            int indexOffset = 0;
+            ushort index = 0;
+            for (int i = 0; i < MaxSpriteCount; ++i)
             {
-                int indexOffset = 0;
-                ushort index = 0;
-                for (int i = 0; i < MaxSpriteCount; ++i)
-                {
-                    indices[indexOffset++] = index;
-                    indices[indexOffset++] = (ushort)(index + 1);
-                    indices[indexOffset++] = (ushort)(index + 2);
-                    indices[indexOffset++] = (ushort)(index + 1);
-                    indices[indexOffset++] = (ushort)(index + 3);
-                    indices[indexOffset++] = (ushort)(index + 2);
+                indices[indexOffset++] = index;
+                indices[indexOffset++] = (ushort)(index + 1);
+                indices[indexOffset++] = (ushort)(index + 2);
+                indices[indexOffset++] = (ushort)(index + 1);
+                indices[indexOffset++] = (ushort)(index + 3);
+                indices[indexOffset++] = (ushort)(index + 2);
 
-                    index += 4;
-                }
-
-                VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics,
-                                                                                             new GorgonVertexBufferInfo
-                                                                                             {
-                                                                                                 Usage = ResourceUsage.Dynamic,
-                                                                                                 Binding = VertexIndexBufferBinding.None,
-                                                                                                 SizeInBytes = Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4)
-                                                                                             });
-
-                IndexBuffer = new GorgonIndexBuffer(Graphics,
-                                                    new GorgonIndexBufferInfo
-                                                    {
-                                                        Usage = ResourceUsage.Immutable,
-                                                        Binding = VertexIndexBufferBinding.None,
-                                                        IndexCount = indices.Length
-                                                    },
-                                                    indices);
+                index += 4;
             }
+
+            VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics,
+                                                                                         new GorgonVertexBufferInfo
+                                                                                         {
+                                                                                             Usage = ResourceUsage.Dynamic,
+                                                                                             Binding = VertexIndexBufferBinding.None,
+                                                                                             SizeInBytes = Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4)
+                                                                                         });
+
+            IndexBuffer = new GorgonIndexBuffer(Graphics,
+                                                new GorgonIndexBufferInfo
+                                                {
+                                                    Usage = ResourceUsage.Immutable,
+                                                    Binding = VertexIndexBufferBinding.None,
+                                                    IndexCount = indices.Length
+                                                },
+                                                indices.ToSpan());
         }
 
         /// <summary>
@@ -175,15 +175,22 @@ namespace Gorgon.Renderers
                 ExpandCache(lastVertex - _vertexCache.Length);
             }
 
-            for (int i = 0; i < vertexCount; ++i, ++_allocatedVertexCount)
+            unsafe
             {
-                _vertexCache[_currentVertexIndex++] = vertices[i];
+                fixed (void* destPtr = &_vertexCache[_currentVertexIndex])
+                fixed (void* srcPtr = &vertices[0])
+                {
+                    Unsafe.CopyBlock(destPtr, srcPtr, (uint)(Gorgon2DVertex.SizeInBytes * vertexCount));
+                }
             }
 
             if (renderable.IndexCount != 0)
             {
                 _indexCount += renderable.IndexCount;
             }
+
+            _allocatedVertexCount += vertexCount;
+            _currentVertexIndex += vertexCount;
         }
 
         /// <summary>
@@ -212,7 +219,7 @@ namespace Gorgon.Renderers
                 CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
 
                 // Copy a chunk of the cache.
-                vertexBuffer.SetData(_vertexCache, cacheIndex, vertexCount, _vertexBufferByteOffset, copyMode);
+                vertexBuffer.SetData<Gorgon2DVertex>(_vertexCache.AsSpan(cacheIndex, vertexCount), _vertexBufferByteOffset, copyMode);
 
                 drawCall.VertexStartIndex = _vertexBufferIndex;
                 drawCall.VertexCount = vertexCount;
@@ -260,7 +267,7 @@ namespace Gorgon.Renderers
                 CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
 
                 // Copy a chunk of the cache.
-                vertexBuffer.SetData(_vertexCache, cacheIndex, vertexCount, _vertexBufferByteOffset, copyMode);
+                vertexBuffer.SetData<Gorgon2DVertex>(_vertexCache.AsSpan(cacheIndex, vertexCount), _vertexBufferByteOffset, copyMode);
 
                 drawCall.BaseVertexIndex = _indexBufferBaseVertexIndex;
                 drawCall.IndexStart = _indexStart;

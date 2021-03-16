@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -78,7 +79,7 @@ namespace Gorgon.Animation
                     result = prev.Value.Lerp(next.Value, deltaTime);
                     break;
                 case TrackInterpolationMode.Spline:
-                    DX.Vector4 val = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    Vector4 val = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
                     result = val.X;
                     break;
                 default:
@@ -96,12 +97,12 @@ namespace Gorgon.Animation
         /// <param name="time">The current time for the animation.</param>
         /// <param name="result">The result value to apply to the vector2 object property.</param>
         /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateVector2(IGorgonAnimationTrack<GorgonKeyVector2> track, float time, out DX.Vector2 result)
+	    public static bool TryUpdateVector2(IGorgonAnimationTrack<GorgonKeyVector2> track, float time, out Vector2 result)
         {
             switch (track.KeyFrames.Count)
             {
                 case 0:
-                    result = DX.Vector2.Zero;
+                    result = Vector2.Zero;
                     return false;
                 case 1:
                     result = track.KeyFrames[0].Value;
@@ -128,10 +129,11 @@ namespace Gorgon.Animation
             switch (track.InterpolationMode)
             {
                 case TrackInterpolationMode.Linear:
-                    DX.Vector2.Lerp(ref prev.Value, ref next.Value, deltaTime, out result);
+                    result = Vector2.Lerp(prev.Value, next.Value, deltaTime);
                     break;
                 case TrackInterpolationMode.Spline:
-                    result = (DX.Vector2)track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    Vector4 val = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    result = new Vector2(val.X, val.Y);
                     break;
                 default:
                     result = prev.Value;
@@ -148,12 +150,12 @@ namespace Gorgon.Animation
         /// <param name="time">The current time for the animation.</param>
         /// <param name="result">The result value to apply to the vector3 object property.</param>
         /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateVector3(IGorgonAnimationTrack<GorgonKeyVector3> track, float time, out DX.Vector3 result)
+	    public static bool TryUpdateVector3(IGorgonAnimationTrack<GorgonKeyVector3> track, float time, out Vector3 result)
         {
             switch (track.KeyFrames.Count)
             {
                 case 0:
-                    result = DX.Vector3.Zero;
+                    result = Vector3.Zero;
                     return false;
                 case 1:
                     result = track.KeyFrames[0].Value;
@@ -180,10 +182,11 @@ namespace Gorgon.Animation
             switch (track.InterpolationMode)
             {
                 case TrackInterpolationMode.Linear:
-                    DX.Vector3.Lerp(ref prev.Value, ref next.Value, deltaTime, out result);
+                    result = Vector3.Lerp(prev.Value, next.Value, deltaTime);
                     break;
                 case TrackInterpolationMode.Spline:
-                    result = (DX.Vector3)track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    Vector4 val = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    result = new Vector3(val.X, val.Y, val.Z);
                     break;
                 default:
                     result = prev.Value;
@@ -200,12 +203,12 @@ namespace Gorgon.Animation
         /// <param name="time">The current time for the animation.</param>
         /// <param name="result">The result value to apply to the vector3 object property.</param>
         /// <returns><b>true</b> if there's a value to update, <b>false</b> if not.</returns>
-	    public static bool TryUpdateVector4(IGorgonAnimationTrack<GorgonKeyVector4> track, float time, out DX.Vector4 result)
+	    public static bool TryUpdateVector4(IGorgonAnimationTrack<GorgonKeyVector4> track, float time, out Vector4 result)
         {
             switch (track.KeyFrames.Count)
             {
                 case 0:
-                    result = DX.Vector4.Zero;
+                    result = Vector4.Zero;
                     return false;
                 case 1:
                     result = track.KeyFrames[0].Value;
@@ -229,19 +232,12 @@ namespace Gorgon.Animation
 
             (GorgonKeyVector4 prev, GorgonKeyVector4 next, int prevKeyIndex, float deltaTime) = TweenKey.GetNearestKeys(track, time, lastKey.Time);
 
-            switch (track.InterpolationMode)
+            result = track.InterpolationMode switch
             {
-                case TrackInterpolationMode.Linear:
-                    DX.Vector4.Lerp(ref prev.Value, ref next.Value, deltaTime, out result);
-                    break;
-                case TrackInterpolationMode.Spline:
-                    result = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
-                    break;
-                default:
-                    result = prev.Value;
-                    break;
-            }
-
+                TrackInterpolationMode.Linear => Vector4.Lerp(prev.Value, next.Value, deltaTime),
+                TrackInterpolationMode.Spline => track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime),
+                _ => prev.Value,
+            };
             return true;
         }
 
@@ -342,7 +338,7 @@ namespace Gorgon.Animation
                                                prev.Value.Height.Lerp(next.Value.Height, deltaTime));
                     break;
                 case TrackInterpolationMode.Spline:
-                    DX.Vector4 splineResult = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
+                    Vector4 splineResult = track.SplineController.GetInterpolatedValue(prevKeyIndex, deltaTime);
                     result = new DX.RectangleF(splineResult.X, splineResult.Y, splineResult.Z, splineResult.W);
                     break;
                 default:

@@ -1,0 +1,99 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+name: 3.2.9999.001
+
+trigger:
+  branches:
+    include:
+      - v3_2
+
+jobs:
+  - job: 'v3_2'
+    pool:
+      vmImage: 'windows-2019'
+
+    variables:
+      solution: 'Gorgon.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Debug'
+
+    steps:
+      - checkout: self
+        submodules: true
+
+      - task: CmdLine@2
+        displayName: 'Updating version to $(Build.BuildNumber)'
+        inputs:
+          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
+
+      - task: NuGetToolInstaller@1
+        inputs:
+          checkLatest: true
+
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$(solution)'
+
+      - task: DownloadSecureFile@1
+        inputs:
+          secureFile: GorgonFull.snk
+
+      - task: CmdLine@2
+        displayName: 'Signing code...'
+        inputs:
+          script: 'ProjectSigner.exe $(Agent.TempDirectory)\GorgonFull.snk -y'
+
+      - task: VSBuild@1
+        inputs:
+          clean: true
+          solution: '$(solution)'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
+          msbuildArgs: '/p:SourceLinkCreate=true'
+
+      - task: CopyFiles@2
+        displayName: 'Copying Lib to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/Gorgon'
+          Contents: | 
+            **/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)
+            !**/$(buildConfiguration)/**/net48/**/*
+          CleanTargetFolder: true
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
+          flattenFolders: true
+          Overwrite: true
+
+      - task: CopyFiles@2
+        displayName: 'Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/'
+          Contents: '**/?(*.dll|Gorgon*.pdb)'
+          CleanTargetFolder: true
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
+
+      - task: CopyFiles@2
+        displayName: 'Copying Tools to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)'
+          Contents: |
+            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
+            !**/TextViewerContentExample.*
+            !**/net48/**/*
+          CleanTargetFolder: true
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/Tools'
+          
+      - task: CopyFiles@2
+        displayName: 'Copying nuget files to artifacts'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/nuget/debug'
+          Contents: '**/*'
+          CleanTargetFolder: true
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/NugetSupport/Debug'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: develop_drop

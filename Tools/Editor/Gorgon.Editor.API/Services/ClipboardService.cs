@@ -45,7 +45,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to return whether or not there is data on the clipboard.
         /// </summary>
-        public bool HasData => _data != null;
+        public bool HasData => _data is not null;
         #endregion
 
         #region Methods.
@@ -65,7 +65,7 @@ namespace Gorgon.Editor.Services
         {
             Type type = typeof(T);
 
-            if (_data == null)
+            if (_data is null)
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE, type.FullName));
             }
@@ -101,7 +101,7 @@ namespace Gorgon.Editor.Services
         {
             Type type = typeof(T);
 
-            if (_data == null)
+            if (_data is null)
             {
                 return false;
             }
@@ -122,7 +122,7 @@ namespace Gorgon.Editor.Services
         /// <param name="item">The item to copy.</param>
         public void CopyItem(object item)
         {
-            if (item == null)
+            if (item is null)
             {
                 return;
             }

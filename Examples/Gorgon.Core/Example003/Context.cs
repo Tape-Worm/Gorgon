@@ -77,7 +77,7 @@ namespace Gorgon.Examples
         /// Calls <see cref="M:System.Windows.Forms.ApplicationContext.ExitThreadCore" />, which raises the <see cref="E:System.Windows.Forms.ApplicationContext.ThreadExit" /> event.
         /// </summary>
         /// <param name="sender">The object that raised the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">The <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnMainFormClosed(object sender, EventArgs e)
         {
             base.OnMainFormClosed(sender, e);

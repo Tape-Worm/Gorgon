@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -75,42 +76,27 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="smoothing">Smoothing value to convert.</param>
         /// <returns>Texture filtering value.</returns>
-        private static SampleFilter ConvertSmoothingToFilter(int smoothing)
+        private static SampleFilter ConvertSmoothingToFilter(int smoothing) => smoothing switch
         {
-            switch (smoothing)
-            {
-                case 0:
-                    return SampleFilter.MinMagMipPoint;
-                case 2:
-                    return SampleFilter.MinPointMagMipLinear;
-                case 3:
-                    return SampleFilter.MinLinearMagMipPoint;
-                default:
-                    return SampleFilter.MinMagMipLinear;
-            }
-        }
+            0 => SampleFilter.MinMagMipPoint,
+            2 => SampleFilter.MinPointMagMipLinear,
+            3 => SampleFilter.MinLinearMagMipPoint,
+            _ => SampleFilter.MinMagMipLinear,
+        };
 
         /// <summary>
         /// Function to convert Gorgon 1.x image addressing values to 2.x texture addressing values.
         /// </summary>
         /// <param name="imageAddress">Image addressing values.</param>
         /// <returns>Texture addressing values.</returns>
-        private static TextureWrap ConvertImageAddressToTextureAddress(int imageAddress)
+        private static TextureWrap ConvertImageAddressToTextureAddress(int imageAddress) => imageAddress switch
         {
-            switch (imageAddress)
-            {
-                case 0:
-                    return TextureWrap.Wrap;
-                case 1:
-                    return TextureWrap.Mirror;
-                case 2:
-                    return TextureWrap.MirrorOnce;
-                case 4:
-                    return TextureWrap.Border;
-                default:
-                    return TextureWrap.Clamp;
-            }
-        }
+            0 => TextureWrap.Wrap,
+            1 => TextureWrap.Mirror,
+            2 => TextureWrap.MirrorOnce,
+            4 => TextureWrap.Border,
+            _ => TextureWrap.Clamp,
+        };
 
         /// <summary>
         /// Function to build a sampler state from the information provided by the sprite data.
@@ -125,21 +111,16 @@ namespace Gorgon.IO
         {
             var builder = new GorgonSamplerStateBuilder(graphics);
 
-            switch (filter)
+            return filter switch
             {
-                case SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White):
-                    return null;
-                case SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White):
-                    return GorgonSamplerState.PointFiltering;
-                case SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White):
-                    return GorgonSamplerState.Wrapping;
-                case SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White):
-                    return GorgonSamplerState.PointFilteringWrapping;
-                default:
-                    return builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
-                                  .Filter(filter)
-                                  .Build();
-            }
+                SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => null,
+                SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFiltering,
+                SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.Wrapping,
+                SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFilteringWrapping,
+                _ => builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
+.Filter(filter)
+.Build(),
+            };
         }
 
         /// <summary>
@@ -151,7 +132,6 @@ namespace Gorgon.IO
         /// <returns>The sprite from the stream data.</returns>
         private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonBinaryReader reader, GorgonTexture2DView overrideTexture)
         {
-            Version version;
             string imageName = string.Empty;
 
             string headerVersion = reader.ReadString();
@@ -163,22 +143,13 @@ namespace Gorgon.IO
             }
 
             var sprite = new GorgonSprite();
-
-            // Get the version information.
-            switch (headerVersion.ToUpperInvariant())
+            Version version = headerVersion.ToUpperInvariant() switch
             {
-                case "GORSPR1":
-                    version = new Version(1, 0);
-                    break;
-                case "GORSPR1.1":
-                    version = new Version(1, 1);
-                    break;
-                case "GORSPR1.2":
-                    version = new Version(1, 2);
-                    break;
-                default:
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_VERSION_MISMATCH, headerVersion));
-            }
+                "GORSPR1" => new Version(1, 0),
+                "GORSPR1.1" => new Version(1, 1),
+                "GORSPR1.2" => new Version(1, 2),
+                _ => throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_VERSION_MISMATCH, headerVersion)),
+            };
 
             // We don't need the sprite name.
             reader.ReadString();
@@ -237,17 +208,17 @@ namespace Gorgon.IO
             // that the texture was loaded safely, so we'll have to defer it until later.
             // Also, older versions used the size the determine the area on the texture to cover.  So use the size to
             // get the texture bounds.
-            var textureOffset = new DX.Vector2(reader.ReadSingle(), reader.ReadSingle());
+            var textureOffset = new Vector2(reader.ReadSingle(), reader.ReadSingle());
 
             // Read the anchor.
             // Gorgon v3 anchors are relative, so we need to convert them based on our sprite size.
-            sprite.Anchor = new DX.Vector2(reader.ReadSingle() / sprite.Size.Width, reader.ReadSingle() / sprite.Size.Height);
+            sprite.Anchor = new Vector2(reader.ReadSingle() / sprite.Size.Width, reader.ReadSingle() / sprite.Size.Height);
 
             // Get vertex offsets.
-            sprite.CornerOffsets.UpperLeft = new DX.Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
-            sprite.CornerOffsets.UpperRight = new DX.Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
-            sprite.CornerOffsets.LowerRight = new DX.Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
-            sprite.CornerOffsets.LowerLeft = new DX.Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
+            sprite.CornerOffsets.UpperLeft = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
+            sprite.CornerOffsets.UpperRight = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
+            sprite.CornerOffsets.LowerRight = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
+            sprite.CornerOffsets.LowerLeft = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
 
             // Get vertex colors.
             sprite.CornerColors.UpperLeft = new GorgonColor(reader.ReadInt32());
@@ -394,7 +365,7 @@ namespace Gorgon.IO
             GorgonTexture2DView textureView;
 
             // Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
-            if ((!string.IsNullOrEmpty(imageName)) && (overrideTexture == null))
+            if ((!string.IsNullOrEmpty(imageName)) && (overrideTexture is null))
             {
                 GorgonTexture2D texture = graphics.LocateResourcesByName<GorgonTexture2D>(imageName).FirstOrDefault();
                 textureView = texture?.GetShaderResourceView();
@@ -405,7 +376,7 @@ namespace Gorgon.IO
             }
 
             // If we cannot load the image, then fall back to the standard coordinates.            
-            if (textureView == null)
+            if (textureView is null)
             {
                 sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
             }
@@ -430,33 +401,27 @@ namespace Gorgon.IO
         /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
         protected override bool OnIsReadable(Stream stream)
         {
-            using (var reader = new GorgonBinaryReader(stream, true))
+            using var reader = new GorgonBinaryReader(stream, true);
+            // If we don't have at least 10 bytes, then this file is not valid.
+            if ((stream.Length - stream.Position) < 16)
             {
-                // If we don't have at least 10 bytes, then this file is not valid.
-                if ((stream.Length - stream.Position) < 16)
-                {
-                    return false;
-                }
-
-                string headerVersion = reader.ReadString();
-                if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
-                    || (headerVersion.Length < 7)
-                    || (headerVersion.Length > 9))
-                {
-                    return false;
-                }
-
-                // Get the version information.
-                switch (headerVersion.ToUpperInvariant())
-                {
-                    case "GORSPR1":
-                    case "GORSPR1.1":
-                    case "GORSPR1.2":
-                        return true;
-                    default:
-                        return false;
-                }
+                return false;
             }
+
+            string headerVersion = reader.ReadString();
+            if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
+                || (headerVersion.Length < 7)
+                || (headerVersion.Length > 9))
+            {
+                return false;
+            }
+
+            // Get the version information.
+            return headerVersion.ToUpperInvariant() switch
+            {
+                "GORSPR1" or "GORSPR1.1" or "GORSPR1.2" => true,
+                _ => false,
+            };
         }
 
         /// <summary>
@@ -466,39 +431,37 @@ namespace Gorgon.IO
         /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
         protected override string OnGetAssociatedTextureName(Stream stream)
         {
-            using (var reader = new GorgonBinaryReader(stream, true))
+            using var reader = new GorgonBinaryReader(stream, true);
+            string headerVersion = reader.ReadString();
+            if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
+                || (headerVersion.Length < 7)
+                || (headerVersion.Length > 9))
             {
-                string headerVersion = reader.ReadString();
-                if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
-                    || (headerVersion.Length < 7)
-                    || (headerVersion.Length > 9))
-                {
-                    return null;
-                }
-
-                // Get the version information.
-                switch (headerVersion.ToUpperInvariant())
-                {
-                    case "GORSPR1":
-                    case "GORSPR1.1":
-                    case "GORSPR1.2":
-                        break;
-                    default:
-                        return null;
-                }
-
-                // We don't need the sprite name.
-                reader.ReadString();
-
-                // Find out if we have an image.
-                if (!reader.ReadBoolean())
-                {
-                    return null;
-                }
-
-                reader.ReadBoolean();
-                return reader.ReadString();
+                return null;
             }
+
+            // Get the version information.
+            switch (headerVersion.ToUpperInvariant())
+            {
+                case "GORSPR1":
+                case "GORSPR1.1":
+                case "GORSPR1.2":
+                    break;
+                default:
+                    return null;
+            }
+
+            // We don't need the sprite name.
+            reader.ReadString();
+
+            // Find out if we have an image.
+            if (!reader.ReadBoolean())
+            {
+                return null;
+            }
+
+            reader.ReadBoolean();
+            return reader.ReadString();
         }
 
         /// <summary>
@@ -510,11 +473,9 @@ namespace Gorgon.IO
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
         protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
         {
-            using (var reader = new GorgonBinaryReader(stream, true))
-            {
-                // We don't need the byte count here.
-                return LoadSprite(Graphics, reader, overrideTexture);
-            }
+            using var reader = new GorgonBinaryReader(stream, true);
+            // We don't need the byte count here.
+            return LoadSprite(Graphics, reader, overrideTexture);
         }
 
         /// <summary>

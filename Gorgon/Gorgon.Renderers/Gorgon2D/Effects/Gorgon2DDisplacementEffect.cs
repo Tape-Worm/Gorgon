@@ -24,11 +24,14 @@
 // 
 #endregion
 
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -137,7 +140,7 @@ namespace Gorgon.Renderers
                                                                                         GorgonConstantBufferInfo("Gorgon2DDisplacementEffect Constant Buffer")
                                                                                         {
                                                                                             Usage = ResourceUsage.Dynamic,
-                                                                                            SizeInBytes = DX.Vector4.SizeInBytes
+                                                                                            SizeInBytes = Unsafe.SizeOf<Vector4>()
                                                                                         });
 
             _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");
@@ -167,7 +170,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
-            if ((_displacementView == null) || (sizeChanged))
+            if ((_displacementView is null) || (sizeChanged))
             {
                 UpdateDisplacementMap(output);
             }
@@ -177,8 +180,8 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            var settings = new DX.Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, 0);
-            _displacementSettingsBuffer.Buffer.SetData(ref settings);
+            var settings = new Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, 0);
+            _displacementSettingsBuffer.Buffer.SetData(in settings);
             _isUpdated = false;
         }
 
@@ -195,7 +198,7 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             if (passIndex == 0)
             {
@@ -216,9 +219,9 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if ((_batchState == null) || (statesChanged))
+            if ((_batchState is null) || (statesChanged))
             {
-                if (_displacementState == null)
+                if (_displacementState is null)
                 {
                     _displacementState = builders.PixelShaderBuilder.Clear()
                                           .Shader(_displacementShader)
@@ -264,13 +267,13 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        public void Begin(GorgonTexture2DView backgroundTexture, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        public void Begin(GorgonTexture2DView backgroundTexture, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             backgroundTexture.ValidateObject(nameof(backgroundTexture));
 
             _originalTarget = Graphics.RenderTargets[0];
 
-            if (_originalTarget == null)
+            if (_originalTarget is null)
             {
                 return;
             }

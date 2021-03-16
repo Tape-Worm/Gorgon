@@ -73,7 +73,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="element">The element to search for.</param>
         /// <param name="index">The index of the current element.</param>
         /// <param name="parameterName">The name of the parameter being validated.</param>
-        private static void FindDuplicateElements(IList<GorgonStreamOutElement> elements, GorgonStreamOutElement element, int index, string parameterName)
+        private static void FindDuplicateElements(IList<GorgonStreamOutElement> elements, in GorgonStreamOutElement element, int index, string parameterName)
         {
             for (int i = 0; i < elements.Count; ++i)
             {
@@ -131,7 +131,7 @@ namespace Gorgon.Graphics.Core
         public GorgonStreamOutLayout(string name, IEnumerable<GorgonStreamOutElement> elements)
             : base(name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

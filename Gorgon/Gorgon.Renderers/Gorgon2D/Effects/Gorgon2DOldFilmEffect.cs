@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Core;
@@ -158,7 +159,7 @@ namespace Gorgon.Renderers
                 _noiseFrequency = value;
 
                 // Prepare the random data texture for update.
-                if (_randomTexture == null)
+                if (_randomTexture is null)
                 {
                     return;
                 }
@@ -372,7 +373,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the offset that can be used to simulate shaking.
         /// </summary>
-        public DX.Vector2 ShakeOffset
+        public Vector2 ShakeOffset
         {
             get;
             set;
@@ -387,48 +388,46 @@ namespace Gorgon.Renderers
         {
             int textureSize = NoiseTextureSize.Min(128).Max(16);
 
-            using (var image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8_UNorm)
+            using var image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8_UNorm)
             {
                 Width = textureSize,
                 Height = textureSize
-            }))
+            });
+            IGorgonImageBuffer imageBuffer = image.Buffers[0];
+
+            for (int y = 0; y < textureSize; ++y)
             {
-                IGorgonImageBuffer imageBuffer = image.Buffers[0];
-
-                for (int y = 0; y < textureSize; ++y)
+                for (int x = 0; x < textureSize; ++x)
                 {
-                    for (int x = 0; x < textureSize; ++x)
+                    float simplexNoise = GorgonRandom.SimplexNoise(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency));
+
+                    if (simplexNoise < -0.75f)
                     {
-                        float simplexNoise = GorgonRandom.SimplexNoise(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency));
-
-                        if (simplexNoise < -0.75f)
-                        {
-                            simplexNoise *= -1;
-                        }
-                        else
-                        {
-                            simplexNoise *= 0.95f;
-                        }
-
-                        if (simplexNoise < 0.125f)
-                        {
-                            simplexNoise = 0.0f;
-                        }
-
-
-                        image.Buffers[0].Data[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
+                        simplexNoise *= -1;
                     }
-                }
+                    else
+                    {
+                        simplexNoise *= 0.95f;
+                    }
 
-                _randomTexture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("Gorgon2D Old Film Effect Random Noise Texture")
-                {
-                    Width = textureSize,
-                    Height = textureSize,
-                    Usage = ResourceUsage.Immutable,
-                    Binding = TextureBinding.ShaderResource,
-                    Format = BufferFormat.R8_UNorm
-                }, image);
+                    if (simplexNoise < 0.125f)
+                    {
+                        simplexNoise = 0.0f;
+                    }
+
+
+                    image.Buffers[0].Data[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
+                }
             }
+
+            _randomTexture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("Gorgon2D Old Film Effect Random Noise Texture")
+            {
+                Width = textureSize,
+                Height = textureSize,
+                Usage = ResourceUsage.Immutable,
+                Binding = TextureBinding.ShaderResource,
+                Format = BufferFormat.R8_UNorm
+            }, image);
         }
 
         /// <summary>
@@ -448,8 +447,8 @@ namespace Gorgon.Renderers
                 SizeInBytes = 16
             });
 
-            _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");
-            _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
+            _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");
+            _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
 
             // Create pixel shader.
             _filmShader = CompileShader<GorgonPixelShader>(Resources.FilmGrain, "GorgonPixelShaderFilmGrain");
@@ -475,17 +474,17 @@ namespace Gorgon.Renderers
 
             if (_isScratchUpdated)
             {
-                _scratchBuffer.Buffer.SetData(ref _scratchSettings);
+                _scratchBuffer.Buffer.SetData(in _scratchSettings);
                 _isScratchUpdated = false;
             }
 
             if (_isSepiaUpdated)
             {
-                _sepiaBuffer.Buffer.SetData(ref _sepiaSettings);
+                _sepiaBuffer.Buffer.SetData(in _sepiaSettings);
                 _isSepiaUpdated = false;
             }
 
-            _timingBuffer.Buffer.SetData(ref _time);
+            _timingBuffer.Buffer.SetData(in _time);
         }
 
         /// <summary>
@@ -497,7 +496,7 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if (_batchState == null)
+            if (_batchState is null)
             {
                 _filmState = builders.PixelShaderBuilder
                               .ConstantBuffer(_timingBuffer, 1)
@@ -564,7 +563,7 @@ namespace Gorgon.Renderers
                 }
 
                 // Render dirt/hair lines.
-                var dirtStart = new DX.Vector2(GorgonRandom.RandomSingle(region.Left, region.Right),
+                var dirtStart = new Vector2(GorgonRandom.RandomSingle(region.Left, region.Right),
                                                GorgonRandom.RandomSingle(region.Top, region.Bottom));
 
                 float dirtWidth = GorgonRandom.RandomSingle(1.0f, 3.0f);

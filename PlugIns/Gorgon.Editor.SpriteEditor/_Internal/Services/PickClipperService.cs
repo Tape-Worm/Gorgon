@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -108,7 +109,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 _imageData = value;
 
-                if (value == null)
+                if (value is null)
                 {
                     _pixels = Array.Empty<bool>();
                     return;
@@ -135,7 +136,7 @@ namespace Gorgon.Editor.SpriteEditor
             int location = (position.X * ImageData.FormatInformation.SizeInBytes) + (position.Y * ImageData.PitchInformation.RowPitch);
 
             // Grab the pixel at the location.
-            int pixel = ImageData.Data.ReadAs<int>(location);
+            int pixel = ImageData.Data.AsRef<int>(location);
 
             // Images should be in RGBA 32 bit format.  If they're not, then we'll get bad data.
             if (clipMask == ClipMask.Alpha)
@@ -224,9 +225,9 @@ namespace Gorgon.Editor.SpriteEditor
         /// If the position is not contained within this region, <b>null</b> will be returned signifying that no rectangular region could be found.
         /// </para>
         /// </remarks>
-        public DX.RectangleF? Pick(DX.Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
+        public DX.RectangleF? Pick(Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
         {
-            if (ImageData == null)
+            if (ImageData is null)
             {
                 return null;
             }
@@ -234,12 +235,12 @@ namespace Gorgon.Editor.SpriteEditor
             var imageBounds = new DX.RectangleF(0, 0, ImageData.Width, ImageData.Height);
 
             // If we clicked outside of the image, then there's nothing to click.
-            if (!imageBounds.Contains(imagePosition))
+            if (!imageBounds.Contains(imagePosition.X, imagePosition.Y))
             {
                 return null;
             }
 
-            var imagePoint = (DX.Point)imagePosition;
+            var imagePoint = imagePosition.ToPoint();
 
             // We clicked on an area that has the masking value under our cursor, so we can't build anything.
             // In this case, do not change the current rectangle.

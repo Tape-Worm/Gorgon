@@ -26,10 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using Gorgon.Core;
-using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using DX = SharpDX;
 
@@ -131,93 +130,6 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
         #region Methods.
         /// <summary>
-        /// Function to create a glyph.
-        /// </summary>
-        /// <param name="character">The character that the glyph represents.</param>
-        /// <param name="advance">The horizontal advance amount for the character.</param>
-        /// <returns>A new <seealso cref="GorgonGlyph"/>.</returns>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="advance"/> value represents the distance between the previous position and the next when rendering. If this value is not correct, then the font will render incorrectly.
-        /// </para>
-        /// </remarks>
-        protected GorgonGlyph CreateGlyph(char character, int advance) => new GorgonGlyph(character, advance);
-
-        /// <summary>
-        /// Function to build the font from the data provided.
-        /// </summary>
-        /// <param name="info">The font information used to generate the font.</param>
-        /// <param name="fontHeight">The height of the font, in pixels.</param>
-        /// <param name="lineHeight">The height of a line, in pixels.</param>
-        /// <param name="ascent">The ascent for the font, in pixels.</param>
-        /// <param name="descent">The descent for the font, in pixels.</param>
-        /// <param name="textures">The textures associated with the font.</param>
-        /// <param name="glyphs">The glyphs associated with the font.</param>
-        /// <param name="kerningValues">The kerning values, if any, associated with the font.</param>
-        /// <returns>A new <seealso cref="GorgonFont"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/>, <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is empty.</exception>
-        /// <remarks>
-        /// <para>
-        /// Codec implementors should call this method once all information has been gathered for the font. This will load the font data into the <seealso cref="GorgonFont"/>, and store that font in the 
-        /// <seealso cref="Factory"/> cache for reuse.
-        /// </para>
-        /// <para>
-        /// This method must be called because an application will not be able to create a <seealso cref="GorgonFont"/> directly.
-        /// </para>
-        /// </remarks>
-        protected GorgonFont BuildFont(IGorgonFontInfo info,
-                                       float fontHeight,
-                                       float lineHeight,
-                                       float ascent,
-                                       float descent,
-                                       IReadOnlyList<GorgonTexture2D> textures,
-                                       IReadOnlyList<GorgonGlyph> glyphs,
-                                       IReadOnlyDictionary<GorgonKerningPair, int> kerningValues)
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            if (textures == null)
-            {
-                throw new ArgumentNullException(nameof(textures));
-            }
-
-            if (textures.Count == 0)
-            {
-                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(textures));
-            }
-
-            if (glyphs == null)
-            {
-                throw new ArgumentNullException(nameof(glyphs));
-            }
-
-            if (glyphs.Count == 0)
-            {
-                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(glyphs));
-            }
-
-            GorgonFont result = null;
-            try
-            {
-                result = new GorgonFont(info.Name, Factory, info, fontHeight, lineHeight, ascent, descent, glyphs, textures, kerningValues);
-
-                // Register with the factory font cache.
-                Factory.RegisterFont(result);
-
-                return result;
-            }
-            catch
-            {
-                result?.Dispose();
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Function to write the font data to the stream.
         /// </summary>
         /// <param name="fontData">The font data to write.</param>
@@ -247,6 +159,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
         protected abstract GorgonFont OnLoadFromStream(string name, Stream stream);
 
         /// <summary>
+        /// Function to load the font data, with the specified size, from a stream.
+        /// </summary>
+        /// <param name="name">The name to assign to the font.</param>
+        /// <param name="stream">The stream containing the font data.</param>
+        /// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
+        protected abstract Task<GorgonFont> OnLoadFromStreamAsync(string name, Stream stream);
+
+        /// <summary>
         /// Function to read the meta data for font data within a stream.
         /// </summary>
         /// <param name="stream">The stream containing the metadata to read.</param>
@@ -262,7 +182,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         public IGorgonFontInfo GetMetaData(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -310,54 +230,63 @@ namespace Gorgon.Graphics.Fonts.Codecs
         public abstract bool IsReadable(Stream stream);
 
         /// <summary>
-        /// Function to load an font from a stream.
+        /// Function to asynchronously load a font from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the font data to read.</param>
-        /// <param name="name">[Optional] The name of the font.</param>
-        /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
-        /// </exception>
-        /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        GorgonFont IGorgonFontCodec.LoadFromStream(Stream stream, string name) => FromStream(stream, name);
-
-        /// <summary>
-        /// Function to persist a <see cref="GorgonFont"/> to a file on the physical file system.
-        /// </summary>
-        /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
-        /// <param name="filePath">The path to the file that will hold the font data.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="fontData"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty..</exception>
-        /// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        void IGorgonFontCodec.SaveToFile(GorgonFont fontData, string filePath) => Save(fontData, filePath);
-
-        /// <summary>
-        /// Function to persist a <see cref="GorgonFont"/> to a stream.
-        /// </summary>
-        /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
-        /// <param name="stream">The stream that will receive the font data.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="fontData"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
-        /// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        void IGorgonFontCodec.SaveToStream(GorgonFont fontData, Stream stream) => Save(fontData, stream);
-
-        /// <summary>
-        /// Function to load an font from a file on the physical file system.
-        /// </summary>
-        /// <param name="filePath">Path to the file to load.</param>
         /// <param name="name">The name of the font.</param>
         /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        GorgonFont IGorgonFontCodec.LoadFromFile(string filePath, string name) => FromFile(filePath, name);
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
+        public async Task<GorgonFont> FromStreamAsync(Stream stream, string name)
+        {
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new ArgumentException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY, nameof(stream));
+            }
+
+            if (name is null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
+            Stream externalStream = stream;
+
+            try
+            {
+                if (!stream.CanSeek)
+                {
+                    externalStream = new DX.DataStream((int)stream.Length, true, true);
+                    stream.CopyTo(externalStream);
+                    externalStream.Position = 0;
+                }
+
+                GorgonFont result = await OnLoadFromStreamAsync(name, externalStream);
+
+                return result;
+            }
+            finally
+            {
+                if (externalStream != stream)
+                {
+                    externalStream.Dispose();
+                }
+            }
+        }
 
         /// <summary>
-        /// Function to load an font from a stream.
+        /// Function to load a font from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the font data to read.</param>
         /// <param name="name">The name of the font.</param>
@@ -368,7 +297,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
         public GorgonFont FromStream(Stream stream, string name)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -378,7 +307,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 throw new ArgumentException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY, nameof(stream));
             }
 
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -422,12 +351,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
         {
             FileStream stream = null;
 
-            if (fontData == null)
+            if (fontData is null)
             {
                 throw new ArgumentNullException(nameof(fontData));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -458,12 +387,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
         public void Save(GorgonFont fontData, Stream stream)
         {
-            if (fontData == null)
+            if (fontData is null)
             {
                 throw new ArgumentNullException(nameof(fontData));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -482,7 +411,30 @@ namespace Gorgon.Graphics.Fonts.Codecs
         }
 
         /// <summary>
-        /// Function to load an font from a file on the physical file system.
+        /// Function to asynchronously load a font from a file on the physical file system.
+        /// </summary>
+        /// <param name="filePath">Path to the file to load.</param>
+        /// <param name="name">[Optional] The name of the font.</param>
+        /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+        public async Task<GorgonFont> FromFileAsync(string filePath, string name = null)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentEmptyException(nameof(filePath));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = filePath;
+            }
+
+            using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return await OnLoadFromStreamAsync(name, stream);
+        }
+
+        /// <summary>
+        /// Function to load a font from a file on the physical file system.
         /// </summary>
         /// <param name="filePath">Path to the file to load.</param>
         /// <param name="name">[Optional] The name of the font.</param>
@@ -500,10 +452,8 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 name = filePath;
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return OnLoadFromStream(name, stream);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return OnLoadFromStream(name, stream);
         }
 
         /// <summary>

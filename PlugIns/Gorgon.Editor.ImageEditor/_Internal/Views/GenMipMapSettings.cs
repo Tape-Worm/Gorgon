@@ -58,7 +58,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void UpdateMipSupport(IMipMapSettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 LabelMipLevels.Enabled = NumericMipLevels.Enabled = false;
             }
@@ -73,7 +73,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ComboImageFilter_SelectedValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -116,7 +116,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericMipLevels_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -129,7 +129,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -154,7 +154,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The data context being assigned.</param>
         private void InitializeFromDataContext(IMipMapSettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -170,7 +170,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnCancel();
 
-            if ((DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 return;
             }
@@ -183,7 +183,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnSubmit();
 
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
             {
                 return;
             }
@@ -194,7 +194,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function called to validate the OK button.</summary>
         /// <returns>
         ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
-        protected override bool OnValidateOk() => (DataContext?.OkCommand != null) && (DataContext.OkCommand.CanExecute(null));
+        protected override bool OnValidateOk() => (DataContext?.OkCommand is not null) && (DataContext.OkCommand.CanExecute(null));
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
         /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
@@ -220,7 +220,7 @@ namespace Gorgon.Editor.ImageEditor
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

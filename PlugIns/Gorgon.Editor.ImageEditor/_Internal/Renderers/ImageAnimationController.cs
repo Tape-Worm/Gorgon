@@ -24,10 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using SharpDX;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -38,7 +39,7 @@ namespace Gorgon.Editor.ImageEditor
         : GorgonAnimationController<ITextureViewer>
     {
         // The track used to animate opacity for the texture.
-        private static readonly GorgonTrackRegistration _opacityTrack = new GorgonTrackRegistration(nameof(ITextureViewer.Opacity), nameof(ITextureViewer.Opacity), AnimationTrackKeyType.Single);
+        private static readonly GorgonTrackRegistration _opacityTrack = new(nameof(ITextureViewer.Opacity), nameof(ITextureViewer.Opacity), AnimationTrackKeyType.Single);
 
         /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
         /// <param name="track">The track currently being processed.</param>
@@ -90,7 +91,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected override void OnRectangleUpdate(GorgonTrackRegistration track, ITextureViewer animObject, RectangleF value)
+        protected override void OnRectangleUpdate(GorgonTrackRegistration track, ITextureViewer animObject, DX.RectangleF value)
         {
         }
 
@@ -100,7 +101,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="texture">The texture to switch to.</param>
         /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
         /// <param name="textureArrayIndex">The texture array index.</param>
-        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, ITextureViewer animObject, GorgonTexture2DView texture, RectangleF textureCoordinates, int textureArrayIndex)
+        protected override void OnTexture2DUpdate(GorgonTrackRegistration track, ITextureViewer animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
         {
         }
 

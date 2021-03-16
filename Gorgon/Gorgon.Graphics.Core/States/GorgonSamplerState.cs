@@ -57,12 +57,12 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// A default sampler state.
         /// </summary>
-        public static readonly GorgonSamplerState Default = new GorgonSamplerState();
+        public static readonly GorgonSamplerState Default = new();
 
         /// <summary>
         /// A sampler state that turns on texture wrapping when texture coordinates exceed the range of the texture size.
         /// </summary>
-	    public static readonly GorgonSamplerState Wrapping = new GorgonSamplerState
+	    public static readonly GorgonSamplerState Wrapping = new()
         {
             WrapU = TextureWrap.Wrap,
             WrapV = TextureWrap.Wrap,
@@ -72,7 +72,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// A sampler state that provides point filtering for the complete texture.
         /// </summary>
-        public static readonly GorgonSamplerState PointFiltering = new GorgonSamplerState
+        public static readonly GorgonSamplerState PointFiltering = new()
         {
             Filter = SampleFilter.MinMagMipPoint
         };
@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// A sampler state that provides anisotropic filtering for the complete texture.
         /// </summary>
-        public static readonly GorgonSamplerState AnisotropicFiltering = new GorgonSamplerState
+        public static readonly GorgonSamplerState AnisotropicFiltering = new()
         {
             Filter = SampleFilter.Anisotropic
         };
@@ -88,7 +88,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// A sampler state that turns on texture wrapping when texture coordinates exceed the range of the texture size.
         /// </summary>
-        public static readonly GorgonSamplerState PointFilteringWrapping = new GorgonSamplerState
+        public static readonly GorgonSamplerState PointFilteringWrapping = new()
         {
             Filter = SampleFilter.MinMagMipPoint,
             WrapU = TextureWrap.Wrap,
@@ -305,7 +305,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="device">The D3D11 device to use to create the sampler.</param>
         internal void BuildD3D11SamplerState(D3D11.Device5 device)
         {
-            Debug.Assert(Native == null, "Already have a native sampler state.");
+            Debug.Assert(Native is null, "Already have a native sampler state.");
 
             var desc = new D3D11.SamplerStateDescription
             {
@@ -328,7 +328,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool Equals(GorgonSamplerState other) => (this == other) || ((other != null)
+        public bool Equals(GorgonSamplerState other) => (this == other) || ((other is not null)
                                        && (other.WrapU == WrapU)
                                        && (other.WrapV == WrapV)
                                        && (other.WrapW == WrapW)

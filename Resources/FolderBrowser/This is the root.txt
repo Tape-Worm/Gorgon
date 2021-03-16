@@ -1,0 +1,1 @@
+This is the root of the FolderBrowser example.  We root the browser here to avoid any potential issues with adding/deleting directories.

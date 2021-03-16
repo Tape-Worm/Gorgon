@@ -25,8 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Threading;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -39,9 +41,9 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The view * projection matrix.
-        private DX.Matrix _viewProjectionMatrix = DX.Matrix.Identity;
+        private Matrix4x4 _viewProjectionMatrix = Matrix4x4.Identity;
         // The current camera that has had its data uploaded to the GPU.
-        private IGorgon2DCamera _current;
+        private GorgonCameraCommon _current;
         // The buffer for holding the camera GPU data.
         private GorgonConstantBufferView _cameraBuffer;
         #endregion
@@ -66,7 +68,7 @@ namespace Gorgon.Renderers
         /// Function to update the camera data on the GPU.
         /// </summary>
         /// <param name="camera">The camera to update.</param>
-        public void UpdateCamera(IGorgon2DCamera camera)
+        public void UpdateCamera(GorgonCameraCommon camera)
         {
             if (camera.AllowUpdateOnResize)
             {
@@ -78,20 +80,18 @@ namespace Gorgon.Renderers
                 }
             }
 
-            bool camChanged = (_current != camera) || (camera.NeedsUpdate);
+            bool camChanged = (_current != camera) || (camera.Changes != CameraChange.None);
 
             if (!camChanged)
             {
                 return;
             }
 
-            camera.GetViewMatrix(out DX.Matrix view);
-            camera.GetProjectionMatrix(out DX.Matrix projection);
-
             // Build the view/projection matrix.
-            DX.Matrix.Multiply(ref view, ref projection, out _viewProjectionMatrix);
-
-            CameraBuffer.Buffer.SetData(ref _viewProjectionMatrix);
+            ref readonly Matrix4x4 viewMatrix = ref camera.GetViewMatrix();
+            ref readonly Matrix4x4 projMatrix = ref camera.GetProjectionMatrix();
+            _viewProjectionMatrix = Matrix4x4.Multiply(viewMatrix, projMatrix);            
+            CameraBuffer.Buffer.SetData(in _viewProjectionMatrix);
 
             _current = camera;
         }
@@ -115,7 +115,7 @@ namespace Gorgon.Renderers
         {
             Graphics = graphics;
             _cameraBuffer = GorgonConstantBufferView.CreateConstantBuffer(graphics,
-                                                                          ref _viewProjectionMatrix,
+                                                                          in _viewProjectionMatrix,
                                                                           "Gorgon 2D Camera Constant Buffer",
                                                                           ResourceUsage.Dynamic);
         }

@@ -145,7 +145,7 @@ namespace Gorgon.Memory
         /// </remarks>
 	    public void Deallocate(ref T item, Action<T> finalizer = null)
         {
-            if (item == null)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
@@ -157,7 +157,7 @@ namespace Gorgon.Memory
 
             T localItem = Interlocked.Exchange(ref item, null);
 
-            if (localItem == null)
+            if (localItem is null)
             {
                 return;
             }

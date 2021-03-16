@@ -25,8 +25,8 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -42,7 +42,7 @@ namespace Gorgon.Renderers
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var v3 = (DX.Vector3)value;
+            var v3 = (Vector3)value;
             writer.WriteStartObject();
             writer.WritePropertyName("x");
             writer.WriteValue(v3.X);
@@ -64,26 +64,26 @@ namespace Gorgon.Renderers
             if ((reader.TokenType != JsonToken.StartObject)
                 || (!reader.Read()))
             {
-                return DX.Vector3.Zero;
+                return Vector3.Zero;
             }
 
             float x = (float)(reader.ReadAsDouble() ?? 0);
             if (!reader.Read())
             {
-                return new DX.Vector3(x, 0, 0);
+                return new Vector3(x, 0, 0);
             }
 
             float y = (float)(reader.ReadAsDouble() ?? 0);
 
             if (!reader.Read())
             {
-                return new DX.Vector3(x, y, 0);
+                return new Vector3(x, y, 0);
             }
 
             float z = (float)(reader.ReadAsDouble() ?? 0);
             reader.Read();
 
-            return new DX.Vector3(x, y, z);
+            return new Vector3(x, y, z);
         }
 
         /// <summary>
@@ -93,6 +93,6 @@ namespace Gorgon.Renderers
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType) => (objectType == typeof(DX.Vector3));
+        public override bool CanConvert(Type objectType) => (objectType == typeof(Vector3));
     }
 }

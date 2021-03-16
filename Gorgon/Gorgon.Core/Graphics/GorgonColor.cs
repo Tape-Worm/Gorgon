@@ -30,10 +30,11 @@ using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using System.Numerics;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {
@@ -57,87 +58,87 @@ namespace Gorgon.Graphics
         /// <summary>
         /// A completely transparent color.
         /// </summary>
-        public static readonly GorgonColor Transparent = new GorgonColor(1, 1, 1, 0);
+        public static readonly GorgonColor Transparent = new(1, 1, 1, 0);
         /// <summary>
         /// A completely transparent color.
         /// </summary>
-        public static readonly GorgonColor BlackTransparent = new GorgonColor(0, 0, 0, 0);
+        public static readonly GorgonColor BlackTransparent = new(0, 0, 0, 0);
         /// <summary>
         /// The color white.
         /// </summary>
-        public static readonly GorgonColor White = new GorgonColor(1, 1, 1, 1);
+        public static readonly GorgonColor White = new(1, 1, 1, 1);
         /// <summary>
         /// The color black.
         /// </summary>
-        public static readonly GorgonColor Black = new GorgonColor(0, 0, 0, 1);
+        public static readonly GorgonColor Black = new(0, 0, 0, 1);
         /// <summary>
         /// Pure red (Red = 1, Green = 0, Blue = 0).
         /// </summary>
-        public static readonly GorgonColor RedPure = new GorgonColor(1, 0, 0);
+        public static readonly GorgonColor RedPure = new(1, 0, 0);
         /// <summary>
         /// Pure green (Red = 0, Green = 1, Blue = 0).
         /// </summary>
-        public static readonly GorgonColor GreenPure = new GorgonColor(0, 1, 0);
+        public static readonly GorgonColor GreenPure = new(0, 1, 0);
         /// <summary>
         /// Pure blue (Red = 0, Green = 0, Blue = 1).
         /// </summary>
-        public static readonly GorgonColor BluePure = new GorgonColor(0, 0, 1);
+        public static readonly GorgonColor BluePure = new(0, 0, 1);
         /// <summary>
         /// Pure purple (Red = 1, Green = 0, Blue = 1).
         /// </summary>
-        public static readonly GorgonColor PurplePure = new GorgonColor(1, 0, 1);
+        public static readonly GorgonColor PurplePure = new(1, 0, 1);
         /// <summary>
         /// Pure yellow (Red = 1, Green = 1, Blue = 0).
         /// </summary>
-        public static readonly GorgonColor YellowPure = new GorgonColor(1, 1, 0);
+        public static readonly GorgonColor YellowPure = new(1, 1, 0);
         /// <summary>
         /// Pure cyan (Red = 0, Green = 1, Blue = 1).
         /// </summary>
-        public static readonly GorgonColor CyanPure = new GorgonColor(0, 1, 1);
+        public static readonly GorgonColor CyanPure = new(0, 1, 1);
         /// <summary>
         /// 90% gray.
         /// </summary>
-        public static readonly GorgonColor Gray90 = new GorgonColor(0.9f, 0.9f, 0.9f);
+        public static readonly GorgonColor Gray90 = new(0.9f, 0.9f, 0.9f);
         /// <summary>
         /// 80% gray.
         /// </summary>
-        public static readonly GorgonColor Gray80 = new GorgonColor(0.8f, 0.8f, 0.8f);
+        public static readonly GorgonColor Gray80 = new(0.8f, 0.8f, 0.8f);
         /// <summary>
         /// 75% gray.
         /// </summary>
-        public static readonly GorgonColor Gray75 = new GorgonColor(0.75f, 0.75f, 0.75f);
+        public static readonly GorgonColor Gray75 = new(0.75f, 0.75f, 0.75f);
         /// <summary>
         /// 70% gray.
         /// </summary>
-        public static readonly GorgonColor Gray70 = new GorgonColor(0.7f, 0.7f, 0.7f);
+        public static readonly GorgonColor Gray70 = new(0.7f, 0.7f, 0.7f);
         /// <summary>
         /// 60% gray.
         /// </summary>
-        public static readonly GorgonColor Gray60 = new GorgonColor(0.6f, 0.6f, 0.6f);
+        public static readonly GorgonColor Gray60 = new(0.6f, 0.6f, 0.6f);
         /// <summary>
         /// 50% gray.
         /// </summary>
-        public static readonly GorgonColor Gray50 = new GorgonColor(0.5f, 0.5f, 0.5f);
+        public static readonly GorgonColor Gray50 = new(0.5f, 0.5f, 0.5f);
         /// <summary>
         /// 40% gray.
         /// </summary>
-        public static readonly GorgonColor Gray40 = new GorgonColor(0.4f, 0.4f, 0.4f);
+        public static readonly GorgonColor Gray40 = new(0.4f, 0.4f, 0.4f);
         /// <summary>
         /// 30% gray.
         /// </summary>
-        public static readonly GorgonColor Gray30 = new GorgonColor(0.3f, 0.3f, 0.3f);
+        public static readonly GorgonColor Gray30 = new(0.3f, 0.3f, 0.3f);
         /// <summary>
         /// 25% gray.
         /// </summary>
-        public static readonly GorgonColor Gray25 = new GorgonColor(0.25f, 0.25f, 0.25f);
+        public static readonly GorgonColor Gray25 = new(0.25f, 0.25f, 0.25f);
         /// <summary>
         /// 20% gray.
         /// </summary>
-        public static readonly GorgonColor Gray20 = new GorgonColor(0.2f, 0.2f, 0.2f);
+        public static readonly GorgonColor Gray20 = new(0.2f, 0.2f, 0.2f);
         /// <summary>
         /// 10% gray.
         /// </summary>
-        public static readonly GorgonColor Gray10 = new GorgonColor(0.1f, 0.1f, 0.1f);
+        public static readonly GorgonColor Gray10 = new(0.1f, 0.1f, 0.1f);
         /// <summary>
         /// Corn flower blue.
         /// </summary>
@@ -201,7 +202,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Dark yellow.
         /// </summary>
-        public static readonly GorgonColor DarkYellow = new GorgonColor(0.5f, 0.5f, 0);
+        public static readonly GorgonColor DarkYellow = new(0.5f, 0.5f, 0);
         /// <summary>
         /// Dark red.
         /// </summary>
@@ -221,23 +222,23 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Light purple.
         /// </summary>
-        public static readonly GorgonColor LightPurple = new GorgonColor(1, 0.5f, 1);
+        public static readonly GorgonColor LightPurple = new(1, 0.5f, 1);
         /// <summary>
         /// Light yellow.
         /// </summary>
-        public static readonly GorgonColor LightYellow = new GorgonColor(1, 1, 0.5f);
+        public static readonly GorgonColor LightYellow = new(1, 1, 0.5f);
         /// <summary>
         /// Light red.
         /// </summary>
-        public static readonly GorgonColor LightRed = new GorgonColor(1, 0.5f, 0.5f);
+        public static readonly GorgonColor LightRed = new(1, 0.5f, 0.5f);
         /// <summary>
         /// Light green.
         /// </summary>
-        public static readonly GorgonColor LightGreen = new GorgonColor(0.5f, 1.0f, 0.5f);
+        public static readonly GorgonColor LightGreen = new(0.5f, 1.0f, 0.5f);
         /// <summary>
         /// Light blue.
         /// </summary>
-        public static readonly GorgonColor LightBlue = new GorgonColor(0.5f, 0.5f, 1.0f);
+        public static readonly GorgonColor LightBlue = new(0.5f, 0.5f, 1.0f);
         /// <summary>
         /// DeepPink.
         /// </summary>
@@ -376,7 +377,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="color">The color to clamp.</param>
         /// <returns>The clamped color.</returns>
-	    public static GorgonColor Clamp(GorgonColor color) => new GorgonColor(color.Red.Max(0).Min(1),
+	    public static GorgonColor Clamp(GorgonColor color) => new(color.Red.Max(0).Min(1),
                                    color.Green.Max(0).Min(1),
                                    color.Blue.Max(0).Min(1),
                                    color.Alpha.Max(0).Min(1));
@@ -407,7 +408,7 @@ namespace Gorgon.Graphics
         /// <param name="color">The <see cref="GorgonColor"/> to update.</param>
         /// <param name="alpha">The alpha value to set.</param>
         /// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
-        public static GorgonColor SetAlpha(GorgonColor color, float alpha) => new GorgonColor(color, alpha);
+        public static GorgonColor SetAlpha(GorgonColor color, float alpha) => new(color, alpha);
 
         /// <summary>
         /// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
@@ -472,7 +473,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
         /// </remarks>
-        public static GorgonColor Add(GorgonColor left, GorgonColor right) => new GorgonColor(left.Red + right.Red,
+        public static GorgonColor Add(GorgonColor left, GorgonColor right) => new(left.Red + right.Red,
                                    left.Green + right.Green,
                                    left.Blue + right.Blue,
                                    left.Alpha + right.Alpha);
@@ -500,7 +501,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
         /// </remarks>
-        public static GorgonColor Subtract(GorgonColor left, GorgonColor right) => new GorgonColor(left.Red - right.Red,
+        public static GorgonColor Subtract(GorgonColor left, GorgonColor right) => new(left.Red - right.Red,
                                    left.Green - right.Green,
                                    left.Blue - right.Blue,
                                    left.Alpha - right.Alpha);
@@ -522,7 +523,7 @@ namespace Gorgon.Graphics
         /// <param name="left">The left color to multiply.</param>
         /// <param name="right">The right color to multiply.</param>
         /// <returns>Product of the two colors.</returns>
-        public static GorgonColor Multiply(GorgonColor left, GorgonColor right) => new GorgonColor(left.Red * right.Red,
+        public static GorgonColor Multiply(GorgonColor left, GorgonColor right) => new(left.Red * right.Red,
                                    left.Green * right.Green,
                                    left.Blue * right.Blue,
                                    left.Alpha * right.Alpha);
@@ -544,7 +545,7 @@ namespace Gorgon.Graphics
         /// <param name="color">The color to multiply.</param>
         /// <param name="value">The value to multiply.</param>
         /// <returns>Product of the <paramin name="color"/> and the <paramin name="value"/>.</returns>
-        public static GorgonColor Multiply(GorgonColor color, float value) => new GorgonColor(color.Red * value,
+        public static GorgonColor Multiply(GorgonColor color, float value) => new(color.Red * value,
                                    color.Green * value,
                                    color.Blue * value,
                                    color.Alpha * value);
@@ -658,7 +659,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="gammaValue">The gamma value to apply.</param>
         /// <returns>The adjusted color.</returns>
-        public GorgonColor ApplyGamma(float gammaValue) => new GorgonColor(Red * 2.0f.Pow(gammaValue), Green * 2.0f.Pow(gammaValue), Blue * 2.0f.Pow(gammaValue), Alpha);
+        public GorgonColor ApplyGamma(float gammaValue) => new(Red * 2.0f.Pow(gammaValue), Green * 2.0f.Pow(gammaValue), Blue * 2.0f.Pow(gammaValue), Alpha);
 
         /// <summary>
         /// Function to convert this <see cref="GorgonColor"/> into a <see cref="Color"/>.
@@ -667,25 +668,33 @@ namespace Gorgon.Graphics
         [Pure]
         public Color ToColor() => Color.FromArgb(ToARGB());
 
-        /// <summary>
-        /// Function to convert this <see cref="GorgonColor"/> into a DX.Vector3.
-        /// </summary>
-        /// <returns>The DX.Vector3 value.</returns>
-        /// <remarks>
-        /// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the DX.Vector3.X, DX.Vector3.Y and DX.Vector3.Z values respectively.
-        /// </remarks>
-        [Pure]
-        public DX.Vector3 ToVector3() => new DX.Vector3(Red, Green, Blue);
 
         /// <summary>
-        /// Function to convert this <see cref="GorgonColor"/> into a DX.Vector4.
+        /// Function to conver this <see cref="GorgonColor"/> into a <c>SharpDX.Color</c>.
         /// </summary>
-        /// <returns>The DX.Vector4 value.</returns>
+        /// <returns>The <c>SharpDX.Color</c> value.</returns>
+        [Pure]
+        public DX.Color ToSharpDXColor() => new(Red, Green, Blue, Alpha);
+
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> into a Vector3.
+        /// </summary>
+        /// <returns>The Vector3 value.</returns>
         /// <remarks>
-        /// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the DX.Vector4.X, DX.Vector4.Y, DX.Vector4.Z and DX.Vector4.W values respectively.
+        /// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the Vector3.X, Vector3.Y and Vector3.Z values respectively.
         /// </remarks>
         [Pure]
-        public DX.Vector4 ToVector4() => new DX.Vector4(Red, Green, Blue, Alpha);
+        public Vector3 ToVector3() => new(Red, Green, Blue);
+
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> into a Vector4.
+        /// </summary>
+        /// <returns>The Vector4 value.</returns>
+        /// <remarks>
+        /// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the Vector4.X, Vector4.Y, Vector4.Z and Vector4.W values respectively.
+        /// </remarks>
+        [Pure]
+        public Vector4 ToVector4() => new(Red, Green, Blue, Alpha);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -797,6 +806,20 @@ namespace Gorgon.Graphics
         public static implicit operator Color(GorgonColor color) => ToColor(color);
 
         /// <summary>
+        /// Performs an implicit conversion from <see cref="GorgonColor"/> to a <c>SharpDX.Color</c>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator DX.Color(GorgonColor color) => ToSharpDXColor(color);
+
+        /// <summary>
+        /// Performs an implicit conversion from a <c>SharpDX.Color</c> to a <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GorgonColor(DX.Color color) => ToGorgonColor(color);
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="Color"/> to <see cref="GorgonColor"/>.
         /// </summary>
         /// <param name="color">The color to convert.</param>
@@ -824,52 +847,59 @@ namespace Gorgon.Graphics
         public static implicit operator GorgonColor(int color) => ToGorgonColor(color);
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="GorgonColor"/> to DX.Vector3.
+        /// Performs an explicit conversion from <see cref="GorgonColor"/> to Vector3.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks>
-        /// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the DX.Vector3.X, DX.Vector3.Y and DX.Vector3.Z values respectively.
+        /// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the Vector3.X, Vector3.Y and Vector3.Z values respectively.
         /// </remarks>
-        public static explicit operator DX.Vector3(GorgonColor color) => ToVector3(color);
+        public static explicit operator Vector3(GorgonColor color) => ToVector3(color);
 
         /// <summary>
-        /// Performs an explicit conversion from DX.Vector3 to <see cref="GorgonColor"/>.
+        /// Performs an explicit conversion from Vector3 to <see cref="GorgonColor"/>.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks>
-        /// This will map the DX.Vector3.X, DX.Vector3.Y and DX.Vector3.Z components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
+        /// This will map the Vector3.X, Vector3.Y and Vector3.Z components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
         /// The <see cref="Alpha"/> value is set to 1.0f (opaque) for this conversion.
         /// </remarks>
-        public static explicit operator GorgonColor(DX.Vector3 color) => ToGorgonColor(color);
+        public static explicit operator GorgonColor(Vector3 color) => ToGorgonColor(color);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="GorgonColor"/> to DX.Vector4.
+        /// Performs an implicit conversion from <see cref="GorgonColor"/> to Vector4.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks>
-        /// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the DX.Vector4.X, DX.Vector4.Y, DX.Vector4.Z and DX.Vector4.W values respectively.
+        /// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the Vector4.X, Vector4.Y, Vector4.Z and Vector4.W values respectively.
         /// </remarks>
-        public static implicit operator DX.Vector4(GorgonColor color) => ToVector4(color);
+        public static implicit operator Vector4(GorgonColor color) => ToVector4(color);
 
         /// <summary>
-        /// Performs an implicit conversion from DX.Vector4 to <see cref="GorgonColor"/>.
+        /// Performs an implicit conversion from Vector4 to <see cref="GorgonColor"/>.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks>
-        /// This will map the DX.Vector4.X, DX.Vector4.Y, DX.Vector4.Z and DX.Vector4.W components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
+        /// This will map the Vector4.X, Vector4.Y, Vector4.Z and Vector4.W components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
         /// </remarks>
-        public static implicit operator GorgonColor(DX.Vector4 color) => ToGorgonColor(color);
+        public static implicit operator GorgonColor(Vector4 color) => ToGorgonColor(color);
 
         /// <summary>
         /// Function to perform an implicit conversion from <see cref="Color"/> to <see cref="GorgonColor"/>.
         /// </summary>
         /// <param name="color">The color to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static GorgonColor ToGorgonColor(Color color) => new GorgonColor(color);
+        public static GorgonColor ToGorgonColor(Color color) => new(color);
+
+        /// <summary>
+        /// Function to perform an implicit conversion from a <c>SharpDX.Color</c> to <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static GorgonColor ToGorgonColor(DX.Color color) => new(color);
 
         /// <summary>
         /// Function to perform an implicit conversion from <see cref="int"/> to <see cref="GorgonColor"/>.
@@ -879,28 +909,28 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This operator assumes the <paramin name="color"/> is in ARGB format.
         /// </remarks>
-        public static GorgonColor ToGorgonColor(int color) => new GorgonColor(color);
+        public static GorgonColor ToGorgonColor(int color) => new(color);
 
         /// <summary>
-        /// Function to perform an explicit conversion from DX.Vector3 to <see cref="GorgonColor"/>.
+        /// Function to perform an explicit conversion from Vector3 to <see cref="GorgonColor"/>.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks>
-        /// This will map the DX.Vector3.X, DX.Vector3.Y and DX.Vector3.Z components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
+        /// This will map the Vector3.X, Vector3.Y and Vector3.Z components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
         /// The <see cref="Alpha"/> value is set to 1.0f (opaque) for this conversion.
         /// </remarks>
-        public static GorgonColor ToGorgonColor(DX.Vector3 color) => new GorgonColor(color);
+        public static GorgonColor ToGorgonColor(Vector3 color) => new(color);
 
         /// <summary>
-        /// Function to perform an implicit conversion from DX.Vector4 to <see cref="GorgonColor"/>.
+        /// Function to perform an implicit conversion from Vector4 to <see cref="GorgonColor"/>.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks>
-        /// This will map the DX.Vector4.X, DX.Vector4.Y, DX.Vector4.Z and DX.Vector4.W components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
+        /// This will map the Vector4.X, Vector4.Y, Vector4.Z and Vector4.W components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
         /// </remarks>
-        public static GorgonColor ToGorgonColor(DX.Vector4 color) => new GorgonColor(color);
+        public static GorgonColor ToGorgonColor(Vector4 color) => new(color);
 
         /// <summary>
         /// Function to perform an implicit conversion from <see cref="GorgonColor"/> to <see cref="int"/>.
@@ -913,24 +943,24 @@ namespace Gorgon.Graphics
         public static int ToInt32(GorgonColor color) => color.ToARGB();
 
         /// <summary>
-        /// Function to perform an implicit conversion from <see cref="GorgonColor"/> to DX.Vector4.
+        /// Function to perform an implicit conversion from <see cref="GorgonColor"/> to Vector4.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks>
-        /// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the DX.Vector4.X, DX.Vector4.Y, DX.Vector4.Z and DX.Vector4.W values respectively.
+        /// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the Vector4.X, Vector4.Y, Vector4.Z and Vector4.W values respectively.
         /// </remarks>
-        public static DX.Vector4 ToVector4(GorgonColor color) => color.ToVector4();
+        public static Vector4 ToVector4(GorgonColor color) => color.ToVector4();
 
         /// <summary>
-        /// Function to perform an explicit conversion from <see cref="GorgonColor"/> to DX.Vector3.
+        /// Function to perform an explicit conversion from <see cref="GorgonColor"/> to Vector3.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks>
-        /// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the DX.Vector3.X, DX.Vector3.Y and DX.Vector3.Z values respectively.
+        /// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the Vector3.X, Vector3.Y and Vector3.Z values respectively.
         /// </remarks>
-        public static DX.Vector3 ToVector3(GorgonColor color) => color.ToVector3();
+        public static Vector3 ToVector3(GorgonColor color) => color.ToVector3();
 
         /// <summary>
         /// Function to perform an implicit conversion from <see cref="GorgonColor"/> to <see cref="Color"/>.
@@ -938,6 +968,35 @@ namespace Gorgon.Graphics
         /// <param name="color">The color to convert.</param>
         /// <returns>The result of the conversion.</returns>
         public static Color ToColor(GorgonColor color) => color.ToColor();
+
+        /// <summary>
+        /// Function to perform an implicit conversion from <see cref="GorgonColor"/> to a <c>SharpDX.Color</c>.
+        /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <returns>The SharpDX color.</returns>
+        public static DX.Color ToSharpDXColor(GorgonColor color) => color.ToSharpDXColor();
+
+        /// <summary>
+        /// Function to deconstruct the color into individual color components.
+        /// </summary>
+        /// <returns>A tuple containing the color channels as integer values scaled from 0 to 255.</returns>
+        public (int R, int G, int B, int A) GetIntegerComponents() => ((int)(Red * 255.0f), (int)(Green * 255.0f), (int)(Blue * 255.0f), (int)(Alpha * 255.0f));
+
+        /// <summary>
+        /// Function to deconstruct the color into individual color components.
+        /// </summary>
+        /// <param name="r">The red component for the color.</param>
+        /// <param name="g">The green component for the color.</param>
+        /// <param name="b">The blue component for the color.</param>
+        /// <param name="a">The alpha component for the color.</param>
+        /// <returns>A tuple containing the color channels as integer values scaled from 0 to 255.</returns>
+        public void Deconstruct(out float r, out float g, out float b, out float a)
+        {
+            r = Red;
+            g = Green;
+            b = Blue;
+            a = Alpha;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -995,12 +1054,12 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
         /// </summary>
-        /// <param name="color">The DX.Vector3 that will be used to generate this <see cref="GorgonColor"/>.</param>
+        /// <param name="color">The Vector3 that will be used to generate this <see cref="GorgonColor"/>.</param>
         /// <remarks>
-        /// This will map the DX.Vector3.X, DX.Vector3.Y and DX.Vector3.Z components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
+        /// This will map the Vector3.X, Vector3.Y and Vector3.Z components to the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> values respectively. 
         /// The <see cref="Alpha"/> value is set to 1.0f (opaque) for this conversion.
         /// </remarks>
-        public GorgonColor(DX.Vector3 color)
+        public GorgonColor(Vector3 color)
             : this(color.X, color.Y, color.Z, 1.0f)
         {
         }
@@ -1008,11 +1067,11 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
         /// </summary>
-        /// <param name="color">The DX.Vector4 that will be used to generate this <see cref="GorgonColor"/>.</param>
+        /// <param name="color">The Vector4 that will be used to generate this <see cref="GorgonColor"/>.</param>
         /// <remarks>
-        /// This will map the DX.Vector4.X, DX.Vector4.Y, DX.Vector4.Z and DX.Vector4.W components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
+        /// This will map the Vector4.X, Vector4.Y, Vector4.Z and Vector4.W components to the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> values respectively.
         /// </remarks>
-        public GorgonColor(DX.Vector4 color)
+        public GorgonColor(Vector4 color)
             : this(color.X, color.Y, color.Z, color.W)
         {
 
@@ -1033,6 +1092,16 @@ namespace Gorgon.Graphics
             Green = color.Green;
             Blue = color.Blue;
             Alpha = alpha;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="GorgonColor" /> struct.</summary>
+        /// <param name="color">A SharpDX color value.</param>
+        public GorgonColor(DX.Color color)
+        {
+            Red = color.R;
+            Green = color.G;
+            Blue = color.B;
+            Alpha = color.A;
         }
 
         /// <summary>

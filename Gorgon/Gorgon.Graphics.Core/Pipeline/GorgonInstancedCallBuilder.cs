@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// <para>
     /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
-    /// <see cref="GorgonGraphics.Submit(GorgonInstancedCall, GorgonColor?, int, int)"/> method.  
+    /// <see cref="GorgonGraphics.Submit(GorgonInstancedCall, in GorgonColor?, int, int)"/> method.  
     /// </para>
     /// <para>
     /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected override GorgonInstancedCall OnCreate(IGorgonAllocator<GorgonInstancedCall> allocator) => allocator == null ? new GorgonInstancedCall() : allocator.Allocate();
+        protected override GorgonInstancedCall OnCreate(IGorgonAllocator<GorgonInstancedCall> allocator) => allocator is null ? new GorgonInstancedCall() : allocator.Allocate();
 
         /// <summary>
         /// Function to reset the properties of the draw call to the draw call passed in.

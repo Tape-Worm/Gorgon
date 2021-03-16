@@ -58,7 +58,7 @@ namespace Gorgon.Renderers
         /// <seealso cref="GorgonSprite"/>
         public static string ToJson(this GorgonSprite sprite, bool prettyFormat = false)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 throw new ArgumentNullException(nameof(sprite));
             }
@@ -95,7 +95,7 @@ namespace Gorgon.Renderers
         /// <seealso cref="GorgonPolySprite"/>
         public static string ToJson(this GorgonPolySprite sprite, bool prettyFormat = false)
         {
-            if (sprite == null)
+            if (sprite is null)
             {
                 throw new ArgumentNullException(nameof(sprite));
             }

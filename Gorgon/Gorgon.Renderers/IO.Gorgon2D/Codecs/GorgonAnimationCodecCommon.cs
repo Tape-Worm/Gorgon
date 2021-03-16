@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -52,7 +51,7 @@ namespace Gorgon.IO
         /// <summary>
         /// The highest currently supported version for animation serialization.
         /// </summary>
-        public static readonly Version CurrentVersion = new Version(3, 1);
+        public static readonly Version CurrentVersion = new(3, 1);
         #endregion
 
         #region Properties.
@@ -171,7 +170,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -217,7 +216,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -227,7 +226,7 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
             }
 
-            if (byteCount == null)
+            if (byteCount is null)
             {
                 byteCount = (int)stream.Length;
             }
@@ -280,7 +279,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -295,10 +294,8 @@ namespace Gorgon.IO
                 name = filePath.FormatPath(Path.DirectorySeparatorChar);
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return FromStream(stream, (int)stream.Length, name);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return FromStream(stream, (int)stream.Length, name);
         }
 
         /// <summary>
@@ -316,12 +313,12 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (animation == null)
+            if (animation is null)
             {
                 throw new ArgumentNullException(nameof(animation));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -349,7 +346,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -359,10 +356,8 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                Save(animation, stream);
-            }
+            using FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            Save(animation, stream);
         }
 
         /// <summary>
@@ -381,7 +376,7 @@ namespace Gorgon.IO
                 throw new NotSupportedException();
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -422,7 +417,7 @@ namespace Gorgon.IO
         {
             Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

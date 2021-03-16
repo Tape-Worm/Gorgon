@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -168,7 +169,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The default sprite codec for sprites.
         private IGorgonSpriteCodec _defaultSpriteCodec;
         // The settings for the plug in.
-        private AnimationEditorSettings _settings = new AnimationEditorSettings();
+        private AnimationEditorSettings _settings = new();
         // The settings for the plug in.
         private Settings _pluginSettings;
         // The texture cache for animation textures.
@@ -180,7 +181,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The service for handling animation I/O functionality.
         private AnimationIOService _ioService;
         // The list of excluded track types.
-        private static readonly List<GorgonTrackRegistration> _excludedTracks = new List<GorgonTrackRegistration>
+        private static readonly List<GorgonTrackRegistration> _excludedTracks = new()
         {
             GorgonSpriteAnimationController.BoundsTrack,
             GorgonSpriteAnimationController.TextureArrayIndexTrack,
@@ -330,10 +331,10 @@ namespace Gorgon.Editor.AnimationEditor
         {
             // Check for primary sprite dependency.
             if ((!dependencyList.TryGetValue(CommonEditorContentTypes.SpriteType, out List<string> spriteNames))
-                || (spriteNames == null)
+                || (spriteNames is null)
                 || (spriteNames.Any(item => !ContentFileManager.FileExists(item))))
             {
-                if (spriteNames == null)
+                if (spriteNames is null)
                 {
                     dependencyList[CommonEditorContentTypes.SpriteType] = spriteNames = new List<string>();
                 }
@@ -346,13 +347,13 @@ namespace Gorgon.Editor.AnimationEditor
 
             // Check for all textures. If they're all there then we don't need to update anything.
             if ((dependencyList.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> textureNames))
-                && (textureNames != null)
+                && (textureNames is not null)
                 && (textureNames.All(item => ContentFileManager.FileExists(item))))
             {
                 return;
             }
 
-            if (textureNames == null)
+            if (textureNames is null)
             {
                 dependencyList[CommonEditorContentTypes.ImageType] = textureNames = new List<string>();
             }
@@ -425,7 +426,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             IContentFile file = ContentFileManager.GetFile(files[0]);
 
-            if (file == null)
+            if (file is null)
             {
                 HostContentServices.Log.Print($"WARNING: The background image file '{files[0]}' was not found.", LoggingLevel.Intermediate);
                 return (null, null);
@@ -464,7 +465,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                     int textureIndex = i.Min(textures.Textures.Count - 1);
 
-                    if ((!string.IsNullOrWhiteSpace(textureKey.TextureName)) && (textureKey.Value == null))
+                    if ((!string.IsNullOrWhiteSpace(textureKey.TextureName)) && (textureKey.Value is null))
                     {
                         textureKey.Value = textures.Textures[textureIndex];                        
                     }
@@ -489,7 +490,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -518,7 +519,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -547,7 +548,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -576,7 +577,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -605,7 +606,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -634,7 +635,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -663,7 +664,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Track trackViewModel = GetViewModel(track.Value.Name);
 
-                if (trackViewModel == null)
+                if (trackViewModel is null)
                 {
                     continue;
                 }
@@ -690,7 +691,7 @@ namespace Gorgon.Editor.AnimationEditor
                     
                     IContentFile textureFile = fileManager.GetFile(key.TextureName);
 
-                    if (textureFile == null)
+                    if (textureFile is null)
                     {
                         // If we cannot locate the file for the texture, then replace this with an empty key frame.
                         HostContentServices.Log.Print($"WARNING: The key at index {i}, for track '{track.Value.Name}' has a texture named '{key.TextureName}', but that texture file was not found in the file system. This will be replaced with an empty texture.", LoggingLevel.Intermediate);
@@ -716,7 +717,7 @@ namespace Gorgon.Editor.AnimationEditor
         private async Task UpdateTextureCacheAsync(IReadOnlyList<IKeyFrame> textureKeys)
         {
             IEnumerable<(GorgonTexture2DView texture, int keyCount)> textureGrouping = (from textureKey in textureKeys
-                                                                                        where textureKey?.TextureValue.Texture != null
+                                                                                        where textureKey?.TextureValue.Texture is not null
                                                                                         group textureKey by textureKey.TextureValue.Texture into g
                                                                                         // We exclude the first key because it's already loaded into the 
                                                                                         // cache when we loaded the dependencies.  
@@ -758,7 +759,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 GorgonTrackRegistration registration = GetRegistration(track.Key);
 
-                if (registration == null)
+                if (registration is null)
                 {
                     continue;
                 }
@@ -878,7 +879,7 @@ namespace Gorgon.Editor.AnimationEditor
                 metadata.Attributes[CodecAttr] = _defaultCodec.GetType().FullName;
                 metadata.Attributes[CommonEditorConstants.IsNewAttr] = bool.TrueString;
 
-                if ((bgTextureFile != null) && (ContentFileManager.FileExists(bgTextureFile.Path)))
+                if ((bgTextureFile is not null) && (ContentFileManager.FileExists(bgTextureFile.Path)))
                 {
                     HostContentServices.Log.Print($"Assigning '{bgTextureFile.Path}' as background image for animation.", LoggingLevel.Verbose);                    
                     metadata.DependsOn[BgImageDependencyName] = new List<string>
@@ -887,30 +888,28 @@ namespace Gorgon.Editor.AnimationEditor
                     };
                 }
 
-                if ((primarySpriteFile != null) && (ContentFileManager.FileExists(primarySpriteFile.Path)))
+                if ((primarySpriteFile is not null) && (ContentFileManager.FileExists(primarySpriteFile.Path)))
                 {
                     HostContentServices.Log.Print($"Loading primary sprite '{primarySpriteFile.Path}'...", LoggingLevel.Verbose);
-                    using (Stream spriteStream = ContentFileManager.OpenStream(primarySpriteFile.Path, FileMode.Open))
+                    using Stream spriteStream = ContentFileManager.OpenStream(primarySpriteFile.Path, FileMode.Open);
+                    string texturePath = _defaultSpriteCodec.GetAssociatedTextureName(spriteStream);
+                    GorgonSprite sprite = _defaultSpriteCodec.FromStream(spriteStream, HostContentServices.GraphicsContext.Renderer2D.EmptyWhiteTexture);
+
+                    if ((!string.IsNullOrWhiteSpace(texturePath)) && (ContentFileManager.FileExists(texturePath)))
                     {
-                        string texturePath = _defaultSpriteCodec.GetAssociatedTextureName(spriteStream);
-                        GorgonSprite sprite = _defaultSpriteCodec.FromStream(spriteStream, HostContentServices.GraphicsContext.Renderer2D.EmptyWhiteTexture);
-
-                        if ((!string.IsNullOrWhiteSpace(texturePath)) && (ContentFileManager.FileExists(texturePath)))
+                        if (_settings.AddTextureTrackForPrimarySprite)
                         {
-                            if (_settings.AddTextureTrackForPrimarySprite)
-                            {
-                                builder.Edit2DTexture(GorgonSpriteAnimationController.TextureTrack.TrackName)
-                                       .SetKey(new GorgonKeyTexture2D(0, texturePath, sprite.TextureRegion, sprite.TextureArrayIndex))
-                                       .EndEdit();
-                                metadata.DependsOn[CommonEditorContentTypes.ImageType] = new List<string> { texturePath };
-                            }
+                            builder.Edit2DTexture(GorgonSpriteAnimationController.TextureTrack.TrackName)
+                                   .SetKey(new GorgonKeyTexture2D(0, texturePath, sprite.TextureRegion, sprite.TextureArrayIndex))
+                                   .EndEdit();
+                            metadata.DependsOn[CommonEditorContentTypes.ImageType] = new List<string> { texturePath };
+                        }
 
-                            metadata.DependsOn[CommonEditorContentTypes.SpriteType] = new List<string> { primarySpriteFile.Path };
-                        }
-                        else
-                        {
-                            HostContentServices.Log.Print($"WARNING: Primary sprite '{primarySpriteFile.Path}' was found, but its associated texture was not. Skipping...", LoggingLevel.Intermediate);
-                        }
+                        metadata.DependsOn[CommonEditorContentTypes.SpriteType] = new List<string> { primarySpriteFile.Path };
+                    }
+                    else
+                    {
+                        HostContentServices.Log.Print($"WARNING: Primary sprite '{primarySpriteFile.Path}' was found, but its associated texture was not. Skipping...", LoggingLevel.Intermediate);
                     }
                 }
 
@@ -918,11 +917,9 @@ namespace Gorgon.Editor.AnimationEditor
 
                 IGorgonAnimation animation = builder.Build(currentDirectory + name.FormatFileName(), fps, length);
 
-                using (var stream = new MemoryStream())
-                {
-                    _defaultCodec.Save(animation, stream);
-                    return stream.ToArray();
-                }
+                using var stream = new MemoryStream();
+                _defaultCodec.Save(animation, stream);
+                return stream.ToArray();
             }
                         
             (string newName, float animLength, float animFps, IContentFile primarySprite, IContentFile bgTexture) = _newAnimation.GetNewAnimationName(currentDirectory, generatedName, null, null);
@@ -939,7 +936,7 @@ namespace Gorgon.Editor.AnimationEditor
         IKeyFrame IViewModelFactory.CreateKeyFrame(float time, AnimationTrackKeyType dataType)
         {
             var result = new KeyFrame();
-            result.Initialize(new KeyFrameParameters(time, dataType, DX.Vector4.Zero, HostContentServices));
+            result.Initialize(new KeyFrameParameters(time, dataType, Vector4.Zero, HostContentServices));
             return result;
         }
 
@@ -961,7 +958,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="dataType">The type of data in the key frame.</param>
         /// <param name="floatValue">The floating point data to assign.</param>
         /// <returns>A new key frame view model with the specified data.</returns>
-        IKeyFrame IViewModelFactory.CreateKeyFrame(float time, AnimationTrackKeyType dataType, DX.Vector4 floatValue)
+        IKeyFrame IViewModelFactory.CreateKeyFrame(float time, AnimationTrackKeyType dataType, Vector4 floatValue)
         {
             var result = new KeyFrame();
             result.Initialize(new KeyFrameParameters(time, dataType, floatValue, HostContentServices));
@@ -978,7 +975,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="trackRegistration"/> parameter is <b>null</b>.</exception>
         ITrack IViewModelFactory.CreateTrack(GorgonTrackRegistration trackRegistration, int keyCount, IReadOnlyList<IKeyFrame> keyFrames)
         {
-            if (trackRegistration == null)
+            if (trackRegistration is null)
             {
                 throw new ArgumentNullException(nameof(trackRegistration));
             }
@@ -1006,7 +1003,7 @@ namespace Gorgon.Editor.AnimationEditor
                 KeyMetadata = metadata
             });
 
-            if (keyFrames != null)
+            if (keyFrames is not null)
             {
                 track.KeyFrames = keyFrames;
             }
@@ -1035,12 +1032,12 @@ namespace Gorgon.Editor.AnimationEditor
             (GorgonSprite textureSprite, IContentFile textureFile) = await _ioService.LoadSpriteAsync(spriteFile);
             spriteFile.IsOpen = false;
 
-            if (textureFile != null)
+            if (textureFile is not null)
             {
                 textureFile.IsOpen = true;
             }
 
-            if (textureSprite == null)
+            if (textureSprite is null)
             {
                 HostContentServices.Log.Print($"WARNING: The sprite in file '{spriteFile.Path}' could not be loaded. No texture will be assigned to the key frame. This may cause undesirable results.", LoggingLevel.Intermediate);
                 return default;
@@ -1059,7 +1056,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns>The new texture track, or <b>null</b> if no primary sprite is available.</returns>
         async Task<ITrack> IViewModelFactory.CreateDefaultTextureTrackAsync((GorgonSprite sprite, IContentFile spriteFile, IContentFile textureFile) primarySprite, int frameCount)
         {
-            if (primarySprite.sprite?.Texture == null)
+            if (primarySprite.sprite?.Texture is null)
             {
                 return null;
             }
@@ -1080,7 +1077,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             finally
             {
-                if (keyFrames != null)
+                if (keyFrames is not null)
                 {
                     ArrayPool<IKeyFrame>.Shared.Return(keyFrames, true);
                 }
@@ -1094,7 +1091,7 @@ namespace Gorgon.Editor.AnimationEditor
         ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
         public bool CanOpenContent(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -1106,19 +1103,17 @@ namespace Gorgon.Editor.AnimationEditor
 
             IContentFile file = ContentFileManager.GetFile(filePath);
 
-            Debug.Assert(file != null, $"File '{filePath}' doesn't exist, but it should!");
+            Debug.Assert(file is not null, $"File '{filePath}' doesn't exist, but it should!");
 
-            using (Stream stream = ContentFileManager.OpenStream(filePath, FileMode.Open))
+            using Stream stream = ContentFileManager.OpenStream(filePath, FileMode.Open);
+            if (!_defaultCodec.IsReadable(stream))
             {
-                if (!_defaultCodec.IsReadable(stream))
-                {
-                    return false;
-                }
-
-                UpdateFileMetadataAttributes(file.Metadata.Attributes);
-                UpdateDependencies(stream, file.Metadata.DependsOn);
-                return true;
+                return false;
             }
+
+            UpdateFileMetadataAttributes(file.Metadata.Attributes);
+            UpdateDependencies(stream, file.Metadata.DependsOn);
+            return true;
         }
 
         /// <summary>Function to retrieve the icon used for new content creation.</summary>
@@ -1138,10 +1133,8 @@ namespace Gorgon.Editor.AnimationEditor
         public Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken) =>
             Task.Run(() =>
                     {
-                        using (var imageStream = new MemoryStream(Resources.anim_thumbnail_256x256))
-                        {
-                            return _defaultImageCodec.FromStream(imageStream);
-                        }
+                        using var imageStream = new MemoryStream(Resources.anim_thumbnail_256x256);
+                        return _defaultImageCodec.FromStream(imageStream);
                     });
 
         /// <summary>Function to open a content object from this plugin.</summary>
@@ -1168,7 +1161,7 @@ namespace Gorgon.Editor.AnimationEditor
             try
             {
                 _undoService = undoService;
-                if (_textureCache == null)
+                if (_textureCache is null)
                 {
                     _textureCache = new TextureCache(HostContentServices.GraphicsContext.Graphics, ContentFileManager, scratchArea, _defaultImageCodec, HostContentServices.Log);
                 }
@@ -1184,11 +1177,11 @@ namespace Gorgon.Editor.AnimationEditor
                 (textures, primarySprite) = await _ioService.LoadDependenciesAsync(file);
                 (bgTexture, bgTextureFile) = await LoadBackgroundTextureAsync(_ioService, file.Metadata.DependsOn);
 
-                DX.Size2 size = bgTexture != null ? new DX.Size2(bgTexture.Width, bgTexture.Height) : _settings.DefaultResolution;
+                DX.Size2 size = bgTexture is not null ? new DX.Size2(bgTexture.Width, bgTexture.Height) : _settings.DefaultResolution;
 
-                if (primarySprite?.PrimarySprite != null)
+                if (primarySprite?.PrimarySprite is not null)
                 {
-                    primarySprite.PrimarySprite.Position = new DX.Vector2((int)(size.Width * 0.5f), (int)(size.Height * 0.5f));
+                    primarySprite.PrimarySprite.Position = new Vector2((int)(size.Width * 0.5f), (int)(size.Height * 0.5f));
                 }
 
                 // Load the sprite now. 
@@ -1218,7 +1211,7 @@ namespace Gorgon.Editor.AnimationEditor
                 GetKeys(animation, tracks, fileManager, maxKeyCount);
                                 
                 IEnumerable<ITrack> textureTracks = tracks.Where(item => (item.ID == GorgonSpriteAnimationController.TextureTrack.ID) 
-                                                                      && (item.KeyFrames.Any(item2 => item2 != null)));
+                                                                      && (item.KeyFrames.Any(item2 => item2 is not null)));
                 foreach (ITrack track in textureTracks)
                 {
                     await UpdateTextureCacheAsync(track.KeyFrames);
@@ -1288,7 +1281,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to provide clean up for the plugin.</summary>
         protected override void OnShutdown()
         {
-            if (_settings != null)
+            if (_settings is not null)
             {
                 // Persist any settings.
                 HostContentServices.ContentPlugInService.WriteContentSettings(SettingsFilename, _settings);
@@ -1321,7 +1314,7 @@ namespace Gorgon.Editor.AnimationEditor
             _defaultSpriteCodec = new GorgonV3SpriteBinaryCodec(HostContentServices.GraphicsContext.Renderer2D);
             
             AnimationEditorSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<AnimationEditorSettings>(SettingsFilename);
-            if (settings != null)
+            if (settings is not null)
             {
                 _settings = settings;
             }

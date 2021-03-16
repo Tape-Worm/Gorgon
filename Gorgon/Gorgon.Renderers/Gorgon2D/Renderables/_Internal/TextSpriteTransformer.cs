@@ -25,9 +25,13 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Gorgon.Math;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Renderers.Geometry;
 using Gorgon.UI;
 using DX = SharpDX;
 
@@ -46,7 +50,7 @@ namespace Gorgon.Renderers
         /// <param name="layoutSize">The layout region size.</param>
         /// <param name="lineLength">Length of the line, in pixels.</param>
         /// <param name="textHeight">The height of the text block being rendered.</param>
-        private static void GetTextAlignmentExtents(ref DX.Vector2 leftTop, Alignment alignment, ref DX.Size2F layoutSize, float lineLength, float textHeight)
+        private static void GetTextAlignmentExtents(ref Vector2 leftTop, Alignment alignment, ref DX.Size2F layoutSize, float lineLength, float textHeight)
         {
             int calc;
 
@@ -101,15 +105,15 @@ namespace Gorgon.Renderers
         /// <param name="bounds">The bounds of the renderable.</param>
         /// <param name="anchor">The anchor point for the renderable.</param>
         /// <param name="corners">The corners of the sprite.</param>
-        private static void BuildRenderable(ref DX.RectangleF bounds, ref DX.Vector2 anchor, ref DX.Vector4 corners)
+        private static void BuildRenderable(ref DX.RectangleF bounds, ref Vector2 anchor, ref Vector4 corners)
         {
-            if (anchor.IsZero)
+            if (anchor.Equals(Vector2.Zero))
             {
                 return;
             }
 
-            var anchorProjected = new DX.Vector2(anchor.X * bounds.Width, anchor.Y * bounds.Height);
-            corners = new DX.Vector4(-anchorProjected.X, -anchorProjected.Y, bounds.Width, bounds.Height);
+            var anchorProjected = new Vector2(anchor.X * bounds.Width, anchor.Y * bounds.Height);
+            corners = new Vector4(-anchorProjected.X, -anchorProjected.Y, bounds.Width, bounds.Height);
         }
 
         /// <summary>
@@ -124,11 +128,11 @@ namespace Gorgon.Renderers
         /// <param name="hasOutline"><b>true</b> if using the outlines in the font, <b>false</b> if not.</param>
         /// <param name="outlineTint">A color used to tint the </param>
         private static void UpdateVertexColors(Gorgon2DVertex[] vertices,
-                                               in GorgonColor upperLeft,
-                                               in GorgonColor upperRight,
-                                               in GorgonColor lowerLeft,
-                                               in GorgonColor lowerRight,
-                                               in GorgonColor outlineTint,
+                                               ref GorgonColor upperLeft,
+                                               ref GorgonColor upperRight,
+                                               ref GorgonColor lowerLeft,
+                                               ref GorgonColor lowerRight,
+                                               ref GorgonColor outlineTint,
                                                int vertexOffset,
                                                bool hasOutline)
         {
@@ -166,10 +170,10 @@ namespace Gorgon.Renderers
             ref Gorgon2DVertex v2 = ref vertices[vertexOffset + 2];
             ref Gorgon2DVertex v3 = ref vertices[vertexOffset + 3];
 
-            v0.UV = new DX.Vector4(textureRegion.TopLeft, textureArrayIndex, 1);
-            v1.UV = new DX.Vector4(textureRegion.TopRight, textureArrayIndex, 1);
-            v2.UV = new DX.Vector4(textureRegion.BottomLeft, textureArrayIndex, 1);
-            v3.UV = new DX.Vector4(textureRegion.BottomRight, textureArrayIndex, 1);
+            v0.UV = new Vector4(textureRegion.Left, textureRegion.Top, textureArrayIndex, 1);
+            v1.UV = new Vector4(textureRegion.Right, textureRegion.Top, textureArrayIndex, 1);
+            v2.UV = new Vector4(textureRegion.Left, textureRegion.Bottom, textureArrayIndex, 1);
+            v3.UV = new Vector4(textureRegion.Right, textureRegion.Bottom, textureArrayIndex, 1);
         }
 
         /// <summary>
@@ -187,7 +191,7 @@ namespace Gorgon.Renderers
         private static void TransformVertices(Gorgon2DVertex[] vertices,
                                               ref DX.RectangleF glyphBounds,
                                               ref DX.RectangleF spriteBounds,
-                                              ref DX.Vector2 scale,
+                                              ref Vector2 scale,
                                               float angleRads,
                                               float angleSin,
                                               float angleCos,
@@ -206,43 +210,43 @@ namespace Gorgon.Renderers
 
             if (angleRads != 0.0f)
             {
-                v0.Position = new DX.Vector4(((glyphBounds.Left * angleCos) - (glyphBounds.Top * angleSin)) + spriteBounds.X,
-                                             ((glyphBounds.Left * angleSin) + (glyphBounds.Top * angleCos)) + spriteBounds.Y,
+                v0.Position = new Vector4(((glyphBounds.Left * angleCos) - (glyphBounds.Top * angleSin)) + spriteBounds.Left,
+                                             ((glyphBounds.Left * angleSin) + (glyphBounds.Top * angleCos)) + spriteBounds.Top,
                                              depth,
                                              1.0f);
-                v0.Angle = new DX.Vector2(angleCos, angleSin);
+                v0.Angle = new Vector2(angleCos, angleSin);
 
-                v1.Position = new DX.Vector4(((glyphBounds.Right * angleCos) - (glyphBounds.Top * angleSin)) + spriteBounds.X,
-                                             ((glyphBounds.Right * angleSin) + (glyphBounds.Top * angleCos)) + spriteBounds.Y,
+                v1.Position = new Vector4(((glyphBounds.Right * angleCos) - (glyphBounds.Top * angleSin)) + spriteBounds.Left,
+                                             ((glyphBounds.Right * angleSin) + (glyphBounds.Top * angleCos)) + spriteBounds.Top,
                                              depth,
                                              1.0f);
-                v1.Angle = new DX.Vector2(angleCos, angleSin);
+                v1.Angle = new Vector2(angleCos, angleSin);
 
-                v2.Position = new DX.Vector4(((glyphBounds.Left * angleCos) - (glyphBounds.Bottom * angleSin)) + spriteBounds.X,
-                                             ((glyphBounds.Left * angleSin) + (glyphBounds.Bottom * angleCos)) + spriteBounds.Y,
+                v2.Position = new Vector4(((glyphBounds.Left * angleCos) - (glyphBounds.Bottom * angleSin)) + spriteBounds.Left,
+                                             ((glyphBounds.Left * angleSin) + (glyphBounds.Bottom * angleCos)) + spriteBounds.Top,
                                              depth,
                                              1.0f);
-                v2.Angle = new DX.Vector2(angleCos, angleSin);
+                v2.Angle = new Vector2(angleCos, angleSin);
 
-                v3.Position = new DX.Vector4(((glyphBounds.Right * angleCos) - (glyphBounds.Bottom * angleSin)) + spriteBounds.X,
-                                             ((glyphBounds.Right * angleSin) + (glyphBounds.Bottom * angleCos)) + spriteBounds.Y,
+                v3.Position = new Vector4(((glyphBounds.Right * angleCos) - (glyphBounds.Bottom * angleSin)) + spriteBounds.Left,
+                                             ((glyphBounds.Right * angleSin) + (glyphBounds.Bottom * angleCos)) + spriteBounds.Top,
                                              depth,
                                              1.0f);
-                v3.Angle = new DX.Vector2(angleCos, angleSin);
+                v3.Angle = new Vector2(angleCos, angleSin);
             }
             else
             {
-                v0.Position = new DX.Vector4(glyphBounds.Left + spriteBounds.X, glyphBounds.Top + spriteBounds.Y, depth, 1.0f);
-                v0.Angle = DX.Vector2.UnitX;
+                v0.Position = new Vector4(glyphBounds.Left + spriteBounds.Left, glyphBounds.Top + spriteBounds.Top, depth, 1.0f);
+                v0.Angle = Vector2.UnitX;
 
-                v1.Position = new DX.Vector4(glyphBounds.Right + spriteBounds.X, glyphBounds.Top + spriteBounds.Y, depth, 1.0f);
-                v1.Angle = DX.Vector2.UnitX;
+                v1.Position = new Vector4(glyphBounds.Right + spriteBounds.Left, glyphBounds.Top + spriteBounds.Top, depth, 1.0f);
+                v1.Angle = Vector2.UnitX;
 
-                v2.Position = new DX.Vector4(glyphBounds.Left + spriteBounds.X, glyphBounds.Bottom + spriteBounds.Y, depth, 1.0f);
-                v2.Angle = DX.Vector2.UnitX;
+                v2.Position = new Vector4(glyphBounds.Left + spriteBounds.Left, glyphBounds.Bottom + spriteBounds.Top, depth, 1.0f);
+                v2.Angle = Vector2.UnitX;
 
-                v3.Position = new DX.Vector4(glyphBounds.Right + spriteBounds.X, glyphBounds.Bottom + spriteBounds.Y, depth, 1.0f);
-                v3.Angle = DX.Vector2.UnitX;
+                v3.Position = new Vector4(glyphBounds.Right + spriteBounds.Left, glyphBounds.Bottom + spriteBounds.Top, depth, 1.0f);
+                v3.Angle = Vector2.UnitX;
             }
         }
 
@@ -256,7 +260,7 @@ namespace Gorgon.Renderers
             int vertexCount = characterCount * 4;
 
             // The vertices do not need to be adjusted at this time.
-            if ((vertices != null) && (vertexCount <= vertices.Length))
+            if ((vertices is not null) && (vertexCount <= vertices.Length))
             {
                 return;
             }
@@ -264,7 +268,7 @@ namespace Gorgon.Renderers
 
             int oldSize = 0;
             int newSize = (((characterCount + (characterCount / 2)) + 63) & ~63) * 4;
-            if (vertices != null)
+            if (vertices is not null)
             {
                 oldSize = vertices.Length;
                 Array.Resize(ref vertices, newSize);
@@ -278,10 +282,10 @@ namespace Gorgon.Renderers
             {
                 ref Gorgon2DVertex vertex = ref vertices[i];
 
-                vertex.Position = new DX.Vector4(DX.Vector3.Zero, 1.0f);
+                vertex.Position = new Vector4(Vector3.Zero, 1.0f);
                 vertex.Color = GorgonColor.White;
-                vertex.UV = DX.Vector4.UnitW;
-                vertex.Angle = DX.Vector2.Zero;
+                vertex.UV = Vector4.UnitW;
+                vertex.Angle = Vector2.Zero;
             }
         }
 
@@ -291,6 +295,7 @@ namespace Gorgon.Renderers
         /// <param name="charIndex">The index of the character.</param>
         /// <param name="colorBlocks">The blocks to evaulate.</param>
         /// <returns>The color if found, or <b>null</b> if not.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public GorgonColor? GetColorForCharacter(int charIndex, List<ColorBlock> colorBlocks)
         {
             for (int i = 0; i < colorBlocks.Count; ++i)
@@ -316,9 +321,8 @@ namespace Gorgon.Renderers
         /// <param name="vertexOffset">The position in the vertex array to update.</param>
         /// <param name="isOutlinePass"><b>true</b> if outlines need to be drawn, or <b>false</b> if not.</param>
         /// <param name="lineMeasure">The width of the line.</param>
-        public void Transform(TextRenderable renderable, GorgonGlyph glyph, GorgonColor? blockColor, ref DX.Vector2 glyphPosition, int vertexOffset, bool isOutlinePass, float lineMeasure)
+        public void Transform(TextRenderable renderable, GorgonGlyph glyph, GorgonColor? blockColor, in Vector2 glyphPosition, int vertexOffset, bool isOutlinePass, float lineMeasure)
         {
-            ref Gorgon2DVertex[] vertices = ref renderable.Vertices;
             ref DX.RectangleF spriteBounds = ref renderable.Bounds;
             Alignment alignment = renderable.Alignment;
             ref GorgonColor outlineTint = ref renderable.OutlineTint;
@@ -327,7 +331,7 @@ namespace Gorgon.Renderers
             if (renderable.VertexCountChanged)
             {
                 int textLength = renderable.TextLength * (renderable.DrawMode == TextDrawMode.OutlinedGlyphs ? 2 : 1);
-                AdjustTextSpriteVertices(ref vertices, textLength);
+                AdjustTextSpriteVertices(ref renderable.Vertices, textLength);
 
                 renderable.VertexCountChanged = false;
                 renderable.HasVertexChanges = true;
@@ -356,12 +360,12 @@ namespace Gorgon.Renderers
                 GorgonColor lowerLeftColor = blockColor ?? renderable.LowerLeftColor;
                 GorgonColor lowerRightColor = blockColor ?? renderable.LowerRightColor;
 
-                UpdateVertexColors(vertices,
-                                   in upperLeftColor,
-                                   in upperRightColor,
-                                   in lowerLeftColor,
-                                   in lowerRightColor,
-                                   in outlineTint,
+                UpdateVertexColors(renderable.Vertices,
+                                   ref upperLeftColor,
+                                   ref upperRightColor,
+                                   ref lowerLeftColor,
+                                   ref lowerRightColor,
+                                   ref outlineTint,
                                    vertexOffset,
                                    isOutlinePass);
             }
@@ -369,7 +373,7 @@ namespace Gorgon.Renderers
             if (renderable.HasTextureChanges)
             {
                 DX.RectangleF textureCoordinates = isOutlinePass ? glyph.OutlineTextureCoordinates : glyph.TextureCoordinates;
-                UpdateTextureCoordinates(vertices, ref textureCoordinates, glyph.TextureIndex, vertexOffset);
+                UpdateTextureCoordinates(renderable.Vertices, ref textureCoordinates, glyph.TextureIndex, vertexOffset);
             }
 
             if (!renderable.HasTransformChanges)
@@ -377,12 +381,12 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            DX.Vector2 offset = isOutlinePass ? glyph.OutlineOffset : glyph.Offset;
-            DX.Vector2 size = isOutlinePass
-                           ? new DX.Vector2(glyph.OutlineCoordinates.Width, glyph.OutlineCoordinates.Height)
-                           : new DX.Vector2(glyph.GlyphCoordinates.Width, glyph.GlyphCoordinates.Height);
+            Vector2 offset = isOutlinePass ? new Vector2(glyph.OutlineOffset.X, glyph.OutlineOffset.Y) : new Vector2(glyph.Offset.X, glyph.Offset.Y);
+            Vector2 size = isOutlinePass
+                           ? new Vector2(glyph.OutlineCoordinates.Width, glyph.OutlineCoordinates.Height)
+                           : new Vector2(glyph.GlyphCoordinates.Width, glyph.GlyphCoordinates.Height);
 
-            var upperLeft = new DX.Vector2(glyphPosition.X + offset.X + renderable.Corners.X,
+            var upperLeft = new Vector2(glyphPosition.X + offset.X + renderable.Corners.X,
                                            glyphPosition.Y + offset.Y + renderable.Corners.Y);
 
             if (alignment != Alignment.UpperLeft)
@@ -392,13 +396,15 @@ namespace Gorgon.Renderers
 
             var glyphBounds = new DX.RectangleF(upperLeft.X, upperLeft.Y, size.X, size.Y);
 
-            TransformVertices(vertices,
+            float rads = renderable.AngleDegs.ToRadians();
+
+            TransformVertices(renderable.Vertices,
                               ref glyphBounds,
                               ref spriteBounds,
                               ref renderable.Scale,
-                              renderable.AngleRads,
-                              renderable.AngleSin,
-                              renderable.AngleCos,
+                              rads,
+                              rads.FastSin(),
+                              rads.FastCos(),
                               renderable.Depth,
                               vertexOffset);
 

@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
@@ -52,22 +53,14 @@ namespace Gorgon.Renderers
         /// </remarks>
         public GorgonColor this[int index]
         {
-            get
+            get => index switch
             {
-                switch (index)
-                {
-                    case 0:
-                        return _renderable.UpperLeftColor;
-                    case 1:
-                        return _renderable.UpperRightColor;
-                    case 2:
-                        return _renderable.LowerRightColor;
-                    case 3:
-                        return _renderable.LowerLeftColor;
-                }
-
-                throw new ArgumentOutOfRangeException();
-            }
+                0 => _renderable.UpperLeftColor,
+                1 => _renderable.UpperRightColor,
+                2 => _renderable.LowerRightColor,
+                3 => _renderable.LowerLeftColor,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
             set
             {
                 switch (index)
@@ -171,12 +164,13 @@ namespace Gorgon.Renderers
         /// Function to assign a single color to all corners.
         /// </summary>
         /// <param name="color">The color to assign.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetAll(in GorgonColor color)
         {
-            if ((_renderable.LowerLeftColor.Equals(in color))
-                && (_renderable.LowerRightColor.Equals(in color))
-                && (_renderable.UpperLeftColor.Equals(in color))
-                && (_renderable.UpperRightColor.Equals(in color)))
+            if ((GorgonColor.Equals(in _renderable.LowerLeftColor, in color))
+                && (GorgonColor.Equals(in _renderable.LowerRightColor, in color))
+                && (GorgonColor.Equals(in _renderable.UpperLeftColor, in color))
+                && (GorgonColor.Equals(in _renderable.UpperRightColor, in color)))
             {
                 return;
             }
@@ -192,7 +186,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
         public void CopyTo(GorgonRectangleColors destination)
         {
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }

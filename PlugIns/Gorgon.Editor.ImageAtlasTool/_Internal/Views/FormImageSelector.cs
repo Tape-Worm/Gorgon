@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
@@ -38,6 +39,7 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
 using DX = SharpDX;
+using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Editor.ImageAtlasTool
 {
@@ -89,7 +91,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
         private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
         {
-            if ((DataContext?.SearchCommand == null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+            if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
             {
                 return;
             }
@@ -104,7 +106,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// <param name="e">The e.</param>
         private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
         {
-            if ((DataContext?.RefreshImagePreviewCommand == null) || (!DataContext.RefreshImagePreviewCommand.CanExecute(e.FocusedFiles)))
+            if ((DataContext?.RefreshImagePreviewCommand is null) || (!DataContext.RefreshImagePreviewCommand.CanExecute(e.FocusedFiles)))
             {
                 return;
             }
@@ -123,7 +125,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonLoad_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ConfirmLoadCommand == null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
+            if ((DataContext?.ConfirmLoadCommand is null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
             {
                 return;
             }
@@ -166,7 +168,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         {
             _previewImage?.Dispose();
 
-            if (image == null)
+            if (image is null)
             {
                 _previewImage = null;
                 return;
@@ -218,13 +220,13 @@ namespace Gorgon.Editor.ImageAtlasTool
             _swapChain.RenderTargetView.Clear(PanelPreviewRender.BackColor);
 
             var renderRegion = GetRenderRegion().ToRectangleF();
-            var halfClient = new DX.Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
+            var halfClient = new Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
 
             _graphicsContext.Renderer2D.Begin();
             _graphicsContext.Renderer2D.DrawFilledRectangle(renderRegion, DarkFormsRenderer.DarkBackground);
 
             // Render the sprite image.
-            if (_previewImage != null)
+            if (_previewImage is not null)
             {                
                 float scale = (renderRegion.Width / _previewImage.Width).Min(renderRegion.Height / _previewImage.Height);
                 float width = _previewImage.Width * scale;
@@ -236,16 +238,16 @@ namespace Gorgon.Editor.ImageAtlasTool
             }
             else
             {
-                DX.Size2F size = _graphicsContext.Renderer2D.DefaultFont.MeasureText(Resources.GORIAG_TEXT_SELECT_IMAGE, false);
+                DX.Size2F size = Resources.GORIAG_TEXT_SELECT_IMAGE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
                 _graphicsContext.Renderer2D.DrawString(Resources.GORIAG_TEXT_SELECT_IMAGE, 
-                                                        new DX.Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
+                                                        new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
                                                         color: GorgonColor.White);
             }
             _graphicsContext.Renderer2D.End();
 
             _swapChain.Present(1);
 
-            if ((GorgonApplication.AllowBackground) && (_oldIdle != null))
+            if ((GorgonApplication.AllowBackground) && (_oldIdle is not null))
             {
                 if (!_oldIdle())
                 {
@@ -262,7 +264,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         private void ShutdownGraphics()
         {
             Func<bool> oldIdle = Interlocked.Exchange(ref _oldIdle, null);
-            if (oldIdle != null)
+            if (oldIdle is not null)
             {
                 GorgonApplication.IdleMethod = oldIdle;
             }
@@ -270,7 +272,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             GorgonSwapChain swap = Interlocked.Exchange(ref _swapChain, null);
 
             preview?.Dispose();
-            if (swap != null)
+            if (swap is not null)
             {
                 _graphicsContext.ReturnSwapPresenter(ref swap);
             }
@@ -282,7 +284,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -301,7 +303,7 @@ namespace Gorgon.Editor.ImageAtlasTool
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(IImageFiles dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -321,7 +323,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                 return;
             }
 
-            if ((_closeState == 1) || (DataContext?.CancelCommand == null) || (!DataContext.CancelCommand.CanExecute(null)))
+            if ((_closeState == 1) || (DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 _closeState = 0;
                 DataContext?.OnUnload();
@@ -362,7 +364,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 
             _graphicsContext = context;
 
-            if (context == null)
+            if (context is null)
             {
                 return;
             }
@@ -382,7 +384,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

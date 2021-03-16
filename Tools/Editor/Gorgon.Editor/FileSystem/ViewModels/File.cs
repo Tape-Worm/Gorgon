@@ -50,7 +50,7 @@ namespace Gorgon.Editor.ViewModels
 
         #region Variables.
         // The synchronization lock for the rename event.
-        private readonly object _eventLock = new object();
+        private readonly object _eventLock = new();
         // The virtual file wrapped by this view model.
         private IGorgonVirtualFile _file;
         // The parent directory.
@@ -80,7 +80,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         RenamedEvent = null;
                         return;
@@ -93,7 +93,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 lock (_eventLock)
                 {
-                    if (value == null)
+                    if (value is null)
                     {
                         return;
                     }
@@ -385,7 +385,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="file">The file to link to this content.</param>
         void IContentFile.LinkContent(IContentFile file)
         {
-            if (file == null)
+            if (file is null)
             {
                 return;
             }
@@ -405,7 +405,7 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="file">The file to unlink from this content.</param>
         void IContentFile.UnlinkContent(IContentFile file)
         {
-            if (file == null)
+            if (file is null)
             {
                 return;
             }

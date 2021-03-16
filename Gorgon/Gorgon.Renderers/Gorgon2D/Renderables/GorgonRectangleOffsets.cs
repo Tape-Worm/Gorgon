@@ -23,10 +23,11 @@
 // Created: February 8, 2017 7:22:29 PM
 // 
 #endregion
+
 using System;
+using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -34,7 +35,7 @@ namespace Gorgon.Renderers
     /// Defines the offsets for each corner of a rectangle.
     /// </summary>
     public class GorgonRectangleOffsets
-        : IReadOnlyList<DX.Vector3>
+        : IReadOnlyList<Vector3>
     {
         #region Variables.
         // The renderable object to update.
@@ -49,24 +50,16 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// The ordering of the indices is as follows: 0 - Upper left, 1 - Upper right, 2 - Lower right, 3 - Lower left.
         /// </remarks>
-        public DX.Vector3 this[int index]
+        public Vector3 this[int index]
         {
-            get
+            get => index switch
             {
-                switch (index)
-                {
-                    case 0:
-                        return _renderable.UpperLeftOffset;
-                    case 1:
-                        return _renderable.UpperRightOffset;
-                    case 2:
-                        return _renderable.LowerRightOffset;
-                    case 3:
-                        return _renderable.LowerLeftOffset;
-                }
-
-                throw new ArgumentOutOfRangeException();
-            }
+                0 => _renderable.UpperLeftOffset,
+                1 => _renderable.UpperRightOffset,
+                2 => _renderable.LowerRightOffset,
+                3 => _renderable.LowerLeftOffset,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
             set
             {
                 switch (index)
@@ -92,12 +85,12 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the offset of the upper left corner.
         /// </summary>
-        public DX.Vector3 UpperLeft
+        public Vector3 UpperLeft
         {
             get => _renderable.UpperLeftOffset;
             set
             {
-                if (_renderable.UpperLeftOffset.Equals(ref value))
+                if (_renderable.UpperLeftOffset == value)
                 {
                     return;
                 }
@@ -110,12 +103,12 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the offset of the upper right corner.
         /// </summary>
-        public DX.Vector3 UpperRight
+        public Vector3 UpperRight
         {
             get => _renderable.UpperRightOffset;
             set
             {
-                if (_renderable.UpperRightOffset.Equals(ref value))
+                if (_renderable.UpperRightOffset == value)
                 {
                     return;
                 }
@@ -128,12 +121,12 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the offset of the lower left corner.
         /// </summary>
-        public DX.Vector3 LowerLeft
+        public Vector3 LowerLeft
         {
             get => _renderable.LowerLeftOffset;
             set
             {
-                if (_renderable.LowerLeftOffset.Equals(ref value))
+                if (_renderable.LowerLeftOffset == value)
                 {
                     return;
                 }
@@ -146,12 +139,12 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the offset of the lower right corner.
         /// </summary>
-        public DX.Vector3 LowerRight
+        public Vector3 LowerRight
         {
             get => _renderable.LowerRightOffset;
             set
             {
-                if (_renderable.LowerRightOffset.Equals(ref value))
+                if (_renderable.LowerRightOffset == value)
                 {
                     return;
                 }
@@ -166,7 +159,7 @@ namespace Gorgon.Renderers
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<DX.Vector3> GetEnumerator()
+        public IEnumerator<Vector3> GetEnumerator()
         {
             for (int i = 0; i < 4; ++i)
             {
@@ -190,12 +183,12 @@ namespace Gorgon.Renderers
         /// Function to assign a single offset to all corners.
         /// </summary>
         /// <param name="offset">The offset to assign.</param>
-        public void SetAll(DX.Vector3 offset)
+        public void SetAll(Vector3 offset)
         {
-            if ((offset.Equals(ref _renderable.LowerLeftOffset))
-                && (offset.Equals(ref _renderable.LowerRightOffset))
-                && (offset.Equals(ref _renderable.UpperRightOffset))
-                && (offset.Equals(ref _renderable.UpperLeftOffset)))
+            if ((offset == _renderable.LowerLeftOffset)
+                && (offset == _renderable.LowerRightOffset)
+                && (offset == _renderable.UpperRightOffset)
+                && (offset == _renderable.UpperLeftOffset))
             {
                 return;
             }
@@ -211,7 +204,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
         public void CopyTo(GorgonRectangleOffsets destination)
         {
-            if (destination == null)
+            if (destination is null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }

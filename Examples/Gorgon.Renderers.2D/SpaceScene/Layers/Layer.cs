@@ -24,12 +24,9 @@
 // 
 #endregion
 
-using System;
+using System.Numerics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -41,7 +38,7 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // The list of active lights for the layer.
-        private readonly List<Light> _activeLights = new List<Light>();
+        private readonly List<Light> _activeLights = new();
         #endregion
 
         #region Properties.
@@ -82,7 +79,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the offset for the layer.
         /// </summary>
-        public DX.Vector2 Offset
+        public Vector2 Offset
         {
             get;
             set;
@@ -100,7 +97,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the camera to be used with this layer.
         /// </summary>
-        public IGorgon2DCamera Camera
+        public GorgonCameraCommon Camera
         {
             get;
             set;
@@ -118,12 +115,16 @@ namespace Gorgon.Examples
             {
                 Light light = Lights[i];
 
-                if (light == null)
+                if (light is null)
                 {
                     continue;
                 }
 
-                light.Position = new DX.Vector3(((DX.Vector2)light.LocalLightPosition + Offset) / ParallaxLevel, Lights[i].LocalLightPosition.Z);
+                if (light.PointLight is not null)
+                {
+                    Vector3 newPosition = (light.LocalLightPosition + new Vector3(Offset, 0)) / ParallaxLevel;
+                    light.PointLight.Position = new Vector3(new Vector2(newPosition.X, newPosition.Y), Lights[i].LocalLightPosition.Z);
+                }
             }
         }
 
@@ -145,7 +146,7 @@ namespace Gorgon.Examples
         /// <param name="light">The light to apply.</param>
         public void ApplyLight(Light light)
         {
-            if (light == null)
+            if (light is null)
             {
                 return;
             }

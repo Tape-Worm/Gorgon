@@ -25,41 +25,38 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using SharpDX.DXGI;
+using Gorgon.Memory;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A view to allow 2D texture based render targets to be bound to the pipeline.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
-	/// </para>
-	/// <para>
-	/// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
-	/// target. 
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="GorgonSwapChain"/>
-	/// <seealso cref="GorgonTexture2D"/>
-	/// <seealso cref="GorgonTexture3D"/>
-	public sealed class GorgonRenderTarget2DView
+    /// <summary>
+    /// A view to allow 2D texture based render targets to be bound to the pipeline.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
+    /// </para>
+    /// <para>
+    /// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
+    /// target. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonSwapChain"/>
+    /// <seealso cref="GorgonTexture2D"/>
+    /// <seealso cref="GorgonTexture3D"/>
+    public sealed class GorgonRenderTarget2DView
 		: GorgonRenderTargetView, IGorgonTexture2DInfo, IGorgonImageInfo
 	{
-		#region Variables.
-		// Clear rectangles.
-		private RawRectangle[] _clearRects;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the owner <see cref="RenderTargetFactory"/> for this texture.
@@ -235,15 +232,20 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
 		/// </summary>
 		public override TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
-        #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the view description.
-        /// </summary>
-        /// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
-        /// <returns>The view description.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
+		/// <summary>
+		/// Property to return whether the resource used by this view can be shared or not.
+		/// </summary>
+		public bool Shared => Texture.Shared;
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the view description.
+		/// </summary>
+		/// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
+		/// <returns>The view description.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         private D3D11.RenderTargetViewDescription1 GetDesc2D(bool isMultisampled)
 		{
             // Set up for arrayed and multisampled texture.
@@ -251,7 +253,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.RenderTargetViewDescription1
 				{
-					Format = (Format)Format,
+					Format = (DXGI.Format)Format,
 					Dimension = isMultisampled
 						? D3D11.RenderTargetViewDimension.Texture2DMultisampledArray
 						: D3D11.RenderTargetViewDimension.Texture2DArray,
@@ -268,7 +270,7 @@ namespace Gorgon.Graphics.Core
 
             return new D3D11.RenderTargetViewDescription1
 			{
-				Format = (Format)Format,
+				Format = (DXGI.Format)Format,
 				Dimension = isMultisampled
 					? D3D11.RenderTargetViewDimension.Texture2DMultisampled
 					: D3D11.RenderTargetViewDimension.Texture2D,
@@ -322,7 +324,7 @@ namespace Gorgon.Graphics.Core
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has a usage of <see cref="ResourceUsage.Staging"/>.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown if the texture <see cref="Format"/> is not typeless, and the <see cref="Binding"/> is set to <see cref="TextureBinding.DepthStencil"/>.</para>
+		/// <para>Thrown if the texture <see cref="GorgonRenderTargetView.Format"/> is not typeless, and the <see cref="Binding"/> is set to <see cref="TextureBinding.DepthStencil"/>.</para>
 		/// <para></para>
 		/// </exception>
 		/// <remarks>
@@ -396,12 +398,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="pixelVector">The pixel size to convert.</param>
 		/// <returns>A 2D vector containing the texel space coordinates.</returns>
-		public DX.Vector2 ToTexel(DX.Vector2 pixelVector)
+		public Vector2 ToTexel(Vector2 pixelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+			return new Vector2(pixelVector.X / width, pixelVector.Y / height);
 		}
 
 		/// <summary>
@@ -409,12 +411,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texelVector">The texel size to convert.</param>
 		/// <returns>A 2D vector containing the pixel space coordinates.</returns>
-		public DX.Vector2 ToPixel(DX.Vector2 texelVector)
+		public Vector2 ToPixel(Vector2 texelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+			return new Vector2(texelVector.X * width, texelVector.Y * height);
 		}
 
 		/// <summary>
@@ -431,30 +433,34 @@ namespace Gorgon.Graphics.Core
 		/// If the <paramref name="rectangles"/> parameter is <b>null</b>, or has a zero length, the entirety of the view is cleared.
 		/// </para>
 		/// </remarks>
-		public void Clear(GorgonColor color, DX.Rectangle[] rectangles)
+		public void Clear(in GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
 		{
-			if ((rectangles == null) || (rectangles.Length == 0))
+			if (rectangles.IsEmpty)
 			{
 				Clear(color);
 				return;
 			}
 
-			if ((_clearRects == null) || (_clearRects.Length < rectangles.Length))
+			RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
+
+			try
 			{
-				_clearRects = new RawRectangle[rectangles.Length];
+				for (int i = 0; i < rectangles.Length; ++i)
+				{
+					clearRects[i] = rectangles[i];
+				}
+
+				Texture.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), clearRects, rectangles.Length);
+
+				ref GorgonGraphicsStatistics stats = ref Texture.Graphics.RwStatistics;
+				unchecked
+				{
+					++stats._clearCount;
+				}
 			}
-
-			for (int i = 0; i < rectangles.Length; ++i)
+			finally
 			{
-				_clearRects[i] = rectangles[i];
-			}
-
-			Texture.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), _clearRects, rectangles.Length);
-
-			ref GorgonGraphicsStatistics stats = ref Texture.Graphics.RwStatistics;
-			unchecked
-			{
-				++stats._clearCount;
+				GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects);
 			}
 		}
 
@@ -463,7 +469,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public override void Dispose()
 		{
-			if (OwnerFactory != null)
+			if (OwnerFactory is not null)
 			{
 				OwnerFactory.Return(this);
 				return;
@@ -496,12 +502,12 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonTexture2D"/>
 		public static GorgonRenderTarget2DView CreateRenderTarget(GorgonGraphics graphics, IGorgonTexture2DInfo info, int arrayIndex = 0, int? arrayCount = null)
 		{
-			if (graphics == null)
+			if (graphics is null)
 			{
 				throw new ArgumentNullException(nameof(graphics));
 			}
 
-			if (info == null)
+			if (info is null)
 			{
 				throw new ArgumentNullException(nameof(info));
 			}
@@ -526,6 +532,48 @@ namespace Gorgon.Graphics.Core
 
 			var texture = new GorgonTexture2D(graphics, newInfo);
 			GorgonRenderTarget2DView result = texture.GetRenderTargetView(arrayIndex: arrayIndex, arrayCount: arrayCount ?? 1);
+			result.OwnsResource = true;
+
+			return result;
+		}
+
+		/// <summary>
+        /// Function to create a render target used to interoperate with external rendering systems (e.g. WPF).
+        /// </summary>
+        /// <param name="graphics">The graphics interface used to create the objects for the render target view.</param>
+        /// <param name="surface">A pointer to a surface that Gorgon can render into.</param>
+        /// <param name="name">[Optional] The name to use for the render target texture resource.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="surface"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="surface"/> pointer could not be interpreted as a 2D Texture.</exception>
+        /// <returns>The new render target view.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method is used to wrap a surface from an external rendering system such as WPF (which is based on Direct3D 9) into a Gorgon render target view. This allows Gorgon to render into the 
+        /// external surface.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This render target view takes ownership of its underlying texture. Disposal of the render target view will also dispose the underlying texture resource.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+		public static GorgonRenderTarget2DView CreateInteropRenderTarget(GorgonGraphics graphics, IntPtr surface, string name)
+		{
+			if (graphics is null)
+			{
+				throw new ArgumentNullException(nameof(graphics));
+			}
+
+			if (surface == IntPtr.Zero)
+			{
+				throw new ArgumentNullException(nameof(surface));
+			}
+
+			var texture = new GorgonTexture2D(graphics, surface);
+			texture.D3DResource.DebugName = name ?? $"WPF_Render_Target_{Guid.NewGuid():N}";
+			GorgonRenderTarget2DView result = texture.GetRenderTargetView(0, 1);
 			result.OwnsResource = true;
 
 			return result;

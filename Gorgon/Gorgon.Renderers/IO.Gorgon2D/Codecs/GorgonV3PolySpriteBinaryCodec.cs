@@ -26,12 +26,12 @@
 
 using System;
 using System.IO;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -93,12 +93,12 @@ namespace Gorgon.IO
         /// <param name="textureScale">The texture transform scale.</param>
         /// <param name="textureArrayIndex">The texture array index.</param>
         /// <returns>The texture attached to the sprite.</returns>
-        private GorgonTexture2DView LoadTexture(GorgonBinaryReader reader, GorgonTexture2DView overrideTexture, out DX.Vector2 textureOffset, out DX.Vector2 textureScale, out int textureArrayIndex)
+        private GorgonTexture2DView LoadTexture(GorgonBinaryReader reader, GorgonTexture2DView overrideTexture, out Vector2 textureOffset, out Vector2 textureScale, out int textureArrayIndex)
         {
             // Write out as much info about the texture as we can so we can look it up based on these values when loading.
             string textureName = reader.ReadString();
-            textureOffset = DX.Vector2.Zero;
-            textureScale = DX.Vector2.One;
+            textureOffset = Vector2.Zero;
+            textureScale = Vector2.One;
             textureArrayIndex = 0;
 
             if (string.IsNullOrWhiteSpace(textureName))
@@ -118,14 +118,14 @@ namespace Gorgon.IO
             GorgonTexture2D texture = null;
 
             // Locate the texture resource.
-            if (overrideTexture == null)
+            if (overrideTexture is null)
             {
                 texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
-                if (texture == null)
+                if (texture is null)
                 {
-                    textureOffset = DX.Vector2.Zero;
-                    textureScale = DX.Vector2.One;
+                    textureOffset = Vector2.Zero;
+                    textureScale = Vector2.One;
                     textureArrayIndex = 0;
                     return null;
                 }
@@ -162,7 +162,7 @@ namespace Gorgon.IO
             {
                 reader.Open();
                 binReader = reader.OpenChunk(SpriteData);
-                DX.Vector2 anchor = binReader.ReadValue<DX.Vector2>();
+                Vector2 anchor = binReader.ReadValue<Vector2>();
 
                 // If we do not have alpha test information, then skip writing its data.
                 GorgonRangeF? alphaRange = null;
@@ -179,9 +179,9 @@ namespace Gorgon.IO
 
                 for (int i = 0; i < vertices.Length; ++i)
                 {
-                    vertices[i] = new GorgonPolySpriteVertex(binReader.ReadValue<DX.Vector2>(),
+                    vertices[i] = new GorgonPolySpriteVertex(binReader.ReadValue<Vector2>(),
                                                                 binReader.ReadValue<GorgonColor>(),
-                                                                binReader.ReadValue<DX.Vector2>());
+                                                                binReader.ReadValue<Vector2>());
                 }
 
                 reader.CloseChunk();
@@ -201,8 +201,8 @@ namespace Gorgon.IO
 
                 GorgonTexture2DView texture = null;
                 int textureArrayIndex = 0;
-                DX.Vector2 textureOffset = DX.Vector2.Zero;
-                DX.Vector2 textureScale = DX.Vector2.One;
+                Vector2 textureOffset = Vector2.Zero;
+                Vector2 textureScale = Vector2.One;
 
                 if (reader.Chunks.Contains(TextureData))
                 {
@@ -236,7 +236,7 @@ namespace Gorgon.IO
                                                    .Build();
                 }
 
-                if ((indices == null) || (indices.Length == 0))
+                if ((indices is null) || (indices.Length == 0))
                 {
                     var builder = new GorgonPolySpriteBuilder(Renderer);
                     return builder.AddVertices(vertices)
@@ -290,8 +290,8 @@ namespace Gorgon.IO
                 binWriter.WriteValue(sprite.Anchor);
 
                 // If we do not have alpha test information, then skip writing its data.
-                binWriter.Write(sprite.AlphaTest != null);
-                if (sprite.AlphaTest != null)
+                binWriter.Write(sprite.AlphaTest is not null);
+                if (sprite.AlphaTest is not null)
                 {
                     binWriter.WriteValue(sprite.AlphaTest.Value);
                 }
@@ -326,7 +326,7 @@ namespace Gorgon.IO
                 }
 
                 // We have no texture data, so don't bother writing out that chunk.
-                if (sprite.Texture != null)
+                if (sprite.Texture is not null)
                 {
                     binWriter = writer.OpenChunk(TextureData);
                     binWriter.Write(sprite.Texture.Texture.Name);
@@ -347,7 +347,7 @@ namespace Gorgon.IO
                     binWriter.Close();
                 }
 
-                if (sprite.TextureSampler == null)
+                if (sprite.TextureSampler is null)
                 {
                     return;
                 }
@@ -387,13 +387,11 @@ namespace Gorgon.IO
                 return false;
             }
 
-            using (GorgonBinaryReader binReader = reader.OpenChunk(VersionData))
-            {
-                var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
-                reader.CloseChunk();
+            using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
+            var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+            reader.CloseChunk();
 
-                return Version.Equals(fileVersion);
-            }
+            return Version.Equals(fileVersion);
         }
 
         /// <summary>

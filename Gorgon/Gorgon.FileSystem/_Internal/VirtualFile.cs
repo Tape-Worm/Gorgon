@@ -96,7 +96,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return the full path to the file in the <see cref="IGorgonFileSystem"/>.
         /// </summary>
-        public string FullPath => Directory == null ? Name : Directory.FullPath + Name;
+        public string FullPath => Directory is null ? Name : Directory.FullPath + Name;
 
         /// <summary>
         /// Property to return the mount point for this file.

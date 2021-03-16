@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Animation.Properties;
@@ -118,9 +119,9 @@ namespace Gorgon.Animation
         // The current animation state.
         private AnimationState _state = AnimationState.Stopped;
         // The list of registered track names.
-        private readonly List<GorgonTrackRegistration> _trackNames = new List<GorgonTrackRegistration>();
+        private readonly List<GorgonTrackRegistration> _trackNames = new();
         // The list of registered track names that can be played with a given animation.
-        private readonly List<GorgonTrackRegistration> _playableTracks = new List<GorgonTrackRegistration>();
+        private readonly List<GorgonTrackRegistration> _playableTracks = new();
         #endregion
 
         #region Properties.
@@ -143,10 +144,10 @@ namespace Gorgon.Animation
         /// </summary>
         public AnimationState State
         {
-            get => CurrentAnimation == null ? AnimationState.Stopped : _state;
+            get => CurrentAnimation is null ? AnimationState.Stopped : _state;
             private set
             {
-                if (CurrentAnimation == null)
+                if (CurrentAnimation is null)
                 {
                     return;
                 }
@@ -163,7 +164,7 @@ namespace Gorgon.Animation
             get => _time;
             set
             {
-                if (CurrentAnimation == null)
+                if (CurrentAnimation is null)
                 {
                     return;
                 }
@@ -328,7 +329,7 @@ namespace Gorgon.Animation
                         if ((CurrentAnimation.Vector2Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector2> vec2DTrack))
                             && (vec2DTrack.IsEnabled)
                             && (vec2DTrack.KeyFrames.Count > 0)
-                            && (TrackKeyProcessor.TryUpdateVector2(vec2DTrack, _time, out DX.Vector2 vec2DValue)))
+                            && (TrackKeyProcessor.TryUpdateVector2(vec2DTrack, _time, out Vector2 vec2DValue)))
                         {
                             OnVector2ValueUpdate(registration, _animatedObject, vec2DValue);
                         }
@@ -337,7 +338,7 @@ namespace Gorgon.Animation
                         if ((CurrentAnimation.Vector3Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector3> vec3DTrack))
                             && (vec3DTrack.IsEnabled)
                             && (vec3DTrack.KeyFrames.Count > 0)
-                            && (TrackKeyProcessor.TryUpdateVector3(vec3DTrack, _time, out DX.Vector3 vec3DValue)))
+                            && (TrackKeyProcessor.TryUpdateVector3(vec3DTrack, _time, out Vector3 vec3DValue)))
                         {
                             OnVector3ValueUpdate(registration, _animatedObject, vec3DValue);
                         }
@@ -346,7 +347,7 @@ namespace Gorgon.Animation
                         if ((CurrentAnimation.Vector4Tracks.TryGetValue(registration.TrackName, out IGorgonAnimationTrack<GorgonKeyVector4> vec4DTrack))
                             && (vec4DTrack.IsEnabled)
                             && (vec4DTrack.KeyFrames.Count > 0)
-                            && (TrackKeyProcessor.TryUpdateVector4(vec4DTrack, _time, out DX.Vector4 vec4DValue)))
+                            && (TrackKeyProcessor.TryUpdateVector4(vec4DTrack, _time, out Vector4 vec4DValue)))
                         {
                             OnVector4ValueUpdate(registration, _animatedObject, vec4DValue);
                         }
@@ -396,7 +397,7 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected abstract void OnVector2ValueUpdate(GorgonTrackRegistration track, T animObject, DX.Vector2 value);
+        protected abstract void OnVector2ValueUpdate(GorgonTrackRegistration track, T animObject, Vector2 value);
 
         /// <summary>
         /// Function called when a 3D vector value needs to be updated on the animated object.
@@ -404,7 +405,7 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected abstract void OnVector3ValueUpdate(GorgonTrackRegistration track, T animObject, DX.Vector3 value);
+        protected abstract void OnVector3ValueUpdate(GorgonTrackRegistration track, T animObject, Vector3 value);
 
         /// <summary>
         /// Function called when a 4D vector value needs to be updated on the animated object.
@@ -412,7 +413,7 @@ namespace Gorgon.Animation
         /// <param name="track">The track currently being processed.</param>
         /// <param name="animObject">The object to update.</param>
         /// <param name="value">The value to apply.</param>
-        protected abstract void OnVector4ValueUpdate(GorgonTrackRegistration track, T animObject, DX.Vector4 value);
+        protected abstract void OnVector4ValueUpdate(GorgonTrackRegistration track, T animObject, Vector4 value);
 
         /// <summary>
         /// Function called when a <see cref="GorgonColor"/> value needs to be updated on the animated object.
@@ -506,7 +507,7 @@ namespace Gorgon.Animation
         /// </summary>
         public void Refresh()
         {
-            if (CurrentAnimation == null)
+            if (CurrentAnimation is null)
             {
                 return;
             }
@@ -519,7 +520,7 @@ namespace Gorgon.Animation
         /// </summary>
 	    public void Reset()
         {
-            if (CurrentAnimation == null)
+            if (CurrentAnimation is null)
             {
                 Time = 0;
                 return;
@@ -551,7 +552,7 @@ namespace Gorgon.Animation
         /// <seealso cref="GorgonTrackRegistration"/>
         public void Play(T animatedObject, IGorgonAnimation animation)
         {
-            if (animation == null)
+            if (animation is null)
             {
                 throw new ArgumentNullException(nameof(animation));
             }
@@ -563,7 +564,7 @@ namespace Gorgon.Animation
             }
 
             // Stop the current animation.
-            if (CurrentAnimation != null)
+            if (CurrentAnimation is not null)
             {
                 _playableTracks.Clear();
                 State = AnimationState.Stopped;
@@ -597,7 +598,7 @@ namespace Gorgon.Animation
         /// </summary>
 	    public void Pause()
         {
-            if ((CurrentAnimation == null) || (_animatedObject == null))
+            if ((CurrentAnimation is null) || (_animatedObject is null))
             {
                 State = AnimationState.Stopped;
                 return;
@@ -611,7 +612,7 @@ namespace Gorgon.Animation
         /// </summary>
         public void Resume()
         {
-            if ((CurrentAnimation == null) || (_animatedObject == null))
+            if ((CurrentAnimation is null) || (_animatedObject is null))
             {
                 State = AnimationState.Stopped;
                 return;
@@ -627,7 +628,7 @@ namespace Gorgon.Animation
         {
             Reset();
 
-            if (CurrentAnimation == null)
+            if (CurrentAnimation is null)
             {
                 return;
             }

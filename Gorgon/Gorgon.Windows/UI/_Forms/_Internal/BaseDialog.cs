@@ -40,7 +40,7 @@ namespace Gorgon.UI
     {
         #region Variables.
         private string _message = string.Empty;             // Message to be displayed.
-        private Point _textPosition = new Point(60, 2);     // Text position.
+        private Point _textPosition = new(60, 2);     // Text position.
         private Size _maxTextSize;                          // Maximum text size.
         #endregion
 
@@ -101,7 +101,7 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown"></see> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.KeyEventArgs"></see> that contains the event data.</param>
+        /// <param name="e">A <see cref="KeyEventArgs"></see> that contains the event data.</param>
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -142,7 +142,7 @@ namespace Gorgon.UI
             _maxTextSize.Width = _maxTextSize.Width <= 0 ? currentScreen.WorkingArea.Width / 4 : _maxTextSize.Width;
 
             // Inherit the parent icon.
-            if (Owner != null)
+            if (Owner is not null)
             {
                 Icon = Owner.Icon;
             }
@@ -155,12 +155,12 @@ namespace Gorgon.UI
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Shown"></see> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.EventArgs"></see> that contains the event data.</param>
+        /// <param name="e">A <see cref="EventArgs"></see> that contains the event data.</param>
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
 
-            if ((!DesignMode) && (Owner != null))
+            if ((!DesignMode) && (Owner is not null))
             {
                 Icon = Owner.Icon;
             }
@@ -255,12 +255,12 @@ namespace Gorgon.UI
             }
 
             // Reposition.
-            if ((StartPosition != FormStartPosition.CenterScreen) && (StartPosition != FormStartPosition.CenterParent))
+            if (StartPosition is not FormStartPosition.CenterScreen and not FormStartPosition.CenterParent)
             {
                 return;
             }
 
-            if (Parent == null)
+            if (Parent is null)
             {
                 CenterToScreen();
             }
@@ -271,7 +271,7 @@ namespace Gorgon.UI
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.</summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
+        /// <param name="e">A <see cref="PaintEventArgs" /> that contains the event data.</param>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);

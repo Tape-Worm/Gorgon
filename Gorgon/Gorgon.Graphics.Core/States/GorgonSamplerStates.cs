@@ -77,7 +77,7 @@ namespace Gorgon.Graphics.Core
         public GorgonSamplerStates(IReadOnlyList<GorgonSamplerState> states = null)
             : base(MaximumSamplerStateCount)
         {
-            if (states == null)
+            if (states is null)
             {
                 return;
             }

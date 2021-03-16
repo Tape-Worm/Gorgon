@@ -57,7 +57,7 @@ namespace Gorgon.IO
         public static bool Equals(GorgonAnimationCodecDescription left, GorgonAnimationCodecDescription right) => string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>Returns the fully qualified type name of this instance.</summary>
-        /// <returns>A <see cref="System.String" /> containing a fully qualified type name.</returns>
+        /// <returns>A <see cref="string" /> containing a fully qualified type name.</returns>
         public override string ToString() => string.Format(Resources.GOR2DIO_TOSTR_ANIMATION_CODEC_PLUGIN_DESC, Name, Description);
 
         /// <summary>Indicates whether this instance and a specified object are equal.</summary>
@@ -101,7 +101,7 @@ namespace Gorgon.IO
         /// <param name="type">The type of codec object.</param>
         public GorgonAnimationCodecDescription(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }

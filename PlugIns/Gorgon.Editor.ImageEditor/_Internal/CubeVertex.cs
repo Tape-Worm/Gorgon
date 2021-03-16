@@ -24,10 +24,10 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {
@@ -54,7 +54,7 @@ namespace Gorgon.Editor.ImageEditor
         /// as indicated by the integer parameter.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public DX.Vector4 Position;
+        public Vector4 Position;
 
         /// <summary>
         /// This will be the texture coordinate for the vertex.
@@ -63,18 +63,18 @@ namespace Gorgon.Editor.ImageEditor
         /// texture, and 1, 1 is the lower-right of the texture.
         /// </summary>
         [InputElement(1, "TEXCOORD")]
-        public DX.Vector3 UVW;
+        public Vector3 UVW;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CubeVertex"/> struct.
         /// </summary>
         /// <param name="position">The position of the vertex in object space.</param>
         /// <param name="uv">The texture coordinate for this vertex.</param>
-        public CubeVertex(DX.Vector3 position, DX.Vector3 uvw)
+        public CubeVertex(Vector3 position, Vector3 uvw)
         {
             // Note that we're passing a 3D vector, but storing a 4D vector. We need the W coordinate set to 1.0f to indicate that the coordinates are normalized.
             // For more information about the W component, go to http://www.tomdalling.com/blog/modern-opengl/explaining-homogenous-coordinates-and-projective-geometry/
-            Position = new DX.Vector4(position, 1.0f);
+            Position = new Vector4(position, 1.0f);
             UVW = uvw;
         }
     }

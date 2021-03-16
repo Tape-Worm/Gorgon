@@ -135,6 +135,9 @@
   <data name="GORIMG_DESC_TGA_CODEC" xml:space="preserve">
     <value>Truevision Targa</value>
   </data>
+  <data name="GORIMG_ERR_ALREADY_EDITING" xml:space="preserve">
+    <value>The image is already being edited. Call EndUpdate before calling BeginUpdate to edit the image.</value>
+  </data>
   <data name="GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT" xml:space="preserve">
     <value>The size of the bitmap ({0}x{1}) is not the same as the buffer ({2}x{3}).</value>
   </data>

@@ -161,13 +161,13 @@ namespace Gorgon.Graphics.Core
         // The information used to create the swap chain.
         private readonly GorgonSwapChainInfo _info;
         // Information used when resizing the back buffers or performing a state transition.
-        private readonly ResizeState _resizeState = new ResizeState();
+        private readonly ResizeState _resizeState = new();
         // The current full screen video mode.
         private GorgonVideoMode? _fullScreenVideoMode;
         // Flag to indicate that the application is in full screen borderless mode.
         private bool _isFullScreenBorderless;
         // The state to reset when exiting full screen borderless mode.
-        private readonly WindowState _fullScreenBordlessState = new WindowState();
+        private readonly WindowState _fullScreenBordlessState = new();
         // The render target view.
         private GorgonRenderTarget2DView _targetView;
         // The previously assigned render target views captured when using flip mode.
@@ -192,7 +192,7 @@ namespace Gorgon.Graphics.Core
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     SwapChainResizingEvent = null;
                     return;
@@ -202,7 +202,7 @@ namespace Gorgon.Graphics.Core
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -218,7 +218,7 @@ namespace Gorgon.Graphics.Core
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     SwapChainResizedEvent = null;
                     return;
@@ -228,7 +228,7 @@ namespace Gorgon.Graphics.Core
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -408,7 +408,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="EnterFullScreen(in GorgonVideoMode, IGorgonVideoOutputInfo)"/>
         /// <seealso cref="EnterFullScreen()"/>
         /// <seealso cref="ExitFullScreen"/>
-        public bool IsWindowed => FullscreenOutput == null || _fullScreenVideoMode == null;
+        public bool IsWindowed => FullscreenOutput is null || _fullScreenVideoMode is null;
         #endregion
 
         #region Methods.
@@ -426,22 +426,22 @@ namespace Gorgon.Graphics.Core
 
             result = control.FindForm();
 
-            if (result == null)
+            if (result is null)
             {
                 result = control.TopLevelControl as Form;
             }
 
-            if (result == null)
+            if (result is null)
             {
                 result = Form.ActiveForm;
 
-                if ((result != null) && (result.DisplayRectangle.IntersectsWith(control.RectangleToScreen(control.ClientRectangle))))
+                if ((result is not null) && (result.DisplayRectangle.IntersectsWith(control.RectangleToScreen(control.ClientRectangle))))
                 {
                     return result;
                 }
             }
 
-            if ((result == null) && (Application.OpenForms.Count > 0))
+            if ((result is null) && (Application.OpenForms.Count > 0))
             {
                 foreach (Form form in Application.OpenForms)
                 {
@@ -467,8 +467,8 @@ namespace Gorgon.Graphics.Core
         {
             if ((!ExitFullScreenModeOnFocusLoss)
                 || (!IsWindowed)
-                || (_resizeState.PreviousOutput == null)
-                || (_resizeState.PreviousVideoMode == null))
+                || (_resizeState.PreviousOutput is null)
+                || (_resizeState.PreviousVideoMode is null))
             {
                 return;
             }
@@ -499,9 +499,9 @@ namespace Gorgon.Graphics.Core
         {
             if ((!ExitFullScreenModeOnFocusLoss)
                 || (IsWindowed)
-                || (_fullScreenVideoMode == null)
-                || (_resizeState.PreviousOutput == null)
-                || (_resizeState.PreviousVideoMode == null))
+                || (_fullScreenVideoMode is null)
+                || (_resizeState.PreviousOutput is null)
+                || (_resizeState.PreviousVideoMode is null))
             {
                 return;
             }
@@ -641,7 +641,7 @@ namespace Gorgon.Graphics.Core
             GorgonRenderTarget2DView rtv = Interlocked.Exchange(ref _targetView, null);
             rtv?.Dispose();
 
-            if (_backBufferTextures == null)
+            if (_backBufferTextures is null)
             {
                 return renderTargetViewIndex;
             }
@@ -691,7 +691,7 @@ namespace Gorgon.Graphics.Core
 
             // Restore the render target if we resize.
             GorgonDepthStencil2DView dsv = null;
-            if (Graphics.DepthStencilView != null)
+            if (Graphics.DepthStencilView is not null)
             {
                 dsv = ((_info.Width == Graphics.DepthStencilView.Width)
                        && (_info.Height == Graphics.DepthStencilView.Height)
@@ -701,7 +701,7 @@ namespace Gorgon.Graphics.Core
                           ? Graphics.DepthStencilView
                           : null;
 
-                if ((dsv == null) && (Graphics.DepthStencilView.Texture != null))
+                if ((dsv is null) && (Graphics.DepthStencilView.Texture is not null))
                 {
                     // Log a warning here because we didn't unbind our depth/stencil.
                     Graphics.Log.Print($"Warning: Depth/Stencil view for resource '{Graphics.DepthStencilView.Texture.Name}' ({Graphics.DepthStencilView.Width}x{Graphics.DepthStencilView.Height}) does not match the size of the swap chain ({_info.Width}x{_info.Height}). Therefore, the depth/stencil view will be unbound from the pipeline.",
@@ -731,7 +731,7 @@ namespace Gorgon.Graphics.Core
                 _previousViews[i] = view;
 
                 // Skip null entries, we don't care about these.
-                if (view == null)
+                if (view is null)
                 {
                     continue;
                 }
@@ -759,7 +759,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information about the swap chain.</param>
         private void ValidateSwapChainInfo(GorgonSwapChainInfo info)
         {
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
@@ -814,12 +814,12 @@ namespace Gorgon.Graphics.Core
                     output = Graphics.VideoAdapter.Outputs.FirstOrDefault(item => item.MonitorHandle == monitor);
                 }
 
-                if (output == null)
+                if (output is null)
                 {
                     monitor = Win32API.MonitorFromWindow(ParentForm.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
                     output = Graphics.VideoAdapter.Outputs.FirstOrDefault(item => item.MonitorHandle == monitor);
 
-                    Debug.Assert(output != null, "Cannot find a suitable output for full screen borderless window mode.");
+                    Debug.Assert(output is not null, "Cannot find a suitable output for full screen borderless window mode.");
                 }
 
                 var videoMode = new GorgonVideoMode(output.DesktopBounds.Width, output.DesktopBounds.Height, BufferFormat.R8G8B8A8_UNorm);
@@ -916,7 +916,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="ExitFullScreen"/>
         public void EnterFullScreen(in GorgonVideoMode desiredMode, IGorgonVideoOutputInfo output)
         {
-            if (output == null)
+            if (output is null)
             {
                 throw new ArgumentNullException(nameof(output));
             }
@@ -931,7 +931,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_NEED_FORM_FOR_FULLSCREEN, Name));
             }
 
-            if (((_fullScreenVideoMode != null) && (_fullScreenVideoMode.Value.Equals(in desiredMode)) && (output == FullscreenOutput))
+            if (((_fullScreenVideoMode is not null) && (_fullScreenVideoMode.Value.Equals(in desiredMode)) && (output == FullscreenOutput))
                 || (_isFullScreenBorderless))
             {
                 return;
@@ -1029,8 +1029,8 @@ namespace Gorgon.Graphics.Core
         public void ExitFullScreen()
         {
             if ((IsWindowed)
-                || (FullScreenVideoMode == null)
-                || (FullscreenOutput == null))
+                || (FullScreenVideoMode is null)
+                || (FullscreenOutput is null))
             {
                 return;
             }
@@ -1153,7 +1153,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonTexture2D"/>
         public GorgonTexture2D CopyBackBufferToTexture(ResourceUsage usage, TextureBinding binding)
         {
-            if ((usage != ResourceUsage.Default) && (usage != ResourceUsage.Staging))
+            if (usage is not ResourceUsage.Default and not ResourceUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BACKBUFFER_USAGE_INVALID);
             }
@@ -1181,10 +1181,8 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="IGorgonImage"/>
         public IGorgonImage CopyBackBufferToImage()
         {
-            using (GorgonTexture2D texture = CopyBackBufferToTexture(ResourceUsage.Staging, TextureBinding.None))
-            {
-                return texture.ToImage();
-            }
+            using GorgonTexture2D texture = CopyBackBufferToTexture(ResourceUsage.Staging, TextureBinding.None);
+            return texture.ToImage();
         }
 
         /// <summary>
@@ -1252,7 +1250,10 @@ namespace Gorgon.Graphics.Core
                 Graphics.SetRenderTargets(_previousViews, prevDepthStencil);
 
                 // Remove all items from the list so we don't hang on to them.
-                Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
+                for (int i = prevTargetRange.FirstIndex; i < prevTargetRange.TargetCount + prevTargetRange.FirstIndex; ++i)
+                {
+                    _previousViews[i] = null;
+                }
 
                 if (!GorgonGraphics.IsDebugEnabled)
                 {
@@ -1305,7 +1306,7 @@ namespace Gorgon.Graphics.Core
             SwapChainResizedEvent = null;
             SwapChainResizingEvent = null;
 
-            if (ParentForm != null)
+            if (ParentForm is not null)
             {
                 // We assign these events to the parent form so that a window resize is smooth, currently using the Resize event only introduces massive
                 // lag when resizing the back buffers. This will counter that by only resizing when the resize operation ends.
@@ -1318,12 +1319,12 @@ namespace Gorgon.Graphics.Core
 
             }
 
-            if (Window != null)
+            if (Window is not null)
             {
                 Window.Layout -= Window_Layout;
             }
 
-            if (swapChain == null)
+            if (swapChain is null)
             {
                 this.UnregisterDisposable(Graphics);
                 return;
@@ -1361,7 +1362,7 @@ namespace Gorgon.Graphics.Core
             Window = control ?? throw new ArgumentNullException(nameof(control));
             ParentForm = FindForm(control);
 
-            Debug.Assert(ParentForm != null, "No parent form found for control.");
+            Debug.Assert(ParentForm is not null, "No parent form found for control.");
 
             SwapChainDescription1 desc = info.ToSwapChainDesc();
 

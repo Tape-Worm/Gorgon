@@ -24,7 +24,11 @@
 // 
 #endregion
 
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using Gorgon.Math;
 using Gorgon.Graphics;
+using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -40,17 +44,17 @@ namespace Gorgon.Renderers
         /// <param name="bounds">The bounds of the renderable.</param>
         /// <param name="anchor">The anchor point for the renderable.</param>
         /// <param name="corners">The corners of the renderable.</param>
-        private static void BuildRenderable(ref DX.RectangleF bounds, ref DX.Vector2 anchor, out DX.Vector4 corners)
+        private static void BuildRenderable(ref DX.RectangleF bounds, ref Vector2 anchor, out Vector4 corners)
         {
-            var vectorSize = new DX.Vector2(bounds.Size.Width, bounds.Size.Height);
-            DX.Vector2 axisOffset = default;
+            var vectorSize = new Vector2(bounds.Width, bounds.Height);
+            Vector2 axisOffset = default;
 
-            if (!anchor.IsZero)
+            if ((anchor.X != 0) || (anchor.Y != 0))
             {
-                DX.Vector2.Multiply(ref anchor, ref vectorSize, out axisOffset);
+                axisOffset = Vector2.Multiply(anchor, vectorSize);
             }
 
-            corners = new DX.Vector4(-axisOffset.X, -axisOffset.Y, vectorSize.X - axisOffset.X, vectorSize.Y - axisOffset.Y);
+            corners = new Vector4(-axisOffset.X, -axisOffset.Y, vectorSize.X - axisOffset.X, vectorSize.Y - axisOffset.Y);
         }
 
         /// <summary>
@@ -61,7 +65,7 @@ namespace Gorgon.Renderers
         /// <param name="upperRight">The color of the upper right corner.</param>
         /// <param name="lowerLeft">The color of the lower left corner.</param>
         /// <param name="lowerRight">The color of the lower right corner.</param>
-        private static void UpdateVertexColors(Gorgon2DVertex[] vertices, in GorgonColor upperLeft, in GorgonColor upperRight, in GorgonColor lowerLeft, in GorgonColor lowerRight)
+        private static void UpdateVertexColors(Gorgon2DVertex[] vertices, ref GorgonColor upperLeft, ref GorgonColor upperRight, ref GorgonColor lowerLeft, ref GorgonColor lowerRight)
         {
             vertices[0].Color = upperLeft;
             vertices[1].Color = upperRight;
@@ -85,8 +89,8 @@ namespace Gorgon.Renderers
                                                      bool verticalFlip,
                                                      bool perspectCorrect)
         {
-            var rightBottom = new DX.Vector4(textureRegion.BottomRight, textureArrayIndex, 1.0f);
-            var leftTop = new DX.Vector4(textureRegion.TopLeft, textureArrayIndex, 1.0f);
+            var rightBottom = new Vector4(textureRegion.Right, textureRegion.Bottom, textureArrayIndex, 1.0f);
+            var leftTop = new Vector4(textureRegion.Left, textureRegion.Top, textureArrayIndex, 1.0f);
 
             if (horizontalFlip)
             {
@@ -107,8 +111,8 @@ namespace Gorgon.Renderers
             }
             
             vertices[0].UV = leftTop;
-            vertices[1].UV = new DX.Vector4(rightBottom.X, leftTop.Y, textureArrayIndex, 1.0f);
-            vertices[2].UV = new DX.Vector4(leftTop.X, rightBottom.Y, textureArrayIndex, 1.0f);
+            vertices[1].UV = new Vector4(rightBottom.X, leftTop.Y, textureArrayIndex, 1.0f);
+            vertices[2].UV = new Vector4(leftTop.X, rightBottom.Y, textureArrayIndex, 1.0f);
             vertices[3].UV = rightBottom;            
         }
 
@@ -119,34 +123,39 @@ namespace Gorgon.Renderers
         /// <param name="leftTop">The upper left texture coordinate.</param>
         /// <param name="rightBottom">The lower right texture coordinate.</param>
         /// <param name="arrayIndex">Th texture array index.</param>
-        private static void BuildPerspectiveModifier(Gorgon2DVertex[] vertices, ref DX.Vector4 leftTop, ref DX.Vector4 rightBottom, int arrayIndex)
+        /// <remarks>
+        /// <para>
+        /// Adapted from code at <a href="https://pumpkin-games.net/wp/?p=215"/>
+        /// </para>
+        /// </remarks>
+        private static void BuildPerspectiveModifier(Gorgon2DVertex[] vertices, ref Vector4 leftTop, ref Vector4 rightBottom, int arrayIndex)
         {
-            var v0 = (DX.Vector2)vertices[0].Position;
-            var v1 = (DX.Vector2)vertices[1].Position;
-            var v2 = (DX.Vector2)vertices[2].Position;
-            var v3 = (DX.Vector2)vertices[3].Position;
-            ref DX.Vector4 uv0 = ref vertices[0].UV;
-            ref DX.Vector4 uv1 = ref vertices[1].UV;
-            ref DX.Vector4 uv2 = ref vertices[2].UV;
-            ref DX.Vector4 uv3 = ref vertices[3].UV;
+            var v0 = new Vector2(vertices[0].Position.X, vertices[0].Position.Y);
+            var v1 = new Vector2(vertices[1].Position.X, vertices[1].Position.Y);
+            var v2 = new Vector2(vertices[2].Position.X, vertices[2].Position.Y);
+            var v3 = new Vector2(vertices[3].Position.X, vertices[3].Position.Y);
+            ref Vector4 uv0 = ref vertices[0].UV;
+            ref Vector4 uv1 = ref vertices[1].UV;
+            ref Vector4 uv2 = ref vertices[2].UV;
+            ref Vector4 uv3 = ref vertices[3].UV;
 
             uv0.Z = uv1.Z = uv2.Z = uv3.Z = arrayIndex;
             uv0.W = uv1.W = uv2.W = uv3.W = 1.0f;
 
-            DX.Vector2.Subtract(ref v3, ref v0, out DX.Vector2 va);
-            DX.Vector2.Subtract(ref v2, ref v1, out DX.Vector2 vb);
-            float crossProduct = va.X * vb.Y - va.Y * vb.X;
+            var va = Vector2.Subtract(v3, v0);
+            var vb = Vector2.Subtract(v2, v1);
+            float cross = va.X * vb.Y - va.Y * vb.X;
 
-            if (crossProduct == 0)
+            if (cross == 0)
             {                                
                 return;
             }
 
-            DX.Vector2.Subtract(ref v0, ref v1, out DX.Vector2 vc);
-            float u = (va.X * vc.Y - va.Y * vc.X) / crossProduct;
-            float v = (vb.X * vc.Y - vb.Y * vc.X) / crossProduct;
+            var vc = Vector2.Subtract(v0, v1);            
+            float u = (va.X * vc.Y - va.Y * vc.X) / cross;
+            float v = (vb.X * vc.Y - vb.Y * vc.X) / cross;
 
-            if (u < 0 || u >= 1 || v < 0 || v >= 1)
+            if ((u < 0) || (u >= 1) || (v < 0) || (v >= 1))
             {
                 return;
             }
@@ -189,29 +198,29 @@ namespace Gorgon.Renderers
         /// <param name="cornerLowerLeft">The lower left corner offset.</param>
         /// <param name="cornerLowerRight">The lower right corner offset.</param>
         private static void TransformVertices(Gorgon2DVertex[] vertices,
-                                              ref DX.Vector4 corners,
+                                              ref Vector4 corners,
                                               ref DX.RectangleF bounds,
-                                              ref DX.Vector2 scale,
+                                              ref Vector2 scale,
                                               float angleRads,
                                               float angleSin,
                                               float angleCos,
                                               float depth,
-                                              ref DX.Vector3 cornerUpperLeft,
-                                              ref DX.Vector3 cornerUpperRight,
-                                              ref DX.Vector3 cornerLowerLeft,
-                                              ref DX.Vector3 cornerLowerRight)
+                                              ref Vector3 cornerUpperLeft,
+                                              ref Vector3 cornerUpperRight,
+                                              ref Vector3 cornerLowerLeft,
+                                              ref Vector3 cornerLowerRight)
         {
-            var upperLeft = new DX.Vector2(corners.X + cornerUpperLeft.X, corners.Y + cornerUpperLeft.Y);
-            var upperRight = new DX.Vector2(corners.Z + cornerUpperRight.X, corners.Y + cornerUpperRight.Y);
-            var lowerRight = new DX.Vector2(corners.Z + cornerLowerRight.X, corners.W + cornerLowerRight.Y);
-            var lowerLeft = new DX.Vector2(corners.X + cornerLowerLeft.X, corners.W + cornerLowerLeft.Y);
+            var upperLeft = new Vector2(corners.X + cornerUpperLeft.X, corners.Y + cornerUpperLeft.Y);
+            var upperRight = new Vector2(corners.Z + cornerUpperRight.X, corners.Y + cornerUpperRight.Y);
+            var lowerRight = new Vector2(corners.Z + cornerLowerRight.X, corners.W + cornerLowerRight.Y);
+            var lowerLeft = new Vector2(corners.X + cornerLowerLeft.X, corners.W + cornerLowerLeft.Y);
 
             if ((scale.X != 1.0f) || (scale.Y != 1.0f))
             {
-                DX.Vector2.Multiply(ref upperLeft, ref scale, out upperLeft);
-                DX.Vector2.Multiply(ref upperRight, ref scale, out upperRight);
-                DX.Vector2.Multiply(ref lowerRight, ref scale, out lowerRight);
-                DX.Vector2.Multiply(ref lowerLeft, ref scale, out lowerLeft);
+                upperLeft = Vector2.Multiply(upperLeft, scale);
+                upperRight = Vector2.Multiply(upperRight, scale);
+                lowerRight = Vector2.Multiply(lowerRight, scale);
+                lowerLeft = Vector2.Multiply(lowerLeft, scale);
             }
 
             ref Gorgon2DVertex v1 = ref vertices[0];
@@ -221,44 +230,47 @@ namespace Gorgon.Renderers
 
             if (angleRads != 0.0f)
             {
-                v1.Position.X = ((upperLeft.X * angleCos) - (upperLeft.Y * angleSin)) + bounds.X;
-                v1.Position.Y = ((upperLeft.X * angleSin) + (upperLeft.Y * angleCos)) + bounds.Y;
-                v1.Position.Z = depth + cornerUpperLeft.Z;
-                v1.Angle = new DX.Vector2(angleCos, angleSin);
+                v1.Position = new Vector4(((upperLeft.X * angleCos) - (upperLeft.Y * angleSin)) + bounds.Left,
+                                    ((upperLeft.X * angleSin) + (upperLeft.Y * angleCos)) + bounds.Top,
+                                    depth + cornerUpperLeft.Z, 1);
+                v1.Angle = new Vector2(angleCos, angleSin);
 
-                v2.Position.X = ((upperRight.X * angleCos) - (upperRight.Y * angleSin)) + bounds.X;
-                v2.Position.Y = ((upperRight.X * angleSin) + (upperRight.Y * angleCos)) + bounds.Y;
-                v2.Position.Z = depth + cornerUpperRight.Z;
-                v2.Angle = new DX.Vector2(angleCos, angleSin);
+                v2.Position = new Vector4(((upperRight.X * angleCos) - (upperRight.Y * angleSin)) + bounds.Left,
+                                     ((upperRight.X * angleSin) + (upperRight.Y * angleCos)) + bounds.Top,
+                                      depth + cornerUpperRight.Z, 1);
+                v2.Angle = new Vector2(angleCos, angleSin);
 
-                v3.Position.X = ((lowerLeft.X * angleCos) - (lowerLeft.Y * angleSin)) + bounds.X;
-                v3.Position.Y = ((lowerLeft.X * angleSin) + (lowerLeft.Y * angleCos)) + bounds.Y;
-                v3.Position.Z = depth + cornerLowerLeft.Z;
-                v3.Angle = new DX.Vector2(angleCos, angleSin);
+                v3.Position = new Vector4(((lowerLeft.X * angleCos) - (lowerLeft.Y * angleSin)) + bounds.Left,
+                                     ((lowerLeft.X * angleSin) + (lowerLeft.Y * angleCos)) + bounds.Top,
+                                      depth + cornerLowerLeft.Z, 1);
+                v3.Angle = new Vector2(angleCos, angleSin);
 
-                v4.Position.X = ((lowerRight.X * angleCos) - (lowerRight.Y * angleSin)) + bounds.X;
-                v4.Position.Y = ((lowerRight.X * angleSin) + (lowerRight.Y * angleCos)) + bounds.Y;
-                v4.Position.Z = depth + cornerLowerRight.Z;
-                v4.Angle = new DX.Vector2(angleCos, angleSin);
+                v4.Position = new Vector4(((lowerRight.X * angleCos) - (lowerRight.Y * angleSin)) + bounds.Left,
+                                     ((lowerRight.X * angleSin) + (lowerRight.Y * angleCos)) + bounds.Top,
+                                      depth + cornerLowerRight.Z, 1);
+                v4.Angle = new Vector2(angleCos, angleSin);
             }
             else
             {
-                v1.Position.X = upperLeft.X + bounds.X;
-                v1.Position.Y = upperLeft.Y + bounds.Y;
-                v1.Position.Z = depth + cornerUpperLeft.Z;
-                v1.Angle = DX.Vector2.UnitX;
-                v2.Position.X = upperRight.X + bounds.X;
-                v2.Position.Y = upperRight.Y + bounds.Y;
-                v2.Position.Z = depth + cornerUpperRight.Z;
-                v2.Angle = DX.Vector2.UnitX;
-                v3.Position.X = lowerLeft.X + bounds.X;
-                v3.Position.Y = lowerLeft.Y + bounds.Y;
-                v3.Position.Z = depth + cornerLowerLeft.Z;
-                v3.Angle = DX.Vector2.UnitX;
-                v4.Position.X = lowerRight.X + bounds.X;
-                v4.Position.Y = lowerRight.Y + bounds.Y;
-                v4.Position.Z = depth + cornerLowerRight.Z;
-                v4.Angle = DX.Vector2.UnitX;
+                v1.Position  = new Vector4(upperLeft.X + bounds.Left,
+                                     upperLeft.Y + bounds.Top,
+                                     depth + cornerUpperLeft.Z, 1);
+                v1.Angle = Vector2.UnitX;
+
+                v2.Position = new Vector4(upperRight.X + bounds.Left,
+                                     upperRight.Y + bounds.Top,
+                                     depth + cornerUpperRight.Z, 1);
+                v2.Angle = Vector2.UnitX;
+
+                v3.Position = new Vector4(lowerLeft.X + bounds.Left,
+                                     lowerLeft.Y + bounds.Top,
+                                     depth + cornerLowerLeft.Z, 1);
+                v3.Angle = Vector2.UnitX;
+
+                v4.Position = new Vector4(lowerRight.X + bounds.Left,
+                                     lowerRight.Y + bounds.Top,
+                                     depth + cornerLowerRight.Z, 1);
+                v4.Angle = Vector2.UnitX;
             }
         }
 
@@ -268,8 +280,6 @@ namespace Gorgon.Renderers
         /// <param name="renderable">The renderable to transform.</param>
         public void Transform(BatchRenderable renderable)
         {
-            Gorgon2DVertex[] vertices = renderable.Vertices;
-
             if (renderable.HasVertexChanges)
             {
                 BuildRenderable(ref renderable.Bounds, ref renderable.Anchor, out renderable.Corners);
@@ -281,13 +291,24 @@ namespace Gorgon.Renderers
 
             if (renderable.HasTransformChanges)
             {
-                TransformVertices(vertices,
+                float rads = 0;
+                float sin = 0;
+                float cos = 1;
+
+                if (renderable.AngleDegs != 0)
+                {
+                    rads = renderable.AngleDegs.ToRadians();
+                    sin = rads.FastSin();
+                    cos = rads.FastCos();
+                }
+
+                TransformVertices(renderable.Vertices,
                                   ref renderable.Corners,
                                   ref renderable.Bounds,
                                   ref renderable.Scale,
-                                  renderable.AngleRads,
-                                  renderable.AngleSin,
-                                  renderable.AngleCos,
+                                  rads,
+                                  sin,
+                                  cos,
                                   renderable.Depth,
                                   ref renderable.UpperLeftOffset,
                                   ref renderable.UpperRightOffset,
@@ -299,17 +320,17 @@ namespace Gorgon.Renderers
 
             if (renderable.HasVertexColorChanges)
             {
-                UpdateVertexColors(vertices, in renderable.UpperLeftColor, in renderable.UpperRightColor, in renderable.LowerLeftColor, in renderable.LowerRightColor);
+                UpdateVertexColors(renderable.Vertices, ref renderable.UpperLeftColor, ref renderable.UpperRightColor, ref renderable.LowerLeftColor, ref renderable.LowerRightColor);
                 renderable.HasVertexColorChanges = false;
             }
 
             if (renderable.HasTextureChanges)
             {
-                UpdateTextureCoordinates(vertices, ref renderable.TextureRegion, renderable.TextureArrayIndex, renderable.HorizontalFlip, renderable.VerticalFlip,
-                                       (!renderable.LowerLeftOffset.IsZero) 
-                                    || (!renderable.UpperLeftOffset.IsZero)
-                                    || (!renderable.LowerRightOffset.IsZero)
-                                    || (!renderable.UpperRightOffset.IsZero));
+                UpdateTextureCoordinates(renderable.Vertices, ref renderable.TextureRegion, renderable.TextureArrayIndex, renderable.HorizontalFlip, renderable.VerticalFlip,
+                                       (!renderable.LowerLeftOffset.Equals(Vector3.Zero)) 
+                                    || (!renderable.UpperLeftOffset.Equals(Vector3.Zero))
+                                    || (!renderable.LowerRightOffset.Equals(Vector3.Zero))
+                                    || (!renderable.UpperRightOffset.Equals(Vector3.Zero)));
                 renderable.HasTextureChanges = false;
             }            
         }

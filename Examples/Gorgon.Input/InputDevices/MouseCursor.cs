@@ -72,31 +72,31 @@ namespace Gorgon.Examples
         /// </summary>
         private void CleanUp()
         {
-            if (_buffer != null)
+            if (_buffer is not null)
             {
                 _buffer.Dispose();
                 _buffer = null;
             }
 
-            if (_graphicsContext != null)
+            if (_graphicsContext is not null)
             {
                 _graphicsContext.Dispose();
                 _graphicsContext = null;
             }
 
-            if (_graphics != null)
+            if (_graphics is not null)
             {
                 _graphics.Dispose();
                 _graphics = null;
             }
 
-            if (_imageGraphics != null)
+            if (_imageGraphics is not null)
             {
                 _imageGraphics.Dispose();
                 _imageGraphics = null;
             }
 
-            if (_mouseImage == null)
+            if (_mouseImage is null)
             {
                 return;
             }
@@ -132,7 +132,7 @@ namespace Gorgon.Examples
 
             CleanUp();
 
-            if ((ownerForm != null) && (ownerForm.WindowState != FormWindowState.Minimized))
+            if ((ownerForm is not null) && (ownerForm.WindowState != FormWindowState.Minimized))
             {
                 CreateDoubleBufferSurface(displayControl);
             }
@@ -147,13 +147,12 @@ namespace Gorgon.Examples
         public void DrawMouseCursor(Point position, Image cursor, Image additionalBuffer)
         {
             _buffer.Graphics.Clear(_clearColor);
-            if (additionalBuffer != null)
+            if (additionalBuffer is not null)
             {
                 _buffer.Graphics.DrawImage(additionalBuffer, Point.Empty);
             }
 
             _buffer.Graphics.DrawImage(cursor, new Point(position.X + Hotspot.X, position.Y + Hotspot.Y));
-            _buffer.Render();
             _buffer.Render(_graphics);
         }
         #endregion

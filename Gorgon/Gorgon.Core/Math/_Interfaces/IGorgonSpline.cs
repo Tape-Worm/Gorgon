@@ -1,6 +1,32 @@
-﻿using System;
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2021 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: February 12, 2021 1:07:51 AM
+// 
+#endregion
+
+using System;
+using System.Numerics;
 using System.Collections.Generic;
-using DX = SharpDX;
 
 namespace Gorgon.Math
 {
@@ -66,7 +92,7 @@ namespace Gorgon.Math
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>
-        DX.Vector4 GetInterpolatedValue(int startPointIndex, float delta);
+        Vector4 GetInterpolatedValue(int startPointIndex, float delta);
 
         /// <summary>
         /// Function to return an interpolated point from the spline.
@@ -79,7 +105,7 @@ namespace Gorgon.Math
         /// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
         /// </para>
         /// </remarks>
-        DX.Vector4 GetInterpolatedValue(float delta);
+        Vector4 GetInterpolatedValue(float delta);
     }
 
     /// <summary>
@@ -139,7 +165,7 @@ namespace Gorgon.Math
         /// <remarks>
         /// When adding or removing points> from the spline, a call to the <see cref="UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
         /// </remarks>
-        IList<DX.Vector4> Points
+        IList<Vector4> Points
         {
             get;
         }

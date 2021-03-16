@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -35,6 +36,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
@@ -48,7 +50,7 @@ namespace Gorgon.Editor.SpriteEditor
         // The renderer used to draw the UI.
         private readonly Gorgon2D _renderer;
         // The list of vertices to update.
-        private readonly DX.Vector2[] _vertices = new DX.Vector2[4];
+        private readonly Vector2[] _vertices = new Vector2[4];
         // The handles for grabbing.
         private readonly RectHandle[] _handles =
         {
@@ -63,21 +65,21 @@ namespace Gorgon.Editor.SpriteEditor
         // The state used to draw inverted items.
         private readonly Gorgon2DBatchState _invertedState;
         // The vertex positions, in screen space.
-        private readonly DX.Vector2[] _screenVertices = new DX.Vector2[4];
+        private readonly Vector2[] _screenVertices = new Vector2[4];
         // The currently active handle (the mouse is over it).
         private int _activeHandleIndex = -1;
         // Starting drag position.
-        private DX.Vector2 _localStartDrag;
+        private Vector2 _localStartDrag;
         // Mouse position (in client space).
-        private DX.Vector2 _mousePos;
+        private Vector2 _mousePos;
         // The original position of the handle being dragged.
-        private DX.Vector2 _dragHandlePos;
+        private Vector2 _dragHandlePos;
         // The icon used for keyboard manual input.
         private Lazy<GorgonTexture2DView> _keyboardIcon;
         // The currently selected vertex.
         private int _selectedVertexIndex = -1;
         // The camera used to render the UI.
-        private IGorgon2DCamera _camera;
+        private GorgonOrthoCamera _camera;
         #endregion
 
         #region Events.
@@ -97,7 +99,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     VerticesChangedEvent = null;
                     return;
@@ -107,7 +109,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -123,7 +125,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     VertexSelectedEvent = null;
                     return;
@@ -133,7 +135,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -149,7 +151,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     KeyboardIconClickedEvent = null;
                     return;
@@ -159,7 +161,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -173,7 +175,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to set or return the camera being used.
         /// </summary>
-        public IGorgon2DCamera Camera
+        public GorgonOrthoCamera Camera
         {
             get => _camera;
             set
@@ -193,12 +195,12 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Property to set or return the vertices for the sprite.</summary>
-        public IReadOnlyList<DX.Vector2> Vertices
+        public IReadOnlyList<Vector2> Vertices
         {
             get => _vertices;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     Array.Clear(_vertices, 0, _vertices.Length);
                     return;
@@ -211,7 +213,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 for (int i = 0; i < _vertices.Length; ++i)
                 {
-                    _vertices[i] = i < value.Count ? value[i] : DX.Vector2.Zero;
+                    _vertices[i] = i < value.Count ? value[i] : Vector2.Zero;
                 }
 
                 SetupHandles();
@@ -273,15 +275,15 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to perform the dragging on the handles or the body of the selection.
         /// </summary>
         /// <param name="localMousePos">The position of the mouse, relative to the sprite.</param>
-        private void DragHandles(DX.Vector2 localMousePos)
+        private void DragHandles(Vector2 localMousePos)
         {
             if (SelectedVertexIndex == -1)
             {
                 return;
             }
 
-            DX.Vector2.Subtract(ref localMousePos, ref _localStartDrag, out DX.Vector2 dragDelta);
-            var newPos = new DX.Vector2(_dragHandlePos.X + dragDelta.X, _dragHandlePos.Y + dragDelta.Y);
+            var dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
+            var newPos = new Vector2(_dragHandlePos.X + dragDelta.X, _dragHandlePos.Y + dragDelta.Y);
             _vertices[SelectedVertexIndex] = newPos.Truncate();
             SetupHandles();
 
@@ -311,7 +313,7 @@ namespace Gorgon.Editor.SpriteEditor
                     continue;
                 }
 
-                if ((handleBounds.Contains(_mousePos)) && (!IsDragging))
+                if ((handleBounds.Contains(_mousePos.X, _mousePos.Y)) && (!IsDragging))
                 {
                     _activeHandleIndex = i;
                     mouseCursor = _handles[_activeHandleIndex].HandleCursor;
@@ -336,20 +338,22 @@ namespace Gorgon.Editor.SpriteEditor
         private void SetupHandles()
         {
             // Convert to client space.
-            if (Camera != null)
+            if (Camera is not null)
             {
-                var half = new DX.Vector2(SpriteBounds.Width * 0.5f, SpriteBounds.Height * 0.5f);
-                _screenVertices[0] = (DX.Vector2)Camera.Unproject((DX.Vector3)_vertices[0]) - half;
-                _screenVertices[1] = (DX.Vector2)Camera.Unproject((DX.Vector3)_vertices[1]) - half;
-                _screenVertices[2] = (DX.Vector2)Camera.Unproject((DX.Vector3)_vertices[2]) - half;
-                _screenVertices[3] = (DX.Vector2)Camera.Unproject((DX.Vector3)_vertices[3]) - half;
+                var half = new Vector3(SpriteBounds.Width * 0.5f, SpriteBounds.Height * 0.5f, 0);
+
+                for (int i = 0; i < _screenVertices.Length; ++i)
+                {
+                    Vector3 unprojected = Camera.Unproject(new Vector3(_vertices[i].X, _vertices[i].Y, 0)) - half;
+                    _screenVertices[i] = new Vector2(unprojected.X, unprojected.Y);
+                }
             }
             else
             {
-                _screenVertices[0] = new DX.Vector2(_vertices[0].X, _vertices[0].Y);
-                _screenVertices[1] = new DX.Vector2(_vertices[1].X, _vertices[1].Y);
-                _screenVertices[2] = new DX.Vector2(_vertices[2].X, _vertices[2].Y);
-                _screenVertices[3] = new DX.Vector2(_vertices[3].X, _vertices[3].Y);
+                _screenVertices[0] = new Vector2(_vertices[0].X, _vertices[0].Y);
+                _screenVertices[1] = new Vector2(_vertices[1].X, _vertices[1].Y);
+                _screenVertices[2] = new Vector2(_vertices[2].X, _vertices[2].Y);
+                _screenVertices[3] = new Vector2(_vertices[3].X, _vertices[3].Y);
             }
 
             var aabb = new DX.RectangleF
@@ -377,7 +381,7 @@ namespace Gorgon.Editor.SpriteEditor
             _handles[3].HandleBounds = new DX.RectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
             if ((aabb.Width >= _keyboardIcon.Value.Width * 2) && (aabb.Height >= _keyboardIcon.Value.Height * 2) && (SelectedVertexIndex != -1))
             {
-                DX.Vector2 keyPos = new DX.Vector2(_screenVertices[SelectedVertexIndex].X + 8, _screenVertices[SelectedVertexIndex].Y + 8).Truncate();
+                Vector2 keyPos = new Vector2(_screenVertices[SelectedVertexIndex].X + 8, _screenVertices[SelectedVertexIndex].Y + 8).Truncate();
 
                 _handles[4].HandleBounds = new DX.RectangleF(keyPos.X, keyPos.Y, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
                 _handles[4].Texture = _keyboardIcon.Value;
@@ -410,7 +414,7 @@ namespace Gorgon.Editor.SpriteEditor
                 offset = 100;
             }
 
-            DX.Vector2 localPos = DX.Vector2.Zero;
+            Vector2 localPos = Vector2.Zero;
 
             if (SelectedVertexIndex != -1)
             {
@@ -443,61 +447,61 @@ namespace Gorgon.Editor.SpriteEditor
                 case Keys.Back:
                 case Keys.D0:
                     SelectedVertexIndex = -1;
-                    _dragHandlePos = DX.Vector2.Zero;
-                    _localStartDrag = DX.Vector2.Zero;
+                    _dragHandlePos = Vector2.Zero;
+                    _localStartDrag = Vector2.Zero;
                     IsDragging = false;
                     return true;                    
                 case Keys.D1:
                     SelectedVertexIndex = 0;
-                    _dragHandlePos = DX.Vector2.Zero;
-                    _localStartDrag = DX.Vector2.Zero;
+                    _dragHandlePos = Vector2.Zero;
+                    _localStartDrag = Vector2.Zero;
                     IsDragging = false;
                     return true;
                 case Keys.D2:
                     SelectedVertexIndex = 1;
-                    _dragHandlePos = DX.Vector2.Zero;
-                    _localStartDrag = DX.Vector2.Zero;
+                    _dragHandlePos = Vector2.Zero;
+                    _localStartDrag = Vector2.Zero;
                     IsDragging = false;
                     return true;
                 case Keys.D3:
                     SelectedVertexIndex = 2;
-                    _dragHandlePos = DX.Vector2.Zero;
-                    _localStartDrag = DX.Vector2.Zero;
+                    _dragHandlePos = Vector2.Zero;
+                    _localStartDrag = Vector2.Zero;
                     IsDragging = false;
                     return true;
                 case Keys.D4:
                     SelectedVertexIndex = 3;
-                    _dragHandlePos = DX.Vector2.Zero;
-                    _localStartDrag = DX.Vector2.Zero;
+                    _dragHandlePos = Vector2.Zero;
+                    _localStartDrag = Vector2.Zero;
                     IsDragging = false;
                     return true;
                 case Keys.Up:
                 case Keys.NumPad8:
-                    localPos = new DX.Vector2(localPos.X, localPos.Y - offset);
+                    localPos = new Vector2(localPos.X, localPos.Y - offset);
                     break;
                 case Keys.Down:
                 case Keys.NumPad2:
-                    localPos = new DX.Vector2(localPos.X, localPos.Y + offset);
+                    localPos = new Vector2(localPos.X, localPos.Y + offset);
                     break;
                 case Keys.Right:
                 case Keys.NumPad6:
-                    localPos = new DX.Vector2(localPos.X + offset, localPos.Y);
+                    localPos = new Vector2(localPos.X + offset, localPos.Y);
                     break;
                 case Keys.Left:
                 case Keys.NumPad4:
-                    localPos = new DX.Vector2(localPos.X - offset, localPos.Y);
+                    localPos = new Vector2(localPos.X - offset, localPos.Y);
                     break;
                 case Keys.NumPad7:
-                    localPos = new DX.Vector2(localPos.X - offset, localPos.Y - offset);
+                    localPos = new Vector2(localPos.X - offset, localPos.Y - offset);
                     break;
                 case Keys.NumPad9:
-                    localPos = new DX.Vector2(localPos.X + offset, localPos.Y - offset);
+                    localPos = new Vector2(localPos.X + offset, localPos.Y - offset);
                     break;
                 case Keys.NumPad1:
-                    localPos = new DX.Vector2(localPos.X - offset, localPos.Y + offset);
+                    localPos = new Vector2(localPos.X - offset, localPos.Y + offset);
                     break;
                 case Keys.NumPad3:
-                    localPos = new DX.Vector2(localPos.X + offset, localPos.Y + offset);
+                    localPos = new Vector2(localPos.X + offset, localPos.Y + offset);
                     break;
                 default:
                     return false;
@@ -520,7 +524,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
         public bool MouseMove(MouseArgs args)
         {
-            _mousePos = args.ClientPosition;
+            _mousePos = args.ClientPosition.ToVector2();
             GetActiveHandle();
 
             if (SelectedVertexIndex == -1)
@@ -536,9 +540,9 @@ namespace Gorgon.Editor.SpriteEditor
 
             if ((args.MouseButtons == MouseButtons.Left) && (_activeHandleIndex != -1) && (_activeHandleIndex != 4) && (!IsDragging))
             {
-                var delta = new DX.Vector2(_localStartDrag.X - args.CameraSpacePosition.X, _localStartDrag.Y - args.CameraSpacePosition.Y);
-                ref DX.Vector2 vertexPosition = ref _vertices[SelectedVertexIndex];
-                vertexPosition = new DX.Vector2(vertexPosition.X + delta.X, vertexPosition.Y + delta.Y);
+                var delta = new Vector2(_localStartDrag.X - args.CameraSpacePosition.X, _localStartDrag.Y - args.CameraSpacePosition.Y);
+                ref Vector2 vertexPosition = ref _vertices[SelectedVertexIndex];
+                vertexPosition = new Vector2(vertexPosition.X + delta.X, vertexPosition.Y + delta.Y);
                 _localStartDrag = args.CameraSpacePosition;
                 _dragHandlePos = vertexPosition;
 
@@ -562,7 +566,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="args">The arguments for the mouse down event.</param>
         public bool MouseDown(MouseArgs args)
         {
-            _mousePos = args.ClientPosition;
+            _mousePos = args.ClientPosition.ToVector2();
             GetActiveHandle();
 
             if (_activeHandleIndex == 4)
@@ -570,7 +574,7 @@ namespace Gorgon.Editor.SpriteEditor
                 return true;
             }
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex > 3))
+            if (_activeHandleIndex is (-1) or > 3)
             {
                 SelectedVertexIndex = -1;
                 return false;
@@ -588,7 +592,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
         public bool MouseUp(MouseArgs args)
         {
-            _mousePos = args.ClientPosition;
+            _mousePos = args.ClientPosition.ToVector2();
             GetActiveHandle();
 
             if ((_activeHandleIndex == 4) && (!IsDragging))
@@ -605,7 +609,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             if (args.MouseButtons == MouseButtons.Left)
             {
-                _localStartDrag = DX.Vector2.Zero;
+                _localStartDrag = Vector2.Zero;
                 IsDragging = false;
             }
 
@@ -659,7 +663,7 @@ namespace Gorgon.Editor.SpriteEditor
                     _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
                 }
 
-                if (texture == null)
+                if (texture is null)
                 {
                     _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
                     _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);

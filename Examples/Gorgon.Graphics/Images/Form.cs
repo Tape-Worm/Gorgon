@@ -67,11 +67,13 @@ namespace Gorgon.Examples
         private ImageGallery _gallery;
         // The animator for the GIF file.
         private GifAnimator _gifAnim;
+        // The graphics context for the form.
+        private System.Drawing.Graphics _graphics;
         #endregion
 
         #region Methods.
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data. </param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -86,15 +88,10 @@ namespace Gorgon.Examples
                 // Load our image data.
                 _gallery.LoadImages(GorgonApplication.StartupPath.FullName);
 
+                _graphics = CreateGraphics();
 
                 // Begin our animation.
-                _gifAnim.Animate(() =>
-                                 {
-                                     using (System.Drawing.Graphics graphics = CreateGraphics())
-                                     {
-                                         _gallery.RefreshGif(graphics);
-                                     }
-                                 });
+                _gifAnim.Animate(() => _gallery.RefreshGif(_graphics));
             }
             catch (Exception ex)
             {
@@ -108,7 +105,7 @@ namespace Gorgon.Examples
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
@@ -128,12 +125,12 @@ namespace Gorgon.Examples
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.FormClosingEventArgs" /> that contains the event data. </param>
+        /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data. </param>
         protected override async void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
 
-            if (_gifAnim == null)
+            if (_gifAnim is null)
             {
                 return;
             }
@@ -155,6 +152,7 @@ namespace Gorgon.Examples
 
                 e.Cancel = false;
 
+                _graphics.Dispose();
                 _gallery.Dispose();
                 _gifAnim = null;
             }

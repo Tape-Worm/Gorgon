@@ -29,7 +29,6 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -43,7 +42,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// <para>
     /// To send indices to the GPU using a index buffer, an application can upload a value type values, representing the indices, to the buffer using one of the 
-    /// <see cref="GorgonBufferCommon.SetData{T}(T[], int, int?, int, CopyMode)"/> overloads. For best performance, it is recommended to upload index data only once, or rarely. However, in 
+    /// <see cref="GorgonBufferCommon.SetData{T}(ReadOnlySpan{T}, int, CopyMode)"/> overloads. For best performance, it is recommended to upload index data only once, or rarely. However, in 
     /// some scenarios, and with the correct <see cref="IGorgonIndexBufferInfo.Usage"/> flag, indices can be updated regularly for things like dynamic tesselation of surface.
     /// </para>
     /// <para> 
@@ -98,7 +97,7 @@ namespace Gorgon.Graphics.Core
         internal override D3D11.BindFlags BindFlags => Native?.Description.BindFlags ?? D3D11.BindFlags.None;
 
         /// <summary>
-        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/> methods.
+        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(Span{T}, int, int?)"/> methods.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -118,8 +117,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/>
-        /// <seealso cref="GorgonBufferCommon.GetData{T}(T[], int, int?, int)"/>
+        /// <seealso cref="GorgonBufferCommon.GetData{T}(Span{T}, int, int?)"/>
         /// <seealso cref="GorgonBufferCommon.GetData{T}(out T, int)"/>
         /// <seealso cref="GorgonBufferCommon.GetData{T}(int, int?)"/>
         public override bool IsCpuReadable => Usage == ResourceUsage.Staging;
@@ -160,7 +158,7 @@ namespace Gorgon.Graphics.Core
         /// Function to initialize the buffer data.
         /// </summary>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
-        private void Initialize<T>(GorgonNativeBuffer<T> initialData)
+        private void Initialize<T>(ReadOnlySpan<T> initialData)
             where T : unmanaged
         {
             D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.IndexBuffer);
@@ -191,23 +189,7 @@ namespace Gorgon.Graphics.Core
                 StructureByteStride = 0
             };
 
-            if ((initialData != null) && (initialData.Length > 0))
-            {
-                unsafe
-                {
-                    D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((void*)initialData), desc)
-                    {
-                        DebugName = Name
-                    };
-                }
-            }
-            else
-            {
-                D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
-                {
-                    DebugName = Name
-                };
-            }
+            D3DResource = Native = ResourceFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
         }
 
 
@@ -302,7 +284,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, format);
             GorgonIndexBufferReadWriteView result = GetReadWriteView<GorgonIndexBufferReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
@@ -336,11 +318,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
-        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<byte> initialData)
+        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, ReadOnlySpan<byte> initialData)
             : base(graphics)
         {
             _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
-            Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+            Initialize(initialData.IsEmpty ? throw new ArgumentNullException(nameof(initialData)) : initialData);
         }
 
         /// <summary>
@@ -350,11 +332,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
-        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<ushort> initialData)
+        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, ReadOnlySpan<ushort> initialData)
             : base(graphics)
         {
             _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
-            Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+            Initialize(initialData.IsEmpty ? throw new ArgumentNullException(nameof(initialData)) : initialData);
         }
 
         /// <summary>
@@ -364,11 +346,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
-        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<short> initialData = null)
+        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, ReadOnlySpan<short> initialData)
             : base(graphics)
         {
             _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
-            Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+            Initialize(initialData.IsEmpty ? throw new ArgumentNullException(nameof(initialData)) : initialData);
         }
 
         /// <summary>
@@ -378,11 +360,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
-        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<uint> initialData = null)
+        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, ReadOnlySpan<uint> initialData)
             : base(graphics)
         {
             _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
-            Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+            Initialize(initialData.IsEmpty ? throw new ArgumentNullException(nameof(initialData)) : initialData);
         }
 
         /// <summary>
@@ -392,11 +374,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
-        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<int> initialData = null)
+        public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, ReadOnlySpan<int> initialData)
             : base(graphics)
         {
             _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
-            Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+            Initialize(initialData.IsEmpty ? throw new ArgumentNullException(nameof(initialData)) : initialData);
         }
         #endregion
     }

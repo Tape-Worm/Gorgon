@@ -25,10 +25,11 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Renderers;
-using DX = SharpDX;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Editor.Services
 {
@@ -54,7 +55,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the position of the sprite anchor.
         /// </summary>
-        DX.Vector2 AnchorPosition
+        Vector2 AnchorPosition
         {
             get;
             set;
@@ -63,7 +64,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the center position of the sprite.
         /// </summary>
-        DX.Vector2 CenterPosition
+        Vector2 CenterPosition
         {
             get;
             set;
@@ -72,7 +73,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the camera for the renderer.
         /// </summary>
-        IGorgon2DCamera Camera
+        GorgonOrthoCamera Camera
         {
             get;
             set;

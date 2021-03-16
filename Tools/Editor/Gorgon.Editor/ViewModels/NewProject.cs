@@ -240,7 +240,7 @@ namespace Gorgon.Editor.ViewModels
 
             // Do not allow us to write to the main windows or system folders, that'd be bad.
             if ((forbiddenPaths.Any(item => string.Equals(directory, item, StringComparison.OrdinalIgnoreCase)))
-                || (System.IO.Directory.GetParent(directory) == null))
+                || (System.IO.Directory.GetParent(directory) is null))
             {                
                 InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.Ellipses(45, true));
                 return false;
@@ -302,13 +302,13 @@ namespace Gorgon.Editor.ViewModels
             {
                 lastPath = string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ? null : Path.GetFullPath(_settings.LastProjectWorkingDirectory);
 
-                if ((lastPath == null) || (!System.IO.Directory.Exists(lastPath)))
+                if ((lastPath is null) || (!System.IO.Directory.Exists(lastPath)))
                 {
                     if (!string.IsNullOrWhiteSpace(lastPath))
                     {
                         var parentDir = new DirectoryInfo(lastPath);
 
-                        if (parentDir.Parent != null)
+                        if (parentDir.Parent is not null)
                         {
                             lastPath = parentDir.FullName;
                         }
@@ -318,7 +318,7 @@ namespace Gorgon.Editor.ViewModels
                         }
                     }
 
-                    if (lastPath == null)
+                    if (lastPath is null)
                     {
                         lastPath = _defaultProjectPath;
                         System.IO.Directory.CreateDirectory(lastPath);
@@ -351,7 +351,7 @@ namespace Gorgon.Editor.ViewModels
 
                 DirectoryInfo dir = _directoryLocator.GetDirectory(new DirectoryInfo(lastPath), Resources.GOREDIT_CAPTION_SELECT_PROJECT_DIR);
 
-                if (dir == null)
+                if (dir is null)
                 {
                     return;
                 }
@@ -381,7 +381,7 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the project workspace can be set, or <b>false</b> if not.</returns>
-        private bool CanSetProjectWorkspace(SetProjectWorkspaceArgs args) => args != null;
+        private bool CanSetProjectWorkspace(SetProjectWorkspaceArgs args) => args is not null;
 
         /// <summary>
         /// Function to set the project workspace.
@@ -433,7 +433,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // If we just a drive letter (e.g. "C:"), then restore the path separator so we can treat it as the root of the drive.
-                if (path[path.Length - 1] == Path.VolumeSeparatorChar)
+                if (path[^1] == Path.VolumeSeparatorChar)
                 {
                     path += Path.DirectorySeparatorChar;
                 }
@@ -462,7 +462,7 @@ namespace Gorgon.Editor.ViewModels
                 }
                 else
                 {
-                    Title = path.Substring(lastSep + 1);
+                    Title = path[(lastSep + 1)..];
                 }
 
                 InvalidPathReason = null;

@@ -26,10 +26,10 @@
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Statistics gathered while rendering.
-	/// </summary>
-	public struct GorgonGraphicsStatistics
+    /// <summary>
+    /// Statistics gathered while rendering.
+    /// </summary>
+    public struct GorgonGraphicsStatistics
 	{
 		#region Variables.
 		// The number of draw calls.

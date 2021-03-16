@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Animation;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.IO
 {
@@ -43,7 +43,7 @@ namespace Gorgon.IO
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, GorgonKeyVector4 value, JsonSerializer serializer)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;
@@ -107,7 +107,7 @@ namespace Gorgon.IO
                 }
             }
 
-            return new GorgonKeyVector4(time, new DX.Vector4(x, y, z, w));
+            return new GorgonKeyVector4(time, new Vector4(x, y, z, w));
         }
     }
 }

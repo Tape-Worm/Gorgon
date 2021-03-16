@@ -45,7 +45,7 @@ namespace Gorgon.IO
         // Parent directory for this file system entry.
         private readonly VirtualDirectory _parent;
         // The list of file entries.
-        private readonly Dictionary<string, VirtualFile> _files = new Dictionary<string, VirtualFile>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, VirtualFile> _files = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
@@ -77,7 +77,7 @@ namespace Gorgon.IO
             {
                 fileName = fileName.FormatFileName();
 
-                if (value == null)
+                if (value is null)
                 {
                     _files.Remove(fileName);
                     return;
@@ -148,7 +148,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Adds an item to the <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// Adds an item to the <see cref="ICollection{T}" />.
         /// </summary>
         /// <param name="mountPoint">The mount point for the file.</param>
         /// <param name="fileInfo">The physical file information.</param>
@@ -169,20 +169,20 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Removes all items from the <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// Removes all items from the <see cref="ICollection{T}" />.
         /// </summary>
         public void Clear() => _files.Clear();
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// Removes the first occurrence of a specific object from the <see cref="ICollection{T}" />.
         /// </summary>
-        /// <param name="item">The object to remove from the <see cref="System.Collections.Generic.ICollection{T}" />.</param>
+        /// <param name="item">The object to remove from the <see cref="ICollection{T}" />.</param>
         /// <returns>
-        /// true if <paramref name="item" /> was successfully removed from the <see cref="System.Collections.Generic.ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="System.Collections.Generic.ICollection{T}" />.
+        /// true if <paramref name="item" /> was successfully removed from the <see cref="ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="ICollection{T}" />.
         /// </returns>
         public bool Remove(VirtualFile item)
         {
-            if (item == null)
+            if (item is null)
             {
                 return false;
             }
@@ -209,7 +209,7 @@ namespace Gorgon.IO
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<IGorgonVirtualFile> GetEnumerator() => GetVirtualFiles().GetEnumerator();
 
@@ -217,7 +217,7 @@ namespace Gorgon.IO
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_files.Values).GetEnumerator();
         #endregion

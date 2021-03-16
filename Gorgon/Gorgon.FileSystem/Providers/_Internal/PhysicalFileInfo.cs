@@ -42,7 +42,7 @@ namespace Gorgon.IO.Providers
         // The physical root directory for the file.
         private readonly string _physicalRoot;
         // The buffer used to update the virtual path.
-        private readonly StringBuilder _pathBuffer = new StringBuilder();
+        private readonly StringBuilder _pathBuffer = new();
         #endregion
 
         #region Properties.

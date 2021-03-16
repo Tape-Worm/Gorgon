@@ -79,7 +79,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">[Optional] The specified state to copy.</param>
         /// <returns>The fluent builder interface.</returns>
-        public TB ResetTo(TRs state = null) => state == null ? Clear() : OnResetTo(state);
+        public TB ResetTo(TRs state = null) => state is null ? Clear() : OnResetTo(state);
 
         /// <summary>
         /// Function to clear the builder to a default state.

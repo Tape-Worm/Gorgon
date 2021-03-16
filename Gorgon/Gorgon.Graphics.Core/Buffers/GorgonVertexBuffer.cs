@@ -29,7 +29,6 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -40,8 +39,8 @@ namespace Gorgon.Graphics.Core
     /// <remarks>
     /// <para>
     /// To send vertices to the GPU using a vertex buffer, an application can upload vertices, represented as a value type, to the buffer using one of the
-    /// <see cref="GorgonBufferCommon.SetData{T}(T[], int, int?, int, CopyMode)"/> overloads. For best performance, it is recommended to upload vertex data only once, or rarely. However, in some scenarios, and with the
-    /// correct <see cref="GorgonGraphicsResource.Usage"/> flag, vertex animation is possible by uploading data to a <see cref="ResourceUsage.Dynamic"/> vertex buffer.
+    /// <see cref="GorgonBufferCommon.SetData{T}(ReadOnlySpan{T}, int, CopyMode)"/> overloads. For best performance, it is recommended to upload vertex data only once, or rarely. However, in some 
+    /// scenarios, and with the correct <see cref="GorgonGraphicsResource.Usage"/> flag, vertex animation is possible by uploading data to a <see cref="ResourceUsage.Dynamic"/> vertex buffer.
     /// </para>
     /// <para>
     /// To use a vertex buffer with the GPU pipeline, one must create a <see cref="GorgonVertexBufferBinding"/> to inform the GPU on how to use the vertex buffer.
@@ -153,7 +152,7 @@ namespace Gorgon.Graphics.Core
         public override int SizeInBytes => _info.SizeInBytes;
 
         /// <summary>
-        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/> methods.
+        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(Span{T}, int, int?)"/> methods.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -167,8 +166,7 @@ namespace Gorgon.Graphics.Core
         /// This will always return <b>false</b> for this buffer type, except when its <see cref="GorgonGraphicsResource.Usage"/> is <see cref="ResourceUsage.Staging"/>.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/>
-        /// <seealso cref="GorgonBufferCommon.GetData{T}(T[], int, int?, int)"/>
+        /// <seealso cref="GorgonBufferCommon.GetData{T}(Span{T}, int, int?)"/>
         /// <seealso cref="GorgonBufferCommon.GetData{T}(out T, int)"/>
         /// <seealso cref="GorgonBufferCommon.GetData{T}(int, int?)"/>
         public override bool IsCpuReadable => Usage == ResourceUsage.Staging;
@@ -180,6 +178,49 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to initialize the buffer data.
+        /// </summary>
+        /// <param name="initialData">The initial data used to populate the buffer.</param>
+        private void Initialize(ReadOnlySpan<byte> initialData)
+        {
+            D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.VertexBuffer);
+
+            Log.Print($"{Name} Vertex Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
+
+            ValidateBufferBindings(_info.Usage, 0);
+
+            D3D11.BindFlags bindFlags = Usage == ResourceUsage.Staging ? D3D11.BindFlags.None : D3D11.BindFlags.VertexBuffer;
+
+            if ((_info.Binding & VertexIndexBufferBinding.StreamOut) == VertexIndexBufferBinding.StreamOut)
+            {
+                bindFlags |= D3D11.BindFlags.StreamOutput;
+            }
+
+            if ((_info.Binding & VertexIndexBufferBinding.UnorderedAccess) == VertexIndexBufferBinding.UnorderedAccess)
+            {
+                bindFlags |= D3D11.BindFlags.UnorderedAccess;
+            }
+
+            var desc = new D3D11.BufferDescription
+            {
+                SizeInBytes = _info.SizeInBytes,
+                Usage = (D3D11.ResourceUsage)_info.Usage,
+                BindFlags = bindFlags,
+                OptionFlags = D3D11.ResourceOptionFlags.None,
+                CpuAccessFlags = cpuFlags,
+                StructureByteStride = 0
+            };
+
+            D3DResource = Native = ResourceFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
+        }
+
+        /// <summary>
+        /// Function to retrieve a copy of this buffer as a staging resource.
+        /// </summary>
+        /// <returns>The staging buffer to retrieve.</returns>
+        protected override GorgonBufferCommon GetStagingInternal() => GetStaging();
+
         /// <summary>
         /// Function to validate the bindings for a given buffer.
         /// </summary>
@@ -211,63 +252,66 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to initialize the buffer data.
+        /// Function to create a new vertex buffer that is to be filled with a known vertex type.
         /// </summary>
-        /// <param name="initialData">The initial data used to populate the buffer.</param>
-        private void Initialize(GorgonNativeBuffer<byte> initialData)
+        /// <typeparam name="T">The type of vertex data to send to the vertex buffer. Must be an unmanaged type.</typeparam>
+        /// <param name="graphics">The graphics interface used to create the vertex buffer.</param>
+        /// <param name="info">Information about the vertex buffer.</param>
+        /// <param name="initialData">[Optional] A read only span used to populate the vertex buffer.</param>
+        /// <returns>A new <see cref="GorgonVertexBuffer"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown if the size of the data in <paramref name="initialData"/> is too large for the buffer.</exception>
+        /// <remarks>
+        /// <para>
+        /// This factory method is used to create a vertex buffer using a known type of data, and, optionally, fill it with data. This avoids the need to convert the data to byte data when initializing 
+        /// from the constructor.
+        /// </para>
+        /// <para>
+        /// If the <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> property in the <paramref name="info"/> is less than 1, then the method will create a vertex buffer that is the exact size needed 
+        /// to fit the <paramref name="initialData"/>. If <paramref name="initialData"/> is omitted and the size is less than 1, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public static GorgonVertexBuffer Create<T>(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default)
+            where T : unmanaged            
         {
-            D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.VertexBuffer);
-
-            Log.Print($"{Name} Vertex Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
-
-            ValidateBufferBindings(_info.Usage, 0);
-
-            D3D11.BindFlags bindFlags = Usage == ResourceUsage.Staging ? D3D11.BindFlags.None : D3D11.BindFlags.VertexBuffer;
-
-            if ((_info.Binding & VertexIndexBufferBinding.StreamOut) == VertexIndexBufferBinding.StreamOut)
+            if (graphics is null)
             {
-                bindFlags |= D3D11.BindFlags.StreamOutput;
+                throw new ArgumentNullException(nameof(graphics));
             }
 
-            if ((_info.Binding & VertexIndexBufferBinding.UnorderedAccess) == VertexIndexBufferBinding.UnorderedAccess)
+            if (info is null)
             {
-                bindFlags |= D3D11.BindFlags.UnorderedAccess;
+                throw new ArgumentNullException(nameof(info));
             }
 
-            var desc = new D3D11.BufferDescription
+            if (initialData.IsEmpty)
             {
-                SizeInBytes = _info.SizeInBytes,
-                Usage = (D3D11.ResourceUsage)_info.Usage,
-                BindFlags = bindFlags,
-                OptionFlags = D3D11.ResourceOptionFlags.None,
-                CpuAccessFlags = cpuFlags,
-                StructureByteStride = 0
-            };
+                return new GorgonVertexBuffer(graphics, info);
+            }
 
-            if ((initialData != null) && (initialData.Length > 0))
-            {
-                unsafe
+            unsafe
+            {                
+                int size = initialData.Length * sizeof(T);                
+
+                if (info.SizeInBytes < 1)
                 {
-                    D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((void*)initialData), desc)
+                    info = new GorgonVertexBufferInfo(info)
                     {
-                        DebugName = Name
+                        SizeInBytes = size
                     };
                 }
-            }
-            else
-            {
-                D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
+
+                if (size > info.SizeInBytes)
                 {
-                    DebugName = Name
-                };
+                    throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, size), nameof(initialData));
+                }
+
+                fixed (void* ptr = &initialData[0])
+                {
+                    return new GorgonVertexBuffer(graphics, info, new ReadOnlySpan<byte>(ptr, initialData.Length * sizeof(T)));
+                }
             }
         }
-
-        /// <summary>
-        /// Function to retrieve a copy of this buffer as a staging resource.
-        /// </summary>
-        /// <returns>The staging buffer to retrieve.</returns>
-        protected override GorgonBufferCommon GetStagingInternal() => GetStaging();
 
         /// <summary>
         /// Function to retrieve a copy of this buffer as a staging resource.
@@ -367,7 +411,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, format);
             GorgonVertexBufferReadWriteView result = GetReadWriteView<GorgonVertexBufferReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
@@ -388,7 +432,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
-        public GorgonVertexBuffer(GorgonGraphics graphics, IGorgonVertexBufferInfo info, GorgonNativeBuffer<byte> initialData = null)
+        public GorgonVertexBuffer(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<byte> initialData = default)
             : base(graphics)
         {
             _info = new GorgonVertexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));

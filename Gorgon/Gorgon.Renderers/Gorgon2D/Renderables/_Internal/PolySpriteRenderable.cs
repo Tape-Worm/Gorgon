@@ -24,15 +24,15 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
     /// <summary>
     /// A renderable used by a polygon sprite.
     /// </summary>
-    class PolySpriteRenderable
+    internal class PolySpriteRenderable
         : BatchRenderable
     {
         /// <summary>
@@ -48,11 +48,11 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The world matrix for the polygon renderable.
         /// </summary>
-        public DX.Matrix WorldMatrix;
+        public Matrix4x4 WorldMatrix;
 
         /// <summary>
         /// The transformation data for textures.
         /// </summary>
-        public DX.Vector4 TextureTransform;
+        public Vector4 TextureTransform;
     }
 }

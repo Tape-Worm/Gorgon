@@ -26,6 +26,7 @@
 
 using Gorgon.Collections;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Renderers
 {
@@ -36,7 +37,7 @@ namespace Gorgon.Renderers
     /// <remarks>
     /// <para>
     /// This provides state information wrapped around shaders based on <see cref="GorgonShader"/>. These states are used for passing shader programs and related states to the 
-    /// <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/>.
+    /// <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonPipelineState"/>
@@ -50,15 +51,15 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The constant buffers, with read/write access.
         /// </summary>
-        internal GorgonArray<GorgonConstantBufferView> RwConstantBuffers = new GorgonArray<GorgonConstantBufferView>(GorgonConstantBuffers.MaximumConstantBufferCount);
+        internal GorgonArray<GorgonConstantBufferView> RwConstantBuffers = new(GorgonConstantBuffers.MaximumConstantBufferCount);
         /// <summary>
         /// The texture samplers, with read/write access.
         /// </summary>
-        internal GorgonArray<GorgonSamplerState> RwSamplers = new GorgonArray<GorgonSamplerState>(GorgonSamplerStates.MaximumSamplerStateCount);
+        internal GorgonArray<GorgonSamplerState> RwSamplers = new(GorgonSamplerStates.MaximumSamplerStateCount);
         /// <summary>
         /// The shader resource views, with read/write access.
         /// </summary>
-        internal GorgonArray<GorgonShaderResourceView> RwSrvs = new GorgonArray<GorgonShaderResourceView>(16);
+        internal GorgonArray<GorgonShaderResourceView> RwSrvs = new(16);
         #endregion
 
         #region Properties.

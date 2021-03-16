@@ -172,7 +172,7 @@ namespace Gorgon.Editor.PlugIns
         public ToolPlugInRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName)
             : base(Guid.NewGuid().ToString("N"))
         {
-            if (displayText == null)
+            if (displayText is null)
             {
                 throw new ArgumentNullException(nameof(displayText));
             }
@@ -182,7 +182,7 @@ namespace Gorgon.Editor.PlugIns
                 throw new ArgumentEmptyException(nameof(displayText));
             }
 
-            if (groupName == null)
+            if (groupName is null)
             {
                 throw new ArgumentNullException(nameof(groupName));
             }

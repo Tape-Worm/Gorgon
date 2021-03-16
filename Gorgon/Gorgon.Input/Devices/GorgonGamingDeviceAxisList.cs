@@ -37,14 +37,14 @@ namespace Gorgon.Input
     /// </summary>
     /// <typeparam name="T">The type of axis data to store in this collection. This type must implement <see cref="IGorgonGamingDeviceAxis"/>.</typeparam>
     public sealed class GorgonGamingDeviceAxisList<T>
-        : IEnumerable<T>
+        : IReadOnlyList<T>
         where T : IGorgonGamingDeviceAxis
     {
         #region Variables.
         // The list of available axes.
-        private readonly List<GamingDeviceAxis> _axisList = new List<GamingDeviceAxis>();
+        private readonly List<GamingDeviceAxis> _axisList = new();
         // The list of information about each axis.
-        private readonly Dictionary<GamingDeviceAxis, T> _infoList = new Dictionary<GamingDeviceAxis, T>(new GorgonGamingDeviceAxisEqualityComparer());
+        private readonly Dictionary<GamingDeviceAxis, T> _infoList = new();
         #endregion
 
         #region Properties.
@@ -107,7 +107,7 @@ namespace Gorgon.Input
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// An <see cref="IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_infoList.Values).GetEnumerator();
@@ -138,7 +138,7 @@ namespace Gorgon.Input
         /// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisList{T}" /> class.
         /// </summary>
         /// <param name="data">A list of items to add to the collection.</param>
-        public GorgonGamingDeviceAxisList(IEnumerable<T> data)
+        internal GorgonGamingDeviceAxisList(IEnumerable<T> data)
         {
             foreach (T item in data)
             {

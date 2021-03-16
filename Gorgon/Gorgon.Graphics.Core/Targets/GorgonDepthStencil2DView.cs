@@ -25,27 +25,28 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using SharpDX.DXGI;
+using Gorgon.Memory;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
-
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Defines options for using a depth/stencil view.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline.
-	/// </para>
-	/// </remarks>
-	[Flags]
+    /// <summary>
+    /// Defines options for using a depth/stencil view.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline.
+    /// </para>
+    /// </remarks>
+    [Flags]
 	public enum DepthStencilViewFlags
 	{
 		/// <summary>
@@ -82,11 +83,6 @@ namespace Gorgon.Graphics.Core
 	public sealed class GorgonDepthStencil2DView
 		: GorgonResourceView, IGorgonTexture2DInfo, IGorgonImageInfo
 	{
-		#region Variables.
-		// Clear rectangles.
-		private RawRectangle[] _clearRects;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the native D3D depth/stencil view.
@@ -292,6 +288,11 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
 		/// </summary>
 		public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
+
+		/// <summary>
+        /// Property to return whether the resource used by this view can be shared or not.
+        /// </summary>
+        public bool Shared => Texture.Shared;
         #endregion
 
         #region Methods.
@@ -309,7 +310,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.DepthStencilViewDescription
 				{
-					Format = (Format)Format,
+					Format = (DXGI.Format)Format,
 					Dimension = isMultisampled
 									? D3D11.DepthStencilViewDimension.Texture2DMultisampledArray
 									: D3D11.DepthStencilViewDimension.Texture2DArray,
@@ -324,7 +325,7 @@ namespace Gorgon.Graphics.Core
 
             return new D3D11.DepthStencilViewDescription
 			{
-				Format = (Format)Format,
+				Format = (DXGI.Format)Format,
 				Dimension = isMultisampled
 								? D3D11.DepthStencilViewDimension.Texture2DMultisampled
 								: D3D11.DepthStencilViewDimension.Texture2D,
@@ -474,12 +475,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="pixelVector">The pixel size to convert.</param>
 		/// <returns>A 2D vector containing the texel space coordinates.</returns>
-		public DX.Vector2 ToTexel(DX.Vector2 pixelVector)
+		public Vector2 ToTexel(Vector2 pixelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+			return new Vector2(pixelVector.X / width, pixelVector.Y / height);
 		}
 
 		/// <summary>
@@ -487,12 +488,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texelVector">The texel size to convert.</param>
 		/// <returns>A 2D vector containing the pixel space coordinates.</returns>
-		public DX.Vector2 ToPixel(DX.Vector2 texelVector)
+		public Vector2 ToPixel(Vector2 texelVector)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+			return new Vector2(texelVector.X * width, texelVector.Y * height);
 		}
 
 		/// <summary>
@@ -598,30 +599,35 @@ namespace Gorgon.Graphics.Core
 		/// ignored.
 		/// </para>
 		/// </remarks>
-		public void Clear(float depthValue, DX.Rectangle[] rectangles)
+		public void Clear(float depthValue, ReadOnlySpan<DX.Rectangle> rectangles)
 		{
-			if ((rectangles == null) || (rectangles.Length == 0) || (FormatInformation.HasStencil))
+			if ((rectangles.IsEmpty) || (FormatInformation.HasStencil))
 			{
 				Clear(depthValue, 0);
 				return;
 			}
 
-			if ((_clearRects == null) || (_clearRects.Length < rectangles.Length))
+
+			RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
+
+			try
 			{
-				_clearRects = new RawRectangle[rectangles.Length];
+				for (int i = 0; i < rectangles.Length; ++i)
+				{
+					clearRects[i] = rectangles[i];
+				}
+
+				Texture.Graphics.D3DDeviceContext.ClearView(Native, new DX.Color4(depthValue), clearRects, rectangles.Length);
+
+				ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
+				unchecked
+				{
+					++stats._clearCount;
+				}
 			}
-
-			for (int i = 0; i < rectangles.Length; ++i)
+			finally
 			{
-				_clearRects[i] = rectangles[i];
-			}
-
-			Texture.Graphics.D3DDeviceContext.ClearView(Native, new DX.Color4(depthValue), _clearRects, rectangles.Length);
-
-			ref GorgonGraphicsStatistics stats = ref Graphics.RwStatistics;
-			unchecked
-			{
-				++stats._clearCount;
+				GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects);
 			}
 		}
 
@@ -651,12 +657,12 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonTexture2D"/>
 		public static GorgonDepthStencil2DView CreateDepthStencil(GorgonGraphics graphics, IGorgonTexture2DInfo info, DepthStencilViewFlags viewFlags = DepthStencilViewFlags.None)
 		{
-			if (graphics == null)
+			if (graphics is null)
 			{
 				throw new ArgumentNullException(nameof(graphics));
 			}
 
-			if (info == null)
+			if (info is null)
 			{
 				throw new ArgumentNullException(nameof(info));
 			}

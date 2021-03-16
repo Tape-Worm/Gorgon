@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
 
@@ -65,7 +65,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>
         /// Property to return one to four floating point values for the key frame.
         /// </summary>
-        DX.Vector4 FloatValue
+        Vector4 FloatValue
         {
             get;
             set;

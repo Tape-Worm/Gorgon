@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -56,7 +57,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             add
             {
-                if (value == null)
+                if (value is null)
                 {
                     ToggleManualInputEvent = null;
                     return;
@@ -66,7 +67,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
             remove
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
@@ -163,9 +164,9 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpriteClipContext.FixedSize):
                     DX.Size2F? size = DataContext.SpriteClipContext.FixedSize;
 
-                    _clipper.AllowResize = size == null;
+                    _clipper.AllowResize = size is null;
 
-                    if (size == null)
+                    if (size is null)
                     {
                         break;
                     }
@@ -216,7 +217,7 @@ namespace Gorgon.Editor.SpriteEditor
             _sprite.TextureArrayIndex = DataContext.SpriteClipContext.ArrayIndex;
             _sprite.TextureRegion = _sprite.Texture.ToTexel(_clipper.Rectangle.ToRectangle());
             _sprite.Size = _clipper.Rectangle.Size.Truncate();
-            _sprite.Position = new DX.Vector2(_clipper.Rectangle.X - (RenderRegion.Width * 0.5f),
+            _sprite.Position = new Vector2(_clipper.Rectangle.X - (RenderRegion.Width * 0.5f),
                                               _clipper.Rectangle.Y - (RenderRegion.Height * 0.5f))
                                      .Truncate();
         }
@@ -351,7 +352,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to draw the sprite.</summary>
         protected override void DrawSprite()
         {
-            var halfRegion = new DX.Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);            
+            var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);            
 
             RenderSpriteTexture();
 
@@ -377,7 +378,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (DataContext?.Texture == null)
+            if (DataContext?.Texture is null)
             {
                 return;
             }
@@ -386,10 +387,9 @@ namespace Gorgon.Editor.SpriteEditor
             region.Inflate(32, 32);
             ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(region);
 
-            var spritePosition = (DX.Vector2)Camera.Unproject(new DX.Vector3(region.X + region.Width * 0.5f,
-                                                                             region.Y + region.Height * 0.5f, 0));
+            Vector3 spritePosition = Camera.Unproject(new Vector3(region.X + region.Width * 0.5f, region.Y + region.Height * 0.5f, 0));
 
-            MoveTo(spritePosition, spriteZoomLevel.GetScale());
+            MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
         }
         #endregion
 

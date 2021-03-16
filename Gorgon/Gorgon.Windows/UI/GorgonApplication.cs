@@ -112,14 +112,63 @@ namespace Gorgon.UI
         #endregion
 
         #region Events.
+        // Event fired when the application is about to exit.
+        private static event EventHandler ExitEvent;
+
+        // Event fired when a message pump thread is about to exit.
+        private static event EventHandler ThreadExitEvent;
+
         /// <summary>
         /// Event fired when the application is about to exit.
         /// </summary>
-        public static event EventHandler Exit;
+        public static event EventHandler Exit
+        {
+            add
+            {
+                if (value is null)
+                {
+                    ExitEvent = null;
+                    return;
+                }
+
+                ExitEvent += value;
+            }
+            remove
+            {
+                if (value is null)
+                {                    
+                    return;
+                }
+
+                ExitEvent -= value;
+            }
+        }
+
         /// <summary>
         /// Event fired when a message pump thread is about to exit.
         /// </summary>
-        public static event EventHandler ThreadExit;
+        public static event EventHandler ThreadExit
+        {
+            add
+            {
+                if (value is null)
+                {
+                    ThreadExitEvent = null;
+                    return;
+                }
+
+                ThreadExitEvent += value;
+            }
+            remove
+            {
+                if (value is null)
+                {
+                    return;
+                }
+
+                ThreadExitEvent -= value;
+            }
+        }
         #endregion
 
         #region Variables.
@@ -134,13 +183,13 @@ namespace Gorgon.UI
         // The dummy log interface.
         private static readonly IGorgonLog _dummyLog = GorgonLog.NullLog;
         // A synchronization object for threads.
-        private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new();
         // The number of milliseconds to sleep while the application is unfocused but running in the background.
         private static int _unfocusedSleepTime = 16;
         // An atomic to ensure that run is only called by 1 thread at a time.
         private static int _runAtomic;
         // Event used to put the application to sleep.
-        private static readonly ManualResetEventSlim _unfocusedTimeout = new ManualResetEventSlim(false, 20);
+        private static readonly ManualResetEventSlim _unfocusedTimeout = new(false, 20);
         #endregion
 
         #region Properties.
@@ -202,7 +251,7 @@ namespace Gorgon.UI
         /// If no <see cref="MainForm"/> is assigned, then this property will always return <b>false</b>. 
         /// </para>
         /// </remarks>
-        public static bool IsForeground => ((MainForm != null) && (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus));
+        public static bool IsForeground => ((MainForm is not null) && (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus));
 
         /// <summary>
         /// Property to return the ID of the application UI thread.
@@ -314,9 +363,9 @@ namespace Gorgon.UI
             {
                 // If we have no application form, or context and we try disable the loop, leave. 
                 // We do this because if there's no context or form, then there's nothing to run and that's an invalid state.
-                if ((value == null)
-                    && (MainForm == null)
-                    && (ApplicationContext == null))
+                if ((value is null)
+                    && (MainForm is null)
+                    && (ApplicationContext is null))
                 {
                     throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_CANNOT_REMOVE_IDLE_LOOP);
                 }
@@ -330,7 +379,7 @@ namespace Gorgon.UI
 
                 _loop = value;
 
-                if ((value == null) || (!IsRunning))
+                if ((value is null) || (!IsRunning))
                 {
                     return;
                 }
@@ -380,7 +429,7 @@ namespace Gorgon.UI
         /// property.
         /// </para>
         /// </remarks>
-        public static Form MainForm => ApplicationContext != null ? ApplicationContext.MainForm : _mainForm;
+        public static Form MainForm => ApplicationContext is not null ? ApplicationContext.MainForm : _mainForm;
 
         /// <summary>
         /// Property to set or return the current application context.
@@ -417,7 +466,7 @@ namespace Gorgon.UI
                     {
                         _log?.LogEnd();
 
-                        if (value == null)
+                        if (value is null)
                         {
                             _log = _dummyLog;
                             return;
@@ -448,14 +497,14 @@ namespace Gorgon.UI
             // Windows message to retrieve.
 
             // We have nothing to execute, so just leave.
-            if ((IdleMethod == null) || (!IsRunning))
+            if ((IdleMethod is null) || (!IsRunning))
             {
                 return;
             }
 
             // Check for application focus. If we didn't assign a main form, or one was not assigned to the application context, then 
             // run regardless since we have an idle method to execute.
-            bool appShouldProcess = MainForm == null || AllowBackground || IsForeground;
+            bool appShouldProcess = MainForm is null || AllowBackground || IsForeground;
 
             if (!GorgonTiming.TimingStarted)
             {
@@ -469,9 +518,8 @@ namespace Gorgon.UI
                     GorgonTiming.StartTiming<GorgonTimerMultimedia>();
                 }
             }
-
-            // ReSharper disable once UnusedVariable
-            while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG message, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
+                        
+            while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG _, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
             {
                 GorgonTiming.Update();
 
@@ -483,7 +531,7 @@ namespace Gorgon.UI
                 }
 
                 // Give up CPU time if we're not focused.
-                if ((MainForm == null) || (MainForm.ContainsFocus) || (_unfocusedSleepTime <= 0) || (Form.ActiveForm != null))
+                if ((MainForm is null) || (MainForm.ContainsFocus) || (_unfocusedSleepTime <= 0) || (Form.ActiveForm is not null))
                 {
                     continue;
                 }
@@ -503,7 +551,7 @@ namespace Gorgon.UI
         /// </summary>
         private static void InitializeLogger()
         {
-            if (Log == null)
+            if (Log is null)
             {
                 return;
             }
@@ -512,11 +560,11 @@ namespace Gorgon.UI
 
             // Display information
             Log.Print("Logging interface assigned. Initializing...", LoggingLevel.All);
-            Log.Print("Architecture: {0}", LoggingLevel.Verbose, ComputerInfo.PlatformArchitecture);
-            Log.Print("Processor count: {0}", LoggingLevel.Verbose, ComputerInfo.ProcessorCount);
-            Log.Print("Installed Memory: {0}", LoggingLevel.Verbose, ComputerInfo.TotalPhysicalRAM.FormatMemory());
-            Log.Print("Available Memory: {0}", LoggingLevel.Verbose, ComputerInfo.AvailablePhysicalRAM.FormatMemory());
-            Log.Print("Operating System: {0} ({1})", LoggingLevel.Verbose, ComputerInfo.OperatingSystemVersionText, ComputerInfo.OperatingSystemArchitecture);
+            Log.Print($"Architecture: {ComputerInfo.PlatformArchitecture}", LoggingLevel.Verbose);
+            Log.Print($"Processor count: {ComputerInfo.ProcessorCount}", LoggingLevel.Verbose);
+            Log.Print($"Installed Memory: {ComputerInfo.TotalPhysicalRAM.FormatMemory()}", LoggingLevel.Verbose);
+            Log.Print($"Available Memory: {ComputerInfo.AvailablePhysicalRAM.FormatMemory()}", LoggingLevel.Verbose);
+            Log.Print($"Operating System: {ComputerInfo.OperatingSystemVersionText} ({ComputerInfo.OperatingSystemArchitecture})", LoggingLevel.Verbose);
             Log.Print(string.Empty, LoggingLevel.Verbose);
         }
 
@@ -534,12 +582,12 @@ namespace Gorgon.UI
             IsRunning = true;
 
             // Display the form.
-            if ((MainForm != null) && (!MainForm.IsDisposed))
+            if ((MainForm is not null) && (!MainForm.IsDisposed))
             {
                 MainForm.Show();
             }
 
-            if ((IdleMethod != null) && (!_quitSignalled))
+            if ((IdleMethod is not null) && (!_quitSignalled))
             {
                 Log.Print("Application loop starting...", LoggingLevel.Simple);
                 Application.Idle += Application_Idle;
@@ -564,8 +612,7 @@ namespace Gorgon.UI
 
             // This will only allow one thread to actually call this.
             // It also has the added benefit of unassigning the exit handler when the application shuts down.
-            EventHandler exitHandler = Interlocked.Exchange(ref ThreadExit, null);
-
+            EventHandler exitHandler = Interlocked.Exchange(ref ThreadExitEvent, null);
             exitHandler?.Invoke(sender, e);
         }
 
@@ -580,8 +627,7 @@ namespace Gorgon.UI
 
             // This will only allow one thread to actually call this.
             // It also has the added benefit of unassigning the exit handler when the application shuts down.
-            EventHandler exitHandler = Interlocked.Exchange(ref Exit, null);
-
+            EventHandler exitHandler = Interlocked.Exchange(ref ExitEvent, null);
             exitHandler?.Invoke(sender, e);
         }
 
@@ -597,10 +643,13 @@ namespace Gorgon.UI
             // Remove quit handlers.
             Application.ApplicationExit -= Application_ApplicationExit;
             Application.ThreadExit -= Application_ThreadExit;
+            ExitEvent = null;
+            ThreadExitEvent = null;
 
-            if (IdleMethod != null)
+            if (IdleMethod is not null)
             {
                 Application.Idle -= Application_Idle;
+                _loop = null;
                 Log.Print("Application loop stopped.", LoggingLevel.Simple);
             }
 
@@ -708,7 +757,7 @@ namespace Gorgon.UI
                 throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD);
             }
 
-            if (idleMethod != null)
+            if (idleMethod is not null)
             {
                 IdleMethod = idleMethod;
             }
@@ -789,7 +838,7 @@ namespace Gorgon.UI
                 throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD);
             }
 
-            if (idleMethod != null)
+            if (idleMethod is not null)
             {
                 IdleMethod = idleMethod;
             }
@@ -901,7 +950,7 @@ namespace Gorgon.UI
 
             try
             {
-                Log = new GorgonLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
+                Log = new GorgonTextFileLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
             }
             catch
             {

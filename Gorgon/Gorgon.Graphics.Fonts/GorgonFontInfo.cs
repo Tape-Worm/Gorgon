@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Fonts
     {
         #region Variables.
         // Texture size.
-        private DX.Size2 _textureSize = new DX.Size2(256, 256);
+        private DX.Size2 _textureSize = new(256, 256);
         // The list of characters supported by the font.
         private char[] _characters;
         // Packing spacing.
@@ -197,7 +197,7 @@ namespace Gorgon.Graphics.Fonts
             get => _characters;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     _characters = new[]
                                   {
@@ -417,6 +417,22 @@ namespace Gorgon.Graphics.Fonts
         {
             get;
         }
+
+        /// <summary>Property to set or return the type of compression to apply to the font textures.</summary>
+        /// <remarks>
+        ///   <para>
+        /// Use compression to lower the amount of video RAM consumed by the font textures. It is recommended that <see cref="UsePremultipliedTextures" /> be set to <b>true</b> when using
+        /// compression.
+        /// </para>
+        ///   <para>
+        /// The default value is <see cref="FontTextureCompression.None" />.
+        /// </para>
+        /// </remarks>
+        public FontTextureCompression Compression
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -443,6 +459,7 @@ namespace Gorgon.Graphics.Fonts
             TextureHeight = fontInfo.TextureHeight;
             UsePremultipliedTextures = fontInfo.UsePremultipliedTextures;
             UseKerningPairs = fontInfo.UseKerningPairs;
+            Compression = fontInfo.Compression;
         }
 
         /// <summary>
@@ -457,7 +474,7 @@ namespace Gorgon.Graphics.Fonts
         /// <exception cref="ArgumentException">The <paramref name="size"/> parameter is less than or equal to 0.</exception>
         public GorgonFontInfo(string fontFamily, float size, FontHeightMode heightMode = FontHeightMode.Pixels, string name = null)
         {
-            if (fontFamily == null)
+            if (fontFamily is null)
             {
                 throw new ArgumentNullException(nameof(fontFamily));
             }

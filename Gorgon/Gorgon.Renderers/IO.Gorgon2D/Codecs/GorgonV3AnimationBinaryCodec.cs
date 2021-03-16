@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using Gorgon.Animation;
@@ -123,7 +124,7 @@ namespace Gorgon.IO
             // Locate the texture resource.
             GorgonTexture2D texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
-            if (texture == null)
+            if (texture is null)
             {
                 return null;
             }
@@ -150,13 +151,11 @@ namespace Gorgon.IO
                 return false;
             }
 
-            using (GorgonBinaryReader binReader = reader.OpenChunk(VersionData))
-            {
-                var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
-                reader.CloseChunk();
+            using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
+            var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+            reader.CloseChunk();
 
-                return Version.Equals(fileVersion);
-            }
+            return Version.Equals(fileVersion);
         }
 
         /// <summary>Function to retrieve the names of the associated textures.</summary>
@@ -266,7 +265,8 @@ namespace Gorgon.IO
                                                                             .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
+                        Vector3 val = binReader.ReadValue<Vector3>();
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new Vector2(val.X, val.Y)));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -282,7 +282,8 @@ namespace Gorgon.IO
                                                                             .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
+                        Vector3 val = binReader.ReadValue<Vector3>();
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new Vector2(val.X, val.Y)));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -298,7 +299,7 @@ namespace Gorgon.IO
                                                                            .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeySingle(binReader.ReadSingle(), binReader.ReadValue<DX.Vector3>().Z));
+                        track.SetKey(new GorgonKeySingle(binReader.ReadSingle(), binReader.ReadValue<Vector3>().Z));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -314,7 +315,8 @@ namespace Gorgon.IO
                                                                             .SetInterpolationMode(interpolation);
                     for (int i = 0; i < keyCount; ++i)
                     {
-                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), (DX.Vector2)binReader.ReadValue<DX.Vector3>()));
+                        Vector3 val = binReader.ReadValue<Vector3>();
+                        track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new Vector2(val.X, val.Y)));
                     }
                     track.EndEdit();
                     reader.CloseChunk();
@@ -376,7 +378,7 @@ namespace Gorgon.IO
                     {
                         texture = LoadTexture(binReader, out textureName);
 
-                        if ((texture == null) && (string.IsNullOrWhiteSpace(textureName)))
+                        if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                         {
                             Renderer.Log.Print("Attempted to load a texture from the data, but the texture was not in memory and the name is unknown.",
                                                  LoggingLevel.Verbose);
@@ -384,7 +386,7 @@ namespace Gorgon.IO
                         }
                     }
 
-                    if ((texture == null) && (hasTexture != 0))
+                    if ((texture is null) && (hasTexture is not 0))
                     {
                         textureTrack.SetKey(new GorgonKeyTexture2D(time, textureName, binReader.ReadValue<DX.RectangleF>(), binReader.ReadInt32()));
                     }

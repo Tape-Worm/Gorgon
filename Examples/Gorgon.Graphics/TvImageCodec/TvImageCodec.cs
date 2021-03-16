@@ -232,7 +232,7 @@ namespace Gorgon.Examples
                         uint color = (uint)(((pixel >> 8) & 0xff) << (8 * (x % 3)));
                         uint alpha = (uint)((pixel & 0xff) << 24);
 
-                        ref uint imagePixel = ref result.ImageData.ReadAs<uint>(ptrPosition);
+                        ref uint imagePixel = ref result.ImageData.AsRef<uint>(ptrPosition);
                         imagePixel = color | alpha;
                         ptrPosition += sizeof(uint);
                     }
@@ -272,50 +272,48 @@ namespace Gorgon.Examples
             };
 
             // Write the metadata to the stream.
-            using (var writer = new GorgonBinaryWriter(stream, true))
+            using var writer = new GorgonBinaryWriter(stream, true);
+            writer.WriteValue(header);
+
+            // Now, we need to encode the image data as 1 byte for every other color component per pixel. 
+            // In essence, we'll be writing one channel as a byte and moving to the next pixel. 
+            // Get the pointer to our image buffer.
+            //IGorgonPointer imagePtr = imageData.ImageData;
+
+            // For each scan line in the image we'll encode the data as described above.
+            for (int y = 0; y < imageData.Height; ++y)
             {
-                writer.WriteValue(header);
+                // Ensure that we move to the next line by the row pitch and not the amount of pixels.
+                // Some images put padding in for alignment reasons which can throw off the data offsets.
+                // Also, the width is not suitable as a pixel is often more than 1 byte.
+                int pointerPos = (y * imageData.Buffers[0].PitchInformation.RowPitch);
 
-                // Now, we need to encode the image data as 1 byte for every other color component per pixel. 
-                // In essence, we'll be writing one channel as a byte and moving to the next pixel. 
-                // Get the pointer to our image buffer.
-                //IGorgonPointer imagePtr = imageData.ImageData;
-
-                // For each scan line in the image we'll encode the data as described above.
-                for (int y = 0; y < imageData.Height; ++y)
+                // Loop through the scan line until we're at its end.
+                for (int x = 0; x < imageData.Width; ++x)
                 {
-                    // Ensure that we move to the next line by the row pitch and not the amount of pixels.
-                    // Some images put padding in for alignment reasons which can throw off the data offsets.
-                    // Also, the width is not suitable as a pixel is often more than 1 byte.
-                    int pointerPos = (y * imageData.Buffers[0].PitchInformation.RowPitch);
+                    // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
+                    // the format of the data.
+                    uint pixel = imageData.ImageData.AsRef<uint>(pointerPos);
+                    pointerPos += sizeof(uint);
 
-                    // Loop through the scan line until we're at its end.
-                    for (int x = 0; x < imageData.Width; ++x)
-                    {
-                        // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
-                        // the format of the data.
-                        uint pixel = imageData.ImageData.ReadAs<uint>(pointerPos);
-                        pointerPos += sizeof(uint);
+                    // Get the alpha channel for this pixel.
+                    byte alpha = (byte)((pixel >> 24) & 0xff);
 
-                        // Get the alpha channel for this pixel.
-                        byte alpha = (byte)((pixel >> 24) & 0xff);
+                    // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
+                    // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 2 bytes 
+                    // per pixel in the destination.
 
-                        // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
-                        // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 2 bytes 
-                        // per pixel in the destination.
+                    // We determine how many bits to shift the pixel based on horizontal positioning.
+                    // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
+                    // determined by dividing the row pitch by the image width.
 
-                        // We determine how many bits to shift the pixel based on horizontal positioning.
-                        // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
-                        // determined by dividing the row pitch by the image width.
+                    // Get the color component for the pixel.
+                    byte color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
 
-                        // Get the color component for the pixel.
-                        byte color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
-
-                        // Write it to the scanline.
-                        // We're encoding a pixel as a single color component with its alpha channel
-                        // value into an unsigned 16 bit number.
-                        writer.Write((ushort)((color << 8) | alpha));
-                    }
+                    // Write it to the scanline.
+                    // We're encoding a pixel as a single color component with its alpha channel
+                    // value into an unsigned 16 bit number.
+                    writer.Write((ushort)((color << 8) | alpha));
                 }
             }
         }
@@ -342,7 +340,7 @@ namespace Gorgon.Examples
         /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         public override bool IsReadable(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -410,7 +408,7 @@ namespace Gorgon.Examples
         /// </remarks>
         public override IGorgonImageInfo GetMetaData(Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }

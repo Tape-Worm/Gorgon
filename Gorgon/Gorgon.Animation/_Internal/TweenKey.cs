@@ -115,7 +115,7 @@ namespace Gorgon.Animation
             float animationLength)
             where T : class, IGorgonKeyFrame
         {
-            if (track == null)
+            if (track is null)
             {
                 throw new ArgumentNullException(nameof(track));
             }

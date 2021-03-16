@@ -29,7 +29,6 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -78,7 +77,7 @@ namespace Gorgon.Graphics.Core
         public override string Name => _info.Name;
 
         /// <summary>
-        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/> methods.
+        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="GorgonBufferCommon.GetData{T}(int, int?)"/> methods.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -90,7 +89,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// <para>
         /// If this value is <b>false</b>, then the buffer can still be read, but it will take a slower path by copying to a staging buffer and reading that when calling the
-        /// <see cref="GorgonBufferCommon.GetData{T}(T[], int, int?, int)"/> methods.
+        /// <see cref="GorgonBufferCommon.GetData{T}(int, int?)"/> methods.
         /// </para>
         /// <para>
         /// <note type="information">
@@ -99,8 +98,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonBufferCommon.GetData{T}(GorgonNativeBuffer{T}, int, int?, int)"/>
-        /// <seealso cref="GorgonBufferCommon.GetData{T}(T[], int, int?, int)"/>
+        /// <seealso cref="GorgonBufferCommon.GetData{T}(Span{T}, int, int?)"/>
         /// <seealso cref="GorgonBufferCommon.GetData{T}(out T, int)"/>
         /// <seealso cref="GorgonBufferCommon.GetData{T}(int, int?)"/>
         public override bool IsCpuReadable =>
@@ -275,9 +273,7 @@ namespace Gorgon.Graphics.Core
                     result = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
                     break;
                 case ResourceUsage.Default:
-                    if ((binding != BufferBinding.Shader)
-                        && (binding != BufferBinding.ReadWrite)
-                        && (binding != (BufferBinding.Shader | BufferBinding.ReadWrite)))
+                    if (binding is not BufferBinding.Shader and not BufferBinding.ReadWrite and not (BufferBinding.Shader | BufferBinding.ReadWrite))
                     {
                         break;
                     }
@@ -293,14 +289,14 @@ namespace Gorgon.Graphics.Core
         /// Function used to initalize the buffer.
         /// </summary>
         /// <param name="initialData">The data to copy into the buffer on creation.</param>
-        private void Initialize(GorgonNativeBuffer<byte> initialData)
+        private void Initialize(ReadOnlySpan<byte> initialData)
         {
             if (_info.SizeInBytes < 1)
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, 1));
             }
 
-            if ((_info.Usage == ResourceUsage.Immutable) && (initialData == null))
+            if ((_info.Usage == ResourceUsage.Immutable) && (initialData.IsEmpty))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
@@ -315,23 +311,7 @@ namespace Gorgon.Graphics.Core
 
             Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-            if ((initialData != null) && (initialData.Length > 0))
-            {
-                unsafe
-                {
-                    D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((byte*)initialData), desc)
-                    {
-                        DebugName = $"{Name}_ID3D11Buffer"
-                    };
-                }
-            }
-            else
-            {
-                D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
-                {
-                    DebugName = $"{Name}_ID3D11Buffer"
-                };
-            }
+            D3DResource = Native = ResourceFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
         }
 
         /// <summary>
@@ -597,7 +577,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, format);
             GorgonBufferReadWriteView result = GetReadWriteView<GorgonBufferReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
@@ -662,7 +642,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
             GorgonStructuredReadWriteView result = GetReadWriteView<GorgonStructuredReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
@@ -791,7 +771,7 @@ namespace Gorgon.Graphics.Core
             var key = new BufferShaderViewKey(startElement, elementCount, elementType);
             GorgonRawReadWriteView result = GetReadWriteView<GorgonRawReadWriteView>(key);
 
-            if (result != null)
+            if (result is not null)
             {
                 return result;
             }
@@ -817,7 +797,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>A value on the <paramref name="info"/> parameter is incorrect.</para>
         /// </exception>
-        public GorgonBuffer(GorgonGraphics graphics, IGorgonBufferInfo info, GorgonNativeBuffer<byte> initialData = null)
+        public GorgonBuffer(GorgonGraphics graphics, IGorgonBufferInfo info, ReadOnlySpan<byte> initialData = default)
             : base(graphics)
         {
             _info = new GorgonBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));

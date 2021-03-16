@@ -24,18 +24,14 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
+using System.Numerics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.Timing;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -73,9 +69,9 @@ namespace Gorgon.Examples
         // Are we moving backwards?
         private bool _backwards;
         // The offset of the engine glow.
-        private DX.Vector2 _engineOffset;
+        private Vector2 _engineOffset;
         // Position of the ship.
-        private DX.Vector2 _position;
+        private Vector2 _position;
         // The laughable AI.
         private DummyAi _ai;
         #endregion
@@ -99,7 +95,7 @@ namespace Gorgon.Examples
             set
             {
                 _ai = value;
-                if (_ai != null)
+                if (_ai is not null)
                 {
                     _ai.Ship = this;
                 }
@@ -123,7 +119,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return the position of the ship, in space.
         /// </summary>
-        public DX.Vector2 Position
+        public Vector2 Position
         {
             get => _position;
             set
@@ -147,14 +143,14 @@ namespace Gorgon.Examples
             get => _layerController;
             set
             {
-                if (_layerController != null)
+                if (_layerController is not null)
                 {
                     _layerController.TrackingLayer = null;
                 }
 
                 _layerController = value;
 
-                if (_layerController != null)
+                if (_layerController is not null)
                 {
                     _layerController.TrackingLayer = _layer;
                 }
@@ -170,19 +166,19 @@ namespace Gorgon.Examples
         /// </summary>
         private void UpdateEntityPositions()
         {
-            if (_layerController != null)
+            if (_layerController is not null)
             {
                 _layerController.SetPosition(-_position);
             }
 
-            if ((_ship == null) || (_engine == null))
+            if ((_ship is null) || (_engine is null))
             {
                 return;
             }
 
             _ship.Rotation = _angle;
             _engine.Rotation = Speed >= 0 ? _angle : _angle + 180;
-            _engine.LocalPosition = _ship.LocalPosition = _layerController == null ? _position : DX.Vector2.Zero;
+            _engine.LocalPosition = _ship.LocalPosition = _layerController is null ? _position : Vector2.Zero;
         }
 
         /// <summary>
@@ -237,7 +233,7 @@ namespace Gorgon.Examples
             // engine burning from the other side of the ship.
             if (Speed < 0)
             {
-                _engine.Anchor = new DX.Vector2(_engineOffset.X, 0.73f);
+                _engine.Anchor = new Vector2(_engineOffset.X, 0.73f);
             }
             else
             {
@@ -261,7 +257,7 @@ namespace Gorgon.Examples
 
             // Convert our angle and speed to a vector so we can get movement along it.
             float rads = _angle.ToRadians();
-            DX.Vector2 dirMag = new DX.Vector2(-rads.Sin(), rads.Cos()) * Speed;
+            Vector2 dirMag = new Vector2(-rads.Sin(), rads.Cos()) * Speed;
             Position -= dirMag * GorgonTiming.Delta;
 
             // Ensure our animation moves to the next frame.
@@ -306,7 +302,7 @@ namespace Gorgon.Examples
         /// </remarks>
         public void UserInput(GorgonKeyStateCollection keys)
         {
-            if ((_layerController == null) || (_ai != null))
+            if ((_layerController is null) || (_ai is not null))
             {
                 return;
             }

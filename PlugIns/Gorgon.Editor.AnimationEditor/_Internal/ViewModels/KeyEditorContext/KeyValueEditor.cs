@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Renderers;
@@ -41,7 +41,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The track that is being edited.
         private TrackKeySelection _editTrack;
         // The floating point values.
-        private DX.Vector4 _floatValues;
+        private Vector4 _floatValues;
         // The sprite to update.
         private GorgonSprite _workingSprite;
         #endregion
@@ -68,9 +68,9 @@ namespace Gorgon.Editor.AnimationEditor
 
                 OnPropertyChanging();
                 _workingSprite = value;
-                if (_editTrack != null)
+                if (_editTrack is not null)
                 {
-                    Value = _workingSprite?.GetFloatValues(_editTrack.Track.SpriteProperty) ?? DX.Vector4.Zero;
+                    Value = _workingSprite?.GetFloatValues(_editTrack.Track.SpriteProperty) ?? Vector4.Zero;
                 }
                 OnPropertyChanged();
             }
@@ -98,12 +98,12 @@ namespace Gorgon.Editor.AnimationEditor
         }
 
         /// <summary>Property to set or return the value for the key frame.</summary>
-        public DX.Vector4 Value
+        public Vector4 Value
         {
             get => _floatValues;
             set
             {
-                if (_floatValues.Equals(ref value))
+                if (_floatValues.Equals(value))
                 {
                     return;
                 }
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 _floatValues = value;
                 
-                if ((_editTrack != null) && (_workingSprite != null))
+                if ((_editTrack is not null) && (_workingSprite is not null))
                 {
                     _workingSprite.SetFloatValues(_editTrack.Track.SpriteProperty, _floatValues);
                 }

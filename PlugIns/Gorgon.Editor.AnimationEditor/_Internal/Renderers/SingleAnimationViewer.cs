@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
@@ -62,13 +63,13 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="mousePos">The mouse client position.</param>
         /// <param name="currentAngle">The current angle of rotation to apply.</param>
         /// <returns>The angle of rotation, relative to the sprite.</returns>
-        private float CalcAngleFromMouse(DX.Vector2 mousePos, float currentAngle)
+        private float CalcAngleFromMouse(Vector2 mousePos, float currentAngle)
         {
-            var pivotPos = new DX.Vector2(Sprite.Position.X - RenderRegion.Width * Camera.Anchor.X, Sprite.Position.Y - RenderRegion.Height * Camera.Anchor.Y);
+            var pivotPos = new Vector2(Sprite.Position.X - RenderRegion.Width * Camera.Anchor.X, Sprite.Position.Y - RenderRegion.Height * Camera.Anchor.Y);
             pivotPos = ToClient(pivotPos, ClientSize);
 
-            DX.Vector2 dest = mousePos - pivotPos;
-            dest.Normalize();
+            Vector2 dest = mousePos - pivotPos;
+            dest = Vector2.Normalize(dest);
 
             return (dest.Y.ATan(dest.X).ToDegrees() - currentAngle).LimitAngle(-360);
         }
@@ -99,7 +100,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            _startAngle = CalcAngleFromMouse(args.ClientPosition, DataContext.KeyEditor.CurrentEditor.Value.X);
+            _startAngle = CalcAngleFromMouse(args.ClientPosition.ToVector2(), DataContext.KeyEditor.CurrentEditor.Value.X);
             _dragAngle = true;
             args.Handled = true;
             base.OnMouseDown(args);
@@ -116,8 +117,8 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            float angle = CalcAngleFromMouse(args.ClientPosition, _startAngle);
-            DataContext.KeyEditor.CurrentEditor.Value = new DX.Vector4(angle, 0, 0, 0);
+            float angle = CalcAngleFromMouse(args.ClientPosition.ToVector2(), _startAngle);
+            DataContext.KeyEditor.CurrentEditor.Value = new Vector4(angle, 0, 0, 0);
 
             args.Handled = true;
             base.OnMouseMove(args);
@@ -155,16 +156,16 @@ namespace Gorgon.Editor.AnimationEditor
             switch (args.KeyCode)
             {
                 case Keys.Home:
-                    DataContext.KeyEditor.CurrentEditor.Value = DX.Vector4.Zero;
+                    DataContext.KeyEditor.CurrentEditor.Value = Vector4.Zero;
                     args.IsInputKey = true;
                     return;
                 case Keys.Left:
 
-                    DataContext.KeyEditor.CurrentEditor.Value = new DX.Vector4((DataContext.KeyEditor.CurrentEditor.Value.X - amount).LimitAngle(-360), 0, 0, 0);
+                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4((DataContext.KeyEditor.CurrentEditor.Value.X - amount).LimitAngle(-360), 0, 0, 0);
                     args.IsInputKey = true;
                     return;
                 case Keys.Right:
-                    DataContext.KeyEditor.CurrentEditor.Value = new DX.Vector4((DataContext.KeyEditor.CurrentEditor.Value.X + amount).LimitAngle(-360), 0, 0, 0);
+                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4((DataContext.KeyEditor.CurrentEditor.Value.X + amount).LimitAngle(-360), 0, 0, 0);
                     args.IsInputKey = true;
                     return;
             }
@@ -225,7 +226,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to draw the animation.</summary>
         protected override void DrawAnimation()
         {
-            if (DataContext.KeyEditor.CurrentEditor?.Track == null)
+            if (DataContext.KeyEditor.CurrentEditor?.Track is null)
             {
                 return;
             }
@@ -252,7 +253,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (Sprite == null)
+            if (Sprite is null)
             {
                 return;
             }

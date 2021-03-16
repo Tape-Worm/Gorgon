@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using System.Drawing;
+using DX = SharpDX;
 
 namespace Gorgon.Input
 {
@@ -97,7 +97,7 @@ namespace Gorgon.Input
     /// This type is not intended for use by applications.
     /// </para>
     /// </remarks>
-    public struct GorgonRawMouseData
+    public readonly struct GorgonRawMouseData
     {
         /// <summary>
         /// The current position of the mouse.
@@ -106,21 +106,34 @@ namespace Gorgon.Input
         /// If the <see cref="IsRelative"/> value is set to <b>true</b>, then this value will be a relative value based on the last known position of the mouse. Otherwise, this will return the absolute 
         /// position of the mouse.
         /// </remarks>
-        public Point Position;
+        public readonly DX.Point Position;
 
         /// <summary>
         /// The change in the mouse wheel since the last event.
         /// </summary>
-        public short MouseWheelDelta;
+        public readonly short MouseWheelDelta;
 
         /// <summary>
         /// The state of the mouse button
         /// </summary>
-        public MouseButtonState ButtonState;
+        public readonly MouseButtonState ButtonState;
 
         /// <summary>
         /// Flag to indicate whether the <see cref="Position"/> value is relative or not.
         /// </summary>
-        public bool IsRelative;
+        public readonly bool IsRelative;
+
+        /// <summary>Initializes a new instance of the <see cref="GorgonRawMouseData" /> struct.</summary>
+        /// <param name="position">The position of the mouse.</param>
+        /// <param name="mouseWheel">The mouse wheel delta value.</param>
+        /// <param name="mouseButton">The mouse buttons that are held down.</param>
+        /// <param name="relative"><b>true</b> if the positioning is relative, <b>false</b> if absolute.</param>
+        public GorgonRawMouseData(DX.Point position, short mouseWheel, MouseButtonState mouseButton, bool relative)
+        {
+            Position = position;
+            MouseWheelDelta = mouseWheel;
+            ButtonState = mouseButton;
+            IsRelative = relative;
+        }
     }
 }

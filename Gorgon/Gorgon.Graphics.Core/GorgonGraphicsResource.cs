@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Gorgon.Core;
+using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -154,11 +155,11 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     public abstract class GorgonGraphicsResource
-        : IGorgonNamedObject, IGorgonGraphicsObject, IDisposable
+        : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonNativeResource, IDisposable
     {
         #region Variables.
         // Custom application data.
-        private readonly Dictionary<Guid, object> _appData = new Dictionary<Guid, object>();
+        private readonly Dictionary<Guid, object> _appData = new();
         // The Direct 3D 11 resource.
         private D3D11.Resource _resource;
         #endregion
@@ -182,9 +183,17 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Property to return the native handle for the underlying resource object.
+        /// </summary>
+        /// <remarks>
+        /// The property can be used to interoperate with functionality that require direct access to Direct 3D objects.
+        /// </remarks>
+        IntPtr IGorgonNativeResource.Handle => _resource?.NativePointer ?? IntPtr.Zero;
+
+        /// <summary>
         /// Property to return whether or not the resource is disposed.
         /// </summary>
-        public bool IsDisposed => _resource == null;
+        public bool IsDisposed => _resource is null;
 
         /// <summary>
         /// Property to return the usage for the resource.
@@ -215,10 +224,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public EvictionPriority EvictionPriority
         {
-            get => D3DResource == null ? EvictionPriority.Minimum : (EvictionPriority)D3DResource.EvictionPriority;
+            get => D3DResource is null ? EvictionPriority.Minimum : (EvictionPriority)D3DResource.EvictionPriority;
             set
             {
-                if (D3DResource != null)
+                if (D3DResource is not null)
                 {
                     D3DResource.EvictionPriority = (int)value;
                 }
@@ -284,12 +293,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void SetApplicationData(Guid guid, object data)
         {
-            if (D3DResource == null)
+            if (D3DResource is null)
             {
                 return;
             }
 
-            if (data == null)
+            if (data is null)
             {
                 _appData.Remove(guid);
                 return;

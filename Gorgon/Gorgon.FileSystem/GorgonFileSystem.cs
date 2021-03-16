@@ -123,7 +123,7 @@ namespace Gorgon.IO
         internal static readonly string PhysicalDirSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 
         // Synchronization object.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         // The list of providers available to the file system.
         private readonly Dictionary<string, IGorgonFileSystemProvider> _providers;
         // The log file for the application.
@@ -205,7 +205,7 @@ namespace Gorgon.IO
 
             IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(physicalPath)).Value;
 
-            if (provider == null)
+            if (provider is null)
             {
                 throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, physicalPath));
             }
@@ -270,7 +270,7 @@ namespace Gorgon.IO
         {
             IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(location)).Value;
 
-            if (provider == null)
+            if (provider is null)
             {
                 throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, location));
             }
@@ -312,7 +312,7 @@ namespace Gorgon.IO
             // Find existing mount point.
             VirtualDirectory mountDirectory = GetVirtualDirectory(mountPoint.MountLocation);
 
-            if (mountDirectory == null)
+            if (mountDirectory is null)
             {
                 mountDirectory = _rootDirectory.Directories.Add(mountPoint, mountPoint.MountLocation);
             }
@@ -333,7 +333,7 @@ namespace Gorgon.IO
                 // If the directory path already exists for another provider, then override it with the 
                 // provider we're currently loading. All directories and files will be overridden by the last 
                 // provider loaded if they already exist.
-                if (existingDirectory == null)
+                if (existingDirectory is null)
                 {
                     _rootDirectory.Directories.Add(mountPoint, directory);
                 }
@@ -359,7 +359,7 @@ namespace Gorgon.IO
 
                 VirtualDirectory directory = GetVirtualDirectory(directoryName);
 
-                if (directory == null)
+                if (directory is null)
                 {
                     throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
                 }
@@ -403,7 +403,7 @@ namespace Gorgon.IO
                                      RegexOptions.Singleline | RegexOptions.IgnoreCase);
             }
 
-            return item.Name.EndsWith(searchMask.Substring(searchMask.IndexOf('*') + 1), StringComparison.OrdinalIgnoreCase);
+            return item.Name.EndsWith(searchMask[(searchMask.IndexOf('*') + 1)..], StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -437,7 +437,7 @@ namespace Gorgon.IO
         /// <returns>An <see cref="IEnumerable{T}"/> containing <see cref="VirtualDirectory"/> objects.</returns>
         private IEnumerable<VirtualDirectory> FindVirtualDirectories(string path, string directoryMask, bool recursive)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -448,7 +448,7 @@ namespace Gorgon.IO
             }
 
             VirtualDirectory startDirectory = GetVirtualDirectory(path);
-            return startDirectory == null
+            return startDirectory is null
                 ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path))
                 : !recursive
                        ? (string.Equals(directoryMask, "*", StringComparison.OrdinalIgnoreCase)
@@ -467,7 +467,7 @@ namespace Gorgon.IO
         /// <returns>An <see cref="IEnumerable{T}"/> containing <see cref="VirtualFile"/> objects.</returns>
         private IEnumerable<VirtualFile> FindVirtualFiles(string path, string fileMask, bool recursive)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -479,7 +479,7 @@ namespace Gorgon.IO
 
             VirtualDirectory start = GetVirtualDirectory(path);
 
-            return start == null
+            return start is null
                 ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path))
                 : !recursive
                        ? (string.Equals(fileMask, "*", StringComparison.OrdinalIgnoreCase)
@@ -495,7 +495,7 @@ namespace Gorgon.IO
         /// <returns>The file entry if found, null if not.</returns>
         private VirtualFile GetVirtualFile(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -526,7 +526,7 @@ namespace Gorgon.IO
             // Start search.
             VirtualDirectory search = GetVirtualDirectory(directory);
 
-            return search == null ? null : search.Files.Contains(filename) ? search.Files[filename] : null;
+            return search is null ? null : search.Files.Contains(filename) ? search.Files[filename] : null;
         }
 
         /// <summary>
@@ -536,7 +536,7 @@ namespace Gorgon.IO
         /// <returns>The directory entry if found, null if not.</returns>
         private VirtualDirectory GetVirtualDirectory(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -632,13 +632,13 @@ namespace Gorgon.IO
         {
             VirtualDirectory dir = GetVirtualDirectory(directoryPath);
 
-            if (dir == null)
+            if (dir is null)
             {
                 return;
             }
 
             // If this is a root directory, then just clear everything.
-            if (dir.Parent == null)
+            if (dir.Parent is null)
             {
                 _rootDirectory.Directories.Clear();
                 _rootDirectory.Files.Clear();
@@ -659,7 +659,7 @@ namespace Gorgon.IO
         {
             VirtualDirectory dir = GetVirtualDirectory(oldPath);
 
-            if (dir?.Parent == null)
+            if (dir?.Parent is null)
             {
                 return;
             }
@@ -746,7 +746,7 @@ namespace Gorgon.IO
         {
             VirtualFile file = GetVirtualFile(filePath);
 
-            if (file == null)
+            if (file is null)
             {
                 return;
             }
@@ -762,7 +762,7 @@ namespace Gorgon.IO
         {
             VirtualFile file = GetVirtualFile(fileInfo.VirtualPath);
 
-            if (file == null)
+            if (file is null)
             {
                 string directoryPath = Path.GetDirectoryName(fileInfo.VirtualPath);
                 VirtualDirectory directory = GetVirtualDirectory(directoryPath);
@@ -994,7 +994,7 @@ namespace Gorgon.IO
         /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
         /// 
         /// // The file does not exist yet because the file system has no idea that it's been added.
-        /// if (file == null)
+        /// if (file is null)
         /// {
         ///    Console.WriteLine("File does not exist.");
         /// }
@@ -1006,7 +1006,7 @@ namespace Gorgon.IO
         /// IGorgonVirtualFile file = fileSystem.GetFile("/Files/MyBudget.xls");
         /// 
         /// // The file will now show up in the directory.
-        /// if (file != null)
+        /// if (file is not null)
         /// {
         ///    Console.WriteLine("File exists.");
         /// }
@@ -1017,7 +1017,7 @@ namespace Gorgon.IO
         /// </remarks>
         public void Refresh(string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
@@ -1029,7 +1029,7 @@ namespace Gorgon.IO
 
             VirtualDirectory directory = GetVirtualDirectory(path);
 
-            if (directory == null)
+            if (directory is null)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
             }
@@ -1074,7 +1074,7 @@ namespace Gorgon.IO
 
                 VirtualDirectory subDirectory = GetVirtualDirectory(directoryName);
 
-                if (subDirectory == null)
+                if (subDirectory is null)
                 {
                     throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
                 }
@@ -1173,7 +1173,7 @@ namespace Gorgon.IO
                 VirtualDirectory mountPointDirectory = GetVirtualDirectory(mountPoint.MountLocation);
 
                 // If we don't have the directory in the file system, then we have nothing to remove.
-                if (mountPointDirectory == null)
+                if (mountPointDirectory is null)
                 {
                     return;
                 }
@@ -1219,7 +1219,7 @@ namespace Gorgon.IO
                 _mountProviders.Remove(mountPoint);
 
                 // If there's nothing left under this mount point, and it's not the root, then dump the directory.
-                if ((mountPointDirectory.Parent == null)
+                if ((mountPointDirectory.Parent is null)
                     || (mountPointDirectory.Directories.Count != 0)
                     || (mountPointDirectory.Files.Count != 0))
                 {
@@ -1381,7 +1381,7 @@ namespace Gorgon.IO
         /// </example>
         public GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath = null)
         {
-            if (physicalPath == null)
+            if (physicalPath is null)
             {
                 throw new ArgumentNullException(nameof(physicalPath));
             }
@@ -1453,17 +1453,17 @@ namespace Gorgon.IO
         public GorgonFileSystem(IEnumerable<IGorgonFileSystemProvider> providers, IGorgonLog log = null)
             : this(log)
         {
-            if (providers == null)
+            if (providers is null)
             {
                 throw new ArgumentNullException(nameof(providers));
             }
 
             // Get all the providers in the parameter.
-            foreach (IGorgonFileSystemProvider provider in providers.Where(item => item != null))
+            foreach (IGorgonFileSystemProvider provider in providers.Where(item => item is not null))
             {
                 string providerTypeName = provider.GetType().FullName;
 
-                Debug.Assert(providerTypeName != null, nameof(providerTypeName) + " != null");
+                Debug.Assert(providerTypeName is not null, nameof(providerTypeName) + " is null");
 
                 _providers[providerTypeName] = provider;
             }
@@ -1483,7 +1483,7 @@ namespace Gorgon.IO
             _providers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
             _mountProviders = new HashSet<GorgonFileSystemMountPoint>();
 
-            DefaultProvider = new GorgonFileSystemProvider();
+            DefaultProvider = new FolderFileSystemProvider();
 
             _rootDirectory = new VirtualDirectory(default, this, null, "/");
         }

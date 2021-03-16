@@ -23,9 +23,11 @@
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
 #endregion
+
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -60,7 +62,7 @@ namespace Gorgon.Examples
         public Sphere(GorgonGraphics graphics,
                       GorgonInputLayout inputLayout,
                       float radius,
-                      DX.Vector2 textureOffset,
+                      Vector2 textureOffset,
                       DX.Size2F textureScale,
                       int ringCount = 8,
                       int segmentCount = 16)
@@ -77,7 +79,7 @@ namespace Gorgon.Examples
             int vertexCount = (ringCount + 1) * (segmentCount + 1);
             int indexCount = 6 * ringCount * (segmentCount + 1);
 
-            Vertices = new BoingerVertex[vertexCount];
+            Vertices = new GorgonVertexPosUv[vertexCount];
             Indices = new ushort[indexCount];
 
             Radius = radius;
@@ -87,11 +89,11 @@ namespace Gorgon.Examples
             {
                 float angle = deltaRingAngle * ring;
                 float ringSin = angle.Sin();
-                var position = new DX.Vector3(0, angle.Cos() * radius, 0);
+                var position = new Vector3(0, angle.Cos() * radius, 0);
 
                 for (int segment = 0; segment <= segmentCount; segment++)
                 {
-                    var textureDelta = new DX.Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
+                    var textureDelta = new Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
                     float segmentAngle = deltaSegAngle * segment;
 
                     position.X = ringSin * segmentAngle.Sin() * radius;
@@ -103,7 +105,7 @@ namespace Gorgon.Examples
                     textureDelta.X += textureOffset.X;
                     textureDelta.Y += textureOffset.Y;
 
-                    Vertices[vertexIndex++] = new BoingerVertex(
+                    Vertices[vertexIndex++] = new GorgonVertexPosUv(
                                                                 position,
                                                                 textureDelta
                                                                );
@@ -125,24 +127,20 @@ namespace Gorgon.Examples
             }
 
             // Copy the above vertex/index data into a vertex and index buffer so we can render our sphere.
-            using (var indexPtr = GorgonNativeBuffer<ushort>.Pin(Indices))
-            using (var vertexPtr = GorgonNativeBuffer<BoingerVertex>.Pin(Vertices))
-            {
-                VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer(graphics,
-                                                                                       new GorgonVertexBufferInfo("Sphere Vertex Buffer")
-                                                                                       {
-                                                                                           SizeInBytes = Vertices.Length * BoingerVertex.Size,
-                                                                                           Usage = ResourceUsage.Immutable
-                                                                                       },
-                                                                                       vertexPtr);
-                IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                    new GorgonIndexBufferInfo("Sphere Index Buffer")
-                                                    {
-                                                        Usage = ResourceUsage.Immutable,
-                                                        IndexCount = Indices.Length
-                                                    },
-                                                    indexPtr);
-            }
+            VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
+                                                                                    new GorgonVertexBufferInfo("Sphere Vertex Buffer")
+                                                                                    {
+                                                                                        SizeInBytes = Vertices.Length * GorgonVertexPosUv.SizeInBytes,
+                                                                                        Usage = ResourceUsage.Immutable
+                                                                                    },
+                                                                                    Vertices);
+            IndexBuffer = new GorgonIndexBuffer(graphics,
+                                                new GorgonIndexBufferInfo("Sphere Index Buffer")
+                                                {
+                                                    Usage = ResourceUsage.Immutable,
+                                                    IndexCount = Indices.Length
+                                                },
+                                                Indices);
         }
         #endregion
     }

@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Renderers;
 using Gorgon.Editor.Content;
@@ -72,7 +72,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="dataType">The type of data for the key frame.</param>
         /// <param name="floatValue">The floating point data to assign.</param>
         /// <returns>A new key frame view model with the specified data.</returns>
-        IKeyFrame CreateKeyFrame(float time, AnimationTrackKeyType dataType, DX.Vector4 floatValue);
+        IKeyFrame CreateKeyFrame(float time, AnimationTrackKeyType dataType, Vector4 floatValue);
 
         /// <summary>
         /// Function to create the default texture track for an animation.

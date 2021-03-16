@@ -24,9 +24,9 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Collections.Generic;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {
@@ -39,7 +39,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to set or return the vertex offset for the selected vertex.
         /// </summary>
-        DX.Vector2 Offset
+        Vector2 Offset
         {
             get;
             set;
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Property to set or return the vertices that are being edited.
         /// </summary>
-        IReadOnlyList<DX.Vector2> Vertices
+        IReadOnlyList<Vector2> Vertices
         {
             get;
             set;

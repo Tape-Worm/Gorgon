@@ -68,91 +68,27 @@ namespace Gorgon.Native
             {
                 int keyboardType = GetKeyboardType(0);
 
-                switch (keyboardType)
+                return keyboardType switch
                 {
-                    case 1:
-                        return KeyboardType.XT;
-                    case 2:
-                        return KeyboardType.OlivettiICO;
-                    case 3:
-                        return KeyboardType.AT;
-                    case 4:
-                        return KeyboardType.Enhanced;
-                    case 5:
-                        return KeyboardType.Nokia1050;
-                    case 6:
-                        return KeyboardType.Nokia9140;
-                    case 7:
-                        return KeyboardType.Japanese;
-                    case 81:
-                        return KeyboardType.USB;
-                    default:
-                        return KeyboardType.Unknown;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Converts a virtual key code into a unicode character representation.
-        /// </summary>
-        /// <param name="keyCode">Key code</param>
-        /// <param name="scanCode">Scan code</param>
-        /// <param name="keyboardState">State</param>
-        /// <param name="buffer">Buffer to populate</param>
-        /// <param name="bufferSize">Size of the buffer, in bytes.</param>
-        /// <param name="flags">Flags to pass.</param>
-        /// <returns>The return code for the method.</returns>
-        /// <remarks>
-        /// See <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms646320(v=vs.85).aspx"/> for more info.
-        /// </remarks>
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern int ToUnicode(uint keyCode,
-                                            uint scanCode,
-                                            byte[] keyboardState,
-                                            [Out] [MarshalAs(UnmanagedType.LPArray)] char[] buffer,
-                                            int bufferSize,
-                                            uint flags);
-
-        /// <summary>
-        /// Function to set the visibility of the pointing device cursor.
-        /// </summary>
-        /// <param name="bShow"><b>true</b> to show, <b>false</b> to hide.</param>
-        /// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with <b>true</b>.</returns>
-        [DllImport("User32.dll")]
-        public static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
-
-        [DllImport("User32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetCursorInfo(IntPtr pci);
-
-        public static CursorInfoFlags IsCursorVisible()
-        {
-            unsafe
-            {
-                var cursorInfo = new CURSORINFO
-                {
-                    cbSize = Unsafe.SizeOf<CURSORINFO>(),
-                    flags = CursorInfoFlags.CursorHidden,
-                    hCursor = IntPtr.Zero,
-                    ptScreenPos = new POINT
-                    {
-                        Y = 0,
-                        X = 0
-                    }
+                    1 => KeyboardType.XT,
+                    2 => KeyboardType.OlivettiICO,
+                    3 => KeyboardType.AT,
+                    4 => KeyboardType.Enhanced,
+                    5 => KeyboardType.Nokia1050,
+                    6 => KeyboardType.Nokia9140,
+                    7 => KeyboardType.Japanese,
+                    81 => KeyboardType.USB,
+                    _ => KeyboardType.Unknown,
                 };
-
-                if (GetCursorInfo((IntPtr)(&cursorInfo)))
-                {
-                    return cursorInfo.flags;
-                }
-
-                int win32Error = Marshal.GetLastWin32Error();
-                throw new Win32Exception(string.Format(Resources.GORINP_ERR_WIN32_CURSOR_INFO, win32Error));
             }
         }
         #endregion
 
         #region Methods.
+        [DllImport("User32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetCursorInfo(ref CURSORINFO pci);
+
         /// <summary>
         /// Function to retrieve keyboard type information.
         /// </summary>
@@ -217,6 +153,58 @@ namespace Gorgon.Native
         private static extern IntPtr SetWindowLongx64(HandleRef hwnd, int index, IntPtr info);
 
         /// <summary>
+        /// Function to set the visibility of the pointing device cursor.
+        /// </summary>
+        /// <param name="bShow"><b>true</b> to show, <b>false</b> to hide.</param>
+        /// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with <b>true</b>.</returns>
+        [DllImport("User32.dll")]
+        public static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
+
+        /// <summary>
+        /// Converts a virtual key code into a unicode character representation.
+        /// </summary>
+        /// <param name="keyCode">Key code</param>
+        /// <param name="scanCode">Scan code</param>
+        /// <param name="keyboardState">State</param>
+        /// <param name="buffer">Buffer to populate</param>
+        /// <param name="bufferSize">Size of the buffer, in bytes.</param>
+        /// <param name="flags">Flags to pass.</param>
+        /// <returns>The return code for the method.</returns>
+        /// <remarks>
+        /// See <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms646320(v=vs.85).aspx"/> for more info.
+        /// </remarks>
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern int ToUnicode(uint keyCode,
+                                            uint scanCode,
+                                            byte[] keyboardState,
+                                            [Out][MarshalAs(UnmanagedType.LPArray)] char[] buffer,
+                                            int bufferSize,
+                                            uint flags);
+
+        public static CursorInfoFlags IsCursorVisible()
+        {
+            var cursorInfo = new CURSORINFO
+            {
+                cbSize = Unsafe.SizeOf<CURSORINFO>(),
+                flags = CursorInfoFlags.CursorHidden,
+                hCursor = IntPtr.Zero,
+                ptScreenPos = new POINT
+                {
+                    Y = 0,
+                    X = 0
+                }
+            };
+
+            if (GetCursorInfo(ref cursorInfo))
+            {
+                return cursorInfo.flags;
+            }
+
+            int win32Error = Marshal.GetLastWin32Error();
+            throw new Win32Exception(string.Format(Resources.GORINP_ERR_WIN32_CURSOR_INFO, win32Error));
+        }
+
+        /// <summary>
         /// Function to call a window procedure.
         /// </summary>
         /// <param name="wndProc">Pointer to the window procedure function to call.</param>
@@ -234,7 +222,7 @@ namespace Gorgon.Native
         /// <param name="hwnd">Window handle to retrieve information from.</param>
         /// <param name="index">Type of information.</param>
         /// <returns>A pointer to the information.</returns>
-        public static IntPtr GetWindowLong(HandleRef hwnd, int index) => IntPtr.Size == 4 ? GetWindowLongx86(hwnd, index) : GetWindowLongx64(hwnd, index);
+        public static IntPtr GetWindowLong(HandleRef hwnd, int index) => !Environment.Is64BitProcess ? GetWindowLongx86(hwnd, index) : GetWindowLongx64(hwnd, index);
 
         /// <summary>
         /// Function to set information for the specified window.
@@ -243,7 +231,7 @@ namespace Gorgon.Native
         /// <param name="index">Type of information.</param>
         /// <param name="info">Information to set.</param>
         /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-        public static IntPtr SetWindowLong(HandleRef hwnd, int index, IntPtr info) => IntPtr.Size == 4 ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
+        public static IntPtr SetWindowLong(HandleRef hwnd, int index, IntPtr info) => !Environment.Is64BitProcess ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
 
         /// <summary>
         /// Function to return the scan code for a virtual key.

@@ -74,12 +74,12 @@ namespace Gorgon.Examples
             // 
             this.textDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textDisplay.Location = new System.Drawing.Point(0, 27);
+            this.textDisplay.Location = new System.Drawing.Point(2, 29);
             this.textDisplay.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textDisplay.Multiline = true;
             this.textDisplay.Name = "textDisplay";
             this.textDisplay.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textDisplay.Size = new System.Drawing.Size(956, 471);
+            this.textDisplay.Size = new System.Drawing.Size(956, 503);
             this.textDisplay.TabIndex = 1;
             this.textDisplay.TextChanged += new System.EventHandler(this.TextDisplay_TextChanged);
             // 
@@ -93,7 +93,7 @@ namespace Gorgon.Examples
             this.buttonReload,
             this.toolStripSeparator1,
             this.toolStripLabel1});
-            this.stripCommands.Location = new System.Drawing.Point(0, 0);
+            this.stripCommands.Location = new System.Drawing.Point(2, 2);
             this.stripCommands.Name = "stripCommands";
             this.stripCommands.Size = new System.Drawing.Size(956, 27);
             this.stripCommands.Stretch = true;
@@ -141,10 +141,13 @@ namespace Gorgon.Examples
             // 
             // toolStripLabel1
             // 
+            this.toolStripLabel1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(554, 24);
+            this.toolStripLabel1.Size = new System.Drawing.Size(528, 24);
             this.toolStripLabel1.Text = "Change the text below and press the Save button.  Press the Reload button to load" +
-    " in the saved changes.";
+    " the original text.";
+            this.toolStripLabel1.ToolTipText = "Change the text below and press the Save button.  Press the Reload button to load" +
+    " the original text.";
             // 
             // panelWriteLocation
             // 
@@ -189,7 +192,7 @@ namespace Gorgon.Examples
             this.panel3.Controls.Add(this.panelWriteLocation);
             this.panel3.Controls.Add(this.panel4);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 498);
+            this.panel3.Location = new System.Drawing.Point(2, 532);
             this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(956, 66);
@@ -263,21 +266,21 @@ namespace Gorgon.Examples
             this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
             // 
-            // formMain
+            // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 600);
+            this.Controls.Add(this.textDisplay);
+            this.Controls.Add(this.stripCommands);
+            this.Controls.Add(this.panel3);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "formMain";
+            this.Name = "Form";
             this.Padding = new System.Windows.Forms.Padding(2);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gorgon Example - Writing to a Virtual File System";
-		    this.Controls.Add(this.textDisplay);
-		    this.Controls.Add(this.stripCommands);
-		    this.Controls.Add(this.panel3);
             this.stripCommands.ResumeLayout(false);
             this.stripCommands.PerformLayout();
             this.panelWriteLocation.ResumeLayout(false);
@@ -288,6 +291,7 @@ namespace Gorgon.Examples
             this.panel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
 		}
 

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
@@ -34,6 +35,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
@@ -85,7 +87,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="GorgonSearchEventArgs"/> instance containing the event data.</param>
         private void ContentFileExplorer_Search(object sender, GorgonSearchEventArgs e)
         {
-            if ((DataContext?.SearchCommand == null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
+            if ((DataContext?.SearchCommand is null) || (!DataContext.SearchCommand.CanExecute(e.SearchText)))
             {
                 return;
             }
@@ -100,7 +102,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The e.</param>
         private async void ContentFileExplorer_FileEntriesFocused(object sender, ContentFileEntriesFocusedArgs e)
         {
-            if ((DataContext?.RefreshSpritePreviewCommand == null) || (!DataContext.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
+            if ((DataContext?.RefreshSpritePreviewCommand is null) || (!DataContext.RefreshSpritePreviewCommand.CanExecute(e.FocusedFiles)))
             {
                 return;
             }
@@ -119,7 +121,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonLoad_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ConfirmLoadCommand == null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
+            if ((DataContext?.ConfirmLoadCommand is null) || (!DataContext.ConfirmLoadCommand.CanExecute(null)))
             {
                 return;
             }
@@ -150,7 +152,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             _previewImage?.Dispose();
 
-            if (image == null)
+            if (image is null)
             {
                 _previewImage = null;
                 return;
@@ -202,13 +204,13 @@ namespace Gorgon.Editor.TextureAtlasTool
             _swapChain.RenderTargetView.Clear(PanelPreviewRender.BackColor);
 
             var renderRegion = GetRenderRegion().ToRectangleF();
-            var halfClient = new DX.Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
+            var halfClient = new Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
 
             _graphicsContext.Renderer2D.Begin();
             _graphicsContext.Renderer2D.DrawFilledRectangle(renderRegion, DarkFormsRenderer.DarkBackground);
 
             // Render the sprite image.
-            if (_previewImage != null)
+            if (_previewImage is not null)
             {                
                 float scale = (renderRegion.Width / _previewImage.Width).Min(renderRegion.Height / _previewImage.Height);
                 float width = _previewImage.Width * scale;
@@ -220,16 +222,16 @@ namespace Gorgon.Editor.TextureAtlasTool
             }
             else
             {
-                DX.Size2F size = _graphicsContext.Renderer2D.DefaultFont.MeasureText(Resources.GORTAG_TEXT_SELECT_SPRITE, false);
+                DX.Size2F size = Resources.GORTAG_TEXT_SELECT_SPRITE.MeasureText(_graphicsContext.Renderer2D.DefaultFont, false);
                 _graphicsContext.Renderer2D.DrawString(Resources.GORTAG_TEXT_SELECT_SPRITE, 
-                                                        new DX.Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
+                                                        new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f), 
                                                         color: GorgonColor.White);
             }
             _graphicsContext.Renderer2D.End();
 
             _swapChain.Present(1);
 
-            if ((GorgonApplication.AllowBackground) && (_oldIdle != null))
+            if ((GorgonApplication.AllowBackground) && (_oldIdle is not null))
             {
                 if (!_oldIdle())
                 {
@@ -246,7 +248,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         private void ShutdownGraphics()
         {
             Func<bool> oldIdle = Interlocked.Exchange(ref _oldIdle, null);
-            if (oldIdle != null)
+            if (oldIdle is not null)
             {
                 GorgonApplication.IdleMethod = oldIdle;
             }
@@ -254,7 +256,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             GorgonSwapChain swap = Interlocked.Exchange(ref _swapChain, null);
 
             preview?.Dispose();
-            if (swap != null)
+            if (swap is not null)
             {
                 _graphicsContext.ReturnSwapPresenter(ref swap);
             }
@@ -266,7 +268,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// </summary>
         private void UnassignEvents()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -285,7 +287,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(ISpriteFiles dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -334,7 +336,7 @@ namespace Gorgon.Editor.TextureAtlasTool
 
             _graphicsContext = context;
 
-            if (context == null)
+            if (context is null)
             {
                 return;
             }
@@ -354,7 +356,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             InitializeFromDataContext(dataContext);
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

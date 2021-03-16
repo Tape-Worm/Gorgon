@@ -58,19 +58,19 @@ namespace Gorgon.Animation
     {
         #region Variables.
         // A list of builders for single floating point value tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeySingle>> _singleTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeySingle>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeySingle>> _singleTracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for vector 2 tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector2>> _vector2Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector2>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector2>> _vector2Tracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for vector 3 tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>> _vector3Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector3>> _vector3Tracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for vector 4 tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>> _vector4Tracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyVector4>> _vector4Tracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for rectangle tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>> _rectangleTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyRectangle>> _rectangleTracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for rectangle tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>> _colorTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>> _colorTracks = new(StringComparer.OrdinalIgnoreCase);
         // A list of builders for texture tracks.
-        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>> _textureTracks = new Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>> _textureTracks = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Methods.       
@@ -88,7 +88,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeySingle> EditSingle(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -120,7 +120,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyVector2> EditVector2(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -152,7 +152,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditVector3(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -184,7 +184,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyVector4> EditVector4(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -216,7 +216,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyRectangle> EditRectangle(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -248,7 +248,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> EditColor(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -280,7 +280,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyTexture2D> Edit2DTexture(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -309,7 +309,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteSingle(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -337,7 +337,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteVector2(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -366,7 +366,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteVector3(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -395,7 +395,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteVector4(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -424,7 +424,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteRectangle(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -453,7 +453,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder DeleteColor(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -482,7 +482,7 @@ namespace Gorgon.Animation
         /// <exception cref="KeyNotFoundException">Thrown if the track with the name specified does not exist.</exception>
         public GorgonAnimationBuilder Delete2DTexture(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -520,7 +520,7 @@ namespace Gorgon.Animation
         /// </remarks>
         public IGorgonAnimation Build(string name, float fps = 60, float? length = null)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -647,7 +647,7 @@ namespace Gorgon.Animation
                 };
             }
 
-            if (length == null)
+            if (length is null)
             {
                 length = _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>()).DefaultIfEmpty()
                                       .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys).DefaultIfEmpty())
@@ -685,7 +685,7 @@ namespace Gorgon.Animation
         {
             Clear();
 
-            if (builderObject == null)
+            if (builderObject is null)
             {
                 return this;
             }

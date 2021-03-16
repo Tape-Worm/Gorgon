@@ -87,7 +87,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>
         /// Property to return whether or not block compression is supported.
         /// </summary>
-        public bool CanHandleBlockCompression => _compressor != null;
+        public bool CanHandleBlockCompression => _compressor is not null;
         #endregion
 
         #region Methods.
@@ -109,7 +109,7 @@ namespace Gorgon.Editor.ImageEditor
             // Try to determine if we can actually read the file using an installed codec, if we can't, then try to find a suitable codec.
             using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                if ((importCodec == null) || (!importCodec.IsReadable(stream)))
+                if ((importCodec is null) || (!importCodec.IsReadable(stream)))
                 {
                     importCodec = null;
 
@@ -123,7 +123,7 @@ namespace Gorgon.Editor.ImageEditor
                     }
                 }
 
-                if (importCodec == null)
+                if (importCodec is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_NO_CODEC, filePath));
                 }
@@ -136,10 +136,8 @@ namespace Gorgon.Editor.ImageEditor
                 _log.Print($"Adding {codecExtension.Extension} extension to working file or else external tools may not be able to read it.", LoggingLevel.Verbose);
                 workFilePath = $"{workFilePath}.{codecExtension.Extension}";
 
-                using (Stream outStream = ScratchArea.OpenStream(workFilePath, FileMode.Create))
-                {
-                    stream.CopyTo(outStream);
-                }
+                using Stream outStream = ScratchArea.OpenStream(workFilePath, FileMode.Create);
+                stream.CopyTo(outStream);
             }
 
             workFile = ScratchArea.FileSystem.GetFile(workFilePath);
@@ -150,7 +148,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 _log.Print($"Image is compressed using [{formatInfo.Format}] as its pixel format.", LoggingLevel.Intermediate);
 
-                if (_compressor == null)
+                if (_compressor is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
@@ -158,7 +156,7 @@ namespace Gorgon.Editor.ImageEditor
                 _log.Print($"Loading image '{workFile.FullPath}'...", LoggingLevel.Simple);
                 importImage = _compressor.Decompress(ref workFile, metaData);
 
-                if (importImage == null)
+                if (importImage is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
@@ -167,10 +165,8 @@ namespace Gorgon.Editor.ImageEditor
             }
             else
             {
-                using (Stream workStream = workFile.OpenStream())
-                {
-                    importImage = importCodec.FromStream(workStream);
-                }
+                using Stream workStream = workFile.OpenStream();
+                importImage = importCodec.FromStream(workStream);
             }
 
             return (file, importImage, workFile, metaData.Format);
@@ -239,7 +235,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>The updated working file.</returns>
         public IGorgonVirtualFile SaveImageFile(string name, IGorgonImage image, BufferFormat pixelFormat, IGorgonImageCodec codec = null)
         {
-            if (codec == null)
+            if (codec is null)
             {
                 codec = DefaultCodec;
             }
@@ -256,7 +252,7 @@ namespace Gorgon.Editor.ImageEditor
             var formatInfo = new GorgonFormatInfo(pixelFormat);
 
             // The file doesn't exist, so we need to create a dummy file.
-            if (workFile == null)
+            if (workFile is null)
             {
                 using (Stream tempStream = ScratchArea.OpenStream(name, FileMode.Create))
                 {
@@ -274,7 +270,7 @@ namespace Gorgon.Editor.ImageEditor
             if (formatInfo.IsCompressed)
             {
                 _log.Print($"Pixel format [{pixelFormat}] is a block compression format, compressing using external tool...", LoggingLevel.Intermediate);
-                if ((_compressor == null) || (!codec.SupportsBlockCompression))
+                if ((_compressor is null) || (!codec.SupportsBlockCompression))
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
@@ -289,26 +285,27 @@ namespace Gorgon.Editor.ImageEditor
                 result = _compressor.Compress(workFile, pixelFormat, image.MipCount);
 
                 // Convert to an uncompressed format if we aren't already in that format.
+                IGorgonImageUpdateFluent imageUpdate = image.BeginUpdate();
                 switch (pixelFormat)
                 {
                     case BufferFormat.BC5_SNorm when image.Format != BufferFormat.R8G8_SNorm:
-                        image.ConvertToFormat(BufferFormat.R8G8_SNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8G8_SNorm);
                         break;
                     case BufferFormat.BC5_Typeless when image.Format != BufferFormat.R8G8_UNorm:
                     case BufferFormat.BC5_UNorm when image.Format != BufferFormat.R8G8_UNorm:
-                        image.ConvertToFormat(BufferFormat.R8G8_UNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8G8_UNorm);
                         break;
                     case BufferFormat.BC6H_Sf16 when image.Format != BufferFormat.R16G16B16A16_Float:
                     case BufferFormat.BC6H_Typeless when image.Format != BufferFormat.R16G16B16A16_Float:
                     case BufferFormat.BC6H_Uf16 when image.Format != BufferFormat.R16G16B16A16_Float:
-                        image.ConvertToFormat(BufferFormat.R16G16B16A16_Float);
+                        imageUpdate.ConvertToFormat(BufferFormat.R16G16B16A16_Float);
                         break;
                     case BufferFormat.BC4_SNorm when image.Format != BufferFormat.R8G8_SNorm:
-                        image.ConvertToFormat(BufferFormat.R8_SNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8_SNorm);
                         break;
                     case BufferFormat.BC4_Typeless when image.Format != BufferFormat.R8G8_UNorm:
                     case BufferFormat.BC4_UNorm when image.Format != BufferFormat.R8G8_UNorm:
-                        image.ConvertToFormat(BufferFormat.R8_UNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8_UNorm);
                         break;
                     case BufferFormat.BC1_Typeless when image.Format != BufferFormat.R8G8B8A8_UNorm:
                     case BufferFormat.BC1_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
@@ -318,17 +315,19 @@ namespace Gorgon.Editor.ImageEditor
                     case BufferFormat.BC3_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
                     case BufferFormat.BC7_Typeless when image.Format != BufferFormat.R8G8B8A8_UNorm:
                     case BufferFormat.BC7_UNorm when image.Format != BufferFormat.R8G8B8A8_UNorm:
-                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
                         break;
                     case BufferFormat.BC1_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
                     case BufferFormat.BC2_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
                     case BufferFormat.BC3_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
                     case BufferFormat.BC7_UNorm_SRgb when image.Format != BufferFormat.R8G8B8A8_UNorm_SRgb:
-                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb);
+                        imageUpdate.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb);
                         break;
                 }
 
-                if (result == null)
+                imageUpdate.EndUpdate();
+
+                if (result is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
@@ -339,7 +338,9 @@ namespace Gorgon.Editor.ImageEditor
                 if (pixelFormat != image.Format)
                 {
                     _log.Print($"Image pixel format [{image.Format}] is different than requested format of [{pixelFormat}], converting...", LoggingLevel.Intermediate);
-                    image.ConvertToFormat(pixelFormat);
+                    image.BeginUpdate()
+                         .ConvertToFormat(pixelFormat)
+                         .EndUpdate();
                     _log.Print($"Converted image '{workFile.Name}' to pixel format: [{pixelFormat}].", LoggingLevel.Simple);
                 }
 
@@ -367,7 +368,7 @@ namespace Gorgon.Editor.ImageEditor
             IGorgonImageInfo originalInfo = DefaultCodec.GetMetaData(file);
             (IGorgonImage image, IGorgonVirtualFile workFile, _) = LoadImageFile(file, path);
 
-            if ((image == null) || (workFile == null))
+            if ((image is null) || (workFile is null))
             {
                 image?.Dispose();
                 return (null, null, null);
@@ -376,13 +377,18 @@ namespace Gorgon.Editor.ImageEditor
             // Create a thumbnail from the image.
             if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
             {
-                image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                image.BeginUpdate()
+                     .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                     .EndUpdate();
             }
             else
             {
                 if ((_noThumbImage.Width != size) || (_noThumbImage.Height != size))
                 {
-                    image = _noThumbImage.Clone().Resize((int)(size * dpi), (int)(size * dpi), 1, ImageFilter.Fant);
+                    image = _noThumbImage.Clone()
+                                         .BeginUpdate()
+                                         .Resize((int)(size * dpi), (int)(size * dpi), 1, ImageFilter.Fant)
+                                         .EndUpdate();
                 }
                 else
                 {
@@ -424,12 +430,15 @@ namespace Gorgon.Editor.ImageEditor
                 newWidth = (int)((size * aspect) * dpi);
             }
 
-            image.Resize(newWidth, newHeight, 1, ImageFilter.Fant);
+            IGorgonImageUpdateFluent imageUpdate = image.BeginUpdate();
+            imageUpdate.Resize(newWidth, newHeight, 1, ImageFilter.Fant);
 
             if (imageSize != size)
             {
-                image.Expand(imageSize, imageSize, 1, ImageExpandAnchor.Center);
+                imageUpdate.Expand(imageSize, imageSize, 1, ImageExpandAnchor.Center);
             }
+
+            imageUpdate.EndUpdate();
 
             return (image, workFile, originalInfo);
         }
@@ -478,7 +487,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 _log.Print($"Image is compressed using [{formatInfo.Format}] as its pixel format.", LoggingLevel.Intermediate);
 
-                if (_compressor == null)
+                if (_compressor is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
@@ -486,7 +495,7 @@ namespace Gorgon.Editor.ImageEditor
                 _log.Print($"Loading image '{workFile.FullPath}'...", LoggingLevel.Simple);
                 result = _compressor.Decompress(ref workFile, imageInfo);
 
-                if (result == null)
+                if (result is null)
                 {
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_FILE, formatInfo.Format));
                 }
@@ -496,10 +505,8 @@ namespace Gorgon.Editor.ImageEditor
             else
             {
                 _log.Print($"Loading image '{workFile.FullPath}'...", LoggingLevel.Simple);
-                using (Stream workingFileStream = workFile.OpenStream())
-                {
-                    result = DefaultCodec.FromStream(workingFileStream);
-                }
+                using Stream workingFileStream = workFile.OpenStream();
+                result = DefaultCodec.FromStream(workingFileStream);
             }
 
             return (result, workFile, originalFormat);
@@ -512,10 +519,8 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns>An image information object containing data about the image.</returns>
         public IGorgonImageInfo GetImageInfo(string filePath)
         {
-            using (Stream stream = ScratchArea.OpenStream(filePath, FileMode.Open))
-            {
-                return DefaultCodec.GetMetaData(stream);
-            }
+            using Stream stream = ScratchArea.OpenStream(filePath, FileMode.Open);
+            return DefaultCodec.GetMetaData(stream);
         }
         #endregion
 

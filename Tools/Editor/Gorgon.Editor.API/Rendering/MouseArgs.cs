@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Windows.Forms;
 using DX = SharpDX;
 
@@ -52,7 +53,7 @@ namespace Gorgon.Editor.Rendering
         /// <remarks>
         /// This returns the location of the mouse in relation to the transformed (i.e. panning and scaling applied) content render region, where 0x0 is the center of the screen.
         /// </remarks>
-        public DX.Vector2 CameraSpacePosition
+        public Vector2 CameraSpacePosition
         {
             get;
             internal set;

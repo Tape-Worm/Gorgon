@@ -51,7 +51,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// The default multisampling value.
         /// </summary>
-        public static readonly GorgonMultisampleInfo NoMultiSampling = new GorgonMultisampleInfo(1, 0);
+        public static readonly GorgonMultisampleInfo NoMultiSampling = new(1, 0);
 
         /// <summary>
         /// A quality level for standard multisample quality.

@@ -27,7 +27,7 @@
 using System;
 using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
-using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.Services
@@ -54,7 +54,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Property to set or return the camera being used.
         /// </summary>
-        IGorgon2DCamera Camera
+        GorgonOrthoCamera Camera
         {
             get;
             set;

@@ -68,7 +68,7 @@ namespace Gorgon.Editor.UI
             set
             {
                 WorkspaceBrowser.AssignInitialDirectory(string.IsNullOrWhiteSpace(value) ? null : new DirectoryInfo(value));
-                ButtonOK.Enabled = value != null;
+                ButtonOK.Enabled = value is not null;
             }
         }
         #endregion
@@ -106,7 +106,7 @@ namespace Gorgon.Editor.UI
         {
             base.OnLoad(e);
 
-            if (_prevWindowSize != null)
+            if (_prevWindowSize is not null)
             {
                 SetBounds(_prevWindowSize.Value.X, _prevWindowSize.Value.Y, _prevWindowSize.Value.Width.Max(640), _prevWindowSize.Value.Height.Max(480), BoundsSpecified.Size);
             }

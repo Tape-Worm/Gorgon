@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
@@ -84,73 +83,43 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonVertexBuffer"/>
-        public static GorgonVertexBufferBinding CreateVertexBuffer<T>(GorgonGraphics graphics, IGorgonVertexBufferInfo info, GorgonNativeBuffer<T> initialData = null, int bindingIndex = 0)
+        public static GorgonVertexBufferBinding CreateVertexBuffer<T>(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default, int bindingIndex = 0)
             where T : unmanaged
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (info == null)
+            if (info is null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
 
-            var buffer = new GorgonVertexBuffer(graphics, info, initialData?.Cast<byte>());
-            int vertexSize = Unsafe.SizeOf<T>();
+            // The vertex buffer takes a byte buffer for its initial data.
+            GorgonPtr<byte> byteData = GorgonPtr<byte>.NullPtr;
+            GorgonVertexBuffer buffer = null;
 
-            return new GorgonVertexBufferBinding(buffer, vertexSize, bindingIndex * vertexSize);
-        }
-
-        /// <summary>
-        /// Function to create a vertex buffer and its binding.
-        /// </summary>
-        /// <typeparam name="T">The type of data representing a vertex, must be an unmanaged value type.</typeparam>
-        /// <param name="graphics">The graphics interface that will create the buffer.</param>
-        /// <param name="vertexCount">The total number vertices that the buffer can hold.</param>
-        /// <param name="usage">[Optional] The intended usage for the buffer.</param>
-        /// <param name="binding">[Optional] The binding options for the buffer.</param>
-        /// <param name="initialData">[Optional] An initial set of vertex data to send to the buffer.</param>
-        /// <param name="bindingIndex">[Optional] The index, in vertices, inside the buffer where binding is to begin.</param>
-        /// <param name="bufferName">[Optional] A name for the buffer.</param>
-        /// <returns>A new <see cref="GorgonVertexBufferBinding"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// Use this to quickly create a vertex buffer and its binding based on a known vertex data type. 
-        /// </para>
-        /// <para>
-        /// Be aware that the <see cref="VertexBuffer"/> created by this method must be disposed manually after it is no longer of any use. 
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="GorgonVertexBuffer"/>
-        public static GorgonVertexBufferBinding CreateVertexBuffer<T>(GorgonGraphics graphics,
-                                                                      int vertexCount,
-                                                                      ResourceUsage usage = ResourceUsage.Default,
-                                                                      VertexIndexBufferBinding binding = VertexIndexBufferBinding.None,
-                                                                      GorgonNativeBuffer<T> initialData = null,
-                                                                      int bindingIndex = 0,
-                                                                      string bufferName = null)
-            where T : unmanaged
-        {
-            if (graphics == null)
+            unsafe
             {
-                throw new ArgumentNullException(nameof(graphics));
+                int vertexSize = sizeof(T);
+
+                if (!initialData.IsEmpty)
+                {
+                    // Convert into a byte span.
+                    fixed (T* initialValue = &initialData[0])
+                    {
+                        byteData = new GorgonPtr<byte>((byte*)initialValue, initialData.Length * vertexSize);
+                        buffer = new GorgonVertexBuffer(graphics, info, byteData);
+                    }
+                }
+                else
+                {
+                    buffer = new GorgonVertexBuffer(graphics, info);
+                }
+
+                return new GorgonVertexBufferBinding(buffer, vertexSize, bindingIndex * vertexSize);
             }
-
-            int vertexSize = Unsafe.SizeOf<T>();
-            var buffer = new GorgonVertexBuffer(graphics,
-                                                new GorgonVertexBufferInfo(bufferName)
-                                                {
-                                                    SizeInBytes = vertexCount * vertexSize,
-                                                    Binding = binding,
-                                                    Usage = usage
-                                                },
-                                                initialData?.Cast<byte>());
-
-
-            return new GorgonVertexBufferBinding(buffer, vertexSize, bindingIndex * vertexSize);
         }
 
         /// <summary>
@@ -166,7 +135,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
         /// </returns>
-        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_VERTEXBUFFER_BINDING, Stride, Offset, (VertexBuffer?.Native == null) ? "(NULL)" : VertexBuffer.Name);
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_VERTEXBUFFER_BINDING, Stride, Offset, (VertexBuffer?.Native is null) ? "(NULL)" : VertexBuffer.Name);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -174,7 +143,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => VertexBuffer == null
+        public override int GetHashCode() => VertexBuffer is null
                        ? 281.GenerateHash(Stride).GenerateHash(Offset)
                        : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
 

@@ -4,11 +4,11 @@
 struct Light
 {
 	// w = Light type.
-    float4 lightPosition;
-    float4 lightColor;
-    float4 dirLightDirection;
-	// Attributes (x = specular power, y = attenuation, z = intensity, w = specular enabled flag).
-    float4 attribs;
+    float4 Position;
+    float4 Direction;
+	// Attributes (X = Specular Power, Y = Intensity, Z = Attenuation (point light only), W = Specular on/off).
+    float4 Attributes;
+    float4 Color;
 };
 
 #ifdef MAX_LIGHTS
@@ -36,8 +36,12 @@ struct GorgonSpriteLitVertex
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
-    float3 uv : TEXCOORD;
+    float4 uv : TEXCOORD;
     float3 worldPos : WORLDPOS;
+#ifdef TRANSFORM // Apply transforms to normals as needed.
+    float3 tangent : TANGENT;
+    float3 bitangent : BITANGENT;
+#endif
 };
 
 // Normal and specular map.
@@ -61,71 +65,93 @@ float4 GetSpecularValue(float2 uv, float3 lightDir, float3 normal, float3 toEye,
 }
 
 // Retrieves a normal texel.
+#ifdef TRANSFORM
+float3 GetNormal(float2 uv, float3 tangent, float3 bitangent)
+#else
 float3 GetNormal(float2 uv)
+#endif
 {
+    // TODO: We should probably be transforming the normal here instead of the gbuffer.
+    //       Otherwise, rotation will be off when we aren't using a gbuffer.
 #ifndef USE_ARRAY
     float4 normalTexel = _normalTexture.Sample(_normalSampler, uv);
 #else
 	float4 normalTexel = _gorgonTexture.Sample(_normalSampler, float3(uv, _arrayIndices.x));
 #endif
 
-    return normalTexel.rgb * 2 - 1;
+    float3 normal = normalTexel.rgb * 2 - 1;
+#ifdef TRANSFORM
+    normal = normalize(float3(0, 0, normal.z) + (normal.x * tangent + normal.y * bitangent));
+#endif
+
+    return normal;
 }
 
 // Simulates a point light with attenuationuation falloff and optional specular highlighting.
-float4 PointLight(float3 worldPos, float3 uv, Light light)
+float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
 {
-    float4 color = _gorgonTexture.Sample(_gorgonSampler, uv);
+    float4 color = SampleMainTexture(vertex.uv, vertex.color);
 
-    REJECT_ALPHA(color.a);
-		
-    float3 normal = GetNormal(uv.xy);
+    REJECT_ALPHA(color.a);    
+
+    float2 uv = vertex.uv.xy / vertex.uv.w;
+        	
+#ifdef TRANSFORM
+    float3 normal = GetNormal(uv, vertex.tangent, vertex.bitangent);
+#else
+    float3 normal = GetNormal(uv);
+#endif
 	
-    int specularEnabled = int(light.attribs.w);
-    float4 result;
-    float3 lightRange = light.lightPosition.xyz - worldPos;
+    int specularEnabled = int(light.Attributes.w);
+    float3 result;
+    float3 lightRange = light.Position.xyz - vertex.worldPos;
     float3 lightDirection = normalize(lightRange);
     float distance = length(lightRange);
 
-    float atten = clamp(light.attribs.y / distance, 0, 1);
+    float atten = clamp(light.Attributes.z / distance, 0, 1);
 
     float diffuseAmount = saturate(dot(normal, lightDirection)) * atten * atten;
-    result = float4(color.rgb * diffuseAmount * light.lightColor.rgb * light.attribs.z, color.a * diffuseAmount * light.attribs.z);
+    result = float3(color.rgb * diffuseAmount * light.Color.rgb * light.Attributes.y);
 
     if (specularEnabled != 0)
-    {
-        result += diffuseAmount * GetSpecularValue(uv.xy, normalize(worldPos - light.lightPosition.xyz), normalize(normal), normalize(worldPos - _cameraPos.xyz), light.attribs.x);
+    {        
+        result += diffuseAmount * GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
     }
 
-    return saturate(float4(result.rgb + (color.rgb * _ambientColor.rgb), color.a));
+    return saturate(float4(result + (color.rgb * _ambientColor.rgb), color.a));
 }
 
 // Simulates a directional light (e.g. the sun) with optional specular highlighting.
-float4 DirectionalLight(float3 worldPos, float3 uv, Light light)
+float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
 {
-    float4 color = _gorgonTexture.Sample(_gorgonSampler, uv);
+    float4 color = SampleMainTexture(vertex.uv, vertex.color);
 	
     REJECT_ALPHA(color.a);
 
-    float3 normal = GetNormal(uv.xy);
+    float2 uv = vertex.uv.xy / vertex.uv.w;
+
+#ifdef TRANSFORM
+    float3 normal = GetNormal(uv, vertex.tangent, vertex.bitangent);
+#else
+    float3 normal = GetNormal(uv);
+#endif
 	
-    int specularEnabled = int(light.attribs.w);
-    float4 result = float4(0, 0, 0, 1);
-    float3 lightRange = -light.dirLightDirection;
-    float3 lightDir = normalize(lightRange);
+    int specularEnabled = int(light.Attributes.w);
+    float3 result;
+    float3 lightDir = normalize(light.Direction);
     float diffuseAmount;
 	
     diffuseAmount = saturate(dot(normal, lightDir));
 
-    result = float4(color.rgb * diffuseAmount * light.lightColor.rgb * light.attribs.z, color.a * diffuseAmount * light.attribs.z);
+    result = float3(color.rgb * diffuseAmount * light.Color.rgb * light.Attributes.y);
 	
     if (specularEnabled != 0)
-    {
-		// Oddly enough, if we don't normalize dirLightDirection, our specular shows up correctly, and if we do normalize it, it gets weird at 0x0.
-        result += diffuseAmount * GetSpecularValue(uv.xy, light.dirLightDirection.xyz, normalize(normal), normalize(worldPos - _cameraPos.xyz), light.attribs.x);
+    {        
+		// Oddly enough, if we don't normalize Direction, our specular shows up correctly, and if we do normalize it, it gets weird at 0x0.
+        result += diffuseAmount * GetSpecularValue(uv, -light.Direction, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
     }
     
-    return saturate(float4(result.rgb + (color.rgb * _ambientColor.rgb), color.a));
+    return saturate(float4(result + (color.rgb * _ambientColor.rgb), color.a));
 }
 
 // Updated vertex shader that will capture the world position of the vertex prior to sending to the pixel shader.
@@ -135,8 +161,17 @@ GorgonSpriteLitVertex GorgonVertexLitShader(GorgonSpriteVertex vertex)
 	
     output.worldPos = vertex.position.xyz;
     output.position = mul(ViewProjection, vertex.position);
-    output.uv = vertex.uv.xyz;
+    output.uv = vertex.uv;
     output.color = vertex.color;
+
+#ifdef TRANSFORM
+	// We encode our rotation cosine and sine in our vertex data so that we don't need to perform the calculation more than needed.
+	float3x3 rotation = float3x3(vertex.angle.x, -vertex.angle.y, 0, vertex.angle.y, vertex.angle.x, 0, 0, 0, 1);
+
+	// Build up our tangents.  Without this, rotating a sprite would not look right when lit.
+	output.tangent = normalize(mul(rotation, float3(1, 0, 0)));
+	output.bitangent = normalize(cross(output.tangent, float3(0, 0, -1)));
+#endif
 
     return output;
 }
@@ -151,22 +186,21 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
     for (int i = 0; i < MAX_LIGHTS; ++i)
     {
         Light light = _lights[i];
-        int lightType = int(light.lightPosition.w);
-
+        int lightType = int(light.Position.w);
 
         switch (lightType)
-        {
-			// Directional lights.
+        {			
             case 1:
-				color = DirectionalLight(vertex.worldPos, vertex.uv, light);
+                // Point lights.
+                color = PointLight(vertex, light);
+                result = float4(result.rgb + color.rgb, color.a);                
                 break;
-			// Point lights.
-            default:
-                color = PointLight(vertex.worldPos, vertex.uv, light);
-                break;
+            case 2:
+                // Directional lights.
+				color = DirectionalLight(vertex, light);
+                result = float4(result.rgb + color.rgb, color.a);
+                break;			
         }
-        
-        result = float4(result.rgb + color.rgb, color.a);
     }
 
     return saturate(result);

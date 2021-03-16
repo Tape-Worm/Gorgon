@@ -1,16 +1,39 @@
-﻿using System;
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2021 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: February 13, 2021 4:04:07 PM
+// 
+#endregion
+
+using System;
+using System.Numerics;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
-using DX = SharpDX;
+using Krypton.Toolkit;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Examples.Properties;
 
 namespace Gorgon.Examples
@@ -38,12 +61,12 @@ namespace Gorgon.Examples
         // with the menu item assigned to the zoom level.
 
         // The list of menu items associated with the zoom level.
-        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = new Dictionary<ZoomLevels, ToolStripMenuItem>();
+        private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuZoomItems = new();
 
         // This is similar to the zoom items in that it's a lookup for the font values and the menu items for the fonts.
 
         // The list of menu items associated with font selection.
-        private readonly Dictionary<FontFace, ToolStripMenuItem> _menuFontItems = new Dictionary<FontFace, ToolStripMenuItem>();
+        private readonly Dictionary<FontFace, ToolStripMenuItem> _menuFontItems = new();
 
         // The current zoom level.
         private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
@@ -79,14 +102,14 @@ namespace Gorgon.Examples
                     return;
                 }
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged -= ContentRenderer_ZoomScale;
                 }
 
                 _contentRenderer = value;
 
-                if (_contentRenderer != null)
+                if (_contentRenderer is not null)
                 {
                     ContentRenderer.ZoomScaleChanged += ContentRenderer_ZoomScale;
                     _zoomLevel = _contentRenderer.ZoomLevel;
@@ -189,7 +212,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.SaveContentCommand == null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
+            if ((DataContext?.SaveContentCommand is null) || (!DataContext.SaveContentCommand.CanExecute(SaveReason.UserSave)))
             {
                 return;
             }
@@ -204,7 +227,7 @@ namespace Gorgon.Examples
         /// </summary>
         private void ValidateButtons()
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -216,7 +239,7 @@ namespace Gorgon.Examples
             // view model to handle any complicated state evaluation logic and makes it such that the view stays unaware of 
             // the logic.
 
-            ButtonFont.Enabled = DataContext.CurrentPanel == null;
+            ButtonFont.Enabled = DataContext.CurrentPanel is null;
             ButtonChangeText.Enabled = DataContext.ChangeTextCommand?.CanExecute(null) ?? false;
             ButtonTextColor.Enabled = DataContext.ActivateTextColorCommand?.CanExecute(null) ?? false;
             ButtonSaveText.Enabled = DataContext.SaveContentCommand?.CanExecute(SaveReason.UserSave) ?? false;
@@ -236,7 +259,7 @@ namespace Gorgon.Examples
             // Always unassign your view model events. Failure to do so can result in an event leak, causing the view to stay 
             // in memory for the lifetime of the application.
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -261,7 +284,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void Font_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -299,7 +322,7 @@ namespace Gorgon.Examples
         {
             var item = (ToolStripMenuItem)sender;
 
-            if ((item.Tag == null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
+            if ((item.Tag is null) || (!Enum.TryParse(item.Tag.ToString(), out ZoomLevels zoom)))
             {
                 item.Checked = false;
                 return;
@@ -328,7 +351,7 @@ namespace Gorgon.Examples
             // are rendering our content into, and Width x Height is the size of that control.
             // 
             // To get the center, we multiply the width and height by 1/2.
-            ContentRenderer?.MoveTo(new DX.Vector2(ContentRenderer.ClientSize.Width * 0.5f, ContentRenderer.ClientSize.Height * 0.5f),
+            ContentRenderer?.MoveTo(new Vector2(ContentRenderer.ClientSize.Width * 0.5f, ContentRenderer.ClientSize.Height * 0.5f),
                                     _zoomLevel.GetScale());
         }
 
@@ -339,7 +362,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.ChangeTextCommand == null) || (!DataContext.ChangeTextCommand.CanExecute(null)))
+            if ((DataContext?.ChangeTextCommand is null) || (!DataContext.ChangeTextCommand.CanExecute(null)))
             {
                 return;
             }
@@ -355,7 +378,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.ActivateTextColorCommand == null) || (!DataContext.ActivateTextColorCommand.CanExecute(null)))
+            if ((DataContext?.ActivateTextColorCommand is null) || (!DataContext.ActivateTextColorCommand.CanExecute(null)))
             {
                 return;
             }
@@ -371,7 +394,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.UndoCommand == null) || (!DataContext.UndoCommand.CanExecute(null)))
+            if ((DataContext?.UndoCommand is null) || (!DataContext.UndoCommand.CanExecute(null)))
             {
                 return;
             }
@@ -387,7 +410,7 @@ namespace Gorgon.Examples
         {
             // Here's how we execute a command on the view model. We first check to see if the command is assigned, 
             // and can actually execute given the current state of the view model.
-            if ((DataContext?.RedoCommand == null) || (!DataContext.RedoCommand.CanExecute(null)))
+            if ((DataContext?.RedoCommand is null) || (!DataContext.RedoCommand.CanExecute(null)))
             {
                 return;
             }
@@ -402,7 +425,7 @@ namespace Gorgon.Examples
         /// <param name="dataContext">The data context used to initialize.</param>
         private void InitializeFromDataContext(ITextContent dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -423,7 +446,7 @@ namespace Gorgon.Examples
             DataContext = dataContext;
             ValidateButtons();
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }

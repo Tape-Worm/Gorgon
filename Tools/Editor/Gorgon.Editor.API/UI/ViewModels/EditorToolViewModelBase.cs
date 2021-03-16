@@ -163,7 +163,7 @@ namespace Gorgon.Editor.UI
         /// </remarks>
         protected override void OnInitialize(T injectionParameters)
         {
-            if (injectionParameters == null)
+            if (injectionParameters is null)
             {
                 throw new ArgumentNullException(nameof(injectionParameters));
             }

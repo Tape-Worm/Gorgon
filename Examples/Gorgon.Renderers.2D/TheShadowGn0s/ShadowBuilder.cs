@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -74,10 +75,10 @@ namespace Gorgon.Examples
                 _renderer.Graphics.SetRenderTarget(rtv);
                 _renderer.Begin();
 
-                _sprite1.Position = new DX.Vector2(rtv.Width / 4.0f, rtv.Height / 2.0f);
+                _sprite1.Position = new Vector2(rtv.Width / 4.0f, rtv.Height / 2.0f);
                 _sprite1.Color = GorgonColor.Black;
 
-                _sprite2.Position = new DX.Vector2(rtv.Width - (rtv.Width / 4.0f), rtv.Height / 2.0f);
+                _sprite2.Position = new Vector2(rtv.Width - (rtv.Width / 4.0f), rtv.Height / 2.0f);
                 _sprite2.Color = GorgonColor.Black;
 
                 _renderer.DrawSprite(_sprite1);
@@ -102,7 +103,7 @@ namespace Gorgon.Examples
                     Texture = resultTexture,
                     Size = new DX.Size2F(6 + _sprite1.Size.Width, 6 + _sprite1.Size.Height),
                     Color = new GorgonColor(GorgonColor.White, 0.85f),
-                    Anchor = new DX.Vector2(0.5f, 0.5f),
+                    Anchor = new Vector2(0.5f, 0.5f),
                     TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite1.Position.X - (_sprite1.Size.Width / 2) - 10),
                                                                            (int)(_sprite1.Position.Y - (_sprite1.Size.Height / 2) - 10),
                                                                            (int)_sprite1.Size.Width + 20,
@@ -114,7 +115,7 @@ namespace Gorgon.Examples
                     Texture = resultTexture,
                     Size = new DX.Size2F(6 + _sprite2.Size.Width, 6 + _sprite2.Size.Height),
                     Color = new GorgonColor(GorgonColor.White, 0.85f),
-                    Anchor = new DX.Vector2(0.5f, 0.5f),
+                    Anchor = new Vector2(0.5f, 0.5f),
                     TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite2.Position.X - (_sprite2.Size.Width / 2) - 10),
                                                                            (int)(_sprite2.Position.Y - (_sprite2.Size.Height / 2) - 10),
                                                                            (int)_sprite2.Size.Width + 20,

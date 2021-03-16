@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace Fetze.WinFormsColor
 {
+#pragma warning disable IDE0090 // Use 'new(...)'
 	public partial class ColorPickerPanel 
 		: UserControl
 	{
@@ -634,4 +635,6 @@ namespace Fetze.WinFormsColor
             ColorChanged?.Invoke(this, EventArgs.Empty);
         }
 	}
+#pragma warning restore IDE0090 // Use 'new(...)'
 }
+

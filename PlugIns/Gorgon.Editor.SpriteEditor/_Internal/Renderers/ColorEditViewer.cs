@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
@@ -71,7 +72,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// Function to retrieve the currently active handle.
         /// </summary>
         /// <param name="clientMousePos">Client mouse position.</param>
-        private void GetActiveHandle(DX.Vector2 clientMousePos)
+        private void GetActiveHandle(Vector2 clientMousePos)
         {
             _activeHandleIndex = -1;
 
@@ -86,7 +87,7 @@ namespace Gorgon.Editor.SpriteEditor
                     continue;
                 }
 
-                if (handle.Contains(clientMousePos))
+                if (handle.Contains(clientMousePos.X, clientMousePos.Y))
                 {
                     _activeHandleIndex = i;
                     mouseCursor = Cursors.Cross;
@@ -115,7 +116,7 @@ namespace Gorgon.Editor.SpriteEditor
             switch (args.KeyCode)
             {
                 case Keys.D1:
-                    if ((args.Modifiers != Keys.Control) && (args.Modifiers != Keys.Shift))
+                    if (args.Modifiers is not Keys.Control and not Keys.Shift)
                     {
                         Array.Clear(_selected, 0, _selected.Length);
                     }
@@ -123,7 +124,7 @@ namespace Gorgon.Editor.SpriteEditor
                     args.IsInputKey = true;
                     break;
                 case Keys.D2:
-                    if ((args.Modifiers != Keys.Control) && (args.Modifiers != Keys.Shift))
+                    if (args.Modifiers is not Keys.Control and not Keys.Shift)
                     {
                         Array.Clear(_selected, 0, _selected.Length);
                     }
@@ -131,7 +132,7 @@ namespace Gorgon.Editor.SpriteEditor
                     args.IsInputKey = true;
                     break;
                 case Keys.D3:
-                    if ((args.Modifiers != Keys.Control) && (args.Modifiers != Keys.Shift))
+                    if (args.Modifiers is not Keys.Control and not Keys.Shift)
                     {
                         Array.Clear(_selected, 0, _selected.Length);
                     }
@@ -139,7 +140,7 @@ namespace Gorgon.Editor.SpriteEditor
                     args.IsInputKey = true;
                     break;
                 case Keys.D4:
-                    if ((args.Modifiers != Keys.Control) && (args.Modifiers != Keys.Shift))
+                    if (args.Modifiers is not Keys.Control and not Keys.Shift)
                     {
                         Array.Clear(_selected, 0, _selected.Length);
                     }
@@ -169,11 +170,11 @@ namespace Gorgon.Editor.SpriteEditor
                     }
                     args.IsInputKey = true;
                     break;
-                case Keys.Enter when ((DataContext.ColorEditor.OkCommand != null) && (DataContext.ColorEditor.OkCommand.CanExecute(null))):
+                case Keys.Enter when ((DataContext.ColorEditor.OkCommand is not null) && (DataContext.ColorEditor.OkCommand.CanExecute(null))):
                     DataContext.ColorEditor.OkCommand.Execute(null);
                     args.IsInputKey = true;
                     break;
-                case Keys.Escape when ((DataContext.ColorEditor.CancelCommand != null) && (DataContext.ColorEditor.CancelCommand.CanExecute(null))):
+                case Keys.Escape when ((DataContext.ColorEditor.CancelCommand is not null) && (DataContext.ColorEditor.CancelCommand.CanExecute(null))):
                     DataContext.ColorEditor.CancelCommand.Execute(null);
                     args.IsInputKey = true;
                     break;
@@ -187,7 +188,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnMouseUp(args);
 
-            GetActiveHandle(args.ClientPosition);
+            GetActiveHandle(args.ClientPosition.ToVector2());
 
             for (int i = 0; i < _selected.Length; ++i)
             {
@@ -197,7 +198,7 @@ namespace Gorgon.Editor.SpriteEditor
                 }
             }
 
-            if ((_activeHandleIndex == -1) || (_activeHandleIndex == 4))
+            if (_activeHandleIndex is (-1) or 4)
             {
                 DataContext.ColorEditor.SelectedVertices = _selected;
             }
@@ -237,7 +238,7 @@ namespace Gorgon.Editor.SpriteEditor
         protected override void OnMouseMove(MouseArgs args)
         {
             base.OnMouseMove(args);
-            GetActiveHandle(args.ClientPosition);
+            GetActiveHandle(args.ClientPosition.ToVector2());
         }
 
         /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>
@@ -258,15 +259,15 @@ namespace Gorgon.Editor.SpriteEditor
         /// </summary>
         private void SetHandles()
         {
-            if (DataContext.Texture == null)
+            if (DataContext.Texture is null)
             {
                 return;
             }
 
-            var spriteTopLeft = new DX.Vector3(SpriteRegion.TopLeft, 0);
-            var spriteBottomRight = new DX.Vector3(SpriteRegion.BottomRight, 0);
-            Camera.Unproject(ref spriteTopLeft, out DX.Vector3 transformedTopLeft);
-            Camera.Unproject(ref spriteBottomRight, out DX.Vector3 transformedBottomRight);
+            var spriteTopLeft = new Vector3(SpriteRegion.Left, SpriteRegion.Top, 0);
+            var spriteBottomRight = new Vector3(SpriteRegion.Right, SpriteRegion.Bottom, 0);
+            Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
+            Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
 
             var screenRect = new DX.RectangleF
             {

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -36,8 +36,6 @@ using Gorgon.Editor;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
@@ -67,20 +65,20 @@ namespace Gorgon.Examples
         // The 2D renderer interface for the application.
         private readonly Gorgon2D _renderer;
         // The plug in service for the application.
-        private readonly IGorgonPlugInService _plugIns;
+        private readonly GorgonMefPlugInCache _plugIns;
         // The file system where resources are kept.
         private IGorgonFileSystem _fileSystem;
         // The list of shaders.
-        private readonly Dictionary<string, GorgonPixelShader> _pixelShaders = new Dictionary<string, GorgonPixelShader>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, GorgonVertexShader> _vertexShaders = new Dictionary<string, GorgonVertexShader>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, GorgonPixelShader> _pixelShaders = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, GorgonVertexShader> _vertexShaders = new(StringComparer.OrdinalIgnoreCase);
         // The list of 3D models.
-        private readonly Dictionary<string, MoveableMesh> _meshes = new Dictionary<string, MoveableMesh>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, MoveableMesh> _meshes = new(StringComparer.OrdinalIgnoreCase);
         // The list of animations.
-        private readonly Dictionary<string, IGorgonAnimation> _animations = new Dictionary<string, IGorgonAnimation>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IGorgonAnimation> _animations = new(StringComparer.OrdinalIgnoreCase);
         // The list of post process renderers.
-        private readonly Dictionary<string, Gorgon2DCompositor> _postProcess = new Dictionary<string, Gorgon2DCompositor>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Gorgon2DCompositor> _postProcess = new(StringComparer.OrdinalIgnoreCase);
         // The list of effects used by the application.
-        private readonly Dictionary<string, Gorgon2DEffect> _effects = new Dictionary<string, Gorgon2DEffect>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Gorgon2DEffect> _effects = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Properties.
@@ -182,8 +180,8 @@ namespace Gorgon.Examples
             IGorgonAnimation planetRotation = builder
                 .Clear()
                 .EditVector3("Rotation")
-                .SetKey(new GorgonKeyVector3(0, new DX.Vector3(0, 0, 180)))
-                .SetKey(new GorgonKeyVector3(600, new DX.Vector3(0, 360, 180)))
+                .SetKey(new GorgonKeyVector3(0, new Vector3(0, 0, 180)))
+                .SetKey(new GorgonKeyVector3(600, new Vector3(0, 360, 180)))
                 .SetInterpolationMode(TrackInterpolationMode.Linear)
                 .EndEdit()
                 .Build("PlanetRotation");
@@ -194,9 +192,9 @@ namespace Gorgon.Examples
             IGorgonAnimation cloudRotation = builder
                 .Clear()
                 .EditVector3("Rotation")
-                .SetKey(new GorgonKeyVector3(0, new DX.Vector3(0, 0, 180)))
-                .SetKey(new GorgonKeyVector3(600, new DX.Vector3(100, 180, 180)))
-                .SetKey(new GorgonKeyVector3(1200, new DX.Vector3(0, 360, 180)))
+                .SetKey(new GorgonKeyVector3(0, new Vector3(0, 0, 180)))
+                .SetKey(new GorgonKeyVector3(600, new Vector3(100, 180, 180)))
+                .SetKey(new GorgonKeyVector3(1200, new Vector3(0, 360, 180)))
                 .SetInterpolationMode(TrackInterpolationMode.Linear)
                 .EndEdit()                
                 .Build("CloudRotation");
@@ -254,7 +252,10 @@ namespace Gorgon.Examples
 
             _postProcess["Final Pass"] = finalPostProcess;
 
-            var deferredLighting = new Gorgon2DLightingEffect(_renderer);
+            var deferredLighting = new Gorgon2DLightingEffect(_renderer)
+            {
+                SpecularZDistance = -30
+            };
             var gbuffer = new Gorgon2DGBuffer(_renderer, 1280, 800);
             deferredLighting.AmbientColor = new GorgonColor(0.025f, 0.025f, 0.025f, 1.0f);
             _effects[nameof(bloom)] = bloom;
@@ -278,11 +279,11 @@ namespace Gorgon.Examples
             var earthSphere = new IcoSphere(_graphics,
                                             3.0f,
                                             new DX.RectangleF(0, 0, 1, 1),
-                                            DX.Vector3.Zero,
+                                            Vector3.Zero,
                                             3)
             {
-                Rotation = new DX.Vector3(0, 45.0f, 0),     // Start off with a 45 degree rotation on the Y axis so we can see our textures a little better on startup.
-                Position = DX.Vector3.Zero,                 // Set our translation to nothing for now, our "planet" type will handle positioning.
+                Rotation = new Vector3(0, 45.0f, 0),     // Start off with a 45 degree rotation on the Y axis so we can see our textures a little better on startup.
+                Position = Vector3.Zero,                 // Set our translation to nothing for now, our "planet" type will handle positioning.
                 Material =
                 {
                     SpecularPower = 0.0f,
@@ -303,10 +304,10 @@ namespace Gorgon.Examples
             var earthCloudSphere = new IcoSphere(_graphics,
                                                  3.01f,
                                                  new DX.RectangleF(0, 0, 1, 1),
-                                                 DX.Vector3.Zero,
+                                                 Vector3.Zero,
                                                  3)
             {
-                Position = new DX.Vector3(0, 0, -0.2f),     // Offset the clouds. If we render at the same place in Ortho camera mode, then it'll just overwrite, offsetting like this
+                Position = new Vector3(0, 0, -0.2f),     // Offset the clouds. If we render at the same place in Ortho camera mode, then it'll just overwrite, offsetting like this
                 Material =									// ensures that the clouds appear on top.
                 {
                     SpecularPower = 0,
@@ -364,7 +365,8 @@ namespace Gorgon.Examples
         {
             // Load the file system containing our application data (sprites, images, etc...)
             IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugIns, GorgonApplication.Log);
-            IGorgonFileSystemProvider provider = providerFactory.CreateProvider("Gorgon.IO.GorPack.GorPackProvider");
+            IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"), 
+                                                                                "Gorgon.IO.GorPack.GorPackProvider");
             _fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
             _fileSystem.Mount(path);
 
@@ -438,7 +440,7 @@ namespace Gorgon.Examples
         /// <summary>Initializes a new instance of the <see cref="ResourceManagement"/> class.</summary>
         /// <param name="renderer">The renderer for the application.</param>
         /// <param name="plugIns>The plugin service used to load file system providers.</param>
-        public ResourceManagement(Gorgon2D renderer, IGorgonPlugInService plugIns)
+        public ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
         {
             _renderer = renderer;
             _graphics = renderer.Graphics;

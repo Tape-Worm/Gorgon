@@ -30,18 +30,18 @@ using Gorgon.Properties;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// An extension and description for a file.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This type allows for easy manipulation of file extensions and their descriptions when populating a file dialog extension list.
-	/// </para>
-	/// <para>
-	/// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
-	/// </para>
-	/// </remarks>
-	public readonly struct GorgonFileExtension
+    /// <summary>
+    /// An extension and description for a file.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This type allows for easy manipulation of file extensions and their descriptions when populating a file dialog extension list.
+    /// </para>
+    /// <para>
+    /// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
+    /// </para>
+    /// </remarks>
+    public readonly struct GorgonFileExtension
 		: IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, IGorgonNamedObject
 	{
 		#region Variables.
@@ -66,6 +66,17 @@ namespace Gorgon.IO
 		/// Property to return whether the extension is empty or not.
 		/// </summary>
 		public bool IsEmpty => string.IsNullOrWhiteSpace(Extension);
+
+		/// <summary>
+        /// Property to return the fully qualified extension.
+        /// </summary>
+        /// <remarks>
+        /// This property is the same as the <see cref="Extension"/> value, except it is prefixed with a period.
+        /// </remarks>
+		public string FullExtension
+		{
+			get;
+		}
 		#endregion
 
 		#region Operators.
@@ -179,17 +190,16 @@ namespace Gorgon.IO
 		/// </returns>
 		public bool Equals(string other)
 		{
-			if (string.IsNullOrWhiteSpace(other))
-			{
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if (string.IsNullOrWhiteSpace(other))
+            {
 				return false;
 			}
 
-			if (other.StartsWith(".", StringComparison.Ordinal))
-			{
-				other = other.Substring(1);
-			}
-
-			return string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
+            return other.StartsWith(".", StringComparison.Ordinal)
+                ? string.Equals(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+                : string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
+#pragma warning restore IDE0046 // Convert to conditional expression
 		}
 
 		/// <summary>
@@ -202,17 +212,16 @@ namespace Gorgon.IO
 		/// <exception cref="NotImplementedException"></exception>
 		public int CompareTo(string other)
 		{
-			if (string.IsNullOrWhiteSpace(other))
-			{
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if (string.IsNullOrWhiteSpace(other))
+            {
 				return -1;
 			}
 
-			if (other.StartsWith(".", StringComparison.Ordinal))
-			{
-				other = other.Substring(1);
-			}
-
-			return string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
+            return other.StartsWith(".", StringComparison.Ordinal)
+                ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+                : string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
+#pragma warning restore IDE0046 // Convert to conditional expression
 		}
 		#endregion
 
@@ -224,14 +233,14 @@ namespace Gorgon.IO
 		/// <param name="description">The description.</param>
 		public GorgonFileExtension(string extension, string description)
 		{
-			if (extension == null)
+			if (extension is null)
 			{
 				throw new ArgumentNullException(nameof(extension));
 			}
 
 			if (extension.StartsWith(".", StringComparison.Ordinal))
 			{
-				extension = extension.Substring(1);
+				extension = extension[1..];
 			}
 
 			if (string.IsNullOrWhiteSpace(extension))
@@ -240,6 +249,7 @@ namespace Gorgon.IO
 			}
 
 			Extension = extension;
+			FullExtension = $".{extension}";
 			Description = description;
 		}
 

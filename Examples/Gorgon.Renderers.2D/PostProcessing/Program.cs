@@ -25,14 +25,15 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
@@ -92,9 +93,9 @@ namespace Gorgon.Examples
         // The button currently being dragged.
         private static Button _dragButton;
         // The offset of the mouse cursor when dragging started.
-        private static DX.Vector2 _dragOffset;
+        private static Vector2 _dragOffset;
         // The starting position of the drag.
-        private static DX.Vector2 _dragStart;        
+        private static Vector2 _dragStart;        
         #endregion
 
         #region Methods.
@@ -147,17 +148,17 @@ namespace Gorgon.Examples
                     continue;
                 }
 
-                _renderer.DrawString(button.Text, button.Bounds.TopLeft, color: button.ForeColor);
+                _renderer.DrawString(button.Text, new Vector2(button.Bounds.Left, button.Bounds.Top), color: button.ForeColor);
             }
 
             // Always draw the dragging button on top.
-            if (_dragButton != null)
+            if (_dragButton is not null)
             {
                 Drawing.Point cursorPosition = _screen.Window.PointToClient(Cursor.Position);
 
                 var pos = new DX.RectangleF(cursorPosition.X - _dragOffset.X, cursorPosition.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
                 _renderer.DrawFilledRectangle(pos, _dragButton.BackColor);
-                _renderer.DrawString(_dragButton.Text, pos.TopLeft, color: _dragButton.ForeColor);
+                _renderer.DrawString(_dragButton.Text, new Vector2(pos.Left, pos.Top), color: _dragButton.ForeColor);
             }
 
             _renderer.End();
@@ -170,11 +171,11 @@ namespace Gorgon.Examples
             // Shake the old film for a few seconds.
             if ((_compositor["Olde Film"].Enabled) && ((GorgonTiming.SecondsSinceStart % 10) >= 6))
             {
-                _oldFilmEffect.ShakeOffset = new DX.Vector2(GorgonRandom.RandomSingle(-2, 2), GorgonRandom.RandomSingle(-2, 2));
+                _oldFilmEffect.ShakeOffset = new Vector2(GorgonRandom.RandomSingle(-2, 2), GorgonRandom.RandomSingle(-2, 2));
             }
             else
             {
-                _oldFilmEffect.ShakeOffset = DX.Vector2.Zero;
+                _oldFilmEffect.ShakeOffset = Vector2.Zero;
             }
 
             return true;
@@ -222,20 +223,20 @@ namespace Gorgon.Examples
         private static void LayoutGUI()
         {
             float maxWidth = 0;
-            var position = new DX.Vector2(0, 70);
+            var position = new Vector2(0, 70);
 
             for (int i = 0; i < _buttons.Length; ++i)
             {
-                if (_buttons[i] != null)
+                if (_buttons[i] is not null)
                 {
                     _buttons[i].Click -= Button_Click;
                 }
 
                 _buttons[i] = new Button(_compositor[i]);
-                DX.Size2F size = _renderer.DefaultFont.MeasureText(_buttons[i].Text, false);
+                DX.Size2F size = _buttons[i].Text.MeasureText(_renderer.DefaultFont, false);
                 maxWidth = maxWidth.Max(size.Width);
                 _buttons[i].Bounds = new DX.RectangleF(0, position.Y, 0, size.Height);
-                position = new DX.Vector2(0, position.Y + size.Height + 2);
+                position = new Vector2(0, position.Y + size.Height + 2);
             }
 
             for (int i = 0; i < _buttons.Length; ++i)
@@ -351,7 +352,7 @@ namespace Gorgon.Examples
                                                       texture,
                                                       new DX.RectangleF(0, 0, 1, 1));
                            
-                           var midPoint = new DX.Vector2(target.Width * 0.5f, target.Height * 0.5f);
+                           var midPoint = new Vector2(target.Width * 0.5f, target.Height * 0.5f);
 
                            for (int i = 160; i >= 100; --i)
                            {
@@ -389,8 +390,8 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
-            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Post Processing");
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Post Processing");
 
             try
             {
@@ -409,8 +410,8 @@ namespace Gorgon.Examples
                                               window,
                                               new GorgonSwapChainInfo("Gorgon2D Effects Example Swap Chain")
                                               {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
+                                                  Width = ExampleConfig.Default.Resolution.Width,
+                                                  Height = ExampleConfig.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
 
@@ -462,12 +463,12 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
         private static void Window_MouseDown(object sender, MouseEventArgs e)
         {
-            if (_dragButton != null)
+            if (_dragButton is not null)
             {
                 return;
             }
 
-            _dragStart = new DX.Vector2(e.X, e.Y);
+            _dragStart = new Vector2(e.X, e.Y);
         }
 
         /// <summary>
@@ -484,12 +485,12 @@ namespace Gorgon.Examples
                 Button button = _buttons[i];
                 button.State = ButtonState.Normal;
 
-                if ((_dragButton == null) && (!button.Bounds.Contains(e.X, e.Y)))
+                if ((_dragButton is null) && (!button.Bounds.Contains(e.X, e.Y)))
                 {
                     continue;
                 }
 
-                if (_dragButton != null)
+                if (_dragButton is not null)
                 {
                     var dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
 
@@ -503,19 +504,19 @@ namespace Gorgon.Examples
 
                 button.State = ButtonState.Hovered;
 
-                if ((e.Button != MouseButtons.Left) || (_dragButton != null))
+                if ((e.Button is not MouseButtons.Left) || (_dragButton is not null))
                 {
                     continue;
                 }
 
-                DX.Vector2 diff = new DX.Vector2(e.X, e.Y) - _dragStart;
+                Vector2 diff = new Vector2(e.X, e.Y) - _dragStart;
 
                 if ((diff.X.Abs() < 5) && (diff.Y.Abs() < 5))
                 {
                     continue;
                 }
 
-                _dragOffset = new DX.Vector2(_dragStart.X - button.Bounds.Left, _dragStart.Y - button.Bounds.Top);
+                _dragOffset = new Vector2(_dragStart.X - button.Bounds.Left, _dragStart.Y - button.Bounds.Top);
                 button.IsDragging = true;
                 _dragButton = button;
             }
@@ -533,7 +534,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            if (_dragButton != null)
+            if (_dragButton is not null)
             {
                 var dragPosition = new DX.RectangleF(e.X - _dragOffset.X, e.Y - _dragOffset.Y, _dragButton.Bounds.Width, _dragButton.Bounds.Height);
                 int index = -1;
@@ -554,8 +555,8 @@ namespace Gorgon.Examples
 
                 _dragButton.IsDragging = false;
                 _dragButton = null;
-                _dragOffset = DX.Vector2.Zero;
-                _dragStart = DX.Vector2.Zero;
+                _dragOffset = Vector2.Zero;
+                _dragStart = Vector2.Zero;
 
                 LayoutGUI();
                 return;
@@ -612,6 +613,9 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
@@ -625,7 +629,7 @@ namespace Gorgon.Examples
             {
                 GorgonExample.UnloadResources();
 
-                if (_images != null)
+                if (_images is not null)
                 {
                     for (int i = 0; i < _images.Length; ++i)
                     {
@@ -633,7 +637,7 @@ namespace Gorgon.Examples
                     }
                 }
 
-                if (_compositor != null)
+                if (_compositor is not null)
                 {
                     _blurEffect?.Dispose();        
                     _grayScaleEffect?.Dispose();

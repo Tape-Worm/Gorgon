@@ -12,8 +12,9 @@ using Gorgon.Diagnostics;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers;
-using SharpDX;
-
+using System.Numerics;
+using DX = SharpDX;
+using Gorgon.Renderers.Geometry;
 
 namespace GorgonTriangulator
 {
@@ -34,11 +35,11 @@ namespace GorgonTriangulator
     internal class Triangulator
     {
         #region Fields
-        private readonly IndexableCyclicalLinkedList<Vertex> _polygonVertices = new IndexableCyclicalLinkedList<Vertex>();
-        private readonly IndexableCyclicalLinkedList<Vertex> _earVertices = new IndexableCyclicalLinkedList<Vertex>();
-        private readonly CyclicalList<Vertex> _convexVertices = new CyclicalList<Vertex>();
-        private readonly CyclicalList<Vertex> _reflexVertices = new CyclicalList<Vertex>();
-        private readonly List<Triangle> _triangles = new List<Triangle>();
+        private readonly IndexableCyclicalLinkedList<Vertex> _polygonVertices = new();
+        private readonly IndexableCyclicalLinkedList<Vertex> _earVertices = new();
+        private readonly CyclicalList<Vertex> _convexVertices = new();
+        private readonly CyclicalList<Vertex> _reflexVertices = new();
+        private readonly List<Triangle> _triangles = new();
         // The log used for debug messages.
         private readonly IGorgonLog _log;
         #endregion
@@ -60,7 +61,7 @@ namespace GorgonTriangulator
         /// <param name="inputVertices">The polygon vertices in counter-clockwise winding order.</param>
         /// <param name="desiredWindingOrder">The desired output winding order.</param>
         /// <returns>A tuple containing a list of vertices, indices and bounds.</returns>
-        public (GorgonNativeBuffer<int> indices, RectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
+        public (int[] indices, DX.RectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
         {
             Log("\nBeginning triangulation...");
 
@@ -80,7 +81,7 @@ namespace GorgonTriangulator
             //generate the cyclical list of vertices in the polygon
             for (int i = 0; i < inputVertices.Length; i++)
             {
-                _polygonVertices.AddLast(new Vertex((Vector2)inputVertices[i].Position, i));
+                _polygonVertices.AddLast(new Vertex(new Vector2(inputVertices[i].Position.X, inputVertices[i].Position.Y), i));
             }
 
             //categorize all of the vertices as convex, reflex, and ear
@@ -103,7 +104,8 @@ namespace GorgonTriangulator
             }
 
             //add all of the triangle indices to the output array
-            var outputIndices = new GorgonNativeBuffer<int>(_triangles.Count * 3);
+            int[] outputIndices = new int[_triangles.Count * 3];
+
             //move the if statement out of the loop to prevent all the
             //redundant comparisons
             if (desiredWindingOrder == WindingOrder.CounterClockwise)
@@ -127,7 +129,7 @@ namespace GorgonTriangulator
                 }
             }
 
-            var minMax = new RectangleF();
+            var minMax = new DX.RectangleF();
 
             // Calculate bounds.
             for (int i = 0; i < inputVertices.Length; ++i)
@@ -381,8 +383,8 @@ namespace GorgonTriangulator
                 Vector4 p2 = vertices[i].Position;
                 Vector4 p3 = vertices[(i + 1) % vertices.Length].Position;
 
-                Vector4.Subtract(ref p1, ref p2, out Vector4 e1);
-                Vector4.Subtract(ref p3, ref p2, out Vector4 e2);
+                var e1 = Vector4.Subtract(p1, p2);
+                var e2 = Vector4.Subtract(p3, p2);
 
                 if ((e1.X * e2.Y) - (e1.Y * e2.X) >= 0)
                 {

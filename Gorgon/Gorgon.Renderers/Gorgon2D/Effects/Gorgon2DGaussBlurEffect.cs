@@ -25,12 +25,14 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Globalization;
 using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -66,7 +68,7 @@ namespace Gorgon.Renderers
         // Radius for the blur.
         private int _blurRadius;
         // The size of the render targets used to blur.
-        private DX.Size2 _renderTargetSize = new DX.Size2(256, 256);
+        private DX.Size2 _renderTargetSize = new(256, 256);
 
         // Flag to indicate that the kernel data needs updating.
         private bool _needKernelUpdate = true;
@@ -274,7 +276,7 @@ namespace Gorgon.Renderers
         private void UpdateOffsets()
         {
             // This adjusts just how far from the texel the blurring can occur.
-            var unitSize = new DX.Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
+            var unitSize = new Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
 
             int pointerOffset = 0;
             int yOffset = (((_blurRadius) * 2) + 1);
@@ -288,7 +290,7 @@ namespace Gorgon.Renderers
                 pointerOffset++;
             }
 
-            _blurBufferKernel.Buffer.SetData(_blurKernelData);
+            _blurBufferKernel.Buffer.SetData<float>(_blurKernelData.ToSpan());
             _needOffsetUpdate = false;
         }
 
@@ -324,7 +326,7 @@ namespace Gorgon.Renderers
 
             // Write out the current blur radius.
             // Store the blur radius in the last part of the buffer (minus 4 floats for float alignment rules on constant buffers).
-            _blurKernelData[_blurKernelData.Length - 4] = _blurRadius;
+            _blurKernelData[^4] = _blurRadius;
 
             _needKernelUpdate = false;
             _needOffsetUpdate = true;
@@ -335,12 +337,12 @@ namespace Gorgon.Renderers
         /// </summary>
         private void FreeTargets()
         {
-            if (_hPass != null)
+            if (_hPass is not null)
             {
                 Graphics.TemporaryTargets?.Return(_hPass);
             }
 
-            if (_vPass == null)
+            if (_vPass is null)
             {
                 return;
             }
@@ -354,7 +356,7 @@ namespace Gorgon.Renderers
         /// <param name="builders">The builder types that will manage the state of the effect.</param>
         private void BuildState(IGorgon2DEffectBuilders builders)
         {
-            if (_blurState == null)
+            if (_blurState is null)
             {
                 _blurState = builders.PixelShaderBuilder.SamplerState(GorgonSamplerState.Default)
                                                         .ConstantBuffer(_blurBufferKernel, 1)
@@ -363,7 +365,7 @@ namespace Gorgon.Renderers
                                                         .Build();
             }
 
-            if (_blurStateNoAlpha == null)
+            if (_blurStateNoAlpha is null)
             {
                 _blurStateNoAlpha = builders.PixelShaderBuilder.Shader(_blurShaderNoAlpha)
                                                                .Build();
@@ -388,8 +390,8 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if ((_batchStateNoAlpha == null)
-                || (_batchState == null))
+            if ((_batchStateNoAlpha is null)
+                || (_batchState is null))
             {
                 BuildState(builders);
             }
@@ -492,7 +494,7 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera)
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             if (_blurRadius == 0)
             {
@@ -502,11 +504,11 @@ namespace Gorgon.Renderers
             switch (passIndex)
             {
                 case 0:
-                    _blurBufferPass.Buffer.SetData(ref passIndex, copyMode: CopyMode.Discard);
+                    _blurBufferPass.Buffer.SetData(in passIndex, copyMode: CopyMode.Discard);
                     Graphics.SetRenderTarget(_hPass);
                     break;
                 case 1:
-                    _blurBufferPass.Buffer.SetData(ref passIndex, copyMode: CopyMode.Discard);
+                    _blurBufferPass.Buffer.SetData(in passIndex, copyMode: CopyMode.Discard);
                     Graphics.SetRenderTarget(_vPass);
                     break;
             }
@@ -525,7 +527,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnAfterRender(GorgonRenderTargetView output)
         {
-            if ((_hPass == null) || (_vPass == null))
+            if ((_hPass is null) || (_vPass is null))
             {
                 return;
             }
@@ -631,8 +633,7 @@ namespace Gorgon.Renderers
         public Gorgon2DGaussBlurEffect(Gorgon2D renderer, int kernelSize = 7)
             : base(renderer, Resources.GOR2D_EFFECT_GAUSS_BLUR, Resources.GOR2D_EFFECT_GAUSS_BLUT_DESC, 2)
         {
-            if ((kernelSize < 3)
-                || (kernelSize > 81))
+            if (kernelSize is < 3 or > 81)
             {
                 throw new ArgumentOutOfRangeException(nameof(kernelSize), Resources.GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID);
             }

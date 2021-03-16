@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The new render state.</returns>
-        protected override GorgonSamplerState OnCreateState() => Graphics.CacheSamplerState(WorkingState);
+        protected override GorgonSamplerState OnCreateState() => Graphics.SamplerStateCache.Cache(WorkingState);
 
         /// <summary>
         /// Function to reset the builder to the specified state.
@@ -152,31 +152,31 @@ namespace Gorgon.Graphics.Core
         /// If all parameters are set to <b>null</b> (i.e. omitted), then the corresponding values will be reset to their defaults.
         /// </para>
         /// </remarks>
-        public GorgonSamplerStateBuilder Wrapping(TextureWrap? wrapU = null, TextureWrap? wrapV = null, TextureWrap? wrapW = null, GorgonColor? borderColor = null)
+        public GorgonSamplerStateBuilder Wrapping(TextureWrap? wrapU = null, TextureWrap? wrapV = null, TextureWrap? wrapW = null, in GorgonColor? borderColor = null)
         {
-            if ((wrapW == null) && (wrapU == null) && (wrapV == null) && (borderColor == null))
+            if ((wrapW is null) && (wrapU is null) && (wrapV is null) && (borderColor is null))
             {
                 WorkingState.WrapU = WorkingState.WrapV = WorkingState.WrapW = TextureWrap.Clamp;
                 WorkingState.BorderColor = GorgonColor.Transparent;
                 return this;
             }
 
-            if (wrapU != null)
+            if (wrapU is not null)
             {
                 WorkingState.WrapU = wrapU.Value;
             }
 
-            if (wrapV != null)
+            if (wrapV is not null)
             {
                 WorkingState.WrapV = wrapV.Value;
             }
 
-            if (wrapW != null)
+            if (wrapW is not null)
             {
                 WorkingState.WrapW = wrapW.Value;
             }
 
-            if (borderColor != null)
+            if (borderColor is not null)
             {
                 WorkingState.BorderColor = borderColor.Value;
             }
@@ -219,7 +219,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
 	    public GorgonSamplerStateBuilder MipLevelOfDetail(float? min = null, float? max = null, float? mipLodBias = null)
         {
-            if ((min == null) && (max == null) && (mipLodBias == null))
+            if ((min is null) && (max is null) && (mipLodBias is null))
             {
                 WorkingState.MinimumLevelOfDetail = float.MinValue;
                 WorkingState.MaximumLevelOfDetail = float.MaxValue;
@@ -227,17 +227,17 @@ namespace Gorgon.Graphics.Core
                 return this;
             }
 
-            if (min != null)
+            if (min is not null)
             {
                 WorkingState.MinimumLevelOfDetail = min.Value;
             }
 
-            if (max != null)
+            if (max is not null)
             {
                 WorkingState.MaximumLevelOfDetail = max.Value;
             }
 
-            if (mipLodBias != null)
+            if (mipLodBias is not null)
             {
                 WorkingState.MipLevelOfDetailBias = mipLodBias.Value;
             }

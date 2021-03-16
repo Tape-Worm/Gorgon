@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool Equals(GorgonShaderMacro left, GorgonShaderMacro right) => string.Equals(left.Name, right.Name, StringComparison.Ordinal);
+        public static bool Equals(in GorgonShaderMacro left, in GorgonShaderMacro right) => string.Equals(left.Name, right.Name, StringComparison.Ordinal);
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/>, is equal to this instance.
@@ -124,7 +124,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         public GorgonShaderMacro(string name, string value = null)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }

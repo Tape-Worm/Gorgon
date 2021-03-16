@@ -243,7 +243,7 @@ namespace Gorgon.Editor.ImageEditor
 
             foreach (GorgonImageCodecPlugIn plugIn in plugIns)
             {
-                if ((response != MessageResponse.YesToAll) && (response != MessageResponse.NoToAll))
+                if (response is not MessageResponse.YesToAll and not MessageResponse.NoToAll)
                 {
                     response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORIMG_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: plugIns.Count > 1);
                 }
@@ -316,7 +316,7 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     IGorgonImageCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
-                    if (codec == null)
+                    if (codec is null)
                     {
                         continue;
                     }
@@ -347,7 +347,7 @@ namespace Gorgon.Editor.ImageEditor
                 {
                     IGorgonImageCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
-                    if (codec == null)
+                    if (codec is null)
                     {
                         continue;
                     }

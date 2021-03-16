@@ -1,4 +1,5 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿#if NETSTANDARD2_0
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -50,7 +51,7 @@ namespace System.ComponentModel.Composition.Registration
 
         public PartBuilder ForTypesDerivedFrom(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -71,7 +72,7 @@ namespace System.ComponentModel.Composition.Registration
 
         public PartBuilder ForType(Type type)
         {
-            if (type == null)
+            if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
@@ -84,7 +85,7 @@ namespace System.ComponentModel.Composition.Registration
 
         public PartBuilder<T> ForTypesMatching<T>(Predicate<Type> typeFilter)
         {
-            if (typeFilter == null)
+            if (typeFilter is null)
             {
                 throw new ArgumentNullException(nameof(typeFilter));
             }
@@ -97,7 +98,7 @@ namespace System.ComponentModel.Composition.Registration
 
         public PartBuilder ForTypesMatching(Predicate<Type> typeFilter)
         {
-            if (typeFilter == null)
+            if (typeFilter is null)
             {
                 throw new ArgumentNullException(nameof(typeFilter));
             }
@@ -138,7 +139,7 @@ namespace System.ComponentModel.Composition.Registration
         }
 
         // Handle Type Exports and Parts
-        protected override IEnumerable<object> GetCustomAttributes(System.Reflection.MemberInfo member, IEnumerable<object> declaredAttributes)
+        protected override IEnumerable<object> GetCustomAttributes(MemberInfo member, IEnumerable<object> declaredAttributes)
         {
             IEnumerable<object> attributes = base.GetCustomAttributes(member, declaredAttributes);
 
@@ -153,7 +154,7 @@ namespace System.ComponentModel.Composition.Registration
                     _memberInfos.TryGetValue(underlyingMemberType, out cachedAttributes);
                 }
 
-                if (cachedAttributes == null)
+                if (cachedAttributes is null)
                 {
                     using (new WriteLock(_lock))
                     {
@@ -164,7 +165,7 @@ namespace System.ComponentModel.Composition.Registration
                             foreach (Tuple<object, List<Attribute>> element in EvaluateThisTypeAgainstTheConvention((Type)member))
                             {
                                 attributeList = element.Item2;
-                                if (attributeList != null)
+                                if (attributeList is not null)
                                 {
                                     if (element.Item1 is MemberInfo info)
                                     {
@@ -227,16 +228,16 @@ namespace System.ComponentModel.Composition.Registration
                 cachedAttributes = ReadMemberCustomAttributes(member);
             }
 
-            return cachedAttributes == null ? attributes : attributes.Concat(cachedAttributes);
+            return cachedAttributes is null ? attributes : attributes.Concat(cachedAttributes);
         }
 
         //This is where ParameterImports will be handled
-        protected override IEnumerable<object> GetCustomAttributes(System.Reflection.ParameterInfo parameter, IEnumerable<object> declaredAttributes)
+        protected override IEnumerable<object> GetCustomAttributes(ParameterInfo parameter, IEnumerable<object> declaredAttributes)
         {
             IEnumerable<object> attributes = base.GetCustomAttributes(parameter, declaredAttributes);
             List<Attribute> cachedAttributes = ReadParameterCustomAttributes(parameter);
 
-            return cachedAttributes == null ? attributes : attributes.Concat(cachedAttributes);
+            return cachedAttributes is null ? attributes : attributes.Concat(cachedAttributes);
         }
 
         private List<Attribute> ReadMemberCustomAttributes(MemberInfo member)
@@ -311,3 +312,4 @@ namespace System.ComponentModel.Composition.Registration
         }
     }
 }
+#endif

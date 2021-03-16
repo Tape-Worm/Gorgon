@@ -76,15 +76,6 @@ namespace GorgonTriangulator
             // ReSharper disable ImpureMethodCallOnReadonlyValueField
             obj.A.Equals(A) && obj.B.Equals(B) && obj.C.Equals(C);// ReSharper restore ImpureMethodCallOnReadonlyValueField
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int result = A.GetHashCode();
-                result = (result * 397) ^ B.GetHashCode();
-                result = (result * 397) ^ C.GetHashCode();
-                return result;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(A, B, C);
     }
 }

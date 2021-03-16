@@ -40,13 +40,13 @@ namespace Gorgon.Core
         /// <summary>
         /// Function to break a string into an array of strings based on the newline control characters present in the text.
         /// </summary>
-        /// <param name="renderText">The text to evaluate.</param>
+        /// <param name="text">The text to evaluate.</param>
         /// <param name="buffer">The array of strings representing a single line per newline control character.</param>
-        public static void GetLines(this StringBuilder renderText, ref string[] buffer)
+        public static void GetLines(this StringBuilder text, ref string[] buffer)
         {
             int lineCount = 0;
 
-            if (renderText.Length == 0)
+            if (text.Length == 0)
             {
                 buffer = Array.Empty<string>();
                 return;
@@ -56,9 +56,9 @@ namespace Gorgon.Core
             int charCount = 0;
 
             // Find out how many lines we have.
-            for (int i = 0; i < renderText.Length; ++i)
+            for (int i = 0; i < text.Length; ++i)
             {
-                char character = renderText[i];
+                char character = text[i];
 
                 if (character == '\n')
                 {
@@ -69,15 +69,15 @@ namespace Gorgon.Core
             // We'll always have at least 1 line.
             ++lineCount;
 
-            if ((buffer == null) || (buffer.Length != lineCount))
+            if ((buffer is null) || (buffer.Length != lineCount))
             {
                 buffer = new string[lineCount];
             }
 
             int line = 0;
-            for (int i = 0; i < renderText.Length; ++i)
+            for (int i = 0; i < text.Length; ++i)
             {
-                char character = renderText[i];
+                char character = text[i];
 
                 if (character != '\n')
                 {
@@ -92,7 +92,7 @@ namespace Gorgon.Core
                 }
                 else
                 {
-                    buffer[line] = renderText.ToString(startChar, charCount);
+                    buffer[line] = text.ToString(startChar, charCount);
                     startChar += charCount + 1;
                 }
 
@@ -106,7 +106,7 @@ namespace Gorgon.Core
             }
 
             // Get last line.
-            buffer[line] = renderText.ToString(startChar, charCount);
+            buffer[line] = text.ToString(startChar, charCount);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int IndexOf(this StringBuilder theString, char character)
         {
-            if (theString == null)
+            if (theString is null)
             {
                 throw new ArgumentNullException(nameof(theString));
             }
@@ -157,7 +157,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int IndexOf(this StringBuilder theString, string characters, int startIndex = 0, StringComparison comparison = StringComparison.InvariantCulture)
         {
-            if (theString == null)
+            if (theString is null)
             {
                 throw new ArgumentNullException(nameof(theString));
             }
@@ -183,7 +183,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int LastIndexOf(this StringBuilder theString, char character)
         {
-            if (theString == null)
+            if (theString is null)
             {
                 throw new ArgumentNullException(nameof(theString));
             }
@@ -214,7 +214,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
         public static int LastIndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
         {
-            if (theString == null)
+            if (theString is null)
             {
                 throw new ArgumentNullException(nameof(theString));
             }
@@ -239,7 +239,7 @@ namespace Gorgon.Core
         /// </remarks>
         public static string ToStringWithDeclaration(this XDocument document)
         {
-            if (document == null)
+            if (document is null)
             {
                 throw new ArgumentNullException(nameof(document));
             }
@@ -363,7 +363,7 @@ namespace Gorgon.Core
             }
 
             // Format the string.
-            if ((values != null) && (values.Length > 0))
+            if ((values is not null) && (values.Length > 0))
             {
                 theString = string.Format(theString, values);
             }
@@ -410,7 +410,7 @@ namespace Gorgon.Core
                         }
                         else
                         {
-                            lines[i] = lines[i].Substring(lines[i].Length - difference);
+                            lines[i] = lines[i][^difference..];
                         }
                     }
                 }
@@ -443,7 +443,7 @@ namespace Gorgon.Core
                 return 0;
             }
 
-            if (encoding == null)
+            if (encoding is null)
             {
                 encoding = Encoding.UTF8;
             }
@@ -475,7 +475,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
 	    public static bool IsWhiteSpaceOrEmpty(this string value)
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }

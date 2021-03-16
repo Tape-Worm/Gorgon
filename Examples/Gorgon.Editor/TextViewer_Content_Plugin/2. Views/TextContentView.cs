@@ -25,14 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
@@ -97,7 +90,7 @@ namespace Gorgon.Examples
             // Load event - most of the time...) If we have no data context, we call ResetDataContext to reset the view back to its 
             // default state.
 
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -116,7 +109,7 @@ namespace Gorgon.Examples
             // If we have a ribbon to merge into the editor ribbon, we should pass in the current renderer.
             _formRibbon.ContentRenderer = renderer;
 
-            if (renderer == null)
+            if (renderer is null)
             {
                 return;
             }

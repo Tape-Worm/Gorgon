@@ -390,7 +390,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
             {
                 GorgonColor? newColor = HostServices.ColorPicker.GetColor(_extractData.SkipColor);
 
-                if (newColor == null)
+                if (newColor is null)
                 {
                     return;
                 }
@@ -407,7 +407,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// Function to determine if the sprite index can be decremented to the previous sprite index.
         /// </summary>
         /// <returns><b>true</b> if the index can be decremented, <b>false</b> if not.</returns>
-        private bool CanPrevSprite() => (_extractedSprites != null) && (_extractedSprites.Count > 0) && (IsInSpritePreview) && (_currentPreviewSprite > 0);
+        private bool CanPrevSprite() => (_extractedSprites is not null) && (_extractedSprites.Count > 0) && (IsInSpritePreview) && (_currentPreviewSprite > 0);
 
         /// <summary>
         /// Function to decrement the current preview sprite index.
@@ -428,7 +428,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// Function to determine if the sprite index can be incremented to the next sprite index.
         /// </summary>
         /// <returns><b>true</b> if the index can be incremented, <b>false</b> if not.</returns>
-        private bool CanNextSprite() => (_extractedSprites != null) && (_extractedSprites.Count > 0) && (IsInSpritePreview) && (_currentPreviewSprite + 1 < _extractedSprites.Count);
+        private bool CanNextSprite() => (_extractedSprites is not null) && (_extractedSprites.Count > 0) && (IsInSpritePreview) && (_currentPreviewSprite + 1 < _extractedSprites.Count);
 
         /// <summary>
         /// Function to increment the current preview sprite index.
@@ -511,7 +511,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// Function to determine if the sprite generation can be canceled or not.
         /// </summary>
         /// <returns><b>true</b> if it can be canceled, <b>false</b> if not.</returns>
-        private bool CanCancelSpriteGeneration() => (_cancelSource != null) && (!_cancelSource.IsCancellationRequested) && (_currentTask != null) && (IsGenerating);
+        private bool CanCancelSpriteGeneration() => (_cancelSource is not null) && (!_cancelSource.IsCancellationRequested) && (_currentTask is not null) && (IsGenerating);
 
         /// <summary>
         /// Function to cancel an active sprite generation process.
@@ -535,7 +535,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
         /// <returns><b>true</b> if the sprites can be saved, <b>false</b> if not.</returns>
-        private bool CanSaveSprites(SaveSpritesArgs args) => (Sprites != null) && (Sprites.Count > 0) && (!IsGenerating);
+        private bool CanSaveSprites(SaveSpritesArgs args) => (Sprites is not null) && (Sprites.Count > 0) && (!IsGenerating);
 
         /// <summary>
         /// Function to save the sprites to the file system.
@@ -592,7 +592,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
         protected async override Task<bool> OnCloseToolTaskAsync() 
         {
             // If we're executing a task, wait for it to finish.
-            if (_currentTask == null)
+            if (_currentTask is null)
             {
                 return true;
             }

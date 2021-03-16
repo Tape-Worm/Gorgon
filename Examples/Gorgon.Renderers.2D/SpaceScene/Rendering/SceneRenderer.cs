@@ -25,16 +25,13 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.Timing;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Examples
@@ -53,14 +50,14 @@ namespace Gorgon.Examples
         // The resource manager.
         private readonly ResourceManagement _resources;
         // The camera used for rendering.
-        private readonly IGorgon2DCamera _camera;
+        private readonly GorgonOrthoCamera _camera;
         // The screen buffer.
         private GorgonRenderTarget2DView _screen;
         // The list of layers to render.
-        private readonly List<Layer> _layers = new List<Layer>();
+        private readonly List<Layer> _layers = new();
         // Post processing groups.  Use to render specific layers with post processing effects.
-        private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new List<(string name, Gorgon2DCompositor compositor)>();
-        private readonly Dictionary<string, List<Layer>> _postProcessLayers = new Dictionary<string, List<Layer>>(StringComparer.OrdinalIgnoreCase);
+        private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new();
+        private readonly Dictionary<string, List<Layer>> _postProcessLayers = new(StringComparer.OrdinalIgnoreCase);
         #endregion
 
         #region Methods.
@@ -142,7 +139,7 @@ namespace Gorgon.Examples
                 }
 
                 FlipToScreen(sceneSrv);
-            }
+            }            
             else
             {
                 for (int i = 0; i < _postProcessGroups.Count; ++i)
@@ -164,7 +161,7 @@ namespace Gorgon.Examples
                         layers[j].Render();
                     }
 
-                    if (compositor == null)
+                    if (compositor is null)
                     {
                         FlipToScreen(sceneSrv);
                     }
@@ -186,19 +183,19 @@ namespace Gorgon.Examples
         {
             _screen = screen;
 
-            if (_screen == null)
+            if (_screen is null)
             {
                 return;
             }
 
-            DX.Vector2 aspect;
+            Vector2 aspect;
             if (_screen.Width > _screen.Height)
             {
-                aspect = new DX.Vector2((float)screen.Width / screen.Height, 1.0f);
+                aspect = new Vector2((float)screen.Width / screen.Height, 1.0f);
             }
             else
             {
-                aspect = new DX.Vector2(1, (float)screen.Height / screen.Width);
+                aspect = new Vector2(1, (float)screen.Height / screen.Width);
             }
 
             // Adjust the viewable area to match our aspect ratio.
@@ -273,7 +270,7 @@ namespace Gorgon.Examples
         /// <param name="resources">The resources.</param>
         /// <param name="screen">The main render target for the scene.</param>
         /// <param name="camera">The camera for the scene.</param>
-        public SceneRenderer(Gorgon2D renderer, ResourceManagement resources, GorgonRenderTarget2DView screen, LayerCamera layerController, IGorgon2DCamera camera)
+        public SceneRenderer(Gorgon2D renderer, ResourceManagement resources, GorgonRenderTarget2DView screen, LayerCamera layerController, GorgonOrthoCamera camera)
         {
             _graphics = renderer.Graphics;
             _renderer = renderer;

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -91,28 +92,28 @@ namespace Gorgon.Examples
             _renderer.Begin();
 
             _renderer.DrawString("Polygonal Sprite",
-                                 new DX.Vector2((_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
+                                 new Vector2((_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
                                                 (_screen.Height / 4.0f) - (_polySprite.Size.Height * 0.5f) - _renderer.DefaultFont.LineHeight));
 
             _renderer.DrawString("Polygonal Sprite (Wireframe)",
-                                 new DX.Vector2(_screen.Width - (_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
+                                 new Vector2(_screen.Width - (_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
                                                 (_screen.Height / 4.0f) - (_polySprite.Size.Height * 0.5f) - _renderer.DefaultFont.LineHeight));
 
             _renderer.DrawString("Rectangular Sprite",
-                                 new DX.Vector2((_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
+                                 new Vector2((_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
                                                 _screen.Height - (_screen.Height / 4.0f) - (_polySprite.Size.Height * 0.5f) - _renderer.DefaultFont.LineHeight));
 
             _renderer.DrawString("Rectangular Sprite (Wireframe)",
-                                 new DX.Vector2(_screen.Width - (_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
+                                 new Vector2(_screen.Width - (_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
                                                 _screen.Height - (_screen.Height / 4.0f) - (_polySprite.Size.Height * 0.5f) - _renderer.DefaultFont.LineHeight));
 
             _normalSprite.Texture = _texture;
             _normalSprite.Angle = _angle1;
-            _normalSprite.Position = new DX.Vector2(_screen.Width / 4.0f, _screen.Height - (_screen.Height / 4.0f));
+            _normalSprite.Position = new Vector2(_screen.Width / 4.0f, _screen.Height - (_screen.Height / 4.0f));
 
             _polySprite.Texture = _texture;
             _polySprite.Angle = _angle2;
-            _polySprite.Position = new DX.Vector2(_screen.Width / 4.0f, (_screen.Height / 4.0f));
+            _polySprite.Position = new Vector2(_screen.Width / 4.0f, (_screen.Height / 4.0f));
 
             _renderer.DrawSprite(_normalSprite);
             _renderer.DrawPolygonSprite(_polySprite);
@@ -124,11 +125,11 @@ namespace Gorgon.Examples
 
             _normalSprite.Texture = null;
             _normalSprite.Angle = _angle2;
-            _normalSprite.Position = new DX.Vector2(_screen.Width - (_screen.Width / 4.0f), _screen.Height - (_screen.Height / 4.0f));
+            _normalSprite.Position = new Vector2(_screen.Width - (_screen.Width / 4.0f), _screen.Height - (_screen.Height / 4.0f));
 
             _polySprite.Texture = null;
             _polySprite.Angle = _angle1;
-            _polySprite.Position = new DX.Vector2(_screen.Width - (_screen.Width / 4.0f), (_screen.Height / 4.0f));
+            _polySprite.Position = new Vector2(_screen.Width - (_screen.Width / 4.0f), (_screen.Height / 4.0f));
 
             _renderer.DrawSprite(_normalSprite);
             _renderer.DrawPolygonSprite(_polySprite);
@@ -150,7 +151,7 @@ namespace Gorgon.Examples
             // Create the regular sprite first.
             _normalSprite = new GorgonSprite
             {
-                Anchor = new DX.Vector2(0.5f, 0.5f),
+                Anchor = new Vector2(0.5f, 0.5f),
                 Size = new DX.Size2F(_texture.Width, _texture.Height),
                 Texture = _texture,
                 TextureRegion = new DX.RectangleF(0, 0, 1, 1)
@@ -165,9 +166,9 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
             FormMain window =
-                GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Polygonal Sprites");
+                GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Polygonal Sprites");
 
             try
             {
@@ -186,8 +187,8 @@ namespace Gorgon.Examples
                                               window,
                                               new GorgonSwapChainInfo("Gorgon2D Effects Example Swap Chain")
                                               {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
+                                                  Width = ExampleConfig.Default.Resolution.Width,
+                                                  Height = ExampleConfig.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
 
@@ -226,7 +227,7 @@ namespace Gorgon.Examples
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
         public static string GetResourcePath(string resourceItem)
         {
-            string path = Settings.Default.ResourceLocation;
+            string path = ExampleConfig.Default.ResourceLocation;
 
             if (string.IsNullOrEmpty(resourceItem))
             {
@@ -258,6 +259,9 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

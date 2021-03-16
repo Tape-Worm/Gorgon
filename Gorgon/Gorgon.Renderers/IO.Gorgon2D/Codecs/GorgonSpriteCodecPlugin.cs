@@ -84,7 +84,7 @@ namespace Gorgon.IO
         /// </remarks>
         public IGorgonSpriteCodec CreateCodec(string codec, Gorgon2D renderer)
         {
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -94,7 +94,7 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(codec));
             }
 
-            if (renderer == null)
+            if (renderer is null)
             {
                 throw new ArgumentNullException(nameof(renderer));
             }

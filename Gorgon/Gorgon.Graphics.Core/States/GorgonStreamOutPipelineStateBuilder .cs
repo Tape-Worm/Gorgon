@@ -63,7 +63,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // The working state.
-        private readonly GorgonStreamOutPipelineState _workState = new GorgonStreamOutPipelineState(new GorgonPipelineState
+        private readonly GorgonStreamOutPipelineState _workState = new(new GorgonPipelineState
         {
             PrimitiveType = Core.PrimitiveType.TriangleList
         });
@@ -198,7 +198,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 8.</exception>
         public GorgonStreamOutPipelineStateBuilder BlendState(GorgonBlendState state, int slot = 0)
         {
-            if ((slot < 0) || (slot >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount))
+            if (slot is < 0 or >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_BLEND_SLOT_INVALID, D3D11.OutputMergerStage.SimultaneousRenderTargetCount));
             }
@@ -216,7 +216,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to 8.</exception>
         public GorgonStreamOutPipelineStateBuilder BlendStates(IReadOnlyList<GorgonBlendState> states, int startSlot = 0)
         {
-            if ((startSlot < 0) || (startSlot >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount))
+            if (startSlot is < 0 or >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_BLEND_SLOT_INVALID, D3D11.OutputMergerStage.SimultaneousRenderTargetCount));
             }
@@ -232,7 +232,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent interface for the builder.</returns>
         public GorgonStreamOutPipelineStateBuilder ResetTo(GorgonStreamOutPipelineState pipeState)
         {
-            if (pipeState == null)
+            if (pipeState is null)
             {
                 Clear();
                 return this;
@@ -276,13 +276,13 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonStreamOutPipelineState Build(IGorgonAllocator<GorgonStreamOutPipelineState> allocator)
         {
-            if (allocator == null)
+            if (allocator is null)
             {
-                return new GorgonStreamOutPipelineState(Graphics.CachePipelineState(_workState.PipelineState));
+                return new GorgonStreamOutPipelineState(Graphics.PipelineStateCache.Cache(_workState.PipelineState));
             }
 
             // Caches the state info.
-            void CacheState(GorgonStreamOutPipelineState state) => Graphics.CachePipelineState(state.PipelineState);
+            void CacheState(GorgonStreamOutPipelineState state) => Graphics.PipelineStateCache.Cache(state.PipelineState);
             
             return allocator.Allocate(CacheState);
         }

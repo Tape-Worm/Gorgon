@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Math;
 using DX = SharpDX;
 
@@ -45,19 +46,19 @@ namespace Gorgon.Renderers
         /// <param name="angleCos">The cached cosine of the angle.</param>
         /// <param name="depth">The depth value for the renderable.</param>
         /// <param name="worldMatrix">The world matrix.</param>
-        private static void TransformVertices(ref DX.Vector2 anchor,
+        private static void TransformVertices(ref Vector2 anchor,
                                               ref DX.RectangleF bounds,
-                                              ref DX.Vector2 scale,
+                                              ref Vector2 scale,
                                               bool hasRotation,
                                               float angleSin,
                                               float angleCos,
                                               float depth,
-                                              out DX.Matrix worldMatrix)
+                                              out Matrix4x4 worldMatrix)
         {
-            DX.Matrix anchorMat = DX.Matrix.Identity;
-            DX.Matrix scaleMat = DX.Matrix.Identity;
-            DX.Matrix rotMat = DX.Matrix.Identity;
-            DX.Matrix transMat = DX.Matrix.Identity;
+            Matrix4x4 anchorMat = Matrix4x4.Identity;
+            Matrix4x4 scaleMat = Matrix4x4.Identity;
+            Matrix4x4 rotMat = Matrix4x4.Identity;
+            Matrix4x4 transMat = Matrix4x4.Identity;
 
             anchorMat.M41 = -anchor.X * bounds.Width;
             anchorMat.M42 = -anchor.Y * bounds.Height;
@@ -73,20 +74,22 @@ namespace Gorgon.Renderers
                 rotMat.M22 = angleCos;
             }
 
-            transMat.M41 = bounds.X;
-            transMat.M42 = bounds.Y;
+            transMat.M41 = bounds.Left;
+            transMat.M42 = bounds.Top;
             transMat.M43 = depth;
 
-            DX.Matrix.Multiply(ref anchorMat, ref scaleMat, out DX.Matrix tempMat);
-            DX.Matrix.Multiply(ref tempMat, ref rotMat, out DX.Matrix tempMat2);
-            DX.Matrix.Multiply(ref tempMat2, ref transMat, out worldMatrix);
+            var tempMat = Matrix4x4.Multiply(anchorMat, scaleMat);
+            var tempMat2 = Matrix4x4.Multiply(tempMat, rotMat);
+            worldMatrix = Matrix4x4.Multiply(tempMat2, transMat);
         }
 
         /// <summary>
         /// Function to transform the vertices for a renderable.
         /// </summary>
         /// <param name="renderable">The renderable to transform.</param>
-        public void Transform(PolySpriteRenderable renderable)
+        /// <param name="sinValue">The sine value for the rotation angle.</param>
+        /// <param name="cosValue">The cosine value for the rotation angle.</param>
+        public void Transform(PolySpriteRenderable renderable, out float sinValue, out float cosValue)
         {
             if (renderable.HasVertexChanges)
             {
@@ -97,17 +100,23 @@ namespace Gorgon.Renderers
             renderable.HasTextureChanges = false;
             renderable.HasVertexChanges = false;
 
+            float rads = renderable.AngleDegs.ToRadians();
+            sinValue = rads.FastSin();
+            cosValue = rads.FastCos();
+
             if (!renderable.HasTransformChanges)
             {
                 return;
             }
 
+            
+
             TransformVertices(ref renderable.Anchor,
                               ref renderable.Bounds,
                               ref renderable.Scale,
-                              !renderable.AngleRads.EqualsEpsilon(0.0f),
-                              renderable.AngleSin,
-                              renderable.AngleCos,
+                              !renderable.AngleDegs.EqualsEpsilon(0.0f),
+                              sinValue,
+                              cosValue,
                               renderable.Depth,
                               out renderable.WorldMatrix);
 

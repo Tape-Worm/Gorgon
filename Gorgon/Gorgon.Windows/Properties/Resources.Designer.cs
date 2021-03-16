@@ -276,6 +276,15 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The directory path &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GOR_ERR_DIRECTORY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DIRECTORY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot find the column header..
         /// </summary>
         internal static string GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER {

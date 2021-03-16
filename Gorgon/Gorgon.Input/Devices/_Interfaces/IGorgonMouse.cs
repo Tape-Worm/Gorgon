@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using System.Drawing;
 using Gorgon.Core;
+using DX = SharpDX;
 
 namespace Gorgon.Input
 {
@@ -78,6 +78,7 @@ namespace Gorgon.Input
     /// Provides events and state for mouse data from a physical mouse.
     /// </summary>
     public interface IGorgonMouse
+        : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawMouseData>
     {
         #region Events.
         /// <summary>
@@ -118,7 +119,7 @@ namespace Gorgon.Input
         /// Users should reset this value when they are done with it. Otherwise, it will not be reset until the next <see cref="MouseWheelMove"/> event.
         /// </para>
         /// </remarks>
-        Point RelativePositionOffset
+        DX.Point RelativePositionOffset
         {
             get;
             set;
@@ -159,18 +160,18 @@ namespace Gorgon.Input
         }
 
         /// <summary>
-        /// Property to set or return the <see cref="Rectangle"/> used to constrain the mouse <see cref="Position"/>.
+        /// Property to set or return the <c>Rectangle</c> used to constrain the mouse <see cref="Position"/>.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This will constrain the value of the <see cref="Position"/> within the specified <see cref="Rectangle"/>. This means that a cursor positioned at 320x200 with a region located at 330x210 with a width 
+        /// This will constrain the value of the <see cref="Position"/> within the specified <c>Rectangle</c>. This means that a cursor positioned at 320x200 with a region located at 330x210 with a width 
         /// and height of 160x160 will make the <see cref="Position"/> property return 330x210. If the cursor was positioned at 500x400, the <see cref="Position"/> property would return 480x360.
         /// </para>
         /// <para>
-        /// Passing <see cref="Rectangle.Empty"/> to this property will remove the constraint on the position.
+        /// Passing <c>Rectangle.Empty</c> to this property will remove the constraint on the position.
         /// </para>
         /// </remarks>
-        Rectangle PositionConstraint
+        DX.Rectangle PositionConstraint
         {
             get;
             set;
@@ -195,19 +196,19 @@ namespace Gorgon.Input
         }
 
         /// <summary>
-        /// Property to set or return the <see cref="Size"/> of the area, in pixels, surrounding the cursor that represents a valid double click area.
+        /// Property to set or return the <c>Size</c> of the area, in pixels, surrounding the cursor that represents a valid double click area.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// When this value is set, and a mouse button is double clicked, this value is checked to see if the mouse <see cref="Position"/> falls within -<c>value.</c><see cref="Size.Width"/> to <c>value.</c><see cref="Size.Width"/>, 
-        /// and -<c>value.</c><see cref="Size.Height"/> to <c>value.</c><see cref="Size.Height"/> on the second click. If the <see cref="Position"/> is within this area, then the double click event will be triggered. Otherwise, it will 
+        /// When this value is set, and a mouse button is double clicked, this value is checked to see if the mouse <see cref="Position"/> falls within -<c>value.Size.Width</c> to <c>value.Size.Width</c>, 
+        /// and -<c>value.Size.Height"</c> to <c>value.Size.Height</c> on the second click. If the <see cref="Position"/> is within this area, then the double click event will be triggered. Otherwise, it will 
         /// not.
         /// </para>
         /// <para>
-        /// Passing <see cref="Size.Empty"/> to this property will disable double clicking.
+        /// Passing <c>Size.Empty</c> to this property will disable double clicking.
         /// </para>
         /// </remarks>
-        Size DoubleClickSize
+        DX.Size2 DoubleClickSize
         {
             get;
             set;
@@ -221,7 +222,7 @@ namespace Gorgon.Input
         /// This property is affected by the <see cref="PositionConstraint"/> value.
         /// </para>
         /// </remarks>
-        Point Position
+        DX.Point Position
         {
             get;
             set;

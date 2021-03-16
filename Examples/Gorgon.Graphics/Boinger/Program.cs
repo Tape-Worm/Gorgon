@@ -25,17 +25,20 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
+using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
@@ -107,10 +110,8 @@ namespace Gorgon.Examples
         private static GorgonConstantBufferView _materialBuffer;
         // 2D interface for rendering our text.
         private static Gorgon2D _2D;
-        // Our view matrix.
-        private static DX.Matrix _viewMatrix = DX.Matrix.Identity;
-        // Our projection matrix.
-        private static DX.Matrix _projMatrix = DX.Matrix.Identity;
+        // The camera.
+        private static GorgonPerspectiveCamera _camera;
         // Our walls.
         private static Plane[] _planes;
         // Our sphere.
@@ -137,7 +138,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void UpdateBall()
         {
-            DX.Vector3 position = _sphere.Position;
+            Vector3 position = _sphere.Position;
 
             if (_bounceV)
             {
@@ -166,7 +167,7 @@ namespace Gorgon.Examples
                 position.Y -= 4.0f * GorgonTiming.Delta * (_dropSpeed / 20f);
             }
 
-            if ((position.X < -2.3f) || (position.X > 2.3f))
+            if (position.X is < (-2.3f) or > 2.3f)
             {
                 _bounceH = !_bounceH;
                 if (_bounceH)
@@ -179,7 +180,7 @@ namespace Gorgon.Examples
                 }
             }
 
-            if ((position.Y > 2.0f) || (position.Y < -2.5f))
+            if (position.Y is > 2.0f or < (-2.5f))
             {
                 _bounceV = !_bounceV;
                 if (!_bounceV)
@@ -189,7 +190,7 @@ namespace Gorgon.Examples
                 }
             }
 
-            _sphere.Rotation = new DX.Vector3(0, _rotate, -12.0f);
+            _sphere.Rotation = new Vector3(0, _rotate, -12.0f);
             _sphere.Position = position;
 
             _rotate += 90.0f * GorgonTiming.Delta * (_rotateSpeed.Sin() * 1.5f);
@@ -204,10 +205,10 @@ namespace Gorgon.Examples
         {
             // Send the transform for the model to the GPU so we can update its position and rotation.
             model.UpdateTransform();
-            UpdateWVP(ref model.WorldMatrix);
+            UpdateWVP(in model.WorldMatrix);
 
             GorgonColor color = model.Material.Diffuse;
-            _materialBuffer.Buffer.SetData(ref color, copyMode: CopyMode.Discard);
+            _materialBuffer.Buffer.SetData(in color, copyMode: CopyMode.Discard);
 
             GorgonDrawIndexCall drawCall = model == _sphere ? _drawCalls[2] : (model == _planes[0] ? _drawCalls[0] : _drawCalls[1]);
 
@@ -241,15 +242,15 @@ namespace Gorgon.Examples
             RenderModel(_sphere);
 
             // Remember the position and rotation so we can restore them later.
-            DX.Vector3 spherePosition = _sphere.Position;
-            DX.Vector3 sphereRotation = _sphere.Rotation;
+            Vector3 spherePosition = _sphere.Position;
+            Vector3 sphereRotation = _sphere.Rotation;
 
             // Offset the position of the ball so we can fake a shadow under the ball.
-            _sphere.Position = new DX.Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z + 0.5f);
+            _sphere.Position = new Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z + 0.5f);
             // Scale on the z-axis so the ball "shadow" has no real depth, and on the x & y to make it look slightly bigger.
-            _sphere.Scale = new DX.Vector3(1.155f, 1.155f, 0.001f);
+            _sphere.Scale = new Vector3(1.155f, 1.155f, 0.001f);
             // Reset the rotation so we don't rotate our flattened ball "shadow" (it'd look real weird if it rotated).
-            _sphere.Rotation = DX.Vector3.Zero;
+            _sphere.Rotation = Vector3.Zero;
             // Render as black with alpha of 0.5 to simulate a shadow.
             _sphere.Material.Diffuse = new GorgonColor(0, 0, 0, 0.5f);
 
@@ -259,7 +260,7 @@ namespace Gorgon.Examples
             // Restore our original positioning so we can render the ball in the correct place on the next frame.
             _sphere.Position = spherePosition;
             // Reset scale on the z-axis so the ball so it'll be normal for the next frame.
-            _sphere.Scale = DX.Vector3.One;
+            _sphere.Scale = Vector3.One;
             // Reset the rotation so it'll be in the correct place on the next frame.
             _sphere.Rotation = sphereRotation;
 
@@ -284,20 +285,22 @@ namespace Gorgon.Examples
         /// model and project them into 2D space on your render target.
         /// </para>
         /// </remarks>
-        private static void UpdateWVP(ref DX.Matrix world)
+        private static void UpdateWVP(in Matrix4x4 world)
         {
-
             // Build our world/view/projection matrix to send to
             // the shader.
-            DX.Matrix.Multiply(ref world, ref _viewMatrix, out DX.Matrix temp);
-            DX.Matrix.Multiply(ref temp, ref _projMatrix, out DX.Matrix wvp);
+            ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
+            ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
+
+            var temp = Matrix4x4.Multiply(world, viewMatrix);
+            var wvp = Matrix4x4.Multiply(temp, projMatrix);
 
             // Direct 3D 11 requires that we transpose our matrix 
             // before sending it to the shader.
-            DX.Matrix.Transpose(ref wvp, out wvp);
+            wvp = Matrix4x4.Transpose(wvp);
 
             // Update the constant buffer.
-            _wvpBuffer.Buffer.SetData(ref wvp);
+            _wvpBuffer.Buffer.SetData(in wvp);
         }
 
         /// <summary>
@@ -334,7 +337,7 @@ namespace Gorgon.Examples
             int selectedDeviceIndex = 0;
             IGorgonVideoAdapterInfo selectedDevice = null;
 
-            _selectedVideoMode = new GorgonVideoMode(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
+            _selectedVideoMode = new GorgonVideoMode(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
 
             while (selectedDeviceIndex < deviceList.Count)
             {
@@ -359,7 +362,7 @@ namespace Gorgon.Examples
             }
 
             // If, somehow, we are on a device from the dark ages, then we can't continue.
-            if (selectedDevice != null)
+            if (selectedDevice is not null)
             {
                 return graphics;
             }
@@ -395,7 +398,7 @@ namespace Gorgon.Examples
             _graphics = CreateGraphicsInterface();
 
             // If we couldn't create the graphics interface, then leave.
-            if (_graphics == null)
+            if (_graphics is null)
             {
                 return;
             }
@@ -408,22 +411,22 @@ namespace Gorgon.Examples
                                         {
                                             // Set up for 32 bit RGBA normalized display.
                                             Format = BufferFormat.R8G8B8A8_UNorm,
-                                            Width = Settings.Default.Resolution.Width,
-                                            Height = Settings.Default.Resolution.Height
+                                            Width = ExampleConfig.Default.Resolution.Width,
+                                            Height = ExampleConfig.Default.Resolution.Height
                                         });
 
             // Build the depth buffer for our swap chain.
             BuildDepthBuffer(_swap.Width, _swap.Height);
 
 
-            if (!Settings.Default.IsWindowed)
+            if (!ExampleConfig.Default.IsWindowed)
             {
                 // Get the output for the main window.
                 var currentScreen = Screen.FromControl(_mainForm);
                 IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
 
                 // If we've asked for full screen mode, then locate the correct video mode and set us up.
-                _selectedVideoMode = new GorgonVideoMode(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
+                _selectedVideoMode = new GorgonVideoMode(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
                 _swap.EnterFullScreen(in _selectedVideoMode, output);
             }
 
@@ -446,7 +449,7 @@ namespace Gorgon.Examples
             // Create the vertex input layout.
             // We need to create a layout for our vertex type because the shader won't know how to interpret the data we're sending it otherwise.  
             // This is why we need a vertex shader before we even create the layout.
-            _inputLayout = GorgonInputLayout.CreateUsingType<BoingerVertex>(_graphics, _vertexShader);
+            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
 
             // Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
             // We also will generate mip-map levels for this image so that scaling the texture will look better. 
@@ -468,7 +471,7 @@ namespace Gorgon.Examples
                                                                        new GorgonConstantBufferInfo("WVPBuffer")
                                                                        {
                                                                            Usage = ResourceUsage.Dynamic,
-                                                                           SizeInBytes = DX.Matrix.SizeInBytes
+                                                                           SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
                                                                        });
             // This one will hold our material information.
             _materialBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
@@ -478,7 +481,7 @@ namespace Gorgon.Examples
                                                                                 SizeInBytes = Unsafe.SizeOf<GorgonColor>()
                                                                             });
             GorgonColor defaultMaterialColor = GorgonColor.White;
-            _materialBuffer.Buffer.SetData(ref defaultMaterialColor);
+            _materialBuffer.Buffer.SetData(in defaultMaterialColor);
 
             GorgonExample.LoadResources(_graphics);
         }
@@ -520,16 +523,12 @@ namespace Gorgon.Examples
                                        .IndexBuffer(_sphere.IndexBuffer, 0, _sphere.IndexBuffer.IndexCount)
                                        .Build();
 
-            // Set up our view matrix.
-            // Move the camera (view matrix) back 2.2 units.  This will give us enough room to see what's
-            // going on.
-            DX.Matrix.Translation(0, 0, 2.2f, out _viewMatrix);
-
-            // Set up our projection matrix.
-            // This matrix is probably the cause of almost EVERY problem you'll ever run into in 3D programming. Basically we're telling the renderer that we 
-            // want to have a vertical FOV of 75 degrees, with the aspect ratio based on our form width and height.  The final values indicate how to 
-            // distribute Z values across depth (tip: it's not linear).
-            _projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 500.0f, 0.125f);
+            // Set up our camera.
+            _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 500.0f, 0.125f)
+            {
+                Fov = 75,
+                Position = new Vector3(0, 0, -2.2f)
+            };
         }
 
         /// <summary>
@@ -540,7 +539,7 @@ namespace Gorgon.Examples
             try
             {
                 // Create our form.
-                _mainForm = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Boinger");
+                _mainForm = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Boinger");
 
                 // Add a keybinding to switch to full screen or windowed.
                 _mainForm.KeyDown += MainForm_KeyDown;
@@ -557,34 +556,34 @@ namespace Gorgon.Examples
                 // And here we set up the planes with a material, and initial positioning.
                 _planes = new[]
                           {
-                              new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+                              new Plane(_graphics, _inputLayout, new Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
                               {
                                   Material = new Material
                                              {
                                                  Diffuse = GorgonColor.White, Texture = _texture
                                              },
-                                  Position = new DX.Vector3(0, 0, 3.0f)
+                                  Position = new Vector3(0, 0, 3.0f)
                               },
-                              new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+                              new Plane(_graphics, _inputLayout, new Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
                               {
                                   Material = new Material
                                              {
                                                  Diffuse = GorgonColor.White, Texture = _texture
                                              },
-                                  Position = new DX.Vector3(0, -3.5f, 3.5f),
-                                  Rotation = new DX.Vector3(90.0f, 0, 0)
+                                  Position = new Vector3(0, -3.5f, 3.5f),
+                                  Rotation = new Vector3(90.0f, 0, 0)
                               }
                           };
 
                 // Create our sphere.
                 // Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
-                DX.Vector2 textureOffset = _texture.ToTexel(new DX.Vector2(516, 0));
+                Vector2 textureOffset = _texture.ToTexel(new Vector2(516, 0));
                 // This is to scale our texture coordinates because the actual image is much smaller (255x255) than the full texture (1024x512).
                 textureSize = _texture.ToTexel(new DX.Size2(255, 255));
                 // Give the sphere a place to live.
                 _sphere = new Sphere(_graphics, _inputLayout, 1.0f, textureOffset, textureSize)
                 {
-                    Position = new DX.Vector3(2.2f, 1.5f, 2.5f),
+                    Position = new Vector3(2.2f, 1.5f, 2.5f),
                     Material = new Material
                     {
                         Diffuse = GorgonColor.White,
@@ -655,7 +654,7 @@ namespace Gorgon.Examples
             // This is also the place to re-apply any custom viewports, or scissor rectangles.
 
             // Reset our projection matrix to match our new size.
-            _projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), e.Size.Width / (float)e.Size.Height, 500.0f, 0.125f);
+            _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
             BuildDepthBuffer(e.Size.Width, e.Size.Height);
             _graphics.SetDepthStencil(_depthBuffer);
         }
@@ -667,6 +666,9 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
+#if NET5_0_OR_GREATER
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -688,7 +690,7 @@ namespace Gorgon.Examples
                 // Always call dispose so we can free the native memory allocated for the backing graphics API.
                 _sphere?.Dispose();
 
-                if (_planes != null)
+                if (_planes is not null)
                 {
                     foreach (Plane plane in _planes)
                     {

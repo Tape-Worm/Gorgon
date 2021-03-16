@@ -65,10 +65,16 @@ namespace Gorgon.Examples
         }
 
         /// <summary>
-        /// Function to write the contents pointed at by an unsafe pointer to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
+        /// Function to write the contents of a reference to a buffer into a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
         /// </summary>
         /// <param name="stream">The stream that will receive the data.</param>
-        private static unsafe void WritePointer(MemoryStream stream)
+        /// <remarks>
+        /// <para>
+        /// This is the lowest level of I/O where raw byte data is sent to and read back from the stream. This requires a slightly more complicated syntax for writing and reading data. Users 
+        /// should rarely, if ever, need to use these methods.
+        /// </para>
+        /// </remarks>
+        private static void WriteRef(MemoryStream stream)
         {
             stream.Position = 0;
             var writer = new GorgonBinaryWriter(stream, true);
@@ -84,15 +90,15 @@ namespace Gorgon.Examples
                 };
 
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("Writing/Reading pointer to memory into a memory stream.");
+                Console.WriteLine("Writing/Reading ref value to memory into a memory stream.");
                 Console.ForegroundColor = ConsoleColor.White;
 
-                writer.Write(&data, Unsafe.SizeOf<SomeTestData>());
+                writer.Write(ref Unsafe.As<SomeTestData, byte>(ref data), Unsafe.SizeOf<SomeTestData>());
 
                 stream.Position = 0;
 
                 SomeTestData readData = default;
-                reader.Read(&readData, Unsafe.SizeOf<SomeTestData>());
+                reader.Read(ref Unsafe.As<SomeTestData, byte>(ref readData), Unsafe.SizeOf<SomeTestData>());
 
                 Console.WriteLine($"int32 Value1 = 1: {readData.Value1 == 1}");
                 Console.WriteLine($"double Value2 = 2.1: {readData.Value2.EqualsEpsilon(2.1)}");
@@ -229,7 +235,7 @@ namespace Gorgon.Examples
                 Console.WriteLine();
 
                 WriteByRefValueType(stream);
-                WritePointer(stream);
+                WriteRef(stream);
                 WriteArrayValues(stream);
 
                 Console.ResetColor();

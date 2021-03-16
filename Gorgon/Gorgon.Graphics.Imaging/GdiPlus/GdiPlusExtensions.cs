@@ -27,10 +27,10 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
+using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging.GdiPlus
 {
@@ -64,8 +64,8 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
                         // (R at byte 0) to the highest byte (A at byte 3).
                         // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
                         var color = new GorgonColor(*offset);
-                        int* destBuffer = (int*)(Unsafe.AsPointer(ref buffer.Data[destOffset]));
-                        *destBuffer = color.ToABGR();
+                        ref int destBuffer = ref buffer.Data.AsRef<int>(destOffset);
+                        destBuffer = color.ToABGR();
                         offset++;
                         destOffset += 4;
                     }
@@ -102,13 +102,21 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
                         byte r = *offset++;
 
                         var color = new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
-                        int* destBuffer = (int*)(Unsafe.AsPointer(ref buffer.Data[destOffset]));
-                        *destBuffer = color.ToABGR();
+                        ref int destBuffer = ref buffer.Data.AsRef<int>(destOffset);
+                        destBuffer = color.ToABGR();
                         destOffset += 4;
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// Function to retrieve the pointer to locked bitmap data.
+        /// </summary>
+        /// <param name="bitmapData">The bitmap data returned from the lock.</param>
+        /// <param name="offset">[Optional] The offset, in bytes, to start at.</param>
+        /// <returns>A new pointer.</returns>
+        private unsafe static GorgonPtr<byte> GetGdiImagePtr(BitmapData bitmapData, int offset = 0) => new(bitmapData.Scan0 + offset, bitmapData.Stride);
 
         /// <summary>
         /// Function to convert an individual <see cref="IGorgonImageBuffer"/> to a GDI+ bitmap object.
@@ -172,7 +180,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </remarks>
 	    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
         {
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
@@ -213,20 +221,17 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 
                 try
                 {
-                    byte* srcPtr = (byte*)buffer.Data;
-                    byte* destPtr = (byte*)destData.Scan0;
-
                     for (int y = 0; y < buffer.Height; ++y)
                     {
-                        byte* src = srcPtr + (y * buffer.PitchInformation.RowPitch);
-                        byte* dest = destPtr + (y * destData.Stride);
+                        GorgonPtr<byte> src = buffer.Data + (y * destData.Stride);
+                        GorgonPtr<byte> dest = GetGdiImagePtr(destData, y * buffer.PitchInformation.RowPitch);
 
                         switch (pixelFormat)
                         {
                             case PixelFormat.Format32bppArgb:
                                 if (!needsSwizzle)
                                 {
-                                    Unsafe.CopyBlock(dest, src, (uint)(destData.Stride.Min(buffer.PitchInformation.RowPitch)));
+                                    src.CopyTo(dest, count: destData.Stride.Min(buffer.PitchInformation.RowPitch));
                                     continue;
                                 }
 
@@ -312,18 +317,17 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </remarks>
 	    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
         {
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            if (bitmap == null)
+            if (bitmap is null)
             {
                 throw new ArgumentNullException(nameof(bitmap));
             }
 
-            if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
-                && (bitmap.PixelFormat != PixelFormat.Format32bppPArgb))
+            if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb)
             {
                 throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
             }
@@ -333,57 +337,33 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
                 throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT, bitmap.Width, bitmap.Height, buffer.Width, buffer.Height));
             }
 
-            bool needsSwizzle;
-
-            switch (buffer.Format)
+            bool needsSwizzle = buffer.Format switch
             {
-                case BufferFormat.R8G8B8A8_UNorm:
-                case BufferFormat.R8G8B8A8_UNorm_SRgb:
-                case BufferFormat.R8G8B8A8_SInt:
-                case BufferFormat.R8G8B8A8_SNorm:
-                case BufferFormat.R8G8B8A8_UInt:
-                case BufferFormat.R8G8B8A8_Typeless:
-                    needsSwizzle = true;
-                    break;
-                case BufferFormat.B8G8R8A8_UNorm:
-                case BufferFormat.B8G8R8A8_Typeless:
-                case BufferFormat.B8G8R8A8_UNorm_SRgb:
-                case BufferFormat.B8G8R8X8_UNorm:
-                case BufferFormat.B8G8R8X8_Typeless:
-                case BufferFormat.B8G8R8X8_UNorm_SRgb:
-                    needsSwizzle = false;
-                    break;
-                default:
-                    throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
-            }
+                BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_Typeless => true,
+                BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm or BufferFormat.B8G8R8X8_Typeless or BufferFormat.B8G8R8X8_UNorm_SRgb => false,
+                _ => throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format)),
+            };
+            BitmapData destData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
 
-            unsafe
+            try
             {
-                BitmapData destData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
-
-                try
+                for (int y = 0; y < buffer.Height; ++y)
                 {
-                    byte* srcPtr = (byte*)buffer.Data;
-                    byte* destPtr = (byte*)destData.Scan0;
+                    GorgonPtr<byte> src = buffer.Data + (y * destData.Stride);
+                    GorgonPtr<byte> dest = GetGdiImagePtr(destData, y * buffer.PitchInformation.RowPitch);
 
-                    for (int y = 0; y < buffer.Height; ++y)
+                    if (!needsSwizzle)
                     {
-                        byte* src = srcPtr + (y * buffer.PitchInformation.RowPitch);
-                        byte* dest = destPtr + (y * destData.Stride);
-
-                        if (!needsSwizzle)
-                        {
-                            Unsafe.CopyBlock(dest, src, (uint)(destData.Stride.Min(buffer.PitchInformation.RowPitch)));
-                            continue;
-                        }
-
-                        ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, buffer.Format, ImageBitFlags.None);
+                        src.CopyTo(dest, count: destData.Stride.Min(buffer.PitchInformation.RowPitch));
+                        continue;
                     }
+
+                    ImageUtilities.SwizzleScanline(in src, buffer.PitchInformation.RowPitch, in dest, destData.Stride, buffer.Format, ImageBitFlags.None);
                 }
-                finally
-                {
-                    bitmap.UnlockBits(destData);
-                }
+            }
+            finally
+            {
+                bitmap.UnlockBits(destData);
             }
         }
 
@@ -452,18 +432,17 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </remarks>
 	    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
         {
-            if (bitmap == null)
+            if (bitmap is null)
             {
                 throw new ArgumentNullException(nameof(bitmap));
             }
 
-            if (buffer == null)
+            if (buffer is null)
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
-                && (bitmap.PixelFormat != PixelFormat.Format32bppPArgb))
+            if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb)
             {
                 throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
             }
@@ -473,57 +452,33 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
                 throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT, bitmap.Width, bitmap.Height, buffer.Width, buffer.Height));
             }
 
-            bool needsSwizzle;
-
-            switch (buffer.Format)
+            bool needsSwizzle = buffer.Format switch
             {
-                case BufferFormat.R8G8B8A8_UNorm:
-                case BufferFormat.R8G8B8A8_UNorm_SRgb:
-                case BufferFormat.R8G8B8A8_SInt:
-                case BufferFormat.R8G8B8A8_SNorm:
-                case BufferFormat.R8G8B8A8_UInt:
-                case BufferFormat.R8G8B8A8_Typeless:
-                    needsSwizzle = true;
-                    break;
-                case BufferFormat.B8G8R8A8_UNorm:
-                case BufferFormat.B8G8R8A8_Typeless:
-                case BufferFormat.B8G8R8A8_UNorm_SRgb:
-                case BufferFormat.B8G8R8X8_UNorm:
-                case BufferFormat.B8G8R8X8_Typeless:
-                case BufferFormat.B8G8R8X8_UNorm_SRgb:
-                    needsSwizzle = false;
-                    break;
-                default:
-                    throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
-            }
+                BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_Typeless => true,
+                BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm or BufferFormat.B8G8R8X8_Typeless or BufferFormat.B8G8R8X8_UNorm_SRgb => false,
+                _ => throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format)),
+            };
+            BitmapData srcData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-            unsafe
+            try
             {
-                BitmapData srcData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-
-                try
+                for (int y = 0; y < buffer.Height; ++y)
                 {
-                    byte* srcPtr = (byte*)srcData.Scan0;
-                    byte* destPtr = (byte*)buffer.Data;
+                    GorgonPtr<byte> srcPtr = GetGdiImagePtr(srcData, y * srcData.Stride);
+                    GorgonPtr<byte> destPtr = buffer.Data + (y * buffer.PitchInformation.RowPitch);
 
-                    for (int y = 0; y < buffer.Height; ++y)
+                    if (!needsSwizzle)
                     {
-                        byte* src = srcPtr + (y * srcData.Stride);
-                        byte* dest = destPtr + (y * buffer.PitchInformation.RowPitch);
-
-                        if (!needsSwizzle)
-                        {
-                            Unsafe.CopyBlock(dest, src, (uint)(srcData.Stride.Min(buffer.PitchInformation.RowPitch)));
-                            continue;
-                        }
-
-                        ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, srcData.Stride, buffer.Format, ImageBitFlags.None);
+                        srcPtr.CopyTo(destPtr, count: srcData.Stride.Min(buffer.PitchInformation.RowPitch));
+                        continue;
                     }
+
+                    ImageUtilities.SwizzleScanline(in srcPtr, buffer.PitchInformation.RowPitch, in destPtr, srcData.Stride, buffer.Format, ImageBitFlags.None);
                 }
-                finally
-                {
-                    bitmap.UnlockBits(srcData);
-                }
+            }
+            finally
+            {
+                bitmap.UnlockBits(srcData);
             }
         }
 
@@ -561,15 +516,12 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </remarks>
         public static IGorgonImage ToGorgonImage(this Bitmap bitmap)
         {
-            if (bitmap == null)
+            if (bitmap is null)
             {
                 throw new ArgumentNullException(nameof(bitmap));
             }
 
-            if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
-                && (bitmap.PixelFormat != PixelFormat.Format32bppPArgb)
-                && (bitmap.PixelFormat != PixelFormat.Format32bppRgb)
-                && (bitmap.PixelFormat != PixelFormat.Format24bppRgb))
+            if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb and not PixelFormat.Format32bppRgb and not PixelFormat.Format24bppRgb)
             {
                 throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
             }
@@ -587,9 +539,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
             {
                 bitmapLock = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-                if ((bitmap.PixelFormat == PixelFormat.Format32bppArgb)
-                    || (bitmap.PixelFormat == PixelFormat.Format32bppPArgb)
-                    || (bitmap.PixelFormat == PixelFormat.Format32bppRgb))
+                if (bitmap.PixelFormat is PixelFormat.Format32bppArgb or PixelFormat.Format32bppPArgb or PixelFormat.Format32bppRgb)
                 {
                     Transfer32Argb(bitmapLock, result.Buffers[0]);
                 }
@@ -605,7 +555,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
             }
             finally
             {
-                if (bitmapLock != null)
+                if (bitmapLock is not null)
                 {
                     bitmap.UnlockBits(bitmapLock);
                 }

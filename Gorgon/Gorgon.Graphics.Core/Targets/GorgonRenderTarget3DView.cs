@@ -25,32 +25,33 @@
 #endregion
 
 using System;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A view to allow 3D texture based render targets to be bound to the pipeline.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
-	/// </para>
-	/// <para>
-	/// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
-	/// target. 
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="GorgonSwapChain"/>
-	/// <seealso cref="GorgonTexture2D"/>
-	/// <seealso cref="GorgonTexture3D"/>
-	public sealed class GorgonRenderTarget3DView
+    /// <summary>
+    /// A view to allow 3D texture based render targets to be bound to the pipeline.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or a texture to be bound to the GPU pipeline as a render target resource.
+    /// </para>
+    /// <para>
+    /// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
+    /// target. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonSwapChain"/>
+    /// <seealso cref="GorgonTexture2D"/>
+    /// <seealso cref="GorgonTexture3D"/>
+    public sealed class GorgonRenderTarget3DView
 		: GorgonRenderTargetView, IGorgonTexture3DInfo, IGorgonImageInfo
 	{
 		#region Properties.
@@ -208,7 +209,7 @@ namespace Gorgon.Graphics.Core
 
 			var desc = new D3D11.RenderTargetViewDescription1
 			{
-				Format = (Format)Format,
+				Format = (DXGI.Format)Format,
 				Dimension = D3D11.RenderTargetViewDimension.Texture3D,
 				Texture3D =
 														  {
@@ -239,7 +240,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
 		/// <returns>The pixel coordinates.</returns>
-		public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates)
+		public (DX.Point, int) ToPixel(Vector3 texelCoordinates)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
@@ -252,12 +253,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
 		/// <returns>The texel coordinates.</returns>
-		public DX.Vector3 ToTexel(DX.Point pixelCoordinates)
+		public Vector3 ToTexel(DX.Point pixelCoordinates)
 		{
 			float width = Texture.Width;
 			float height = Texture.Height;
 
-			return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
+			return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
 		}
 
 		/// <summary>
@@ -316,12 +317,12 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonTexture3D"/>
 		public static GorgonRenderTarget3DView CreateRenderTarget(GorgonGraphics graphics, IGorgonTexture3DInfo info)
 		{
-			if (graphics == null)
+			if (graphics is null)
 			{
 				throw new ArgumentNullException(nameof(graphics));
 			}
 
-			if (info == null)
+			if (info is null)
 			{
 				throw new ArgumentNullException(nameof(info));
 			}

@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Diagnostics;
 using Gorgon.Collections;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -53,14 +52,47 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonStreamOutCall"/>
     public class GorgonPipelineState
     {
+        #region Variables.
+        // D3D States.
+        private D3D11.RasterizerState1 _d3DRasterState;
+        private D3D11.DepthStencilState _d3DDepthStencilState;
+        private D3D11.BlendState1 _d3DBlendState;
+        // Shaders.
+        private GorgonPixelShader _pixelShader;
+        private GorgonVertexShader _vertexShader;
+        private GorgonGeometryShader _geometryShader;
+        private GorgonDomainShader _domainShader;
+        private GorgonHullShader _hullShader;
+        // Topology.
+        private PrimitiveType _primitiveType;
+        #endregion
+
         #region Properties.
+        /// <summary>
+        /// Property to set or return the states that have been updated in this pipeline state.
+        /// </summary>
+        internal PipelineStateChanges UpdatedStates
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the Direct 3D 11 raster state.
         /// </summary>
         internal D3D11.RasterizerState1 D3DRasterState
         {
-            get;
-            set;
+            get => _d3DRasterState;
+            set
+            {
+                if (_d3DRasterState == value)
+                {
+                    return;
+                }
+
+                _d3DRasterState = value;
+                UpdatedStates |= PipelineStateChanges.RasterState;
+            }
         }
 
         /// <summary>
@@ -68,8 +100,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal D3D11.DepthStencilState D3DDepthStencilState
         {
-            get;
-            set;
+            get => _d3DDepthStencilState;
+            set
+            {
+                if (_d3DDepthStencilState == value)
+                {
+                    return;
+                }
+
+                _d3DDepthStencilState = value;
+                UpdatedStates |= PipelineStateChanges.DepthStencilState;
+            }
         }
 
         /// <summary>
@@ -77,17 +118,26 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal D3D11.BlendState1 D3DBlendState
         {
-            get;
-            set;
+            get => _d3DBlendState;
+            set
+            {
+                if (_d3DBlendState == value)
+                {
+                    return;
+                }
+
+                _d3DBlendState = value;
+                UpdatedStates |= PipelineStateChanges.BlendState;
+            }
         }
 
         /// <summary>
         /// Property to return the readable/writable list of blending states for each render target.
         /// </summary>
-	    internal GorgonArray<GorgonBlendState> RwBlendStates
+	    internal BlendStateArray RwBlendStates
         {
             get;
-        } = new GorgonArray<GorgonBlendState>(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
+        } = new BlendStateArray();
 
         /// <summary>
         /// Property to return the ID of the pipeline state.
@@ -106,8 +156,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
 	    public GorgonPixelShader PixelShader
         {
-            get;
-            internal set;
+            get => _pixelShader;
+            internal set
+            {
+                if (_pixelShader == value)
+                {
+                    return;
+                }
+
+                _pixelShader = value;
+                UpdatedStates |= PipelineStateChanges.PixelShader;
+            }
         }
 
         /// <summary>
@@ -115,8 +174,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonVertexShader VertexShader
         {
-            get;
-            internal set;
+            get => _vertexShader;
+            internal set
+            {
+                if (_vertexShader == value)
+                {
+                    return;
+                }
+                                
+                _vertexShader = value;
+                UpdatedStates |= PipelineStateChanges.VertexShader;
+            }
         }
 
         /// <summary>
@@ -124,8 +192,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonGeometryShader GeometryShader
         {
-            get;
-            internal set;
+            get => _geometryShader;
+            internal set
+            {
+                if (_geometryShader == value)
+                {
+                    return;
+                }
+
+                _geometryShader = value;
+                UpdatedStates |= PipelineStateChanges.GeometryShader;
+            }
         }
 
         /// <summary>
@@ -133,8 +210,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonDomainShader DomainShader
         {
-            get;
-            internal set;
+            get => _domainShader;
+            internal set
+            {
+                if (_domainShader == value)
+                {
+                    return;
+                }
+
+                _domainShader = value;
+                UpdatedStates |= PipelineStateChanges.DomainShader;
+            }
         }
 
         /// <summary>
@@ -142,8 +228,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonHullShader HullShader
         {
-            get;
-            internal set;
+            get => _hullShader;
+            internal set
+            {
+                if (_hullShader == value)
+                {
+                    return;
+                }
+
+                _hullShader = value;
+                UpdatedStates |= PipelineStateChanges.HullShader;
+            }
         }
 
         /// <summary>
@@ -169,8 +264,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public PrimitiveType PrimitiveType
         {
-            get;
-            internal set;
+            get => _primitiveType;
+            internal set
+            {
+                if (_primitiveType == value)
+                {
+                    return;
+                }
+
+                _primitiveType = value;
+                UpdatedStates |= PipelineStateChanges.Topology;
+            }
         }
 
         /// <summary>
@@ -217,131 +321,6 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to build the D3D11 blend state.
-        /// </summary>
-        /// <param name="device">The device used to create the blend state.</param>
-	    internal void BuildD3D11BlendState(D3D11.Device5 device)
-        {
-            Debug.Assert(D3DBlendState == null, "D3D Blend state already assigned to this pipeline state.");
-
-            (int start, int count) = RwBlendStates.GetDirtyItems();
-            var desc = new D3D11.BlendStateDescription1
-            {
-                AlphaToCoverageEnable = IsAlphaToCoverageEnabled,
-                IndependentBlendEnable = IsIndependentBlendingEnabled
-            };
-
-            for (int i = 0; i < count; ++i)
-            {
-                GorgonBlendState state = RwBlendStates[start + i];
-
-                if (state == null)
-                {
-                    continue;
-                }
-
-                desc.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
-                {
-                    AlphaBlendOperation = (D3D11.BlendOperation)state.AlphaBlendOperation,
-                    BlendOperation = (D3D11.BlendOperation)state.ColorBlendOperation,
-                    IsLogicOperationEnabled = state.LogicOperation != LogicOperation.Noop,
-                    IsBlendEnabled = state.IsBlendingEnabled,
-                    RenderTargetWriteMask = (D3D11.ColorWriteMaskFlags)state.WriteMask,
-                    LogicOperation = (D3D11.LogicOperation)state.LogicOperation,
-                    SourceAlphaBlend = (D3D11.BlendOption)state.SourceAlphaBlend,
-                    SourceBlend = (D3D11.BlendOption)state.SourceColorBlend,
-                    DestinationAlphaBlend = (D3D11.BlendOption)state.DestinationAlphaBlend,
-                    DestinationBlend = (D3D11.BlendOption)state.DestinationColorBlend
-                };
-            }
-
-            for (int i = count; i < D3D11.OutputMergerStage.SimultaneousRenderTargetCount; ++i)
-            {
-                desc.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
-                {
-                    AlphaBlendOperation = D3D11.BlendOperation.Add,
-                    BlendOperation = D3D11.BlendOperation.Add,
-                    IsLogicOperationEnabled = false,
-                    IsBlendEnabled = false,
-                    RenderTargetWriteMask = D3D11.ColorWriteMaskFlags.All,
-                    LogicOperation = D3D11.LogicOperation.Noop,
-                    SourceAlphaBlend = D3D11.BlendOption.One,
-                    SourceBlend = D3D11.BlendOption.One,
-                    DestinationAlphaBlend = D3D11.BlendOption.Zero,
-                    DestinationBlend = D3D11.BlendOption.Zero
-                };
-            }
-
-            D3DBlendState = new D3D11.BlendState1(device, desc)
-            {
-                DebugName = nameof(GorgonBlendState)
-            };
-        }
-
-        /// <summary>
-        /// Function to copy the contents of a pipeline state to another pipeline state.
-        /// </summary>
-        /// <param name="pipelineState">The pipeline state to copy.</param>
-        internal void CopyTo(GorgonPipelineState pipelineState)
-        {
-            if (RasterState != null)
-            {
-                if (pipelineState.RasterState == null)
-                {
-                    pipelineState.RasterState = new GorgonRasterState();
-                }
-
-                pipelineState.RasterState.IsAntialiasedLineEnabled = RasterState.IsAntialiasedLineEnabled;
-                pipelineState.RasterState.CullMode = RasterState.CullMode;
-                pipelineState.RasterState.DepthBias = RasterState.DepthBias;
-                pipelineState.RasterState.DepthBiasClamp = RasterState.DepthBiasClamp;
-                pipelineState.RasterState.IsDepthClippingEnabled = RasterState.IsDepthClippingEnabled;
-                pipelineState.RasterState.FillMode = RasterState.FillMode;
-                pipelineState.RasterState.ForcedReadWriteViewSampleCount = RasterState.ForcedReadWriteViewSampleCount;
-                pipelineState.RasterState.IsFrontCounterClockwise = RasterState.IsFrontCounterClockwise;
-                pipelineState.RasterState.IsMultisamplingEnabled = RasterState.IsMultisamplingEnabled;
-                pipelineState.RasterState.ScissorRectsEnabled = RasterState.ScissorRectsEnabled;
-                pipelineState.RasterState.SlopeScaledDepthBias = RasterState.SlopeScaledDepthBias;
-                pipelineState.RasterState.UseConservativeRasterization = RasterState.UseConservativeRasterization;
-            }
-
-            if (DepthStencilState != null)
-            {
-                if (pipelineState.DepthStencilState == null)
-                {
-                    pipelineState.DepthStencilState = new GorgonDepthStencilState();
-                }
-
-                pipelineState.DepthStencilState.BackFaceStencilOp.Comparison = DepthStencilState.BackFaceStencilOp.Comparison;
-                pipelineState.DepthStencilState.BackFaceStencilOp.DepthFailOperation = DepthStencilState.BackFaceStencilOp.DepthFailOperation;
-                pipelineState.DepthStencilState.BackFaceStencilOp.FailOperation = DepthStencilState.BackFaceStencilOp.FailOperation;
-                pipelineState.DepthStencilState.BackFaceStencilOp.PassOperation = DepthStencilState.BackFaceStencilOp.PassOperation;
-
-                pipelineState.DepthStencilState.FrontFaceStencilOp.Comparison = DepthStencilState.FrontFaceStencilOp.Comparison;
-                pipelineState.DepthStencilState.FrontFaceStencilOp.DepthFailOperation = DepthStencilState.FrontFaceStencilOp.DepthFailOperation;
-                pipelineState.DepthStencilState.FrontFaceStencilOp.FailOperation = DepthStencilState.FrontFaceStencilOp.FailOperation;
-                pipelineState.DepthStencilState.FrontFaceStencilOp.PassOperation = DepthStencilState.FrontFaceStencilOp.PassOperation;
-
-                pipelineState.DepthStencilState.DepthComparison = DepthStencilState.DepthComparison;
-                pipelineState.DepthStencilState.IsDepthWriteEnabled = DepthStencilState.IsDepthWriteEnabled;
-                pipelineState.DepthStencilState.IsDepthEnabled = DepthStencilState.IsDepthEnabled;
-                pipelineState.DepthStencilState.IsStencilEnabled = DepthStencilState.IsStencilEnabled;
-                pipelineState.DepthStencilState.StencilReadMask = DepthStencilState.StencilReadMask;
-                pipelineState.DepthStencilState.StencilWriteMask = DepthStencilState.StencilWriteMask;
-            }
-
-            pipelineState.IsIndependentBlendingEnabled = IsIndependentBlendingEnabled;
-            pipelineState.IsAlphaToCoverageEnabled = IsAlphaToCoverageEnabled;
-            pipelineState.PixelShader = PixelShader;
-            pipelineState.VertexShader = VertexShader;
-            pipelineState.GeometryShader = GeometryShader;
-            pipelineState.DomainShader = DomainShader;
-            pipelineState.HullShader = HullShader;
-            pipelineState.PrimitiveType = PrimitiveType;
-            RwBlendStates.CopyTo(pipelineState.RwBlendStates);
-        }
-
-        /// <summary>
         /// Function to clear the pipeline state.
         /// </summary>
 	    internal void Clear()
@@ -362,6 +341,35 @@ namespace Gorgon.Graphics.Core
             PrimitiveType = PrimitiveType.None;
             RwBlendStates.Clear();
         }
+
+        /// <summary>
+        /// Function to copy the state from this pipeline state object to the one passed to the method.
+        /// </summary>
+        /// <param name="state">The state to copy into.</param>
+        /// <param name="copyD3DStates"><b>true</b> to copy the Direct3D state objects, <b>false</b> to ignore.</param>
+        internal void CopyTo(GorgonPipelineState state, bool copyD3DStates = true)
+        {
+            state.RasterState = RasterState;
+            state.DepthStencilState = DepthStencilState;
+            state.IsIndependentBlendingEnabled = IsIndependentBlendingEnabled;
+            state.IsAlphaToCoverageEnabled = IsAlphaToCoverageEnabled;
+            state.PixelShader = PixelShader;
+            state.VertexShader = VertexShader;
+            state.GeometryShader = GeometryShader;
+            state.DomainShader = DomainShader;
+            state.HullShader = HullShader;
+            state.PrimitiveType = PrimitiveType;
+            RwBlendStates.CopyTo(state.RwBlendStates);
+
+            if (!copyD3DStates)
+            {
+                return;
+            }
+
+            state.D3DBlendState = D3DBlendState;
+            state.D3DDepthStencilState = D3DDepthStencilState;
+            state.D3DRasterState = D3DRasterState;
+        }
         #endregion
 
         #region Constructor.
@@ -369,20 +377,7 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonPipelineState"/> class.
         /// </summary>
         /// <param name="state">The state copy.</param>
-        internal GorgonPipelineState(GorgonPipelineState state)
-        {
-            RasterState = state.RasterState;
-            DepthStencilState = state.DepthStencilState;
-            IsIndependentBlendingEnabled = state.IsIndependentBlendingEnabled;
-            IsAlphaToCoverageEnabled = state.IsAlphaToCoverageEnabled;
-            PixelShader = state.PixelShader;
-            VertexShader = state.VertexShader;
-            GeometryShader = state.GeometryShader;
-            DomainShader = state.DomainShader;
-            HullShader = state.HullShader;
-            PrimitiveType = state.PrimitiveType;
-            state.RwBlendStates.CopyTo(RwBlendStates);
-        }
+        internal GorgonPipelineState(GorgonPipelineState state) => state.CopyTo(this);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonPipelineState" /> class.

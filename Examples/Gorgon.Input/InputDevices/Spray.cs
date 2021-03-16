@@ -62,7 +62,7 @@ namespace Gorgon.Examples
         /// </summary>
         public void Resize(Size newSize)
         {
-            if (_graphics != null)
+            if (_graphics is not null)
             {
                 _graphics.Dispose();
                 _graphics = null;
@@ -71,7 +71,7 @@ namespace Gorgon.Examples
             var newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
             _graphics = DrawingGraphics.FromImage(newBuffer);
 
-            if (Surface != null)
+            if (Surface is not null)
             {
                 // Copy the old image to the new surface.
                 _graphics.DrawImage(Surface, Point.Empty);
@@ -87,10 +87,18 @@ namespace Gorgon.Examples
         /// Function to randomly "spray" a point on the surface.
         /// </summary>
         /// <param name="point">Origin point for the spray.</param>
-        public void SprayPoint(Point point)
+        /// <param name="erase"><b>true</b> to erase, or <b>false</b> to draw with colors.</param>
+        public void SprayPoint(Point point, bool erase)
         {
             var randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
-            _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length - 1)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
+            if (!erase)
+            {
+                _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length - 1)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
+            }
+            else
+            {
+                _graphics.FillEllipse(Brushes.White, new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
+            }
         }
         #endregion
 

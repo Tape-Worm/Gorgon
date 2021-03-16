@@ -40,7 +40,7 @@ namespace Gorgon.Input
     /// </para>
     /// </remarks>
     public class GorgonRawKeyboard
-        : IGorgonRawInputDevice, IRawInputDeviceData<GorgonRawKeyboardData>, IGorgonKeyboard
+        : IGorgonKeyboard
     {
         #region Events.
         /// <summary>
@@ -278,23 +278,19 @@ namespace Gorgon.Input
 
             int result = UserApi.ToUnicode((uint)key, 0, _charStates, _characterBuffer, _characterBuffer.Length, 0);
 
-            switch (result)
+            return result switch
             {
-                case -1:
-                case 0:
-                    return string.Empty;
-                case 1:
-                    return new string(_characterBuffer, 0, 1);
-                default:
-                    return string.Empty;
-            }
+                -1 or 0 => string.Empty,
+                1 => new string(_characterBuffer, 0, 1),
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
         /// Function to process the Gorgon raw input data into device state data and appropriate events.
         /// </summary>
         /// <param name="rawInputData">The data to process.</param>
-        void IRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(ref GorgonRawKeyboardData rawInputData)
+        void IGorgonRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(in GorgonRawKeyboardData rawInputData)
         {
             // Get the key code.
             Keys keyCode = rawInputData.Key;
@@ -344,15 +340,12 @@ namespace Gorgon.Input
         /// </remarks>
         public GorgonRawKeyboard(IGorgonKeyboardInfo keyboardInfo = null)
         {
-            var rawInfo = keyboardInfo as RawKeyboardInfo;
-
-            if (keyboardInfo == null)
+            if (keyboardInfo is null)
             {
-                keyboardInfo = rawInfo = GetSysKeyboardInfo();
+                keyboardInfo = GetSysKeyboardInfo();
             }
 
-            _deviceHandle = rawInfo?.Handle ?? throw new InvalidCastException(string.Format(Resources.GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE, keyboardInfo.GetType().FullName, GetType().FullName));
-
+            _deviceHandle = keyboardInfo.Handle;
             Info = keyboardInfo;
             KeyStates = new GorgonKeyStateCollection();
             KeyStates.Reset();

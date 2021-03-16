@@ -168,7 +168,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             try
             {
-                if (_previewSpriteTask != null)
+                if (_previewSpriteTask is not null)
                 {
                     if (_previewSpriteTask.Status == TaskStatus.Faulted)
                     {
@@ -206,7 +206,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
                     {
-                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                        image.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate();
                     }
                     else
                     {
@@ -272,7 +272,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             try
             {
-                if (_previewTextureTask != null)
+                if (_previewTextureTask is not null)
                 {
                     if (_previewTextureTask.Status == TaskStatus.Faulted)
                     {
@@ -312,7 +312,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     if (image.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
                     {
-                        image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
+                        image.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate();
                     }
                     else
                     {
@@ -476,7 +476,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             target.Entries = dirs.Values.ToArray();
 
-            if (selectedTexture == null)
+            if (selectedTexture is null)
             {
                 return;
             }

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
@@ -114,7 +114,7 @@ namespace Gorgon.Editor.AnimationEditor
         // The project file manager.
         private IContentFileManager _fileManager;
         // The list of sprites selected for loading texture keys.
-        private readonly List<IContentFile> _selectedSprites = new List<IContentFile>();
+        private readonly List<IContentFile> _selectedSprites = new();
         // Services from the plug in.
         private ContentServices _contentServices;
         // The current editor for floating point values.
@@ -298,7 +298,7 @@ namespace Gorgon.Editor.AnimationEditor
                             IKeyFrame keyFrame = track.Track.KeyFrames[i];
                             TrackKeySelection.KeySelection selectedKeyFrame = track.SelectedKeys.FirstOrDefault(item => item.KeyIndex == i);
 
-                            if (selectedKeyFrame != null)
+                            if (selectedKeyFrame is not null)
                             {
                                 keyFrame = selectedKeyFrame.KeyFrame;
                                 await _contentServices.KeyProcessor.RestoreTextureAsync(keyFrame);
@@ -319,7 +319,7 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 finally
                 {
-                    if (keyFrames != null)
+                    if (keyFrames is not null)
                     {
                         ArrayPool<IKeyFrame>.Shared.Return(keyFrames);
                     }
@@ -348,7 +348,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                             if (track.SelectedKeys.Any(item => item.KeyFrame == keyFrame))
                             {
-                                if ((keyFrame?.TextureValue.Texture != null) && (keyFrame?.TextureValue.TextureFile != null))
+                                if ((keyFrame?.TextureValue.Texture is not null) && (keyFrame?.TextureValue.TextureFile is not null))
                                 {
                                     // Unload this texture.
                                     _contentServices.KeyProcessor.UnloadTextureKeyframe(keyFrame);
@@ -373,7 +373,7 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 finally
                 {
-                    if (keyFrames != null)
+                    if (keyFrames is not null)
                     {
                         ArrayPool<IKeyFrame>.Shared.Return(keyFrames);
                     }
@@ -386,13 +386,13 @@ namespace Gorgon.Editor.AnimationEditor
 
             undoArgs = new RemoveKeyUndoRedoArgs
             {
-                SelectedKeys = new List<TrackKeySelection>(selectedKeyFrames.Where(item => item != null)
+                SelectedKeys = new List<TrackKeySelection>(selectedKeyFrames.Where(item => item is not null)
                                                                             .Select(item => new TrackKeySelection(item.TrackIndex, item.Track, item.SelectedKeys.Take(_content.MaxKeyCount).ToArray())))
             };
 
             redoArgs = new RemoveKeyUndoRedoArgs
             {
-                SelectedKeys = new List<TrackKeySelection>(selectedKeyFrames.Where(item => item != null)
+                SelectedKeys = new List<TrackKeySelection>(selectedKeyFrames.Where(item => item is not null)
                                                                             .Select(item => new TrackKeySelection(item.TrackIndex, item.Track, item.SelectedKeys.Take(_content.MaxKeyCount).ToArray())))
             };
 
@@ -419,11 +419,11 @@ namespace Gorgon.Editor.AnimationEditor
 
                 TrackKeySelection selectedTrack = _content.Selected[0];
                 TrackKeySelection.KeySelection selectedKey = _content.Selected[0].SelectedKeys[0];
-                DX.Vector4? value = selectedKey.KeyFrame?.FloatValue ?? _contentServices.KeyProcessor.GetTrackFloatValues(selectedTrack.Track, selectedKey.TimeIndex, 
+                Vector4? value = selectedKey.KeyFrame?.FloatValue ?? _contentServices.KeyProcessor.GetTrackFloatValues(selectedTrack.Track, selectedKey.TimeIndex, 
                                                                                                                           _controller.CurrentAnimation, _content.WorkingSprite);
 
                 // Reset the track/key value.
-                if (CurrentEditor != null)
+                if (CurrentEditor is not null)
                 {
                     CurrentEditor.WorkingSprite = null;
                     CurrentEditor.Track = null;
@@ -436,7 +436,7 @@ namespace Gorgon.Editor.AnimationEditor
                         CurrentEditor = ColorKeysEditor;
                         ColorKeysEditor.Track = selectedTrack;
                         ColorKeysEditor.WorkingSprite = _content.WorkingSprite;
-                        if (value != null)
+                        if (value is not null)
                         {
                             ColorKeysEditor.Value = value.Value;
                         }                        
@@ -446,7 +446,7 @@ namespace Gorgon.Editor.AnimationEditor
                         CurrentEditor = FloatKeysEditor;
                         FloatKeysEditor.Track = selectedTrack;
                         FloatKeysEditor.WorkingSprite = _content.WorkingSprite;
-                        if (value != null)
+                        if (value is not null)
                         {
                             FloatKeysEditor.Value = value.Value;
                         }                        
@@ -478,12 +478,12 @@ namespace Gorgon.Editor.AnimationEditor
         {
             IKeyFrame selectedKeyFrame = track.KeyFrames[keyIndex];
 
-            if (selectedKeyFrame?.TextureValue.Texture != null)
+            if (selectedKeyFrame?.TextureValue.Texture is not null)
             {
                 _contentServices.KeyProcessor.UnloadTextureKeyframe(selectedKeyFrame);
             }
 
-            if (textureValue == null)
+            if (textureValue is null)
             {
                 return null;
             }
@@ -502,11 +502,11 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="time">The time, in seconds, for the key frame.</param>
         /// <param name="floatValues">The floating point values to assign.</param>
         /// <returns>A new key frame if one does not exist, an updated key frame if it already exists, or <b>null</b> to indicate that no data is in the key frame slot.</returns>
-        private IKeyFrame SetFloatValuesKeyFrameData(ITrack track, float time, DX.Vector4? floatValues)
+        private IKeyFrame SetFloatValuesKeyFrameData(ITrack track, float time, Vector4? floatValues)
         {
             IKeyFrame result = null;
 
-            if (floatValues != null)
+            if (floatValues is not null)
             {
                 // If the currently selected key frame is null, then treat this as a new key frame and populate it with data using the processor.
                 result = _contentServices.ViewModelFactory.CreateKeyFrame(time, track.KeyType);
@@ -522,18 +522,18 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="selectedFiles">The files that were selected.</param>
         /// <param name="floatValues">The floating point values to assign.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        private async Task SetKeyAsync(IReadOnlyList<IContentFile> selectedFiles, DX.Vector4? floatValues)
+        private async Task SetKeyAsync(IReadOnlyList<IContentFile> selectedFiles, Vector4? floatValues)
         {
             // Function to create the arguments for the undo/redo.
             SetKeyUndoRedoArgs CreateArgs() =>
-                new SetKeyUndoRedoArgs
+                new()
                 {
                     SelectedKeys = new List<TrackKeySelection.KeySelection>(_content.Selected[0].SelectedKeys.Select(item => new TrackKeySelection.KeySelection(item))),
                 };            
 
             void SetupKeyframeBuffer(ITrack track, ref IKeyFrame[] buffer)
             {
-                if (buffer == null)
+                if (buffer is null)
                 {
                     buffer = ArrayPool<IKeyFrame>.Shared.Rent(track.KeyFrames.Count);
                 }
@@ -542,7 +542,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
 
             // Function to assign the keys with the sprite files passed in, or from the list of keys passed in.
-            async Task SetAsync(List<TrackKeySelection.KeySelection> keys, IReadOnlyList<IContentFile> spriteFiles, DX.Vector4? newFloatValues)
+            async Task SetAsync(List<TrackKeySelection.KeySelection> keys, IReadOnlyList<IContentFile> spriteFiles, Vector4? newFloatValues)
             {
                 IKeyFrame[] keyFrames = null;
 
@@ -566,7 +566,7 @@ namespace Gorgon.Editor.AnimationEditor
                         switch (currentTrack.KeyType)
                         {
                             case AnimationTrackKeyType.Single when currentTrack.SpriteProperty == TrackSpriteProperty.Opacity:
-                                var opacity = new DX.Vector4(newFloatValues?.X ?? key.KeyFrame?.FloatValue.X ?? 1.0f, 0, 0, 0);
+                                var opacity = new Vector4(newFloatValues?.X ?? key.KeyFrame?.FloatValue.X ?? 1.0f, 0, 0, 0);
                                 keyFrames[key.KeyIndex] = SetFloatValuesKeyFrameData(currentTrack, key.TimeIndex, opacity);
                                 break;
                             case AnimationTrackKeyType.Single:
@@ -578,7 +578,7 @@ namespace Gorgon.Editor.AnimationEditor
                                 keyFrames[key.KeyIndex] = SetFloatValuesKeyFrameData(currentTrack, key.TimeIndex, newFloatValues ?? key.KeyFrame?.FloatValue);
                                 break;
                             case AnimationTrackKeyType.Texture2D:
-                                if (spriteFiles == null)
+                                if (spriteFiles is null)
                                 {
                                     keyFrames[key.KeyIndex] = await SetTextureKeyFrameDataAsync(currentTrack, key.KeyIndex, key.TimeIndex, key.KeyFrame?.TextureValue);
                                     continue;
@@ -591,7 +591,7 @@ namespace Gorgon.Editor.AnimationEditor
                                 }
 
                                 // If we have a previous texture value in here, then unload the texture.
-                                if (selectedKeyFrame?.TextureValue.Texture != null)
+                                if (selectedKeyFrame?.TextureValue.Texture is not null)
                                 {
                                     _contentServices.KeyProcessor.UnloadTextureKeyframe(selectedKeyFrame);
                                 }
@@ -607,8 +607,8 @@ namespace Gorgon.Editor.AnimationEditor
                         }
 
                         // If we currently have this keyframe selected, then update the selection.
-                        TrackKeySelection.KeySelection actualSelected = _content.Selected[0].SelectedKeys.FirstOrDefault(item => (item != null) && (item.KeyIndex == key.KeyIndex));
-                        if (actualSelected != null)
+                        TrackKeySelection.KeySelection actualSelected = _content.Selected[0].SelectedKeys.FirstOrDefault(item => (item is not null) && (item.KeyIndex == key.KeyIndex));
+                        if (actualSelected is not null)
                         {
                             actualSelected.KeyFrame = keyFrames[key.KeyIndex];
                         }
@@ -617,7 +617,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                     // Update the undo/redo arguments.
                     _contentServices.KeyProcessor.AssignKeyFrames(currentTrack, keyFrames, _content.MaxKeyCount);
-                    if (CurrentEditor == null)
+                    if (CurrentEditor is null)
                     {
                         return;
                     }
@@ -630,7 +630,7 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 finally
                 {
-                    if (keyFrames != null)
+                    if (keyFrames is not null)
                     {
                         ArrayPool<IKeyFrame>.Shared.Return(keyFrames);
                     }
@@ -645,7 +645,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             await SetAsync(redoArgs.SelectedKeys, selectedFiles, floatValues);            
 
-            if (redoArgs != null)
+            if (redoArgs is not null)
             {
                 _contentServices.UndoService.Record(Resources.GORANM_DESC_UNDO_SET_KEY, UndoRedoAsync, UndoRedoAsync, undoArgs, redoArgs);
                 NotifyPropertyChanged(nameof(UndoCommand));
@@ -691,12 +691,12 @@ namespace Gorgon.Editor.AnimationEditor
                             IKeyFrame srcKey = key.KeyFrame;
                             IKeyFrame destKey = keyFrames[key.KeyIndex];
 
-                            if ((srcKey != null) && (srcKey.TextureValue.Texture == null) && (srcKey.TextureValue.TextureFile != null))
+                            if ((srcKey is not null) && (srcKey.TextureValue.Texture is null) && (srcKey.TextureValue.TextureFile is not null))
                             {
                                 await _contentServices.KeyProcessor.RestoreTextureAsync(srcKey);
                             }
 
-                            if (destKey?.TextureValue.Texture != null)
+                            if (destKey?.TextureValue.Texture is not null)
                             {
                                 _contentServices.KeyProcessor.UnloadTextureKeyframe(destKey);
                             }
@@ -715,7 +715,7 @@ namespace Gorgon.Editor.AnimationEditor
                 finally
                 {
                     HideWaitPanel();
-                    if (keyFrames != null)
+                    if (keyFrames is not null)
                     {
                         ArrayPool<IKeyFrame>.Shared.Return(keyFrames, true);
                     }
@@ -737,7 +737,7 @@ namespace Gorgon.Editor.AnimationEditor
                             ShowWaitPanel(Resources.GORANM_TEXT_PLEASE_WAIT);
                         }
 
-                        if (keyFrames == null)
+                        if (keyFrames is null)
                         {
                             keyFrames = ArrayPool<IKeyFrame>.Shared.Rent(trackSel.Track.KeyFrames.Count);
                         }
@@ -751,7 +751,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                         Stack<TrackKeySelection.KeySelection> undoSel = null;
 
-                        if (undo != null)
+                        if (undo is not null)
                         {
                             undoSel = new Stack<TrackKeySelection.KeySelection>();
                             undo.Keys.Add((trackSel.Track, undoSel));
@@ -765,9 +765,9 @@ namespace Gorgon.Editor.AnimationEditor
                                 IKeyFrame srcKeyFrame = trackSel.Track.KeyFrames[keySel.KeyIndex];
                                 undoSel?.Push(new TrackKeySelection.KeySelection(keySel));
 
-                                if (srcKeyFrame != null)
+                                if (srcKeyFrame is not null)
                                 {
-                                    if (srcKeyFrame.TextureValue.Texture != null)
+                                    if (srcKeyFrame.TextureValue.Texture is not null)
                                     {
                                         _contentServices.KeyProcessor.UnloadTextureKeyframe(srcKeyFrame);
                                     }
@@ -793,24 +793,24 @@ namespace Gorgon.Editor.AnimationEditor
                             IKeyFrame destKeyFrame = trackSel.Track.KeyFrames[destIndex];
                             // If we've already got this keyframe captured for undo, then don't add a duplicate, it will get restored to its original
                             // state earlier in the stack.
-                            if ((undoSel != null) && (!undoSel.Any(item => item?.KeyIndex == destIndex)))
+                            if ((undoSel is not null) && (!undoSel.Any(item => item?.KeyIndex == destIndex)))
                             {
                                 undoSel?.Push(new TrackKeySelection.KeySelection(trackSel.Track, destIndex, _content.Fps));
                             }
 
                             // If we've got a texture in the destination, unload it.
-                            if ((destKeyFrame != null) && (trackSel.Track.KeyType == AnimationTrackKeyType.Texture2D) && (destKeyFrame.TextureValue.Texture != null))
+                            if ((destKeyFrame is not null) && (trackSel.Track.KeyType == AnimationTrackKeyType.Texture2D) && (destKeyFrame.TextureValue.Texture is not null))
                             {
                                 _contentServices.KeyProcessor.UnloadTextureKeyframe(destKeyFrame);
                             }
 
-                            if (keySel.KeyFrame != null)
+                            if (keySel.KeyFrame is not null)
                             {
-                                IKeyFrame newFrame = _contentServices.ViewModelFactory.CreateKeyFrame(destKeyFrame == null ? (destIndex / _content.Fps) : destKeyFrame.Time, trackSel.Track.KeyType);
+                                IKeyFrame newFrame = _contentServices.ViewModelFactory.CreateKeyFrame(destKeyFrame is null ? (destIndex / _content.Fps) : destKeyFrame.Time, trackSel.Track.KeyType);
                                 newFrame.FloatValue = keySel.KeyFrame.FloatValue;
                                 newFrame.TextureValue = keySel.KeyFrame.TextureValue;
 
-                                if ((newFrame.TextureValue.TextureFile != null) && (trackSel.Track.KeyType == AnimationTrackKeyType.Texture2D))
+                                if ((newFrame.TextureValue.TextureFile is not null) && (trackSel.Track.KeyType == AnimationTrackKeyType.Texture2D))
                                 {
                                     await _contentServices.KeyProcessor.RestoreTextureAsync(newFrame);
                                 }
@@ -828,7 +828,7 @@ namespace Gorgon.Editor.AnimationEditor
                         HideWaitPanel();
                     }
 
-                    if (CurrentEditor != null)
+                    if (CurrentEditor is not null)
                     {
                         CurrentEditor.Value = _content.WorkingSprite.GetFloatValues(_content.Selected[0].Track.SpriteProperty);
                     }
@@ -842,7 +842,7 @@ namespace Gorgon.Editor.AnimationEditor
                 }
                 finally
                 {
-                    if (keyFrames != null)
+                    if (keyFrames is not null)
                     {
                         ArrayPool<IKeyFrame>.Shared.Return(keyFrames, true);
                     }
@@ -890,7 +890,7 @@ namespace Gorgon.Editor.AnimationEditor
                 _selectedSprites.AddRange(_fileManager.GetSelectedFiles().Select(item => _fileManager.GetFile(item)));
 
                 // If we have sprites selected, and none of them are sprites.
-                if ((_selectedSprites.Count == 0) || (_selectedSprites.Any(item => (item == null) || (!_contentServices.IOService.IsContentSprite(item)))))
+                if ((_selectedSprites.Count == 0) || (_selectedSprites.Any(item => (item is null) || (!_contentServices.IOService.IsContentSprite(item)))))
                 {
                     _selectedSprites.Clear();
                     return false;
@@ -908,7 +908,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>        
         private async Task DoSetKeyAsync()
         {
-            DX.Vector4? floatValues = null;
+            Vector4? floatValues = null;
 
             try
             {
@@ -921,7 +921,7 @@ namespace Gorgon.Editor.AnimationEditor
                     _selectedSprites.AddRange(_fileManager.GetSelectedFiles()
                                                           .Reverse()
                                                           .Select(item => _fileManager.GetFile(item))
-                                                          .Where(item => (item != null) && (_contentServices.IOService.IsContentSprite(item))));
+                                                          .Where(item => (item is not null) && (_contentServices.IOService.IsContentSprite(item))));
                 }
                 else
                 {
@@ -943,7 +943,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns><b>true</b> if the sprites can be loaded, <b>false</b> if not.</returns>
         private bool CanLoadSprite(IReadOnlyList<string> paths)
         {
-            if ((_content.Selected.Count == 0) || (paths == null) || (paths.Count == 0) || (_content.Selected.Any(item => item.Track.KeyType != AnimationTrackKeyType.Texture2D)))
+            if ((_content.Selected.Count == 0) || (paths is null) || (paths.Count == 0) || (_content.Selected.Any(item => item.Track.KeyType != AnimationTrackKeyType.Texture2D)))
             {
                 return false;
             }
@@ -951,7 +951,7 @@ namespace Gorgon.Editor.AnimationEditor
             IEnumerable<IContentFile> files = paths.Where(item => !string.IsNullOrWhiteSpace(item))
                                                    .Select(item => _fileManager.GetFile(item));
 
-            return files.All(item => (item != null) && (_contentServices.IOService.IsContentSprite(item)));                                                   
+            return files.All(item => (item is not null) && (_contentServices.IOService.IsContentSprite(item)));                                                   
         }
 
         /// <summary>
@@ -1022,7 +1022,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if the selected key frames can be removed.
         /// </summary>
         /// <returns><b>true</b> if the keyframes can be removed, <b>false</b> if not.</returns>
-        private bool CanRemoveKeyframes() => (_content.CommandContext == this) && (_content.Selected.Count > 0) && (_content.Selected.SelectMany(item => item.SelectedKeys).Any(item => item != null));
+        private bool CanRemoveKeyframes() => (_content.CommandContext == this) && (_content.Selected.Count > 0) && (_content.Selected.SelectMany(item => item.SelectedKeys).Any(item => item is not null));
 
         /// <summary>
         /// Function to remove the selected key frames.
@@ -1042,7 +1042,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// Function to determine if the keyframes can be cleared.
         /// </summary>
         /// <returns><b>true</b> if the keyframes can be cleared, <b>false</b> if not.</returns>
-        private bool CanClearKeyframes() => (_content.CommandContext == this) && (_content.Tracks.Count > 0) && (_content.Tracks.SelectMany(item => item.KeyFrames).Any(item => item != null));
+        private bool CanClearKeyframes() => (_content.CommandContext == this) && (_content.Tracks.Count > 0) && (_content.Tracks.SelectMany(item => item.KeyFrames).Any(item => item is not null));
 
         /// <summary>
         /// Function to clear all keyframes from the animation.
@@ -1075,7 +1075,7 @@ namespace Gorgon.Editor.AnimationEditor
             }
             finally
             {
-                if (selection != null)
+                if (selection is not null)
                 {
                     ArrayPool<TrackKeySelection>.Shared.Return(selection, true);
                 }
@@ -1089,7 +1089,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns><b>true</b> if the keys can be copied/moved, <b>false</b> if not.</returns>
         private bool CanCopyMoveFrames(KeyFrameCopyMoveData args)
         {
-            if ((args == null) || (args.KeyFrames.Count == 0) || (_content.CommandContext != this))
+            if ((args is null) || (args.KeyFrames.Count == 0) || (_content.CommandContext != this))
             {
                 return false;
             }
@@ -1118,7 +1118,7 @@ namespace Gorgon.Editor.AnimationEditor
                     {
                         IKeyFrame keyFrame = keySel.KeyFrame;
 
-                        if (keyFrame != null)
+                        if (keyFrame is not null)
                         {
                             if (keyFrame.DataType != AnimationTrackKeyType.Texture2D)
                             {
@@ -1144,7 +1144,7 @@ namespace Gorgon.Editor.AnimationEditor
                     (args.KeyFrames[0].TrackIndex, new[] { args.DestinationKeyIndex })
                 };
 
-                if ((_content.SelectTrackAndKeysCommand != null) && (_content.SelectTrackAndKeysCommand.CanExecute(selection)))
+                if ((_content.SelectTrackAndKeysCommand is not null) && (_content.SelectTrackAndKeysCommand.CanExecute(selection)))
                 {
                     _content.SelectTrackAndKeysCommand.Execute(selection);
                 }
@@ -1165,7 +1165,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <returns><b>true</b> if the data can be pasted, <b>false</b> if not.</returns>
         private bool CanPasteKeyframes()
         {
-            if ((!HostServices.ClipboardService.HasData) || (_content.Selected == null) || (_content.Selected.Count == 0))
+            if ((!HostServices.ClipboardService.HasData) || (_content.Selected is null) || (_content.Selected.Count == 0))
             {
                 return false;
             }
@@ -1177,7 +1177,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             IKeyFrameCopyMoveData data = HostServices.ClipboardService.GetData<IKeyFrameCopyMoveData>();
 
-            return (data != null) && (data.KeyFrames.Count != 0);
+            return (data is not null) && (data.KeyFrames.Count != 0);
         }
 
         /// <summary>
@@ -1214,7 +1214,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             var copyData = args as IKeyFrameCopyMoveData;
 
-            return (copyData?.KeyFrames != null) && (copyData.KeyFrames.Count > 0) && (_content.CommandContext == this);
+            return (copyData?.KeyFrames is not null) && (copyData.KeyFrames.Count > 0) && (_content.CommandContext == this);
         }
 
         /// <summary>
@@ -1237,7 +1237,7 @@ namespace Gorgon.Editor.AnimationEditor
                     {
                         IKeyFrame keyFrame = keySel.KeyFrame;
 
-                        if (keyFrame != null)
+                        if (keyFrame is not null)
                         {
                             if (keyFrame.DataType != AnimationTrackKeyType.Texture2D)
                             {
@@ -1323,7 +1323,7 @@ namespace Gorgon.Editor.AnimationEditor
             HostServices.ClipboardService.Clear();
             _content.PropertyChanged -= Content_PropertyChanged;
 
-            if (CurrentEditor != null)
+            if (CurrentEditor is not null)
             {
                 CurrentEditor.WorkingSprite = null;
                 CurrentEditor.Track = null;

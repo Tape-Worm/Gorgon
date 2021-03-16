@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Linq;
 using System.Threading;
 using DX = SharpDX;
@@ -149,7 +150,7 @@ namespace Gorgon.Editor.Rendering
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
         private void SetDataContext(T dataContext)
         {
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.PropertyChanging -= DataContext_PropertyChanging;
                 DataContext.PropertyChanged -= DataContext_PropertyChanged;
@@ -157,7 +158,7 @@ namespace Gorgon.Editor.Rendering
 
             DataContext = dataContext;
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -218,7 +219,7 @@ namespace Gorgon.Editor.Rendering
         /// <returns>The scaling factor to apply.</returns>
         protected float CalculateScaling(DX.Size2F size, DX.Size2F windowSize)
         {
-            var scaling = new DX.Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
+            var scaling = new Vector2(windowSize.Width / size.Width, windowSize.Height / size.Height);
 
             return scaling.X.Min(scaling.Y);
         }
@@ -313,7 +314,7 @@ namespace Gorgon.Editor.Rendering
 
             UnloadResources();
 
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 SetDataContext(null);
             }

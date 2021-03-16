@@ -24,9 +24,12 @@
 // 
 #endregion
 
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Geometry;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -71,22 +74,22 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The offset of the upper left corner of the renderable.
         /// </summary>
-        public DX.Vector3 UpperLeftOffset;
+        public Vector3 UpperLeftOffset;
 
         /// <summary>
         /// The offset of the upper right corner of the renderable.
         /// </summary>
-        public DX.Vector3 UpperRightOffset;
+        public Vector3 UpperRightOffset;
 
         /// <summary>
         /// The offset of the lower left corner of the renderable.
         /// </summary>
-        public DX.Vector3 LowerLeftOffset;
+        public Vector3 LowerLeftOffset;
 
         /// <summary>
         /// The offset of the lower right corner of the renderable.
         /// </summary>
-        public DX.Vector3 LowerRightOffset;
+        public Vector3 LowerRightOffset;
 
         /// <summary>
         /// Property to set or return whether the object space information the vertices need updating or not.
@@ -119,7 +122,7 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This value is a relative value where 0, 0 means the upper left of the sprite, and 1, 1 means the lower right.
         /// </remarks>
-        public DX.Vector2 Anchor;
+        public Vector2 Anchor;
 
         /// <summary>
         /// Property to set or return the region of the texture to use when drawing the sprite.
@@ -127,27 +130,17 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// These values are in texel coordinates.
         /// </remarks>
-        public DX.RectangleF TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+        public DX.RectangleF TextureRegion = new(0, 0, 1, 1);
 
         /// <summary>
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
-        public DX.Vector2 Scale = DX.Vector2.One;
+        public Vector2 Scale = Vector2.One;
 
         /// <summary>
-        /// Property to set or return the angle of rotation in radians.
+        /// Property to set or return the angle of rotation in degrees.
         /// </summary>
-        public float AngleRads;
-
-        /// <summary>
-        /// Property to set or return cached the sine for the rotation angle.
-        /// </summary>
-        public float AngleSin;
-
-        /// <summary>
-        /// Property to set or return cached the cosine for the rotation angle.
-        /// </summary>
-        public float AngleCos;
+        public float AngleDegs;
 
         /// <summary>
         /// Property to set or return which index within a texture array to use.
@@ -178,7 +171,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the alpha test data.
         /// </summary>
-        public AlphaTestData AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+        public AlphaTestData AlphaTestData = new(true, GorgonRangeF.Empty);
 
         /// <summary>
         /// Property to set or return the vertices for this renderable.
@@ -203,7 +196,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The bounding corners for a renderable.
         /// </summary>
-        public DX.Vector4 Corners;
+        public Vector4 Corners;
 
         /// <summary>
         /// The number of indices used by the renderable.
@@ -214,5 +207,27 @@ namespace Gorgon.Renderers
         /// The type of primitive.
         /// </summary>
         public PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
+
+        /// <summary>
+        /// Function to determine if the states of the two renderables match for rendering.
+        /// </summary>
+        /// <param name="left">The left state to compare.</param>
+        /// <param name="right">The right state to compare.</param>
+        /// <returns><b>true</b> if the states are the same, or <b>false</b> if not.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool AreStatesSame(BatchRenderable left, BatchRenderable right)
+        {
+#pragma warning disable IDE0046 // Convert to conditional expression
+            if ((left == right) && (left.StateChanged))
+            {
+                return false;
+            }
+
+            return (left.PrimitiveType == right.PrimitiveType)
+                   && (left.Texture == right.Texture)
+                   && (left.TextureSampler == right.TextureSampler)
+                   && (AlphaTestData.Equals(in left.AlphaTestData, in right.AlphaTestData));
+#pragma warning restore IDE0046 // Convert to conditional expression
+        }
     }
 }

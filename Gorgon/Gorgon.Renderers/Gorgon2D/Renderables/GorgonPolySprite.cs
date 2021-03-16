@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -34,6 +35,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using Newtonsoft.Json;
 using DX = SharpDX;
@@ -47,15 +49,12 @@ namespace Gorgon.Renderers
         : IDisposable
     {
         #region Variables.
-        // The angle of rotation, in degrees.
-        private float _angle;
-
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
-        internal PolySpriteRenderable Renderable = new PolySpriteRenderable
+        internal PolySpriteRenderable Renderable = new()
         {
-            WorldMatrix = DX.Matrix.Identity,
-            TextureTransform = new DX.Vector4(0, 0, 1, 1)
+            WorldMatrix = Matrix4x4.Identity,
+            TextureTransform = new Vector4(0, 0, 1, 1)
         };
         #endregion
 
@@ -148,9 +147,9 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the offset to apply to a texture.
         /// </summary>
-        public DX.Vector2 TextureOffset
+        public Vector2 TextureOffset
         {
-            get => (DX.Vector2)Renderable.TextureTransform;
+            get => new(Renderable.TextureTransform.X, Renderable.TextureTransform.Y);
             set
             {
                 if ((Renderable.TextureTransform.X == value.X)
@@ -159,7 +158,7 @@ namespace Gorgon.Renderers
                     return;
                 }
 
-                Renderable.TextureTransform = new DX.Vector4(value.X, value.Y, Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
+                Renderable.TextureTransform = new Vector4(value.X, value.Y, Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
                 Renderable.HasTextureChanges = true;
             }
         }
@@ -167,9 +166,9 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the scale to apply to a texture.
         /// </summary>
-        public DX.Vector2 TextureScale
+        public Vector2 TextureScale
         {
-            get => new DX.Vector2(Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
+            get => new(Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
             set
             {
                 if ((Renderable.TextureTransform.Z == value.X)
@@ -178,7 +177,7 @@ namespace Gorgon.Renderers
                     return;
                 }
 
-                Renderable.TextureTransform = new DX.Vector4(Renderable.TextureTransform.X, Renderable.TextureTransform.Y, value.X, value.Y);
+                Renderable.TextureTransform = new Vector4(Renderable.TextureTransform.X, Renderable.TextureTransform.Y, value.X, value.Y);
                 Renderable.HasTextureChanges = true;
             }
         }
@@ -228,9 +227,9 @@ namespace Gorgon.Renderers
         /// Property to set or return the position of the sprite.
         /// </summary>
         [JsonIgnore]
-        public DX.Vector2 Position
+        public Vector2 Position
         {
-            get => Renderable.Bounds.TopLeft;
+            get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
@@ -272,12 +271,12 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This value is a relative value where 0, 0 means the upper left of the sprite, and 1, 1 means the lower right.
         /// </remarks>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => Renderable.Anchor;
             set
             {
-                ref DX.Vector2 anchor = ref Renderable.Anchor;
+                ref Vector2 anchor = ref Renderable.Anchor;
                 if ((anchor.X == value.X)
                     && (anchor.Y == value.Y))
                 {
@@ -305,19 +304,17 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public DX.Size2F ScaledSize
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
-                scale = new DX.Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+                ref Vector2 scale = ref Renderable.Scale;
+                scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -326,12 +323,12 @@ namespace Gorgon.Renderers
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
         [JsonIgnore]
-        public DX.Vector2 Scale
+        public Vector2 Scale
         {
             get => Renderable.Scale;
             set
             {
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 if ((scale.X == value.X)
                     && (scale.Y == value.Y))
                 {
@@ -340,7 +337,7 @@ namespace Gorgon.Renderers
 
                 scale = value;
 
-                ref DX.Matrix matrix = ref Renderable.WorldMatrix;
+                ref Matrix4x4 matrix = ref Renderable.WorldMatrix;
                 matrix.M11 = scale.X;
                 matrix.M22 = scale.Y;
                 Renderable.HasTransformChanges = true;
@@ -353,22 +350,15 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public float Angle
         {
-            get => _angle;
+            get => Renderable.AngleDegs;
             set
             {
-                if (_angle == value)
+                if (Renderable.AngleDegs == value)
                 {
                     return;
                 }
 
-                _angle = value;
-                float rads = value.ToRadians();
-                Renderable.AngleRads = rads;
-                Renderable.AngleSin = rads.FastSin();
-                Renderable.AngleCos = rads.FastCos();
-
-
-
+                Renderable.AngleDegs = value;
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -392,7 +382,7 @@ namespace Gorgon.Renderers
             set
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (value == null)
+                if (value is null)
                 {
                     if (Renderable.AlphaTestData.IsEnabled == 0)
                     {
@@ -617,17 +607,17 @@ namespace Gorgon.Renderers
             float maxX = float.MinValue;
             float maxY = float.MinValue;
 
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (vertices == null)
+            if (vertices is null)
             {
                 throw new ArgumentNullException(nameof(vertices));
             }
 
-            if (indices == null)
+            if (indices is null)
             {
                 throw new ArgumentNullException(nameof(indices));
             }
@@ -662,31 +652,20 @@ namespace Gorgon.Renderers
             newSprite.Bounds = new DX.RectangleF(0, 0, maxX - minX, maxY - minY);
 
             // Split the polygon hull into triangles.            
-            GorgonNativeBuffer<Gorgon2DVertex> vertexData = newSprite.Renderable.Vertices.ToNativeBuffer();
-            GorgonNativeBuffer<int> indexData = newSprite.RwIndices.ToNativeBuffer();
-
-            try
+            newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo
             {
-                newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo
-                {
-                    Binding = VertexIndexBufferBinding.None,
-                    Use16BitIndices = false,
-                    IndexCount = indexData.Length,
-                    Usage = ResourceUsage.Immutable
-                }, indexData);
+                Binding = VertexIndexBufferBinding.None,
+                Use16BitIndices = false,
+                IndexCount = newSprite.RwIndices.Length,
+                Usage = ResourceUsage.Immutable
+            }, newSprite.RwIndices);
 
-                newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(graphics, new GorgonVertexBufferInfo
-                {
-                    Usage = ResourceUsage.Immutable,
-                    Binding = VertexIndexBufferBinding.None,
-                    SizeInBytes = vertexData.SizeInBytes
-                }, vertexData);                
-            }
-            finally
+            newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(graphics, new GorgonVertexBufferInfo
             {
-                vertexData?.Dispose();
-                indexData?.Dispose();
-            }
+                Usage = ResourceUsage.Immutable,
+                Binding = VertexIndexBufferBinding.None,
+                SizeInBytes = newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes
+            }, newSprite.Renderable.Vertices);                
 
             return newSprite;
         }

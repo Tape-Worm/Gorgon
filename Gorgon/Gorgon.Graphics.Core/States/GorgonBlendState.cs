@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Render target 0 blending enabled, blending operations don't allow for blending.
         /// </summary>
-        public static readonly GorgonBlendState NoBlending = new GorgonBlendState();
+        public static readonly GorgonBlendState NoBlending = new();
 
         /// <summary>
         /// Additive blending on render target 0.
@@ -253,7 +253,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <returns>true if the current object is equal to the <paramref name="state" /> parameter; otherwise, false.</returns>
         /// <param name="state">An object to compare with this object.</param>
-        public bool Equals(GorgonBlendState state) => (state == this) || ((state != null)
+        public bool Equals(GorgonBlendState state) => (state == this) || ((state is not null)
                                        && (WriteMask == state.WriteMask)
                                        && (AlphaBlendOperation == state.AlphaBlendOperation)
                                        && (ColorBlendOperation == state.ColorBlendOperation)

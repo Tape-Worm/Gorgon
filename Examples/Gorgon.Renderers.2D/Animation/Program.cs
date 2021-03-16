@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,7 +33,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -74,7 +74,7 @@ namespace Gorgon.Examples
         // The batch state for drawing our render target.
         private static Gorgon2DBatchState _targetBatchState;
         // Player for our mp3.
-        private static readonly AudioPlayback _mp3Player = new AudioPlayback();
+        private static readonly AudioPlayback _mp3Player = new();
         // The task used while playing audio.
         private static Task _audioTask;
         #endregion
@@ -95,23 +95,23 @@ namespace Gorgon.Examples
             // Set up some scaling...            
             animBuilder.EditVector2("Scale")
                        .SetInterpolationMode(TrackInterpolationMode.Spline)
-                       .SetKey(new GorgonKeyVector2(0, new DX.Vector2(1, 1)))
-                       .SetKey(new GorgonKeyVector2(2, new DX.Vector2(0.5f, 0.5f)))
-                       .SetKey(new GorgonKeyVector2(4, new DX.Vector2(4.0f, 4.0f)))
-                       .SetKey(new GorgonKeyVector2(6, new DX.Vector2(1, 1)))
+                       .SetKey(new GorgonKeyVector2(0, new Vector2(1, 1)))
+                       .SetKey(new GorgonKeyVector2(2, new Vector2(0.5f, 0.5f)))
+                       .SetKey(new GorgonKeyVector2(4, new Vector2(4.0f, 4.0f)))
+                       .SetKey(new GorgonKeyVector2(6, new Vector2(1, 1)))
                        .EndEdit()
                        // Set up some positions...
                        .EditVector2("Position")
                        .SetInterpolationMode(TrackInterpolationMode.Spline)
-                       .SetKey(new GorgonKeyVector2(0, new DX.Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f)))
-                       .SetKey(new GorgonKeyVector2(2, new DX.Vector2(200, 220)))
-                       .SetKey(new GorgonKeyVector2(3, new DX.Vector2(_screen.Width - 2, 130)))
-                       .SetKey(new GorgonKeyVector2(4, new DX.Vector2(255, _screen.Height - _metal.Height)))
-                       .SetKey(new GorgonKeyVector2(5, new DX.Vector2(200, 180)))
-                       .SetKey(new GorgonKeyVector2(6, new DX.Vector2(180, 160)))
-                       .SetKey(new GorgonKeyVector2(7, new DX.Vector2(150, 180)))
-                       .SetKey(new GorgonKeyVector2(8, new DX.Vector2(150, 160)))
-                       .SetKey(new GorgonKeyVector2(9, new DX.Vector2(_screen.Width / 2, _screen.Height / 2)))
+                       .SetKey(new GorgonKeyVector2(0, new Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f)))
+                       .SetKey(new GorgonKeyVector2(2, new Vector2(200, 220)))
+                       .SetKey(new GorgonKeyVector2(3, new Vector2(_screen.Width - 2, 130)))
+                       .SetKey(new GorgonKeyVector2(4, new Vector2(255, _screen.Height - _metal.Height)))
+                       .SetKey(new GorgonKeyVector2(5, new Vector2(200, 180)))
+                       .SetKey(new GorgonKeyVector2(6, new Vector2(180, 160)))
+                       .SetKey(new GorgonKeyVector2(7, new Vector2(150, 180)))
+                       .SetKey(new GorgonKeyVector2(8, new Vector2(150, 160)))
+                       .SetKey(new GorgonKeyVector2(9, new Vector2(_screen.Width / 2, _screen.Height / 2)))
                        .EndEdit()
                        // Set up some colors...By changing the alpha, we can simulate a motion blur effect.
                        .EditColor("Color")
@@ -189,8 +189,8 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
-            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Animation");
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Animation");
 
             try
             {
@@ -209,8 +209,8 @@ namespace Gorgon.Examples
                                               window,
                                               new GorgonSwapChainInfo("Gorgon2D Animation Example Swap Chain")
                                               {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
+                                                  Width = ExampleConfig.Default.Resolution.Width,
+                                                  Height = ExampleConfig.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
 
@@ -256,9 +256,9 @@ namespace Gorgon.Examples
                 _renderer = new Gorgon2D(_graphics);
                 _animatedSprite = new GorgonSprite
                 {
-                    Position = new DX.Vector2(_screen.Width / 2, _screen.Height / 2),
+                    Position = new Vector2(_screen.Width / 2, _screen.Height / 2),
                     Size = new DX.Size2F(_metal.Width, _metal.Height),
-                    Anchor = new DX.Vector2(0.5f, 0.5f)
+                    Anchor = new Vector2(0.5f, 0.5f)
                 };
 
                 MakeAn80sMusicVideo();
@@ -285,7 +285,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static async void PlayAudio()
         {
-            if (_audioTask != null)
+            if (_audioTask is not null)
             {
                 await _audioTask;
             }
@@ -307,7 +307,7 @@ namespace Gorgon.Examples
                 PlayAudio();
             }
 
-            if (_animController.CurrentAnimation == null)
+            if (_animController.CurrentAnimation is null)
             {
                 _animController.Play(_animatedSprite, _animation);
             }
@@ -344,12 +344,15 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
                 GorgonApplication.Run(Initialize(), Idle);
 
-                if (_mp3Player != null)
+                if (_mp3Player is not null)
                 {
                     _mp3Player.Stop();
                 }

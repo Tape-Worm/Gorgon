@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Numerics;
+using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 
@@ -63,18 +65,54 @@ namespace Gorgon.Graphics.Core
     public abstract class GorgonReadWriteView
         : GorgonResourceView
     {
+        #region Variables.
+        // The D3D11 UAV descriptor.
+        private D3D11.UnorderedAccessViewDescription1 _uavDesc;
+        #endregion
+
         #region Properties.
+        /// <summary>
+        /// Property to return a reference to the D3D11 UAV descriptor.
+        /// </summary>
+        private protected ref D3D11.UnorderedAccessViewDescription1 UavDesc => ref _uavDesc;
+
         /// <summary>
         /// Property to return the native Direct 3D 11 view.
         /// </summary>
         internal D3D11.UnorderedAccessView1 Native
         {
             get;
-            set;
+            private set;
         }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to perform the creation of a specific kind of view.
+        /// </summary>
+        /// <returns>The view that was created.</returns>
+        private protected sealed override D3D11.ResourceView OnCreateNativeView()
+        {
+            ref readonly D3D11.UnorderedAccessViewDescription1 desc = ref OnGetUavParams();
+            
+            Graphics.Log.Print($"Creating D3D11 {Resource.D3DResource.Dimension} unordered access view for {Resource.Name}.", LoggingLevel.Simple);
+
+            Native = new D3D11.UnorderedAccessView1(Graphics.D3DDevice, Resource.D3DResource, desc)
+            {
+                DebugName = $"{Resource.Name}_UAV"
+            };
+
+            Graphics.Log.Print($"Unordered Access View for '{Resource.Name}': {Resource.ResourceType} -> Start: {desc.Buffer.FirstElement}, Count: {desc.Buffer.ElementCount}", LoggingLevel.Verbose);
+
+            return Native;
+        }
+
+        /// <summary>
+        /// Function to retrieve the necessary parameters to create the native view.
+        /// </summary>
+        /// <returns>The D3D11 UAV descriptor.</returns>
+        private protected abstract ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams();
+
         /// <summary>
         /// Function to clear the unordered access value with the specified values.
         /// </summary>
@@ -121,7 +159,8 @@ namespace Gorgon.Graphics.Core
         /// This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value.
         /// </para>
         /// </remarks>
-        public void Clear(float value1, float value2, float value3, float value4) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(value1, value2, value3, value4));
+        public void Clear(float value1, float value2, float value3, float value4) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, 
+                                                                                 new DX.Mathematics.Interop.RawInt4((int)value1, (int)value2, (int)value3, (int)value4));
 
         /// <summary>
         /// Function to clear the unordered access value with the specified value.
@@ -135,7 +174,7 @@ namespace Gorgon.Graphics.Core
         /// This method works on any unordered access view that does not require format conversion.
         /// </para>
         /// </remarks>
-        public void Clear(float value) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(value));
+        public void Clear(float value) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Mathematics.Interop.RawInt4((int)value, (int)value, (int)value, (int)value));
 
         /// <summary>
         /// Function to clear the unordered access value with the specified values.
@@ -149,7 +188,7 @@ namespace Gorgon.Graphics.Core
         /// This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value in the vector.
         /// </para>
         /// </remarks>
-        public void Clear(DX.Vector4 values) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(values.X, values.Y, values.Z, values.W));
+        public void Clear(Vector4 values) => Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Mathematics.Interop.RawInt4((int)values.X, (int)values.Y, (int)values.Z, (int)values.W));
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using DX = SharpDX;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.ImageSplitTool.Properties;
@@ -34,6 +35,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Math;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
+using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Editor.ImageSplitTool
 {
@@ -61,7 +63,7 @@ namespace Gorgon.Editor.ImageSplitTool
 		{
 			_previewImage?.Dispose();
 
-			if (image == null)
+			if (image is null)
 			{
 				_previewImage = null;
 				return;
@@ -154,7 +156,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
 			Renderer.Begin();
 			Renderer.DrawFilledRectangle(renderRegion, 
-										 ((DataContext.PreviewImage == null) || (_loading)) ? (GorgonColor)DarkFormsRenderer.DarkBackground : GorgonColor.White, 
+										 ((DataContext.PreviewImage is null) || (_loading)) ? (GorgonColor)DarkFormsRenderer.DarkBackground : GorgonColor.White, 
 										 _backgroundImage, 
 										 new DX.RectangleF(0, 0, renderRegion.Width / _backgroundImage.Width, renderRegion.Height / _backgroundImage.Height));
 			Renderer.End();
@@ -167,12 +169,12 @@ namespace Gorgon.Editor.ImageSplitTool
 			OnRenderBackground();
 
 			var renderRegion = GetRenderRegion().ToRectangleF();
-			var halfClient = new DX.Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
+			var halfClient = new Vector2(renderRegion.Width * 0.5f, renderRegion.Height * 0.5f);
 
 			Renderer.Begin();
 
 			// Render the image.
-			if ((DataContext.PreviewImage != null) && (!_loading))
+			if ((DataContext.PreviewImage is not null) && (!_loading))
 			{
 				float scale = (renderRegion.Width / DataContext.PreviewImage.Width).Min(renderRegion.Height / DataContext.PreviewImage.Height);
 				float width = DataContext.PreviewImage.Width * scale;
@@ -186,16 +188,16 @@ namespace Gorgon.Editor.ImageSplitTool
 			{
 				if (!_loading)
 				{
-					DX.Size2F size = Renderer.DefaultFont.MeasureText(Resources.GORIST_TEXT_SELECT_IMAGE, false);
+					DX.Size2F size = Resources.GORIST_TEXT_SELECT_IMAGE.MeasureText(Renderer.DefaultFont, false);
 					Renderer.DrawString(Resources.GORIST_TEXT_SELECT_IMAGE,
-															new DX.Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
+															new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
 															color: GorgonColor.White);
 				}
 				else
 				{
-					DX.Size2F size = Renderer.DefaultFont.MeasureText(Resources.GORIST_TEXT_LOADING, false);
+					DX.Size2F size = Resources.GORIST_TEXT_LOADING.MeasureText(Renderer.DefaultFont, false);
 					Renderer.DrawString(Resources.GORIST_TEXT_LOADING,
-															new DX.Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
+															new Vector2(renderRegion.X + halfClient.X - size.Width * 0.5f, renderRegion.Y + halfClient.Y - size.Height * 0.5f),
 															color: GorgonColor.White);
 				}
 			}
@@ -219,7 +221,7 @@ namespace Gorgon.Editor.ImageSplitTool
 				}, image);
 			}
 
-			if (DataContext.PreviewImage != null)
+			if (DataContext.PreviewImage is not null)
 			{
 				UpdateRenderImage(DataContext.PreviewImage);
 			}

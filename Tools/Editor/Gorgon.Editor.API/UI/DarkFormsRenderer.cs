@@ -173,7 +173,7 @@ namespace Gorgon.Editor.UI
             }
 
 			var item = e.Item as ToolStripMenuItem;
-			if ((item != null) && (item.IsOnDropDown))
+			if ((item is not null) && (item.IsOnDropDown))
 			{
 				e.TextRectangle = new Rectangle(e.TextRectangle.X - 12,
 				                                e.TextRectangle.Y,
@@ -183,7 +183,7 @@ namespace Gorgon.Editor.UI
 
 			ToolStrip strip = e.Item.GetCurrentParent();
 
-			if (!(strip is ToolStripDropDown))
+			if (strip is not ToolStripDropDown)
 			{
 				if (e.Item.AutoSize)
 				{
@@ -194,7 +194,7 @@ namespace Gorgon.Editor.UI
                         
 			TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, textColor, e.TextFormat);
 
-            if ((item == null) || (!item.CheckOnClick) || (item.Checked))
+            if ((item is null) || (!item.CheckOnClick) || (item.Checked))
             {
                 return;
             }
@@ -207,11 +207,9 @@ namespace Gorgon.Editor.UI
                 color = DisabledColor;
             }
 
-            using (var pen = new Pen(color))
-            {
-                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                e.Graphics.DrawRectangle(pen, new Rectangle(checkPos.X, checkPos.Y, 12, 12));
-            }
+            using var pen = new Pen(color);
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            e.Graphics.DrawRectangle(pen, new Rectangle(checkPos.X, checkPos.Y, 12, 12));
         }
 
         /// <summary>
@@ -220,7 +218,7 @@ namespace Gorgon.Editor.UI
         /// <param name="e">A <see cref="ToolStripItemRenderEventArgs"/> that contains the event data.</param>
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
 		{
-			if (!(e.Item is ToolStripMenuItem))
+			if (e.Item is not ToolStripMenuItem)
 			{
 				base.OnRenderItemBackground(e);
 				return;
@@ -230,11 +228,9 @@ namespace Gorgon.Editor.UI
 
 			if (item.Selected)
 			{
-				using (Brush backBrush = new SolidBrush(MenuHilightBackground))
-				{
-					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
-				}
-			}
+                using Brush backBrush = new SolidBrush(MenuHilightBackground);
+                e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
+            }
 
 			if (item.IsOnDropDown)
 			{
@@ -246,13 +242,11 @@ namespace Gorgon.Editor.UI
 				return;
 			}
 
-			using (var pen = new Pen(BorderColor, 1.0f))
-			{
-				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
-				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
-				e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
-			}
-		}
+            using var pen = new Pen(BorderColor, 1.0f);
+            e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
+            e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
+            e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+        }
 
 		/// <summary>
 		/// Raises the <see cref="ToolStripRenderer.RenderButtonBackground"/> event.
@@ -262,10 +256,8 @@ namespace Gorgon.Editor.UI
 		{
             if (e.Item.Selected)
             {
-                using (Brush backBrush = new SolidBrush(MenuHilightBackground))
-                {
-                    e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
-                }
+                using Brush backBrush = new SolidBrush(MenuHilightBackground);
+                e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
             }
             else
             {
@@ -276,10 +268,8 @@ namespace Gorgon.Editor.UI
                         return;
                     }
 
-                    using (Brush backBrush = new SolidBrush(MenuHilightBackground))
-                    {
-                        e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
-                    }
+                    using Brush backBrush = new SolidBrush(MenuHilightBackground);
+                    e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
 
                     return;
                 }
@@ -309,18 +299,14 @@ namespace Gorgon.Editor.UI
                 color = DisabledColor;
             }
 
-            using (var pen = new Pen(color))
-            {
-                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                e.Graphics.DrawRectangle(pen, new Rectangle(checkPos.X, checkPos.Y, 12, 12));
+            using var pen = new Pen(color);
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            e.Graphics.DrawRectangle(pen, new Rectangle(checkPos.X, checkPos.Y, 12, 12));
 
-                checkPos = new Point(item.Width - 32, (int)(item.Height * 0.5f - 4));
+            checkPos = new Point(item.Width - 32, (int)(item.Height * 0.5f - 4));
 
-                using (var brush = new SolidBrush(color))
-                {
-                    e.Graphics.FillRectangle(brush, new Rectangle(checkPos.X, checkPos.Y, 8, 8));
-                }
-            }
+            using var brush = new SolidBrush(color);
+            e.Graphics.FillRectangle(brush, new Rectangle(checkPos.X, checkPos.Y, 8, 8));
         }
 
         /// <summary>
@@ -329,27 +315,25 @@ namespace Gorgon.Editor.UI
         /// <param name="e">A <see cref="ToolStripRenderEventArgs"/> that contains the event data.</param>
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
 		{
-			using(Brush backBrush = new SolidBrush(DarkBackground))
-			{				
-				e.Graphics.FillRectangle(backBrush, e.AffectedBounds);
+            using Brush backBrush = new SolidBrush(DarkBackground);
+            e.Graphics.FillRectangle(backBrush, e.AffectedBounds);
 
-				if ((!e.ToolStrip.IsDropDown))
-				{
-					return;
-				}
+            if ((!e.ToolStrip.IsDropDown))
+            {
+                return;
+            }
 
-				using (var borderPen = new Pen(BorderColor))
-				{
-					e.Graphics.DrawRectangle(borderPen,
-					                         new Rectangle(e.AffectedBounds.Left,
-					                                       e.AffectedBounds.Top,
-					                                       e.AffectedBounds.Width - 1,
-					                                       e.AffectedBounds.Height - 1));
-				}
+            using (var borderPen = new Pen(BorderColor))
+            {
+                e.Graphics.DrawRectangle(borderPen,
+                                         new Rectangle(e.AffectedBounds.Left,
+                                                       e.AffectedBounds.Top,
+                                                       e.AffectedBounds.Width - 1,
+                                                       e.AffectedBounds.Height - 1));
+            }
 
-				e.Graphics.FillRectangle(backBrush, e.ConnectedArea);
-			}
-		}
+            e.Graphics.FillRectangle(backBrush, e.ConnectedArea);
+        }
 
 		/// <summary>
 		/// Raises the <see cref="ToolStripRenderer.RenderSeparator"/> event.
@@ -357,22 +341,20 @@ namespace Gorgon.Editor.UI
 		/// <param name="e">A <see cref="ToolStripSeparatorRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
 		{
-            using (var pen = new Pen(BorderColor, 1.0f))
+            using var pen = new Pen(BorderColor, 1.0f);
+            if (!e.Vertical)
             {
-	            if (!e.Vertical)
-	            {
-		            e.Graphics.DrawLine(pen,
-		                                new Point(0, e.Item.ContentRectangle.Height / 2),
-		                                new Point(e.Item.Width, e.Item.ContentRectangle.Height / 2));
-	            }
-	            else
-	            {
-		            e.Graphics.DrawLine(pen,
-		                                new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Top + 3),
-		                                new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Bottom - 5));
-	            }
+                e.Graphics.DrawLine(pen,
+                                    new Point(0, e.Item.ContentRectangle.Height / 2),
+                                    new Point(e.Item.Width, e.Item.ContentRectangle.Height / 2));
             }
-		}
+            else
+            {
+                e.Graphics.DrawLine(pen,
+                                    new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Top + 3),
+                                    new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Bottom - 5));
+            }
+        }
 
 		/// <summary>
 		/// Raises the <see cref="ToolStripRenderer.OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs)" /> event.
@@ -382,59 +364,55 @@ namespace Gorgon.Editor.UI
 		{
 			var item = e.Item as ToolStripSplitButton;
 
-			Debug.Assert(item != null, "Drop down button is NULL!");
+			Debug.Assert(item is not null, "Drop down button is NULL!");
 
 			if (item.Selected)
 			{
-				using (Brush backBrush = new SolidBrush(MenuHilightBackground))
-				{
-					if (item.ButtonSelected)
-					{
-						e.Graphics.FillRectangle(backBrush, item.ButtonBounds);
+                using Brush backBrush = new SolidBrush(MenuHilightBackground);
+                if (item.ButtonSelected)
+                {
+                    e.Graphics.FillRectangle(backBrush, item.ButtonBounds);
 
-					}
+                }
 
-					if (item.DropDownButtonSelected)
-					{
-						e.Graphics.FillRectangle(backBrush, item.DropDownButtonBounds);
-					}
-				}
-			}
+                if (item.DropDownButtonSelected)
+                {
+                    e.Graphics.FillRectangle(backBrush, item.DropDownButtonBounds);
+                }
+            }
 
-			using (var pen = new Pen(BorderColor, 1.0f))
-			{
-                ArrowDirection direction = ArrowDirection.Down;
+            using var pen = new Pen(BorderColor, 1.0f);
+            ArrowDirection direction = ArrowDirection.Down;
 
-				switch (item.DropDownDirection)
-				{
-					case ToolStripDropDownDirection.AboveLeft:
-					case ToolStripDropDownDirection.AboveRight:
-						direction = ArrowDirection.Up;
-						break;
-					case ToolStripDropDownDirection.Left:
-						direction = ArrowDirection.Left;
-						break;
-					case ToolStripDropDownDirection.Right:
-						direction = ArrowDirection.Right;
-						break;
-				}
-				DrawArrow(new ToolStripArrowRenderEventArgs(e.Graphics,
-				                                            item,
-															item.DropDownButtonBounds, 
-				                                            Color.White,
-				                                            direction));
+            switch (item.DropDownDirection)
+            {
+                case ToolStripDropDownDirection.AboveLeft:
+                case ToolStripDropDownDirection.AboveRight:
+                    direction = ArrowDirection.Up;
+                    break;
+                case ToolStripDropDownDirection.Left:
+                    direction = ArrowDirection.Left;
+                    break;
+                case ToolStripDropDownDirection.Right:
+                    direction = ArrowDirection.Right;
+                    break;
+            }
+            DrawArrow(new ToolStripArrowRenderEventArgs(e.Graphics,
+                                                        item,
+                                                        item.DropDownButtonBounds,
+                                                        Color.White,
+                                                        direction));
 
-				if (!item.DropDown.Visible)
-				{
-					e.Graphics.DrawLine(pen, item.SplitterBounds.Location, new Point(item.SplitterBounds.X, item.SplitterBounds.Height));
-					return;
-				}
+            if (!item.DropDown.Visible)
+            {
+                e.Graphics.DrawLine(pen, item.SplitterBounds.Location, new Point(item.SplitterBounds.X, item.SplitterBounds.Height));
+                return;
+            }
 
-				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
-				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
-				e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
-			}
-		}
+            e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
+            e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
+            e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+        }
 
 		/// <summary>
 		/// Raises the <see cref="ToolStripRenderer.RenderDropDownButtonBackground"/> event.
@@ -444,27 +422,23 @@ namespace Gorgon.Editor.UI
 		{
 			var item = e.Item as ToolStripDropDownButton;
 
-			Debug.Assert(item != null, "Drop down button is NULL!");
+			Debug.Assert(item is not null, "Drop down button is NULL!");
 
 			if (item.Selected)
 			{
-				using (Brush backBrush = new SolidBrush(MenuHilightBackground))
-				{
-					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
-				}
-			}
+                using Brush backBrush = new SolidBrush(MenuHilightBackground);
+                e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
+            }
 
 			if (!item.DropDown.Visible)
 			{
 				return;
 			}
 
-			using (var pen = new Pen(BorderColor, 1.0f))
-			{
-				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
-				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
-				e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
-			}
-		}        
+            using var pen = new Pen(BorderColor, 1.0f);
+            e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
+            e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
+            e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+        }        
 	}
 }

@@ -105,7 +105,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
         /// </returns>
-        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_SO_BINDING, Offset, (Buffer?.Native == null) ? "(NULL)" : Buffer.Name);
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_SO_BINDING, Offset, (Buffer?.Native is null) ? "(NULL)" : Buffer.Name);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -113,7 +113,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => Buffer == null
+        public override int GetHashCode() => Buffer is null
                        ? 281.GenerateHash(Offset)
                        : 281.GenerateHash(Offset).GenerateHash(Buffer.GetHashCode());
 

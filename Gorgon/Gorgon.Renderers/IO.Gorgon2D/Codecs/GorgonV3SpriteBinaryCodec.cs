@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -107,11 +108,11 @@ namespace Gorgon.IO
 
             GorgonTexture2D texture = null;
             // Locate the texture resource.
-            if (overrideTexture == null)
+            if (overrideTexture is null)
             {
                 texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
-                if (texture == null)
+                if (texture is null)
                 {
                     return null;
                 }
@@ -148,7 +149,7 @@ namespace Gorgon.IO
                 reader.Open();
                 binReader = reader.OpenChunk(SpriteData);
                 sprite.Size = binReader.ReadValue<DX.Size2F>();
-                sprite.Anchor = binReader.ReadValue<DX.Vector2>();
+                sprite.Anchor = binReader.ReadValue<Vector2>();
 
                 // If we do not have alpha test information, then skip writing its data.
                 if (binReader.ReadBoolean())
@@ -157,10 +158,10 @@ namespace Gorgon.IO
                 }
 
                 // Write out corner data.
-                sprite.CornerOffsets.UpperLeft = binReader.ReadValue<DX.Vector3>();
-                sprite.CornerOffsets.UpperRight = binReader.ReadValue<DX.Vector3>();
-                sprite.CornerOffsets.LowerLeft = binReader.ReadValue<DX.Vector3>();
-                sprite.CornerOffsets.LowerRight = binReader.ReadValue<DX.Vector3>();
+                sprite.CornerOffsets.UpperLeft = binReader.ReadValue<Vector3>();
+                sprite.CornerOffsets.UpperRight = binReader.ReadValue<Vector3>();
+                sprite.CornerOffsets.LowerLeft = binReader.ReadValue<Vector3>();
+                sprite.CornerOffsets.LowerRight = binReader.ReadValue<Vector3>();
 
                 sprite.CornerColors.UpperLeft = binReader.ReadValue<GorgonColor>();
                 sprite.CornerColors.UpperRight = binReader.ReadValue<GorgonColor>();
@@ -238,8 +239,8 @@ namespace Gorgon.IO
                 binWriter.WriteValue(sprite.Anchor);
 
                 // If we do not have alpha test information, then skip writing its data.
-                binWriter.Write(sprite.AlphaTest != null);
-                if (sprite.AlphaTest != null)
+                binWriter.Write(sprite.AlphaTest is not null);
+                if (sprite.AlphaTest is not null)
                 {
                     binWriter.WriteValue(sprite.AlphaTest.Value);
                 }
@@ -258,7 +259,7 @@ namespace Gorgon.IO
                 writer.CloseChunk();
 
                 // We have no texture data, so don't bother writing out that chunk.
-                if (sprite.Texture != null)
+                if (sprite.Texture is not null)
                 {
                     binWriter = writer.OpenChunk(TextureData);
                     // Write out as much info about the texture as we can so we can look it up based on these values when loading.
@@ -278,7 +279,7 @@ namespace Gorgon.IO
                     binWriter.Close();
                 }
 
-                if (sprite.TextureSampler == null)
+                if (sprite.TextureSampler is null)
                 {
                     return;
                 }
@@ -317,13 +318,11 @@ namespace Gorgon.IO
                 return false;
             }
 
-            using (GorgonBinaryReader binReader = reader.OpenChunk(VersionData))
-            {
-                var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
-                reader.CloseChunk();
+            using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
+            var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
+            reader.CloseChunk();
 
-                return Version.Equals(fileVersion);
-            }
+            return Version.Equals(fileVersion);
         }
 
         /// <summary>

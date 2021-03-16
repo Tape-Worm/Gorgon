@@ -80,8 +80,8 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             ButtonGenerate.Enabled = DataContext?.GenerateCommand?.CanExecute(null) ?? false;
             ButtonCalculateSize.Enabled = DataContext?.CalculateSizesCommand?.CanExecute(null) ?? false;
-            ButtonPrevArray.Visible = DataContext.Atlas != null;
-            ButtonNextArray.Visible = DataContext.Atlas != null;
+            ButtonPrevArray.Visible = DataContext.Atlas is not null;
+            ButtonNextArray.Visible = DataContext.Atlas is not null;
             ButtonPrevArray.Enabled = DataContext?.PrevPreviewCommand?.CanExecute(null) ?? false;
             ButtonNextArray.Enabled = DataContext?.NextPreviewCommand?.CanExecute(null) ?? false;
             ButtonOk.Enabled = DataContext?.CommitAtlasCommand?.CanExecute(null) ?? false;
@@ -93,7 +93,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="dataContext">The current data context.</param>
         private void UpdateLabelArrayText(ITextureAtlas dataContext)
         {
-            if ((dataContext?.Atlas?.Textures == null) || (dataContext.Atlas.Textures.Count == 0))
+            if ((dataContext?.Atlas?.Textures is null) || (dataContext.Atlas.Textures.Count == 0))
             {
                 LabelArray.Text = Resources.GORTAG_TEXT_NO_ATLAS;
                 return;
@@ -113,7 +113,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// </summary>
         private void ShowFileSelector()
         {
-            if ((DataContext?.SpriteFiles == null) || (_spriteSelector != null))
+            if ((DataContext?.SpriteFiles is null) || (_spriteSelector is not null))
             {
                 return;
             }
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextArray_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.NextPreviewCommand == null) || (!DataContext.NextPreviewCommand.CanExecute(null)))
+            if ((DataContext?.NextPreviewCommand is null) || (!DataContext.NextPreviewCommand.CanExecute(null)))
             {
                 return;
             }
@@ -153,7 +153,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevArray_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.PrevPreviewCommand == null) || (!DataContext.PrevPreviewCommand.CanExecute(null)))
+            if ((DataContext?.PrevPreviewCommand is null) || (!DataContext.PrevPreviewCommand.CanExecute(null)))
             {
                 return;
             }
@@ -166,7 +166,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonGenerate_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.GenerateCommand == null) || (!DataContext.GenerateCommand.CanExecute(null)))
+            if ((DataContext?.GenerateCommand is null) || (!DataContext.GenerateCommand.CanExecute(null)))
             {
                 return;
             }
@@ -184,7 +184,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericTextureWidth_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -197,7 +197,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericTextureHeight_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -210,7 +210,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericArrayIndex_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -223,7 +223,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void NumericPadding_ValueChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -238,7 +238,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             var args = new CancelEventArgs(false);
 
-            if ((DataContext?.CommitAtlasCommand == null) || (!DataContext.CommitAtlasCommand.CanExecute(args)))
+            if ((DataContext?.CommitAtlasCommand is null) || (!DataContext.CommitAtlasCommand.CanExecute(args)))
             {
                 return;
             }
@@ -256,7 +256,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonCalculateSize_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.CalculateSizesCommand == null) || (!DataContext.CalculateSizesCommand.CanExecute(null)))
+            if ((DataContext?.CalculateSizesCommand is null) || (!DataContext.CalculateSizesCommand.CanExecute(null)))
             {
                 return;
             }
@@ -269,7 +269,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFolderBrowse_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SelectFolderCommand == null) || (!DataContext.SelectFolderCommand.CanExecute(null)))
+            if ((DataContext?.SelectFolderCommand is null) || (!DataContext.SelectFolderCommand.CanExecute(null)))
             {
                 return;
             }
@@ -282,7 +282,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void TextBaseTextureName_TextChanged(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -372,7 +372,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         /// <param name="dataContext">The current data context.</param>
         private void InitializeFromDataContext(ITextureAtlas dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -403,7 +403,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnResize(e);
 
-            if (Settings == null)
+            if (Settings is null)
             {
                 return;
             }
@@ -470,7 +470,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnSetupGraphics(graphicsContext, swapChain);
 
-            Debug.Assert(DataContext != null, "No datacontext");
+            Debug.Assert(DataContext is not null, "No datacontext");
 
             NumericTextureWidth.Maximum = graphicsContext.VideoAdapter.MaxTextureWidth;
             NumericTextureHeight.Maximum = graphicsContext.VideoAdapter.MaxTextureHeight;

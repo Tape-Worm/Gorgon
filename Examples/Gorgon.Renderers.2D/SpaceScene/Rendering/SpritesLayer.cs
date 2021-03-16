@@ -24,12 +24,9 @@
 // 
 #endregion
 
-using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using DX = SharpDX;
@@ -44,11 +41,11 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // The list of sprites that are lit.
-        private readonly List<Gorgon2DBatchState> _states = new List<Gorgon2DBatchState>();
+        private readonly List<Gorgon2DBatchState> _states = new();
         // The list of sprites organized by name.
-        private readonly Dictionary<string, SpriteEntity> _spriteByName = new Dictionary<string, SpriteEntity>();
+        private readonly Dictionary<string, SpriteEntity> _spriteByName = new();
         // A list of sprite entities to draw.
-        private readonly List<(int index, SpriteEntity entity)> _drawList = new List<(int index, SpriteEntity entity)>();
+        private readonly List<(int index, SpriteEntity entity)> _drawList = new();
         #endregion
 
         #region Properties.
@@ -93,7 +90,7 @@ namespace Gorgon.Examples
             sprite.Depth = 0.1f;
             sprite.Position = entity.Position;
             sprite.Angle = entity.Rotation;
-            sprite.Scale = new DX.Vector2(entity.Scale);
+            sprite.Scale = new Vector2(entity.Scale);
             sprite.Anchor = entity.Anchor;
 
             Renderer.GetAABB(sprite, out DX.RectangleF bounds);
@@ -111,13 +108,13 @@ namespace Gorgon.Examples
         /// <summary>Function called to update items per frame on the layer.</summary>
         protected override void OnUpdate()
         {
-            if (DeferredLighter != null)
+            if (DeferredLighter is not null)
             {
                 DeferredLighter.Lights.Clear();
 
                 for (int i = 0; i < ActiveLights.Count; ++i)
                 {
-                    DeferredLighter.Lights.Add(ActiveLights[i]);
+                    DeferredLighter.Lights.Add(ActiveLights[i].LightData);
                 }
             }
 
@@ -127,7 +124,7 @@ namespace Gorgon.Examples
             {
                 SpriteEntity sprite = Sprites[i];
 
-                DX.Vector2 transformed = sprite.LocalPosition + Offset;
+                Vector2 transformed = sprite.LocalPosition + Offset;
 
                 sprite.Position = transformed / ParallaxLevel;
 
@@ -149,12 +146,12 @@ namespace Gorgon.Examples
 
             GorgonRenderTargetView rtv = Graphics.RenderTargets[0];
 
-            if (rtv == null)
+            if (rtv is null)
             {
                 return;
             }
 
-            if ((GBuffer != null) && 
+            if ((GBuffer is not null) && 
                 ((GBuffer.Diffuse.Width != rtv.Width) || (GBuffer.Diffuse.Height != rtv.Height)))
             {
                 GBuffer.Resize(rtv.Width, rtv.Height);
@@ -170,14 +167,14 @@ namespace Gorgon.Examples
 
                 if (needStateChange)
                 {
-                    if ((!entity.IsLit) || (GBuffer == null))
+                    if ((!entity.IsLit) || (GBuffer is null))
                     {
-                        if ((wasLit) && (GBuffer != null))
+                        if ((wasLit) && (GBuffer is not null))
                         {
                             GBuffer.End();
-                            if ((DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
+                            if ((DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
                             {
-                                DeferredLighter.Render(GBuffer, rtv, Camera);
+                                DeferredLighter.Render(GBuffer, rtv);
                             }
                         }
                         Renderer.End();
@@ -188,9 +185,9 @@ namespace Gorgon.Examples
                         if (wasLit)
                         {
                             GBuffer.End();                            
-                            if ((DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
+                            if ((DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
                             {
-                                DeferredLighter.Render(GBuffer, rtv, Camera);
+                                DeferredLighter.Render(GBuffer, rtv);
                             }
                         }
                         Renderer.End();
@@ -205,7 +202,7 @@ namespace Gorgon.Examples
                 sprite.Depth = 0.1f;
                 sprite.Position = entity.Position;
                 sprite.Angle = entity.Rotation;
-                sprite.Scale = new DX.Vector2(entity.Scale);
+                sprite.Scale = new Vector2(entity.Scale);
                 sprite.Color = entity.Color;
                 sprite.Anchor = entity.Anchor;
 
@@ -213,9 +210,9 @@ namespace Gorgon.Examples
             }
 
             GBuffer?.End();
-            if ((wasLit) && (DeferredLighter != null) && (DeferredLighter.Lights.Count > 0))
+            if ((wasLit) && (DeferredLighter is not null) && (DeferredLighter.Lights.Count > 0))
             {
-                DeferredLighter.Render(GBuffer, rtv, Camera);
+                DeferredLighter.Render(GBuffer, rtv);
             }
             Renderer.End();
         }
@@ -232,7 +229,7 @@ namespace Gorgon.Examples
 
             foreach (GorgonBlendState blendState in Sprites.Select(item => item.BlendState).Distinct())
             {
-                if ((blendState == null) || (blendState == GorgonBlendState.Default))
+                if ((blendState is null) || (blendState == GorgonBlendState.Default))
                 {
                     continue;
                 }

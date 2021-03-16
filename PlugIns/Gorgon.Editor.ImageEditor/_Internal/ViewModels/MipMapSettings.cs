@@ -141,7 +141,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         {
             try
             {
-                if (image == null)
+                if (image is null)
                 {
                     MaxMipLevels = int.MaxValue;
                     MipLevels = 2;

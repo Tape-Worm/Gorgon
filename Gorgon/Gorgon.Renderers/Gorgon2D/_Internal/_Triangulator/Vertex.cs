@@ -5,7 +5,7 @@
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
 using System;
-using SharpDX;
+using System.Numerics;
 
 namespace GorgonTriangulator
 {

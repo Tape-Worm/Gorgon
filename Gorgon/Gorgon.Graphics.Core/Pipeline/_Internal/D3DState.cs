@@ -29,171 +29,121 @@ using System;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Defines what has been changed on a draw call.
+    /// Defines what resource state has been changed on a draw call.
     /// </summary>
     [Flags]
-    enum DrawCallChanges
-        : ulong
+    internal enum ResourceStateChanges
     {
         /// <summary>
         /// No changes.
         /// </summary>
         None = 0,
         /// <summary>
-        /// The list of vertex buffers used by a draw call.
-        /// </summary>
-        VertexBuffers = 0x1,
-        /// <summary>
         /// The input layout for the vertex buffers.
         /// </summary>
-        InputLayout = 0x2,
+        InputLayout = 0x1,
+        /// <summary>
+        /// The list of vertex buffers used by a draw call.
+        /// </summary>
+        VertexBuffers = 0x2,
         /// <summary>
         /// The index buffer used by a draw call.
         /// </summary>
         IndexBuffer = 0x4,
         /// <summary>
-        /// The primtive topology.
-        /// </summary>
-        Topology = 0x8,
-        /// <summary>
-        /// The vertex shader was changed.
-        /// </summary>
-        VertexShader = 0x10,
-        /// <summary>
-        /// The pixel shader was changed.
-        /// </summary>
-        PixelShader = 0x20,
-        /// <summary>
-        /// The geometry shader was changed.
-        /// </summary>
-        GeometryShader = 0x40,
-        /// <summary>
-        /// The domain shader was changed.
-        /// </summary>
-        DomainShader = 0x80,
-        /// <summary>
-        /// The hull shader was changed.
-        /// </summary>
-        HullShader = 0x100,
-        /// <summary>
-        /// The compute shader was changed.
-        /// </summary>
-        ComputeShader = 0x200,
-        /// <summary>
-        /// The rasterizer state was modified.
-        /// </summary>
-        RasterState = 0x400,
-        /// <summary>
-        /// The depth/stencil state was modified.
-        /// </summary>
-        DepthStencilState = 0x800,
-        /// <summary>
-        /// The blend state was modified.
-        /// </summary>
-        BlendState = 0x1000,
-        /// <summary>
         /// Stream out buffers were modified.
         /// </summary>
-        StreamOutBuffers = 0x4000,
+        StreamOutBuffers = 0x8,
         /// <summary>
         /// General unordered access views were modified.
         /// </summary>
-        Uavs = 0x8000,
+        Uavs = 0x10,
         /// <summary>
         /// Sampler state has changed.
         /// </summary>
-        PsSamplers = 0x1000_0000_0000,
+        PsSamplers = 0x20,
         /// <summary>
         /// Constant buffers have changed.
         /// </summary>
-        PsConstants = 0x2000_0000_0000,
+        PsConstants = 0x40,
         /// <summary>
         /// Resource views have changed.
         /// </summary>
-        PsResourceViews = 0x4000_0000_0000,
+        PsResourceViews = 0x80,
         /// <summary>
         /// Sampler state has changed.
         /// </summary>
-        VsSamplers = 0x8000_0000_0000,
+        VsSamplers = 0x100,
         /// <summary>
         /// Constant buffers have changed.
         /// </summary>
-        VsConstants = 0x1_0000_0000_0000,
+        VsConstants = 0x200,
         /// <summary>
         /// Resource views have changed.
         /// </summary>
-        VsResourceViews = 0x2_0000_0000_0000,
+        VsResourceViews = 0x400,
         /// <summary>
         /// Sampler state has changed.
         /// </summary>
-        GsSamplers = 0x4_0000_0000_0000,
+        GsSamplers = 0x800,
         /// <summary>
         /// Constant buffers have changed.
         /// </summary>
-        GsConstants = 0x8_0000_0000_0000,
+        GsConstants = 0x1_000,
         /// <summary>
         /// Resource views have changed.
         /// </summary>
-        GsResourceViews = 0x10_0000_0000_0000,
+        GsResourceViews = 0x2_000,
         /// <summary>
         /// Sampler state has changed.
         /// </summary>
-        DsSamplers = 0x20_0000_0000_0000,
+        DsSamplers = 0x4_000,
         /// <summary>
         /// Constant buffers have changed.
         /// </summary>
-        DsConstants = 0x40_0000_0000_0000,
+        DsConstants = 0x8_000,
         /// <summary>
         /// Resource views have changed.
         /// </summary>
-        DsResourceViews = 0x80_0000_0000_0000,
+        DsResourceViews = 0x10_000,
         /// <summary>
         /// Sampler state has changed.
         /// </summary>
-        HsSamplers = 0x100_0000_0000_0000,
+        HsSamplers = 0x20_000,
         /// <summary>
         /// Constant buffers have changed.
         /// </summary>
-        HsConstants = 0x200_0000_0000_0000,
+        HsConstants = 0x40_000,
         /// <summary>
         /// Resource views have changed.
         /// </summary>
-        HsResourceViews = 0x400_0000_0000_0000,
+        HsResourceViews = 0x80_000,
         /// <summary>
         /// Sampler state has changed.
         /// </summary>
-        CsSamplers = 0x800_0000_0000_0000,
+        CsSamplers = 0x100_000,
         /// <summary>
         /// Constant buffers have changed.
         /// </summary>
-        CsConstants = 0x1000_0000_0000_0000,
+        CsConstants = 0x200_000,
         /// <summary>
         /// Resource views have changed.
         /// </summary>
-        CsResourceViews = 0x2000_0000_0000_0000,
+        CsResourceViews = 0x400_000,
         /// <summary>
         /// Unordered access views have changed.
         /// </summary>
-        CsUavs = 0x4000_0000_0000_0000,
+        CsUavs = 0x800_000,
         /// <summary>
-        /// All pipeline states.
+        /// The compute shader was changed.
         /// </summary>
-        AllPipelineState = Topology
-                           | RasterState
-                           | DepthStencilState
-                           | BlendState
-                           | PixelShader
-                           | VertexShader
-                           | GeometryShader
-                           | DomainShader
-                           | HullShader,
+        ComputeShader = 0x1_000_000,
         /// <summary>
         /// Everything changed.
         /// </summary>
         All = VertexBuffers
               | InputLayout
               | IndexBuffer
-              | Topology
               | Uavs
               | PsSamplers
               | VsSamplers
@@ -214,7 +164,94 @@ namespace Gorgon.Graphics.Core
               | HsResourceViews
               | CsResourceViews
               | CsUavs
-              | AllPipelineState
+              | ComputeShader
+    }
+
+    /// <summary>
+    /// Defines what pipeline state has been changed on a draw call.
+    /// </summary>
+    [Flags]
+    internal enum PipelineStateChanges
+    {
+        /// <summary>
+        /// No changes.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// The primtive topology.
+        /// </summary>
+        Topology = 0x1,
+        /// <summary>
+        /// The vertex shader was changed.
+        /// </summary>
+        VertexShader = 0x2,
+        /// <summary>
+        /// The pixel shader was changed.
+        /// </summary>
+        PixelShader = 0x4,
+        /// <summary>
+        /// The geometry shader was changed.
+        /// </summary>
+        GeometryShader = 0x8,
+        /// <summary>
+        /// The domain shader was changed.
+        /// </summary>
+        DomainShader = 0x10,
+        /// <summary>
+        /// The hull shader was changed.
+        /// </summary>
+        HullShader = 0x20,
+        /// <summary>
+        /// The rasterizer state was modified.
+        /// </summary>
+        RasterState = 0x40,
+        /// <summary>
+        /// The depth/stencil state was modified.
+        /// </summary>
+        DepthStencilState = 0x80,
+        /// <summary>
+        /// The blend state was modified.
+        /// </summary>
+        BlendState = 0x100,
+        /// <summary>
+        /// The blend factor color has changed.
+        /// </summary>
+        BlendFactor = 0x200,
+        /// <summary>
+        /// The blending sample mask has changed.
+        /// </summary>
+        BlendSampleMask = 0x400,
+        /// <summary>
+        /// The depth/stencil reference value has changed.
+        /// </summary>
+        DepthStencilReference = 0x800,
+        /// <summary>
+        /// All pipeline states without blend flags.
+        /// </summary>
+        AllWithoutBlendFlags = Topology
+            | RasterState
+            | DepthStencilState
+            | BlendState
+            | PixelShader
+            | VertexShader
+            | GeometryShader
+            | DomainShader
+            | HullShader,
+        /// <summary>
+        /// All pipeline states.
+        /// </summary>
+        All = Topology
+            | RasterState
+            | DepthStencilState
+            | BlendState
+            | PixelShader
+            | VertexShader
+            | GeometryShader
+            | DomainShader
+            | HullShader
+            | BlendFactor
+            | BlendSampleMask
+            | DepthStencilReference
     }
 
     /// <summary>

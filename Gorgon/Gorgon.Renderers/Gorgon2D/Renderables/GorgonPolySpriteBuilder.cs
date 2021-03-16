@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,11 +33,10 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Native;
+using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using GorgonTriangulator;
 using DX = SharpDX;
-
 
 namespace Gorgon.Renderers
 {
@@ -72,9 +72,9 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // The working sprite.
-        private readonly GorgonPolySprite _workingSprite = new GorgonPolySprite();
+        private readonly GorgonPolySprite _workingSprite = new();
         // The triangulator used to convert the polygon into a triangle mesh.
-        private readonly Triangulator _triangulator = new Triangulator(null);
+        private readonly Triangulator _triangulator = new(null);
         #endregion
 
         #region Properties.
@@ -173,7 +173,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="vertex"/> is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder RemoveVertex(GorgonPolySpriteVertex vertex)
         {
-            if (vertex == null)
+            if (vertex is null)
             {
                 throw new ArgumentNullException(nameof(vertex));
             }
@@ -208,7 +208,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="vertex"/> parameter is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder MoveVertex(GorgonPolySpriteVertex vertex, int newIndex)
         {
-            if (vertex == null)
+            if (vertex is null)
             {
                 throw new ArgumentNullException(nameof(vertex));
             }
@@ -252,7 +252,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name=" vertex"/> parameter is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder InsertVertex(int index, GorgonPolySpriteVertex vertex)
         {
-            if (vertex == null)
+            if (vertex is null)
             {
                 throw new ArgumentNullException(nameof(vertex));
             }
@@ -270,7 +270,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name=" vertices"/> parameter is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder InsertVertices(int index, IEnumerable<GorgonPolySpriteVertex> vertices)
         {
-            if (vertices == null)
+            if (vertices is null)
             {
                 throw new ArgumentNullException(nameof(vertices));
             }
@@ -287,7 +287,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="vertices"/> is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder AddVertices(IEnumerable<GorgonPolySpriteVertex> vertices)
         {
-            if (vertices == null)
+            if (vertices is null)
             {
                 throw new ArgumentNullException(nameof(vertices));
             }
@@ -304,7 +304,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="vertex"/> is <b>null</b>.</exception>
         public GorgonPolySpriteBuilder AddVertex(GorgonPolySpriteVertex vertex)
         {
-            if (vertex == null)
+            if (vertex is null)
             {
                 throw new ArgumentNullException(nameof(vertex));
             }
@@ -342,7 +342,7 @@ namespace Gorgon.Renderers
         /// <param name="textureCoordinate">The texture coordinate to assign.</param>
         /// <returns>The fluent interface for this builder.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0, or equal to/greater than the <see cref="VertexCount"/>.</exception>
-        public GorgonPolySpriteBuilder TextureCoordinate(int index, DX.Vector2 textureCoordinate)
+        public GorgonPolySpriteBuilder TextureCoordinate(int index, Vector2 textureCoordinate)
         {
             if ((index < 0) || (index >= VertexCount))
             {
@@ -376,7 +376,7 @@ namespace Gorgon.Renderers
         /// <param name="textureOffset">The translation amount to apply to the UV coordinates of the vertices in the polygon sprite.</param>
         /// <param name="textureScale">The scale amount to apply to the UV coordinates of the vertices in the polygon sprite.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPolySpriteBuilder TextureTransform(DX.Vector2 textureOffset, DX.Vector2 textureScale)
+        public GorgonPolySpriteBuilder TextureTransform(Vector2 textureOffset, Vector2 textureScale)
         {
             _workingSprite.TextureOffset = textureOffset;
             _workingSprite.TextureScale = textureScale;
@@ -417,7 +417,7 @@ namespace Gorgon.Renderers
         /// This value is in relative unit coordinates.  For example, 0.5, 0.5 would mean the center of the sprite.
         /// </para>
         /// </remarks>
-        public GorgonPolySpriteBuilder Anchor(DX.Vector2 anchor)
+        public GorgonPolySpriteBuilder Anchor(Vector2 anchor)
         {
             _workingSprite.Anchor = anchor;
             return this;
@@ -429,7 +429,7 @@ namespace Gorgon.Renderers
         /// <param name="position">The position of the sprite.</param>
         /// <param name="depth">[Optional] A depth value for the sprite.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPolySpriteBuilder Position(DX.Vector2 position, float depth = 0)
+        public GorgonPolySpriteBuilder Position(Vector2 position, float depth = 0)
         {
             _workingSprite.Position = position;
             _workingSprite.Depth = depth;
@@ -441,7 +441,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="scale">The scale to assign to the polygon sprite.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPolySpriteBuilder Scale(DX.Vector2 scale)
+        public GorgonPolySpriteBuilder Scale(Vector2 scale)
         {
             _workingSprite.Scale = scale;
             return this;
@@ -490,7 +490,7 @@ namespace Gorgon.Renderers
             CopySprite(newSprite, _workingSprite);
 
             newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
-            if ((newSprite.Renderable.Vertices == null) || (newSprite.Renderable.Vertices.Length < newSprite.RwVertices.Count))
+            if ((newSprite.Renderable.Vertices is null) || (newSprite.Renderable.Vertices.Length < newSprite.RwVertices.Count))
             {
                 newSprite.Renderable.Vertices = new Gorgon2DVertex[newSprite.RwVertices.Count];
             }
@@ -504,36 +504,27 @@ namespace Gorgon.Renderers
             _triangulator.EnsureWindingOrder(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
 
             // Split the polygon hull into triangles.
-            (GorgonNativeBuffer<int> indices, DX.RectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
-            GorgonNativeBuffer<Gorgon2DVertex> vertexData = newSprite.Renderable.Vertices.ToNativeBuffer();
+            (int[] indices, DX.RectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);            
 
-            try
+            newSprite.RwIndices = indices;
+
+            newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(Graphics, new GorgonIndexBufferInfo
             {
-                newSprite.RwIndices = indices.ToArray();
+                Binding = VertexIndexBufferBinding.None,
+                Use16BitIndices = false,
+                IndexCount = indices.Length,
+                Usage = ResourceUsage.Immutable
+            }, indices);
 
-                newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(Graphics, new GorgonIndexBufferInfo
-                {
-                    Binding = VertexIndexBufferBinding.None,
-                    Use16BitIndices = false,
-                    IndexCount = indices.Length,
-                    Usage = ResourceUsage.Immutable
-                }, indices);
-
-                newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(Graphics, new GorgonVertexBufferInfo
-                {
-                    Usage = ResourceUsage.Immutable,
-                    Binding = VertexIndexBufferBinding.None,
-                    SizeInBytes = vertexData.SizeInBytes
-                }, vertexData);
-                newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
-                newSprite.Renderable.IndexCount = indices.Length;
-                newSprite.Bounds = new DX.RectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
-            }
-            finally
+            newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics, new GorgonVertexBufferInfo
             {
-                vertexData?.Dispose();
-                indices?.Dispose();
-            }
+                Usage = ResourceUsage.Immutable,
+                Binding = VertexIndexBufferBinding.None,
+                SizeInBytes = newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes
+            }, newSprite.Renderable.Vertices);
+            newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
+            newSprite.Renderable.IndexCount = indices.Length;
+            newSprite.Bounds = new DX.RectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
 
             return newSprite;
         }
@@ -547,16 +538,16 @@ namespace Gorgon.Renderers
             _workingSprite.RwVertices.Clear();
             _workingSprite.Renderable.ActualVertexCount = 0;
             _workingSprite.Renderable.IndexCount = 0;
-            _workingSprite.Position = DX.Vector2.Zero;
+            _workingSprite.Position = Vector2.Zero;
             _workingSprite.AlphaTest = GorgonRangeF.Empty;
-            _workingSprite.Anchor = DX.Vector2.Zero;
+            _workingSprite.Anchor = Vector2.Zero;
             _workingSprite.Angle = 0.0f;
             _workingSprite.Bounds = DX.RectangleF.Empty;
             _workingSprite.Color = GorgonColor.White;
             _workingSprite.Depth = 0.0f;
             _workingSprite.HorizontalFlip = false;
             _workingSprite.VerticalFlip = false;
-            _workingSprite.Scale = DX.Vector2.One;
+            _workingSprite.Scale = Vector2.One;
             _workingSprite.Texture = null;
             _workingSprite.TextureSampler = null;
             return this;
@@ -569,7 +560,7 @@ namespace Gorgon.Renderers
         /// <returns>The fluent builder interface.</returns>
         public GorgonPolySpriteBuilder ResetTo(GorgonPolySprite builderObject = null)
         {
-            if (builderObject == null)
+            if (builderObject is null)
             {
                 Clear();
                 return this;

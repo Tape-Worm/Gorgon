@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Fonts.Codecs
@@ -108,41 +109,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
         #region Methods.
         /// <summary>
-        /// Function to load an font from a stream.
-        /// </summary>
-        /// <param name="stream">The stream containing the font data to read.</param>
-        /// <param name="name">[Optional] The name of the font.</param>
-        /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-        [Obsolete("Use FromStream(Stream, string) instead.")]
-        GorgonFont LoadFromStream(Stream stream, string name = null);
-
-        /// <summary>
-        /// Function to load an font from a file on the physical file system.
-        /// </summary>
-        /// <param name="filePath">Path to the file to load.</param>
-        /// <param name="name">[Optional] The name of the font.</param>
-        /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-        [Obsolete("Use FromFile(string, string) instead.")]
-        GorgonFont LoadFromFile(string filePath, string name = null);
-
-        /// <summary>
-        /// Function to persist a <see cref="GorgonFont"/> to a stream.
-        /// </summary>
-        /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
-        /// <param name="stream">The stream that will receive the font data.</param>
-        [Obsolete("Use Save(GorgonFont, Stream) instead.")]
-        void SaveToStream(GorgonFont fontData, Stream stream);
-
-        /// <summary>
-        /// Function to persist a <see cref="GorgonFont"/> to a file on the physical file system.
-        /// </summary>
-        /// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
-        /// <param name="filePath">The path to the file that will hold the font data.</param>
-        [Obsolete("Use Save(GorgonFont, string) instead.")]
-        void SaveToFile(GorgonFont fontData, string filePath);
-
-        /// <summary>
-        /// Function to load an font from a stream.
+        /// Function to load a font from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the font data to read.</param>
         /// <param name="name">The name of the font.</param>
@@ -150,12 +117,28 @@ namespace Gorgon.Graphics.Fonts.Codecs
         GorgonFont FromStream(Stream stream, string name);
 
         /// <summary>
-        /// Function to load an font from a file on the physical file system.
+        /// Function to asynchronously load a font from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the font data to read.</param>
+        /// <param name="name">The name of the font.</param>
+        /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>        
+        Task<GorgonFont> FromStreamAsync(Stream stream, string name);
+
+        /// <summary>
+        /// Function to load a font from a file on the physical file system.
         /// </summary>
         /// <param name="filePath">Path to the file to load.</param>
         /// <param name="name">[Optional] The name of the font.</param>
         /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>        
         GorgonFont FromFile(string filePath, string name = null);
+
+        /// <summary>
+        /// Function to asynchrnously load a font from a file on the physical file system.
+        /// </summary>
+        /// <param name="filePath">Path to the file to load.</param>
+        /// <param name="name">[Optional] The name of the font.</param>
+        /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>        
+        Task<GorgonFont> FromFileAsync(string filePath, string name = null);
 
         /// <summary>
         /// Function to persist a <see cref="GorgonFont"/> to a stream.

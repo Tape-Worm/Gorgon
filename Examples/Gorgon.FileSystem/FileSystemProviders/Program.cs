@@ -30,7 +30,6 @@ using System.IO;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Examples.Properties;
 using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
 
@@ -68,8 +67,6 @@ namespace Gorgon.Examples
         private static IReadOnlyList<GorgonFileSystemProvider> _providers;
         // The cache that will hold the assemblies where our plugins will live.
         private static GorgonMefPlugInCache _pluginAssemblies;
-        // The plugin service.
-        private static IGorgonPlugInService _pluginService;
         // The log used for debug logging.
         private static IGorgonLog _log;
         #endregion
@@ -82,7 +79,7 @@ namespace Gorgon.Examples
         {
             get
             {
-                string path = Settings.Default.PlugInLocation;
+                string path = ExampleConfig.Default.PlugInLocation;
 
                 if (path.Contains("{0}"))
                 {
@@ -110,15 +107,13 @@ namespace Gorgon.Examples
         /// <returns>The number of file system provider plug ins.</returns>
         private static int LoadFileSystemProviders()
         {
-            _pluginAssemblies.LoadPlugInAssemblies(PlugInPath, "Gorgon.FileSystem.*");
-
             // Get the file system provider factory so we can retrieve our newly loaded providers.
-            IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
+            IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginAssemblies, _log);
 
             // Get all the providers.
             // We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
             // this example, we'll get everything we've got.
-            _providers = providerFactory.CreateProviders();
+            _providers = providerFactory.CreateProviders(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.*.dll"));
 
             return _providers.Count;
         }
@@ -128,13 +123,13 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Main()
         {
-            _log = new GorgonLog("FileSystemProviders", "Tape_Worm");
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+
+            _log = new GorgonTextFileLog("FileSystemProviders", "Tape_Worm");
             _log.LogStart();
 
             // Create a plugin assembly cache to hold our plugin assemblies.
             _pluginAssemblies = new GorgonMefPlugInCache(_log);
-            // Create the plugin service.
-            _pluginService = new GorgonMefPlugInService(_pluginAssemblies);
 
             try
             {

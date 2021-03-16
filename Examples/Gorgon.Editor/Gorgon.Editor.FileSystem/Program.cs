@@ -25,8 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Numerics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -34,10 +33,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.PlugIns;
@@ -91,15 +88,14 @@ namespace Gorgon.Examples
             // The Gorgon packed file provider plug in dll.
             const string gorPackDll = "Gorgon.FileSystem.GorPack.dll";
             // The name of the Gorgon packed file plugin.
-            const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";
+            const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";            
 
             // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
             // and get rid of the plugin stuff since we won't need it again.
             _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
-            _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
+            IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(_assemblyCache);
 
-            var plugIns = new GorgonMefPlugInService(_assemblyCache);
-            return plugIns.GetPlugIn<GorgonFileSystemProvider>(gorPackPlugInName);
+            return factory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, gorPackDll), gorPackPlugInName);
         }
 
         /// <summary>
@@ -108,13 +104,16 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
+            // Tell the graphics API that we want to render to the "screen" swap chain.
+            _graphics.SetRenderTarget(_screen.RenderTargetView);
+
             _screen.RenderTargetView.Clear(new GorgonColor(0.333333f, 0.752941f, 0.850980f));
 
-            var scale = new DX.Vector2(_screen.Width / (float)Settings.Default.Resolution.Width, 
-                                       _screen.Height / (float)Settings.Default.Resolution.Height);
+            var scale = new Vector2(_screen.Width / (float)ExampleConfig.Default.Resolution.Width, 
+                                       _screen.Height / (float)ExampleConfig.Default.Resolution.Height);
 
-            _dudeBro.Position = new DX.Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
-            _dudeBroReflect.Position = new DX.Vector2(_dudeBro.Position.X, _dudeBro.Position.Y + _dudeBro.ScaledSize.Height + 3);
+            _dudeBro.Position = new Vector2(_screen.Width * 0.5f, -139 + _backGround.Height * scale.Y * 0.5f);
+            _dudeBroReflect.Position = new Vector2(_dudeBro.Position.X, _dudeBro.Position.Y + _dudeBro.ScaledSize.Height + 3);
 
             // Copy the texture coordinates from the animated sprite, this way we can mirror the animation in our reflection without
             // having to set up a separate controller.
@@ -142,8 +141,8 @@ namespace Gorgon.Examples
         /// </summary>
         private static async Task InitializeAsync(FormMain window)
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
             try
             {
@@ -173,8 +172,8 @@ namespace Gorgon.Examples
                                               window,
                                               new GorgonSwapChainInfo("Gorgon2D Gorgon.Editor Example Swap Chain")
                                               {
-                                                  Width = Settings.Default.Resolution.Width,
-                                                  Height = Settings.Default.Resolution.Height,
+                                                  Width = ExampleConfig.Default.Resolution.Width,
+                                                  Height = ExampleConfig.Default.Resolution.Height,
                                                   Format = BufferFormat.R8G8B8A8_UNorm
                                               });
                 
@@ -222,7 +221,7 @@ namespace Gorgon.Examples
                 _backGround = (await _contentLoader.LoadTextureAsync("/nature_settings_simple_landscape_1.dds"))?.GetShaderResourceView();
 
                 // This sprite is kinda small, so we'll need to update its scale.
-                _dudeBroReflect.Scale = _dudeBro.Scale = new DX.Vector2(8, 8);
+                _dudeBroReflect.Scale = _dudeBro.Scale = new Vector2(8, 8);
                 _dudeBroReflect.VerticalFlip = true;
 
                 // Now that we have a sprite, and an animation to play against, we can set up the animation controller to play the 
@@ -247,6 +246,9 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
@@ -255,7 +257,7 @@ namespace Gorgon.Examples
                 SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
                 // Create the window, and size it to our resolution.
-                FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), 
+                FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), 
                                                            "Gorgon.Editor.FileSystem - Loading content from an editor file system example.",
                                                            async (sender, _) => await InitializeAsync(sender as FormMain));
 

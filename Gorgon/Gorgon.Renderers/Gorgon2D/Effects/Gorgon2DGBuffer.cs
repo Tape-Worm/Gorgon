@@ -25,11 +25,13 @@
 #endregion
 
 using System;
-using DX = SharpDX;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using System.Threading;
 
 namespace Gorgon.Renderers
 {
@@ -68,10 +70,10 @@ namespace Gorgon.Renderers
         // The indices of the normal/specular map when using an array.
         private (int normalIndex, int specularIndex) _indices;
         // The macro sent to the shader to enable using array indices.
-        private readonly GorgonShaderMacro _useArrayMacro = new GorgonShaderMacro("USE_ARRAY");
+        private readonly GorgonShaderMacro _useArrayMacro = new("USE_ARRAY");
         
         // The texture information for the main GBuffer targets.
-        private readonly GorgonTexture2DInfo _mainInfo = new GorgonTexture2DInfo("GBuffer")
+        private readonly GorgonTexture2DInfo _mainInfo = new("GBuffer")
         {
             ArrayCount = 3,
             Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
@@ -149,7 +151,7 @@ namespace Gorgon.Renderers
                 _target[i]?.Dispose();
             }
 
-            GBufferTexture = Specular = Normal = Diffuse = null;            
+            GBufferTexture = Specular = Normal = Diffuse = null;                        
             Array.Clear(_target, 0, _target.Length);
             
             _gbuffer?.Dispose();
@@ -162,7 +164,7 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">The camera used to transform the lights to camera space.</param>
-        private void OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, IGorgon2DCamera camera)
+        private void OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, GorgonCameraCommon camera)
         {
             BeginRender(_target[0], blendState, depthStencilState, rasterState);
             BeginPass(0, _target[0], camera);
@@ -202,13 +204,13 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool defaultStatesChanged)
         {
-            if (_vertexShaderState == null)
+            if (_vertexShaderState is null)
             {                
                 _vertexShaderState = builders.VertexShaderBuilder.Shader(_vertexShader)
                                                                  .Build();
             }
 
-            if (_pixelShader == null)
+            if (_pixelShader is null)
             {
                 Macros.Clear();
                 if (_useArray)
@@ -220,7 +222,7 @@ namespace Gorgon.Renderers
                 _pixelShaderState = null;
             }
 
-            if (_pixelShaderState == null)
+            if (_pixelShaderState is null)
             {
                 builders.PixelShaderBuilder.Clear()
                                            .Shader(_pixelShader);
@@ -240,7 +242,7 @@ namespace Gorgon.Renderers
                 _gbufferState = null;
             }
 
-            if ((_gbufferState == null) || (defaultStatesChanged))
+            if ((_gbufferState is null) || (defaultStatesChanged))
             {
                 _gbufferState = builders.BatchBuilder.PixelShaderState(_pixelShaderState)
                                                      .VertexShaderState(_vertexShaderState)
@@ -298,7 +300,7 @@ namespace Gorgon.Renderers
             _params = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo("GBuffer Parameters")
             {
                 Usage = ResourceUsage.Default,
-                SizeInBytes = DX.Vector4.SizeInBytes
+                SizeInBytes = Unsafe.SizeOf<Vector4>()
             });
         }
 
@@ -353,7 +355,7 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        public void Begin(GorgonTexture2DView normal = null, GorgonTexture2DView specular = null, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        public void Begin(GorgonTexture2DView normal = null, GorgonTexture2DView specular = null, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             if ((_normalTexture != normal) || (_specularTexture != specular))
             {
@@ -387,7 +389,7 @@ namespace Gorgon.Renderers
         /// This method takes the texture of whatever is currently being rendered and uses an array index to index into the texture and retrieve the normal and specular map values.
         /// </para>
         /// </remarks>
-        public void Begin(int normalMapIndex, int specularMapIndex, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, IGorgon2DCamera camera = null)
+        public void Begin(int normalMapIndex, int specularMapIndex, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             if (!_initialized)
             {
@@ -397,8 +399,8 @@ namespace Gorgon.Renderers
 
             if ((_indices.normalIndex != normalMapIndex) || (_indices.specularIndex != specularMapIndex))
             {
-                var gbufferParams = new DX.Vector4(normalMapIndex, specularMapIndex, 0, 0);
-                _params.Buffer.SetData(ref gbufferParams);
+                var gbufferParams = new Vector4(normalMapIndex, specularMapIndex, 0, 0);
+                _params.Buffer.SetData(in gbufferParams);
                 _indices = (normalMapIndex, specularMapIndex);
             }
 

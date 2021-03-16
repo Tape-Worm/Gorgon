@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -36,6 +37,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.UI;
 using DX = SharpDX;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Examples
 {
@@ -130,9 +132,9 @@ namespace Gorgon.Examples
             MiniTriVertex[] vertices = {
 							   // Note that we're assigning the texture coordinates in pixel space. The ToTexel function on the texture will convert these into 
 							   // texel space for us.
-				               new MiniTriVertex(new DX.Vector3(0, 0.5f, 1.0f), _texture.ToTexel(new DX.Point(128, 3))),
-                               new MiniTriVertex(new DX.Vector3(0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(230, 252))),
-                               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(23, 252)))
+				               new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), _texture.ToTexel(new DX.Point(128, 3))),
+                               new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(230, 252))),
+                               new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(23, 252)))
                            };
 
             // Create the vertex buffer.
@@ -147,7 +149,7 @@ namespace Gorgon.Examples
                                                                                         });
 
             // Send the vertex data into the buffer.
-            _vertexBuffer.VertexBuffer.SetData(vertices);
+            _vertexBuffer.VertexBuffer.SetData<MiniTriVertex>(vertices);
         }
 
         /// <summary>
@@ -156,18 +158,21 @@ namespace Gorgon.Examples
         /// <param name="window">The application window.</param>
         private static void CreateConstantBuffer(Form window)
         {
-            // Our projection matrix.
+            // Use a camera to build our projection matrix.
 
             // Build our projection matrix using a 65 degree field of view and an aspect ratio that matches our current window aspect ratio.
             // Note that we depth a depth range from 0.001f up to 1000.0f.  This provides a near and far plane for clipping.  
             // These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
             // linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-            DX.Matrix.PerspectiveFovLH(65.0f.ToRadians(), window.ClientSize.Width / (float)window.ClientSize.Height, 0.125f, 1000f, out DX.Matrix projectionMatrix);
+            var camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(window.ClientSize.Width, window.ClientSize.Height), 0.125f, 1000.0f)
+            {
+                Fov = 65.0f
+            };
 
             // Create our constant buffer.
             //
             // The data we pass into here will apply the projection transformation to our vertex data so we can transform from 3D space into 2D space.
-            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref projectionMatrix, "MiniTri WVP Constant Buffer");
+            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in camera.GetProjectionMatrix(), "MiniTri WVP Constant Buffer");
         }
 
         /// <summary>
@@ -176,7 +181,7 @@ namespace Gorgon.Examples
         /// <returns>The application window.</returns>
         private static FormMain Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Create our form and center on the primary monitor.
             FormMain window = GorgonExample.Initialize(new DX.Size2(1280, 800), "Gorgon MiniTri - Now with 100% more textures.");
@@ -232,6 +237,7 @@ namespace Gorgon.Examples
                 {
                     DoNotAutoResizeBackBuffer = true
                 };
+                _graphics.SetRenderTarget(_swap.RenderTargetView);
 
                 // Create the shaders used to render the triangle.
                 // These shaders provide transformation and coloring for the output pixel data.
@@ -301,6 +307,9 @@ namespace Gorgon.Examples
         [STAThread]
         private static void Main()
         {
+#if NET5_0_OR_GREATER
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

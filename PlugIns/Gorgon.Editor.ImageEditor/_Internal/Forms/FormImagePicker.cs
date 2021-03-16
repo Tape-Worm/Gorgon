@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // A list of images held until the form is loaded for the first time.
-        private readonly List<(string, Image)> _deferredImages = new List<(string, Image)>();
+        private readonly List<(string, Image)> _deferredImages = new();
         // The background texture.
         private GorgonTexture2DView _bgTextureView;
         private GorgonTexture2D _bgTexture;
@@ -118,7 +118,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void ValidateButtons(IImagePicker dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ButtonOK.Enabled = ListImages.Enabled = TableArrayDepthControls.Enabled = false;                
                 return;
@@ -130,8 +130,7 @@ namespace Gorgon.Editor.ImageEditor
             PanelDialogButtons.Visible = LabelImportDesc.Visible = ListImages.Visible = enableList;
             TableArrayDepthControls.Visible = enableList;            
 
-            LabelAnchor.Visible = AlignmentPicker.Visible = (dataContext.CropResizeSettings.CurrentMode == CropResizeMode.Crop) 
-                                                            || (dataContext.CropResizeSettings.CurrentMode == CropResizeMode.None);
+            LabelAnchor.Visible = AlignmentPicker.Visible = dataContext.CropResizeSettings.CurrentMode is CropResizeMode.Crop or CropResizeMode.None;
             LabelResizeAnchor.Visible = AlignmentResize.Visible = (dataContext.CropResizeSettings.CurrentMode == CropResizeMode.Resize)
                                                             && (dataContext.CropResizeSettings.PreserveAspect);
             LabelImageFilter.Visible = PanelFilter.Visible = !LabelAnchor.Visible;
@@ -146,7 +145,7 @@ namespace Gorgon.Editor.ImageEditor
 
             ISourceImagePicker sourcePicker = dataContext.SourcePicker;
 
-            if (sourcePicker == null)
+            if (sourcePicker is null)
             {
                 ButtonPrevSrcArray.Enabled = ButtonNextSrcArray.Enabled = ButtonPrevSrcMip.Enabled = ButtonNextSrcMip.Enabled = false;
                 ButtonSrcImport.Enabled = false;
@@ -166,7 +165,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void SetUIText(ICropResizeSettings dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }
@@ -186,7 +185,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void SetUIText(IImagePicker dataContext)
         {
-            if (dataContext?.ImageData == null)
+            if (dataContext?.ImageData is null)
             {
                 return;
             }
@@ -206,7 +205,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The current data context.</param>
         private void SetUIText(ISourceImagePicker dataContext)
         {
-            if (dataContext?.SourceImage == null)
+            if (dataContext?.SourceImage is null)
             {
                 return;
             }
@@ -233,40 +232,40 @@ namespace Gorgon.Editor.ImageEditor
             switch (DataContext.CropResizeSettings.CurrentAlignment)
             {
                 case Alignment.UpperLeft:
-                    _previewSprite.Position = new DX.Vector2(x, y);
-                    _previewSprite.AbsoluteAnchor = DX.Vector2.Zero;
+                    _previewSprite.Position = new Vector2(x, y);
+                    _previewSprite.AbsoluteAnchor = Vector2.Zero;
                     break;
                 case Alignment.UpperCenter:
-                    _previewSprite.Position = new DX.Vector2(x + (width * 0.5f), y);
-                    _previewSprite.Anchor = new DX.Vector2(0.5f, 0);
+                    _previewSprite.Position = new Vector2(x + (width * 0.5f), y);
+                    _previewSprite.Anchor = new Vector2(0.5f, 0);
                     break;
                 case Alignment.UpperRight:
-                    _previewSprite.Position = new DX.Vector2(x + width, y);
-                    _previewSprite.Anchor = new DX.Vector2(1, 0);
+                    _previewSprite.Position = new Vector2(x + width, y);
+                    _previewSprite.Anchor = new Vector2(1, 0);
                     break;
                 case Alignment.CenterLeft:
-                    _previewSprite.Position = new DX.Vector2(x, y + (height * 0.5f));
-                    _previewSprite.Anchor = new DX.Vector2(0, 0.5f);
+                    _previewSprite.Position = new Vector2(x, y + (height * 0.5f));
+                    _previewSprite.Anchor = new Vector2(0, 0.5f);
                     break;
                 case Alignment.Center:
-                    _previewSprite.Position = new DX.Vector2(x + (width * 0.5f), y + (height * 0.5f));
-                    _previewSprite.Anchor = new DX.Vector2(0.5f, 0.5f);
+                    _previewSprite.Position = new Vector2(x + (width * 0.5f), y + (height * 0.5f));
+                    _previewSprite.Anchor = new Vector2(0.5f, 0.5f);
                     break;
                 case Alignment.CenterRight:
-                    _previewSprite.Position = new DX.Vector2(x + width, y + (height * 0.5f));
-                    _previewSprite.Anchor = new DX.Vector2(1, 0.5f);
+                    _previewSprite.Position = new Vector2(x + width, y + (height * 0.5f));
+                    _previewSprite.Anchor = new Vector2(1, 0.5f);
                     break;
                 case Alignment.LowerLeft:
-                    _previewSprite.Position = new DX.Vector2(x, y + height);
-                    _previewSprite.Anchor = new DX.Vector2(0, 1);
+                    _previewSprite.Position = new Vector2(x, y + height);
+                    _previewSprite.Anchor = new Vector2(0, 1);
                     break;
                 case Alignment.LowerCenter:
-                    _previewSprite.Position = new DX.Vector2(x + (width * 0.5f), y + height);
-                    _previewSprite.Anchor = new DX.Vector2(0.5f, 1);
+                    _previewSprite.Position = new Vector2(x + (width * 0.5f), y + height);
+                    _previewSprite.Anchor = new Vector2(0.5f, 1);
                     break;
                 case Alignment.LowerRight:
-                    _previewSprite.Position = new DX.Vector2(x + width, y + height);
-                    _previewSprite.Anchor = new DX.Vector2(1, 1);
+                    _previewSprite.Position = new Vector2(x + width, y + height);
+                    _previewSprite.Anchor = new Vector2(1, 1);
                     break;
             }
 
@@ -274,7 +273,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 case CropResizeMode.None:
                 case CropResizeMode.Crop:
-                    _previewSprite.Scale = new DX.Vector2(scale, scale);
+                    _previewSprite.Scale = new Vector2(scale, scale);
 
                     _previewSprite.TextureSampler = GorgonSamplerState.PointFiltering;
                     break;
@@ -293,8 +292,8 @@ namespace Gorgon.Editor.ImageEditor
 
                     if (!DataContext.CropResizeSettings.PreserveAspect)
                     {
-                        _previewSprite.Position = new DX.Vector2((int)x, (int)y);
-                        _previewSprite.Anchor = DX.Vector2.Zero;
+                        _previewSprite.Position = new Vector2((int)x, (int)y);
+                        _previewSprite.Anchor = Vector2.Zero;
                     }
                     _previewSprite.ScaledSize = new DX.Size2F((int)width, (int)height);
                     _previewSprite.TextureSampler = DataContext.CropResizeSettings.ImageFilter == ImageFilter.Point ? GorgonSamplerState.PointFiltering : GorgonSamplerState.Default;
@@ -336,14 +335,14 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void DrawSourceImage()
         {
-            if (_sourceSwapchain == null)
+            if (_sourceSwapchain is null)
             {
                 return;
             }
 
             IGorgonImage image = DataContext.SourcePicker.SourceImage;
             Gorgon2D renderer = GraphicsContext.Renderer2D;
-            var halfClient = new DX.Vector2((PanelSourceImage.ClientSize.Width - 6) * 0.5f, (PanelSourceImage.ClientSize.Height - 6) * 0.5f);
+            var halfClient = new Vector2((PanelSourceImage.ClientSize.Width - 6) * 0.5f, (PanelSourceImage.ClientSize.Height - 6) * 0.5f);
             float scale = ((float)(PanelSourceImage.ClientSize.Width - 6) / DataContext.SourcePicker.MipWidth).Min((float)(PanelSourceImage.ClientSize.Height - 6) / DataContext.SourcePicker.MipHeight);
             float width = DataContext.SourcePicker.MipWidth * scale;
             float height = DataContext.SourcePicker.MipHeight * scale;
@@ -357,7 +356,7 @@ namespace Gorgon.Editor.ImageEditor
                 DepthSlice = image.ImageType == ImageType.Image3D ? (float)DataContext.SourcePicker.CurrentArrayIndexDepthSlice / DataContext.SourcePicker.MipDepth : 0,
                 MipLevel = DataContext.SourcePicker.CurrentMipLevel
             };
-            _textureParameters.Buffer.SetData(ref tParams);
+            _textureParameters.Buffer.SetData(in tParams);
 
             GraphicsContext.Graphics.SetRenderTarget(_sourceSwapchain.RenderTargetView);
 
@@ -388,7 +387,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
         private bool Idle()
         {
-            if ((GraphicsContext == null) || (DataContext?.ImageData == null))
+            if ((GraphicsContext is null) || (DataContext?.ImageData is null))
             {
                 return false;
             }
@@ -398,7 +397,7 @@ namespace Gorgon.Editor.ImageEditor
             Gorgon2D renderer = GraphicsContext.Renderer2D;
             IGorgonImage image = DataContext.ImageData;
 
-            var halfClient = new DX.Vector2((PanelArrayDepth.ClientSize.Width - 6) * 0.5f, (PanelArrayDepth.ClientSize.Height - 6) * 0.5f);
+            var halfClient = new Vector2((PanelArrayDepth.ClientSize.Width - 6) * 0.5f, (PanelArrayDepth.ClientSize.Height - 6) * 0.5f);
             float scale = ((float)(PanelArrayDepth.ClientSize.Width - 6) / DataContext.MipWidth).Min((float)(PanelArrayDepth.ClientSize.Height - 6) / DataContext.MipHeight);
             float width = DataContext.MipWidth * scale;
             float height = DataContext.MipHeight * scale;
@@ -411,7 +410,7 @@ namespace Gorgon.Editor.ImageEditor
                 DepthSlice = image.ImageType == ImageType.Image3D ? (float)DataContext.CurrentArrayIndexDepthSlice / DataContext.MipDepth : 0,
                 MipLevel = DataContext.CurrentMipLevel
             };
-            _textureParameters.Buffer.SetData(ref tParams);
+            _textureParameters.Buffer.SetData(in tParams);
 
             GraphicsContext.Graphics.SetRenderTarget(_imageSwapChain.RenderTargetView);
 
@@ -457,7 +456,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void CleanupGraphics()
         {
-            if (GraphicsContext == null)
+            if (GraphicsContext is null)
             {
                 return;
             }
@@ -480,7 +479,7 @@ namespace Gorgon.Editor.ImageEditor
             GorgonTexture3DView view3D = Interlocked.Exchange(ref _imageTexture3D, null);
             view3D?.Dispose();
 
-            if (swapChain != null)
+            if (swapChain is not null)
             {
                 GraphicsContext.ReturnSwapPresenter(ref swapChain);
             }
@@ -497,7 +496,7 @@ namespace Gorgon.Editor.ImageEditor
             oldTexture3D?.Dispose();
             oldTexture2D?.Dispose();
 
-            if (DataContext.SourcePicker.SourceImage == null)
+            if (DataContext.SourcePicker.SourceImage is null)
             {
                 return;
             }
@@ -610,7 +609,7 @@ namespace Gorgon.Editor.ImageEditor
             src3D?.Dispose();
             src2D?.Dispose();
 
-            if (swap != null)
+            if (swap is not null)
             {
                 GraphicsContext?.ReturnSwapPresenter(ref swap);
             }
@@ -621,7 +620,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void InitializeSourceImagePicking()
         {
-            if (GraphicsContext == null)
+            if (GraphicsContext is null)
             {
                 return;
             }
@@ -635,7 +634,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </summary>
         private void InitializeGraphics()
         {
-            if (GraphicsContext == null)
+            if (GraphicsContext is null)
             {
                 return;
             }
@@ -651,7 +650,7 @@ namespace Gorgon.Editor.ImageEditor
             _imageSwapChain = GraphicsContext.LeaseSwapPresenter(PanelArrayDepth);
 
             // Only create the pixel shaders and related resources once.
-            if (_imageShader2D == null)
+            if (_imageShader2D is null)
             {
                 _imageShader2D = GorgonShaderFactory.Compile<GorgonPixelShader>(GraphicsContext.Graphics, Resources.ImageViewShaders, "Gorgon2DTextureArrayView");
                 _imageShader3D = GorgonShaderFactory.Compile<GorgonPixelShader>(GraphicsContext.Graphics, Resources.ImageViewShaders, "Gorgon3DTextureView");
@@ -689,7 +688,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="ItemDragEventArgs"/> instance containing the event data.</param>
         private void ListImages_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -720,7 +719,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="ListViewItemMouseHoverEventArgs"/> instance containing the event data.</param>
         private void ListImages_ItemMouseHover(object sender, ListViewItemMouseHoverEventArgs e)
         {
-            if (!(e.Item?.Tag is ImagePickerImportData data))
+            if (e.Item?.Tag is not ImagePickerImportData data)
             {
                 TipsFiles.Hide(ListImages);
                 return;
@@ -736,7 +735,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonCropResizeOk_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.UpdateImageCommand == null) || (!DataContext.UpdateImageCommand.CanExecute(null)))
+            if ((DataContext?.UpdateImageCommand is null) || (!DataContext.UpdateImageCommand.CanExecute(null)))
             {
                 return;
             }
@@ -749,7 +748,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSrcImport_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.SelectSourceImageCommand == null) || (!DataContext.SelectSourceImageCommand.CanExecute(null)))
+            if ((DataContext?.SelectSourceImageCommand is null) || (!DataContext.SelectSourceImageCommand.CanExecute(null)))
             {
                 return;
             }
@@ -762,7 +761,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevSrcArray_Click(object sender, EventArgs e)
         {
-            if (DataContext?.SourcePicker == null)
+            if (DataContext?.SourcePicker is null)
             {
                 return;
             }
@@ -776,7 +775,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextSrcArray_Click(object sender, EventArgs e)
         {
-            if (DataContext?.SourcePicker == null)
+            if (DataContext?.SourcePicker is null)
             {
                 return;
             }
@@ -790,7 +789,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevSrcMip_Click(object sender, EventArgs e)
         {
-            if (DataContext?.SourcePicker == null)
+            if (DataContext?.SourcePicker is null)
             {
                 return;
             }
@@ -804,7 +803,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextSrcMip_Click(object sender, EventArgs e)
         {
-            if (DataContext?.SourcePicker == null)
+            if (DataContext?.SourcePicker is null)
             {
                 return;
             }
@@ -818,7 +817,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ComboImageFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (DataContext?.CropResizeSettings == null)
+            if (DataContext?.CropResizeSettings is null)
             {
                 return;
             }
@@ -831,7 +830,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckPreserveAspect_CheckedChanged(object sender, EventArgs e)
         {
-            if (DataContext?.CropResizeSettings == null)
+            if (DataContext?.CropResizeSettings is null)
             {
                 return;
             }
@@ -844,7 +843,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void AlignmentPicker_AlignmentChanged(object sender, EventArgs e)
         {
-            if (DataContext?.CropResizeSettings == null)
+            if (DataContext?.CropResizeSettings is null)
             {
                 return;
             }
@@ -859,7 +858,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void RadioCrop_CheckedChanged(object sender, EventArgs e)
         {
-            if (DataContext?.CropResizeSettings == null)
+            if (DataContext?.CropResizeSettings is null)
             {
                 return;
             }
@@ -881,7 +880,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void RadioResize_CheckedChanged(object sender, EventArgs e)
         {
-            if (DataContext?.CropResizeSettings == null)
+            if (DataContext?.CropResizeSettings is null)
             {
                 return;
             }
@@ -895,7 +894,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonCropResizeCancel_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.CancelImportFileCommand == null) || (!DataContext.CancelImportFileCommand.CanExecute(null)))
+            if ((DataContext?.CancelImportFileCommand is null) || (!DataContext.CancelImportFileCommand.CanExecute(null)))
             {
                 return;    
             }
@@ -908,7 +907,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonSrcCancel_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.CancelImportFileCommand == null) || (!DataContext.CancelImportFileCommand.CanExecute(null)))
+            if ((DataContext?.CancelImportFileCommand is null) || (!DataContext.CancelImportFileCommand.CanExecute(null)))
             {
                 return;
             }
@@ -922,7 +921,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonRestore_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.RestoreCommand == null) || (!DataContext.RestoreCommand.CanExecute(null)))
+            if ((DataContext?.RestoreCommand is null) || (!DataContext.RestoreCommand.CanExecute(null)))
             {
                 return;
             }
@@ -935,7 +934,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ButtonImport_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.ImportCommand == null) || (!DataContext.ImportCommand.CanExecute(null)))
+            if ((DataContext?.ImportCommand is null) || (!DataContext.ImportCommand.CanExecute(null)))
             {
                 return;
             }
@@ -951,7 +950,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonOK_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.OkCommand == null) || (!DataContext.OkCommand.CanExecute(null)))
+            if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
             {
                 return;
             }
@@ -977,7 +976,7 @@ namespace Gorgon.Editor.ImageEditor
                 _resetSelection = true;
 
                 ListImages.SelectedItems.Clear();
-                if (_selectedFile != null)
+                if (_selectedFile is not null)
                 {
                     _selectedFile.Selected = true;
                 }
@@ -989,7 +988,7 @@ namespace Gorgon.Editor.ImageEditor
             _selectedFile = ListImages.SelectedItems.Count > 0 ? ListImages.SelectedItems[0] : null;
             var data = (ImagePickerImportData)_selectedFile?.Tag;
 
-            if ((DataContext?.SelectFileCommand == null) || (!DataContext.SelectFileCommand.CanExecute(data)))
+            if ((DataContext?.SelectFileCommand is null) || (!DataContext.SelectFileCommand.CanExecute(data)))
             {
                 return;
             }
@@ -1002,7 +1001,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextArrayDepth_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1015,7 +1014,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevArrayDepth_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1028,7 +1027,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonNextMip_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1041,7 +1040,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonPrevMip_Click(object sender, EventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1117,7 +1116,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(ICropResizeSettings.ImportImage):
-                    if (DataContext.CropResizeSettings.ImportImage == null)
+                    if (DataContext.CropResizeSettings.ImportImage is null)
                     {
                         break;
                     }
@@ -1171,7 +1170,7 @@ namespace Gorgon.Editor.ImageEditor
             switch (e.PropertyName)
             {
                 case nameof(ISourceImagePicker.SourceImage):
-                    if ((_sourceTexture2D != null) || (_sourceTexture3D != null))
+                    if ((_sourceTexture2D is not null) || (_sourceTexture3D is not null))
                     {
                         BuildSourceImageTexture();
                     }
@@ -1203,7 +1202,7 @@ namespace Gorgon.Editor.ImageEditor
                     CleanupSourceImagePicking();
                     break;
                 case nameof(IImagePicker.IsActive):
-                    if (_prevIdle != null)
+                    if (_prevIdle is not null)
                     {
                         GorgonApplication.IdleMethod = _prevIdle;
                     }                    
@@ -1236,7 +1235,7 @@ namespace Gorgon.Editor.ImageEditor
                     break;
                 case nameof(IImagePicker.ImageData):
                     // Only update the texture if we've already created it.
-                    if ((_imageTexture2D != null) || (_imageTexture3D != null))
+                    if ((_imageTexture2D is not null) || (_imageTexture3D is not null))
                     {
                         BuildImageTexture();
                     }
@@ -1246,14 +1245,14 @@ namespace Gorgon.Editor.ImageEditor
                     SetUIText(DataContext);
                     break;
                 case nameof(IImagePicker.SelectedFile):
-                    if (DataContext.SelectedFile == null)
+                    if (DataContext.SelectedFile is null)
                     {                        
                         break;
                     }
 
                     ListViewItem imageItem = ListImages.Items.OfType<ListViewItem>().FirstOrDefault(item => item.Tag == DataContext.SelectedFile);
 
-                    if ((imageItem == null) || (imageItem.Selected))
+                    if ((imageItem is null) || (imageItem.Selected))
                     {
                         break;
                     }
@@ -1289,13 +1288,13 @@ namespace Gorgon.Editor.ImageEditor
         {
             ImageFiles.Images.Clear();
 
-            if ((dataContext?.FilesToImport == null) || (dataContext.FilesToImport.Count == 0))
+            if ((dataContext?.FilesToImport is null) || (dataContext.FilesToImport.Count == 0))
             {                
                 return;
             }
 
             // Convert to GDI+ bitmaps.
-            foreach (ImagePickerImportData data in dataContext.FilesToImport.Where(item => item.Thumbnail != null))
+            foreach (ImagePickerImportData data in dataContext.FilesToImport.Where(item => item.Thumbnail is not null))
             {
                 Image bitmap = data.Thumbnail.Buffers[0].ToBitmap();
 
@@ -1329,7 +1328,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 ListImages.Items.Clear();
 
-                if (dataContext.FilesToImport == null)
+                if (dataContext.FilesToImport is null)
                 {
                     return;
                 }
@@ -1365,7 +1364,7 @@ namespace Gorgon.Editor.ImageEditor
         {
             _progressPanel.SetDataContext(null);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1394,7 +1393,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="dataContext">The data context to apply.</param>
         private void InitializeFromDataContext(IImagePicker dataContext)
         {
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 ResetDataContext();
                 return;
@@ -1437,7 +1436,7 @@ namespace Gorgon.Editor.ImageEditor
 
             ValidateButtons(DataContext);
 
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -1462,12 +1461,12 @@ namespace Gorgon.Editor.ImageEditor
         {
             base.OnFormClosing(e);
 
-            if ((e.CloseReason == CloseReason.UserClosing) && (DataContext != null))
+            if ((e.CloseReason == CloseReason.UserClosing) && (DataContext is not null))
             {
                 e.Cancel = true;
             }
 
-            if (DataContext != null)
+            if (DataContext is not null)
             {
                 DataContext.Settings.PickerWindowState = (int)WindowState;
 
@@ -1478,7 +1477,7 @@ namespace Gorgon.Editor.ImageEditor
                 }
             }           
 
-            if ((DataContext?.DeactivateCommand != null) && (DataContext.DeactivateCommand.CanExecute(null)))
+            if ((DataContext?.DeactivateCommand is not null) && (DataContext.DeactivateCommand.CanExecute(null)))
             {
                 DataContext.DeactivateCommand.Execute(null);
             }
@@ -1501,7 +1500,7 @@ namespace Gorgon.Editor.ImageEditor
             _progressPanel.SetDataContext(dataContext);
             ValidateButtons(dataContext);
 
-            if (dataContext == null)
+            if (dataContext is null)
             {
                 return;
             }

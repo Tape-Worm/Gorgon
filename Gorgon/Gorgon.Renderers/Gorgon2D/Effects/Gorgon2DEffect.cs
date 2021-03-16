@@ -31,6 +31,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -89,7 +90,7 @@ namespace Gorgon.Renderers
         // The previous size of the output.
         private DX.Size2 _prevOutputSize;
         // The builders used to manage state for the effect.
-        private readonly EffectBuilders _effectBuilders = new EffectBuilders();
+        private readonly EffectBuilders _effectBuilders = new();
         // Flag to indicate that the batch state for the effect pass needs updating.
         private bool _needsStateUpdate = true;
         // The state of the current rendering pass.
@@ -301,14 +302,14 @@ namespace Gorgon.Renderers
         /// <para>
         /// <note type="important">
         /// <para>
-        /// The <see cref="Gorgon2D"/>.<see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/> method is already called prior to this method. Developers must not call 
-        /// <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/> while rendering a pass, or else an exception will be thrown. 
+        /// The <see cref="Gorgon2D"/>.<see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/> method is already called prior to this method. Developers must not call 
+        /// <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/> while rendering a pass, or else an exception will be thrown. 
         /// </para>
         /// </note>
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, IGorgon2DCamera camera) => PassContinuationState.Continue;
+        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera) => PassContinuationState.Continue;
 
         /// <summary>
         /// Function called after a pass is finished rendering.
@@ -391,7 +392,7 @@ namespace Gorgon.Renderers
         {
             output.ValidateObject(nameof(output));
 
-            if (_currentEffect != null)
+            if (_currentEffect is not null)
             {
                 throw new GorgonException(GorgonResult.AlreadyInitialized, string.Format(Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED, _currentEffect));
             }
@@ -435,7 +436,7 @@ namespace Gorgon.Renderers
         ///     <para>
         ///     When the effect is ready to begin rendering a single pass, developers <b>must</b> call this method and ensure there's a matching call to <see cref="EndPass"/>. This method will begin by 
         ///     configuring the states via <see cref="OnGetBatchState(int, IGorgon2DEffectBuilders, bool)"/> for rendering the current effect pass, and by initializing batch rendering via the 
-        ///     <see cref="Gorgon2D.Begin(Gorgon2DBatchState, IGorgon2DCamera)"/> method. It will also call the <see cref="OnBeforeRenderPass(int, GorgonRenderTargetView, IGorgon2DCamera)"/> method so 
+        ///     <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/> method. It will also call the <see cref="OnBeforeRenderPass(int, GorgonRenderTargetView, GorgonCameraCommon)"/> method so 
         ///     effects can do per-pass configuration as needed.
         ///     </para>
         ///     
@@ -461,12 +462,12 @@ namespace Gorgon.Renderers
         ///     </para>
         /// </remarks>
         /// <seealso cref="BeginRender"/>
-        protected PassContinuationState BeginPass(int index, GorgonRenderTargetView output, IGorgon2DCamera camera = null)
+        protected PassContinuationState BeginPass(int index, GorgonRenderTargetView output, GorgonCameraCommon camera = null)
         {
             output.ValidateObject(nameof(output));
             index.ValidateRange(nameof(index), 0, PassCount);
 
-            if (_currentEffect == null)
+            if (_currentEffect is null)
             {
                 throw new GorgonException(GorgonResult.NotInitialized, Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_NOT_CALLED);
             }
@@ -519,14 +520,14 @@ namespace Gorgon.Renderers
         {
             index.ValidateRange(nameof(index), 0, PassCount);
 
-            if ((!_isRenderingPass) || (_currentEffect == null))
+            if ((!_isRenderingPass) || (_currentEffect is null))
             {
                 return;
             }
 
             try
             {
-                if (output == null)
+                if (output is null)
                 {
                     return;
                 }
@@ -575,7 +576,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected void EndRender(GorgonRenderTargetView output)
         {
-            if (_currentEffect == null)
+            if (_currentEffect is null)
             {
                 return;
             }
@@ -589,12 +590,12 @@ namespace Gorgon.Renderers
                 }
 
                 // Set the output render target so effects can just dump their contents to the output.
-                if ((output != null) && (Graphics.RenderTargets[0] != output))
+                if ((output is not null) && (Graphics.RenderTargets[0] != output))
                 {
                     Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
                 }
 
-                if (output == null)
+                if (output is null)
                 {
                     return;
                 }

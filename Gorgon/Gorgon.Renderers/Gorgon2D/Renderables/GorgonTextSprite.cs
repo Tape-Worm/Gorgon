@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,6 +36,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.UI;
 using DX = SharpDX;
+
 
 namespace Gorgon.Renderers
 {
@@ -73,26 +75,24 @@ namespace Gorgon.Renderers
     public class GorgonTextSprite
     {
         #region Variables.
-        // The angle of rotation, in degrees.
-        private float _angle;
         // The text to render.
         private string _text;
         // Text with embedded codes.
         private string _encodedText;
         // The formatted text.
-        private readonly StringBuilder _formattedText = new StringBuilder(256);
+        private readonly StringBuilder _formattedText = new(256);
         // The area for used for text layout.
         private DX.Size2F? _layoutArea;
         // Flag to allow or disallow control codes in the text.
         private bool _allowCodes;
         // The parser used to parse out the codes from text assigned to this object.
-        private readonly TextCodeParser _parser = new TextCodeParser();
+        private readonly TextCodeParser _parser = new();
 
         /// <summary>
         /// The renderable data for this sprite.
         /// It is exposed an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
         /// </summary>
-        internal readonly TextRenderable Renderable = new TextRenderable();
+        internal readonly TextRenderable Renderable = new();
         #endregion
 
         #region Properties.
@@ -287,7 +287,7 @@ namespace Gorgon.Renderers
             get => _allowCodes ? _encodedText : _text;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     value = string.Empty;
                 }
@@ -394,14 +394,14 @@ namespace Gorgon.Renderers
             set
             {
                 if ((Renderable.Font == value)
-                    || (value == null))
+                    || (value is null))
                 {
                     return;
                 }
 
                 Renderable.Font = value;
                 // Default to the first glyph texture.
-                Renderable.Texture = value.Glyphs.FirstOrDefault(item => item.TextureView != null)?.TextureView;
+                Renderable.Texture = value.Glyphs.FirstOrDefault(item => item.TextureView is not null)?.TextureView;
                 Renderable.HasVertexChanges = true;
                 Renderable.HasTextureChanges = true;
                 Renderable.HasVertexColorChanges = true;
@@ -419,19 +419,20 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the position of the sprite.
         /// </summary>
-        public DX.Vector2 Position
+        public Vector2 Position
         {
-            get => Renderable.Bounds.TopLeft;
+            get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
             set
             {
-                if ((Renderable.Bounds.X == value.X)
-                    && (Renderable.Bounds.Y == value.Y))
+                ref DX.RectangleF bounds = ref Renderable.Bounds;
+
+                if ((bounds.Left == value.X)
+                    && (bounds.Top == value.Y))
                 {
                     return;
                 }
 
-                Renderable.Bounds.X = value.X;
-                Renderable.Bounds.Y = value.Y;
+                bounds = new DX.RectangleF(value.X, value.Y, bounds.Width, bounds.Height);
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -460,12 +461,12 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This value is a relative value where 0, 0 means the upper left of the sprite, and 1, 1 means the lower right.
         /// </remarks>
-        public DX.Vector2 Anchor
+        public Vector2 Anchor
         {
             get => Renderable.Anchor;
             set
             {
-                ref DX.Vector2 anchor = ref Renderable.Anchor;
+                ref Vector2 anchor = ref Renderable.Anchor;
                 if ((anchor.X == value.X)
                     && (anchor.Y == value.Y))
                 {
@@ -494,14 +495,14 @@ namespace Gorgon.Renderers
             get
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
             }
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
-                ref DX.Vector2 scale = ref Renderable.Scale;
-                scale = new DX.Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+                ref Vector2 scale = ref Renderable.Scale;
+                scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -509,12 +510,12 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
-        public DX.Vector2 Scale
+        public Vector2 Scale
         {
             get => Renderable.Scale;
             set
             {
-                ref DX.Vector2 scale = ref Renderable.Scale;
+                ref Vector2 scale = ref Renderable.Scale;
                 if ((scale.X == value.X)
                     && (scale.Y == value.Y))
                 {
@@ -531,18 +532,15 @@ namespace Gorgon.Renderers
         /// </summary>
         public float Angle
         {
-            get => _angle;
+            get => Renderable.AngleDegs;
             set
             {
-                if (_angle == value)
+                if (Renderable.AngleDegs == value)
                 {
                     return;
                 }
 
-                _angle = value;
-                Renderable.AngleRads = _angle.ToRadians();
-                Renderable.AngleSin = Renderable.AngleRads.Sin();
-                Renderable.AngleCos = Renderable.AngleRads.Cos();
+                Renderable.AngleDegs = value;
             }
         }
 
@@ -570,7 +568,7 @@ namespace Gorgon.Renderers
             {
                 BatchRenderable renderable = Renderable;
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
-                if (value == null)
+                if (value is null)
                 {
                     if (renderable.AlphaTestData.IsEnabled == 0)
                     {
@@ -594,7 +592,7 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpdateBounds()
         {
-            DX.Size2F size = Renderable.Font.MeasureText(_formattedText.ToString(),
+            DX.Size2F size = _formattedText.ToString().MeasureText(Renderable.Font,
                                                          DrawMode != TextDrawMode.GlyphsOnly,
                                                          Renderable.TabSpaceCount,
                                                          Renderable.LineSpaceMultiplier);
@@ -620,7 +618,7 @@ namespace Gorgon.Renderers
             int estimatedVertexCount = _formattedText.Length * (Renderable.DrawMode == TextDrawMode.OutlinedGlyphs ? 8 : 4);
 
             Renderable.HasVertexChanges = true;
-            Renderable.VertexCountChanged = (Renderable.Vertices == null) || (estimatedVertexCount > Renderable.Vertices.Length);
+            Renderable.VertexCountChanged = (Renderable.Vertices is null) || (estimatedVertexCount > Renderable.Vertices.Length);
         }
         #endregion
 

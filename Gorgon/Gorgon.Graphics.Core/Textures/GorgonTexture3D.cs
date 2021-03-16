@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -38,7 +39,6 @@ using Gorgon.Math;
 using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
-
 
 namespace Gorgon.Graphics.Core
 {
@@ -57,15 +57,15 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // Default texture loading options.
-        private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new GorgonTextureLoadOptions();
+        private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new();
         // The ID number of the texture.
         private static int _textureID;
         // The list of cached texture unordered access views.
-        private Dictionary<TextureViewKey, GorgonTexture3DReadWriteView> _cachedReadWriteViews = new Dictionary<TextureViewKey, GorgonTexture3DReadWriteView>();
+        private Dictionary<TextureViewKey, GorgonTexture3DReadWriteView> _cachedReadWriteViews = new();
         // The list of cached texture shader resource views.
-        private Dictionary<TextureViewKey, GorgonTexture3DView> _cachedSrvs = new Dictionary<TextureViewKey, GorgonTexture3DView>();
+        private Dictionary<TextureViewKey, GorgonTexture3DView> _cachedSrvs = new();
         // The list of cached render target resource views.
-        private Dictionary<TextureViewKey, GorgonRenderTarget3DView> _cachedRtvs = new Dictionary<TextureViewKey, GorgonRenderTarget3DView>();
+        private Dictionary<TextureViewKey, GorgonRenderTarget3DView> _cachedRtvs = new();
         // The information used to create the texture.
         private readonly GorgonTexture3DInfo _info;
         #endregion
@@ -276,7 +276,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Format));
             }
 
-            if ((Usage == ResourceUsage.Dynamic) || (Usage == ResourceUsage.Staging))
+            if (Usage is ResourceUsage.Dynamic or ResourceUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT);
             }
@@ -383,7 +383,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="image">The image used to initialize the texture.</param>
         private void Initialize(IGorgonImage image)
         {
-            if ((Usage == ResourceUsage.Immutable) && (image == null))
+            if ((Usage == ResourceUsage.Immutable) && (image is null))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE_REQUIRES_DATA, Name));
             }
@@ -417,31 +417,7 @@ namespace Gorgon.Graphics.Core
                 MipLevels = MipLevels
             };
 
-            if (image == null)
-            {
-                D3DResource = new D3D11.Texture3D1(Graphics.D3DDevice, tex3DDesc)
-                {
-                    DebugName = $"{Name}[{TextureID}]_ID3D11Texture3D1"
-                };
-                return;
-            }
-
-            // Upload the data to the texture.
-            var dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, MipLevels)];
-
-            unsafe
-            {
-                for (int mipIndex = 0; mipIndex < MipLevels; ++mipIndex)
-                {
-                    IGorgonImageBuffer buffer = image.Buffers[mipIndex];
-                    dataBoxes[mipIndex] = new DX.DataBox(new IntPtr((void*)buffer.Data), buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
-                }
-            }
-
-            D3DResource = new D3D11.Texture3D1(Graphics.D3DDevice, tex3DDesc, dataBoxes)
-            {
-                DebugName = $"{Name}[{TextureID}]_ID3D11Texture3D1"
-            };
+            D3DResource = ResourceFactory.Create(Graphics.D3DDevice, Name, TextureID, in tex3DDesc, image);
         }
 
 
@@ -462,7 +438,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// <para>
         /// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
-        /// copied, use the <see cref="CopyTo(GorgonTexture3D, DX.Rectangle?, GorgonRange?, int, int, int, int, int, CopyMode)"/> method.
+        /// copied, use the <see cref="CopyTo(GorgonTexture3D, in DX.Rectangle?, GorgonRange?, int, int, int, int, int, CopyMode)"/> method.
         /// </para>
         /// <para>
         /// This method does not perform stretching, filtering or clipping.
@@ -543,7 +519,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">The <see cref="IGorgonTexture3DInfo"/> used to define a texture.</param>
         /// <returns>The number of bytes for the texture.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public static int CalculateSizeInBytes(IGorgonTexture3DInfo info) => info == null
+        public static int CalculateSizeInBytes(IGorgonTexture3DInfo info) => info is null
                 ? throw new ArgumentNullException(nameof(info))
                 : CalculateSizeInBytes(info.Width,
                                         info.Height,
@@ -614,7 +590,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRange == null)
+            if (sourceRange is null)
             {
                 rect = new DX.Rectangle(0, sourceY, Width.Min(destinationTexture.Width).Max(1), 1);
             }
@@ -740,7 +716,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void CopyTo(GorgonTexture2D destinationTexture, DX.Rectangle? sourceRectangle = null, int sourceDepthSlice = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+        public void CopyTo(GorgonTexture2D destinationTexture, in DX.Rectangle? sourceRectangle = null, int sourceDepthSlice = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
         {
             destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -756,7 +732,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRectangle == null)
+            if (sourceRectangle is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
             }
@@ -892,7 +868,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void CopyTo(GorgonTexture3D destinationTexture, DX.Rectangle? sourceRectangle = null, GorgonRange? sourceDepthSliceRange = null, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+        public void CopyTo(GorgonTexture3D destinationTexture, in DX.Rectangle? sourceRectangle = null, GorgonRange? sourceDepthSliceRange = null, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
         {
             destinationTexture.ValidateObject(nameof(destinationTexture));
 
@@ -905,7 +881,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            if ((sourceRectangle == null) && (sourceDepthSliceRange == null) && (sourceMipLevel == 0)
+            if ((sourceRectangle is null) && (sourceDepthSliceRange is null) && (sourceMipLevel == 0)
                 && (destX == 0) && (destY == 0) && (destZ == 0) && (destMipLevel == 0)
                 && (MipLevels == destinationTexture.MipLevels)
                 && (Width == destinationTexture.Width) && (Height == destinationTexture.Height) && (Depth == destinationTexture.Depth)
@@ -918,7 +894,7 @@ namespace Gorgon.Graphics.Core
             DX.Rectangle rect;
 
             // If we didn't specify a box to copy from, then create one.
-            if (sourceRectangle == null)
+            if (sourceRectangle is null)
             {
                 rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
             }
@@ -932,7 +908,7 @@ namespace Gorgon.Graphics.Core
 
 
             // Ensure the indices are clipped to our settings.
-            GorgonRange srcDepth = sourceDepthSliceRange == null
+            GorgonRange srcDepth = sourceDepthSliceRange is null
                                        ? new GorgonRange(0, Depth)
                                        : new GorgonRange(sourceDepthSliceRange.Value.Minimum.Min(Depth - 1).Max(0), sourceDepthSliceRange.Value.Maximum.Min(Depth).Max(1));
 
@@ -1140,7 +1116,7 @@ namespace Gorgon.Graphics.Core
         /// ]]>
         /// </code>
         /// </example>
-        public void SetData(IGorgonImageBuffer imageBuffer, DX.Rectangle? destRectangle = null, int destSlice = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+        public void SetData(IGorgonImageBuffer imageBuffer, in DX.Rectangle? destRectangle = null, int destSlice = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
         {
 #if DEBUG
             if (Usage == ResourceUsage.Immutable)
@@ -1178,7 +1154,7 @@ namespace Gorgon.Graphics.Core
             unsafe
             {
                 // If we have a default usage, then update using update subresource.
-                if ((Usage != ResourceUsage.Dynamic) && (Usage != ResourceUsage.Staging))
+                if (Usage is not ResourceUsage.Dynamic and not ResourceUsage.Staging)
                 {
                     Graphics.D3DDeviceContext.UpdateSubresource1(D3DResource,
                                                                  D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destSlice, MipLevels),
@@ -1202,15 +1178,11 @@ namespace Gorgon.Graphics.Core
 
                 if (Usage == ResourceUsage.Dynamic)
                 {
-                    switch (copyMode)
+                    mapMode = copyMode switch
                     {
-                        case CopyMode.NoOverwrite:
-                            mapMode = D3D11.MapMode.WriteNoOverwrite;
-                            break;
-                        default:
-                            mapMode = D3D11.MapMode.WriteDiscard;
-                            break;
-                    }
+                        CopyMode.NoOverwrite => D3D11.MapMode.WriteNoOverwrite,
+                        _ => D3D11.MapMode.WriteDiscard,
+                    };
                 }
 
                 // Otherwise we will map and write the data.
@@ -1286,7 +1258,7 @@ namespace Gorgon.Graphics.Core
                 mipLevel = mipLevel.Min(MipLevels - 1).Max(0);
                 int slice = 0;
 
-                if (depthSlice != null)
+                if (depthSlice is not null)
                 {
                     slice = depthSlice.Value.Min(Depth - 1).Max(0);
                 }
@@ -1295,13 +1267,13 @@ namespace Gorgon.Graphics.Core
                 {
                     Width = (Width >> mipLevel).Max(1),
                     Height = (Height >> mipLevel).Max(1),
-                    Depth = depthSlice == null ? 1 : ((Depth - slice) >> mipLevel).Max(1),
+                    Depth = depthSlice is null ? 1 : ((Depth - slice) >> mipLevel).Max(1),
                     ArrayCount = 1,
                     MipCount = 1
                 });
 
                 // Copy the data from the texture.
-                GetTextureData(stagingTexture, slice, mipLevel, image.Buffers[mipLevel], depthSlice != null);
+                GetTextureData(stagingTexture, slice, mipLevel, image.Buffers[mipLevel], depthSlice is not null);
 
                 return image;
             }
@@ -1380,7 +1352,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="texelCoordinates">The texel coordinates to convert.</param>
         /// <returns>The pixel coordinates.</returns>
-        public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates) => (new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
+        public (DX.Point, int) ToPixel(Vector3 texelCoordinates) => (new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
 
         /// <summary>
         /// Function to convert a pixel coordinate into a texel coordinate.
@@ -1388,28 +1360,28 @@ namespace Gorgon.Graphics.Core
         /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
         /// <param name="depthSlice">The depth slice to convert.</param>
         /// <returns>The texel coordinates.</returns>
-        public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int depthSlice) => new DX.Vector3(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
+        public Vector3 ToTexel(DX.Point pixelCoordinates, int depthSlice) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
 
         /// <summary>
         /// Function to convert a pixel coordinate into a texel coordinate.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
         /// <returns>The texel coordinates.</returns>
-        public DX.Vector3 ToTexel(DX.Vector3 pixelCoordinates) => new DX.Vector3(pixelCoordinates.X / Width, pixelCoordinates.Y / Height, pixelCoordinates.Z / Depth);
+        public Vector3 ToTexel(Vector3 pixelCoordinates) => new(pixelCoordinates.X / Width, pixelCoordinates.Y / Height, pixelCoordinates.Z / Depth);
 
         /// <summary>
         /// Function to convert a texel size into a pixel size.
         /// </summary>
         /// <param name="texelCoordinates">The texel size to convert.</param>
         /// <returns>The pixel size.</returns>
-        public DX.Size2 ToPixel(DX.Size2F texelCoordinates) => new DX.Size2((int)(texelCoordinates.Width * Width), (int)(texelCoordinates.Height * Height));
+        public DX.Size2 ToPixel(DX.Size2F texelCoordinates) => new((int)(texelCoordinates.Width * Width), (int)(texelCoordinates.Height * Height));
 
         /// <summary>
         /// Function to convert a pixel size into a texel size.
         /// </summary>
         /// <param name="pixelCoordinates">The pixel size to convert.</param>
         /// <returns>The texel size.</returns>
-        public DX.Size2F ToTexel(DX.Size2 pixelCoordinates) => new DX.Size2F(pixelCoordinates.Width / (float)Width, pixelCoordinates.Height / (float)Height);
+        public DX.Size2F ToTexel(DX.Size2 pixelCoordinates) => new(pixelCoordinates.Width / (float)Width, pixelCoordinates.Height / (float)Height);
 
         /// <summary>
         /// Function to create a new <see cref="GorgonTexture3DView"/> for this texture.
@@ -1487,12 +1459,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, mipCount, 0, 0);
 
             if ((_cachedSrvs.TryGetValue(key, out GorgonTexture3DView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedSrvs.Remove(key);
             }
@@ -1582,12 +1554,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, startDepthSlice, depthSliceCount);
 
             if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture3DReadWriteView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedReadWriteViews.Remove(key);
             }
@@ -1671,12 +1643,12 @@ namespace Gorgon.Graphics.Core
             var key = new TextureViewKey(format, firstMipLevel, 1, startDepthSlice, depthSliceCount);
 
             if ((_cachedRtvs.TryGetValue(key, out GorgonRenderTarget3DView view))
-                && (view.Native != null))
+                && (view.Native is not null))
             {
                 return view;
             }
 
-            if (view != null)
+            if (view is not null)
             {
                 _cachedRtvs.Remove(key);
             }
@@ -1733,17 +1705,17 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture3D FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
@@ -1753,7 +1725,7 @@ namespace Gorgon.Graphics.Core
                 throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
             }
 
-            if (size == null)
+            if (size is null)
             {
                 size = stream.Length - stream.Position;
             }
@@ -1763,7 +1735,7 @@ namespace Gorgon.Graphics.Core
                 throw new EndOfStreamException();
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -1773,15 +1745,15 @@ namespace Gorgon.Graphics.Core
                 options.Name = GenerateName(NamePrefix);
             }
 
-            using (IGorgonImage image = codec.FromStream(stream, size))
+            using IGorgonImage image = codec.FromStream(stream, size);
+            if (options.ConvertToPremultipliedAlpha)
             {
-                if (options.ConvertToPremultipliedAlpha)
-                {
-                    image.ConvertToPremultipliedAlpha();
-                }
-
-                return new GorgonTexture3D(graphics, image, options);
+                image.BeginUpdate()
+                     .ConvertToPremultipliedAlpha()
+                     .EndUpdate();
             }
+
+            return new GorgonTexture3D(graphics, image, options);
         }
 
         /// <summary>
@@ -1823,12 +1795,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static GorgonTexture3D FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
         {
-            if (graphics == null)
+            if (graphics is null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }
@@ -1838,12 +1810,12 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            if (codec == null)
+            if (codec is null)
             {
                 throw new ArgumentNullException(nameof(codec));
             }
 
-            if (options == null)
+            if (options is null)
             {
                 options = _defaultLoadOptions;
             }
@@ -1853,15 +1825,15 @@ namespace Gorgon.Graphics.Core
                 options.Name = GenerateName(NamePrefix);
             }
 
-            using (IGorgonImage image = codec.FromFile(filePath))
+            using IGorgonImage image = codec.FromFile(filePath);
+            if (options.ConvertToPremultipliedAlpha)
             {
-                if (options.ConvertToPremultipliedAlpha)
-                {
-                    image.ConvertToPremultipliedAlpha();
-                }
-
-                return new GorgonTexture3D(graphics, image, options);
+                image.BeginUpdate()
+                     .ConvertToPremultipliedAlpha()
+                     .EndUpdate();
             }
+
+            return new GorgonTexture3D(graphics, image, options);
         }
 
         /// <summary>
@@ -1874,7 +1846,7 @@ namespace Gorgon.Graphics.Core
             Dictionary<TextureViewKey, GorgonRenderTarget3DView> cachedRtvs = Interlocked.Exchange(ref _cachedRtvs, null);
             Dictionary<TextureViewKey, GorgonTexture3DReadWriteView> cachedReadWriteViews = Interlocked.Exchange(ref _cachedReadWriteViews, null);
 
-            if (cachedSrvs != null)
+            if (cachedSrvs is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonTexture3DView> view in cachedSrvs)
                 {
@@ -1882,7 +1854,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            if (cachedRtvs != null)
+            if (cachedRtvs is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonRenderTarget3DView> view in cachedRtvs)
                 {
@@ -1890,7 +1862,7 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            if (cachedReadWriteViews != null)
+            if (cachedReadWriteViews is not null)
             {
                 foreach (KeyValuePair<TextureViewKey, GorgonTexture3DReadWriteView> view in cachedReadWriteViews)
                 {

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -53,7 +54,7 @@ namespace Gorgon.Editor.ImageEditor
             /// <summary>
             /// The number of steps for ray marching.
             /// </summary>
-            public DX.Vector3 Steps;
+            public Vector3 Steps;
             /// <summary>
             /// The side to render, and number of iterations.
             /// </summary>
@@ -92,9 +93,9 @@ namespace Gorgon.Editor.ImageEditor
         // The angle of rotation for the cube.
         private float _rotationAngle;
         // The projection matrix.
-        private DX.Matrix _projection;
+        private Matrix4x4 _projection;
         // The view matrix.
-        private DX.Matrix _view;
+        private Matrix4x4 _view;
         // The view for the volume texture.
         private GorgonTexture3DView _textureView;
         // The viewport for the cube.
@@ -130,11 +131,10 @@ namespace Gorgon.Editor.ImageEditor
             // the shader.
             _cube.RotateXYZ(_rotationAngle, _rotationAngle, 0);
 
-            DX.Matrix.Multiply(ref _cube.WorldMatrix, ref _view, out DX.Matrix temp);
-            DX.Matrix.Multiply(ref temp, ref _projection, out DX.Matrix wvp);
-            DX.Matrix.Transpose(ref wvp, out wvp);
+            var temp = Matrix4x4.Multiply(_cube.WorldMatrix, _view);
+            var wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, _projection));
 
-            _cubeTransform.SetData(ref wvp);
+            _cubeTransform.SetData(in wvp);
         }
 
         /// <summary>
@@ -179,10 +179,10 @@ namespace Gorgon.Editor.ImageEditor
             var cubeRegionSize = new DX.Size2F(newWidth, newWidth * aspect);
 
             VolumeRegion = new DX.RectangleF(clientSize.Width - cubeRegionSize.Width - 1, 1, cubeRegionSize.Width, cubeRegionSize.Height);
-            DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)clientSize.Width / clientSize.Height, 0.1f, 1000.0f, out _projection);
+            _projection = Matrix4x4.CreatePerspectiveFieldOfView(60.0f.ToRadians(), (float)clientSize.Width / clientSize.Height, 0.1f, 1000.0f);
             _cubeView = new DX.ViewportF(VolumeRegion.Left, VolumeRegion.Top, VolumeRegion.Width, VolumeRegion.Height, 0, 1);
 
-            if (_textureView == null)
+            if (_textureView is null)
             {
                 return;
             }
@@ -198,19 +198,19 @@ namespace Gorgon.Editor.ImageEditor
         {
             _textureView = texture;
 
-            var size = new DX.Vector3(texture.Width, texture.Height, texture.Depth);
+            var size = new Vector3(texture.Width, texture.Height, texture.Depth);
             float maxSize = texture.Width.Max(texture.Height).Max(texture.Depth);
             var volParams = new VolumeRayParameters
             {
-                Steps = new DX.Vector3(1.0f / texture.Width,
+                Steps = new Vector3(1.0f / texture.Width,
                 1.0f / texture.Height,
                 1.0f / texture.Depth) * 0.5f,
                 Iterations = (int)(maxSize * 2.0f)
             };
-            _volumeRayParams.SetData(ref volParams);
+            _volumeRayParams.SetData(in volParams);
 
-            var scaleFactor = new DX.Vector4(1.0f, 1.0f, 1.0f / (maxSize / size.Z), 1.0f);
-            _volumeScaleFactor.SetData(ref scaleFactor);
+            var scaleFactor = new Vector4(1.0f, 1.0f, 1.0f / (maxSize / size.Z), 1.0f);
+            _volumeScaleFactor.SetData(in scaleFactor);
 
             RebuildVolumeData();
         }
@@ -237,9 +237,9 @@ namespace Gorgon.Editor.ImageEditor
 
             // Draw the actual cube.
             _graphics.SetRenderTarget(currentRtv);
-            _graphics.SetViewport(ref _cubeView);
+            _graphics.SetViewport(_cubeView);
             _graphics.Submit(_cubeDirDrawCall);
-            _graphics.SetViewport(ref oldViewport);
+            _graphics.SetViewport(oldViewport);
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace Gorgon.Editor.ImageEditor
 
             _cubeTransform = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo
             {
-                SizeInBytes = DX.Matrix.SizeInBytes
+                SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
             });
 
             _volumeRayParams = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo
@@ -266,11 +266,11 @@ namespace Gorgon.Editor.ImageEditor
 
             _volumeScaleFactor = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo
             {
-                SizeInBytes = DX.Vector4.SizeInBytes
+                SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
             });
 
             // Our camera is never changing, so we only need to define it here.
-            DX.Matrix.Translation(0, 0, 1.5f, out _view);
+            _view = Matrix4x4.CreateTranslation(0, 0, 1.5f);
             ResizeRenderRegion(clientSize);
 
             UpdateCubeTransform();

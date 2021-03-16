@@ -27,11 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Gorgon.Collections;
 using Gorgon.Core;
-using Gorgon.IO.Properties;
 using Gorgon.PlugIns;
 
 namespace Gorgon.IO.Providers
@@ -61,38 +58,20 @@ namespace Gorgon.IO.Providers
     /// the file system provider can be loaded dynamically through Gorgon's plug in system.
     /// </para>
     /// <para>
-    /// Some providers may not use a physical location on the operating system file system. In such cases, implementors of a <see cref="IGorgonFileSystemProvider"/> must provide a prefix for a physical location 
-    /// (e.g. <c>Mount("::\\Prefix\DirectoryName", "/");</c>, <c>Mount("::\\Prefix", "/")</c>, or whatever else the provider chooses). This prefix is specific to the provider and should be made available via 
-    /// the <see cref="Prefix"/> property. The prefix must <u>always</u> begin with the characters <c>::\\</c>. Otherwise, the <see cref="IGorgonFileSystem"/> will not know how to parse the physical location.
-    /// </para>
-    /// <para>
     /// This type allows the mounting of a directory so that data can be read from the native operating system file system. This is the default provider for any <see cref="IGorgonFileSystem"/>.
     /// </para>
     /// </remarks>
-    public class GorgonFileSystemProvider
+    public abstract class GorgonFileSystemProvider
         : GorgonPlugIn, IGorgonFileSystemProvider
     {
         #region Properties.
         /// <summary>
-        /// Property to return the provider specific prefix for a physical location.
+        /// Property to return whether this provider only gives read only access to the physical file system.
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Some providers may not use a physical location on the operating system file system. In such cases, implementors of a <see cref="IGorgonFileSystemProvider"/> must provide a prefix for a physical 
-        /// location (e.g. <c>Mount("::\\Prefix\DirectoryName", "/");</c>, <c>Mount("::\\Prefix", "/")</c>, or whatever else the provider chooses). 
-        /// </para>
-        /// <para>
-        /// This value must <u>always</u> begin with the characters <c>::\\</c>. Otherwise, the <see cref="IGorgonFileSystem"/> will not know how to parse the physical location.
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// If the provider accesses a physical file system directory or file for its information, then this value should always return <see cref="string.Empty"/> or <b>null</b>.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        public string Prefix => null;
+        public abstract bool IsReadOnly
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return a list of preferred file extensions (if applicable).
@@ -120,7 +99,7 @@ namespace Gorgon.IO.Providers
         /// <param name="physicalRoot">Location of the physical folder holding the root for the virtual file system.</param>
         /// <param name="mountPoint">Path to the mount point.</param>
         /// <returns>The virtual file system path.</returns>
-        private static string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
+        protected private static string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
         {
             if ((string.IsNullOrWhiteSpace(physicalPath))
                 || (string.IsNullOrWhiteSpace(physicalRoot))
@@ -150,58 +129,6 @@ namespace Gorgon.IO.Providers
         }
 
         /// <summary>
-        /// Function to enumerate files from the file system.
-        /// </summary>
-        /// <param name="physicalLocation">The physical file system location to enumerate.</param>
-        /// <param name="mountPoint">The mount point to remap the file paths to.</param>
-        /// <param name="recurse"><b>true</b> to recursively retrieve files, <b>false</b> to retrieve only the files in the physical location.</param>
-        /// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> entries.</returns>
-        private static IReadOnlyList<IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint, bool recurse)
-        {
-            var directoryInfo = new DirectoryInfo(physicalLocation);
-
-            IEnumerable<FileInfo> files = directoryInfo.GetFiles("*", recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-                                                       .Where(item =>
-                                                              (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
-                                                              (item.Attributes & FileAttributes.System) != FileAttributes.System &&
-                                                              (item.Attributes & FileAttributes.Compressed) != FileAttributes.Compressed &&
-                                                              (item.Attributes & FileAttributes.Encrypted) != FileAttributes.Encrypted &&
-                                                              (item.Attributes & FileAttributes.Device) != FileAttributes.Device);
-
-            return files.Select(file =>
-                                new PhysicalFileInfo(file,
-                                                     physicalLocation,
-                                                     MapToVirtualPath(file.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar) + file.Name,
-                                                                      physicalLocation,
-                                                                      mountPoint.FullPath)))
-                        .Cast<IGorgonPhysicalFileInfo>()
-                        .ToArray();
-        }
-
-        /// <summary>
-        /// Function to enumerate directories from the file system.
-        /// </summary>
-        /// <param name="physicalLocation">The physical file system location to enumerate.</param>
-        /// <param name="mountPoint">The mount point to remap the directory paths to.</param>
-        /// <returns>A read only list of <see cref="string"/> values representing the mapped directory entries.</returns>
-        private static IReadOnlyList<string> OnEnumerateDirectories(string physicalLocation, IGorgonVirtualDirectory mountPoint)
-        {
-            var directoryInfo = new DirectoryInfo(physicalLocation);
-
-            IEnumerable<DirectoryInfo> directories =
-                directoryInfo.GetDirectories("*", SearchOption.AllDirectories)
-                             .Where(
-                                 item =>
-                                 (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
-                                 (item.Attributes & FileAttributes.System) != FileAttributes.System);
-
-            return directories.Select(item => MapToVirtualPath(item.FullName.FormatDirectory(Path.DirectorySeparatorChar),
-                                                               physicalLocation,
-                                                               mountPoint.FullPath))
-                              .ToArray();
-        }
-
-        /// <summary>
         /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
         /// </summary>
         /// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
@@ -220,7 +147,7 @@ namespace Gorgon.IO.Providers
         /// return a stream into the zip file positioned at the location of the compressed file within the zip file).
         /// </para>
         /// </remarks>
-        protected virtual GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file) => !File.Exists(file.PhysicalFile.FullPath) ? null : new GorgonFileSystemStream(file, File.Open(file.PhysicalFile.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read));
+        protected abstract GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file);
 
         /// <summary>
         /// Function to determine if a physical file system can be read by this provider.
@@ -235,14 +162,10 @@ namespace Gorgon.IO.Providers
         /// <b>false</b>.
         /// </para>
         /// <para>
-        /// When used with a <see cref="IGorgonFileSystemProvider"/> that supports a non operating system based physical file system, then this method should compare the <paramref name="physicalPath"/> with its 
-        /// <see cref="IGorgonFileSystemProvider.Prefix"/> to ensure that the <see cref="IGorgonFileSystem"/> requesting the provider is using the correct provider.
-        /// </para>
-        /// <para>
         /// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to determine if a packed file can be read by reading the header of the file specified in <paramref name="physicalPath"/>.
         /// </para>
         /// </remarks>
-        protected virtual bool OnCanReadFile(string physicalPath) => false;
+        protected abstract bool OnCanReadFile(string physicalPath);
 
         /// <summary>
         /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
@@ -267,7 +190,25 @@ namespace Gorgon.IO.Providers
         /// The default functionality will only enumerate directories and files from the operating system file system.
         /// </para>
         /// </remarks>
-        protected virtual GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint) => new GorgonPhysicalFileSystemData(OnEnumerateDirectories(physicalLocation, mountPoint), OnEnumerateFiles(physicalLocation, mountPoint, true));
+        protected abstract GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint);
+
+        /// <summary>
+        /// Function to enumerate the files for a given directory.
+        /// </summary>
+        /// <param name="physicalLocation">The physical location containing files to enumerate.</param>
+        /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the files from the physical file system will be mounted into.</param>		
+        /// <returns>A list of files contained within the physical file system.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will return a list of <see cref="IGorgonPhysicalFileInfo"/> objects under the virtual file system. Each file system file is mapped from its <paramref name="physicalLocation"/> on the 
+        /// physical file system to a <paramref name="mountPoint"/> on the virtual file system. For example, if the mount point is set to <c>/MyMount/</c>, and the physical location of a file is 
+        /// <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
+        /// </para>
+        /// <para>
+        /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+        /// </para>
+        /// </remarks>
+        protected abstract IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint);
 
         /// <summary>
         /// Function to return the physical file system path from a virtual file system path.
@@ -275,15 +216,7 @@ namespace Gorgon.IO.Providers
         /// <param name="virtualPath">Virtual path to the file/folder.</param>
         /// <param name="mountPoint">The mount point used to map the physical path.</param>
         /// <returns>The physical file system path.</returns>
-        protected virtual string OnGetPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint)
-        {
-            var result = new StringBuilder(virtualPath, 256);
-
-            result.Replace("/", GorgonFileSystem.PhysicalDirSeparator);
-            result.Insert(0, mountPoint.PhysicalPath.FormatDirectory(GorgonFileSystem.PhysicalDirSeparator[0]));
-
-            return result.ToString();
-        }
+        protected abstract string OnGetPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint);
 
         /// <summary>
         /// Function to return the virtual file system path from a physical file system path.
@@ -310,7 +243,7 @@ namespace Gorgon.IO.Providers
 
             if (virtualPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
             {
-                virtualPath = virtualPath.Substring(1);
+                virtualPath = virtualPath[1..];
             }
 
             return string.IsNullOrWhiteSpace(virtualPath) ? mountPoint.PhysicalPath : OnGetPhysicalPath(virtualPath, mountPoint);
@@ -337,14 +270,14 @@ namespace Gorgon.IO.Providers
         /// </remarks>
         public GorgonPhysicalFileSystemData Enumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
-            if (physicalLocation == null)
+            if (physicalLocation is null)
             {
                 throw new ArgumentNullException(nameof(physicalLocation));
             }
 
 #pragma warning disable IDE0046 // Convert to conditional expression
 
-            if (mountPoint == null)
+            if (mountPoint is null)
             {
                 throw new ArgumentNullException(nameof(mountPoint));
             }
@@ -376,21 +309,20 @@ namespace Gorgon.IO.Providers
         /// </remarks>
         public IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
-            if (physicalLocation == null)
+            if (physicalLocation is null)
             {
                 throw new ArgumentNullException(nameof(physicalLocation));
             }
 
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (mountPoint == null)
+            if (mountPoint is null)
             {
                 throw new ArgumentNullException(nameof(mountPoint));
             }
 
             return string.IsNullOrWhiteSpace(physicalLocation)
                 ? throw new ArgumentEmptyException(nameof(physicalLocation))
-                : OnEnumerateFiles(physicalLocation, mountPoint, false)
-                    .ToDictionary(k => k.VirtualPath, v => v, StringComparer.OrdinalIgnoreCase);
+                : OnEnumerateFiles(physicalLocation, mountPoint);
 #pragma warning restore IDE0046 // Convert to conditional expression
         }
 
@@ -406,7 +338,7 @@ namespace Gorgon.IO.Providers
         /// responsibility of the user to close the stream when finished.
         /// </para>
         /// </remarks>
-        public Stream OpenFileStream(IGorgonVirtualFile file) => file == null ? throw new ArgumentNullException(nameof(file)) : OnOpenFileStream(file);
+        public Stream OpenFileStream(IGorgonVirtualFile file) => file is null ? throw new ArgumentNullException(nameof(file)) : OnOpenFileStream(file);
 
         /// <summary>
         /// Function to determine if a physical file system can be read by this provider.
@@ -420,15 +352,11 @@ namespace Gorgon.IO.Providers
         /// This will test a physical file system (e.g. a Zip file) to see if the provider can open it or not. If used with a directory on an operating system file system, this method should always return 
         /// <b>false</b>.
         /// </para>
-        /// <para>
-        /// When used with a <see cref="IGorgonFileSystemProvider"/> that supports a non operating system based physical file system, then this method should compare the <paramref name="physicalPath"/> with 
-        /// its <see cref="IGorgonFileSystemProvider.Prefix"/> to ensure that the <see cref="IGorgonFileSystem"/> requesting the provider is using the correct provider.
-        /// </para>
         /// </remarks>
         public bool CanReadFileSystem(string physicalPath)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (physicalPath == null)
+            if (physicalPath is null)
             {
                 throw new ArgumentNullException(nameof(physicalPath));
             }
@@ -447,17 +375,6 @@ namespace Gorgon.IO.Providers
         /// <param name="providerDescription">The human readable description for the file system provider.</param>
         protected GorgonFileSystemProvider(string providerDescription)
             : base(providerDescription) => PreferredExtensions = new GorgonFileExtensionCollection();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonFileSystemProvider"/> class.
-        /// </summary>
-        /// <remarks>
-        /// Every copy of the <see cref="IGorgonFileSystem"/> automatically creates an instance of this type as a default provider.
-        /// </remarks>
-        internal GorgonFileSystemProvider()
-            : this(Resources.GORFS_FOLDER_FS_DESC)
-        {
-        }
         #endregion
     }
 }

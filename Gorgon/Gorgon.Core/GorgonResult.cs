@@ -42,72 +42,72 @@ namespace Gorgon.Core
         /// <summary>
         /// Initialization is required before continuing this operation.
         /// </summary>
-        public static GorgonResult NotInitialized => new GorgonResult(nameof(NotInitialized), ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
+        public static GorgonResult NotInitialized => new(nameof(NotInitialized), ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
 
         /// <summary>
         /// Initialization was already performed.
         /// </summary>
-        public static GorgonResult AlreadyInitialized => new GorgonResult(nameof(AlreadyInitialized), ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
+        public static GorgonResult AlreadyInitialized => new(nameof(AlreadyInitialized), ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
 
         /// <summary>
         /// There was an error during creation.
         /// </summary>
-        public static GorgonResult CannotCreate => new GorgonResult(nameof(CannotCreate), ErrorBase + 2, Resources.GOR_RESULT_DESC_CANNOT_CREATE);
+        public static GorgonResult CannotCreate => new(nameof(CannotCreate), ErrorBase + 2, Resources.GOR_RESULT_DESC_CANNOT_CREATE);
 
         /// <summary>
         /// There was an error while writing.
         /// </summary>
-        public static GorgonResult CannotWrite => new GorgonResult(nameof(CannotWrite), ErrorBase + 0xa, Resources.GOR_RESULT_DESC_CANNOT_WRITE);
+        public static GorgonResult CannotWrite => new(nameof(CannotWrite), ErrorBase + 0xa, Resources.GOR_RESULT_DESC_CANNOT_WRITE);
 
         /// <summary>
         /// There was not enough memory to complete the operation.
         /// </summary>
-        public static GorgonResult OutOfMemory => new GorgonResult(nameof(OutOfMemory), ErrorBase + 0xb, Resources.GOR_RESULT_DESC_OUT_OF_MEMORY);
+        public static GorgonResult OutOfMemory => new(nameof(OutOfMemory), ErrorBase + 0xb, Resources.GOR_RESULT_DESC_OUT_OF_MEMORY);
 
         /// <summary>
         /// Access is denied.
         /// </summary>
-        public static GorgonResult AccessDenied => new GorgonResult(nameof(AccessDenied), ErrorBase + 3, Resources.GOR_RESULT_DESC_ACCESS_DENIED);
+        public static GorgonResult AccessDenied => new(nameof(AccessDenied), ErrorBase + 3, Resources.GOR_RESULT_DESC_ACCESS_DENIED);
 
         /// <summary>
         /// There was an error interfacing with the driver.
         /// </summary>
-        public static GorgonResult DriverError => new GorgonResult(nameof(DriverError), ErrorBase + 4, Resources.GOR_RESULT_DESC_DRIVER_ERROR);
+        public static GorgonResult DriverError => new(nameof(DriverError), ErrorBase + 4, Resources.GOR_RESULT_DESC_DRIVER_ERROR);
 
         /// <summary>
         /// There was an error while reading.
         /// </summary>
-        public static GorgonResult CannotRead => new GorgonResult(nameof(CannotRead), ErrorBase + 5, Resources.GOR_RESULT_DESC_CANNOT_READ);
+        public static GorgonResult CannotRead => new(nameof(CannotRead), ErrorBase + 5, Resources.GOR_RESULT_DESC_CANNOT_READ);
 
         /// <summary>
         /// There was an error during binding.
         /// </summary>
-        public static GorgonResult CannotBind => new GorgonResult(nameof(CannotBind), ErrorBase + 6, Resources.GOR_RESULT_DESC_CANNOT_BIND);
+        public static GorgonResult CannotBind => new(nameof(CannotBind), ErrorBase + 6, Resources.GOR_RESULT_DESC_CANNOT_BIND);
 
         /// <summary>
         /// There was an error during the enumeration process.
         /// </summary>
-        public static GorgonResult CannotEnumerate => new GorgonResult(nameof(CannotEnumerate), ErrorBase + 7, Resources.GOR_RESULT_DESC_CANNOT_ENUMERATE);
+        public static GorgonResult CannotEnumerate => new(nameof(CannotEnumerate), ErrorBase + 7, Resources.GOR_RESULT_DESC_CANNOT_ENUMERATE);
 
         /// <summary>
         /// The requested format is not supported.
         /// </summary>
-        public static GorgonResult FormatNotSupported => new GorgonResult(nameof(FormatNotSupported), ErrorBase + 8, Resources.GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED);
+        public static GorgonResult FormatNotSupported => new(nameof(FormatNotSupported), ErrorBase + 8, Resources.GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED);
 
         /// <summary>
         /// The file format is not supported.
         /// </summary>
-        public static GorgonResult InvalidFileFormat => new GorgonResult(nameof(InvalidFileFormat), ErrorBase + 9, Resources.GOR_RESULT_DESC_FILE_FORMAT_NOT_SUPPORTED);
+        public static GorgonResult InvalidFileFormat => new(nameof(InvalidFileFormat), ErrorBase + 9, Resources.GOR_RESULT_DESC_FILE_FORMAT_NOT_SUPPORTED);
 
         /// <summary>
         /// Cannot make this call across threads.
         /// </summary>
-        public static GorgonResult CrossThreadCall => new GorgonResult(nameof(CrossThreadCall), ErrorBase + 10, Resources.GOR_RESULT_DESC_CANNOT_CALL_CROSS_THREAD);
+        public static GorgonResult CrossThreadCall => new(nameof(CrossThreadCall), ErrorBase + 10, Resources.GOR_RESULT_DESC_CANNOT_CALL_CROSS_THREAD);
 
         /// <summary>
         /// Cannot compile the source code.
         /// </summary>
-        public static GorgonResult CannotCompile => new GorgonResult(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_DESC_CANNOT_COMPILE);
+        public static GorgonResult CannotCompile => new(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_DESC_CANNOT_COMPILE);
         #endregion
 
         #region Properties.
@@ -176,7 +176,7 @@ namespace Gorgon.Core
         /// Returns the fully qualified type name of this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> containing a fully qualified type name.
+        /// A <see cref="string"/> containing a fully qualified type name.
         /// </returns>
         public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRESULT, Name, Description, Code.FormatHex());
 
@@ -218,7 +218,7 @@ namespace Gorgon.Core
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
         public GorgonResult(string name, int code, string description)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -228,7 +228,7 @@ namespace Gorgon.Core
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (description == null)
+            if (description is null)
             {
                 throw new ArgumentNullException(nameof(description));
             }
@@ -242,9 +242,6 @@ namespace Gorgon.Core
             Description = description;
             Code = code;
         }
-        #endregion
-
-        #region IEquatable<GorgonResult> Members
         #endregion
     }
 }

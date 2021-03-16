@@ -27,32 +27,28 @@ namespace Gorgon.Security
         /// <returns>A tuple containing the initialization vector, and the key.</returns>
         private (byte[] IV, byte[] Key) GetSymmetricKey(byte[] keyData)
         {
-            if ((_ivKey.IV != null) && (_ivKey.Key != null) && (_ivKey.IV.Length > 0) && (_ivKey.Key.Length > 0))
+            if ((_ivKey.IV is not null) && (_ivKey.Key is not null) && (_ivKey.IV.Length > 0) && (_ivKey.Key.Length > 0))
             {
                 return _ivKey;
             }
 
-            using (var stream = new MemoryStream(keyData))
+            using var stream = new MemoryStream(keyData);
+            using var reader = new BinaryReader(stream, Encoding.Default, false);
+            int ivLength = reader.ReadInt32();
+            int keyLength = reader.ReadInt32();
+
+            byte[] iv = new byte[ivLength];
+            byte[] key = new byte[keyLength];
+
+            if ((iv.Length == 0) || (key.Length == 0))
             {
-                using (var reader = new BinaryReader(stream, Encoding.Default, false))
-                {
-                    int ivLength = reader.ReadInt32();
-                    int keyLength = reader.ReadInt32();
-
-                    byte[] iv = new byte[ivLength];
-                    byte[] key = new byte[keyLength];
-
-                    if ((iv.Length == 0) || (key.Length == 0))
-                    {
-                        throw new ArgumentException(Resources.GOR_ERR_ENCRYPTION_KEY_NOT_VALID, nameof(keyData));
-                    }
-
-                    reader.Read(iv, 0, iv.Length);
-                    reader.Read(key, 0, key.Length);
-
-                    return (iv, key);
-                }
+                throw new ArgumentException(Resources.GOR_ERR_ENCRYPTION_KEY_NOT_VALID, nameof(keyData));
             }
+
+            reader.Read(iv, 0, iv.Length);
+            reader.Read(key, 0, key.Length);
+
+            return (iv, key);
         }
 
         /// <summary>
@@ -63,30 +59,28 @@ namespace Gorgon.Security
         /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
         public byte[] Decrypt(byte[] data)
         {
-            if ((_ivKey.IV == null) || (_ivKey.Key == null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
+            if ((_ivKey.IV is null) || (_ivKey.Key is null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
             {
                 throw new SecurityException(Resources.GOR_ERR_ENCRYPTION_KEY_NOT_VALID);
             }
 
-            if ((data == null) || (data.Length == 0))
+            if ((data is null) || (data.Length == 0))
             {
                 return Array.Empty<byte>();
             }
 
-            using (var aes = new AesManaged())
-            using (ICryptoTransform transform = aes.CreateDecryptor(_ivKey.Key, _ivKey.IV))
-            using (var stream = new MemoryStream())
-            using (var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write))
+            using var aes = new AesManaged();
+            using ICryptoTransform transform = aes.CreateDecryptor(_ivKey.Key, _ivKey.IV);
+            using var stream = new MemoryStream();
+            using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
+            writer.Write(data, 0, data.Length);
+
+            if (!writer.HasFlushedFinalBlock)
             {
-                writer.Write(data, 0, data.Length);
-
-                if (!writer.HasFlushedFinalBlock)
-                {
-                    writer.FlushFinalBlock();
-                }
-
-                return stream.ToArray();
+                writer.FlushFinalBlock();
             }
+
+            return stream.ToArray();
         }
 
         /// <summary>
@@ -97,26 +91,24 @@ namespace Gorgon.Security
         /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
         public byte[] Encrypt(byte[] data)
         {
-            if ((_ivKey.IV == null) || (_ivKey.Key == null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
+            if ((_ivKey.IV is null) || (_ivKey.Key is null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
             {
                 throw new SecurityException(Resources.GOR_ERR_ENCRYPTION_KEY_NOT_VALID);
             }
 
-            if ((data == null) || (data.Length == 0))
+            if ((data is null) || (data.Length == 0))
             {
                 return Array.Empty<byte>();
             }
 
-            using (var aes = new AesManaged())
-            using (ICryptoTransform transform = aes.CreateEncryptor(_ivKey.Key, _ivKey.IV))
-            using (var stream = new MemoryStream())
-            using (var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write))
-            {
-                writer.Write(data, 0, data.Length);
-                writer.FlushFinalBlock();
+            using var aes = new AesManaged();
+            using ICryptoTransform transform = aes.CreateEncryptor(_ivKey.Key, _ivKey.IV);
+            using var stream = new MemoryStream();
+            using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
+            writer.Write(data, 0, data.Length);
+            writer.FlushFinalBlock();
 
-                return stream.ToArray();
-            }
+            return stream.ToArray();
         }
 
         /// <summary>
@@ -136,7 +128,7 @@ namespace Gorgon.Security
                 return Array.Empty<byte>();
             }
 
-            if (textEncoding == null)
+            if (textEncoding is null)
             {
                 textEncoding = Encoding.UTF8;
             }
@@ -156,12 +148,12 @@ namespace Gorgon.Security
         /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
         public string DecryptString(byte[] value, Encoding textEncoding = null)
         {
-            if ((value == null) || (value.Length == 0))
+            if ((value is null) || (value.Length == 0))
             {
                 return string.Empty;
             }
 
-            if (textEncoding == null)
+            if (textEncoding is null)
             {
                 textEncoding = Encoding.UTF8;
             }
@@ -206,22 +198,16 @@ namespace Gorgon.Security
         /// </remarks>
 	    public static (byte[] IV, byte[] Key) GenerateIvKey(string password, byte[] salt = null)
         {
-            using (var rndGen = RandomNumberGenerator.Create())
+            using var rndGen = RandomNumberGenerator.Create();
+            if (salt is null)
             {
-                if (salt == null)
-                {
-                    salt = new byte[32];
-                    rndGen.GetBytes(salt);
-                }
-
-                using (var aes = new AesManaged())
-                {
-                    using (var hashGen = new Rfc2898DeriveBytes(password, salt, 100))
-                    {
-                        return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
-                    }
-                }
+                salt = new byte[32];
+                rndGen.GetBytes(salt);
             }
+
+            using var aes = new AesManaged();
+            using var hashGen = new Rfc2898DeriveBytes(password, salt, 100);
+            return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
         }
         #endregion
 
@@ -237,7 +223,7 @@ namespace Gorgon.Security
         /// </exception>
         public Aes256Encryption(byte[] keyPairFileData)
         {
-            if (keyPairFileData == null)
+            if (keyPairFileData is null)
             {
                 throw new ArgumentNullException(nameof(keyPairFileData));
             }
@@ -265,12 +251,12 @@ namespace Gorgon.Security
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="iv"/>, or the <paramref name="key"/> parameters are empty.</exception>
         public Aes256Encryption(byte[] iv, byte[] key)
         {
-            if (iv == null)
+            if (iv is null)
             {
                 throw new ArgumentNullException(nameof(iv));
             }
 
-            if (key == null)
+            if (key is null)
             {
                 throw new ArgumentNullException(nameof(key));
             }

@@ -24,12 +24,15 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Graphics.Core;
-using Gorgon.Native;
-using DX = SharpDX;
+using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples
 {
+    /// <summary>
+    /// A mesh representing a single triangle.
+    /// </summary>
     internal class Triangle
         : MoveableMesh
     {
@@ -41,7 +44,7 @@ namespace Gorgon.Examples
         /// <param name="point1">The 1st point in the triangle.</param>
         /// <param name="point2">The 2nd point in the triangle.</param>
         /// <param name="point3">The 3rd point in the triangle.</param>
-        public Triangle(GorgonGraphics graphics, Vertex3D point1, Vertex3D point2, Vertex3D point3)
+        public Triangle(GorgonGraphics graphics, GorgonVertexPosNormUvTangent point1, GorgonVertexPosNormUvTangent point2, GorgonVertexPosNormUvTangent point3)
             : base(graphics)
         {
             PrimitiveType = PrimitiveType.TriangleList;
@@ -49,37 +52,37 @@ namespace Gorgon.Examples
             IndexCount = 3;
             TriangleCount = 1;
 
-            point1.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
-            point2.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
-            point3.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
+            point1.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+            point2.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+            point3.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
 
-            using (var points = new GorgonNativeBuffer<Vertex3D>(3))
-            using (var indices = new GorgonNativeBuffer<int>(3))
-            {
-                points[0] = point1;
-                points[1] = point2;
-                points[2] = point3;
-                indices[0] = 0;
-                indices[1] = 1;
-                indices[2] = 2;
+            var points = new GorgonVertexPosNormUvTangent[3];
+            int[] indices = new int[3];
+            
+            points[0] = point1;
+            points[1] = point2;
+            points[2] = point3;
+            indices[0] = 0;
+            indices[1] = 1;
+            indices[2] = 2;
 
-                VertexBuffer = new GorgonVertexBuffer(graphics,
-                                                      new GorgonVertexBufferInfo("TriVB")
-                                                      {
-                                                          Usage = ResourceUsage.Immutable,
-                                                          SizeInBytes = Vertex3D.Size * 3
-                                                      },
-                                                      points.Cast<byte>());
-
-                IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                    new GorgonIndexBufferInfo("TriIB")
+            VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
+                                                    new GorgonVertexBufferInfo("TriVB")
                                                     {
-                                                        Usage = ResourceUsage.Dynamic,
-                                                        Use16BitIndices = false,
-                                                        IndexCount = 3
+                                                        Usage = ResourceUsage.Immutable
                                                     },
-                                                    indices);
-            }
+                                                    points);
+
+            IndexBuffer = new GorgonIndexBuffer(graphics,
+                                                new GorgonIndexBufferInfo("TriIB")
+                                                {
+                                                    Usage = ResourceUsage.Dynamic,
+                                                    Use16BitIndices = false,
+                                                    IndexCount = 3
+                                                },
+                                                indices);
+
+            UpdateAabb(points);
         }
         #endregion
     }

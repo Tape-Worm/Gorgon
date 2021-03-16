@@ -186,7 +186,7 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                if (_loadPreviewTask != null)
+                if (_loadPreviewTask is not null)
                 {
                     if (_loadPreviewTask.Status == TaskStatus.Faulted)
                     {
@@ -207,7 +207,7 @@ namespace Gorgon.Editor.ViewModels
                     _loadPreviewTask = null;
                 }
 
-                if (file?.Metadata?.ContentMetadata == null)
+                if (file?.Metadata?.ContentMetadata is null)
                 {
                     Title = string.Empty;
                     PreviewImage?.Dispose();
@@ -286,7 +286,7 @@ namespace Gorgon.Editor.ViewModels
                     
                     if (_fileExplorer.SelectedFiles.Count > 0)
                     {
-                        file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[_fileExplorer.SelectedFiles.Count - 1].FullPath);                        
+                        file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[^1].FullPath);                        
                     }
 
                     _fileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
@@ -356,7 +356,7 @@ namespace Gorgon.Editor.ViewModels
                 IContentFile file = _contentFileManager.GetFile(filePath);
                 IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(_thumbnailPath);
 
-                if (thumbDirectory == null)
+                if (thumbDirectory is null)
                 {
                     thumbDirectory = _tempFileSystem.CreateDirectory(_thumbnailPath);
                 }
@@ -367,7 +367,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     IGorgonVirtualFile thumbnailFile = _tempFileSystem.FileSystem.GetFile(thumbDirectory.FullPath + thumbnailName);
 
-                    if (thumbnailFile != null)
+                    if (thumbnailFile is not null)
                     {
                         _tempFileSystem.DeleteFile(thumbnailFile.FullPath);
                     }
@@ -418,7 +418,7 @@ namespace Gorgon.Editor.ViewModels
         {
             IDirectory directory = _fileExplorer.SelectedDirectory;
 
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }
@@ -443,7 +443,7 @@ namespace Gorgon.Editor.ViewModels
 
             IDirectory directory = _fileExplorer.SelectedDirectory;
 
-            if (directory == null)
+            if (directory is null)
             {
                 return;
             }

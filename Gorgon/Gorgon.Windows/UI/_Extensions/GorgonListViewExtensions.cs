@@ -25,14 +25,10 @@
 // This code was adapted from the stack overflow answer at http://stackoverflow.com/questions/254129/how-to-i-display-a-sort-arrow-in-the-header-of-a-list-view-column-using-c
 #endregion
 
-using System;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Native;
-using Gorgon.Windows.Properties;
-using Drawing = System.Drawing;
 
-namespace Gorgon.UI
+namespace System.Windows.Forms
 {
     /// <summary>
     /// Extensions used for the list view object.
@@ -96,7 +92,7 @@ namespace Gorgon.UI
 
             try
             {
-                ColumnHeader header = listView.Columns[listView.Columns.Count - 1];
+                ColumnHeader header = listView.Columns[^1];
                 Drawing.Rectangle bounds = GetHeaderBounds(listView);
                 var ncBounds = Drawing.Rectangle.FromLTRB(bounds.Right - header.Width, bounds.Top, bounds.Right, bounds.Height);
                 g.FillRectangle(brush, ncBounds);
@@ -138,7 +134,7 @@ namespace Gorgon.UI
 
                 if (UserApi.SendMessage(columnHeader, HdmGetItem, columnPtr, ref item) == IntPtr.Zero)
                 {
-                    throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER);
+                    throw new GorgonException(GorgonResult.CannotEnumerate, Gorgon.Windows.Properties.Resources.GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER);
                 }
 
                 if ((order != SortOrder.None) && (columnNumber == headerIndex))
@@ -162,7 +158,7 @@ namespace Gorgon.UI
 
                 if (UserApi.SendMessage(columnHeader, HdmSetItem, columnPtr, ref item) == IntPtr.Zero)
                 {
-                    throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR_ERR_LISTVIEW_CANNOT_UPDATE_COLUMN);
+                    throw new GorgonException(GorgonResult.CannotWrite, Gorgon.Windows.Properties.Resources.GOR_ERR_LISTVIEW_CANNOT_UPDATE_COLUMN);
                 }
             }
         }

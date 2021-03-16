@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.Linq;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
@@ -83,8 +84,8 @@ namespace Gorgon.Editor.AnimationEditor
                 LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height),                
             };
 
-            _instructions.Text = _font.WordWrap(Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN, ClientSize.Width);
-            _textSize = _font.MeasureText(_instructions.Text, true, wordWrapWidth: ClientSize.Width);
+            _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
+            _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
         }
 
         /// <summary>Function called when the view has been resized.</summary>
@@ -93,8 +94,8 @@ namespace Gorgon.Editor.AnimationEditor
         {
             _instructions.LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height);
 
-            _instructions.Text = _font.WordWrap(Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN, ClientSize.Width);
-            _textSize = _font.MeasureText(_instructions.Text, true, wordWrapWidth: ClientSize.Width);
+            _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
+            _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
 
             base.OnResizeEnd();
         }
@@ -109,7 +110,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            _instructions.Position = new DX.Vector2(0, 0);
+            _instructions.Position = new Vector2(0, 0);
 
             Renderer.Begin();
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, ClientSize.Height - _textSize.Height, ClientSize.Width, _textSize.Height), new GorgonColor(GorgonColor.Black, 0.65f));
@@ -124,7 +125,7 @@ namespace Gorgon.Editor.AnimationEditor
             Renderer.DrawSprite(Sprite);
             Renderer.End();
 
-            if ((DataContext?.UpdateAnimationPreviewCommand == null) || (!DataContext.UpdateAnimationPreviewCommand.CanExecute(null)))
+            if ((DataContext?.UpdateAnimationPreviewCommand is null) || (!DataContext.UpdateAnimationPreviewCommand.CanExecute(null)))
             {
                 return;
             }
@@ -137,7 +138,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (Sprite == null)
+            if (Sprite is null)
             {
                 return;
             }

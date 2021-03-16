@@ -49,11 +49,11 @@ namespace Gorgon.Editor.Services
     {
         #region Variables.
         // The plugin list.
-        private readonly Dictionary<string, ContentPlugIn> _plugins = new Dictionary<string, ContentPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ContentPlugIn> _plugins = new(StringComparer.OrdinalIgnoreCase);
         // The plugin list.
-        private readonly Dictionary<string, ContentImportPlugIn> _importers = new Dictionary<string, ContentImportPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ContentImportPlugIn> _importers = new(StringComparer.OrdinalIgnoreCase);
         // The list of disabled content plug ins.
-        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new Dictionary<string, IDisabledPlugIn>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
         // The directory that contains the settings for the plug ins.
         private readonly string _settingsDir;
         // The services passed from the host to the content plug ins.
@@ -93,13 +93,13 @@ namespace Gorgon.Editor.Services
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
         public (ContentPlugIn plugin, MetadataPlugInState state) GetContentPlugIn(ProjectItemMetadata metadata)
         {
-            if (metadata == null)
+            if (metadata is null)
             {
                 throw new ArgumentNullException(nameof(metadata));
             }
 
             // If the name is null, then we've never assigned the content plugin.  So look it up.
-            if (metadata.PlugInName == null)
+            if (metadata.PlugInName is null)
             {
                 return (null, MetadataPlugInState.Unassigned);
             }
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.Services
         public T ReadContentSettings<T>(string name, params JsonConverter[] converters)
             where T : class
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -257,11 +257,9 @@ namespace Gorgon.Editor.Services
                 return null;
             }
 
-            using (Stream stream = File.Open(settingsFile, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-            {
-                return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
-            }
+            using Stream stream = File.Open(settingsFile, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
         }
 
         /// <summary>Function to write out the settings for a content plug in as a JSON file.</summary>
@@ -275,7 +273,7 @@ namespace Gorgon.Editor.Services
         public void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters)
             where T : class
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
@@ -285,17 +283,15 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(name));
             }
 
-            if (contentSettings == null)
+            if (contentSettings is null)
             {
                 throw new ArgumentNullException(nameof(contentSettings));
             }
 
             string settingsFile = GetContentPlugInSettingsPath(name);
-            using (Stream stream = File.Open(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None))
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false))
-            {
-                writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
-            }
+            using Stream stream = File.Open(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None);
+            using var writer = new StreamWriter(stream, Encoding.UTF8, 80000, false);
+            writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
         }
 
         /// <summary>Function to add a content import plugin to the service.</summary>
@@ -303,7 +299,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
         public void AddContentImportPlugIn(ContentImportPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -321,7 +317,7 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
         public void AddContentPlugIn(ContentPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -365,12 +361,12 @@ namespace Gorgon.Editor.Services
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginDir"/> parameter is empty.</exception>
         public void LoadContentPlugIns(GorgonMefPlugInCache pluginCache, string pluginDir)
         {
-            if (pluginCache == null)
+            if (pluginCache is null)
             {
                 throw new ArgumentNullException(nameof(pluginCache));
             }
 
-            if (pluginDir == null)
+            if (pluginDir is null)
             {
                 throw new ArgumentNullException(nameof(pluginDir));
             }
@@ -403,7 +399,7 @@ namespace Gorgon.Editor.Services
         /// <param name="plugin">The plugin to remove.</param>
         public void RemoveContentImportPlugIn(ContentImportPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -421,7 +417,7 @@ namespace Gorgon.Editor.Services
         /// <param name="plugin">The plugin to remove.</param>
         public void RemoveContentPlugIn(ContentPlugIn plugin)
         {
-            if (plugin == null)
+            if (plugin is null)
             {
                 throw new ArgumentNullException(nameof(plugin));
             }
@@ -449,7 +445,7 @@ namespace Gorgon.Editor.Services
         /// </remarks>
         public IEditorContentImporter GetContentImporter(string filePath)
         {
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }

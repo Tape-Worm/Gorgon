@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -49,11 +49,11 @@ namespace Gorgon.Editor.AnimationEditor
         // The log used for debug messages.
         private readonly IGorgonLog _log;
         // The list of files for a texture track.
-        private readonly List<IContentFile> _textureFiles = new List<IContentFile>();
+        private readonly List<IContentFile> _textureFiles = new();
         // The arguments for the set keyframe command.
-        private readonly SetKeyFramesArgs _setKeysArgs = new SetKeyFramesArgs();
+        private readonly SetKeyFramesArgs _setKeysArgs = new();
         // The synchronization lock for multiple threads.
-        private readonly object _syncLock = new object();
+        private readonly object _syncLock = new();
         #endregion
 
         #region Methods.
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 _textureFiles.Clear();
 
-                if (track == null)
+                if (track is null)
                 {
                     return _textureFiles;
                 }
@@ -80,7 +80,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     IKeyFrame keyFrame = track.KeyFrames[i];
 
-                    if ((keyFrame != null) && (!_textureFiles.Contains(keyFrame.TextureValue.TextureFile)))
+                    if ((keyFrame is not null) && (!_textureFiles.Contains(keyFrame.TextureValue.TextureFile)))
                     {
                         _textureFiles.Add(keyFrame.TextureValue.TextureFile);
                     }
@@ -109,7 +109,7 @@ namespace Gorgon.Editor.AnimationEditor
         {
             UnloadTextureKeyframe(destKeyFrame);
 
-            if (textureValue.TextureFile == null)
+            if (textureValue.TextureFile is null)
             {
                 _log.Print("WARNING: The source key frame does not have a texture file associated. The key frame will not be available in the animation.", LoggingLevel.Intermediate);
                 return null;
@@ -137,7 +137,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 _textureFiles.Clear();
 
-                if (track == null)
+                if (track is null)
                 {
                     return;
                 }
@@ -146,9 +146,9 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     IKeyFrame keyFrame = track.KeyFrames[i];
 
-                    if (keyFrame?.TextureValue.Texture != null)
+                    if (keyFrame?.TextureValue.Texture is not null)
                     {
-                        if ((_textureCache.ReturnTexture(keyFrame.TextureValue.Texture)) && (keyFrame.TextureValue.TextureFile != null))
+                        if ((_textureCache.ReturnTexture(keyFrame.TextureValue.Texture)) && (keyFrame.TextureValue.TextureFile is not null))
                         {
                             keyFrame.TextureValue.TextureFile.IsOpen = false;
                         }
@@ -167,13 +167,13 @@ namespace Gorgon.Editor.AnimationEditor
         /// <exception cref="ArgumentException">Thrown when the <paramref name="file"/> does not contain any sprite data.</exception>
         public void UnloadTextureKeyframe(IKeyFrame keyFrame)
         {
-            if (keyFrame?.TextureValue.Texture == null)
+            if (keyFrame?.TextureValue.Texture is null)
             {
                 return;
             }
 
-            if ((keyFrame.TextureValue.Texture != null)
-                && (keyFrame.TextureValue.TextureFile != null)
+            if ((keyFrame.TextureValue.Texture is not null)
+                && (keyFrame.TextureValue.TextureFile is not null)
                 && (_textureCache.ReturnTexture(keyFrame.TextureValue.Texture)))
             {
                 keyFrame.TextureValue.TextureFile.IsOpen = false;
@@ -194,13 +194,13 @@ namespace Gorgon.Editor.AnimationEditor
         /// </remarks>
         public async Task RestoreTextureAsync(IKeyFrame keyFrame)
         {
-            if (keyFrame.TextureValue.TextureFile == null)
+            if (keyFrame.TextureValue.TextureFile is null)
             {
                 return;
             }
 
             // We've already got texture data.
-            if (keyFrame.TextureValue.Texture != null)
+            if (keyFrame.TextureValue.Texture is not null)
             {
                 return;
             }
@@ -223,7 +223,7 @@ namespace Gorgon.Editor.AnimationEditor
                 _setKeysArgs.MaxKeyFrameCount = maxKeyCount;
                 _setKeysArgs.KeyFrames = keyFrames;
 
-                if ((track?.SetKeyFramesCommand == null) || (!track.SetKeyFramesCommand.CanExecute(_setKeysArgs)))
+                if ((track?.SetKeyFramesCommand is null) || (!track.SetKeyFramesCommand.CanExecute(_setKeysArgs)))
                 {
                     return;
                 }
@@ -240,9 +240,9 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="animation">The currently active animation being edited.</param>
         /// <param name="workingSprite">The working sprite to update.</param>
         /// <returns>The floating point values at the specified time.</returns>
-        public DX.Vector4? GetTrackFloatValues(ITrack track, float time, IGorgonAnimation animation, GorgonSprite workingSprite)
+        public Vector4? GetTrackFloatValues(ITrack track, float time, IGorgonAnimation animation, GorgonSprite workingSprite)
         {            
-            if ((animation == null) || (workingSprite == null))
+            if ((animation is null) || (workingSprite is null))
             {
                 return null;
             }
@@ -257,12 +257,12 @@ namespace Gorgon.Editor.AnimationEditor
 
                     GorgonKeySingle singleKey = singleTrack?.GetValueAtTime(time);
 
-                    if (singleKey == null)
+                    if (singleKey is null)
                     {
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
 
-                    return new DX.Vector4(singleKey.Value, 0, 0, 0);
+                    return new Vector4(singleKey.Value, 0, 0, 0);
                 case AnimationTrackKeyType.Vector2:
                     if (!animation.Vector2Tracks.TryGetValue(track.Name, out IGorgonAnimationTrack<GorgonKeyVector2> v2Track))
                     {
@@ -271,12 +271,12 @@ namespace Gorgon.Editor.AnimationEditor
 
                     GorgonKeyVector2 v2Key = v2Track.GetValueAtTime(time);
 
-                    if (v2Key == null)
+                    if (v2Key is null)
                     {
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
 
-                    return (DX.Vector4)v2Key.Value;
+                    return new Vector4(v2Key.Value.X, v2Key.Value.Y, 0, 0);
                 case AnimationTrackKeyType.Vector3:
                     if (!animation.Vector3Tracks.TryGetValue(track.Name, out IGorgonAnimationTrack<GorgonKeyVector3> v3Track))
                     {
@@ -285,12 +285,12 @@ namespace Gorgon.Editor.AnimationEditor
 
                     GorgonKeyVector3 v3Key = v3Track.GetValueAtTime(time);
 
-                    if (v3Key == null)
+                    if (v3Key is null)
                     {
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
 
-                    return (DX.Vector4)v3Key.Value;
+                    return new Vector4(v3Key.Value.X, v3Key.Value.Y, v3Key.Value.Z, 0);
                 case AnimationTrackKeyType.Vector4:
                     if (!animation.Vector4Tracks.TryGetValue(track.Name, out IGorgonAnimationTrack<GorgonKeyVector4> v4Track))
                     {
@@ -299,7 +299,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                     GorgonKeyVector4 v4Key = v4Track.GetValueAtTime(time);
 
-                    if (v4Key == null)
+                    if (v4Key is null)
                     {
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
@@ -313,12 +313,12 @@ namespace Gorgon.Editor.AnimationEditor
 
                     GorgonKeyRectangle rectKey = rectTrack.GetValueAtTime(time);
 
-                    if (rectKey == null)
+                    if (rectKey is null)
                     {
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }
 
-                    return new DX.Vector4(rectKey.Value.Left, rectKey.Value.Top, rectKey.Value.Width, rectKey.Value.Height);
+                    return new Vector4(rectKey.Value.Left, rectKey.Value.Top, rectKey.Value.Width, rectKey.Value.Height);
                 case AnimationTrackKeyType.Color:
                     if (!animation.ColorTracks.TryGetValue(track.Name, out IGorgonAnimationTrack<GorgonKeyGorgonColor> colorTrack))
                     {
@@ -327,7 +327,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                     GorgonKeyGorgonColor colorKey = colorTrack.GetValueAtTime(time);
 
-                    if (colorKey == null)
+                    if (colorKey is null)
                     {
                         return workingSprite.GetFloatValues(track.SpriteProperty);
                     }

@@ -93,7 +93,7 @@ namespace Gorgon.Renderers
                                                .PrimitiveType(renderable.PrimitiveType));
 
             // If we don't supply a renderer type, then don't assign a vertex buffer.
-            if (renderer == null)
+            if (renderer is null)
             {
                 return;
             }

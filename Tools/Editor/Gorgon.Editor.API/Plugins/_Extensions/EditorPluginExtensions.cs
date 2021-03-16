@@ -46,21 +46,16 @@ namespace Gorgon.Editor.PlugIns
         /// <returns>The friendly description.</returns>
         public static string GetDescription(this PlugInType pluginType) 
         {
-            switch (pluginType)
+            return pluginType switch
             {
-                case PlugInType.Writer:
-                    return Resources.GOREDIT_PLUGIN_TYPE_WRITER;
-                case PlugInType.Content:
-                    return Resources.GOREDIT_PLUGIN_TYPE_CONTENT;
-                case PlugInType.Tool:
-                    return Resources.GOREDIT_PLUGIN_TYPE_TOOL;
-                case PlugInType.Reader:
-                    return Resources.GOREDIT_PLUGIN_TYPE_READER;
-                case PlugInType.ContentImporter:
-                    return Resources.GOREDIT_PLUGIN_TYPE_IMPORTER;
-                default:
-                    return Resources.GOREDIT_PLUGIN_TYPE_UNKNOWN;
+                PlugInType.Writer => Resources.GOREDIT_PLUGIN_TYPE_WRITER,
+                PlugInType.Content => Resources.GOREDIT_PLUGIN_TYPE_CONTENT,
+                PlugInType.Tool => Resources.GOREDIT_PLUGIN_TYPE_TOOL,
+                PlugInType.Reader => Resources.GOREDIT_PLUGIN_TYPE_READER,
+                PlugInType.ContentImporter => Resources.GOREDIT_PLUGIN_TYPE_IMPORTER,
+                _ => Resources.GOREDIT_PLUGIN_TYPE_UNKNOWN,
             };
+            ;
         }
 
         /// <summary>Function to load all the specified plug in assemblies.</summary>
@@ -71,7 +66,7 @@ namespace Gorgon.Editor.PlugIns
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyFiles" /> parameter is <b>null</b></exception>
         public static IReadOnlyList<PlugInAssemblyState> ValidateAndLoadAssemblies(this GorgonMefPlugInCache pluginCache, IEnumerable<string> pluginAssemblyFiles, IGorgonLog log)
         {
-            if (pluginAssemblyFiles == null)
+            if (pluginAssemblyFiles is null)
             {
                 throw new ArgumentNullException(nameof(pluginAssemblyFiles));
             }

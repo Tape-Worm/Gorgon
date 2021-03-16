@@ -121,7 +121,7 @@ namespace Gorgon.Graphics.Fonts
         /// true if <paramref name="glyph"/> is found in the <see cref="System.Collections.Generic.ICollection{T}"/>; otherwise, false.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
-        public bool Contains(GorgonGlyph glyph) => glyph == null ? throw new ArgumentNullException(nameof(glyph)) : _list.ContainsValue(glyph);
+        public bool Contains(GorgonGlyph glyph) => glyph is null ? throw new ArgumentNullException(nameof(glyph)) : _list.ContainsValue(glyph);
 
         /// <summary>
         /// Function to return whether the character exists in this collection.
@@ -143,7 +143,7 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="glyph">Glyph to find.</param>
         /// <returns>The index of the glyph if found, -1 if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
-        public int IndexOf(GorgonGlyph glyph) => glyph == null ? throw new ArgumentNullException(nameof(glyph)) : _list.IndexOfValue(glyph);
+        public int IndexOf(GorgonGlyph glyph) => glyph is null ? throw new ArgumentNullException(nameof(glyph)) : _list.IndexOfValue(glyph);
 
         /// <summary>
         /// Function to attempt to retrieve a glyph from the list.
@@ -165,7 +165,7 @@ namespace Gorgon.Graphics.Fonts
         public IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> GetGlyphsByTexture()
         {
             IEnumerable<IGrouping<GorgonTexture2D, GorgonGlyph>> groupedGlyphs = from glyph in this
-                                                                                 where glyph.TextureView != null
+                                                                                 where glyph.TextureView is not null
                                                                                  group glyph by glyph.TextureView.Texture;
 
             return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)v.ToArray());

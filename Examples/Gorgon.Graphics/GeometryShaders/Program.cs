@@ -25,10 +25,12 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -38,6 +40,7 @@ using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
+using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Examples
 {
@@ -59,10 +62,10 @@ namespace Gorgon.Examples
         private static GorgonGraphics _graphics;
         // The application swap chain used to display our graphics.
         private static GorgonSwapChain _swap;
-        // The projection matrix.
-        private static DX.Matrix _projection = DX.Matrix.Identity;
+        // The camera for the view.
+        private static GorgonPerspectiveCamera _camera;
         // The world matrix for moving our objects.
-        private static DX.Matrix _worldMatrix = DX.Matrix.Identity;
+        private static Matrix4x4 _worldMatrix = Matrix4x4.Identity;
         // A vertex shader that will generate our data to pass on to the geometry shader.
         private static GorgonVertexShader _bufferless;
         // Our vertex shader used to send data to the render target.
@@ -97,15 +100,15 @@ namespace Gorgon.Examples
         {
             // Update the animated offset for the center point.  We need to put this into a Vector4 because our data needs to be 
             // aligned to a 16 byte boundary for constant buffers.
-            var offset = new DX.Vector4(_heightOffset, 0, 0, 0);
+            var offset = new Vector4(_heightOffset, 0, 0, 0);
 
-            DX.Matrix.RotationY(_angle.ToRadians(), out _worldMatrix);
-            _worldMatrix.Row4 = new DX.Vector4(0, 0, 2.0f, 1.0f);
+            _worldMatrix = Matrix4x4.CreateRotationY(_angle.ToRadians());
+            _worldMatrix.SetRow(3, new Vector4(0, 0, 2.0f, 1.0f));
 
             // We've put our world matrix and center point offset inside of the same buffer since they're both updated once per
             // frame.
-            _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);
-            _vsConstants.Buffer.SetData(ref offset, 128, CopyMode.NoOverwrite);
+            _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
+            _vsConstants.Buffer.SetData(in offset, 128, CopyMode.NoOverwrite);
         }
 
         /// <summary>
@@ -128,8 +131,9 @@ namespace Gorgon.Examples
             _graphics.SetDepthStencil(_depthStencil);
 
             // When we resize, the projection matrix will go out of date, so we need to update our constant buffer with an updated projection.
-            DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
-            _vsConstants.Buffer.SetData(ref _projection);
+            _camera.ViewDimensions = e.Size.ToSize2F();            
+            ref readonly Matrix4x4 projection = ref _camera.GetProjectionMatrix();            
+            _vsConstants.Buffer.SetData(in projection);
         }
 
         /// <summary>
@@ -198,7 +202,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Initialize()
         {
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Build the form so we can actually show something.
             _mainForm = GorgonExample.Initialize(new DX.Size2(1280, 800), "Geometry Shaders");
@@ -286,15 +290,22 @@ namespace Gorgon.Examples
                 _drawCallBuilder = new GorgonDrawCallBuilder();
                 _pipeStateBuilder = new GorgonPipelineStateBuilder(_graphics);
 
+                // Set our swap chain as the active rendering target and the depth/stencil buffer.
+                _graphics.SetRenderTarget(_swap.RenderTargetView, _depthStencil);
+
                 // Create a constant buffer so we can adjust the positioning of the data.
-                DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
+                _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 0.125f, 1000.0f)
+                {
+                    Fov = 65.0f
+                };
+                
                 _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
                                                                              new GorgonConstantBufferInfo("WorldProjection CBuffer")
                                                                              {
-                                                                                 SizeInBytes = (DX.Matrix.SizeInBytes * 2) + DX.Vector4.SizeInBytes
+                                                                                 SizeInBytes = (Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>()
                                                                              });
-                _vsConstants.Buffer.SetData(ref _projection, copyMode: CopyMode.Discard);
-                _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);
+                _vsConstants.Buffer.SetData(in _camera.GetProjectionMatrix(), copyMode: CopyMode.Discard);
+                _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
 
                 // Create a draw call so we actually have something we can draw.
                 _drawCall = _drawCallBuilder.VertexRange(0, 3)
@@ -306,8 +317,6 @@ namespace Gorgon.Examples
                                             .ConstantBuffer(ShaderType.Vertex, _vsConstants)
                                             .ConstantBuffer(ShaderType.Geometry, _vsConstants)
                                             .Build();
-                // Finally set our swap chain as the active rendering target and the depth/stencil buffer.
-                _graphics.SetRenderTarget(_swap.RenderTargetView, _depthStencil);
 
                 GorgonExample.LoadResources(_graphics);
             }
@@ -325,6 +334,9 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

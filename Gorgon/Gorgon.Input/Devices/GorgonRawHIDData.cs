@@ -40,21 +40,36 @@ namespace Gorgon.Input
     /// This type is not intended for use by applications.
     /// </para>
     /// </remarks>
-    public struct GorgonRawHIDData
+    public readonly struct GorgonRawHIDData
     {
+        #region Variables.
         /// <summary>
         /// A pointer to the device data received from Raw Input.
         /// </summary>
-        public GorgonReadOnlyPointer HidData;
+        public readonly GorgonPtr<byte> HidData;
 
         /// <summary>
-        /// The number of HID inputs contained within the data.
+        /// The size of an individual HID input, in bytes, within the <see cref="HidData"/>.
         /// </summary>
-        public int ItemCount;
+        public readonly int HIDDataSize;
+        #endregion
 
+        #region Properties.
         /// <summary>
-        /// The size of an individual HID input within the <see cref="HidData"/>.
+        /// Property to return the number of HID inputs contained within the data.
         /// </summary>
-        public int HIDDataSize;
+        public int ItemCount => ((HidData == GorgonPtr<byte>.NullPtr) || (HIDDataSize == 0)) ? 0 : HidData.Length / HIDDataSize;
+        #endregion
+
+        #region Constructor.
+        /// <summary>Initializes a new instance of the <see cref="GorgonRawHIDData" /> struct.</summary>
+        /// <param name="data">The device data received from raw input.</param>
+        /// <param name="size">The size of a single HID value within the data.</param>
+        public GorgonRawHIDData(in GorgonPtr<byte> data, int size)
+        {
+            HidData = data;
+            HIDDataSize = size;
+        }
+        #endregion
     }
 }

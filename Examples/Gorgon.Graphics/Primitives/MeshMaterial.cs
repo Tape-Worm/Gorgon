@@ -24,10 +24,10 @@
 // 
 #endregion
 
+using System.Numerics;
 using Gorgon.Collections;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -48,7 +48,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Property to set or return an offset for the textures.
         /// </summary>
-        public DX.Vector2 TextureOffset
+        public Vector2 TextureOffset
         {
             get;
             set;

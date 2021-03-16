@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -32,7 +33,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
@@ -97,7 +97,7 @@ namespace Gorgon.Examples
         // Poetry text.
         private GorgonTextSprite _poetry;
         // Text position.
-        private DX.Vector2 _textPosition = DX.Vector2.Zero;
+        private Vector2 _textPosition = Vector2.Zero;
         // Blur delta.
         private float _blurDelta = -16.0f;
         // Flag to show help.
@@ -132,7 +132,7 @@ namespace Gorgon.Examples
         /// </summary>
 	    private void ResetBlur()
         {
-            _sprites[2].Scale = new DX.Vector2(1.0f, 1.0f);
+            _sprites[2].Scale = new Vector2(1.0f, 1.0f);
 
             // Adjust the texture size to avoid bleed when blurring.  
             // Bleed means that other portions of the texture get pulled in to the texture because of bi-linear filtering (and the blur operates in a similar manner, and therefore unwanted 
@@ -140,7 +140,7 @@ namespace Gorgon.Examples
             //
             // See http://tape-worm.net/?page_id=277 for more info.
 
-            _sprites[2].Position = new DX.Vector2(((_blurredImage[0].Width / 2.0f) - (_sprites[2].Size.Width / 2.0f)).FastFloor(),
+            _sprites[2].Position = new Vector2(((_blurredImage[0].Width / 2.0f) - (_sprites[2].Size.Width / 2.0f)).FastFloor(),
                                                   ((_blurredImage[0].Height / 2.0f) - (_sprites[2].Size.Height / 2.0f)).FastFloor());
 
             for (int i = 0; i < _blurredTarget.Length; ++i)
@@ -167,7 +167,7 @@ namespace Gorgon.Examples
             // Reset the text position.
             if (_poetry.Position.Y < -_poetry.Size.Height)
             {
-                _textPosition = new DX.Vector2(0, height + _textFont.LineHeight);
+                _textPosition = new Vector2(0, height + _textFont.LineHeight);
             }
 
             // Scroll up.
@@ -214,10 +214,10 @@ namespace Gorgon.Examples
             _poetry.Position = _textPosition;
             _renderer.DrawTextSprite(_poetry);
 
-            _sprites[0].Position = new DX.Vector2(width / 4, height / 4);
+            _sprites[0].Position = new Vector2(width / 4, height / 4);
 
             // Draw motherships.
-            _sprites[1].Position = new DX.Vector2(width - (width / 4), height / 4);
+            _sprites[1].Position = new Vector2(width - (width / 4), height / 4);
 
             _renderer.DrawSprite(_sprites[0]);
             _renderer.DrawSprite(_sprites[1]);
@@ -255,19 +255,17 @@ namespace Gorgon.Examples
         {
             IGorgonVirtualFile file = _fileSystem.GetFile(path);
 
-            if (file == null)
+            if (file is null)
             {
                 throw new FileNotFoundException($"The file '{path}' was not found in the file system.");
             }
 
-            using (Stream stream = file.OpenStream())
-            {
-                byte[] result = new byte[stream.Length];
+            using Stream stream = file.OpenStream();
+            byte[] result = new byte[stream.Length];
 
-                stream.Read(result, 0, result.Length);
+            stream.Read(result, 0, result.Length);
 
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
@@ -275,12 +273,12 @@ namespace Gorgon.Examples
         /// </summary>
         private void Initialize()
         {
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
-            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Resize and center the screen.
             var screen = Screen.FromHandle(Handle);
-            ClientSize = Settings.Default.Resolution;
+            ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
             Location = new Point(screen.Bounds.Left + (screen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
                                  screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
@@ -306,7 +304,7 @@ namespace Gorgon.Examples
                                               Format = BufferFormat.R8G8B8A8_UNorm
                                           });
 
-            if (!Settings.Default.IsWindowed)
+            if (!ExampleConfig.Default.IsWindowed)
             {
                 // Go full screen by using borderless windowed mode.
                 _screen.EnterFullScreen();
@@ -368,7 +366,7 @@ namespace Gorgon.Examples
             */
 
             // Get poetry.            
-            _textPosition = new DX.Vector2(0, ClientSize.Height + _textFont.LineHeight);
+            _textPosition = new Vector2(0, ClientSize.Height + _textFont.LineHeight);
 
             _poetry = new GorgonTextSprite(_textFont, Encoding.UTF8.GetString(LoadFile("/SomeText.txt")))
             {
@@ -380,7 +378,7 @@ namespace Gorgon.Examples
             _helpText = new GorgonTextSprite(_helpFont, "F1 - Show/hide this help text.\nS - Show frame statistics.\nESC - Exit.")
             {
                 Color = Color.Blue,
-                Position = new DX.Vector2(3, 3)
+                Position = new Vector2(3, 3)
             };
 
             // Unlike the old example, we'll blend to render targets, ping-ponging back and forth, for a much better quality image and smoother transition.

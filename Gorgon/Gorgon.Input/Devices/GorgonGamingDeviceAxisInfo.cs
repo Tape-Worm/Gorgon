@@ -37,7 +37,6 @@ namespace Gorgon.Input
     /// the <see cref="IGorgonGamingDeviceDriver"/> upon enumeration of the devices.
     /// </remarks>
     public class GorgonGamingDeviceAxisInfo
-        : IGorgonGamingDeviceAxis
     {
         #region Variables.
         /// <summary>

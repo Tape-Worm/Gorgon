@@ -41,7 +41,7 @@ namespace Gorgon.Examples
     internal static class Program
     {
         #region Variables.
-        private static readonly Random _rnd = new Random();			// Random number generator.
+        private static readonly Random _rnd = new();			// Random number generator.
         private static FormMain _form;                              // Our application form.
         private static int _lastX;                                  // Last horizontal coordinate.
         private static int _lastY;                                  // Last vertical coordinate.
@@ -88,6 +88,9 @@ namespace Gorgon.Examples
         {
             try
             {
+#if NET5_0_OR_GREATER
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

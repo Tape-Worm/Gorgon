@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Timing;
 using Gorgon.UI;
@@ -42,15 +41,13 @@ namespace Gorgon.Editor.UI
         // The current action to use when cancelling an operation in progress.
         private Action _progressCancelAction;
         // The form to display for the progress panel.
-        private FormProgress _progressForm;
+        private readonly GorgonProgressOverlay _progressForm;
         // The application form that will be the parent of the panel.
-        private readonly Form _appForm;
+        private readonly Control _appForm;
         // The view model to hook into.
         private IViewModel _viewModel;
-        // The synchronization context for synchronizing to the main thread.
-        private readonly SynchronizationContext _syncContext;
         // The timer used to control the rate of updates to the progress panel.
-        private IGorgonTimer _progressTimer;
+        private readonly IGorgonTimer _progressTimer;
         #endregion
 
         #region Methods.
@@ -61,7 +58,7 @@ namespace Gorgon.Editor.UI
         {
             _progressCancelAction?.Invoke();
 
-            if (_viewModel == null)
+            if (_viewModel is null)
             {
                 return;
             }
@@ -70,37 +67,13 @@ namespace Gorgon.Editor.UI
             _viewModel.ProgressUpdated -= ViewModel_ProgressUpdated;
         }
 
-        /// <summary>Handles the OperationCancelled event of the Progress control.</summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void Progress_OperationCancelled(object sender, EventArgs e) => _progressCancelAction?.Invoke();
-
         /// <summary>Handles the ProgressDeactivated event of the ViewModel control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ViewModel_ProgressDeactivated(object sender, EventArgs e)
         {
-            void HideForm(object _)
-            {
-                _appForm.Enabled = true;
-
-                _progressCancelAction = null;
-                _progressForm.Hide();
-                _progressForm.Progress.OperationCancelled -= Progress_OperationCancelled;
-                _progressTimer = null;
-
-                _appForm.BringToFront();
-                _appForm.Activate();
-            }
-
-            if (_syncContext != SynchronizationContext.Current)
-            {
-                _syncContext.Send(HideForm, null);
-            }
-            else
-            {
-                HideForm(null);
-            }
+            _appForm.Enabled = true;
+            _progressForm.Hide();
         }
 
         /// <summary>Views the model progress updated.</summary>
@@ -110,65 +83,20 @@ namespace Gorgon.Editor.UI
         {
             // Drop the message if it's been less than 10 milliseconds since our last call.
             // This will keep us from flooding the window message queue with very fast operations.            
-            if ((_progressTimer != null) && (_progressTimer.Milliseconds < 10) && (e.PercentageComplete < 1) && (e.PercentageComplete > 0))
+            if ((_progressTimer is not null) && (_progressTimer.Milliseconds < 10) && (e.PercentageComplete < 1) && (e.PercentageComplete > 0))
             {
                 return;
             }
 
-            // The actual method to execute on the main thread.
-            void UpdateProgressPanel(object ctx)
+            _progressCancelAction = e.CancelAction;
+
+            if (!_progressForm.IsActive)
             {
-                var args = (ProgressPanelUpdateArgs)ctx;
-                _progressForm.Progress.ProgressTitle = args.Title ?? string.Empty;
-                _progressForm.Progress.ProgressMessage = args.Message ?? string.Empty;
-                _progressForm.Progress.CurrentValue = args.PercentageComplete;
-                _progressForm.Progress.AllowCancellation = args.CancelAction != null;
-                _progressCancelAction = args.CancelAction;
-
-                bool isMarquee = _progressForm.Progress.MeterStyle == ProgressBarStyle.Marquee;
-
-                if (_progressForm.Progress.Visible)
-                {
-                    if (isMarquee == e.IsMarquee)
-                    {
-                        _progressTimer?.Reset();
-                        return;
-                    }
-
-                    // If we change to a marquee format, then hide the previous panel.
-                    ViewModel_ProgressDeactivated(this, EventArgs.Empty);
-                }
-
-                _progressTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
-                _progressForm.Progress.OperationCancelled += Progress_OperationCancelled;
-                _progressForm.Progress.MeterStyle = args.IsMarquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
                 _appForm.Enabled = false;
-                _progressForm.Show(_appForm);
-                _progressForm.Progress.BringToFront();
-                _progressForm.Progress.Invalidate();
+                _progressForm.Show(_appForm, e.Title, e.Message, e.CancelAction, e.IsMarquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous);
             }
-
-            if (_syncContext != SynchronizationContext.Current)
-            {
-                _syncContext.Send(UpdateProgressPanel, e);
-            }
-            else
-            {
-                UpdateProgressPanel(e);
-            }
-        }
-
-        /// <summary>
-        /// Function to bring the wait panel to the top of the z-order.
-        /// </summary>
-        public void BringToFront()
-        {
-            if (!_progressForm.Visible)
-            {
-                return;
-            }
-
-            _progressForm.BringToFront();
+                        
+            _progressForm.UpdateProgress(e.PercentageComplete, e.Message);
         }
 
         /// <summary>
@@ -181,7 +109,7 @@ namespace Gorgon.Editor.UI
 
             _viewModel = dataContext;
 
-            if (_viewModel == null)
+            if (_viewModel is null)
             {
                 return;
             }
@@ -191,23 +119,21 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {            
-            SetDataContext(null);
-            FormProgress progress = Interlocked.Exchange(ref _progressForm, null);
-            progress?.Dispose();
-        }
+        public void Dispose() => UnassignEvents();
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="ProgressPanelDisplay"/> class.</summary>
         /// <param name="appForm">The application form that will be the parent to the wait panel.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appForm"/> parameter is <b>null</b>.</exception>
-        public ProgressPanelDisplay(Form appForm)
+        public ProgressPanelDisplay(Control appForm)
         {
             _appForm = appForm ?? throw new ArgumentNullException(nameof(appForm));
-            _syncContext = SynchronizationContext.Current;
-            _progressForm = new FormProgress();
+            _progressForm = new GorgonProgressOverlay
+            {
+                OverlayColor = Graphics.GorgonColor.Black
+            };
+            _progressTimer = new GorgonTimerQpc();
         }        
         #endregion
 

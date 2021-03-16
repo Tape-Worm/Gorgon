@@ -58,7 +58,7 @@ namespace Gorgon.Editor.Rendering
         {
             Lazy<GorgonTexture2DView> ants = Interlocked.Exchange(ref _marchAntsTexture, null);
 
-            if ((ants == null) || (!ants.IsValueCreated))
+            if ((ants is null) || (!ants.IsValueCreated))
             {
                 return;
             }
@@ -91,15 +91,13 @@ namespace Gorgon.Editor.Rendering
         /// <returns>A new instance of the marching ants texture.</returns>
         private GorgonTexture2DView Build()
         {
-            using (var image = new MemoryStream(Resources.march_ants_diag_32x32))
-            {
-                return GorgonTexture2DView.FromStream(_renderer.Graphics, image, new GorgonCodecDds(),
-                    options: new GorgonTexture2DLoadOptions
-                    {
-                        Name = "MarchingAntsTexture",
-                        Usage = ResourceUsage.Immutable
-                    });
-            }
+            using var image = new MemoryStream(Resources.march_ants_diag_32x32);
+            return GorgonTexture2DView.FromStream(_renderer.Graphics, image, new GorgonCodecDds(),
+                options: new GorgonTexture2DLoadOptions
+                {
+                    Name = "MarchingAntsTexture",
+                    Usage = ResourceUsage.Immutable
+                });
         }
         #endregion
 

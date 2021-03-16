@@ -258,7 +258,7 @@ namespace Gorgon.Editor.PlugIns
         public bool CanOpenContent(string filePath)
         {
 #pragma warning disable IDE0046 // Convert to conditional expression
-            if (filePath == null)
+            if (filePath is null)
             {
                 throw new ArgumentNullException(nameof(filePath));
             }

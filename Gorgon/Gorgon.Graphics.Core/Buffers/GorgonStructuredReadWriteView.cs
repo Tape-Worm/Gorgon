@@ -27,8 +27,8 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -163,34 +163,23 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to initialize the unordered access view.
-        /// </summary>
-        private protected override D3D11.ResourceView OnCreateNativeView()
+        /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
+        /// <returns>The D3D11 UAV descriptor.</returns>
+        private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
         {
-            Graphics.Log.Print($"Creating D3D11 structured buffer unordered access view for {Buffer.Name}.", LoggingLevel.Verbose);
-
-            var desc = new D3D11.UnorderedAccessViewDescription1
+            UavDesc = new D3D11.UnorderedAccessViewDescription1
             {
                 Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
                 Buffer =
-                           {
-                               FirstElement = StartElement,
-                               ElementCount = ElementCount,
-                               Flags = (D3D11.UnorderedAccessViewBufferFlags)ReadWriteViewType
-                           },
-                Format = Format.Unknown
+                {
+                    FirstElement = StartElement,
+                    ElementCount = ElementCount,
+                    Flags = (D3D11.UnorderedAccessViewBufferFlags)ReadWriteViewType
+                },
+                Format = DXGI.Format.Unknown
             };
 
-            Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-            {
-                DebugName = $"'{Buffer.Name}'_D3D11UnorderedAccessView1_Structured"
-            };
-
-            Graphics.Log.Print($"Unordered Access Structured Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}, Type: {ReadWriteViewType}",
-                               LoggingLevel.Verbose);
-
-            return Native;
+            return ref UavDesc;
         }
 
         /// <summary>

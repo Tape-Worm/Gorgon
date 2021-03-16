@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -79,8 +80,8 @@ namespace Gorgon.Editor.Services
             {
                 for (int x = bounds.X; x < bounds.Right; ++x)
                 {
-                    // The last byte of the pixel should be the alpha (we force conversion to R8G8B8A8).
-                    int value = imageData.Data.ReadAs<int>((y * imageData.PitchInformation.RowPitch) + (x * pixelSize));
+                    // The last byte of the pixel should be the alpha (we force conversion to R8G8B8A8).                    
+                    int value = imageData.Data.AsRef<int>((y * imageData.PitchInformation.RowPitch) + (x * pixelSize));
                     if (color != value)
                     {
                         return false;
@@ -170,8 +171,7 @@ namespace Gorgon.Editor.Services
         {
             IGorgonImage imageData = data.Texture.Texture.ToImage();
 
-            if ((imageData.Format == BufferFormat.R8G8B8A8_UNorm)
-                || (imageData.Format == BufferFormat.R8G8B8A8_UNorm_SRgb))
+            if (imageData.Format is BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb)
             {
                 return imageData;
             }
@@ -179,12 +179,12 @@ namespace Gorgon.Editor.Services
             if ((imageData.FormatInfo.IsSRgb)
                 && (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb)))
             {
-                await Task.Run(() => imageData.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb));
+                await Task.Run(() => imageData.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm_SRgb).EndUpdate());
                 return imageData;
             }
             else if (imageData.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
             {
-                await Task.Run(() => imageData.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm));
+                await Task.Run(() => imageData.BeginUpdate().ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).EndUpdate());
                 return imageData;
             }
 
@@ -239,7 +239,7 @@ namespace Gorgon.Editor.Services
                         {
                             TextureArrayIndex = array + data.StartArrayIndex,
                             Texture = data.Texture,
-                            Anchor = DX.Vector2.Zero,
+                            Anchor = Vector2.Zero,
                             Size = new DX.Size2F(data.CellSize.Width, data.CellSize.Height),
                             TextureRegion = data.Texture.ToTexel(spriteRect),
                             TextureSampler = GorgonSamplerState.PointFiltering
@@ -289,7 +289,7 @@ namespace Gorgon.Editor.Services
 
                 IContentFile file = _fileManager.GetFile(filePath);
 
-                Debug.Assert(file != null, $"Sprite file '{filePath}' was not created!");
+                Debug.Assert(file is not null, $"Sprite file '{filePath}' was not created!");
 
                 file.LinkContent(textureFile);
             }

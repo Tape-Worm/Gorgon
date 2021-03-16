@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Numerics;
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -72,12 +73,12 @@ namespace Gorgon.Editor.SpriteEditor
                                                    -DataContext.Size.Height - (DataContext.Size.Height * 0.5f),
                                                    DataContext.Size.Width * 3,
                                                    DataContext.Size.Height * 3).Truncate();
-            Sprite.Position = DX.Vector2.Zero;
+            Sprite.Position = Vector2.Zero;
             Sprite.CornerColors.SetAll(GorgonColor.White);
-            Sprite.CornerOffsets.SetAll(DX.Vector3.Zero);
+            Sprite.CornerOffsets.SetAll(Vector3.Zero);
             Sprite.TextureSampler = DataContext.WrappingEditor.CurrentSampler == GorgonSamplerState.Default ? null : DataContext.WrappingEditor.CurrentSampler;
             Sprite.Size = rect.Size;
-            Sprite.Anchor = new DX.Vector2(0.5f, 0.5f);
+            Sprite.Anchor = new Vector2(0.5f, 0.5f);
             Sprite.TextureRegion = new DX.RectangleF
             {
                 Left = Sprite.TextureRegion.Left - Sprite.TextureRegion.Width,
@@ -93,7 +94,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
-            if (DataContext?.Texture == null)
+            if (DataContext?.Texture is null)
             {
                 return;
             }
@@ -105,10 +106,9 @@ namespace Gorgon.Editor.SpriteEditor
 
             ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(RenderRegion);
 
-            var spritePosition = (DX.Vector2)Camera.Unproject(new DX.Vector3(zoomRect.X + zoomRect.Width * 0.5f,
-                                                                             zoomRect.Y + zoomRect.Height * 0.5f, 0));
+            Vector3 spritePosition = Camera.Unproject(new Vector3(zoomRect.X + zoomRect.Width * 0.5f, zoomRect.Y + zoomRect.Height * 0.5f, 0));
 
-            ForceMoveTo(spritePosition, spriteZoomLevel.GetScale(), true);
+            ForceMoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale(), true);
         }
         #endregion
 
