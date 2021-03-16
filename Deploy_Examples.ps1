@@ -1,4 +1,4 @@
-﻿function Update-Config()
+function Update-Config()
 {
     Param ([string]$configFile)
 
@@ -53,7 +53,7 @@ ForEach ($example in $gorgonExamples)
             continue
         }
     }
-
+    
     # Don't waste time on files we already have.
     if (Test-Path -Path "$artifactBin\\$($example.Name)")
     {
