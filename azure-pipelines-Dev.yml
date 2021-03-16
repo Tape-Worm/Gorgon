@@ -21,6 +21,9 @@ jobs:
       buildConfiguration: 'Debug'
 
     steps:
+      - checkout: self
+        submodules: true
+
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
