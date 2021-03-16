@@ -15,22 +15,17 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Input GorgonEditor Animation</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.7.2" >
-        <dependency id="SharpDX" version="4.2.0"/>
-        <dependency id="SharpDX.Mathematics" version="4.2.0"/>
-        <dependency id="Krypton.ToolKit.Lite" version="5.500.2008"/>
-        <dependency id="Krypton.Ribbon.Lite" version="5.500.2008"/>        
-        <dependency id="System.Buffers" version="4.5.1"/>
-        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>        
-        <dependency id="Gorgon.Renderers.Gorgon2D.Debug" version="$version$-beta"/>
-        <dependency id="Gorgon.Input.Debug" version="$version$-beta"/>        
+      <group targetFramework="net5.0" >
+        <dependency id="Krypton.Ribbon.Lite.Signed" version="5.550.2103"/>        
+        <dependency id="Gorgon.Renderers.Gorgon2D" version="$version$-beta"/>
+        <dependency id="Gorgon.Input" version="$version$-beta"/>        
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\Tools\Gorgon.Editor.API.dll" target="lib\net472\Gorgon.Editor.API.dll" />
-    <file src="..\Tools\Gorgon.Editor.API.xml" target="lib\net472\Gorgon.Editor.API.xml" />
-    <file src="..\Tools\WinFormsColor.dll" target="lib\net472\WinFormsColor.dll" />
+    <file src="..\Tools\Gorgon.Editor.API.dll" target="lib\net5.0\Gorgon.Editor.API.dll" />
+    <file src="..\Tools\Gorgon.Editor.API.xml" target="lib\net5.0\Gorgon.Editor.API.xml" />
+    <file src="..\Tools\WinFormsColor.dll" target="lib\net5.0\WinFormsColor.dll" />
   </files>
 </package>

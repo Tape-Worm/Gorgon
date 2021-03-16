@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata minClientVersion="5.3.0">
-    <id>Gorgon.Graphics.Fonts.Debug</id>
+    <id>Gorgon.Graphics.Wpf.Debug</id>
     <version>$version$-beta</version>
-    <title>Gorgon.Graphics.Fonts (DEBUG)</title>
+    <title>Gorgon.Graphics.Wpf (DEBUG)</title>
     <authors>Tape_Worm</authors>
     <owners>Tape_Worm</owners>
     <license type="expression">MIT</license>
     <projectUrl>https://www.tape-worm.net</projectUrl>
     <icon>images\Gorgon_Icon_64x64.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Contains functionality to create, read and store bitmap fonts for use in text rendering.</description>
+    <description>Contains functionality to render Gorgon graphics into a WPF surface.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2020 Tape_Worm</copyright>
-    <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Fonts</tags>
+    <copyright>Copyright 2021 Tape_Worm</copyright>
+    <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows WPF</tags>
     <dependencies>
       <group targetFramework="net5.0" >
         <dependency id="Gorgon.Graphics.Core" version="$version$-beta"/>
@@ -22,7 +22,8 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Graphics.Fonts.dll" target="lib\net5.0\Gorgon.Graphics.Fonts.dll" />
-    <file src="..\lib\Gorgon.Graphics.Fonts.xml" target="lib\net5.0\Gorgon.Graphics.Fonts.xml" />
+    <file src="..\lib\Gorgon.Graphics.Wpf.dll" target="lib\net5.0\Gorgon.Graphics.Wpf.dll" />
+    <file src="..\lib\Gorgon.Graphics.Wpf.xml" target="lib\net5.0\Gorgon.Graphics.Wpf.xml" />
+    <file src="..\lib\Microsoft.Wpf.Interop.DirectX.dll" target="lib\net5.0\Microsoft.Wpf.Interop.DirectX.dll" />
   </files>
 </package>

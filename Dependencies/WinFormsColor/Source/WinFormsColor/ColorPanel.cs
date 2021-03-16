@@ -11,10 +11,11 @@ namespace Fetze.WinFormsColor
 {
     public class ColorPanel : UserControl
     {
-        private	Bitmap	srcImage		= null;        
+#pragma warning disable IDE0090 // Use 'new(...)'
+        private Bitmap	srcImage		= null;        
         private	int		pickerSize		= 8;
         private	PointF	pickerPos		= new PointF(0.5f, 0.5f);
-		private	Color	clrTopLeft		= Color.Transparent;
+        private	Color	clrTopLeft		= Color.Transparent;
 		private	Color	clrTopRight		= Color.Transparent;
 		private	Color	clrBottomLeft	= Color.Transparent;
 		private	Color	clrBottomRight	= Color.Transparent;
@@ -414,5 +415,7 @@ namespace Fetze.WinFormsColor
         private bool ShouldSerializeTopRightColor() => designSerializeColor;
         private bool ShouldSerializeBottomLeftColor() => designSerializeColor;
         private bool ShouldSerializeBottomRightColor() => designSerializeColor;
+#pragma warning restore IDE0090 // Use 'new(...)'
+
     }
 }

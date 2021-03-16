@@ -15,17 +15,14 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Windows Win32</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.7.2" >
-        <dependency id="SharpDX" version="4.2.0"/>
-        <dependency id="System.Buffers" version="4.5.1"/>
-        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>
+      <group targetFramework="net5.0" >
         <dependency id="Gorgon.Core" version="$version$"/>
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Windows.dll" target="lib\net472\Gorgon.Windows.dll" />
-    <file src="..\lib\Gorgon.Windows.xml" target="lib\net472\Gorgon.Windows.xml" />
+    <file src="..\lib\Gorgon.Windows.dll" target="lib\net5.0\Gorgon.Windows.dll" />
+    <file src="..\lib\Gorgon.Windows.xml" target="lib\net5.0\Gorgon.Windows.xml" />
   </files>
 </package>

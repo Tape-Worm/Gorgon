@@ -15,19 +15,17 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics Imaging</tags>
     <dependencies>
-      <group targetFramework=".NETFramework4.7.2" >
-        <dependency id="SharpDX" version="4.2.0"/>
+      <group targetFramework="net5.0" >
         <dependency id="SharpDX.Direct2D1" version="4.2.0"/>
-        <dependency id="SharpDX.Mathematics" version="4.2.0"/>
-        <dependency id="System.Buffers" version="4.5.1"/>
-        <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.7.1"/>
+        <dependency id="System.Drawing.Common" version="5.0.2"/>
         <dependency id="Gorgon.Core" version="$version$"/>
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Graphics.Imaging.dll" target="lib\net472\Gorgon.Graphics.Imaging.dll" />
-    <file src="..\lib\Gorgon.Graphics.Imaging.xml" target="lib\net472\Gorgon.Graphics.Imaging.xml" />
+    <file src="..\lib\Gorgon.Graphics.Imaging.dll" target="lib\net5.0\Gorgon.Graphics.Imaging.dll" />
+    <file src="..\lib\Gorgon.Graphics.Imaging.xml" target="lib\net5.0\Gorgon.Graphics.Imaging.xml" />
+    <file src="..\lib\BCnEncoder.dll" target="lib\net5.0\BCnEncoder.dll" />
   </files>
 </package>
