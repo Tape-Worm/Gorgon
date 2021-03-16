@@ -22,7 +22,7 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src=".\Gorgon.Graphics.Wpf.targets" target="build\Gorgon.Graphics.Wpf.targets" />
+    <file src=".\Gorgon.Graphics.Wpf.debug.targets" target="build\Gorgon.Graphics.Wpf.debug.targets" />
     <file src="..\lib\ljwhost.dll" target="build\ljwhost.dll" />
     <file src="..\lib\Microsoft.Wpf.Interop.DirectX.dll" target="build\net5.0\Microsoft.Wpf.Interop.DirectX.dll" />
     <file src="..\lib\Gorgon.Graphics.Wpf.dll" target="lib\net5.0\Gorgon.Graphics.Wpf.dll" />
