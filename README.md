@@ -131,7 +131,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 What's required?
 ----------------
 
-  * [.NET 5.0](https://www.microsoft.com/net/download/dotnet-framework-runtime)
+  * [.NET 5.0](https://dotnet.microsoft.com/download)
   * Windows 10 (Build 15063 or later).
   * A video card that supports Microsoft DirectX 11.2 or better
 
