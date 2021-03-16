@@ -17,8 +17,8 @@
     <dependencies>
       <group targetFramework="net5.0" >
         <dependency id="Krypton.Ribbon.Lite.Signed" version="5.550.2103"/>        
-        <dependency id="Gorgon.Renderers.Gorgon2D" version="$version$-beta"/>
-        <dependency id="Gorgon.Input" version="$version$-beta"/>        
+        <dependency id="Gorgon.Renderers.Gorgon2D.Debug" version="$version$-beta"/>
+        <dependency id="Gorgon.Input.Debug" version="$version$-beta"/>        
       </group>
     </dependencies>
   </metadata>
