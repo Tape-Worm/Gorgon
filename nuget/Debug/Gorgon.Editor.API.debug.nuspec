@@ -24,8 +24,8 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\Tools\Gorgon.Editor.API.dll" target="lib\net5.0\Gorgon.Editor.API.dll" />
-    <file src="..\Tools\Gorgon.Editor.API.xml" target="lib\net5.0\Gorgon.Editor.API.xml" />
-    <file src="..\Tools\WinFormsColor.dll" target="lib\net5.0\WinFormsColor.dll" />
+    <file src="..\Tools\net5.0-windows\Gorgon.Editor.API.dll" target="lib\net5.0\Gorgon.Editor.API.dll" />
+    <file src="..\Tools\net5.0-windows\Gorgon.Editor.API.xml" target="lib\net5.0\Gorgon.Editor.API.xml" />
+    <file src="..\Tools\net5.0-windows\WinFormsColor.dll" target="lib\net5.0\WinFormsColor.dll" />
   </files>
 </package>
