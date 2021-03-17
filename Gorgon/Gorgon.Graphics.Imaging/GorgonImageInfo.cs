@@ -25,19 +25,38 @@
 #endregion
 
 using System;
-using Gorgon.Core;
-using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging
 {
+#if NET5_0_OR_GREATER
     /// <summary>
-    /// Provides information describing how to create an image.
+    /// A record used to define the properties of a <see cref="IGorgonImage"/>.
     /// </summary>
-    public class GorgonImageInfo
+    /// <param name="ImageType">The type of image to build.</param>
+    /// <param name="Format">The pixel format layout of the data in the image.</param>
+    public record GorgonImageInfo(ImageType ImageType, BufferFormat Format)
         : IGorgonImageInfo
     {
-        #region Properties.
+    #region Constructor.
+        /// <summary>
+        /// A copy constructor for an <see cref="IGorgonImageInfo"/>.
+        /// </summary>
+        /// <param name="info">The information to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonImageInfo(IGorgonImageInfo info)
+            : this(info?.ImageType ?? throw new ArgumentNullException(nameof(info)), info.Format)
+        {
+            ArrayCount = info.ArrayCount.Max(1);
+            Depth = info.Depth;
+            Height = info.Height;
+            Width = info.Width;
+            MipCount = info.MipCount.Max(1);
+            HasPreMultipliedAlpha = info.HasPreMultipliedAlpha;
+        }
+    #endregion
+
+    #region Properties.
         /// <summary>
         /// Property to set or return the total number of images there are in an image array.
         /// </summary>
@@ -56,7 +75,7 @@ namespace Gorgon.Graphics.Imaging
         public int ArrayCount
         {
             get;
-            set;
+            init;
         }
 
         /// <summary>
@@ -73,21 +92,7 @@ namespace Gorgon.Graphics.Imaging
         public int Depth
         {
             get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the pixel format for an image.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// If the value is set to <see cref="BufferFormat.Unknown"/>, then an exception will be thrown upon image creation.
-        /// </para>
-        /// </remarks>
-        public BufferFormat Format
-        {
-            get;
-            set;
+            init;
         }
 
         /// <summary>
@@ -104,15 +109,7 @@ namespace Gorgon.Graphics.Imaging
         public int Height
         {
             get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the type of image data.
-        /// </summary>
-        public ImageType ImageType
-        {
-            get;
+            init;
         }
 
         /// <summary>
@@ -131,7 +128,7 @@ namespace Gorgon.Graphics.Imaging
         public int MipCount
         {
             get;
-            set;
+            init;
         }
 
         /// <summary>
@@ -143,7 +140,7 @@ namespace Gorgon.Graphics.Imaging
         public int Width
         {
             get;
-            set;
+            init;
         }
 
         /// <summary>
@@ -163,6 +160,93 @@ namespace Gorgon.Graphics.Imaging
         public bool HasPreMultipliedAlpha
         {
             get;
+            internal init;
+        }
+    #endregion
+    }
+#else
+    #region Compatibility
+    /// <summary>
+    /// Provides information describing how to create an image.
+    /// </summary>
+    public class GorgonImageInfo
+        : IGorgonImageInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the total number of images there are in an image array.
+        /// </summary>
+        public int ArrayCount
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the depth of an image, in pixels.
+        /// </summary>
+        public int Depth
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the pixel format for an image.
+        /// </summary>
+        public BufferFormat Format
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the height of an image, in pixels.
+        /// </summary>
+        public int Height
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the type of image data.
+        /// </summary>
+        public ImageType ImageType
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return whether the size of the texture is a power of 2 or not.
+        /// </summary>
+        public bool IsPowerOfTwo => false;
+
+        /// <summary>
+        /// Property to return the number of mip map levels in the image.
+        /// </summary>
+        public int MipCount
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the width of an image, in pixels.
+        /// </summary>
+        public int Width
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return whether the image data is using premultiplied alpha.
+        /// </summary>
+        public bool HasPreMultipliedAlpha
+        {
+            get;
             internal set;
         }
         #endregion
@@ -173,19 +257,9 @@ namespace Gorgon.Graphics.Imaging
         /// </summary>
         /// <param name="imageType">The type of the image to create.</param>
         /// <param name="format">The format describing how a pixel is laid out in memory.</param>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> parameter is set to <see cref="BufferFormat.Unknown"/>.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
         public GorgonImageInfo(ImageType imageType, BufferFormat format)
         {
-            if (format == BufferFormat.Unknown)
-            {
-                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
-            }
-
-            ImageType = imageType;
-            Format = format;
-            ArrayCount = 1;
-            Depth = 1;
-            MipCount = 1;
         }
 
         /// <summary>
@@ -194,34 +268,13 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="info">The initial image information to copy into this instance.</param>
         /// <param name="imageType">[Optional] An updated image type.</param>
         /// <param name="format">[Optional] An updated image pixel format.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <see cref="Format"/> value of the <paramref name="info"/> parameter is set to <see cref="BufferFormat.Unknown"/>.</exception>
-        /// <remarks>
-        /// <para>
-        /// Use this constructor to create a copy of an existing <see cref="IGorgonImageInfo"/> object.
-        /// </para>
-        /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter")]
         public GorgonImageInfo(IGorgonImageInfo info, ImageType? imageType = null, BufferFormat? format = null)
         {
-            if (info is null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            if (info.Format == BufferFormat.Unknown)
-            {
-                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, info.Format), nameof(info.Format));
-            }
-
-            Format = format ?? info.Format;
-            ArrayCount = info.ArrayCount.Max(1);
-            Depth = info.Depth;
-            Height = info.Height;
-            Width = info.Width;
-            ImageType = imageType ?? info.ImageType;
-            MipCount = info.MipCount.Max(1);
-            HasPreMultipliedAlpha = info.HasPreMultipliedAlpha;
         }
         #endregion
+
     }
+    #endregion
+#endif
 }

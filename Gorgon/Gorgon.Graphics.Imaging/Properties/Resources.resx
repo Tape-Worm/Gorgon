@@ -147,6 +147,10 @@
   <data name="GORIMG_ERR_CODEC_NOT_IN_PLUGIN" xml:space="preserve">
     <value>The codec '{0}' was not found in the plug in.</value>
   </data>
+  <data name="GORIMG_ERR_COMPRESSED_SIZE_INCORRECT" xml:space="preserve">
+    <value>The compressed image with and height must be a multiple of 4.
+Current width and height: {0}x{1}</value>
+  </data>
   <data name="GORIMG_ERR_FILE_FORMAT_NOT_CORRECT" xml:space="preserve">
     <value>The file data stored in the stream is not a '{0}' file.</value>
   </data>

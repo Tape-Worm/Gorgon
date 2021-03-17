@@ -149,7 +149,6 @@ namespace Gorgon.Examples
             }
 
             // We only support 2D images with the tv format.
-            var settings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm);
             TvHeader header;
 
             // Load the header for the image.
@@ -165,16 +164,19 @@ namespace Gorgon.Examples
             }
 
             // Ensure the width/height are valid.
+#pragma warning disable IDE0046 // Convert to conditional expression
             if ((header.Width < 0)
                 || (header.Height < 0))
             {
                 throw new ArgumentException(@"The image in this stream has an invalid width/height.", nameof(stream));
             }
 
-            settings.Width = header.Width;
-            settings.Height = header.Height;
-
-            return settings;
+            return new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+            {
+                Width = header.Width,
+                Height = header.Height
+            };
+#pragma warning restore IDE0046 // Convert to conditional expression
         }
 
         /// <summary>
@@ -192,7 +194,7 @@ namespace Gorgon.Examples
         protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
         {
             // Read the image meta data so we'll know how large the data should be.
-            IGorgonImageInfo settings = ReadMetaData(stream);
+            GorgonImageInfo settings = ReadMetaData(stream);
 
             // Calculate the expected size of the image.
             int dataSize = settings.Width * settings.Height * sizeof(ushort);

@@ -151,6 +151,16 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The compressed image with and height must be a multiple of 4.
+        ///Current width and height: {0}x{1}.
+        /// </summary>
+        internal static string GORIMG_ERR_COMPRESSED_SIZE_INCORRECT {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_COMPRESSED_SIZE_INCORRECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file data stored in the stream is not a &apos;{0}&apos; file..
         /// </summary>
         internal static string GORIMG_ERR_FILE_FORMAT_NOT_CORRECT {

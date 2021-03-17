@@ -718,7 +718,12 @@ namespace Gorgon.Graphics.Imaging
                     return;
                 }
 
-                _imageInfo.HasPreMultipliedAlpha = false;
+#if NET5_0_OR_GREATER
+                _imageInfo = _imageInfo with
+                {
+                    HasPreMultipliedAlpha = false
+                };
+#endif
 
                 int arrayOrDepth = ImageType == ImageType.Image3D ? Depth : ArrayCount;
 
@@ -740,6 +745,7 @@ namespace Gorgon.Graphics.Imaging
             }
 
             _commands.Enqueue(DoConvertFromPremultipedAlpha);
+
             return this;
         }
 
@@ -764,7 +770,12 @@ namespace Gorgon.Graphics.Imaging
                     return;
                 }
 
-                _imageInfo.HasPreMultipliedAlpha = true;
+#if NET5_0_OR_GREATER
+                _imageInfo = _imageInfo with
+                {
+                    HasPreMultipliedAlpha = true
+                };
+#endif
 
                 int arrayOrDepth = ImageType == ImageType.Image3D ? Depth : ArrayCount;
 
@@ -786,6 +797,7 @@ namespace Gorgon.Graphics.Imaging
             }
 
             _commands.Enqueue(DoConvertToPremultipliedAlpha);
+
             return this;
         }
 

@@ -82,21 +82,29 @@ namespace Gorgon.Editor.ImageEditor
         public IGorgonImage ConvertTo2D(IGorgonImage image, bool isCubeMap)
         {
             IGorgonImage result = null;
-
+#if NET5_0_OR_GREATER
             try
             {
-                var info = new GorgonImageInfo(image, isCubeMap ? ImageType.ImageCube : ImageType.Image2D)
+                var info = new GorgonImageInfo(image)
                 {
+                    ImageType = isCubeMap ? ImageType.ImageCube : ImageType.Image2D,
                     ArrayCount = image.ArrayCount,
                     Depth = 1
                 };
 
-                if (isCubeMap)
+                if ((isCubeMap) && ((image.ArrayCount % 6) != 0))
                 {
-                    while ((info.ArrayCount % 6) != 0)
+                    int arrayCount = image.ArrayCount;                    
+
+                    while ((arrayCount % 6) != 0)
                     {
-                        ++info.ArrayCount;
+                        ++arrayCount;
                     }
+
+                    info = info with
+                    {
+                        ArrayCount = arrayCount
+                    };
                 }
 
                 result = new GorgonImage(info);
@@ -115,7 +123,7 @@ namespace Gorgon.Editor.ImageEditor
                 result?.Dispose();
                 throw;
             }
-
+#endif
             return result;
         }
 
@@ -128,8 +136,9 @@ namespace Gorgon.Editor.ImageEditor
 
             try
             {
-                result = new GorgonImage(new GorgonImageInfo(image, ImageType.Image3D)
+                result = new GorgonImage(new GorgonImageInfo(image)
                 {
+                    ImageType = ImageType.Image3D,
                     ArrayCount = 1,
                     Depth = 1
                 });
@@ -282,8 +291,9 @@ namespace Gorgon.Editor.ImageEditor
                 return sourceImage;
             }
 
-            IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage, ImageType.Image2D)
+            IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage)
             {
+                ImageType = ImageType.Image2D,
                 Depth = 1
             });
 
@@ -463,6 +473,6 @@ namespace Gorgon.Editor.ImageEditor
 
             return result;
         }
-        #endregion
+#endregion
     }
 }

@@ -91,7 +91,7 @@ namespace Gorgon.PlugIns
     ///		// For brevity, we've omitted checking to see if the assembly is valid and such.
     ///		// In the real world, you should always determine whether the assembly can be loaded 
     ///		// before calling the Load method.
-    ///		_assemblies.LoadPlugInAssemblies("Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll".
+    ///		_assemblies.LoadPlugInAssemblies(@"Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll".
     /// 			
     ///		IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies);
     /// 

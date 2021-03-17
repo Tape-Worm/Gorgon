@@ -354,10 +354,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// Function to read the optional DX10 header.
         /// </summary>
         /// <param name="reader">The reader used to read the information from the underlying stream.</param>
-        /// <param name="header">DDS header.</param>
         /// <param name="flags">Conversion flags.</param>
         /// <returns>A new image settings object.</returns>
-        private GorgonImageInfo ReadDX10Header(GorgonBinaryReader reader, ref DdsHeader header, out DdsConversionFlags flags)
+        private (ImageType ImageType, BufferFormat Format, Dx10Header Header) ReadDX10Header(GorgonBinaryReader reader, out DdsConversionFlags flags)
         {
             Dx10Header dx10Header = reader.ReadValue<Dx10Header>();
             flags = DdsConversionFlags.DX10;
@@ -381,51 +380,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 format = dx10Header.Format;
             }
 
-            if (format == BufferFormat.Unknown)
-            {
-                throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, dx10Header.Format));
-            }
-
-            var settings = new GorgonImageInfo(dx10Header.ResourceDimension, format);
-
-            switch (settings.ImageType)
-            {
-                case ImageType.Image1D:
-                    settings.ArrayCount = (int)dx10Header.ArrayCount;
-                    break;
-                case ImageType.Image2D:
-                    // Make the array size a multiple of 6 if the DDS holds a texture cube map.
-                    if ((dx10Header.MiscFlags & DdsHeaderMiscFlags.TextureCube) == DdsHeaderMiscFlags.TextureCube)
-                    {
-                        settings = new GorgonImageInfo(ImageType.ImageCube, format)
-                        {
-                            ArrayCount = (int)dx10Header.ArrayCount * 6
-                        };
-                    }
-                    else
-                    {
-                        settings.ArrayCount = (int)dx10Header.ArrayCount;
-                    }
-
-                    settings.Height = (int)header.Height;
-
-                    break;
-                case ImageType.Image3D:
-                    if ((header.Flags & DdsHeaderFlags.Volume) != DdsHeaderFlags.Volume)
-                    {
-                        throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
-                    }
-
-                    settings.Height = (int)header.Height;
-                    settings.Depth = (int)header.Depth;
-                    break;
-                default:
-                    throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
-            }
-
-            settings.Width = (int)header.Width;
-
-            return settings;
+            return format == BufferFormat.Unknown
+                ? throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, dx10Header.Format))
+                : (dx10Header.ResourceDimension, format, dx10Header);
         }
 
         /// <summary>
@@ -519,11 +476,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <param name="legacyFlags">Legacy flags to apply.</param>
         /// <param name="conversionFlags">The conversion flags.</param>
         /// <returns>New image settings.</returns>
-        private IGorgonImageInfo ReadHeader(GorgonBinaryReader reader, long size, DdsLegacyFlags legacyFlags, out DdsConversionFlags conversionFlags)
+        private GorgonImageInfo ReadHeader(GorgonBinaryReader reader, long size, DdsLegacyFlags legacyFlags, out DdsConversionFlags conversionFlags)
         {
-            GorgonImageInfo settings;
-
-            // Start with no conversion.
+            ImageType imageType = ImageType.Image2D;
+            int arrayCount = 1;
 
             // Read the magic # from the header.
             uint magicNumber = reader.ReadUInt32();
@@ -548,6 +504,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 header.MipCount = 1;
             }
 
+            BufferFormat format;
+
             // Get DX 10 header information.
             if (((header.PixelFormat.Flags & DdsPixelFormatFlags.FourCC) == DdsPixelFormatFlags.FourCC) && (header.PixelFormat.FourCC == _pfDX10.FourCC))
             {
@@ -556,19 +514,35 @@ namespace Gorgon.Graphics.Imaging.Codecs
                     throw new EndOfStreamException();
                 }
 
-                settings = ReadDX10Header(reader, ref header, out conversionFlags);
+                Dx10Header dx10settings;
+
+                (imageType, format, dx10settings) = ReadDX10Header(reader, out conversionFlags);
+
+                if ((imageType == ImageType.Image3D) && ((header.Flags & DdsHeaderFlags.Volume) != DdsHeaderFlags.Volume))
+                {
+                    throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+                }
+
+                arrayCount = (int)dx10settings.ArrayCount;
+
+                if ((dx10settings.MiscFlags & DdsHeaderMiscFlags.TextureCube) == DdsHeaderMiscFlags.TextureCube)
+                {
+                    arrayCount *= 6;
+                }
             }
             else
             {
-                BufferFormat format = GetFormat(ref header.PixelFormat, legacyFlags, out conversionFlags);
+                format = GetFormat(ref header.PixelFormat, legacyFlags, out conversionFlags);
+
+                if (format == BufferFormat.Unknown)
+                {
+                    throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, format));
+                }
 
                 // If we actually have a volume texture, or we want to make one.
                 if ((header.Flags & DdsHeaderFlags.Volume) == DdsHeaderFlags.Volume)
                 {
-                    settings = new GorgonImageInfo(ImageType.Image3D, format)
-                    {
-                        Depth = (int)header.Depth.Max(1)
-                    };
+                    imageType = ImageType.Image3D;
                 }
                 else
                 {
@@ -580,99 +554,77 @@ namespace Gorgon.Graphics.Imaging.Codecs
                             throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
                         }
 
-                        settings = new GorgonImageInfo(ImageType.ImageCube, format)
-                        {
-                            ArrayCount = 6,
-                            Depth = 1
-                        };
+                        imageType = ImageType.ImageCube;
+                        arrayCount = 6;
                     }
-                    else
-                    {
-                        settings = new GorgonImageInfo(ImageType.Image2D, format)
-                        {
-                            ArrayCount = 1,
-                            Depth = 1
-                        };
-                    }
-                }
-
-                settings.Width = (int)header.Width;
-                settings.Height = (int)header.Height;
-
-                if (settings.Format == BufferFormat.Unknown)
-                {
-                    throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, settings.Format));
                 }
             }
 
-            var formatInfo = new GorgonFormatInfo(settings.Format);
+            var formatInfo = new GorgonFormatInfo(format);
 
-            if (formatInfo.IsCompressed)
+            if ((formatInfo.IsCompressed)
+                && (((header.Width % 4) != 0) || ((header.Height % 4) != 0)))
             {
-                int modWidth = settings.Width % 4;
-                int modHeight = settings.Height % 4;
-
-                if ((modWidth != 0) || (modHeight != 0))
-                {
-                    throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
-                }
+                throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec), 
+                    new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_COMPRESSED_SIZE_INCORRECT, header.Width, header.Height)));
             }
-
-            settings.MipCount = (int)header.MipCount;
 
             // Special flag for handling BGR DXGI 1.1 formats
             if ((legacyFlags & DdsLegacyFlags.ForceRGB) == DdsLegacyFlags.ForceRGB)
             {
-                switch (settings.Format)
+                switch (format)
                 {
                     case BufferFormat.B8G8R8A8_UNorm:
-                        settings.Format = BufferFormat.R8G8B8A8_UNorm;
+                        format = BufferFormat.R8G8B8A8_UNorm;
                         conversionFlags |= DdsConversionFlags.Swizzle;
                         break;
                     case BufferFormat.B8G8R8X8_UNorm:
-                        settings.Format = BufferFormat.R8G8B8A8_UNorm;
+                        format = BufferFormat.R8G8B8A8_UNorm;
                         conversionFlags |= DdsConversionFlags.Swizzle | DdsConversionFlags.NoAlpha;
                         break;
                     case BufferFormat.B8G8R8A8_Typeless:
-                        settings.Format = BufferFormat.R8G8B8A8_Typeless;
+                        format = BufferFormat.R8G8B8A8_Typeless;
                         conversionFlags |= DdsConversionFlags.Swizzle;
                         break;
                     case BufferFormat.B8G8R8A8_UNorm_SRgb:
-                        settings.Format = BufferFormat.R8G8B8A8_UNorm_SRgb;
+                        format = BufferFormat.R8G8B8A8_UNorm_SRgb;
                         conversionFlags |= DdsConversionFlags.Swizzle;
                         break;
-
                     case BufferFormat.B8G8R8X8_Typeless:
-                        settings.Format = BufferFormat.R8G8B8A8_Typeless;
+                        format = BufferFormat.R8G8B8A8_Typeless;
                         conversionFlags |= DdsConversionFlags.Swizzle | DdsConversionFlags.NoAlpha;
                         break;
                     case BufferFormat.B8G8R8X8_UNorm_SRgb:
-                        settings.Format = BufferFormat.R8G8B8A8_UNorm_SRgb;
+                        format = BufferFormat.R8G8B8A8_UNorm_SRgb;
                         conversionFlags |= DdsConversionFlags.Swizzle | DdsConversionFlags.NoAlpha;
                         break;
                 }
             }
 
             // Special flag for handling 16bpp formats
-            if ((legacyFlags & DdsLegacyFlags.No16BPP) != DdsLegacyFlags.No16BPP)
+            if ((legacyFlags & DdsLegacyFlags.No16BPP) == DdsLegacyFlags.No16BPP)
             {
-                return settings;
+                switch (format)
+                {
+                    case BufferFormat.B5G6R5_UNorm:
+                        format = BufferFormat.R8G8B8A8_UNorm;
+                        conversionFlags |= DdsConversionFlags.Expand | DdsConversionFlags.NoAlpha;
+                        break;
+                    case BufferFormat.B5G5R5A1_UNorm:
+                        format = BufferFormat.R8G8B8A8_UNorm;
+                        conversionFlags |= DdsConversionFlags.Expand;
+                        break;
+                }
             }
 
-            switch (settings.Format)
+            return new GorgonImageInfo(imageType, format)
             {
-                case BufferFormat.B5G6R5_UNorm:
-                case BufferFormat.B5G5R5A1_UNorm:
-                    settings.Format = BufferFormat.R8G8B8A8_UNorm;
-                    conversionFlags |= DdsConversionFlags.Expand;
-                    if (settings.Format == BufferFormat.B5G6R5_UNorm)
-                    {
-                        conversionFlags |= DdsConversionFlags.NoAlpha;
-                    }
-                    break;
-            }
-
-            return settings;
+                ArrayCount = arrayCount,
+                Depth = (int)header.Depth,
+                Width = (int)header.Width,
+                Height = (int)header.Height,
+                MipCount = (int)header.MipCount
+            };
         }
 
         /// <summary>
@@ -1273,7 +1225,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             var reader = new GorgonBinaryReader(stream, true);
 
             // Read the header information.
-            IGorgonImageInfo settings = ReadHeader(reader, size, DecodingOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
+            GorgonImageInfo settings = ReadHeader(reader, size, DecodingOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
 
             var imageData = new GorgonImage(settings);
 

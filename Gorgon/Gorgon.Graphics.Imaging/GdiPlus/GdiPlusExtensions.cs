@@ -526,7 +526,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
                 throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
             }
 
-            IGorgonImageInfo info = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+            var info = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
             {
                 Width = bitmap.Width,
                 Height = bitmap.Height

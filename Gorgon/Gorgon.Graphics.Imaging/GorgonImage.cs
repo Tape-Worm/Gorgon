@@ -189,39 +189,39 @@ namespace Gorgon.Graphics.Imaging
         /// Function to sanitize the image information.
         /// </summary>
         /// <param name="info">Information used to create this image.</param>
-        private void SanitizeInfo(IGorgonImageInfo info)
+        private void SanitizeInfo(GorgonImageInfo info)
         {
-            var newInfo = new GorgonImageInfo(info)
-            {
-                Height = info.Height.Max(1),
-                Depth = info.Depth.Max(1)
-            };
-
-            // Validate the array size.
-            newInfo.ArrayCount = newInfo.ImageType == ImageType.Image3D ? 1 : newInfo.ArrayCount.Max(1);
-
-            // Validate depth count.
-            newInfo.Depth = newInfo.ImageType != ImageType.Image3D ? 1 : newInfo.Depth.Max(1);
-
-            // Limit to the lesser value.
+#if NET5_0_OR_GREATER
             int maxMipCount = CalculateMaxMipCount(info);
-            newInfo.MipCount = newInfo.MipCount.Min(maxMipCount);
 
-            if (newInfo.MipCount <= 0)
+            GorgonImageInfo newInfo = info with
             {
-                newInfo.MipCount = maxMipCount;
-            }
+                // Validate depth count.
+                Depth = info.ImageType != ImageType.Image3D ? 1 : info.Depth.Max(1),
+                Height = info.Height.Max(1),
+                // Validate the array size.
+                ArrayCount = info.ImageType == ImageType.Image3D ? 1 : info.ArrayCount.Max(1),
+                MipCount = info.MipCount.Min(maxMipCount).Max(1)
+            };
 
             if (newInfo.ImageType == ImageType.ImageCube)
             {
+                int cubeArrayCount = newInfo.ArrayCount;
+
                 // If we're an image cube, and we don't have an array count that's a multiple of 6, then up size until we do.
-                while ((newInfo.ArrayCount % 6) != 0)
+                while ((cubeArrayCount % 6) != 0)
                 {
-                    newInfo.ArrayCount++;
+                    cubeArrayCount++;
                 }
+
+                newInfo = newInfo with
+                {
+                    ArrayCount = cubeArrayCount
+                };
             }
 
             _imageInfo = newInfo;
+#endif
         }
 
         /// <summary>
@@ -723,7 +723,7 @@ namespace Gorgon.Graphics.Imaging
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonImage(IGorgonImageInfo info, ReadOnlySpan<byte> data = default)
+        public GorgonImage(GorgonImageInfo info, ReadOnlySpan<byte> data = default)
         {
             if (info is null)
             {

@@ -509,7 +509,12 @@ namespace Gorgon.Graphics.Fonts
             {
                 if ((image is null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
                 {
-                    imageSettings.ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount);
+#if NET5_0_OR_GREATER
+                    imageSettings = imageSettings with
+                    {
+                        ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount)
+                    };
+#endif
                     arrayIndex = 0;
 
                     glyphs = new List<GlyphInfo>();
@@ -762,8 +767,8 @@ namespace Gorgon.Graphics.Fonts
                 (fontData, abcAdvances, glyphBitmaps) = await Task.Run(GetFontData);
 
                 groupedByBitmap = (from glyphBitmap in glyphBitmaps
-                                  where glyphBitmap.Value.GlyphBitmap is not null
-                                  group glyphBitmap.Value by glyphBitmap.Value.GlyphBitmap).ToDictionary(k => k.Key, v => v.Select(item => item));
+                                   where glyphBitmap.Value.GlyphBitmap is not null
+                                   group glyphBitmap.Value by glyphBitmap.Value.GlyphBitmap).ToDictionary(k => k.Key, v => v.Select(item => item));
 
                 // Generate textures from the bitmaps. 
                 // We will pack each bitmap into a single arrayed texture up to the maximum number of array indices allowed.
@@ -894,7 +899,7 @@ namespace Gorgon.Graphics.Fonts
             {
                 Brush = info.Brush?.Clone()
             };
-            
+
             Glyphs = new GorgonGlyphCollection();
             KerningPairs = new Dictionary<GorgonKerningPair, int>();
         }

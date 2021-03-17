@@ -238,7 +238,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <param name="reader">The reader used to read the stream containing the data.</param>
         /// <param name="conversionFlags">Flags for conversion.</param>
         /// <returns>New image settings.</returns>
-        private static IGorgonImageInfo ReadHeader(GorgonBinaryReader reader, out TGAConversionFlags conversionFlags)
+        private static GorgonImageInfo ReadHeader(GorgonBinaryReader reader, out TGAConversionFlags conversionFlags)
         {
             conversionFlags = TGAConversionFlags.None;
 
@@ -826,7 +826,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }
 
             using var reader = new GorgonBinaryReader(stream, true);
-            IGorgonImageInfo info = ReadHeader(reader, out TGAConversionFlags flags);
+            GorgonImageInfo info = ReadHeader(reader, out TGAConversionFlags flags);
 
             IGorgonImage image = new GorgonImage(info);
 
