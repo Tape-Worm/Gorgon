@@ -654,10 +654,7 @@ namespace Gorgon.Editor.ImageEditor
             {
                 _imageShader2D = GorgonShaderFactory.Compile<GorgonPixelShader>(GraphicsContext.Graphics, Resources.ImageViewShaders, "Gorgon2DTextureArrayView");
                 _imageShader3D = GorgonShaderFactory.Compile<GorgonPixelShader>(GraphicsContext.Graphics, Resources.ImageViewShaders, "Gorgon3DTextureView");
-                _textureParameters = GorgonConstantBufferView.CreateConstantBuffer(GraphicsContext.Graphics, new GorgonConstantBufferInfo
-                {
-                    SizeInBytes = TextureViewer.TextureParams.Size
-                });
+                _textureParameters = GorgonConstantBufferView.CreateConstantBuffer(GraphicsContext.Graphics, new GorgonConstantBufferInfo(TextureViewer.TextureParams.Size));
             }
 
             BuildImageTexture();

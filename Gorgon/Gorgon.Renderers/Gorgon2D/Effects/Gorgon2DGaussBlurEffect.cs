@@ -428,21 +428,21 @@ namespace Gorgon.Renderers
         protected override void OnInitialize()
         {
             // Align sizes to 16 byte boundaries.
-            _blurBufferKernel = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Effect.GorgonGaussKernelData")
-            {
-                Usage = ResourceUsage.Default,
-                SizeInBytes = (((sizeof(float) * KernelSize) + 15) & ~15)
+            _blurBufferKernel = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo((((sizeof(float) * KernelSize) + 15) & ~15)
                                                                            + (((sizeof(float) * _offsetSize) + 15) & ~15)
-                                                                           + sizeof(int)
+                                                                           + sizeof(int))
+            {
+                Name = "Effect.GorgonGaussKernelData",
+                Usage = ResourceUsage.Default
             });
             _blurKernelData = new GorgonNativeBuffer<float>(_blurBufferKernel.Buffer.SizeInBytes / sizeof(float));
             _blurKernelData.Fill(0);
 
             _blurBufferPass = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
-                                                                            new GorgonConstantBufferInfo("Effect.GorgonGaussPassSettings")
+                                                                            new GorgonConstantBufferInfo(16)
                                                                             {
-                                                                                Usage = ResourceUsage.Dynamic,
-                                                                                SizeInBytes = 16
+                                                                                Name = "Effect.GorgonGaussPassSettings",
+                                                                                Usage = ResourceUsage.Dynamic
                                                                             });
 
             // Set up the constants used by our pixel shader.

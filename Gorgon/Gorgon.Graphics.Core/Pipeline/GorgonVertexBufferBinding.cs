@@ -83,7 +83,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonVertexBuffer"/>
-        public static GorgonVertexBufferBinding CreateVertexBuffer<T>(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default, int bindingIndex = 0)
+        public static GorgonVertexBufferBinding CreateVertexBuffer<T>(GorgonGraphics graphics, GorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default, int bindingIndex = 0)
             where T : unmanaged
         {
             if (graphics is null)

@@ -34,15 +34,32 @@ using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core
 {
+#if NET5_0_OR_GREATER
     /// <summary>
     /// Provides information on how to set up a constant buffer.
     /// </summary>
-    public class GorgonConstantBufferInfo
+    /// <param name="SizeInBytes">The size of the constant buffer, in bytes.</param>
+    public record GorgonConstantBufferInfo(int SizeInBytes)
         : IGorgonConstantBufferInfo
     {
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
+        /// </summary>
+        /// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
+        /// <param name="newName">[Optional] The new name for the buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info, string newName = null)
+            : this(info?.SizeInBytes ?? throw new ArgumentNullException(nameof(info)))
+        {
+            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Usage = info.Usage;
+        }
+        #endregion
+
         #region Properties.
         /// <summary>
-        /// Property to set or return the intended usage flags for this buffer.
+        /// Property to return the intended usage flags for this buffer.
         /// </summary>
         /// <remarks>
         /// This value is defaulted to <see cref="ResourceUsage.Default"/>.
@@ -50,29 +67,8 @@ namespace Gorgon.Graphics.Core
         public ResourceUsage Usage
         {
             get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the number of bytes to allocate for the buffer.
-        /// </summary>
-        /// <remarks>
-        /// <note type="important">
-        /// <para>
-        /// <para>
-        /// A <see cref="BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
-        /// </para>
-        /// <para>
-        /// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
-        /// </para>
-        /// </para>
-        /// </note>
-        /// </remarks>
-        public int SizeInBytes
-        {
-            get;
-            set;
-        }
+            init;
+        } = ResourceUsage.Default;
 
         /// <summary>
         /// Property to return the name of this object.
@@ -80,7 +76,8 @@ namespace Gorgon.Graphics.Core
         public string Name
         {
             get;
-        }
+            init;
+        } = GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix);
         #endregion
 
         #region Methods.
@@ -129,10 +126,10 @@ namespace Gorgon.Graphics.Core
 
             if (dataType.IsSafeForNative(out IReadOnlyList<FieldInfo> badFields))
             {
-                return new GorgonConstantBufferInfo(string.IsNullOrEmpty(dataType.Name) ? dataType.FullName : name)
+                return new GorgonConstantBufferInfo(((count * Unsafe.SizeOf<T>()) + 15) & ~15)
                 {
-                    Usage = usage,
-                    SizeInBytes = ((count * Unsafe.SizeOf<T>()) + 15) & ~15
+                    Name = string.IsNullOrEmpty(dataType.Name) ? dataType.FullName : name,
+                    Usage = usage
                 };
             }
 
@@ -144,35 +141,62 @@ namespace Gorgon.Graphics.Core
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, dataType.FullName));
         }
         #endregion
+    }
+#else
+    /// <summary>
+    /// Provides information on how to set up a constant buffer.
+    /// </summary>
+    public class GorgonConstantBufferInfo
+        : IGorgonConstantBufferInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the intended usage flags for this buffer.
+        /// </summary>
+        public ResourceUsage Usage
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the number of bytes to allocate for the buffer.
+        /// </summary>
+        public int SizeInBytes
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public string Name
+        {
+            get;
+            set;
+        }
+        #endregion
 
         #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
         /// </summary>
-        /// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
-        /// <param name="newName">[Optional] The new name for the buffer.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info, string newName = null)
-        {
-            if (info is null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
-            SizeInBytes = info.SizeInBytes;
-            Usage = info.Usage;
-        }
+        /// <param name="size"></param>
+        public GorgonConstantBufferInfo(int size) => SizeInBytes = size;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
         /// </summary>
-        /// <param name="name">[Optional] The name of the constant buffer.</param>
-        public GorgonConstantBufferInfo(string name = null)
+        /// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
+        /// <param name="newName">[Optional] The new name for the buffer.</param>
+        public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info, string newName = null)
         {
-            Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix) : name;
-            Usage = ResourceUsage.Default;
+            Name = newName;
+            SizeInBytes = info.SizeInBytes;
+            Usage = info.Usage;
         }
         #endregion
     }
+#endif
 }

@@ -67,18 +67,18 @@ namespace Gorgon.Examples
             indices[2] = 2;
 
             VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                    new GorgonVertexBufferInfo("TriVB")
+                                                    new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * 3)
                                                     {
+                                                        Name = "TriVB",
                                                         Usage = ResourceUsage.Immutable
                                                     },
                                                     points);
 
             IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo("TriIB")
+                                                new GorgonIndexBufferInfo(3)
                                                 {
-                                                    Usage = ResourceUsage.Dynamic,
-                                                    Use16BitIndices = false,
-                                                    IndexCount = 3
+                                                    Name = "TriIB",
+                                                    Usage = ResourceUsage.Dynamic
                                                 },
                                                 indices);
 

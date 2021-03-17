@@ -323,38 +323,38 @@ namespace Gorgon.Examples
         {
 
             _viewProjectionBuffer = new GorgonConstantBuffer(_graphics,
-                                                             new GorgonConstantBufferInfo("Projection/View Buffer")
+                                                             new GorgonConstantBufferInfo(Unsafe.SizeOf<ViewProjectionData>())
                                                              {
-                                                                 SizeInBytes = Unsafe.SizeOf<ViewProjectionData>(),
+                                                                 Name = "Projection/View Buffer",                                                                 
                                                                  Usage = ResourceUsage.Dynamic
                                                              }).GetView();
 
             _worldBuffer = new GorgonConstantBuffer(_graphics,
-                                                    new GorgonConstantBufferInfo("WorldBuffer")
+                                                    new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
                                                     {
-                                                        Usage = ResourceUsage.Dynamic,
-                                                        SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
+                                                        Name = "WorldBuffer",
+                                                        Usage = ResourceUsage.Dynamic
                                                     }).GetView();
 
             _cameraBuffer = new GorgonConstantBuffer(_graphics,
-                                                     new GorgonConstantBufferInfo("CameraBuffer")
+                                                     new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector3>())
                                                      {
-                                                         Usage = ResourceUsage.Dynamic,
-                                                         SizeInBytes = Unsafe.SizeOf<Vector3>()
+                                                         Name = "CameraBuffer",
+                                                         Usage = ResourceUsage.Dynamic                                                         
                                                      }).GetView();
 
             _materialBuffer = new GorgonConstantBuffer(_graphics,
-                                                       new GorgonConstantBufferInfo("MaterialBuffer")
+                                                       new GorgonConstantBufferInfo(Unsafe.SizeOf<Material>())
                                                        {
-                                                           Usage = ResourceUsage.Dynamic,
-                                                           SizeInBytes = Unsafe.SizeOf<Material>()
+                                                           Name = "MaterialBuffer",
+                                                           Usage = ResourceUsage.Dynamic
                                                        }).GetView();
 
             _lightBuffer = new GorgonConstantBuffer(_graphics,
-                                                    new GorgonConstantBufferInfo("LightDataBuffer")
+                                                    new GorgonConstantBufferInfo(GorgonGpuLightData.SizeInBytes * MaxLights)
                                                     {
-                                                        Usage = ResourceUsage.Dynamic,
-                                                        SizeInBytes = GorgonGpuLightData.SizeInBytes * MaxLights
+                                                        Name = "LightDataBuffer",
+                                                        Usage = ResourceUsage.Dynamic                                                        
                                                     }).GetView();
 
             // Initialize the constant buffers.

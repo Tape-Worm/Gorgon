@@ -300,9 +300,9 @@ namespace Gorgon.Examples
                 };
                 
                 _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
-                                                                             new GorgonConstantBufferInfo("WorldProjection CBuffer")
+                                                                             new GorgonConstantBufferInfo((Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>())
                                                                              {
-                                                                                 SizeInBytes = (Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>()
+                                                                                 Name = "WorldProjection CBuffer"                                                                                 
                                                                              });
                 _vsConstants.Buffer.SetData(in _camera.GetProjectionMatrix(), copyMode: CopyMode.Discard);
                 _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);

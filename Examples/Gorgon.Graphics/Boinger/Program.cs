@@ -468,17 +468,17 @@ namespace Gorgon.Examples
             // Our constant buffers are how we send data to our shaders.  This one in particular will be responsible for sending our world/view/projection matrix 
             // to the vertex shader.  
             _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
-                                                                       new GorgonConstantBufferInfo("WVPBuffer")
+                                                                       new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
                                                                        {
-                                                                           Usage = ResourceUsage.Dynamic,
-                                                                           SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
+                                                                           Name = "WVPBuffer",
+                                                                           Usage = ResourceUsage.Dynamic
                                                                        });
             // This one will hold our material information.
             _materialBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
-                                                                            new GorgonConstantBufferInfo("MaterialBuffer")
+                                                                            new GorgonConstantBufferInfo(Unsafe.SizeOf<GorgonColor>())
                                                                             {
-                                                                                Usage = ResourceUsage.Dynamic,
-                                                                                SizeInBytes = Unsafe.SizeOf<GorgonColor>()
+                                                                                Name = "MaterialBuffer",
+                                                                                Usage = ResourceUsage.Dynamic
                                                                             });
             GorgonColor defaultMaterialColor = GorgonColor.White;
             _materialBuffer.Buffer.SetData(in defaultMaterialColor);

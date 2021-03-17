@@ -34,15 +34,38 @@ using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core
 {
+#if NET5_0_OR_GREATER
     /// <summary>
     /// Provides the necessary information required to set up a vertex buffer.
     /// </summary>
-    public class GorgonVertexBufferInfo
+    /// <param name="SizeInBytes">The size of the buffer, in bytes.</param>
+    /// <remarks>
+    /// <para>
+    /// When creating the vertex buffer, the <paramref cref="SizeInBytes"/> parameter represents the number of bytes for a single vertex multiplied by the number of vertices.
+    /// </para>
+    /// </remarks>
+    public record GorgonVertexBufferInfo(int SizeInBytes)
         : IGorgonVertexBufferInfo
     {
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.
+        /// </summary>
+        /// <param name="info">A <see cref="IGorgonVertexBufferInfo"/> to copy settings from.</param>
+        /// <param name="newName">[Optional] The new name for the buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonVertexBufferInfo(IGorgonVertexBufferInfo info, string newName = null)
+            : this(info?.SizeInBytes ?? throw new ArgumentNullException(nameof(info)))
+        {
+            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Usage = info.Usage;
+            Binding = info.Binding;
+        }
+        #endregion
+
         #region Properties.
         /// <summary>
-        /// Property to set or return the binding used to bind this buffer to the GPU.
+        /// Property to return the binding used to bind this buffer to the GPU.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="VertexIndexBufferBinding.None"/>.
@@ -50,29 +73,17 @@ namespace Gorgon.Graphics.Core
         public VertexIndexBufferBinding Binding
         {
             get;
-            set;
-        }
+            init;
+        } = VertexIndexBufferBinding.None;
 
         /// <summary>
-        /// Property to set or return the intended usage for binding to the GPU.
+        /// Property to return the intended usage for binding to the GPU.
         /// </summary>
         public ResourceUsage Usage
         {
             get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the size of the buffer, in bytes.
-        /// </summary>
-        /// <remarks>
-        /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
-        /// </remarks>
-        public int SizeInBytes
-        {
-            get;
-            set;
-        }
+            init;
+        } = ResourceUsage.Default;
 
         /// <summary>
         /// Property to return the name of this object.
@@ -80,17 +91,18 @@ namespace Gorgon.Graphics.Core
         public string Name
         {
             get;
-        }
+            init;
+        } = GorgonGraphicsResource.GenerateName(GorgonVertexBuffer.NamePrefix);
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to create a <see cref="IGorgonVertexBufferInfo"/> based on the type representing a vertex.
+        /// Function to create a <see cref="GorgonVertexBufferInfo"/> based on the type representing a vertex.
         /// </summary>
         /// <typeparam name="T">The type of data representing a vertex. This must be an unmanaged value type.</typeparam>
         /// <param name="count">The number of vertices to store in the buffer.</param>
         /// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
-        /// <returns>A new <see cref="IGorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
+        /// <returns>A new <see cref="GorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.</exception>
         /// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
         /// <para>-or-</para>
@@ -109,7 +121,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-        public static IGorgonVertexBufferInfo CreateFromType<T>(int count, ResourceUsage usage = ResourceUsage.Default)
+        public static GorgonVertexBufferInfo CreateFromType<T>(int count, ResourceUsage usage = ResourceUsage.Default)
             where T : unmanaged
         {
             if (count < 1)
@@ -121,21 +133,20 @@ namespace Gorgon.Graphics.Core
 
             return fields.Count == 0
                 ? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, typeof(T).FullName))
-                : new GorgonVertexBufferInfo
-            {
-                Usage = usage,
-                SizeInBytes = count * Unsafe.SizeOf<T>()
-            };
+                : new GorgonVertexBufferInfo(count * Unsafe.SizeOf<T>())
+                {
+                    Usage = usage 
+                };
         }
 
         /// <summary>
-        /// Function to create a <see cref="IGorgonVertexBufferInfo"/> based on a <see cref="GorgonInputLayout"/> and the intended slot for vertex data.
+        /// Function to create a <see cref="GorgonVertexBufferInfo"/> based on a <see cref="GorgonInputLayout"/> and the intended slot for vertex data.
         /// </summary>
         /// <param name="layout">The <see cref="GorgonInputLayout"/> to evaluate.</param>
         /// <param name="count">The number of vertices to store in the buffer.</param>
         /// <param name="slot">The intended slot to use for the vertex data.</param>
         /// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
-        /// <returns>A new <see cref="IGorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
+        /// <returns>A new <see cref="GorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="slot"/> is not present in the <paramref name="layout"/>.</para>
@@ -147,7 +158,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonInputLayout"/>
-        public static IGorgonVertexBufferInfo CreateFromInputLayout(GorgonInputLayout layout, int slot, int count, ResourceUsage usage = ResourceUsage.Default)
+        public static GorgonVertexBufferInfo CreateFromInputLayout(GorgonInputLayout layout, int slot, int count, ResourceUsage usage = ResourceUsage.Default)
         {
             if (layout is null)
             {
@@ -163,15 +174,63 @@ namespace Gorgon.Graphics.Core
 
             return sizeInBytes < 1
                 ? throw new ArgumentOutOfRangeException(nameof(slot))
-                : new GorgonVertexBufferInfo
-            {
-                Usage = usage,
-                SizeInBytes = sizeInBytes * count
-            };
+                : new GorgonVertexBufferInfo(sizeInBytes * count)
+                {
+                    Usage = usage 
+                };
+        }
+        #endregion
+    }
+#else
+    /// <summary>
+    /// Provides the necessary information required to set up a vertex buffer.
+    /// </summary>
+    public class GorgonVertexBufferInfo
+        : IGorgonVertexBufferInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the binding used to bind this buffer to the GPU.
+        /// </summary>
+        public VertexIndexBufferBinding Binding
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the intended usage for binding to the GPU.
+        /// </summary>
+        public ResourceUsage Usage
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the size of the buffer, in bytes.
+        /// </summary>
+        public int SizeInBytes
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public string Name
+        {
+            get;
+            set;
         }
         #endregion
 
         #region Constructor/Finalizer.
+        /// <summary>Initializes a new instance of the <see cref="GorgonVertexBufferInfo" /> class.</summary>
+        /// <param name="sizeInBytes">The size in bytes.</param>
+        public GorgonVertexBufferInfo(int sizeInBytes) => SizeInBytes = sizeInBytes;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.
         /// </summary>
@@ -180,26 +239,12 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonVertexBufferInfo(IGorgonVertexBufferInfo info, string newName = null)
         {
-            if (info is null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Name = newName;
             SizeInBytes = info.SizeInBytes;
             Usage = info.Usage;
             Binding = info.Binding;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.
-        /// </summary>
-        /// <param name="name">[Optional] The name of the buffer.</param>
-        public GorgonVertexBufferInfo(string name = null)
-        {
-            Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonVertexBuffer.NamePrefix) : name;
-            Usage = ResourceUsage.Default;
-        }
         #endregion
     }
+#endif
 }

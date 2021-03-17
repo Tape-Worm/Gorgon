@@ -105,7 +105,7 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // The information used to create the buffer.
-        private readonly GorgonConstantBufferInfo _info;
+        private GorgonConstantBufferInfo _info;
         // A list of constant buffer views.
         private List<GorgonConstantBufferView> _cbvs = new();
         #endregion
@@ -154,7 +154,17 @@ namespace Gorgon.Graphics.Core
         private void Initialize(ReadOnlySpan<byte> initialData)
         {
             // If the buffer is not aligned to 16 bytes, then pad the size.
-            _info.SizeInBytes = (_info.SizeInBytes + 15) & ~15;
+            int newSize = (_info.SizeInBytes + 15) & ~15;
+
+            if (newSize != _info.SizeInBytes)
+            {
+#if NET5_0_OR_GREATER
+                _info = _info with
+                {
+                    SizeInBytes = newSize
+                };
+#endif
+            }
 
             TotalConstantCount = _info.SizeInBytes / (sizeof(float) * 4);
 
@@ -280,7 +290,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="GorgonException">
         /// Thrown when the size of the constant buffer exceeds the maximum constant buffer size. See <see cref="IGorgonVideoAdapterInfo.MaxConstantBufferSize"/> to determine the maximum size of a constant buffer.
         /// </exception>
-        public GorgonConstantBuffer(GorgonGraphics graphics, IGorgonConstantBufferInfo info, ReadOnlySpan<byte> initialData = default)
+        public GorgonConstantBuffer(GorgonGraphics graphics, GorgonConstantBufferInfo info, ReadOnlySpan<byte> initialData = default)
             : base(graphics)
         {
             if (info is null)

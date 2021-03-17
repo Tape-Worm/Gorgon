@@ -220,9 +220,9 @@ namespace Gorgon.Examples
             _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
 
             // Create our constant buffer so we can send our transformation information to the shader.
-            _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo("GlassCube WVP Constant Buffer")
+            _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
             {
-                SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
+                Name = "GlassCube WVP Constant Buffer"                
             });
 
             // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.

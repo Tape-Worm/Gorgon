@@ -138,10 +138,10 @@ namespace Gorgon.Examples
             // This will be responsible for sending vertex data to the GPU. The buffer size is specified in bytes, so we need to ensure it has enough room to hold all 
             // 3 vertices.
             _vertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<MiniTriVertex>(_graphics,
-                                                                         new GorgonVertexBufferInfo("MiniTri Vertex Buffer")
+                                                                         new GorgonVertexBufferInfo(MiniTriVertex.SizeInBytes * vertices.Length)
                                                                          {
-                                                                             Usage = ResourceUsage.Default,
-                                                                             SizeInBytes = MiniTriVertex.SizeInBytes * vertices.Length
+                                                                             Name = "MiniTri Vertex Buffer",
+                                                                             Usage = ResourceUsage.Default
                                                                          });
 
             // Send the vertex data into the buffer.

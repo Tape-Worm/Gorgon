@@ -243,9 +243,9 @@ namespace Gorgon.Renderers
             _chromeAbShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.ChromaticAberration, "ChromaticAberration", GorgonGraphics.IsDebugEnabled);
             _simpleChromeAbShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.ChromaticAberration, "ChromaticAberrationSimple", GorgonGraphics.IsDebugEnabled);
 
-            _settings = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Chromatic Aberration Settings Buffer")
+            _settings = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector4>())
             {
-                SizeInBytes = Unsafe.SizeOf<Vector4>(),
+                Name = "Chromatic Aberration Settings Buffer",
                 Usage = ResourceUsage.Default
             });
         }

@@ -137,10 +137,10 @@ namespace Gorgon.Renderers
         {
             _displacementSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                                         new
-                                                                                        GorgonConstantBufferInfo("Gorgon2DDisplacementEffect Constant Buffer")
+                                                                                        GorgonConstantBufferInfo(Unsafe.SizeOf<Vector4>())
                                                                                         {
-                                                                                            Usage = ResourceUsage.Dynamic,
-                                                                                            SizeInBytes = Unsafe.SizeOf<Vector4>()
+                                                                                            Name = "Gorgon2DDisplacementEffect Constant Buffer",
+                                                                                            Usage = ResourceUsage.Dynamic                                                                                            
                                                                                         });
 
             _displacementShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder");

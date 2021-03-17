@@ -441,10 +441,10 @@ namespace Gorgon.Renderers
         {
             GenerateRandomNoise();
 
-            _timingBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Gorgon 2D Old Film Effect - Timing data")
+            _timingBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(16)
             {
-                Usage = ResourceUsage.Dynamic,
-                SizeInBytes = 16
+                Name = "Gorgon 2D Old Film Effect - Timing data",
+                Usage = ResourceUsage.Dynamic
             });
 
             _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");

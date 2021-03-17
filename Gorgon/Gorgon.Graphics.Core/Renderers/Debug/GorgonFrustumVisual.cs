@@ -74,17 +74,17 @@ namespace Gorgon.Renderers.Debug
         /// </summary>
         private void Initialize()
         {
-            var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo("Frustum Visual VertexBuffer")
+            var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
             {
-                SizeInBytes = _lineVertices.Length * Unsafe.SizeOf<Vector3>(),
+                Name = "Frustum Visual VertexBuffer",                
                 Usage = ResourceUsage.Dynamic
             });
 
             _vertexBuffer = new GorgonVertexBufferBinding(vertexBuffer, Unsafe.SizeOf<Vector3>());
 
-            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Frustum Visual ConstantBufer")
+            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
             {
-                SizeInBytes = Unsafe.SizeOf<Matrix4x4>(),
+                Name = "Frustum Visual ConstantBufer",
                 Usage = ResourceUsage.Dynamic
             });
 

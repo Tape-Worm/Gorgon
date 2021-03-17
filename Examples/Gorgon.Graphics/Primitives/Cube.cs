@@ -172,19 +172,19 @@ namespace Gorgon.Examples
             CalculateTangents(vertexData, indexData);
                         
             VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                     new GorgonVertexBufferInfo("CubeVB")
+                                                     new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
                                                      {
+                                                        Name = "CubeVB",
                                                         Usage = ResourceUsage.Immutable
                                                      },
                                                      vertexData);
 
 
             IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo("CubeIB")
+                                                new GorgonIndexBufferInfo(IndexCount)
                                                 {
-                                                    Usage = ResourceUsage.Immutable,
-                                                    Use16BitIndices = false,
-                                                    IndexCount = IndexCount
+                                                    Name = "CubeIB",
+                                                    Usage = ResourceUsage.Immutable
                                                 },
                                                 indexData);
 

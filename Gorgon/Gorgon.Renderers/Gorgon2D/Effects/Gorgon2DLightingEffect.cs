@@ -495,16 +495,16 @@ namespace Gorgon.Renderers
         protected override void OnInitialize()
         {
             _globalBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
-                                                                          new GorgonConstantBufferInfo("Global light effect data.")
+                                                                          new GorgonConstantBufferInfo(Unsafe.SizeOf<GlobalEffectData>())
                                                                           {
-                                                                              SizeInBytes = Unsafe.SizeOf<GlobalEffectData>(),
+                                                                              Name = "Global light effect data.",                                                                              
                                                                               Usage = ResourceUsage.Dynamic
                                                                           });
 
             _lightBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
-                                                                       new GorgonConstantBufferInfo("Deferred Lighting Light Data Buffer")
+                                                                       new GorgonConstantBufferInfo(GorgonGpuLightData.SizeInBytes * MaxLightCount)
                                                                        {
-                                                                           SizeInBytes = GorgonGpuLightData.SizeInBytes * MaxLightCount,
+                                                                           Name = "Deferred Lighting Light Data Buffer",                                                                           
                                                                            Usage = ResourceUsage.Dynamic
                                                                        });
 

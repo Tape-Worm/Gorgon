@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // The information used to create the buffer.
-        private readonly GorgonBufferInfo _info;
+        private GorgonBufferInfo _info;
         #endregion
 
         #region Properties.
@@ -198,26 +198,27 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="bufferInfo">The parameters used to create the buffer.</param>
         /// <returns>A new D3D 11 buffer description used to create the buffer.</returns>
-        private D3D11.BufferDescription BuildBufferDesc(GorgonBufferInfo bufferInfo)
+        private D3D11.BufferDescription BuildBufferDesc(ref GorgonBufferInfo bufferInfo)
         {
             D3D11.BindFlags bindFlags = GetBindingFlags(bufferInfo.Binding);
             var resourceUsage = (D3D11.ResourceUsage)bufferInfo.Usage;
 
             // Round up to the nearest multiple of 4.
-            bufferInfo.StructureSize = (bufferInfo.StructureSize + 3) & ~3;
+            int structureSize = (bufferInfo.StructureSize + 3) & ~3;
+            int sizeInBytes = bufferInfo.SizeInBytes;
 
-            if (bufferInfo.StructureSize > 2048)
+            if (structureSize > 2048)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID, bufferInfo.StructureSize));
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID, structureSize));
             }
 
             if (bufferInfo.AllowRawView)
             {
                 // Raw buffers use 4 byte alignment.
-                bufferInfo.SizeInBytes = (bufferInfo.SizeInBytes + 3) & ~3;
+                sizeInBytes = (sizeInBytes + 3) & ~3;
             }
 
-            ValidateBufferBindings(bufferInfo.Usage, bufferInfo.Binding, bufferInfo.StructureSize);
+            ValidateBufferBindings(bufferInfo.Usage, bufferInfo.Binding, structureSize);
 
             D3D11.ResourceOptionFlags options = D3D11.ResourceOptionFlags.None;
 
@@ -231,19 +232,30 @@ namespace Gorgon.Graphics.Core
                 options |= D3D11.ResourceOptionFlags.BufferAllowRawViews;
             }
 
-            if (bufferInfo.StructureSize > 0)
+            if (structureSize > 0)
             {
                 options |= D3D11.ResourceOptionFlags.BufferStructured;
             }
 
+            if ((bufferInfo.SizeInBytes != sizeInBytes) || (bufferInfo.StructureSize != structureSize))
+            {
+#if NET5_0_OR_GREATER
+                bufferInfo = bufferInfo with
+                {
+                    StructureSize = structureSize,
+                    SizeInBytes = sizeInBytes
+                };
+#endif
+            }
+
             return new D3D11.BufferDescription
             {
-                SizeInBytes = bufferInfo.SizeInBytes,
+                SizeInBytes = sizeInBytes,
                 Usage = resourceUsage,
                 BindFlags = bindFlags,
                 OptionFlags = options,
                 CpuAccessFlags = GetCpuFlags(bufferInfo.Usage, bufferInfo.Binding, bufferInfo.IndirectArgs),
-                StructureByteStride = bufferInfo.StructureSize
+                StructureByteStride = structureSize
             };
         }
 
@@ -301,12 +313,17 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
 
-            D3D11.BufferDescription desc = BuildBufferDesc(_info);
+            D3D11.BufferDescription desc = BuildBufferDesc(ref _info);
 
             // Implicitly allow reading for staging resources.
             if (_info.Usage == ResourceUsage.Staging)
             {
-                _info.AllowCpuRead = true;
+#if NET5_0_OR_GREATER
+                _info = _info with
+                {
+                    AllowCpuRead = true
+                };
+#endif
             }
 
             Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
@@ -797,7 +814,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>A value on the <paramref name="info"/> parameter is incorrect.</para>
         /// </exception>
-        public GorgonBuffer(GorgonGraphics graphics, IGorgonBufferInfo info, ReadOnlySpan<byte> initialData = default)
+        public GorgonBuffer(GorgonGraphics graphics, GorgonBufferInfo info, ReadOnlySpan<byte> initialData = default)
             : base(graphics)
         {
             _info = new GorgonBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));

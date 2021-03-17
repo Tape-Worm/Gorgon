@@ -102,10 +102,10 @@ namespace Gorgon.Examples
 
             _compute = new GorgonComputeEngine(graphics);
             _sobelData = new GorgonConstantBuffer(graphics,
-                                                  new GorgonConstantBufferInfo("SobelData")
+                                                  new GorgonConstantBufferInfo(16)
                                                   {
-                                                      Usage = ResourceUsage.Dynamic,
-                                                      SizeInBytes = 16
+                                                      Name = "SobelData",
+                                                      Usage = ResourceUsage.Dynamic
                                                   });
 
             _dispatchBuilder = new GorgonDispatchCallBuilder();

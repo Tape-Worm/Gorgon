@@ -254,20 +254,9 @@ namespace Gorgon.Editor.ImageEditor
             _inputLayout = GorgonInputLayout.CreateUsingType<CubeVertex>(_graphics, _cubeVs);
             _cube = new Cube(_graphics, _inputLayout);
 
-            _cubeTransform = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo
-            {
-                SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
-            });
-
-            _volumeRayParams = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo
-            {
-                SizeInBytes = Unsafe.SizeOf<VolumeRayParameters>()
-            });
-
-            _volumeScaleFactor = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo
-            {
-                SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
-            });
+            _cubeTransform = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>()));
+            _volumeRayParams = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<VolumeRayParameters>()));
+            _volumeScaleFactor = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>()));
 
             // Our camera is never changing, so we only need to define it here.
             _view = Matrix4x4.CreateTranslation(0, 0, 1.5f);

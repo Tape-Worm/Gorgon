@@ -267,11 +267,12 @@ namespace Gorgon.Graphics.Core
         /// from the constructor.
         /// </para>
         /// <para>
-        /// If the <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> property in the <paramref name="info"/> is less than 1, then the method will create a vertex buffer that is the exact size needed 
+        /// If the <see cref="GorgonVertexBufferInfo.SizeInBytes"/> property in the <paramref name="info"/> is less than 1, then the method will create a vertex buffer that is the exact size needed 
         /// to fit the <paramref name="initialData"/>. If <paramref name="initialData"/> is omitted and the size is less than 1, then an exception will be thrown.
         /// </para>
         /// </remarks>
-        public static GorgonVertexBuffer Create<T>(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default)
+        /// <seealso cref="GorgonVertexBufferInfo"/>
+        public static GorgonVertexBuffer Create<T>(GorgonGraphics graphics, GorgonVertexBufferInfo info, ReadOnlySpan<T> initialData = default)
             where T : unmanaged            
         {
             if (graphics is null)
@@ -432,7 +433,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
-        public GorgonVertexBuffer(GorgonGraphics graphics, IGorgonVertexBufferInfo info, ReadOnlySpan<byte> initialData = default)
+        public GorgonVertexBuffer(GorgonGraphics graphics, GorgonVertexBufferInfo info, ReadOnlySpan<byte> initialData = default)
             : base(graphics)
         {
             _info = new GorgonVertexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));

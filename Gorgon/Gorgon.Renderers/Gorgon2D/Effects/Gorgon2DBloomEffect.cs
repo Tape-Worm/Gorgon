@@ -636,9 +636,9 @@ namespace Gorgon.Renderers
         protected override void OnInitialize()
         {
             _settingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Bloom Settings Buffer");
-            _textureSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Texture Settings Buffer")
+            _textureSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector2>())
             {
-                SizeInBytes = Unsafe.SizeOf<Vector2>(),
+                Name = "Texture Settings Buffer",                
                 Usage = ResourceUsage.Dynamic
             });
 

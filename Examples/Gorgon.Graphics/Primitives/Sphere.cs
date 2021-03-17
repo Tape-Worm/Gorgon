@@ -158,18 +158,18 @@ namespace Gorgon.Examples
                         segmentCount);
 
             VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                  new GorgonVertexBufferInfo("SphereVertexBuffer")
+                                                  new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
                                                   {
+                                                      Name = "SphereVertexBuffer",
                                                       Usage = ResourceUsage.Immutable
                                                   },
                                                   vertexData);
 
             IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo("SphereIndexBuffer")
+                                                new GorgonIndexBufferInfo(IndexCount)
                                                 {
-                                                    Usage = ResourceUsage.Immutable,
-                                                    Use16BitIndices = false,
-                                                    IndexCount = IndexCount
+                                                    Name = "SphereIndexBuffer",
+                                                    Usage = ResourceUsage.Immutable
                                                 },
                                                 indexData);
 

@@ -297,10 +297,10 @@ namespace Gorgon.Renderers
             }
 
             _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.GBuffer, "GorgonVertexShaderGBuffer", GorgonGraphics.IsDebugEnabled);
-            _params = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo("GBuffer Parameters")
+            _params = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector4>())
             {
-                Usage = ResourceUsage.Default,
-                SizeInBytes = Unsafe.SizeOf<Vector4>()
+                Name = "GBuffer Parameters",
+                Usage = ResourceUsage.Default                
             });
         }
 

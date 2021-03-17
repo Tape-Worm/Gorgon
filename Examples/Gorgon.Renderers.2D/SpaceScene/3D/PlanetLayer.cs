@@ -148,10 +148,10 @@ namespace Gorgon.Examples
             _materialBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in emptyMaterial, "MaterialBuffer", ResourceUsage.Dynamic);
 
             _lightBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
-                                                    new GorgonConstantBufferInfo("LightDataBuffer")
+                                                    new GorgonConstantBufferInfo(Unsafe.SizeOf<GorgonGpuLightData>() * MaxLights)
                                                     {
-                                                        Usage = ResourceUsage.Default,
-                                                        SizeInBytes = Unsafe.SizeOf<GorgonGpuLightData>() * MaxLights
+                                                        Name = "LightDataBuffer",
+                                                        Usage = ResourceUsage.Default                                                        
                                                     });
         }
 

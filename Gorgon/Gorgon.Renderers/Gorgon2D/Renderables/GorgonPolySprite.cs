@@ -652,19 +652,16 @@ namespace Gorgon.Renderers
             newSprite.Bounds = new DX.RectangleF(0, 0, maxX - minX, maxY - minY);
 
             // Split the polygon hull into triangles.            
-            newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo
+            newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo(newSprite.RwIndices.Length)
             {
                 Binding = VertexIndexBufferBinding.None,
-                Use16BitIndices = false,
-                IndexCount = newSprite.RwIndices.Length,
                 Usage = ResourceUsage.Immutable
             }, newSprite.RwIndices);
 
-            newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(graphics, new GorgonVertexBufferInfo
+            newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
             {
                 Usage = ResourceUsage.Immutable,
-                Binding = VertexIndexBufferBinding.None,
-                SizeInBytes = newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes
+                Binding = VertexIndexBufferBinding.None                
             }, newSprite.Renderable.Vertices);                
 
             return newSprite;

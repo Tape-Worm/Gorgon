@@ -90,17 +90,17 @@ namespace Gorgon.Renderers.Debug
         /// </summary>
         private void Initialize()
         {
-            var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo("AABB Visual VertexBuffer")
+            var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
             {
-                SizeInBytes = _lineVertices.Length * Unsafe.SizeOf<Vector3>(),
+                Name = "AABB Visual VertexBuffer",                
                 Usage = ResourceUsage.Dynamic
             });
 
             _vertexBuffer = new GorgonVertexBufferBinding(vertexBuffer, Unsafe.SizeOf<Vector3>());
 
-            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("AABB Visual ConstantBufer")
+            _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
             {
-                SizeInBytes = Unsafe.SizeOf<Matrix4x4>(),
+                Name = "AABB Visual ConstantBufer",                
                 Usage = ResourceUsage.Dynamic
             });
 

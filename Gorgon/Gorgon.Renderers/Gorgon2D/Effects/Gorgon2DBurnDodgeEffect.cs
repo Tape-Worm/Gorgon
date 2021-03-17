@@ -102,10 +102,10 @@ namespace Gorgon.Renderers
         protected override void OnInitialize()
         {
             _burnDodgeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
-                                                                             new GorgonConstantBufferInfo("Gorgon 2D Burn/Dodge Effect Constant Buffer")
+                                                                             new GorgonConstantBufferInfo(16)
                                                                              {
-                                                                                 Usage = ResourceUsage.Default,
-                                                                                 SizeInBytes = 16
+                                                                                 Name = "Gorgon 2D Burn/Dodge Effect Constant Buffer",
+                                                                                 Usage = ResourceUsage.Default                                                                                 
                                                                              });
 
             _dodgeBurnShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderBurnDodge");

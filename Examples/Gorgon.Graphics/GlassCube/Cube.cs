@@ -183,26 +183,24 @@ namespace Gorgon.Examples
             };
 
             // Create our index buffer and vertex buffer and populate with our cube data.
-            using var indexPtr = GorgonNativeBuffer<ushort>.Pin(indices);
-            using var vertexPtr = GorgonNativeBuffer<GorgonVertexPosUv>.Pin(vertices);
             IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo("GlassCube Index Buffer")
+                                                new GorgonIndexBufferInfo(indices.Length)
                                                 {
-                                                    Usage = ResourceUsage.Immutable,
-                                                    IndexCount = indices.Length,
+                                                    Name = "GlassCube Index Buffer",
+                                                    Usage = ResourceUsage.Immutable,                                                    
                                                     Use16BitIndices = true
                                                 },
-                                                indexPtr.Pointer);
+                                                indices);
 
             VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
             {
                 [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
-                                                                   new GorgonVertexBufferInfo("GlassCube Vertex Buffer")
+                                                                   new GorgonVertexBufferInfo(vertices.Length * GorgonVertexPosUv.SizeInBytes)
                                                                    {
-                                                                       Usage = ResourceUsage.Immutable,
-                                                                       SizeInBytes = vertices.Length * GorgonVertexPosUv.SizeInBytes,
+                                                                       Name = "GlassCube Vertex Buffer",
+                                                                       Usage = ResourceUsage.Immutable
                                                                    },
-                                                                   vertexPtr.ToSpan())
+                                                                   vertices)
             };
         }
         #endregion

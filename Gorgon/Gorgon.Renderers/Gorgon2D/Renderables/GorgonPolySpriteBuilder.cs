@@ -508,19 +508,16 @@ namespace Gorgon.Renderers
 
             newSprite.RwIndices = indices;
 
-            newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(Graphics, new GorgonIndexBufferInfo
+            newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(Graphics, new GorgonIndexBufferInfo(indices.Length)
             {
                 Binding = VertexIndexBufferBinding.None,
-                Use16BitIndices = false,
-                IndexCount = indices.Length,
                 Usage = ResourceUsage.Immutable
             }, indices);
 
-            newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics, new GorgonVertexBufferInfo
+            newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
             {
                 Usage = ResourceUsage.Immutable,
-                Binding = VertexIndexBufferBinding.None,
-                SizeInBytes = newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes
+                Binding = VertexIndexBufferBinding.None
             }, newSprite.Renderable.Vertices);
             newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
             newSprite.Renderable.IndexCount = indices.Length;

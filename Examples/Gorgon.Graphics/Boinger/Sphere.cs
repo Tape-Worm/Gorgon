@@ -128,17 +128,18 @@ namespace Gorgon.Examples
 
             // Copy the above vertex/index data into a vertex and index buffer so we can render our sphere.
             VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
-                                                                                    new GorgonVertexBufferInfo("Sphere Vertex Buffer")
+                                                                                    new GorgonVertexBufferInfo(Vertices.Length * GorgonVertexPosUv.SizeInBytes)
                                                                                     {
-                                                                                        SizeInBytes = Vertices.Length * GorgonVertexPosUv.SizeInBytes,
+                                                                                        Name = "Sphere Vertex Buffer",                                                                                        
                                                                                         Usage = ResourceUsage.Immutable
                                                                                     },
                                                                                     Vertices);
             IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo("Sphere Index Buffer")
+                                                new GorgonIndexBufferInfo(Indices.Length)
                                                 {
+                                                    Name = "Sphere Index Buffer",
                                                     Usage = ResourceUsage.Immutable,
-                                                    IndexCount = Indices.Length
+                                                    Use16BitIndices = true
                                                 },
                                                 Indices);
         }

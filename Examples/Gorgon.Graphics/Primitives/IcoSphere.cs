@@ -376,17 +376,16 @@ namespace Gorgon.Examples
             CalculateTangents(vertexData, indexData);
 
             VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                    new GorgonVertexBufferInfo("IcoSphereVertexBuffer")
+                                                    new GorgonVertexBufferInfo(vertexData.Length * GorgonVertexPosNormUvTangent.SizeInBytes)
                                                     {
-                                                        Usage = ResourceUsage.Immutable
+                                                        Name = "IcoSphereVertexBuffer",
+                                                        Usage = ResourceUsage.Immutable                                                        
                                                     },
                                                     vertexData);
             IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo
+                                                new GorgonIndexBufferInfo(IndexCount)
                                                 {
-                                                    Usage = ResourceUsage.Immutable,
-                                                    Use16BitIndices = false,
-                                                    IndexCount = IndexCount
+                                                    Usage = ResourceUsage.Immutable
                                                 },
                                                 indexData);
 

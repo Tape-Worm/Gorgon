@@ -410,10 +410,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to create resources required for the lifetime of the viewer.</summary>
         public void CreateResources()
         {
-            _textureParameters = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo
-            {
-                SizeInBytes = TextureParams.Size
-            });
+            _textureParameters = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(TextureParams.Size));
 
             _imageShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.ImageViewShaders, _shaderName);
 

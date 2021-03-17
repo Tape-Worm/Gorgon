@@ -106,10 +106,10 @@ namespace Gorgon.Examples
             // The GPU output data buffer will be bound to the compute engine as an unordered access view (UAV) so that we can write 
             // the data back into the buffer.
             _outputBuffer = new GorgonBuffer(_graphics,
-                                             new GorgonBufferInfo("OutputData")
+                                             new GorgonBufferInfo(Unsafe.SizeOf<OutputData>() * MaxValues)
                                              {
-                                                 Usage = ResourceUsage.Default,
-                                                 SizeInBytes = Unsafe.SizeOf<OutputData>() * MaxValues,
+                                                 Name = "OutputData",
+                                                 Usage = ResourceUsage.Default,                                                 
                                                  Binding = BufferBinding.ReadWrite,
                                                  StructureSize = Unsafe.SizeOf<OutputData>(),
                                                  AllowCpuRead = true
@@ -118,18 +118,18 @@ namespace Gorgon.Examples
             // This is our input data buffers. One for integer values, and another for floating point.
             // These are just standard buffers that will be bound as a shader resource view (SRV).
             _intBuffer = new GorgonBuffer(_graphics,
-                                          new GorgonBufferInfo("IntData")
+                                          new GorgonBufferInfo(sizeof(int) * MaxValues)
                                           {
+                                              Name = "IntData",
                                               Usage = ResourceUsage.Default,
-                                              SizeInBytes = sizeof(int) * MaxValues,
                                               Binding = BufferBinding.Shader
                                           });
 
             _floatBuffer = new GorgonBuffer(_graphics,
-                                            new GorgonBufferInfo("FloatData")
+                                            new GorgonBufferInfo(sizeof(float) * MaxValues)
                                             {
+                                                Name = "FloatData",
                                                 Usage = ResourceUsage.Default,
-                                                SizeInBytes = sizeof(float) * MaxValues,
                                                 Binding = BufferBinding.Shader
                                             });
 

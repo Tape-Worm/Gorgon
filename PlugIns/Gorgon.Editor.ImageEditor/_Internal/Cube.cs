@@ -168,10 +168,10 @@ namespace Gorgon.Editor.ImageEditor
 
             // Create our index buffer and vertex buffer and populate with our cube data.
             IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo("Volume Index Buffer")
+                                                new GorgonIndexBufferInfo(indices.Length)
                                                 {
+                                                    Name = "Volume Index Buffer",
                                                     Usage = ResourceUsage.Immutable,
-                                                    IndexCount = indices.Length,
                                                     Use16BitIndices = true
                                                 },
                                                 indices);
@@ -179,11 +179,11 @@ namespace Gorgon.Editor.ImageEditor
             VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
             {
                 [0] = GorgonVertexBufferBinding.CreateVertexBuffer<CubeVertex>(graphics,
-                                                                    new GorgonVertexBufferInfo("Volume Vertex Buffer")
+                                                                    new GorgonVertexBufferInfo(CubeVertex.SizeInBytes * vertices.Length)
                                                                     {
+                                                                        Name = "Volume Vertex Buffer",
                                                                         Binding = VertexIndexBufferBinding.None,
-                                                                        Usage = ResourceUsage.Immutable,
-                                                                        SizeInBytes = CubeVertex.SizeInBytes * vertices.Length
+                                                                        Usage = ResourceUsage.Immutable
                                                                     },
                                                                     vertices)
             };

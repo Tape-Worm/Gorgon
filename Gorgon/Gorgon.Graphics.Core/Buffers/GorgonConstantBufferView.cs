@@ -212,7 +212,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonConstantBuffer"/>
-        public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, IGorgonConstantBufferInfo info, int startConstant = 0, int constantCount = 0)
+        public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, GorgonConstantBufferInfo info, int startConstant = 0, int constantCount = 0)
         {
             if (graphics is null)
             {
@@ -277,10 +277,10 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(name)
+            var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<T>())
             {
-                Usage = usage,
-                SizeInBytes = Unsafe.SizeOf<T>()
+                Name = name,
+                Usage = usage                
             });
             buffer.SetData(in value);
             GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);
@@ -335,10 +335,10 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(name)
+            var buffer = new GorgonConstantBuffer(graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<T>() * value.Length)
             {
-                Usage = usage,
-                SizeInBytes = Unsafe.SizeOf<T>() * value.Length
+                Name = name,
+                Usage = usage                
             });
             buffer.SetData(value);
             GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);

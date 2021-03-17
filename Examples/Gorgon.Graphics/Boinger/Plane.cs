@@ -82,19 +82,18 @@ namespace Gorgon.Examples
 
             // Copy the above vertex/index data into a vertex and index buffer so we can render our plane.
             VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
-                                                                                    new GorgonVertexBufferInfo("Plane Vertex Buffer")
+                                                                                    new GorgonVertexBufferInfo(Vertices.Length * GorgonVertexPosUv.SizeInBytes)
                                                                                     {
-                                                                                        SizeInBytes =
-                                                                                            Vertices.Length * GorgonVertexPosUv.SizeInBytes,
+                                                                                        Name = "Plane Vertex Buffer",
                                                                                         Usage = ResourceUsage.Immutable
                                                                                     },
                                                                                     Vertices);
 
             IndexBuffer = new GorgonIndexBuffer(graphics,
-                                                new GorgonIndexBufferInfo("Plane Index Buffer")
+                                                new GorgonIndexBufferInfo(Indices.Length)
                                                 {
-                                                    Usage = ResourceUsage.Immutable,
-                                                    IndexCount = Indices.Length,
+                                                    Name = "Plane Index Buffer",
+                                                    Usage = ResourceUsage.Immutable,                                                    
                                                     Use16BitIndices = true
                                                 },
                                                 Indices);

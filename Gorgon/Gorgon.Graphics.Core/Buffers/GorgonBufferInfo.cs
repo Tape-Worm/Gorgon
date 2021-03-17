@@ -28,15 +28,42 @@ using System;
 
 namespace Gorgon.Graphics.Core
 {
+#if NET5_0_OR_GREATER
     /// <summary>
     /// Provides the necessary information required to set up a generic unstructured buffer.
     /// </summary>
-    public class GorgonBufferInfo
+    /// <param name="SizeInBytes">The size of the buffer, in bytes.</param>
+    /// <remarks>
+    /// <para>
+    /// For buffers that set <see cref="IGorgonBufferInfo.AllowRawView"/> to <b>true</b>, the <see cref="SizeInBytes"/> value will be rounded up to the nearest multiple of 4 at buffer creation time.
+    /// </para>
+    /// </remarks>
+    public record GorgonBufferInfo(int SizeInBytes)
         : IGorgonBufferInfo
     {
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
+        /// </summary>
+        /// <param name="info">The buffer information to copy.</param>
+        /// <param name="newName">[Optional] The new name for the buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonBufferInfo(IGorgonBufferInfo info, string newName = null)
+            : this(info?.SizeInBytes ?? throw new ArgumentNullException(nameof(info)))
+        {
+            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Usage = info.Usage;
+            Binding = info.Binding;
+            AllowCpuRead = info.AllowCpuRead;
+            StructureSize = info.StructureSize;
+            AllowRawView = info.AllowRawView;
+            IndirectArgs = info.IndirectArgs;
+        }
+        #endregion
+
         #region Properties.
         /// <summary>
-        /// Property to set or return whether to allow the CPU read access to the buffer.
+        /// Property to return whether to allow the CPU read access to the buffer.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -54,34 +81,17 @@ namespace Gorgon.Graphics.Core
         public bool AllowCpuRead
         {
             get;
-            set;
+            init;
         }
 
         /// <summary>
-        /// Property to set or return the intended usage for binding to the GPU.
+        /// Property to return the intended usage for binding to the GPU.
         /// </summary>
         public ResourceUsage Usage
         {
             get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the size of the buffer, in bytes.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// For buffers that set <see cref="IGorgonBufferInfo.AllowRawView"/> to <b>true</b>, then this value will be rounded up to the nearest multiple of 4 at buffer creation time.
-        /// </para>
-        /// <para>
-        /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
-        /// </para>
-        /// </remarks>
-        public int SizeInBytes
-        {
-            get;
-            set;
-        }
+            init;
+        } = ResourceUsage.Default;
 
         /// <summary>
         /// Property to return the type of binding for the GPU.
@@ -104,8 +114,8 @@ namespace Gorgon.Graphics.Core
         public BufferBinding Binding
         {
             get;
-            set;
-        }
+            init;
+        } = BufferBinding.None;
 
         /// <summary>
         /// Property to return whether the buffer will contain indirect argument data.
@@ -122,7 +132,7 @@ namespace Gorgon.Graphics.Core
         public bool IndirectArgs
         {
             get;
-            set;
+            init;
         }
 
         /// <summary>
@@ -145,7 +155,7 @@ namespace Gorgon.Graphics.Core
         public int StructureSize
         {
             get;
-            set;
+            init;
         }
 
         /// <summary>
@@ -166,7 +176,7 @@ namespace Gorgon.Graphics.Core
         public bool AllowRawView
         {
             get;
-            set;
+            init;
         }
 
         /// <summary>
@@ -176,6 +186,87 @@ namespace Gorgon.Graphics.Core
         /// For best practice, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
         /// property.
         /// </remarks>
+        public string Name
+        {
+            get;
+            init;
+        } = GorgonGraphicsResource.GenerateName(GorgonBuffer.NamePrefix);
+        #endregion
+    }
+#else
+    /// <summary>
+    /// Provides the necessary information required to set up a generic unstructured buffer.
+    /// </summary>
+    public class GorgonBufferInfo
+        : IGorgonBufferInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether to allow the CPU read access to the buffer.
+        /// </summary>
+        public bool AllowCpuRead
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the intended usage for binding to the GPU.
+        /// </summary>
+        public ResourceUsage Usage
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the size of the buffer, in bytes.
+        /// </summary>
+        public int SizeInBytes
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the type of binding for the GPU.
+        /// </summary>
+        public BufferBinding Binding
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return whether the buffer will contain indirect argument data.
+        /// </summary>
+        public bool IndirectArgs
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the size, in bytes, of an individual structure in a structured buffer.
+        /// </summary>
+        public int StructureSize
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return whether to allow raw unordered views of the buffer.
+        /// </summary>
+        public bool AllowRawView
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
         public string Name
         {
             get;
@@ -191,12 +282,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonBufferInfo(IGorgonBufferInfo info, string newName = null)
         {
-            if (info is null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Name = newName;
             Usage = info.Usage;
             SizeInBytes = info.SizeInBytes;
             Binding = info.Binding;
@@ -205,17 +291,7 @@ namespace Gorgon.Graphics.Core
             AllowRawView = info.AllowRawView;
             IndirectArgs = info.IndirectArgs;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
-        /// </summary>
-        /// <param name="name">[Optional] The name of the buffer.</param>
-        public GorgonBufferInfo(string name = null)
-        {
-            Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonBuffer.NamePrefix) : name;
-            Usage = ResourceUsage.Default;
-            Binding = BufferBinding.None;
-        }
         #endregion
     }
+#endif
 }

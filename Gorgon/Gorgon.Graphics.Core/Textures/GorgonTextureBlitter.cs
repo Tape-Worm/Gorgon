@@ -134,19 +134,19 @@ namespace Gorgon.Graphics.Core
 
                 _vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
                 {
-                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosColorUv>(_graphics, new GorgonVertexBufferInfo("Gorgon Blitter Vertex Buffer")
+                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosColorUv>(_graphics, new GorgonVertexBufferInfo(GorgonVertexPosColorUv.SizeInBytes * 4)
                     {
-                        Binding = VertexIndexBufferBinding.None,
-                        SizeInBytes = GorgonVertexPosColorUv.SizeInBytes * 4,
+                        Name = "Gorgon Blitter Vertex Buffer",
+                        Binding = VertexIndexBufferBinding.None,                        
                         Usage = ResourceUsage.Dynamic
                     })
                 };
 
                 _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
-                                                                           new GorgonConstantBufferInfo("Gorgon Blitter WVP Buffer")
+                                                                           new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
                                                                            {
+                                                                               Name = "Gorgon Blitter WVP Buffer",
                                                                                Usage = ResourceUsage.Dynamic,
-                                                                               SizeInBytes = Unsafe.SizeOf<Matrix4x4>()
                                                                            });
 
 
