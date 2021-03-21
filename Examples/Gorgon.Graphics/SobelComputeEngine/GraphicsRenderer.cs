@@ -114,11 +114,11 @@ namespace Gorgon.Examples
 
             _swapChain = new GorgonSwapChain(_graphics,
                                              panel,
-                                             new GorgonSwapChainInfo("ExampleSwapChain")
+                                             new GorgonSwapChainInfo(panel.ClientSize.Width,
+                                                                          panel.ClientSize.Height,
+                                                                          BufferFormat.R8G8B8A8_UNorm)
                                              {
-                                                 Format = BufferFormat.R8G8B8A8_UNorm,
-                                                 Width = panel.ClientSize.Width,
-                                                 Height = panel.ClientSize.Height
+                                                 Name = "ExampleSwapChain"
                                              });
         }
 

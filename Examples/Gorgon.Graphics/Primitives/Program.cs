@@ -689,11 +689,9 @@ namespace Gorgon.Examples
 
                 _swapChain = new GorgonSwapChain(_graphics,
                                                  _window,
-                                                 new GorgonSwapChainInfo("Swap")
+                                                 new GorgonSwapChainInfo(_window.ClientSize.Width, _window.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                                  {
-                                                     Width = _window.ClientSize.Width,
-                                                     Height = _window.ClientSize.Height,
-                                                     Format = BufferFormat.R8G8B8A8_UNorm
+                                                     Name = "Swap"
                                                  });
 
                 BuildDepthBuffer(_swapChain.Width, _swapChain.Height);

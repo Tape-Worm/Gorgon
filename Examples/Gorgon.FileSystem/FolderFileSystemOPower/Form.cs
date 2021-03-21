@@ -279,12 +279,7 @@ namespace Gorgon.Examples
             // Build our "screen".
             _screen = new GorgonSwapChain(_graphics,
                                           this,
-                                          new GorgonSwapChainInfo
-                                          {
-                                              Width = ClientSize.Width,
-                                              Height = ClientSize.Height,
-                                              Format = BufferFormat.R8G8B8A8_UNorm
-                                          });
+                                          new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm));
 
             if (!ExampleConfig.Default.IsWindowed)
             {

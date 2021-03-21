@@ -657,11 +657,11 @@ namespace Gorgon.Examples
 
                 IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
                 _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
-                _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo("INeedYourInput Swapchain")
+                _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
+                                                                                            ExampleConfig.Default.Resolution.Height,
+                                                                                            BufferFormat.R8G8B8A8_UNorm)
                 {
-                    Width = ExampleConfig.Default.Resolution.Width,
-                    Height = ExampleConfig.Default.Resolution.Height,
-                    Format = BufferFormat.R8G8B8A8_UNorm
+                    Name = "INeedYourInput Swapchain"
                 });
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 

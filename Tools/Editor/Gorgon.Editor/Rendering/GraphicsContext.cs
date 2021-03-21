@@ -165,12 +165,9 @@ namespace Gorgon.Editor.Rendering
             }
 
             var resultSwap = new GorgonSwapChain(Graphics, control,
-                                                             new GorgonSwapChainInfo($"{control.Name} Swap Chain")
+                                                             new GorgonSwapChainInfo(control.ClientSize.Width, control.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                                              {
-                                                                 Width = control.ClientSize.Width,
-                                                                 Height = control.ClientSize.Height,
-                                                                 Format = BufferFormat.R8G8B8A8_UNorm,
-                                                                 UseFlipMode = true
+                                                                 Name = $"{control.Name} Swap Chain"
                                                              });
 
             _swapChainLeases[control.Name] = new WeakReference<GorgonSwapChain>(resultSwap);

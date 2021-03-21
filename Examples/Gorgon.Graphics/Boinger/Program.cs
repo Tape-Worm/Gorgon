@@ -407,12 +407,11 @@ namespace Gorgon.Examples
             // We can modify the resolution in the config file for the application, but like other Gorgon examples, the default is 1280x800.
             _swap = new GorgonSwapChain(_graphics,
                                         _mainForm,
-                                        new GorgonSwapChainInfo("Main")
+                                        new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
+                                                                     ExampleConfig.Default.Resolution.Height,
+                                                                     BufferFormat.R8G8B8A8_UNorm)
                                         {
-                                            // Set up for 32 bit RGBA normalized display.
-                                            Format = BufferFormat.R8G8B8A8_UNorm,
-                                            Width = ExampleConfig.Default.Resolution.Width,
-                                            Height = ExampleConfig.Default.Resolution.Height
+                                            Name = "Main"
                                         });
 
             // Build the depth buffer for our swap chain.

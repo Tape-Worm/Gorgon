@@ -58,30 +58,27 @@ namespace Gorgon.Graphics.Core
         /// Property to return an item in the dictionary by its name.
         /// </summary>
         public IGorgonVideoOutputInfo this[string name] => _outputs[name];
-
-        /// <summary>
-        /// Property to return the correct output where the majority of the window resides.
-        /// </summary>
-        /// <param name="windowHandle">The handle to the window to locate.</param>
-        /// <returns>A <see cref="IGorgonVideoOutputInfo"/> that contains the majority of the window, or <b>null</b> if no output could be determined.</returns>
-        public IGorgonVideoOutputInfo this[IntPtr windowHandle]
-        {
-            get
-            {
-                if ((windowHandle == IntPtr.Zero)
-                    || (Count == 0))
-                {
-                    return null;
-                }
-
-                IntPtr monitor = Win32API.MonitorFromWindow(windowHandle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
-
-                return monitor == IntPtr.Zero ? null : this.FirstOrDefault(item => item.MonitorHandle == monitor);
-            }
-        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to return the correct output where the majority of a window resides.
+        /// </summary>
+        /// <param name="windowHandle">The handle to the window to locate.</param>
+        /// <returns>A <see cref="IGorgonVideoOutputInfo"/> that contains the majority of the window, or <b>null</b> if no output could be determined.</returns>
+        public IGorgonVideoOutputInfo GetOutputFromWindowHandle(IntPtr windowHandle)
+        {
+            if ((windowHandle == IntPtr.Zero)
+                || (Count == 0))
+            {
+                return null;
+            }
+
+            IntPtr monitor = Win32API.MonitorFromWindow(windowHandle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
+
+            return monitor == IntPtr.Zero ? null : this.FirstOrDefault(item => item.MonitorHandle == monitor);
+        }
+
         /// <summary>
         /// Function to return whether an item with the specified name exists in this collection.
         /// </summary>

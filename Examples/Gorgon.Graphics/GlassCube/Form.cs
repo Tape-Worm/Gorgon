@@ -346,11 +346,9 @@ namespace Gorgon.Examples
                 // Build our swap chain.
                 _swap = new GorgonSwapChain(_graphics,
                                             this,
-                                            new GorgonSwapChainInfo("GlassCube SwapChain")
+                                            new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                             {
-                                                Format = BufferFormat.R8G8B8A8_UNorm,
-                                                Width = ClientSize.Width,
-                                                Height = ClientSize.Height,
+                                                Name = "GlassCube SwapChain",
                                                 // We don't need this, as it's the default, but it's included for 
                                                 // completeness.
                                                 StretchBackBuffer = true

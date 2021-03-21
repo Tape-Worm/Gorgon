@@ -29,12 +29,37 @@ using SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
+#if NET5_0_OR_GREATER
     /// <summary> 
     /// Settings for defining the set up for a swap chain.
     /// </summary>
-    public class GorgonSwapChainInfo
+    /// <param name="Width">The width of the swap chain backbuffer.</param>
+    /// <param name="Height">The height of the swap chain backbuffer.</param>
+    /// <param name="Format">The pixel format of the swap chain backbuffer.</param>
+    /// <remarks>
+    /// <para>
+    /// The <paramref cref="Format"/> parameter must support being used a backbuffer format and this can be determined by using the <see cref="GorgonGraphics.FormatSupport"/> 
+    /// property.
+    /// </para>
+    /// </remarks>
+    public record GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
         : IGorgonSwapChainInfo
     {
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
+        /// </summary>
+        /// <param name="info">A <see cref="IGorgonSwapChainInfo"/> to copy the settings from.</param>
+        /// <param name="newName">[Optional] A new name for the swap chain.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonSwapChainInfo(IGorgonSwapChainInfo info, string newName = null)
+            : this(info?.Width ?? throw new ArgumentNullException(nameof(info)), info.Height, info.Format)
+        {
+            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            StretchBackBuffer = info.StretchBackBuffer;
+        }
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to set or return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
@@ -46,24 +71,38 @@ namespace Gorgon.Graphics.Core
         {
             get;
             set;
+        } = true;
+
+        /// <summary>
+        /// Property to return the name of the swap chain.
+        /// </summary>
+	    public string Name
+        {
+            get;
+            set;
+        } = GorgonGraphicsResource.GenerateName(GorgonSwapChain.NamePrefix);
+        #endregion
+    }
+#else
+    /// <summary> 
+    /// Settings for defining the set up for a swap chain.
+    /// </summary>
+    public class GorgonSwapChainInfo
+        : IGorgonSwapChainInfo
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
+        /// </summary>
+        public bool StretchBackBuffer
+        {
+            get;
+            set;
         }
 
         /// <summary>
         /// Property to set or return whether to use flip mode rather than a bitblt mode to present the back buffer to the presentation target.
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Setting this value to <b>true</b> will use the more performant flip model for displaying data from the swap chain back buffer, and setting it to <b>false</b> will use the bitblt model to copy the 
-        /// back buffer data to the presentation target.
-        /// </para>
-        /// <para>
-        /// When this value is set to <b>true</b>, the back buffer contents are kept after the back buffer is sent to the presentation target, when it is set to <b>false</b>, the contents may be erased (this 
-        /// ultimately depends on the driver implementation).
-        /// </para>
-        /// <para>
-        /// This value will default to <b>false</b>.
-        /// </para>
-        /// </remarks>
         public bool UseFlipMode
         {
             get;
@@ -73,9 +112,6 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to set or return the format of the swap chain back buffer.
         /// </summary>
-        /// <remarks>
-        /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
-        /// </remarks>
         public BufferFormat Format
         {
             get;
@@ -106,6 +142,7 @@ namespace Gorgon.Graphics.Core
 	    public string Name
         {
             get;
+            set;
         }
         #endregion
 
@@ -115,9 +152,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="desc">The DXGI swap chain description to copy from.</param>
         /// <param name="name">[Optional] The name of the swap chain.</param>
-        internal GorgonSwapChainInfo(in SwapChainDescription1 desc, string name = null)
-                    : this(name)
+        internal GorgonSwapChainInfo(in SwapChainDescription1 desc, string name = null)                    
         {
+            Name = name;
             Format = (BufferFormat)desc.Format;
             Width = desc.Width;
             Height = desc.Height;
@@ -130,32 +167,26 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="info">A <see cref="IGorgonSwapChainInfo"/> to copy the settings from.</param>
         /// <param name="newName">[Optional] A new name for the swap chain.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonSwapChainInfo(IGorgonSwapChainInfo info, string newName = null)
         {
-            if (info is null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Name = newName;
             Format = info.Format;
             Height = info.Height;
             StretchBackBuffer = info.StretchBackBuffer;
-            UseFlipMode = info.UseFlipMode;
             Width = info.Width;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
-        /// </summary>
-        /// <param name="name">The name of the swap chain.</param>
-        public GorgonSwapChainInfo(string name = null)
+        /// <summary>Initializes a new instance of the <see cref="GorgonSwapChainInfo" /> class.</summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="format">The format.</param>
+        public GorgonSwapChainInfo(int width, int height, BufferFormat format)
         {
-            Name = string.IsNullOrEmpty(name) ? $"GorgonSwapChain_{Guid.NewGuid():N}" : name;
-            StretchBackBuffer = true;
-            Format = BufferFormat.R8G8B8A8_UNorm;
+            Format = format;
+            Width = width;
+            Height = height;
         }
         #endregion
     }
+#endif
 }

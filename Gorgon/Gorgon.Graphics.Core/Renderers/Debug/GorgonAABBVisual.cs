@@ -159,7 +159,7 @@ namespace Gorgon.Renderers.Debug
         /// <param name="depthStencilState">[Optional] The depth/stencil state to apply when drawing.</param>
         public void Draw(in GorgonBoundingBox aabb, in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix, GorgonDepthStencilState depthStencilState = null)
         {
-            if ((_drawCall != null) && (_drawCall.PipelineState.DepthStencilState != depthStencilState))
+            if ((_drawCall is not null) && (_drawCall.PipelineState.DepthStencilState != depthStencilState))
             {
                 BuildDrawCall(depthStencilState);
             }

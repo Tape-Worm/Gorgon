@@ -51,34 +51,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return whether to use flip mode rather than a bitblt mode to present the back buffer to the presentation target.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Setting this value to <b>true</b> will use the more performant flip model for displaying data from the swap chain back buffer, and setting it to <b>false</b> will use the bitblt model to copy the 
-        /// back buffer data to the presentation target.
-        /// </para>
-        /// <para>
-        /// When this value is set to <b>true</b>, the back buffer contents are kept after the back buffer is sent to the presentation target, when it is set to <b>false</b>, the contents may be erased (this 
-        /// ultimately depends on the driver implementation).
-        /// </para>
-        /// <para>
-        /// This value will default to <b>false</b>.
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// Setting this value on Windows 7 will have no effect, it is only supported on Windows 8 or better.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        bool UseFlipMode
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the format of the swap chain back buffer.
         /// </summary>
         /// <remarks>

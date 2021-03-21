@@ -357,11 +357,11 @@ namespace Gorgon.Examples
 
             _screen = new GorgonSwapChain(_graphics,
                                             window,
-                                            new GorgonSwapChainInfo("Gorgon2D Depth Buffer Example")
+                                            new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
+                                                                         ExampleConfig.Default.Resolution.Height,
+                                                                         BufferFormat.R8G8B8A8_UNorm)
                                             {
-                                                Width = ExampleConfig.Default.Resolution.Width,
-                                                Height = ExampleConfig.Default.Resolution.Height,
-                                                Format = BufferFormat.R8G8B8A8_UNorm
+                                                Name = "Gorgon2D Depth Buffer Example"
                                             });
 
             _depthBuffer = GorgonDepthStencil2DView.CreateDepthStencil(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView)

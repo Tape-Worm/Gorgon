@@ -425,12 +425,31 @@ namespace Gorgon.Examples
 				// Create the primary swap chain.
 				_mainScreen = new GorgonSwapChain(_graphics,
 												  _window,
-												  new GorgonSwapChainInfo("Main Screen")
+												  new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
+																			   ExampleConfig.Default.Resolution.Height,
+																			   BufferFormat.R8G8B8A8_UNorm)
 												  {
-													  Width = ExampleConfig.Default.Resolution.Width,
-													  Height = ExampleConfig.Default.Resolution.Height,
-													  Format = BufferFormat.R8G8B8A8_UNorm
+													  Name = "Main Screen"
 												  });
+
+				// If our configuration file indicates that we should start in full screen, then switch over to full screen now.
+				if (!ExampleConfig.Default.IsWindowed)
+				{
+					// Find out which output on the video card contains the majority of our window.
+					IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs.GetOutputFromWindowHandle(_window.Handle);
+
+					// We should check, just in case.
+					if (output is not null)
+					{
+						var mode = new GorgonVideoMode(_mainScreen.Width, _mainScreen.Height, _mainScreen.Format);
+
+						// Find the best video mode that matches the settings we've requested.
+						output.VideoModes.FindNearestVideoMode(output, in mode, out GorgonVideoMode actualMode);
+
+						// Go into full screen mode now.
+						_mainScreen.EnterFullScreen(actualMode, output);
+					}
+				}
 
 				// Center the display.
 				if (_mainScreen.IsWindowed)
@@ -651,15 +670,13 @@ namespace Gorgon.Examples
 					{
 						if (_mainScreen.IsWindowed)
 						{
-							IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[_window.Handle];
+							// Find the output that contains our window.
+							IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs.GetOutputFromWindowHandle(_window.Handle);
 
-							if (output is null)
+							// Always check to ensure that we have an output (if we're in a RDP session, this will be NULL).
+							if (output is not null)
 							{
-								_mainScreen.EnterFullScreen();
-							}
-							else
-							{
-								var mode = new GorgonVideoMode(_window.ClientSize.Width, _window.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm);
+								var mode = new GorgonVideoMode(_window.ClientSize.Width, _window.ClientSize.Height, _mainScreen.Format);
 								_mainScreen.EnterFullScreen(in mode, output);
 							}
 						}
@@ -690,16 +707,6 @@ namespace Gorgon.Examples
 		}
 
 		/// <summary>
-		/// Function to perform clean up operations.
-		/// </summary>
-		private static void CleanUp()
-		{
-			GorgonExample.UnloadResources();
-			_window?.Dispose();
-			_graphics?.Dispose();
-		}
-
-		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
@@ -707,9 +714,7 @@ namespace Gorgon.Examples
 		{
 			try
 			{
-#if NET5_0_OR_GREATER
 				Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
@@ -723,7 +728,17 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
-				CleanUp();
+				GorgonExample.UnloadResources();
+
+				_ballTexture?.Dispose();
+				_ballFont?.Dispose();
+				_blur?.Dispose();
+				_2D?.Dispose();
+				_ballTargetView?.Dispose();
+				_statsTexture?.Dispose();
+				_mainScreen?.Dispose();
+				_graphics?.Dispose();
+				_window?.Dispose();
 			}
 		}
 	}

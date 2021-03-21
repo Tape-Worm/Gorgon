@@ -211,11 +211,9 @@ namespace Gorgon.Examples
                 ClientSize = new Size(640, 400);
                 _screen = new GorgonSwapChain(_graphics,
                                               this,
-                                              new GorgonSwapChainInfo("FunWithShapes SwapChain")
+                                              new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                               {
-                                                  Width = ClientSize.Width,
-                                                  Height = ClientSize.Height,
-                                                  Format = BufferFormat.R8G8B8A8_UNorm
+                                                  Name = "FunWithShapes SwapChain"
                                               });
                 _screen.SwapChainResized += Screen_AfterSwapChainResized;
                 _graphics.SetRenderTarget(_screen.RenderTargetView);

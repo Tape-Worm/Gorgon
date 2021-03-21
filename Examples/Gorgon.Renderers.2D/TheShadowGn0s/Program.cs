@@ -262,11 +262,11 @@ ESC - Quit.";
                 _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
 
                 // Create our "screen".
-                _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo("TheShadowGn0s Screen Swap chain")
+                _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width, 
+                                                                                              ExampleConfig.Default.Resolution.Height, 
+                                                                                              BufferFormat.R8G8B8A8_UNorm)
                 {
-                    Width = ExampleConfig.Default.Resolution.Width,
-                    Height = ExampleConfig.Default.Resolution.Height,
-                    Format = BufferFormat.R8G8B8A8_UNorm
+                    Name = "TheShadowGn0s Screen Swap chain"
                 });
 
                 BuildRenderTargets(new DX.Size2(_screen.Width, _screen.Height));

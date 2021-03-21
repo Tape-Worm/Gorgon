@@ -249,11 +249,9 @@ namespace Gorgon.Examples
                 // This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
                 _swap = new GorgonSwapChain(_graphics,
                                             _mainForm,
-                                            new GorgonSwapChainInfo("Main Swap Chain")
+                                            new GorgonSwapChainInfo(_mainForm.ClientSize.Width, _mainForm.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                             {
-                                                Format = BufferFormat.R8G8B8A8_UNorm,
-                                                Width = _mainForm.ClientSize.Width,
-                                                Height = _mainForm.ClientSize.Height
+                                                Name = "Main Swap Chain"
                                             });
 
                 // Assign events so we can update our projection with our window size.

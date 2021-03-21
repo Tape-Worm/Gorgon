@@ -231,11 +231,9 @@ namespace Graphics.Examples
 
                 _swap = new GorgonSwapChain(_graphics,
                                             this,
-                                            new GorgonSwapChainInfo("Codec PlugIn SwapChain")
+                                            new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                             {
-                                                Width = ClientSize.Width,
-                                                Height = ClientSize.Height,
-                                                Format = BufferFormat.R8G8B8A8_UNorm
+                                                Name = "Codec PlugIn SwapChain"
                                             });
 
                 _graphics.SetRenderTarget(_swap.RenderTargetView);

@@ -408,11 +408,9 @@ namespace Gorgon.Examples
 
                 _screen = new GorgonSwapChain(_graphics,
                                               window,
-                                              new GorgonSwapChainInfo("Gorgon2D Effects Example Swap Chain")
+                                              new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm)
                                               {
-                                                  Width = ExampleConfig.Default.Resolution.Width,
-                                                  Height = ExampleConfig.Default.Resolution.Height,
-                                                  Format = BufferFormat.R8G8B8A8_UNorm
+                                                  Name = "Gorgon2D Effects Example Swap Chain"
                                               });
 
                 // Tell the graphics API that we want to render to the "screen" swap chain.

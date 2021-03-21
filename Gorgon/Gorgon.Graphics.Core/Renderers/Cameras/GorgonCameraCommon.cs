@@ -159,7 +159,7 @@ namespace Gorgon.Renderers.Cameras
             get
             {
 #pragma warning disable IDE0046 // Convert to conditional expression
-                if (GetTarget() != null)
+                if (GetTarget() is not null)
                 {
                     return TargetWidth > TargetHeight
                             ? new Vector2((float)TargetWidth / TargetHeight, 1)

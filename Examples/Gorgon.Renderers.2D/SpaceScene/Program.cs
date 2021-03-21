@@ -310,11 +310,11 @@ namespace Gorgon.Examples
 
                 _screen = new GorgonSwapChain(_graphics,
                                               window,
-                                              new GorgonSwapChainInfo("Gorgon2D Space Scene Example")
+                                              new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
+                                                                           ExampleConfig.Default.Resolution.Height,
+                                                                           BufferFormat.R8G8B8A8_UNorm)
                                               {
-                                                  Width = ExampleConfig.Default.Resolution.Width,
-                                                  Height = ExampleConfig.Default.Resolution.Height,
-                                                  Format = BufferFormat.R8G8B8A8_UNorm
+                                                  Name = "Gorgon2D Space Scene Example"
                                               });
 
                 // Create a secondary render target for our scene. We use 16 bit floating point for the effect fidelity.

@@ -207,11 +207,11 @@ namespace Gorgon.Examples
 
                 _screen = new GorgonSwapChain(_graphics,
                                               window,
-                                              new GorgonSwapChainInfo("Gorgon2D Animation Example Swap Chain")
+                                              new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
+                                                                           ExampleConfig.Default.Resolution.Height,
+                                                                           BufferFormat.R8G8B8A8_UNorm)
                                               {
-                                                  Width = ExampleConfig.Default.Resolution.Width,
-                                                  Height = ExampleConfig.Default.Resolution.Height,
-                                                  Format = BufferFormat.R8G8B8A8_UNorm
+                                                  Name = "Gorgon2D Animation Example Swap Chain"
                                               });
 
                 _target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView, "Video Target")

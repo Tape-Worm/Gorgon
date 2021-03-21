@@ -166,17 +166,15 @@ namespace Gorgon.Examples
 
             _leftPanel = new GorgonSwapChain(_graphics,
                                              GroupControl1,
-                                             new GorgonSwapChainInfo("Left Panel SwapChain")
+                                             new GorgonSwapChainInfo(GroupControl1.ClientSize.Width, GroupControl1.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                              {
-                                                 Width = GroupControl1.ClientSize.Width,
-                                                 Height = GroupControl1.ClientSize.Height,
-                                                 Format = BufferFormat.R8G8B8A8_UNorm
+                                                 Name = "Left Panel SwapChain"
                                              });
 
             _rightPanel = new GorgonSwapChain(_graphics,
                                               GroupControl2,
                                               new GorgonSwapChainInfo(_leftPanel, "Right Panel SwapChain")
-                                              {
+                                              {                                                  
                                                   Width = GroupControl2.ClientSize.Width,
                                                   Height = GroupControl2.ClientSize.Height
                                               });

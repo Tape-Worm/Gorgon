@@ -264,15 +264,34 @@ namespace Gorgon.Examples
                 // This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
                 _swap = new GorgonSwapChain(_graphics,
                                             result,
-                                            new GorgonSwapChainInfo("Main Swap Chain")
+                                            new GorgonSwapChainInfo(result.ClientSize.Width,
+                                                                         result.ClientSize.Height,
+                                                                         BufferFormat.R8G8B8A8_UNorm)
                                             {
-                                                Format = BufferFormat.R8G8B8A8_UNorm,
-                                                Width = result.ClientSize.Width,
-                                                Height = result.ClientSize.Height
+                                                Name = "Main Swap Chain"
                                             });
 
                 // Assign the swap chain as our default rendering surface.
                 _graphics.SetRenderTarget(_swap.RenderTargetView);
+
+                // If our configuration file indicates that we should start in full screen, then switch over to full screen now.
+                if (!ExampleConfig.Default.IsWindowed)
+                {
+                    // Find out which output on the video card contains the majority of our window.
+                    IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs.GetOutputFromWindowHandle(result.Handle);
+
+                    // We should check, just in case.
+                    if (output is not null)
+                    {
+                        var mode = new GorgonVideoMode(_swap.Width, _swap.Height, _swap.Format);
+
+                        // Find the best video mode that matches the settings we've requested.
+                        output.VideoModes.FindNearestVideoMode(output, in mode, out GorgonVideoMode actualMode);
+
+                        // Go into full screen mode now.
+                        _swap.EnterFullScreen(actualMode, output);
+                    }
+                }
 
                 GorgonExample.LoadResources(_graphics);
             }
@@ -304,7 +323,7 @@ namespace Gorgon.Examples
                 return;
             }
 
-            IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[GorgonApplication.MainForm.Handle];
+            IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs.GetOutputFromWindowHandle(GorgonApplication.MainForm.Handle);
 
             if (output is null)
             {

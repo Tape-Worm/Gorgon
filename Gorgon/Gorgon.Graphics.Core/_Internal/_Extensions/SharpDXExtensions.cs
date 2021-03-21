@@ -41,12 +41,9 @@ namespace Gorgon.Graphics.Core
         /// <param name="desc">The description to convert.</param>
         /// <param name="name">The name of the swap chain.</param>
         /// <returns>A new <see cref="GorgonSwapChainInfo"/>.</returns>
-	    public static GorgonSwapChainInfo ToSwapChainInfo(this SwapChainDescription1 desc, string name) => new(name)
+	    public static GorgonSwapChainInfo ToSwapChainInfo(this SwapChainDescription1 desc, string name) => new(desc.Width, desc.Height, (BufferFormat)desc.Format)
         {
-            Width = desc.Width,
-            Height = desc.Height,
-            Format = (BufferFormat)desc.Format,
-            UseFlipMode = desc.SwapEffect == SwapEffect.FlipSequential,
+            Name = name,            
             StretchBackBuffer = desc.Scaling != Scaling.None
         };
 
@@ -65,7 +62,7 @@ namespace Gorgon.Graphics.Core
             Height = swapChainInfo.Height,
             Scaling = swapChainInfo.StretchBackBuffer ? Scaling.Stretch : Scaling.None,
             SampleDescription = ToSampleDesc(GorgonMultisampleInfo.NoMultiSampling),
-            SwapEffect = swapChainInfo.UseFlipMode ? SwapEffect.FlipSequential : SwapEffect.Discard,
+            SwapEffect = SwapEffect.FlipSequential,
             Usage = Usage.RenderTargetOutput
         };
 
