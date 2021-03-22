@@ -69,13 +69,11 @@ namespace Gorgon.Editor.ImageSplitTool
 				return;
 			}
 
-			_previewImage = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("Atlas_Sprite_Preview")
+			_previewImage = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo(image.Width, image.Height, image.Format)
 			{
+				Name = "Atlas_Sprite_Preview",
 				ArrayCount = 1,
 				Binding = TextureBinding.ShaderResource,
-				Format = image.Format,
-				Height = image.Height,
-				Width = image.Width,
 				Usage = ResourceUsage.Immutable,
 				IsCubeMap = false,
 				MipLevels = 1
@@ -211,11 +209,9 @@ namespace Gorgon.Editor.ImageSplitTool
 		{
 			using (IGorgonImage image = Resources.Transparency_Pattern.ToGorgonImage())
 			{
-				_backgroundImage = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("Background")
+				_backgroundImage = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo(image.Width, image.Height, image.Format)
 				{
-					Width = image.Width,
-					Height = image.Height,
-					Format = image.Format,
+					Name = "Background",
 					Binding = TextureBinding.ShaderResource,
 					Usage = ResourceUsage.Immutable
 				}, image);

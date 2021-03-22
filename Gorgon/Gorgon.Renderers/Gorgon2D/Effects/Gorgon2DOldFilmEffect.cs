@@ -420,13 +420,11 @@ namespace Gorgon.Renderers
                 }
             }
 
-            _randomTexture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("Gorgon2D Old Film Effect Random Noise Texture")
+            _randomTexture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo(textureSize, textureSize, BufferFormat.R8_UNorm)
             {
-                Width = textureSize,
-                Height = textureSize,
+                Name = "Gorgon2D Old Film Effect Random Noise Texture",
                 Usage = ResourceUsage.Immutable,
-                Binding = TextureBinding.ShaderResource,
-                Format = BufferFormat.R8_UNorm
+                Binding = TextureBinding.ShaderResource
             }, image);
         }
 

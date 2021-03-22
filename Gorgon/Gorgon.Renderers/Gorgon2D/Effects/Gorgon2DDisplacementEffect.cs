@@ -112,11 +112,9 @@ namespace Gorgon.Renderers
 #endif
 
             _displacementTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
-                                                                              new GorgonTexture2DInfo("Effect.Displacement.RT")
+                                                                              new GorgonTexture2DInfo(output.Width, output.Height, output.Format)
                                                                               {
-                                                                                  Width = output.Width,
-                                                                                  Height = output.Height,
-                                                                                  Format = output.Format,
+                                                                                  Name = "Effect.Displacement.RT",
                                                                                   Binding = TextureBinding.ShaderResource
                                                                               });
             _displacementView = _displacementTarget.GetShaderResourceView();

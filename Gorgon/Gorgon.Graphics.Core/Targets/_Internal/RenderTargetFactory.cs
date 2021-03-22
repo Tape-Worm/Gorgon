@@ -75,7 +75,7 @@ namespace Gorgon.Graphics.Core
         // The timer used to expire the render targets.
         private readonly IGorgonTimer _expiryTimer;
         // An allocator for creating texture info objects.
-        private readonly GorgonRingPool<GorgonTexture2DInfo> _textureInfoAllocator = new(100, () => new GorgonTexture2DInfo());
+        private readonly GorgonRingPool<TempTargetTextureInfo> _textureInfoAllocator = new(100, () => new TempTargetTextureInfo());
         #endregion
 
         #region Properties.
@@ -196,10 +196,9 @@ namespace Gorgon.Graphics.Core
             ExpireTargets();
 
             // Ensure the information is valid.            
-            GorgonTexture2DInfo newInfo = _textureInfoAllocator.Allocate();
-            newInfo.Copy(name, targetInfo);
-            newInfo.Binding = targetInfo.Binding | TextureBinding.RenderTarget | TextureBinding.ShaderResource;
-            newInfo.Usage = ResourceUsage.Default;
+            TempTargetTextureInfo newInfo = _textureInfoAllocator.Allocate();
+            newInfo.Initialize(targetInfo);
+            newInfo.Name = name;
 
             for (int i = 0; i < _renderTargets.Count; ++i)
             {

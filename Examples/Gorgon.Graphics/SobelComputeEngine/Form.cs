@@ -110,8 +110,9 @@ namespace Gorgon.Examples
                                                    }).GetShaderResourceView();
 
                 _outputTexture = new GorgonTexture2D(_graphics,
-                                                     new GorgonTexture2DInfo(_sourceTexture, "Output")
+                                                     new GorgonTexture2DInfo(_sourceTexture)
                                                      {
+                                                         Name = "Output",
                                                          Format = BufferFormat.R8G8B8A8_Typeless,
                                                          Binding = TextureBinding.ShaderResource | TextureBinding.ReadWriteView
                                                      });

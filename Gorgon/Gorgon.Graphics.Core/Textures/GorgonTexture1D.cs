@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
         // The list of cached texture shader resource views.
         private Dictionary<TextureViewKey, GorgonTexture1DView> _cachedSrvs = new();
         // The information used to create the texture.
-        private readonly GorgonTexture1DInfo _info;
+        private GorgonTexture1DInfo _info;
         #endregion
 
         #region Properties.
@@ -302,9 +302,19 @@ namespace Gorgon.Graphics.Core
             }
 
             // Ensure the number of mip levels is not outside of the range for the width/height.
-            _info.MipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, 1, 1)).Max(1);
+            int mipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, 1, 1)).Max(1);
 
-            if (MipLevels <= 1)
+#if NET5_0_OR_GREATER
+            if (mipLevels != _info.MipLevels)
+            {
+                _info = _info with
+                {
+                    MipLevels = mipLevels
+                };
+            }
+#endif
+
+            if (mipLevels <= 1)
             {
                 return;
             }
@@ -892,8 +902,9 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
             }
 
-            IGorgonTexture1DInfo info = new GorgonTexture1DInfo(_info, $"{Name}_[Staging]")
-            {
+            var info = new GorgonTexture1DInfo(_info)
+            {                
+                Name = $"{Name}_[Staging]",
                 Usage = ResourceUsage.Staging,
                 Binding = TextureBinding.None
             };
@@ -1663,10 +1674,9 @@ namespace Gorgon.Graphics.Core
         internal GorgonTexture1D(GorgonGraphics graphics, IGorgonImage image, GorgonTextureLoadOptions options)
             : base(graphics)
         {
-            _info = new GorgonTexture1DInfo(options.Name)
+            _info = new GorgonTexture1DInfo(image.Width, image.Format)
             {
-                Format = image.Format,
-                Width = image.Width,
+                Name = options.Name,
                 Usage = options.Usage,
                 ArrayCount = image.ArrayCount,
                 Binding = options.Binding,
@@ -1695,7 +1705,7 @@ namespace Gorgon.Graphics.Core
         /// To use an immutable texture, use the <see cref="GorgonImageTextureExtensions.ToTexture1D(IGorgonImage, GorgonGraphics, GorgonTextureLoadOptions)"/> extension method on the <see cref="IGorgonImage"/> type.
         /// </para>
         /// </remarks>
-        public GorgonTexture1D(GorgonGraphics graphics, IGorgonTexture1DInfo textureInfo)
+        public GorgonTexture1D(GorgonGraphics graphics, GorgonTexture1DInfo textureInfo)
             : base(graphics)
         {
             _info = new GorgonTexture1DInfo(textureInfo ?? throw new ArgumentNullException(nameof(textureInfo)));

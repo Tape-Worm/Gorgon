@@ -67,7 +67,7 @@ namespace Gorgon.Graphics.Core
         // The list of cached render target resource views.
         private Dictionary<TextureViewKey, GorgonRenderTarget3DView> _cachedRtvs = new();
         // The information used to create the texture.
-        private readonly GorgonTexture3DInfo _info;
+        private GorgonTexture3DInfo _info;
         #endregion
 
         #region Properties.
@@ -360,7 +360,17 @@ namespace Gorgon.Graphics.Core
             }
 
             // Ensure the number of mip levels is not outside of the range for the width/height.
-            _info.MipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, Height, 1)).Max(1);
+            int mipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, Height, 1)).Max(1);
+
+#if NET5_0_OR_GREATER
+            if (mipLevels != _info.MipLevels)
+            {
+                _info = _info with
+                {
+                    MipLevels = mipLevels
+                };
+            }
+#endif
 
             if (MipLevels > 1)
             {
@@ -1015,8 +1025,10 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
             }
 
-            IGorgonTexture3DInfo info = new GorgonTexture3DInfo(_info, $"{Name}_[Staging]")
+#if NET5_0_OR_GREATER
+            GorgonTexture3DInfo info = _info with
             {
+                Name = $"{Name}_[Staging]",
                 Usage = ResourceUsage.Staging,
                 Binding = TextureBinding.None
             };
@@ -1026,6 +1038,9 @@ namespace Gorgon.Graphics.Core
             CopyTo(staging);
 
             return staging;
+#else
+            return null;
+#endif
         }
 
         /// <summary>
@@ -1292,11 +1307,11 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-		/// Function to convert this texture to a <see cref="IGorgonImage"/>.
-		/// </summary>
-		/// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
-		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
-		public IGorgonImage ToImage()
+        /// Function to convert this texture to a <see cref="IGorgonImage"/>.
+        /// </summary>
+        /// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
+        /// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
+        public IGorgonImage ToImage()
         {
             if (Usage == ResourceUsage.Immutable)
             {
@@ -1412,7 +1427,7 @@ namespace Gorgon.Graphics.Core
         /// outside of the range of available mip levels, then they will be clipped to the upper and lower bounds of the mip chain. If these values are left at 0, then all mip levels will be accessible.
         /// </para>
         /// </remarks>
-	    public GorgonTexture3DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0)
+        public GorgonTexture3DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0)
         {
             if (format == BufferFormat.Unknown)
             {
@@ -1878,9 +1893,9 @@ namespace Gorgon.Graphics.Core
         /// <summary>Function to retrieve a default shader resource view.</summary>
         /// <returns>The default shader resource view for the texture.</returns>
         GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
-        #endregion
+#endregion
 
-        #region Constructor/Finalizer.
+#region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture3D"/> class.
         /// </summary>
@@ -1895,13 +1910,10 @@ namespace Gorgon.Graphics.Core
         internal GorgonTexture3D(GorgonGraphics graphics, IGorgonImage image, GorgonTextureLoadOptions options)
             : base(graphics)
         {
-            _info = new GorgonTexture3DInfo(options.Name)
+            _info = new GorgonTexture3DInfo(image.Width, image.Height, image.Depth, image.Format)
             {
-                Format = image.Format,
-                Width = image.Width,
-                Height = image.Height,
+                Name = options.Name,
                 Usage = options.Usage,
-                Depth = image.Depth,
                 Binding = options.Binding,
                 MipLevels = image.MipCount
             };
@@ -1928,7 +1940,7 @@ namespace Gorgon.Graphics.Core
         /// To use an immutable texture, use the <see cref="GorgonImageTextureExtensions.ToTexture3D(IGorgonImage, GorgonGraphics, GorgonTextureLoadOptions)"/> extension method on the <see cref="IGorgonImage"/> type.
         /// </para>
         /// </remarks>
-        public GorgonTexture3D(GorgonGraphics graphics, IGorgonTexture3DInfo textureInfo)
+        public GorgonTexture3D(GorgonGraphics graphics, GorgonTexture3DInfo textureInfo)
             : base(graphics)
         {
             _info = new GorgonTexture3DInfo(textureInfo ?? throw new ArgumentNullException(nameof(textureInfo)));
@@ -1942,6 +1954,6 @@ namespace Gorgon.Graphics.Core
 
             this.RegisterDisposable(graphics);
         }
-        #endregion
+#endregion
     }
 }

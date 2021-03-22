@@ -383,11 +383,9 @@ namespace Gorgon.Examples
         {
             // Restore the render target buffer and restore the contents of it.
             _backBuffer = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-                                                                      new GorgonTexture2DInfo("Backbuffer")
+                                                                      new GorgonTexture2DInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                                                       {
-                                                                          Width = ClientSize.Width,
-                                                                          Height = ClientSize.Height,
-                                                                          Format = BufferFormat.R8G8B8A8_UNorm
+                                                                          Name = "Backbuffer"
                                                                       });
             _backBuffer.Clear(Color.White);
             _backupImage.CopyTo(_backBuffer.Texture, new DX.Rectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
@@ -527,11 +525,9 @@ namespace Gorgon.Examples
             _backBufferView.Dispose();
             _backBuffer.Dispose();
             _backBuffer = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-                                                                      new GorgonTexture2DInfo("Backbuffer")
+                                                                      new GorgonTexture2DInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                                                       {
-                                                                          Width = ClientSize.Width,
-                                                                          Height = ClientSize.Height,
-                                                                          Format = BufferFormat.R8G8B8A8_UNorm
+                                                                          Name = "Backbuffer"
                                                                       });
             _backBuffer.Clear(Color.White);
             _backupImage.CopyTo(_backBuffer.Texture, new DX.Rectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
@@ -696,11 +692,9 @@ namespace Gorgon.Examples
                 };
 
                 // Create a back buffer.
-                _backBuffer = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Backbuffer storage")
+                _backBuffer = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.Width, _screen.Height, _screen.Format)
                 {
-                    Width = _screen.Width,
-                    Height = _screen.Height,
-                    Format = _screen.Format
+                    Name = "Backbuffer storage"
                 });
                 _backBuffer.Clear(Color.White);
                 _backBufferView = _backBuffer.GetShaderResourceView();

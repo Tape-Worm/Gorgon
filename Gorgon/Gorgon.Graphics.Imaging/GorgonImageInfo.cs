@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Imaging
     public record GorgonImageInfo(ImageType ImageType, BufferFormat Format)
         : IGorgonImageInfo
     {
-    #region Constructor.
+        #region Constructor.
         /// <summary>
         /// A copy constructor for an <see cref="IGorgonImageInfo"/>.
         /// </summary>
@@ -54,11 +54,11 @@ namespace Gorgon.Graphics.Imaging
             MipCount = info.MipCount.Max(1);
             HasPreMultipliedAlpha = info.HasPreMultipliedAlpha;
         }
-    #endregion
+        #endregion
 
-    #region Properties.
+        #region Properties.
         /// <summary>
-        /// Property to set or return the total number of images there are in an image array.
+        /// Property to return the total number of images there are in an image array.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -162,7 +162,7 @@ namespace Gorgon.Graphics.Imaging
             get;
             internal init;
         }
-    #endregion
+        #endregion
     }
 #else
     #region Compatibility
@@ -174,7 +174,7 @@ namespace Gorgon.Graphics.Imaging
     {
         #region Properties.
         /// <summary>
-        /// Property to set or return the total number of images there are in an image array.
+        /// Property to return the total number of images there are in an image array.
         /// </summary>
         public int ArrayCount
         {

@@ -86,8 +86,9 @@ namespace Gorgon.Editor.SpriteEditor
                     ArrayCount = texture.ArrayCount
                 });
 
-                convertTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(texture, "Convert_rtv")
+                convertTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(texture)
                 {
+                    Name = "Convert_rtv",
                     ArrayCount = 1,
                     MipLevels = 1,
                     Format = targetFormat,
@@ -218,12 +219,11 @@ namespace Gorgon.Editor.SpriteEditor
 
             try
             {
-                return (GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(file.Path)
+                return (GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(imageData.Width, imageData.Height, imageData.Format)
                 {
+                    Name = file.Path,
                     Binding = TextureBinding.ShaderResource,
                     Usage = ResourceUsage.Default,
-                    Width = imageData.Width,
-                    Height = imageData.Height,
                     IsCubeMap = false
                 }, imageData), file);
             }
@@ -259,12 +259,11 @@ namespace Gorgon.Editor.SpriteEditor
 
             try
             {
-                return GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(file.Path)
+                return GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(imageData.Width, imageData.Height, imageData.Format)
                 {
+                    Name = file.Path,
                     Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Default,
-                    Width = imageData.Width,
-                    Height = imageData.Height
+                    Usage = ResourceUsage.Default
                 }, imageData);
             }
             finally

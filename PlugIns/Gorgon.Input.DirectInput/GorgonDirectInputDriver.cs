@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management;
 using System.Text;
 using System.Threading;
 using Gorgon.Diagnostics;
@@ -56,6 +55,7 @@ namespace Gorgon.Input.DirectInput
         #endregion
 
         #region Methods.
+#if FALSE // This code does not work with .NET 5 - System.Management does not work on .NET 5 (another screw up by Microsoft, it's SUPPOSED to work).
         /// <summary>
         /// Function to build the device ID for an XInput device.
         /// </summary>
@@ -74,13 +74,14 @@ namespace Gorgon.Input.DirectInput
 
             return buffer.ToString();
         }
-
+#endif
         /// <summary>
         /// Function to build a list of XInput device ID values.
         /// </summary>
         /// <returns>A list of XInput device ID values.</returns>
         private static IEnumerable<string> GetXInputDeviceIDs()
         {
+#if FALSE // This code does not work with .NET 5 - System.Management does not work on .NET 5 (another screw up by Microsoft, it's SUPPOSED to work).
             // This monstrosity is based on the code at:
             // https://msdn.microsoft.com/en-ca/library/windows/desktop/ee417014(v=vs.85).aspx
             // 
@@ -98,6 +99,10 @@ namespace Gorgon.Input.DirectInput
                 .ToArray();
 
             return xinputDevices;
+#endif
+#pragma warning disable IDE0022 // Use expression body for methods
+            return Array.Empty<string>();
+#pragma warning restore IDE0022 // Use expression body for methods
         }
 
         /// <summary>
@@ -223,9 +228,9 @@ namespace Gorgon.Input.DirectInput
                    // Attempt to acquire the device immediately.
                    IsAcquired = true
                };
-        #endregion
+#endregion
 
-        #region Constructor/Finalizer.
+#region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonDirectInputDriver"/> class.
         /// </summary>
@@ -235,6 +240,6 @@ namespace Gorgon.Input.DirectInput
             _directInput = new Lazy<DI.DirectInput>(() => new DI.DirectInput(), true);
             _xinputDeviceIDs = new Lazy<IEnumerable<string>>(GetXInputDeviceIDs, true);
         }
-        #endregion
+#endregion
     }
 }

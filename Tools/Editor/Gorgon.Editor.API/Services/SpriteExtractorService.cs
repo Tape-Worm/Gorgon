@@ -127,8 +127,9 @@ namespace Gorgon.Editor.Services
                     ArrayCount = texture.ArrayCount
                 });
 
-                convertTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(texture, "Convert_rtv")
+                convertTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(texture)
                 {
+                    Name = "Convert_rtv",
                     ArrayCount = 1,
                     MipLevels = 1,
                     Format = targetFormat,

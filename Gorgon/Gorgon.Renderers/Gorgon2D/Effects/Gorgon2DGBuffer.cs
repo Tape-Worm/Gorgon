@@ -71,15 +71,9 @@ namespace Gorgon.Renderers
         private (int normalIndex, int specularIndex) _indices;
         // The macro sent to the shader to enable using array indices.
         private readonly GorgonShaderMacro _useArrayMacro = new("USE_ARRAY");
-        
+
         // The texture information for the main GBuffer targets.
-        private readonly GorgonTexture2DInfo _mainInfo = new("GBuffer")
-        {
-            ArrayCount = 3,
-            Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
-            Format = BufferFormat.R8G8B8A8_UNorm,
-            Usage = ResourceUsage.Default
-        };
+        //private GorgonTexture2DInfo _mainInfo;
         #endregion
 
         #region Properties.
@@ -330,17 +324,22 @@ namespace Gorgon.Renderers
 
             UnloadGBuffer();
 
-            _mainInfo.Width = width;
-            _mainInfo.Height = height;
-            _mainInfo.ArrayCount = _target.Length;
-            _gbuffer = new GorgonTexture2D(_graphics, _mainInfo);
+            GorgonTexture2DInfo mainInfo = new(width, height, BufferFormat.R8G8B8A8_UNorm)
+            {
+                Name = "GBuffer",
+                ArrayCount = _target.Length,
+                Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,                
+                Usage = ResourceUsage.Default
+            };
 
-            for (int i = 0; i < _mainInfo.ArrayCount; ++i)
+            _gbuffer = new GorgonTexture2D(_graphics, mainInfo);
+
+            for (int i = 0; i < mainInfo.ArrayCount; ++i)
             {
                 _target[i] = _gbuffer.GetRenderTargetView(arrayIndex: i, arrayCount: 1);
             }
 
-            GBufferTexture = _gbuffer.GetShaderResourceView(arrayCount: _mainInfo.ArrayCount);
+            GBufferTexture = _gbuffer.GetShaderResourceView(arrayCount: mainInfo.ArrayCount);
             Diffuse = _gbuffer.GetShaderResourceView(arrayIndex: 0, arrayCount: 1);
             Normal = _gbuffer.GetShaderResourceView(arrayIndex: 1, arrayCount: 1);
             Specular = _gbuffer.GetShaderResourceView(arrayIndex: 2, arrayCount: 1);

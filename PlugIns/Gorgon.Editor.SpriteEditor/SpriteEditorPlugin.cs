@@ -247,11 +247,11 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 try
                 {                    
-                    rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo($"SpriteEditor_Rtv_Preview_{Guid.NewGuid():N}")
+                    rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo((int)(bounds.Width * scale),
+                                                                                                                                                 (int)(bounds.Height * scale),
+                                                                                                                                                 BufferFormat.R8G8B8A8_UNorm)
                     {
-                        Width = (int)(bounds.Width * scale),
-                        Height = (int)(bounds.Height * scale),
-                        Format = BufferFormat.R8G8B8A8_UNorm,
+                        Name = $"SpriteEditor_Rtv_Preview_{Guid.NewGuid():N}",
                         Binding = TextureBinding.ShaderResource
                     });
                     rtv.Clear(GorgonColor.BlackTransparent);
@@ -584,10 +584,11 @@ namespace Gorgon.Editor.SpriteEditor
             _noThumbnail = Resources.no_thumb_sprite_64x64.ToGorgonImage();
             _ddsCodec = new GorgonCodecDds();
             _defaultCodec = new GorgonV3SpriteBinaryCodec(HostContentServices.GraphicsContext.Renderer2D);
-            _bgPattern = GorgonTexture2DView.CreateTexture(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo($"Sprite_Editor_Bg_Preview_{Guid.NewGuid():N}")
+            _bgPattern = GorgonTexture2DView.CreateTexture(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo(CommonEditorResources.CheckerBoardPatternImage.Width,
+                                                                                                                                      CommonEditorResources.CheckerBoardPatternImage.Height,
+                                                                                                                                      CommonEditorResources.CheckerBoardPatternImage.Format)
             {
-                Width = CommonEditorResources.CheckerBoardPatternImage.Width,
-                Height = CommonEditorResources.CheckerBoardPatternImage.Height
+                Name = $"Sprite_Editor_Bg_Preview_{Guid.NewGuid():N}"
             }, CommonEditorResources.CheckerBoardPatternImage);
             using (var noImageStream = new MemoryStream(Resources.NoImage_256x256))
             {

@@ -268,8 +268,9 @@ namespace Gorgon.Graphics.Core
         public GorgonConstantBuffer GetStaging()
         {
             var buffer = new GorgonConstantBuffer(Graphics,
-                                                    new GorgonConstantBufferInfo(_info, $"{Name}_Staging")
+                                                    new GorgonConstantBufferInfo(_info)
                                                     {
+                                                        Name = $"{Name} Staging",
                                                         Usage = ResourceUsage.Staging
                                                     });
 

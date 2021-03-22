@@ -145,10 +145,6 @@ namespace Gorgon.Renderers
         private GorgonTexture2DView _sceneSrv;
         // A builder used to create shader states.
         private readonly Gorgon2DShaderStateBuilder<GorgonPixelShader> _shaderBuilder = new();
-        // Information used to build render targets.
-        private readonly GorgonTexture2DInfo _sceneTargetInfo;
-        private readonly GorgonTexture2DInfo _blurTargetInfo;
-        private readonly GorgonTexture2DInfo _targetInfo;
         // The bloom intensity level.
         private float _intensity = 1;
         // The amount of blur to apply.
@@ -170,6 +166,10 @@ namespace Gorgon.Renderers
         private readonly Gorgon2DShaderStatePoolAllocator<GorgonPixelShader> _finalPassPixelShaderAllocator = new(64);
         // The batch state builder for downsampling.
         private readonly Gorgon2DBatchStateBuilder _downSampleStateBuilder = new();
+        // The texture settings for the bloom render targets.
+        private readonly BloomTextureInfo _targetInfo;
+        private readonly BloomTextureInfo _sceneTargetInfo;
+        private readonly BloomTextureInfo _blurTargetInfo;
         #endregion
 
         #region Properties.
@@ -658,15 +658,13 @@ namespace Gorgon.Renderers
             : base(renderer, Resources.GOR2D_EFFECT_BLOOM, Resources.GOR2D_EFFECT_BLOOM_DESC, 2)
         {
             // Set up common properties for our targets.
-            _targetInfo = new GorgonTexture2DInfo
+            _targetInfo = new BloomTextureInfo
             {
-                Format = BufferFormat.R16G16B16A16_Float,
-                Usage = ResourceUsage.Default,
-                Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget
+                Name = "Bloom Downsample Target"
             };
 
-            _sceneTargetInfo = new GorgonTexture2DInfo(_targetInfo, "Bloom Source Image");
-            _blurTargetInfo = new GorgonTexture2DInfo(_targetInfo, "Blurred/Filtered Target");
+            _sceneTargetInfo = new BloomTextureInfo(_targetInfo, "Bloom Source Image");
+            _blurTargetInfo = new BloomTextureInfo(_targetInfo, "Blurred/Filtered Target");
         }    
         #endregion
     }

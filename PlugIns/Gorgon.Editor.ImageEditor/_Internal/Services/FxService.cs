@@ -123,24 +123,23 @@ namespace Gorgon.Editor.ImageEditor
         {
             DestroyTexture();
 
-            _texture = GorgonTexture2DView.CreateTexture(_graphics.Graphics, new GorgonTexture2DInfo
+            _texture = GorgonTexture2DView.CreateTexture(_graphics.Graphics, new GorgonTexture2DInfo(_workingImage.Width, _workingImage.Height, _workingImage.Format)
             {
-                Width = _workingImage.Width,
-                Height = _workingImage.Height,
-                Format = _workingImage.Format,
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Default
             }, _workingImage);
 
-            _effectTargetPing = GorgonRenderTarget2DView.CreateRenderTarget(_graphics.Graphics, new GorgonTexture2DInfo(_texture, "Ping Target")
+            _effectTargetPing = GorgonRenderTarget2DView.CreateRenderTarget(_graphics.Graphics, new GorgonTexture2DInfo(_texture)
             {
+                Name = "Ping Target",
                 ArrayCount = 1,
                 MipLevels = 1,
                 Usage = ResourceUsage.Default,
                 IsCubeMap = false
             });
-            _effectTargetPong = GorgonRenderTarget2DView.CreateRenderTarget(_graphics.Graphics, new GorgonTexture2DInfo(_texture, "Pong Target")
+            _effectTargetPong = GorgonRenderTarget2DView.CreateRenderTarget(_graphics.Graphics, new GorgonTexture2DInfo(_texture)
             {
+                Name = "Pong Target",
                 ArrayCount = 1,
                 MipLevels = 1,
                 Usage = ResourceUsage.Default,

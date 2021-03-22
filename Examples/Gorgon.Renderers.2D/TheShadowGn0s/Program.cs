@@ -224,15 +224,16 @@ ESC - Quit.";
         private static void BuildRenderTargets(DX.Size2 size)
         {
             _layer1Target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-                                                                        new GorgonTexture2DInfo("Layer 1")
+                                                                        new GorgonTexture2DInfo(size.Width, size.Height, BufferFormat.R8G8B8A8_UNorm)
                                                                         {
-                                                                            Width = size.Width,
-                                                                            Height = size.Height,
-                                                                            Format = BufferFormat.R8G8B8A8_UNorm,
+                                                                            Name = "Layer 1",
                                                                             Binding = TextureBinding.ShaderResource,
                                                                             Usage = ResourceUsage.Default
                                                                         });
-            _blurTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_layer1Target, "Blurred Image"));
+            _blurTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_layer1Target)
+            {
+                Name = "Blurred Image"
+            });
 
             _layer1Texture = _layer1Target.GetShaderResourceView();
             _blurTexture = _blurTarget.GetShaderResourceView();

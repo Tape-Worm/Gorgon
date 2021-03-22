@@ -41,12 +41,11 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
         /// </summary>
         /// <param name="info">A <see cref="IGorgonIndexBufferInfo"/> to copy settings from.</param>
-        /// <param name="newName">[Optional] The new name for the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info, string newName = null)
+        public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)
             : this(info?.IndexCount ?? throw new ArgumentNullException(nameof(info)))
         {
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Name = info.Name;
             Usage = info.Usage;
             Use16BitIndices = info.Use16BitIndices;
             Binding = info.Binding;

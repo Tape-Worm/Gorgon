@@ -320,8 +320,9 @@ namespace Gorgon.Graphics.Core
         /// <returns>The staging buffer to retrieve.</returns>
         public GorgonVertexBuffer GetStaging()
         {
-            var buffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_info, $"{Name}_Staging")
+            var buffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_info)
             {
+                Name = $"{Name} Staging",
                 Binding = VertexIndexBufferBinding.None,
                 Usage = ResourceUsage.Staging
             });

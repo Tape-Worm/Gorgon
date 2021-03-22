@@ -64,11 +64,11 @@ namespace Gorgon.Editor.ImageAtlasTool
 				return;
 			}
 
-			_texture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("ImagePreview")
+			_texture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo(DataContext.CurrentImage.image.Width,
+																								DataContext.CurrentImage.image.Height,
+																								DataContext.CurrentImage.image.Format)
 			{
-				Width = DataContext.CurrentImage.image.Width,
-				Height = DataContext.CurrentImage.image.Height,
-				Format = DataContext.CurrentImage.image.Format,
+				Name = "ImagePreview",
 				IsCubeMap = false,
 				Usage = ResourceUsage.Immutable,
 				Binding = TextureBinding.ShaderResource

@@ -146,12 +146,12 @@ namespace Gorgon.Editor.ImageEditor
             {
                 _volumeSections[i]?.Dispose();
                 _volumeRtSections[i]?.Dispose();
-                _volumeRtSections[i] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo($"Vol_RTV_{i}")
+                _volumeRtSections[i] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)VolumeRegion.Width, 
+                                                                                                                           (int)VolumeRegion.Height, 
+                                                                                                                           BufferFormat.R16G16B16A16_Float)
                 {
-                    Binding = TextureBinding.ShaderResource,
-                    Format = BufferFormat.R16G16B16A16_Float,
-                    Width = (int)VolumeRegion.Width,
-                    Height = (int)VolumeRegion.Height
+                    Name = $"Vol_RTV_{i}",
+                    Binding = TextureBinding.ShaderResource
                 });
                 _volumeSections[i] = _volumeRtSections[i].GetShaderResourceView();
             }

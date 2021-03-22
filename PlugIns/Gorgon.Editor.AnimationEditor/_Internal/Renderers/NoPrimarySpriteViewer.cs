@@ -95,11 +95,9 @@ namespace Gorgon.Editor.AnimationEditor
         {
             DestroyTarget();
 
-            _rtv = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo("BG_Rtv")
+            _rtv = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo(MainRenderTarget.Width, MainRenderTarget.Height, MainRenderTarget.Format)
             {
-                Width = MainRenderTarget.Width,
-                Height = MainRenderTarget.Height,
-                Format = MainRenderTarget.Format,
+                Name = "BG_Rtv",
                 Usage = ResourceUsage.Default,
                 Binding = TextureBinding.ShaderResource
             });

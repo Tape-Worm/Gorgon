@@ -194,11 +194,10 @@ namespace Gorgon.Editor.ImageSplitTool
                 format = sprite.Texture.Format;
             }
 
-            using var target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo
+            using var target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)sprite.Size.Width,
+                                                                                                                                       (int)sprite.Size.Height,
+                                                                                                                                       format)
             {
-                Width = (int)sprite.Size.Width,
-                Height = (int)sprite.Size.Height,
-                Format = format,
                 Binding = TextureBinding.RenderTarget
             });
             GorgonRenderTargetView currentTarget = _graphics.RenderTargets[0];
@@ -266,16 +265,14 @@ namespace Gorgon.Editor.ImageSplitTool
                 result.Add((newImageName, newImage, GetNewPath(outputDirectory, file.Name, spriteFileExtension), sprite));
 
                 // Reassign a new texture to the sprite with our new image data (required when saving).
-                sprite.Texture = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(newImageName)
+                sprite.Texture = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(newImage.Width, newImage.Height, newImage.Format)
                 {
+                    Name = newImageName,
                     Binding = TextureBinding.ShaderResource,
                     Usage = ResourceUsage.Immutable,
                     ArrayCount = 1,
                     MipLevels = 1,
-                    Width = newImage.Width,
-                    Height = newImage.Height,
-                    IsCubeMap = false,
-                    Format = newImage.Format
+                    IsCubeMap = false
                 }, newImage);
                                     
                 sprite.TextureArrayIndex = 0;
@@ -359,11 +356,9 @@ namespace Gorgon.Editor.ImageSplitTool
                         return;
                     }
 
-                    textureAtlas = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(imageFile.Name)
+                    textureAtlas = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(imageData.Width, imageData.Height, imageData.Format)
                     {
-                        Width = imageData.Width,
-                        Height = imageData.Height,
-                        Format = imageData.Format,
+                        Name = imageFile.Name,
                         MipLevels = imageData.MipCount,
                         ArrayCount = imageData.ArrayCount
                     }, imageData);                    

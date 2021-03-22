@@ -107,12 +107,10 @@ namespace Gorgon.Editor.AnimationEditor
             rtv?.Dispose();
             main?.Dispose();
 
-            _mainRtv = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo("Animation Editor Main Rtv")
+            _mainRtv = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo((int)RenderRegion.Width, (int)RenderRegion.Height, MainRenderTarget.Format)
             {
-                Width = (int)RenderRegion.Width,
-                Height = (int)RenderRegion.Height,
-                Binding = TextureBinding.ShaderResource,
-                Format = MainRenderTarget.Format
+                Name = "Animation Editor Main Rtv",
+                Binding = TextureBinding.ShaderResource
             });
             _main = _mainRtv.GetShaderResourceView();
         }

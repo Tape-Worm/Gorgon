@@ -167,11 +167,9 @@ namespace Gorgon.Editor.Rendering
 
             using (image)
             {
-                result = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(entry.TextureFile.Path)
+                result = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(image.Width, image.Height, image.Format)
                 {
-                    Width = image.Width,
-                    Height = image.Height,
-                    Format = image.Format,
+                    Name = entry.TextureFile.Path,
                     MipLevels = image.MipCount,
                     ArrayCount = image.ArrayCount,
                     Binding = TextureBinding.ShaderResource,
@@ -245,11 +243,9 @@ namespace Gorgon.Editor.Rendering
 
             using (image)
             {
-                result = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(file.Path)
+                result = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(image.Width, image.Height, image.Format)
                 {
-                    Width = image.Width,
-                    Height = image.Height,
-                    Format = image.Format,
+                    Name = file.Path,
                     MipLevels = image.MipCount,
                     ArrayCount = image.ArrayCount,
                     Binding = TextureBinding.ShaderResource,

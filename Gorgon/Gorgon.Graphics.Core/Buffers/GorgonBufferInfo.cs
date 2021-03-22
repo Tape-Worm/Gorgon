@@ -46,12 +46,11 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
         /// </summary>
         /// <param name="info">The buffer information to copy.</param>
-        /// <param name="newName">[Optional] The new name for the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public GorgonBufferInfo(IGorgonBufferInfo info, string newName = null)
+        public GorgonBufferInfo(IGorgonBufferInfo info)
             : this(info?.SizeInBytes ?? throw new ArgumentNullException(nameof(info)))
         {
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Name = info.Name;
             Usage = info.Usage;
             Binding = info.Binding;
             AllowCpuRead = info.AllowCpuRead;
@@ -270,6 +269,7 @@ namespace Gorgon.Graphics.Core
         public string Name
         {
             get;
+            set;
         }
         #endregion
 

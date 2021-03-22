@@ -85,16 +85,17 @@ namespace Gorgon.Examples
             _crawl?.Dispose();
             _crawlRtv?.Dispose();
 
-            _spaceBackgroundRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Space Background")
+            _spaceBackgroundRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.Width, _screen.Height, _screen.Format)
             {
-                Width = _screen.Width,
-                Height = _screen.Height,
-                Format = _screen.Format,
+                Name = "Space Background",
                 Binding = TextureBinding.ShaderResource
             });
             _spaceBackground = _spaceBackgroundRtv.GetShaderResourceView();
 
-            _crawlRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_spaceBackgroundRtv, "Crawl Text Target"));
+            _crawlRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_spaceBackgroundRtv)
+            {
+                Name = "Crawl Text Target"
+            });
             _crawlRtv.Clear(GorgonColor.BlackTransparent);
             _crawl = _crawlRtv.GetShaderResourceView();
 

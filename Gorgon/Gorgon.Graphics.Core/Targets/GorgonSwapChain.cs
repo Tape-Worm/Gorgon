@@ -1204,8 +1204,9 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BACKBUFFER_USAGE_INVALID);
             }
 
-            var texture = new GorgonTexture2D(Graphics, new GorgonTexture2DInfo(_backBufferTextures[0], $"{Name} - Backbuffer copy")
+            var texture = new GorgonTexture2D(Graphics, new GorgonTexture2DInfo(_backBufferTextures[0])
             {
+                Name = $"{Name} - Backbuffer copy",
                 Usage = usage,
                 Binding = binding
             });

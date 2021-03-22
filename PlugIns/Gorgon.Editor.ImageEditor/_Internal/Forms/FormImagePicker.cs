@@ -503,27 +503,27 @@ namespace Gorgon.Editor.ImageEditor
 
             if (DataContext.SourcePicker.SourceImage.ImageType != ImageType.Image3D)
             {
-                _sourceTexture2D = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo("SourceTexture")
+                _sourceTexture2D = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(DataContext.SourcePicker.SourceImage.Width,
+                                                                                                                            DataContext.SourcePicker.SourceImage.Height,
+                                                                                                                            DataContext.SourcePicker.SourceImage.Format)
                 {
+                    Name = "SourceTexture",
                     ArrayCount = DataContext.SourcePicker.SourceImage.ArrayCount,
                     MipLevels = DataContext.SourcePicker.SourceImage.MipCount,
                     Binding = TextureBinding.ShaderResource,
-                    Format = DataContext.SourcePicker.SourceImage.Format,
-                    Height = DataContext.SourcePicker.SourceImage.Height,
-                    Width = DataContext.SourcePicker.SourceImage.Width,
                     Usage = ResourceUsage.Immutable
                 }, DataContext.SourcePicker.SourceImage);
             }
             else
             {
-                _sourceTexture3D = GorgonTexture3DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture3DInfo("SourceTexture")
+                _sourceTexture3D = GorgonTexture3DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture3DInfo(DataContext.SourcePicker.SourceImage.Width,
+                                                                                                                            DataContext.SourcePicker.SourceImage.Height,
+                                                                                                                            DataContext.SourcePicker.SourceImage.Depth,
+                                                                                                                            DataContext.SourcePicker.SourceImage.Format)
                 {
-                    Depth = DataContext.SourcePicker.SourceImage.Depth,
+                    Name = "SourceTexture",
                     MipLevels = DataContext.SourcePicker.SourceImage.MipCount,
                     Binding = TextureBinding.ShaderResource,
-                    Format = DataContext.SourcePicker.SourceImage.Format,
-                    Height = DataContext.SourcePicker.SourceImage.Height,
-                    Width = DataContext.SourcePicker.SourceImage.Width,
                     Usage = ResourceUsage.Immutable
                 }, DataContext.SourcePicker.SourceImage);
             }
@@ -553,27 +553,27 @@ namespace Gorgon.Editor.ImageEditor
 
             if (DataContext.ImageData.ImageType != ImageType.Image3D)
             {
-                _imageTexture2D = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo("ImageTexture")
+                _imageTexture2D = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(DataContext.ImageData.Width,
+                                                                                                                           DataContext.ImageData.Height,
+                                                                                                                           DataContext.ImageData.Format)
                 {
+                    Name = "ImageTexture",
                     ArrayCount = DataContext.ImageData.ArrayCount,
                     MipLevels = DataContext.ImageData.MipCount,
                     Binding = TextureBinding.ShaderResource,
-                    Format = DataContext.ImageData.Format,
-                    Height = DataContext.ImageData.Height,
-                    Width = DataContext.ImageData.Width,
                     Usage = ResourceUsage.Immutable
                 }, DataContext.ImageData);
             }
             else
             {
-                _imageTexture3D = GorgonTexture3DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture3DInfo("ImageTexture")
+                _imageTexture3D = GorgonTexture3DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture3DInfo(DataContext.ImageData.Width,
+                                                                                                                           DataContext.ImageData.Height,
+                                                                                                                           DataContext.ImageData.Depth,
+                                                                                                                           DataContext.ImageData.Format)
                 {
-                    Depth = DataContext.ImageData.Depth,
+                    Name = "ImageTexture",
                     MipLevels = DataContext.ImageData.MipCount,
                     Binding = TextureBinding.ShaderResource,
-                    Format = DataContext.ImageData.Format,
-                    Height = DataContext.ImageData.Height,
-                    Width = DataContext.ImageData.Width,
                     Usage = ResourceUsage.Immutable
                 }, DataContext.ImageData);
             }
@@ -1118,13 +1118,13 @@ namespace Gorgon.Editor.ImageEditor
                         break;
                     }
 
-                    _previewCropResize = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo("PreviewImage")
+                    _previewCropResize = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(DataContext.CropResizeSettings.ImportImage.Width,
+                                                                                                                                  DataContext.CropResizeSettings.ImportImage.Height,
+                                                                                                                                  DataContext.CropResizeSettings.ImportImage.Format)
                     {
+                        Name = "PreviewImage",
                         ArrayCount = 1,
                         MipLevels = 1,
-                        Format = DataContext.CropResizeSettings.ImportImage.Format,
-                        Width = DataContext.CropResizeSettings.ImportImage.Width,
-                        Height = DataContext.CropResizeSettings.ImportImage.Height,
                         Binding = TextureBinding.ShaderResource,
                         Usage = ResourceUsage.Immutable
                     }, DataContext.CropResizeSettings.ImportImage);

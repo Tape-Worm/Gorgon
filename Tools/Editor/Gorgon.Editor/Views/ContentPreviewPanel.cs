@@ -126,13 +126,11 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            _previewTexture = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo
+            _previewTexture = GorgonTexture2DView.CreateTexture(GraphicsContext.Graphics, new GorgonTexture2DInfo(image.Width, image.Height, image.Format)
             {
+                Name = "Content Preview",
                 ArrayCount = 1,
                 Binding = TextureBinding.ShaderResource,
-                Format = image.Format,
-                Height = image.Height,
-                Width = image.Width,
                 MipLevels = 1,
                 Usage = ResourceUsage.Immutable
             }, image);

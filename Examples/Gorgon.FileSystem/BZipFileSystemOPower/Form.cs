@@ -384,12 +384,12 @@ namespace Gorgon.Examples
             };
             _blurEffect.Precache();
 
-            _blurredTarget[0] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Blurred RTV")
+            _blurredTarget[0] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_blurEffect.BlurRenderTargetsSize.Width,
+                                                                                                                    _blurEffect.BlurRenderTargetsSize.Height,
+                                                                                                                    BufferFormat.R8G8B8A8_UNorm)
             {
-                Width = _blurEffect.BlurRenderTargetsSize.Width,
-                Height = _blurEffect.BlurRenderTargetsSize.Height,
+                Name = "Blurred RTV",
                 Binding = TextureBinding.ShaderResource,
-                Format = BufferFormat.R8G8B8A8_UNorm,
                 Usage = ResourceUsage.Default
             });
             _blurredTarget[1] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, _blurredTarget[0]);

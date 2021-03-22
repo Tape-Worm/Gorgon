@@ -105,8 +105,9 @@ namespace Gorgon.Examples
             _srv?.Dispose();
             _rtv?.Dispose();
 
-            _rtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView, "Bloom_RTV")
+            _rtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView)
             {
+                Name = "Bloom_RTV",
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Default
             });

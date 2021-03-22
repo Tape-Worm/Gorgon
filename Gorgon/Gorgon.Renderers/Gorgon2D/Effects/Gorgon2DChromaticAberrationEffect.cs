@@ -232,11 +232,11 @@ namespace Gorgon.Renderers
                 image.ImageData.AsRef<int>(4) = GorgonColor.BluePure.ToABGR();
                 image.ImageData.AsRef<int>(8) = GorgonColor.GreenPure.ToABGR();
 
-                _defaultLut = GorgonTexture1DView.CreateTexture(Graphics, new GorgonTexture1DInfo("Default Spectral LUT")
+                _defaultLut = GorgonTexture1DView.CreateTexture(Graphics, new GorgonTexture1DInfo(3, image.Format)
                 {
+                    Name = "Default Spectral LUT",
                     Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Immutable,
-                    Width = 3
+                    Usage = ResourceUsage.Immutable
                 }, image);
             }
 

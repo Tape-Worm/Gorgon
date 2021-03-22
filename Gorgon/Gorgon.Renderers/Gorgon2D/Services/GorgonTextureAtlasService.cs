@@ -474,13 +474,11 @@ namespace Gorgon.Renderers.Services
                 // Create the new destinations.
                 for (int textureIndex = 0; textureIndex < textureCount; ++textureIndex)
                 {
-                    srvs[textureIndex] = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(string.Format(textureName, textureIndex))
+                    srvs[textureIndex] = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(TextureSize.Width, TextureSize.Height, textureFormat)
                     {
+                        Name = string.Format(textureName, textureIndex),
                         ArrayCount = ArrayCount,
                         Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
-                        Format = textureFormat,
-                        Width = TextureSize.Width,
-                        Height = TextureSize.Height,
                         Usage = ResourceUsage.Default
                     });
                 }

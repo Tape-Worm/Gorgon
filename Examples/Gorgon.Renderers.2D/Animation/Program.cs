@@ -214,8 +214,9 @@ namespace Gorgon.Examples
                                                   Name = "Gorgon2D Animation Example Swap Chain"
                                               });
 
-                _target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView, "Video Target")
+                _target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.RenderTargetView)
                 {
+                    Name = "Video Target",
                     Binding = TextureBinding.ShaderResource
                 });
                 _targetView = _target.GetShaderResourceView();

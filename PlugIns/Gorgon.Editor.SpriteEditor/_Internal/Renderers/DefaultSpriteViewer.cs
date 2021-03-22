@@ -143,12 +143,12 @@ namespace Gorgon.Editor.SpriteEditor
         {
             DestroySpriteTexture();
 
-            _spriteTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo("Sprite Texture RTV")
+            _spriteTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo(DataContext.Texture.Width,
+                                                                                                               DataContext.Texture.Height,
+                                                                                                               BufferFormat.R8G8B8A8_UNorm)
             {
-                Binding = TextureBinding.ShaderResource,
-                Format = BufferFormat.R8G8B8A8_UNorm,
-                Width = DataContext.Texture.Width,
-                Height = DataContext.Texture.Height                
+                Name = "Sprite Texture RTV",
+                Binding = TextureBinding.ShaderResource
             });
 
             _spriteTexture = _spriteTarget.GetShaderResourceView();

@@ -491,11 +491,11 @@ namespace Gorgon.Examples
 
 				// Create the ball render target.
 				_ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-																		  new GorgonTexture2DInfo("Ball Target")
+																		  new GorgonTexture2DInfo(ExampleConfig.Default.Resolution.Width,
+																									   ExampleConfig.Default.Resolution.Height,
+																									   BufferFormat.R8G8B8A8_UNorm)
 																		  {
-																			  Width = ExampleConfig.Default.Resolution.Width,
-																			  Height = ExampleConfig.Default.Resolution.Height,
-																			  Format = BufferFormat.R8G8B8A8_UNorm
+																			  Name = "Ball Target"
 																		  });
 				_ballTargetView = _ballTarget.GetShaderResourceView();
 
@@ -524,11 +524,11 @@ namespace Gorgon.Examples
 														 }
 
 														 _ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-																												   new GorgonTexture2DInfo("Ball Target")
+																												   new GorgonTexture2DInfo(args.Size.Width,
+																																				args.Size.Height,
+																																				BufferFormat.R8G8B8A8_UNorm)
 																												   {
-																													   Width = args.Size.Width,
-																													   Height = args.Size.Height,
-																													   Format = BufferFormat.R8G8B8A8_UNorm
+																													   Name = "Ball Target"
 																												   });
 														 _ballTargetView = _ballTarget.GetShaderResourceView();
 
@@ -572,12 +572,12 @@ namespace Gorgon.Examples
 
 				// Create statistics render target.
 				_statsTexture = GorgonTexture2DView.CreateTexture(_graphics,
-																  new GorgonTexture2DInfo("Stats Render Target")
-																  {
-																	  Width = (int)string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount, 9999)
+																  new GorgonTexture2DInfo((int)string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount, 9999)
 																						 .MeasureText(_ballFont, true).Width,
-																	  Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
-																	  Format = BufferFormat.R8G8B8A8_UNorm,
+																						 (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
+																						 BufferFormat.R8G8B8A8_UNorm)
+																  {
+																	  Name = "Stats Render Target",
 																	  Binding = TextureBinding.RenderTarget
 																  });
 

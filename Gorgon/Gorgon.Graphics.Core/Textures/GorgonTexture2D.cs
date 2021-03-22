@@ -71,15 +71,15 @@ namespace Gorgon.Graphics.Core
         // The list of cached depth/stencil resource views.
         private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = new();
         // The information used to create the texture.
-        private readonly GorgonTexture2DInfo _info;
+        private GorgonTexture2DInfo _info;
         // List of typeless formats that are compatible with a depth view format.
         private static readonly HashSet<BufferFormat> _typelessDepthFormats = new()
         {
-                                                                                 BufferFormat.R16_Typeless,
-                                                                                 BufferFormat.R32_Typeless,
-                                                                                 BufferFormat.R24G8_Typeless,
-                                                                                 BufferFormat.R32G8X24_Typeless
-                                                                             };
+            BufferFormat.R16_Typeless,
+            BufferFormat.R32_Typeless,
+            BufferFormat.R24G8_Typeless,
+            BufferFormat.R32G8X24_Typeless
+        };
         // The shared resource for this texture.
         private DXGI.Resource _sharedResource;
         #endregion
@@ -391,11 +391,12 @@ namespace Gorgon.Graphics.Core
             }
 
             // For texture arrays, bump the value up to be a multiple of 6 if we want a cube map.
-            if ((IsCubeMap) && ((ArrayCount % 6) != 0))
+            int arrayCount = ArrayCount;
+            if ((IsCubeMap) && ((arrayCount % 6) != 0))
             {
-                while ((ArrayCount % 6) != 0)
+                while ((arrayCount % 6) != 0)
                 {
-                    _info.ArrayCount++;
+                    arrayCount++;
                 }
             }
 
@@ -441,7 +442,7 @@ namespace Gorgon.Graphics.Core
             }
 
             // Ensure the number of mip levels is not outside of the range for the width/height.
-            _info.MipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, Height, 1)).Max(1);
+            int mipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, Height, 1)).Max(1);
 
             if (MipLevels > 1)
             {
@@ -475,6 +476,19 @@ namespace Gorgon.Graphics.Core
                                                         MultisampleInfo.Quality,
                                                         Format));
             }
+
+#if NET5_0_OR_GREATER
+            if ((arrayCount == _info.ArrayCount) && (mipLevels == _info.MipLevels))
+            {
+                return;
+            }
+
+            _info = _info with
+            {
+                MipLevels = mipLevels,
+                ArrayCount = arrayCount
+            };
+#endif
         }
 
         /// <summary>
@@ -1273,8 +1287,9 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
             }
 
-            IGorgonTexture2DInfo info = new GorgonTexture2DInfo(_info, $"{Name}_[Staging]")
+            var info = new GorgonTexture2DInfo(_info)
             {
+                Name = $"{Name}_[Staging]",
                 Usage = ResourceUsage.Staging,
                 Binding = TextureBinding.None
             };
@@ -2355,11 +2370,9 @@ namespace Gorgon.Graphics.Core
             }
 
             // Get the info from the back buffer texture.
-            _info = new GorgonTexture2DInfo(D3DResource.DebugName)
+            _info = new GorgonTexture2DInfo(desc.Width, desc.Height, (BufferFormat)desc.Format)
             {
-                Format = (BufferFormat)desc.Format,
-                Width = desc.Width,
-                Height = desc.Height,
+                Name = D3DResource.DebugName,
                 Usage = (ResourceUsage)desc.Usage,
                 ArrayCount = desc.ArraySize,
                 MipLevels = desc.MipLevels,
@@ -2397,11 +2410,9 @@ namespace Gorgon.Graphics.Core
             D3DResource.DebugName = $"Swap Chain '{swapChain.Name}' BackBufferTexture_ID3D11Texture2D1 #{index}.";
 
             // Get the info from the back buffer texture.
-            _info = new GorgonTexture2DInfo(D3DResource.DebugName)
+            _info = new GorgonTexture2DInfo(texture.Description.Width, texture.Description.Height, (BufferFormat)texture.Description.Format)
             {
-                Format = (BufferFormat)texture.Description.Format,
-                Width = texture.Description.Width,
-                Height = texture.Description.Height,
+                Name = D3DResource.DebugName,
                 Usage = (ResourceUsage)texture.Description.Usage,
                 ArrayCount = texture.Description.ArraySize,
                 MipLevels = texture.Description.MipLevels,
@@ -2439,8 +2450,9 @@ namespace Gorgon.Graphics.Core
                 isCubeMap = options.IsTextureCube.Value;
             }
 
-            _info = new GorgonTexture2DInfo(options.Name)
+            _info = new GorgonTexture2DInfo(image.Width, image.Height, image.Format)
             {
+                Name = options.Name,
                 Format = image.Format,
                 Width = image.Width,
                 Height = image.Height,
@@ -2474,7 +2486,7 @@ namespace Gorgon.Graphics.Core
         /// To use an immutable texture, use the <see cref="GorgonImageTextureExtensions.ToTexture2D(IGorgonImage, GorgonGraphics, GorgonTexture2DLoadOptions)"/> extension method on the <see cref="IGorgonImage"/> type.
         /// </para>
         /// </remarks>
-        public GorgonTexture2D(GorgonGraphics graphics, IGorgonTexture2DInfo textureInfo)
+        public GorgonTexture2D(GorgonGraphics graphics, GorgonTexture2DInfo textureInfo)
             : base(graphics)
         {
             _info = new GorgonTexture2DInfo(textureInfo ?? throw new ArgumentNullException(nameof(textureInfo)));

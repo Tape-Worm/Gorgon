@@ -720,10 +720,11 @@ namespace Gorgon.Editor.SpriteEditor
             _handles[3].HandleCursor = _handles[1].HandleCursor = Cursors.Cross;
             _handles[4].HandleCursor = Cursors.Hand;
 
-            _keyboardIcon = new Lazy<GorgonTexture2DView>(() => GorgonTexture2DView.CreateTexture(renderer.Graphics, new GorgonTexture2DInfo("VertexEditor_KeyboardIcon")
+            _keyboardIcon = new Lazy<GorgonTexture2DView>(() => GorgonTexture2DView.CreateTexture(renderer.Graphics, new GorgonTexture2DInfo(CommonEditorResources.KeyboardIcon.Width,
+                                                                                                                                                  CommonEditorResources.KeyboardIcon.Height,
+                                                                                                                                                  CommonEditorResources.KeyboardIcon.Format)
             {
-                Width = CommonEditorResources.KeyboardIcon.Width,
-                Height = CommonEditorResources.KeyboardIcon.Height
+                Name = "VertexEditor_KeyboardIcon"
             }, CommonEditorResources.KeyboardIcon), true);
         }
         #endregion

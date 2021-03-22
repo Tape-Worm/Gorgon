@@ -125,14 +125,13 @@ namespace Gorgon.Editor.ImageEditor
                     Usage = ResourceUsage.Immutable,
                     IsTextureCube = false
                 });
-                using var rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo
+                using var rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo((int)(image.Width * scale),
+                                                                                                                                                                           (int)(image.Height * scale),
+                                                                                                                                                                           BufferFormat.R8G8B8A8_UNorm)
                 {
                     ArrayCount = 1,
                     Binding = TextureBinding.ShaderResource,
-                    Format = BufferFormat.R8G8B8A8_UNorm,
                     MipLevels = 1,
-                    Height = (int)(image.Height * scale),
-                    Width = (int)(image.Width * scale),
                     Usage = ResourceUsage.Default
                 });
                 GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);

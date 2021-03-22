@@ -206,8 +206,9 @@ namespace Gorgon.Graphics.Core
         public GorgonIndexBuffer GetStaging()
         {
             var buffer = new GorgonIndexBuffer(Graphics,
-                                                             new GorgonIndexBufferInfo(_info, $"{Name}_Staging")
+                                                             new GorgonIndexBufferInfo(_info)
                                                              {
+                                                                 Name = $"{Name} Staging",
                                                                  Binding = VertexIndexBufferBinding.None,
                                                                  Usage = ResourceUsage.Staging
                                                              });

@@ -258,18 +258,22 @@ namespace Gorgon.Examples
         /// </summary>
         private static void BuildRenderTargets()
         {
-            _postTarget1 = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Post process render target #1")
+            _postTarget1 = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_screen.Width, _screen.Height, _screen.Format)
             {
-                Width = _screen.Width,
-                Height = _screen.Height,
-                Format = _screen.Format
+                Name = "Post process render target #1"
             });
             _postView1 = _postTarget1.GetShaderResourceView();
 
-            _postTarget2 = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_postTarget1, "Post process render target #2"));
+            _postTarget2 = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_postTarget1)
+            {
+                Name = "Post process render target #2"
+            });
             _postView2 = _postTarget2.GetShaderResourceView();
 
-            _finalTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_postTarget1, "Final post process render target."));
+            _finalTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_postTarget1)
+            {
+                Name = "Final post process render target."
+            });
             _finalView = _finalTarget.GetShaderResourceView();
         }
 

@@ -120,13 +120,10 @@ namespace Gorgon.Examples
         {
             // We need to recreate the depth/stencil here to match the updated size of the render target (the depth/stencil and render targets must be the same size).
             _depthStencil = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
-                                                                        new GorgonTexture2DInfo
+                                                                        new GorgonTexture2DInfo(_swap.Width, _swap.Height, BufferFormat.D24_UNorm_S8_UInt)
                                                                         {
-                                                                            Format = BufferFormat.D24_UNorm_S8_UInt,
                                                                             Binding = TextureBinding.DepthStencil,
-                                                                            Usage = ResourceUsage.Default,
-                                                                            Width = _swap.Width,
-                                                                            Height = _swap.Height
+                                                                            Usage = ResourceUsage.Default
                                                                         });
             _graphics.SetDepthStencil(_depthStencil);
 
@@ -267,13 +264,10 @@ namespace Gorgon.Examples
                 }
 
                 _depthStencil = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
-                                                                            new GorgonTexture2DInfo
+                                                                            new GorgonTexture2DInfo(_swap.Width, _swap.Height, BufferFormat.D24_UNorm_S8_UInt)
                                                                             {
-                                                                                Format = BufferFormat.D24_UNorm_S8_UInt,
                                                                                 Binding = TextureBinding.DepthStencil,
-                                                                                Usage = ResourceUsage.Default,
-                                                                                Width = _swap.Width,
-                                                                                Height = _swap.Height
+                                                                                Usage = ResourceUsage.Default
                                                                             });
 
                 // Load the shaders from a file on disc.

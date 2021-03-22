@@ -319,11 +319,9 @@ namespace Gorgon.Examples
 
                 // Create a secondary render target for our scene. We use 16 bit floating point for the effect fidelity.
                 // We'll lock our resolution to 1920x1080 (pretty common resolution for most people).
-                _mainRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Main RTV")
+                _mainRtv = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)_baseResolution.X, (int)_baseResolution.Y, BufferFormat.R16G16B16A16_Float)
                 {
-                    Width = (int)_baseResolution.X,
-                    Height = (int)_baseResolution.Y,
-                    Format = BufferFormat.R16G16B16A16_Float,
+                    Name = "Main RTV",
                     Binding = TextureBinding.ShaderResource
                 });
                 _mainSrv = _mainRtv.GetShaderResourceView();

@@ -79,8 +79,10 @@ namespace Gorgon.Renderers
         private Gorgon2DBatchState _batchStateNoAlpha;
         // The number of floats for the offset data.
         private readonly int _offsetSize;
-        // The info for the blur render targets.
-        private readonly GorgonTexture2DInfo _blurRtvInfo;
+        // The render target information for the working render targets.
+        private GorgonTexture2DInfo _blurRtvInfo;
+        // The blur render target pixel format.
+        private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UNorm;
         #endregion
 
         #region Properties.
@@ -202,10 +204,23 @@ namespace Gorgon.Renderers
         /// <seealso cref="BufferFormat"/>
         public BufferFormat BlurTargetFormat
         {
-            get;
-            set;
-        } = BufferFormat.R8G8B8A8_UNorm;
+            get => _blurTargetFormat;
+            set
+            {
+                if (_blurTargetFormat == value)
+                {
+                    return;
+                }
 
+                _blurTargetFormat = value;
+#if NET5_0_OR_GREATER
+                _blurRtvInfo = _blurRtvInfo with
+                {
+                    Format = value
+                };
+#endif
+            }
+        }
         /// <summary>
         /// Property to set or return the size of the internal render targets used for blurring.
         /// </summary>
@@ -242,13 +257,24 @@ namespace Gorgon.Renderers
                 value.Width = value.Width.Max(3).Min(Graphics.VideoAdapter.MaxTextureWidth);
                 value.Height = value.Height.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
 
+#if NET5_0_OR_GREATER
+                if (_blurRtvInfo is not null)
+                {
+                    _blurRtvInfo = _blurRtvInfo with
+                    {
+                        Width = value.Width,
+                        Height = value.Height
+                    };
+                }
+#endif
+
                 _renderTargetSize = value;
                 _needOffsetUpdate = true;
             }
         }
-        #endregion
+#endregion
 
-        #region Methods.
+#region Methods.
         /// <summary>
         /// Function to update the render target.
         /// </summary>
@@ -258,10 +284,6 @@ namespace Gorgon.Renderers
             FreeTargets();
 
             // Now recreate with a new size and format (if applicable).
-            _blurRtvInfo.Format = BlurTargetFormat;
-            _blurRtvInfo.Width = _renderTargetSize.Width;
-            _blurRtvInfo.Height = _renderTargetSize.Height;
-
             _hPass = Graphics.TemporaryTargets.Rent(_blurRtvInfo, "GorgonGaussBlur_HPass", clearOnRetrieve: false);
 
             _hPassView = _hPass.GetShaderResourceView();
@@ -396,7 +418,7 @@ namespace Gorgon.Renderers
                 BuildState(builders);
             }
 
-            return PreserveAlpha? _batchStateNoAlpha : _batchState;
+            return PreserveAlpha ? _batchStateNoAlpha : _batchState;
         }
 
         /// <summary>
@@ -414,7 +436,8 @@ namespace Gorgon.Renderers
             switch (passIndex)
             {
                 case 0:
-                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);;
+                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
+                    ;
                     break;
                 case 1:
                     Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColor.White, _hPassView, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
@@ -449,6 +472,8 @@ namespace Gorgon.Renderers
             _blurShader = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlur");
 
             _blurShaderNoAlpha = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlurNoAlpha");
+
+            _blurRtvInfo = new(_renderTargetSize.Width, _renderTargetSize.Height, BlurTargetFormat);
 
             UpdateKernelWeights();
             UpdateOffsets();
@@ -580,7 +605,7 @@ namespace Gorgon.Renderers
         /// </note>
         /// </para>
         /// </remarks>
-        public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output) 
+        public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
         {
             BeginRender(output);
 
@@ -603,9 +628,9 @@ namespace Gorgon.Renderers
 
             EndRender(output);
         }
-        #endregion
+#endregion
 
-        #region Constructor/Finalizer.
+#region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="Gorgon2DGaussBlurEffect"/> class.
         /// </summary>
@@ -646,14 +671,9 @@ namespace Gorgon.Renderers
             _offsetSize = ((2 * KernelSize) + 3) & ~3;
             _blurRadius = MaximumBlurRadius;
 
-            _blurRtvInfo = new GorgonTexture2DInfo
-            {
-                Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget
-            };
-
             Macros.Add(new GorgonShaderMacro("GAUSS_BLUR_EFFECT"));
             Macros.Add(new GorgonShaderMacro("MAX_KERNEL_SIZE", KernelSize.ToString(CultureInfo.InvariantCulture)));
         }
-        #endregion
+#endregion
     }
 }

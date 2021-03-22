@@ -155,16 +155,17 @@ namespace Gorgon.Renderers
 
             _final = outputTarget;
 
-            _pingTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo("Gorgon 2D Post Process Ping Render Target")
+            _pingTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo(outputTarget.Width, outputTarget.Height, outputTarget.Format)
             {
-                Format = outputTarget.Format,
-                Width = outputTarget.Width,
-                Height = outputTarget.Height,
+                Name = "Gorgon 2D Post Process Ping Render Target",
                 Binding = TextureBinding.ShaderResource
             });
             _pingTexture = _pingTarget.GetShaderResourceView();
 
-            _pongTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo(_pingTarget, "Gorgon 2D Post Process Pong Render Target"));
+            _pongTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo(_pingTarget)
+            {
+                Name = "Gorgon 2D Post Process Pong Render Target"
+            });
             _pongTexture = _pongTarget.GetShaderResourceView();
         }
 

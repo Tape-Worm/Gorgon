@@ -47,12 +47,11 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
         /// </summary>
         /// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
-        /// <param name="newName">[Optional] The new name for the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info, string newName = null)
+        public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info)
             : this(info?.SizeInBytes ?? throw new ArgumentNullException(nameof(info)))
         {
-            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Name = info.Name;
             Usage = info.Usage;
         }
         #endregion

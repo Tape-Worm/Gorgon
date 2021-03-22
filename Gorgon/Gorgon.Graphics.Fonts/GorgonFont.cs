@@ -548,11 +548,8 @@ namespace Gorgon.Graphics.Fonts
                 return;
             }
 
-            var textureSettings = new GorgonTexture2DInfo
+            var textureSettings = new GorgonTexture2DInfo(_info.TextureWidth, _info.TextureHeight, BufferFormat.R8G8B8A8_UNorm)
             {
-                Format = BufferFormat.R8G8B8A8_UNorm,
-                Width = _info.TextureWidth,
-                Height = _info.TextureHeight,
                 Usage = ResourceUsage.Default,
                 Binding = TextureBinding.ShaderResource,
                 IsCubeMap = false,
@@ -562,7 +559,15 @@ namespace Gorgon.Graphics.Fonts
 
             foreach ((IGorgonImage image, IEnumerable<GlyphInfo> glyphs) in images)
             {
-                textureSettings.ArrayCount = image.ArrayCount;
+                if (textureSettings.ArrayCount != image.ArrayCount)
+                {
+#if NET5_0_OR_GREATER
+                    textureSettings = textureSettings with
+                    {
+                        ArrayCount = image.ArrayCount
+                    };
+#endif
+                }
 
                 switch (Compression)
                 {

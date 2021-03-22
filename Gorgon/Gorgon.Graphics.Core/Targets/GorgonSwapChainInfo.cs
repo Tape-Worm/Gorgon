@@ -62,7 +62,7 @@ namespace Gorgon.Graphics.Core
 
         #region Properties.
         /// <summary>
-        /// Property to set or return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
+        /// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
         /// </summary>
         /// <remarks>
         /// The default value for this value is <b>true</b>.
@@ -70,7 +70,7 @@ namespace Gorgon.Graphics.Core
         public bool StretchBackBuffer
         {
             get;
-            set;
+            init;
         } = true;
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Gorgon.Graphics.Core
 	    public string Name
         {
             get;
-            set;
+            init;
         } = GorgonGraphicsResource.GenerateName(GorgonSwapChain.NamePrefix);
         #endregion
     }
@@ -92,7 +92,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Properties.
         /// <summary>
-        /// Property to set or return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
+        /// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
         /// </summary>
         public bool StretchBackBuffer
         {
@@ -101,7 +101,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to set or return whether to use flip mode rather than a bitblt mode to present the back buffer to the presentation target.
+        /// Property to return whether to use flip mode rather than a bitblt mode to present the back buffer to the presentation target.
         /// </summary>
         public bool UseFlipMode
         {
@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Core
         } = true;
 
         /// <summary>
-        /// Property to set or return the format of the swap chain back buffer.
+        /// Property to return the format of the swap chain back buffer.
         /// </summary>
         public BufferFormat Format
         {
@@ -119,7 +119,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to set or return the width of the swap chain back buffer.
+        /// Property to return the width of the swap chain back buffer.
         /// </summary>
         public int Width
         {
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to set or return the height of the swap chain back buffer.
+        /// Property to return the height of the swap chain back buffer.
         /// </summary>
         public int Height
         {

@@ -1194,11 +1194,12 @@ namespace Gorgon.Editor.Rendering
 
             Graphics.SetRenderTarget(_swapChain.RenderTargetView);
 
-            BackgroundPattern = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("ContentEditor_Bg_Pattern")
+            BackgroundPattern = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo(CommonEditorResources.CheckerBoardPatternImage.Width,
+                                                                                                         CommonEditorResources.CheckerBoardPatternImage.Height,
+                                                                                                         CommonEditorResources.CheckerBoardPatternImage.Format)
             {
-                Usage = ResourceUsage.Immutable,
-                Width = CommonEditorResources.CheckerBoardPatternImage.Width,
-                Height = CommonEditorResources.CheckerBoardPatternImage.Height
+                Name = "ContentEditor_Bg_Pattern",
+                Usage = ResourceUsage.Immutable
             }, CommonEditorResources.CheckerBoardPatternImage);
 
             ClientSize = new DX.Size2(_swapChain.Width, _swapChain.Height);

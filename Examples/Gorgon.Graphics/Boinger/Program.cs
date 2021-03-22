@@ -381,12 +381,10 @@ namespace Gorgon.Examples
             _graphics.SetDepthStencil(null);
             _depthBuffer?.Dispose();
             _depthBuffer = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
-                                                                       new GorgonTexture2DInfo("Depth Buffer")
+                                                                       new GorgonTexture2DInfo(width, height, _depthFormat)
                                                                        {
-                                                                           Usage = ResourceUsage.Default,
-                                                                           Width = width,
-                                                                           Height = height,
-                                                                           Format = _depthFormat
+                                                                           Name = "Depth Buffer",
+                                                                           Usage = ResourceUsage.Default
                                                                        });
         }
 

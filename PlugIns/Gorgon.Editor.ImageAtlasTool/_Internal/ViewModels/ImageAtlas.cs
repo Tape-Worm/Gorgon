@@ -470,11 +470,9 @@ namespace Gorgon.Editor.ImageAtlasTool
 			foreach (KeyValuePair<IContentFile, IGorgonImage> image in _images)
 			{				
 				var spriteTexture = GorgonTexture2DView.CreateTexture(HostServices.GraphicsContext.Graphics,
-																	  new GorgonTexture2DInfo(image.Key.Path)
+																	  new GorgonTexture2DInfo(image.Value.Width, image.Value.Height, image.Value.Format)
 																	  {
-																		  Width = image.Value.Width,
-																		  Height = image.Value.Height,
-																		  Format = image.Value.Format,
+																		  Name = image.Key.Path,
 																		  IsCubeMap = false,
 																		  Binding = TextureBinding.ShaderResource,
 																		  Usage = ResourceUsage.Immutable

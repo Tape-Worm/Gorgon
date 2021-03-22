@@ -174,13 +174,11 @@ namespace Gorgon.Editor.ImageAtlasTool
                 return;
             }
 
-            _previewImage = GorgonTexture2DView.CreateTexture(_graphicsContext.Graphics, new GorgonTexture2DInfo("Atlas_Sprite_Preview")
+            _previewImage = GorgonTexture2DView.CreateTexture(_graphicsContext.Graphics, new GorgonTexture2DInfo(image.Width, image.Height, image.Format)
             {
+                Name = "Atlas_Sprite_Preview",
                 ArrayCount = 1,
                 Binding = TextureBinding.ShaderResource,
-                Format = image.Format,
-                Height = image.Height,
-                Width = image.Width,
                 Usage = ResourceUsage.Immutable,
                 IsCubeMap = false,
                 MipLevels = 1
