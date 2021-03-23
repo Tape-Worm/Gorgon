@@ -175,7 +175,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="stream">The stream containing the metadata to read.</param>
         /// <returns>
-        /// The font meta data as a <see cref="IGorgonFontInfo"/> value.
+        /// The font meta data as a <see cref="GorgonFontInfo"/> value.
         /// </returns>
         /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
         /// <para>-or-</para>
@@ -190,7 +190,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// may cause undesirable results.
         /// </para> 
         /// </remarks>
-        IGorgonFontInfo GetMetaData(Stream stream);
+        GorgonFontInfo GetMetaData(Stream stream);
         #endregion
     }
 }

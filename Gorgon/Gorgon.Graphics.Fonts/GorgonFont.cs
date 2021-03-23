@@ -353,18 +353,6 @@ namespace Gorgon.Graphics.Fonts
         /// </para>
         /// </remarks>
         public bool UseKerningPairs => _info.UseKerningPairs;
-
-        /// <summary>Property to return the type of compression to apply to the font textures.</summary>
-        /// <remarks>
-        ///   <para>
-        /// Use compression to lower the amount of video RAM consumed by the font textures. It is recommended that <see cref="UsePremultipliedTextures" /> be set to <b>true</b> when using
-        /// compression.
-        /// </para>
-        ///   <para>
-        /// The default value is <see cref="FontTextureCompression.None" />.
-        /// </para>
-        /// </remarks>
-        public FontTextureCompression Compression => _info.Compression;
         #endregion
 
         #region Methods.
@@ -569,23 +557,9 @@ namespace Gorgon.Graphics.Fonts
 #endif
                 }
 
-                switch (Compression)
-                {
-                    case FontTextureCompression.Fast:
-                        image.BeginUpdate()
-                             .Compress(BufferFormat.BC3_UNorm, quality: BcCompressionQuality.Quality)
-                             .EndUpdate();
-                        break;
-                    case FontTextureCompression.Quality:
-                        image.BeginUpdate()
-                             .Compress(BufferFormat.BC7_UNorm, quality: BcCompressionQuality.Quality)
-                             .EndUpdate();
-                        break;
-                }
-
                 GorgonTexture2D texture = image.ToTexture2D(Graphics, new GorgonTexture2DLoadOptions
                 {
-                    Name = $"GorgonFont_{Name.Replace(" ", "_")}_Internal_Texture_{Guid.NewGuid():N}"
+                    Name = $"GorgonFont {Name.Replace(" ", "_")} Internal Texture {Guid.NewGuid():N}"
                 });
 
                 foreach (GlyphInfo glyph in glyphs)

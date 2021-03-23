@@ -350,8 +350,9 @@ namespace Gorgon.Examples
                 SetupScene();
 
                 // Build up a font to use for rendering any GUI text.
-                _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 10.0f, FontHeightMode.Points, "Segoe UI 10pt")
+                _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 10.0f, FontHeightMode.Points)
                 {
+                    Name = "Segoe UI 10pt",
                     OutlineSize = 2,
                     Characters = (Resources.Instructions + "S:1234567890x").Distinct().ToArray(),
                     FontStyle = FontStyle.Bold,

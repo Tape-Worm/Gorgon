@@ -208,8 +208,9 @@ namespace Gorgon.Examples
 
             GorgonExample.LoadResources(_graphics);
 
-            _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points, "Form Font")
+            _appFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points)
             {
+                Name = "Form Font",
                 Characters = "SpdtoxDrag me!\u2190:1234567890.",
                 TextureWidth = 128,
                 TextureHeight = 128,

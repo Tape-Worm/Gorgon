@@ -679,8 +679,9 @@ namespace Gorgon.Examples
 
                 // Create the text font.
                 _fontFactory = new GorgonFontFactory(_graphics);
-                _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt")
+                _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points)
                 {
+                    Name = "Arial 9pt",
                     FontStyle = FontStyle.Bold,
                     AntiAliasingMode = FontAntiAliasMode.AntiAlias
                 });

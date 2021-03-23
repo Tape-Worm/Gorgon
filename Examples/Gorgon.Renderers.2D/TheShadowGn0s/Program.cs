@@ -343,8 +343,9 @@ ESC - Quit.";
 
                 GorgonExample.LoadResources(_graphics);
 
-                _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, FontHeightMode.Points, "Segoe UI 12pt Bold, Outlined")
+                _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, FontHeightMode.Points)
                 {
+                    Name = "Segoe UI 12pt Bold, Outlined",
                     FontStyle = FontStyle.Bold,
                     OutlineColor2 = GorgonColor.Black,
                     OutlineColor1 = GorgonColor.Black,

@@ -146,9 +146,9 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="stream">The stream containing the metadata to read.</param>
         /// <returns>
-        /// The font meta data as a <see cref="IGorgonFontInfo"/> value.
+        /// The font meta data as a <see cref="GorgonFontInfo"/> value.
         /// </returns>
-        protected abstract IGorgonFontInfo OnGetMetaData(Stream stream);
+        protected abstract GorgonFontInfo OnGetMetaData(Stream stream);
 
         /// <summary>
         /// Function to load the font data, with the specified size, from a stream.
@@ -171,7 +171,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="stream">The stream containing the metadata to read.</param>
         /// <returns>
-        /// The font meta data as a <see cref="IGorgonFontInfo"/> value.
+        /// The font meta data as a <see cref="GorgonFontInfo"/> value.
         /// </returns>
         /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
         /// <para>-or-</para>
@@ -180,7 +180,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
         /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-        public IGorgonFontInfo GetMetaData(Stream stream)
+        public GorgonFontInfo GetMetaData(Stream stream)
         {
             if (stream is null)
             {

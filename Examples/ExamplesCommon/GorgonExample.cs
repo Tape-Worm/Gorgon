@@ -326,8 +326,9 @@ namespace Gorgon.Examples
             _blitter = new GorgonTextureBlitter(graphics);
 
             _factory = new GorgonFontFactory(graphics);
-            _statsFont = _factory.GetFont(new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points, "Segoe UI 9pt Bold Outlined")
+            _statsFont = _factory.GetFont(new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points)
             {
+                Name = "Segoe UI 9pt Bold Outlined",
                 AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                 FontStyle = FontStyle.Bold,
                 OutlineColor1 = GorgonColor.Black,

@@ -402,22 +402,5 @@ namespace Gorgon.Graphics.Fonts
         {
             get;
         }
-
-        /// <summary>
-        /// Property to return the type of compression to apply to the font textures.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Use compression to lower the amount of video RAM consumed by the font textures. It is recommended that <see cref="UsePremultipliedTextures"/> be set to <b>true</b> when using 
-        /// compression.
-        /// </para>
-        /// <para>
-        /// The default value is <see cref="FontTextureCompression.None"/>.
-        /// </para>
-        /// </remarks>
-        FontTextureCompression Compression
-        {
-            get;
-        }
     }
 }

@@ -558,8 +558,9 @@ namespace Gorgon.Examples
 
 				GorgonExample.LoadResources(_graphics);
 
-				_ballFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt Bold")
+				_ballFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points)
 				{
+					Name = "Arial 9pt Bold",
 					FontStyle = FontStyle.Bold,
 					Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
 					OutlineSize = 1,

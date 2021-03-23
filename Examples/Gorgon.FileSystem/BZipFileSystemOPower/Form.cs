@@ -312,8 +312,9 @@ namespace Gorgon.Examples
             GorgonExample.LoadResources(_graphics);
 
             // Create fonts.
-            _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, FontHeightMode.Points, "GiGi_24pt")
+            _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, FontHeightMode.Points)
             {
+                Name = "GiGi_24pt",
                 AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                 TextureWidth = 512,
                 TextureHeight = 256
@@ -322,9 +323,9 @@ namespace Gorgon.Examples
             // Use the form font for this one.
             _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name,
                                                                 Font.Size,
-                                                                Font.Unit == GraphicsUnit.Pixel ? FontHeightMode.Pixels : FontHeightMode.Points,
-                                                                "Form Font")
+                                                                Font.Unit == GraphicsUnit.Pixel ? FontHeightMode.Pixels : FontHeightMode.Points)            
             {
+                Name = "Form Font",
                 AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                 FontStyle = FontStyle.Bold
             });

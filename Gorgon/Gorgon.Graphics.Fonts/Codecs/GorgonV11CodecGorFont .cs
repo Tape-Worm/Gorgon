@@ -102,12 +102,13 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="fontFile">The chunk file reader containing the font data.</param>
         /// <param name="name">Used defined name for the font.</param>
-        /// <returns>A new <seealso cref="IGorgonFontInfo"/> containing information about the font.</returns>
+        /// <returns>A new <seealso cref="GorgonFontInfo"/> containing information about the font.</returns>
         private static GorgonFontInfo GetFontInfo(GorgonChunkFileReader fontFile, string name)
         {
             GorgonBinaryReader reader = fontFile.OpenChunk(FontInfoChunk);
-            var info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<FontHeightMode>(), name)
+            var info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<FontHeightMode>())
             {
+                Name = name,
                 FontStyle = reader.ReadValue<FontStyle>(),
                 DefaultCharacter = reader.ReadChar(),
                 Characters = reader.ReadString(),
@@ -117,7 +118,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 OutlineSize = reader.ReadInt32(),
                 UseKerningPairs = reader.ReadBoolean()
             };
-                        
+
             fontFile.CloseChunk();
 
             if (!fontFile.Chunks.Contains(TextureInfoChunk))
@@ -126,11 +127,15 @@ namespace Gorgon.Graphics.Fonts.Codecs
             }
 
             reader = fontFile.OpenChunk(TextureInfoChunk);
-            info.PackingSpacing = reader.ReadInt32();
-            info.TextureWidth = reader.ReadInt32();
-            info.TextureHeight = reader.ReadInt32();
-            info.UsePremultipliedTextures = reader.ReadBoolean();
-            info.Compression = (FontTextureCompression)reader.ReadInt32();
+#if NET5_0_OR_GREATER
+            info = info with
+            {
+                PackingSpacing = reader.ReadInt32(),
+                TextureWidth = reader.ReadInt32(),
+                TextureHeight = reader.ReadInt32(),
+                UsePremultipliedTextures = reader.ReadBoolean()
+            };
+#endif
             fontFile.CloseChunk();
 
             return info;
@@ -174,8 +179,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 writer.Write(fontInfo.PackingSpacing);
                 writer.Write(fontInfo.TextureWidth);
                 writer.Write(fontInfo.TextureHeight);
-                writer.Write(fontInfo.UsePremultipliedTextures);
-                writer.Write((int)fontInfo.Compression);
+                writer.Write(fontInfo.UsePremultipliedTextures);                
                 fontFile.CloseChunk();
 
                 if (fontInfo.Brush is not null)
@@ -197,9 +201,9 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="stream">The stream containing the metadata to read.</param>
         /// <returns>
-        /// The font meta data as a <see cref="IGorgonFontInfo"/> value.
+        /// The font meta data as a <see cref="GorgonFontInfo"/> value.
         /// </returns>
-        protected override IGorgonFontInfo OnGetMetaData(Stream stream)
+        protected override GorgonFontInfo OnGetMetaData(Stream stream)
         {
             GorgonChunkFileReader fontFile = null;
 
@@ -248,13 +252,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 }
 
                 GorgonBinaryReader reader = null;
+                GorgonGlyphBrush fontBrush = null;
 
                 if (fontFile.Chunks.Contains(BrushChunk))
                 {
                     reader = fontFile.OpenChunk(BrushChunk);
                     var brushType = (GlyphBrushType)reader.ReadInt32();
 
-                    fontInfo.Brush = brushType switch
+                    fontBrush = brushType switch
                     {
                         GlyphBrushType.Hatched => new GorgonGlyphHatchBrush(),
                         GlyphBrushType.LinearGradient => new GorgonGlyphLinearGradientBrush(),
@@ -262,13 +267,20 @@ namespace Gorgon.Graphics.Fonts.Codecs
                         GlyphBrushType.Texture => new GorgonGlyphTextureBrush(),
                         _ => new GorgonGlyphSolidBrush(),
                     };
-                    fontInfo.Brush.ReadBrushData(reader);
+                    fontBrush.ReadBrushData(reader);
                     fontFile.CloseChunk();
                 }
                 else
                 {
-                    fontInfo.Brush = new GorgonGlyphSolidBrush();
+                    fontBrush = new GorgonGlyphSolidBrush();
                 }
+
+#if NET5_0_OR_GREATER
+                fontInfo = fontInfo with
+                {
+                    Brush = fontBrush
+                };
+#endif
 
                 return await Factory.GetFontAsync(fontInfo);
             }
@@ -309,13 +321,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 }
 
                 GorgonBinaryReader reader = null;
+                GorgonGlyphBrush fontBrush = null;
 
                 if (fontFile.Chunks.Contains(BrushChunk))
                 {
                     reader = fontFile.OpenChunk(BrushChunk);
                     var brushType = (GlyphBrushType)reader.ReadInt32();
 
-                    fontInfo.Brush = brushType switch
+                    fontBrush = brushType switch
                     {
                         GlyphBrushType.Hatched => new GorgonGlyphHatchBrush(),
                         GlyphBrushType.LinearGradient => new GorgonGlyphLinearGradientBrush(),
@@ -323,14 +336,21 @@ namespace Gorgon.Graphics.Fonts.Codecs
                         GlyphBrushType.Texture => new GorgonGlyphTextureBrush(),
                         _ => new GorgonGlyphSolidBrush(),
                     };
-                    fontInfo.Brush.ReadBrushData(reader);
+                    fontBrush.ReadBrushData(reader);
                     fontFile.CloseChunk();
                 }
                 else
                 {
-                    fontInfo.Brush = new GorgonGlyphSolidBrush();
+                    fontBrush = new GorgonGlyphSolidBrush();
                 }
-                
+
+#if NET5_0_OR_GREATER
+                fontInfo = fontInfo with
+                {
+                    Brush = fontBrush
+                };
+#endif
+
                 return Factory.GetFont(fontInfo);
             }
             finally

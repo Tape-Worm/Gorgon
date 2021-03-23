@@ -204,8 +204,9 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function called during resource creation.</summary>
         protected override void OnCreateResources()
         {
-            _axisFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12, FontHeightMode.Points, "Segoe UI Bold 12pt - Axis Font")
+            _axisFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12, FontHeightMode.Points)
             {
+                Name = "Segoe UI Bold 12pt - Axis Font",
                 OutlineColor1 = GorgonColor.Black,
                 OutlineColor2 = GorgonColor.Black,
                 OutlineSize = 3,

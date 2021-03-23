@@ -44,6 +44,7 @@ using Gorgon.Timing;
 using Gorgon.UI;
 using Drawing = System.Drawing;
 using DX = SharpDX;
+using System.Xml.Linq;
 
 namespace Gorgon.Examples
 {
@@ -109,7 +110,7 @@ namespace Gorgon.Examples
         {
             // Pick a font to use with outlines.
             int fontWithOutlineIndex = GorgonRandom.RandomInt32(1, 5);
-            _glowIndex = GorgonRandom.RandomInt32(fontWithOutlineIndex + 1, fontWithOutlineIndex + 5);
+            _glowIndex = GorgonRandom.RandomInt32(fontWithOutlineIndex + 1, fontWithOutlineIndex + 5);            
             int fontWithGradient = GorgonRandom.RandomInt32(_glowIndex + 1, _glowIndex + 5);
             int fontWithTexture = GorgonRandom.RandomInt32(fontWithGradient + 1, fontWithGradient + 5).Min(_fontFamilies.Count - 1);
 
@@ -125,7 +126,7 @@ namespace Gorgon.Examples
                     // Can't locate this one, move on...
                     continue;
                 }
-
+                
                 bool isExternal = Drawing.FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
                 string fontName;
                 int outlineSize = 0;
@@ -171,9 +172,9 @@ namespace Gorgon.Examples
 
                 var fontInfo = new GorgonFontInfo(fontFamily,
                                                   30.25f,
-                                                  name:
-                                                  fontName)
+                                                  FontHeightMode.Pixels)
                 {
+                    Name = fontName,
                     AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                     OutlineSize = outlineSize,
                     OutlineColor1 = outlineColor1,

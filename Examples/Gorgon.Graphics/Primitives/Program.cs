@@ -738,8 +738,9 @@ namespace Gorgon.Examples
                 GorgonExample.LoadResources(_graphics);
 
                 // Create a font so we can render some text.
-                _font = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, FontHeightMode.Points, "Segoe UI 14pt")
+                _font = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, FontHeightMode.Points)
                 {
+                    Name = "Segoe UI 14pt",
                     OutlineSize = 2,
                     OutlineColor1 = GorgonColor.Black,
                     OutlineColor2 = GorgonColor.Black

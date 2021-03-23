@@ -255,15 +255,20 @@ namespace Gorgon.Examples
         /// <summary>Function to create resources required for the lifetime of the viewer.</summary>
         public void CreateResources()
         {
-            _arial = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt")
+            _arial = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points)
             {
+                Name = "Arial 9pt",
                 FontStyle = FontStyle.Bold
             });
 
-            _timesNewRoman = _fontFactory.GetFont(new GorgonFontInfo("Times New Roman", 18.0f, FontHeightMode.Points, "Times New Roman 18pt"));
-
-            _papyrus = _fontFactory.GetFont(new GorgonFontInfo("Papyrus", 20.0f, FontHeightMode.Points, "Papyrus 20pt")
+            _timesNewRoman = _fontFactory.GetFont(new GorgonFontInfo("Times New Roman", 18.0f, FontHeightMode.Points)
             {
+                Name = "Times New Roman 18pt"
+            });
+
+            _papyrus = _fontFactory.GetFont(new GorgonFontInfo("Papyrus", 20.0f, FontHeightMode.Points)
+            {
+                Name = "Papyrus 20pt",
                 OutlineColor1 = GorgonColor.Black,
                 OutlineColor2 = GorgonColor.Black,
                 OutlineSize = 2

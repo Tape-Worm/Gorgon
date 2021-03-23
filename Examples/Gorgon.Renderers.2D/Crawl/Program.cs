@@ -217,8 +217,9 @@ namespace Gorgon.Examples
                 CreateTargets();
 
                 // Set up our text sprite so we can render formatted text to the render target.
-                _crawlText = new GorgonTextSprite(GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 36.0f, FontHeightMode.Points, "Arial SW")
+                _crawlText = new GorgonTextSprite(GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 36.0f, FontHeightMode.Points)
                 {
+                    Name = "Arial SW",
                     FontStyle = FontStyle.Bold,
                     Characters = Resources.CrawlText.Distinct()
                 }))

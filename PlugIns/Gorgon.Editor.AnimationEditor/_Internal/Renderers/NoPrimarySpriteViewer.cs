@@ -210,8 +210,9 @@ namespace Gorgon.Editor.AnimationEditor
                 });
             }
 
-            _font = _fontFactory.GetFont(new GorgonFontInfo("Century", 64.0f, FontHeightMode.Points, "No Preview Sprite Font")
+            _font = _fontFactory.GetFont(new GorgonFontInfo("Century", 64.0f, FontHeightMode.Points)
             {
+                Name = "No Preview Sprite Font",
                 OutlineSize = 4,
                 OutlineColor1 = GorgonColor.Black,
                 OutlineColor2 = GorgonColor.Black,

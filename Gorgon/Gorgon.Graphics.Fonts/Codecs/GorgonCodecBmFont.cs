@@ -270,21 +270,20 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 }
             }
 
+            int.TryParse(outline, out int outlineSize);
+
             // Create with required settings.
-            var result = new GorgonFontInfo(face, Convert.ToSingle(size))
-            {
+            var result = new GorgonFontInfo(face, Convert.ToSingle(size), FontHeightMode.Pixels)
+            {                
                 PackingSpacing = packSpacing,
                 FontStyle = style,
                 AntiAliasingMode = ((aa.Length > 0) && (string.Equals(aa, "1", StringComparison.OrdinalIgnoreCase))) ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None,
                 DefaultCharacter = ' ',
-                Brush = new GorgonGlyphSolidBrush(),                
+                Brush = new GorgonGlyphSolidBrush(),   
+                OutlineColor1 = outlineSize > 0 ? GorgonColor.Black : GorgonColor.BlackTransparent,
+                OutlineColor2 = outlineSize > 0 ? GorgonColor.Black : GorgonColor.BlackTransparent,
+                OutlineSize = outlineSize
             };
-
-            if (int.TryParse(outline, out int outlineSize))
-            {
-                result.OutlineColor1 = result.OutlineColor2 = GorgonColor.Black;
-                result.OutlineSize = outlineSize;
-            }
 
             return result;
         }
@@ -292,10 +291,9 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <summary>
         /// Function to parse the common info line in the font file.
         /// </summary>
-        /// <param name="fontInfo">The font information structure to populate.</param>
         /// <param name="line">The line containing the common info.</param>
-        /// <param name="textureSkipCount">The number of texture lines to be skipped.</param>
-        private static void ParseCommonLine(GorgonFontInfo fontInfo, string line, out int textureSkipCount)
+        /// <param name="textureInfo">The texture info from the line.</param>
+        private static void ParseCommonLine(string line, out (int textureSkipCount, int textureWidth, int textureHeight) textureInfo)
         {
             if (string.IsNullOrWhiteSpace(line))
             {
@@ -314,10 +312,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
             string textureWidth = keyValues[ScaleWTag];
             string textureHeight = keyValues[ScaleHTag];
             string textureCount = keyValues[PagesTag];
-
-            fontInfo.TextureHeight = Convert.ToInt32(textureHeight);
-            fontInfo.TextureWidth = Convert.ToInt32(textureWidth);
-            textureSkipCount = Convert.ToInt32(textureCount);
+            textureInfo = (Convert.ToInt32(textureCount), Convert.ToInt32(textureWidth), Convert.ToInt32(textureHeight));
         }
 
         /// <summary>
@@ -336,9 +331,9 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// <summary>
         /// Function to read in the character information.
         /// </summary>
-        /// <param name="fontInfo">The font information to update.</param>
         /// <param name="reader">The reader that is reading the file data.</param>
-        private static void ParseCharacters(GorgonFontInfo fontInfo, StreamReader reader)
+        /// <returns>The list of characters as a string.</returns>
+        private static string ParseCharacters(StreamReader reader)
         {
             string countLine = reader.ReadLine();
             var characterList = new StringBuilder();
@@ -377,28 +372,26 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 characterList.Append(Convert.ToChar(Convert.ToInt32(keyValues[CharIdTag])));
             }
 
-            fontInfo.Characters = characterList.ToString();
+            return characterList.ToString();
         }
 
         /// <summary>
         /// Function to read in the kerning information.
         /// </summary>
-        /// <param name="fontInfo">The font information to update.</param>
         /// <param name="reader">The reader that is reading the file data.</param>
-        private static void ParseKerning(GorgonFontInfo fontInfo, StreamReader reader)
+        /// <returns>The kerning flag.</returns>
+        private static bool ParseKerning(StreamReader reader)
         {
             if (reader.EndOfStream)
-            {
-                fontInfo.UseKerningPairs = false;
-                return;
+            {                
+                return false;
             }
 
             string countLine = reader.ReadLine();
 
             if (string.IsNullOrWhiteSpace(countLine))
             {
-                fontInfo.UseKerningPairs = false;
-                return;
+                return true;
             }
 
             Dictionary<string, string> keyValues = GetLineKeyValuePairs(countLine);
@@ -409,11 +402,10 @@ namespace Gorgon.Graphics.Fonts.Codecs
             }
 
             int count = Convert.ToInt32(keyValues[CountTag]);
-            fontInfo.UseKerningPairs = count >= 1;
 
-            if (!fontInfo.UseKerningPairs)
+            if (count < 1)
             {
-                return;
+                return false;
             }
 
             // Skip these lines, we don't need them.
@@ -421,6 +413,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
             {
                 reader.ReadLine();
             }
+            return true;
         }
 
         /// <summary>
@@ -436,16 +429,25 @@ namespace Gorgon.Graphics.Fonts.Codecs
         /// </summary>
         /// <param name="stream">The stream containing the metadata to read.</param>
         /// <returns>
-        /// The font meta data as a <see cref="IGorgonFontInfo"/> value.
+        /// The font meta data as a <see cref="GorgonFontInfo"/> value.
         /// </returns>
-        protected override IGorgonFontInfo OnGetMetaData(Stream stream)
+        protected override GorgonFontInfo OnGetMetaData(Stream stream)
         {
             using var reader = new StreamReader(stream, Encoding.ASCII, true, 80000, true);
             GorgonFontInfo result = ParseInfoLine(reader.ReadLine());
-            ParseCommonLine(result, reader.ReadLine(), out int textureLineSkip);
-            SkipTextures(reader, textureLineSkip);
-            ParseCharacters(result, reader);
-            ParseKerning(result, reader);
+            ParseCommonLine(reader.ReadLine(), out (int TextureLineSkip, int TextureWidth, int TextureHeight) textureInfo);
+            SkipTextures(reader, textureInfo.TextureLineSkip);
+            string characters = ParseCharacters(reader);
+            ParseKerning(reader);
+
+#if NET5_0_OR_GREATER
+            result = result with
+            {
+                Characters = characters,
+                TextureWidth = textureInfo.TextureWidth,
+                TextureHeight = textureInfo.TextureHeight
+            };
+#endif
 
             return result;
         }
@@ -463,7 +465,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM);
             }
 
-            IGorgonFontInfo fontInfo = OnGetMetaData(fileStream);
+            GorgonFontInfo fontInfo = OnGetMetaData(fileStream);
 
             return Factory.GetFontAsync(fontInfo);
         }
@@ -481,7 +483,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM);
             }
 
-            IGorgonFontInfo fontInfo = OnGetMetaData(fileStream);
+            GorgonFontInfo fontInfo = OnGetMetaData(fileStream);
 
             return Factory.GetFont(fontInfo);
         }

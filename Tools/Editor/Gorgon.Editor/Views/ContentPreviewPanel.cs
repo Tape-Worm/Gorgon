@@ -159,8 +159,9 @@ namespace Gorgon.Editor.Views
         {
             _swapChain = GraphicsContext.LeaseSwapPresenter(PanelDisplay);
             _renderer = GraphicsContext.Renderer2D;
-            _titleFont = GraphicsContext.FontFactory.GetFont(new GorgonFontInfo(Font.FontFamily.Name, 10.0f, FontHeightMode.Points, $"PreviewTitleFont")
+            _titleFont = GraphicsContext.FontFactory.GetFont(new GorgonFontInfo(Font.FontFamily.Name, 10.0f, FontHeightMode.Points)
             {
+                Name = "PreviewTitleFont",
                 OutlineSize = 2,
                 OutlineColor1 = GorgonColor.Black,
                 OutlineColor2 = GorgonColor.Black,

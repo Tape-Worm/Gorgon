@@ -67,8 +67,9 @@ namespace Gorgon.Editor.AnimationEditor
         {
             base.OnLoad();
 
-            _font = Fonts.GetFont(new GorgonFontInfo("Segoe UI", 18.0f, FontHeightMode.Points, "Segoe UI 18 pt")
+            _font = Fonts.GetFont(new GorgonFontInfo("Segoe UI", 18.0f, FontHeightMode.Points)
             {
+                Name = "Segoe UI 18 pt",
                 FontStyle = FontStyle.Bold,
                 Characters = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.Distinct(),
                 OutlineColor1 = GorgonColor.Black,
