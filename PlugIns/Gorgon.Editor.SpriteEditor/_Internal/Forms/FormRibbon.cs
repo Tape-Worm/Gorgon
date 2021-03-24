@@ -273,7 +273,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonFixedSize_Click(object sender, EventArgs e)
         {
-            DX.Size2F? size = ButtonFixedSize.Checked ?  new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value) : (DX.Size2F?)null;
+            DX.Size2F? size = ButtonFixedSize.Checked ?  new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value) : null;
 
             if ((DataContext?.SpriteClipContext?.FixedSizeCommand is null) || (!DataContext.SpriteClipContext.FixedSizeCommand.CanExecute(size)))
             {
@@ -885,7 +885,7 @@ namespace Gorgon.Editor.SpriteEditor
             if (DataContext.SpriteClipContext is not null)
             {
                 DX.Size2F? fixedSize = ButtonFixedSize.Enabled ? new DX.Size2F((float)NumericFixedWidth.Value, (float)NumericFixedHeight.Value)
-                                                               : (DX.Size2F?)null;
+                                                               : null;
 
                 ButtonSpriteClipApply.Enabled = DataContext.SpriteClipContext.ApplyCommand?.CanExecute(null) ?? false;
                 ButtonSpriteClipCancel.Enabled = DataContext.SpriteClipContext.CancelCommand?.CanExecute(null) ?? false;

@@ -42,7 +42,7 @@ namespace Gorgon.Editor.UI.Controls
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.UI.Controls.ContentFileEntrySelectedEventArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ContentFileEntrySelectedEventArgs"/> class.</summary>
         /// <param name="entry">The file entry that was selected or unselected.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="entry"/> parameter is <b>null</b>.</exception>
         public ContentFileEntrySelectedEventArgs(ContentFileExplorerFileEntry entry) => FileEntry = entry ?? throw new ArgumentNullException(nameof(entry));

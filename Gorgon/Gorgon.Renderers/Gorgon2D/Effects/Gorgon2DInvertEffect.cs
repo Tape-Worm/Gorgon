@@ -180,7 +180,7 @@ namespace Gorgon.Renderers
             EndRender(target);
         }
 
-        /// <summary>Function to render an effect under the <see cref="Gorgon.Renderers.Gorgon2DCompositor"/>.</summary>
+        /// <summary>Function to render an effect under the <see cref="Gorgon2DCompositor"/>.</summary>
         /// <param name="texture">The texture to render into the next target.</param>
         /// <param name="output">The render target that will receive the final output.</param>
         public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)

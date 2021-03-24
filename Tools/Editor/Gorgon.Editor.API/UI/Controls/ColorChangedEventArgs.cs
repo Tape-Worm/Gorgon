@@ -54,7 +54,7 @@ namespace Gorgon.Editor.UI.Controls
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.UI.Controls.ColorChangedEventArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ColorChangedEventArgs"/> class.</summary>
         /// <param name="newColor">The new color.</param>
         /// <param name="originalColor">The original color.</param>
         public ColorChangedEventArgs(GorgonColor newColor, GorgonColor originalColor)

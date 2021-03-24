@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Imaging
         /// </para>
         /// <para>
         /// Block compression is, by nature, a lossy compression format. Thus some fidelity will be lost when compressing the data, it is recommended that images be compressed as a last stage in 
-        /// processing. Because block compression lays the image data out differently than standard image data, the functionality provided for modifying an image (e.g. <see cref="IGorgonImageUpdateFluent.Resize"/>) will not 
+        /// processing. Because block compression lays the image data out differently than standard image data, the functionality provided for modifying an image (e.g. <see cref="Resize"/>) will not 
         /// work and will throw an exception if used on block compressed data.
         /// </para>
         /// <para>

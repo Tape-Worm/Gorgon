@@ -59,7 +59,7 @@ namespace System
         public int Value => 0;
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="int"/> to <see cref="System.Index"/>.
+        /// Performs an implicit conversion from <see cref="int"/> to <see cref="Index"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>

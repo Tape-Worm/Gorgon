@@ -132,7 +132,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown"></see> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.KeyEventArgs"></see> that contains the event data.</param>
+        /// <param name="e">A <see cref="KeyEventArgs"></see> that contains the event data.</param>
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -163,7 +163,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.FormClosingEventArgs"></see> that contains the event data.</param>
+        /// <param name="e">A <see cref="FormClosingEventArgs"></see> that contains the event data.</param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
@@ -183,7 +183,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs"></see> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"></see> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

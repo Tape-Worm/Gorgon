@@ -96,7 +96,6 @@ namespace Gorgon.Renderers
                 renderable.HasTransformChanges = true;
             }
 
-            renderable.HasVertexColorChanges = false;
             renderable.HasTextureChanges = false;
             renderable.HasVertexChanges = false;
 

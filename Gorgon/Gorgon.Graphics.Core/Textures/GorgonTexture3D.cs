@@ -1182,7 +1182,7 @@ namespace Gorgon.Graphics.Core
                                                                      Right = finalBounds.Right,
                                                                      Bottom = finalBounds.Bottom
                                                                  },
-                                                                 new IntPtr((void*)imageBuffer.Data),
+                                                                 new IntPtr(imageBuffer.Data),
                                                                  imageBuffer.PitchInformation.RowPitch,
                                                                  imageBuffer.PitchInformation.SlicePitch,
                                                                  (int)copyMode);

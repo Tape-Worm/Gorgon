@@ -62,7 +62,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>Property to return whether this 2D texture is a cube map.</summary>
         /// <remarks>
         ///   <para>
-        /// When this value is set to <b>true</b>, then the texture is defined as a cube map using the <see cref="TempTargetTextureInfo.ArrayCount" /> as the number of faces. Because of this, the <see cref="P:Gorgon.Graphics.Core.TempTargetTextureInfo.ArrayCount" /> value
+        /// When this value is set to <b>true</b>, then the texture is defined as a cube map using the <see cref="ArrayCount" /> as the number of faces. Because of this, the <see cref="P:Gorgon.Graphics.Core.TempTargetTextureInfo.ArrayCount" /> value
         /// must be a multiple of 6. If it is not, then the array count will be adjusted to meet the requirement.
         /// </para>
         ///   <para>
@@ -112,7 +112,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>Property to return the flags to determine how the texture will be bound with the pipeline when rendering.</summary>
         /// <remarks>
         ///   <para>
-        /// If the <see cref="TempTargetTextureInfo.Usage" /> property is set to <see cref="ResourceUsage.Staging" />, then the texture must be created with a value of <see cref="TextureBinding.None" /> as staging textures do not
+        /// If the <see cref="Usage" /> property is set to <see cref="ResourceUsage.Staging" />, then the texture must be created with a value of <see cref="TextureBinding.None" /> as staging textures do not
         /// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None" />, an exception will be thrown.
         /// </para>
         ///   <para>

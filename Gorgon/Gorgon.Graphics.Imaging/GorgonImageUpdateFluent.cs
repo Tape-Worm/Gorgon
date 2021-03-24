@@ -677,7 +677,7 @@ namespace Gorgon.Graphics.Imaging
         /// Use this to convert an image format from one to another. The conversion functionality uses Windows Imaging Components (WIC) to perform the conversion.
         /// </para>
         /// <para>
-        /// Because this method uses WIC, not all formats will be convertible. To determine if a format can be converted, use the <see cref="GorgonImage.CanConvertToFormat"/> method. 
+        /// Because this method uses WIC, not all formats will be convertible. To determine if a format can be converted, use the <see cref="CanConvertToFormat"/> method. 
         /// </para>
         /// <para>
         /// For the <see cref="BufferFormat.B4G4R4A4_UNorm"/> format, Gorgon has to perform a manual conversion since that format is not supported by WIC. Because of this, the 

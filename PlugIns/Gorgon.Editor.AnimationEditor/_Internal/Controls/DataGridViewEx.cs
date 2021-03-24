@@ -132,7 +132,7 @@ namespace Gorgon.Editor.AnimationEditor
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.DataGridView.SelectionChanged"/> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains information about the event.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains information about the event.</param>
         protected override void OnSelectionChanged(EventArgs e)
         {
             if (_noFireSelectEvent != 0)

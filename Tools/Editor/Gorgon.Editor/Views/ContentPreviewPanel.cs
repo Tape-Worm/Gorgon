@@ -277,7 +277,7 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Resize"/> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
@@ -285,7 +285,7 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>Paints the background of the control.</summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
+        /// <param name="e">A <see cref="PaintEventArgs"/> that contains the event data.</param>
         protected override void OnPaintBackground(PaintEventArgs e)
         {
             base.OnPaintBackground(e);
@@ -293,7 +293,7 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Paint"/> event.</summary>
-        /// <param name="e">A <see cref="System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
+        /// <param name="e">A <see cref="PaintEventArgs"/> that contains the event data.</param>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -301,7 +301,7 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             if (IsDesignTime)
@@ -333,7 +333,7 @@ namespace Gorgon.Editor.Views
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.Views.ContentPreview"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Views.ContentPreview"/> class.</summary>
         public ContentPreviewPanel()
         {
             SetStyle(ControlStyles.UserPaint, true);

@@ -33,14 +33,14 @@ using Gorgon.Graphics;
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// Defines the colors for each corner of a rectangle.
+    /// Defines the colors for each corner of a text sprite glyph rectangle.
     /// </summary>
-    public class GorgonRectangleColors
+    public class GorgonGlyphColors
         : IReadOnlyList<GorgonColor>
     {
         #region Variables.
         // The renderable that owns this object.
-        private readonly BatchRenderable _renderable;
+        private readonly TextRenderable _renderable;
         #endregion
 
         #region Properties.
@@ -184,7 +184,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="destination">The destination that will receive the copy of the colors.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-        public void CopyTo(GorgonRectangleColors destination)
+        public void CopyTo(GorgonGlyphColors destination)
         {
             if (destination is null)
             {
@@ -208,7 +208,7 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
-        /// <returns>An <see cref="System.Collections.IEnumerator"/> object that can be used to iterate through the collection.</returns>
+        /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             for (int i = 0; i < 4; ++i)
@@ -220,11 +220,11 @@ namespace Gorgon.Renderers
 
         #region Constructor
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonRectangleColors"/> class.
+        /// Initializes a new instance of the <see cref="GorgonGlyphColors"/> class.
         /// </summary>
         /// <param name="defaultColor">The default color for the corners.</param>
         /// <param name="renderable">The renderable that owns this object.</param>
-        internal GorgonRectangleColors(GorgonColor defaultColor, BatchRenderable renderable)
+        internal GorgonGlyphColors(GorgonColor defaultColor, TextRenderable renderable)
         {
             _renderable = renderable;
             SetAll(defaultColor);

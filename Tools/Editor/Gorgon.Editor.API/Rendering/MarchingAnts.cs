@@ -102,7 +102,7 @@ namespace Gorgon.Editor.Rendering
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.Rendering.MarchingAnts"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="MarchingAnts"/> class.</summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
         public MarchingAnts(Gorgon2D renderer)
         {

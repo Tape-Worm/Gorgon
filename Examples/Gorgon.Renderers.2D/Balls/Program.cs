@@ -262,8 +262,7 @@ namespace Gorgon.Examples
 			for (int y = 0; y < _mainScreen.Height; y += (int)_wall.Size.Height)
 			{
 				for (int x = 0; x < _mainScreen.Width; x += (int)_wall.Size.Width)
-				{
-					_wall.Color = Color.White;
+				{					
 					_wall.Position = new Vector2(x, y);
 					_2D.DrawSprite(_wall);
 				}
@@ -477,7 +476,8 @@ namespace Gorgon.Examples
 				{
 					Size = new DX.Size2F(63, 63),
 					Texture = _ballTexture,
-					TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f)
+					TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f),
+					Color = GorgonColor.White
 				};
 
 				// Create the ball sprite.

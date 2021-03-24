@@ -87,28 +87,28 @@ namespace Gorgon.Math
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float FastSin(this float rads)
         {
-            int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
-            rads -= ((i32I) * 3.1415926535897932384626433832795f);
+            int i32I = (int)(rads * 0.31830988618379067153776752674503);  // 1 / PI.
+            double radians = rads - ((i32I) * 3.1415926535897932384626433832795);
 
-            float fX2 = rads * rads;
+            double fX2 = radians * radians;
 
-            return ((i32I & 1) == 1)
-                       ? -rads * ((float)(1.00000000000000000000e+00) +
-                                  (fX2 * ((float)(-1.66666671633720397949e-01) +
-                                         (fX2 * ((float)(8.33333376795053482056e-03) +
-                                                (fX2 * ((float)(-1.98412497411482036114e-04) +
-                                                       (fX2 * ((float)(2.75565571428160183132e-06) +
-                                                              (fX2 * ((float)(-2.50368472620721149724e-08) +
-                                                                     (fX2 * ((float)(1.58849267073435385100e-10) +
-                                                                            (fX2 * (float)(-6.58925550841432672300e-13)))))))))))))))
-                       : rads * ((float)(1.00000000000000000000e+00) +
-                                 (fX2 * ((float)(-1.66666671633720397949e-01) +
-                                        (fX2 * ((float)(8.33333376795053482056e-03) +
-                                               (fX2 * ((float)(-1.98412497411482036114e-04) +
-                                                      (fX2 * ((float)(2.75565571428160183132e-06) +
-                                                             (fX2 * ((float)(-2.50368472620721149724e-08) +
-                                                                    (fX2 * ((float)(1.58849267073435385100e-10) +
-                                                                           (fX2 * (float)(-6.58925550841432672300e-13)))))))))))))));
+            return (float)(((i32I & 1) == 1)
+                       ? -radians * ((1.00000000000000000000e+00) +
+                                  (fX2 * ((-1.66666671633720397949e-01) +
+                                         (fX2 * ((8.33333376795053482056e-03) +
+                                                (fX2 * ((-1.98412497411482036114e-04) +
+                                                       (fX2 * ((2.75565571428160183132e-06) +
+                                                              (fX2 * ((-2.50368472620721149724e-08) +
+                                                                     (fX2 * ((1.58849267073435385100e-10) +
+                                                                            (fX2 * (-6.58925550841432672300e-13)))))))))))))))
+                       : radians * ((1.00000000000000000000e+00) +
+                                 (fX2 * ((-1.66666671633720397949e-01) +
+                                        (fX2 * ((8.33333376795053482056e-03) +
+                                               (fX2 * ((-1.98412497411482036114e-04) +
+                                                      (fX2 * ((2.75565571428160183132e-06) +
+                                                             (fX2 * ((-2.50368472620721149724e-08) +
+                                                                    (fX2 * ((1.58849267073435385100e-10) +
+                                                                           (fX2 * (-6.58925550841432672300e-13))))))))))))))));
         }
 
         /// <summary>
@@ -131,28 +131,28 @@ namespace Gorgon.Math
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float FastCos(this float rads)
         {
-            int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
-            rads -= ((i32I) * 3.1415926535897932384626433832795f);
+            int i32I = (int)(rads * 0.31830988618379067153776752674503);  // 1 / PI.
+            double radians = rads - ((i32I) * 3.1415926535897932384626433832795);
 
-            float fX2 = rads * rads;
+            double fX2 = radians * radians;
 
-            return ((i32I & 1) == 1)
-                       ? -(float)(1.00000000000000000000e+00) -
-                         (fX2 * ((float)(-5.00000000000000000000e-01) +
-                                (fX2 * ((float)(4.16666641831398010254e-02) +
-                                       (fX2 * ((float)(-1.38888671062886714935e-03) +
-                                              (fX2 * ((float)(2.48006890615215525031e-05) +
-                                                     (fX2 * ((float)(-2.75369927749125054106e-07) +
-                                                            (fX2 * ((float)(2.06207229069832465029e-09) +
-                                                                   (fX2 * (float)(-9.77507137733812925262e-12))))))))))))))
-                       : (float)(1.00000000000000000000e+00) +
-                         (fX2 * ((float)(-5.00000000000000000000e-01) +
-                                (fX2 * ((float)(4.16666641831398010254e-02) +
-                                       (fX2 * ((float)(-1.38888671062886714935e-03) +
-                                              (fX2 * ((float)(2.48006890615215525031e-05) +
-                                                     (fX2 * ((float)(-2.75369927749125054106e-07) +
-                                                            (fX2 * ((float)(2.06207229069832465029e-09) +
-                                                                   (fX2 * (float)(-9.77507137733812925262e-12))))))))))))));
+            return (float)(((i32I & 1) == 1)
+                       ? -(1.00000000000000000000e+00) -
+                         (fX2 * ((-5.00000000000000000000e-01) +
+                                (fX2 * ((4.16666641831398010254e-02) +
+                                       (fX2 * ((-1.38888671062886714935e-03) +
+                                              (fX2 * ((2.48006890615215525031e-05) +
+                                                     (fX2 * ((-2.75369927749125054106e-07) +
+                                                            (fX2 * ((2.06207229069832465029e-09) +
+                                                                   (fX2 * (-9.77507137733812925262e-12))))))))))))))
+                       : (1.00000000000000000000e+00) +
+                         (fX2 * ((-5.00000000000000000000e-01) +
+                                (fX2 * ((4.16666641831398010254e-02) +
+                                       (fX2 * ((-1.38888671062886714935e-03) +
+                                              (fX2 * ((2.48006890615215525031e-05) +
+                                                     (fX2 * ((-2.75369927749125054106e-07) +
+                                                            (fX2 * ((2.06207229069832465029e-09) +
+                                                                   (fX2 * (-9.77507137733812925262e-12)))))))))))))));
         }
 
         /// <summary>
@@ -340,6 +340,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">Value to evaluate.</param>
         /// <returns>The absolute value of <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static short Abs(this short value) => System.Math.Abs(value);
 
         /// <summary>
@@ -347,6 +348,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">Value to evaluate.</param>
         /// <returns>The absolute value of <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Abs(this int value) => System.Math.Abs(value);
 
         /// <summary>
@@ -354,6 +356,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">Value to evaluate.</param>
         /// <returns>The absolute value of <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long Abs(this long value) => System.Math.Abs(value);
 
         /// <summary>
@@ -361,6 +364,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">Value to evaluate.</param>
         /// <returns>The absolute value of <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Abs(this double value) => System.Math.Abs(value);
 
         /// <summary>
@@ -368,6 +372,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">Value to evaluate.</param>
         /// <returns>The absolute value of <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal Abs(this decimal value) => System.Math.Abs(value);
 
         /// <summary>
@@ -375,6 +380,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">Value to evaluate.</param>
         /// <returns>The absolute value of <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Abs(this float value) => System.Math.Abs(value);
 
         /// <summary>
@@ -387,6 +393,7 @@ namespace Gorgon.Math
         /// <remarks>  
         /// See <see cref="System.Math.Round(double,int,MidpointRounding)"/> for more information.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Round(this float value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven) => (float)(System.Math.Round(value, decimalCount, rounding));
 
         /// <summary>
@@ -399,6 +406,7 @@ namespace Gorgon.Math
         /// <remarks>  
         /// See <see cref="System.Math.Round(decimal,int,MidpointRounding)"/> for more information.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal Round(this decimal value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven) => System.Math.Round(value, decimalCount, rounding);
 
         /// <summary>
@@ -411,6 +419,7 @@ namespace Gorgon.Math
         /// <remarks>  
         /// See <see cref="System.Math.Round(double,int,MidpointRounding)"/> for more information.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Round(this double value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven) => System.Math.Round(value, decimalCount, rounding);
 
         /// <summary>
@@ -517,6 +526,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">The value to get the square root of.</param>
         /// <returns>The square root of the value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Sqrt(this double value) => System.Math.Sqrt(value);
 
         /// <summary>
@@ -524,6 +534,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">The value to get the square root of.</param>
         /// <returns>The square root of the value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sqrt(this float value) => (float)System.Math.Sqrt(value);
 
         /// <summary>
@@ -531,6 +542,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The sine value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Sin(this float angle) => (float)System.Math.Sin(angle);
 
         /// <summary>
@@ -538,6 +550,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The sine value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal Sin(this decimal angle) => (decimal)System.Math.Sin((double)angle);
 
         /// <summary>
@@ -545,6 +558,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The sine value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Sin(this double angle) => System.Math.Sin(angle);
 
         /// <summary>
@@ -552,6 +566,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The cosine value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Cos(this float angle) => (float)System.Math.Cos(angle);
 
         /// <summary>
@@ -559,6 +574,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The cosine value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal Cos(this decimal angle) => (decimal)System.Math.Cos((double)angle);
 
         /// <summary>
@@ -566,6 +582,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The cosine value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Cos(this double angle) => System.Math.Cos(angle);
 
         /// <summary>
@@ -573,6 +590,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The tangent value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Tan(this float angle) => (float)System.Math.Tan(angle);
 
         /// <summary>
@@ -580,6 +598,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The tangent value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal Tan(this decimal angle) => (decimal)System.Math.Tan((double)angle);
 
         /// <summary>
@@ -587,6 +606,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="angle">The angle, in radians.</param>
         /// <returns>The tangent value of the <paramref name="angle"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Tan(this double angle) => System.Math.Tan(angle);
 
         /// <summary>
@@ -594,6 +614,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="sine">The sine value.</param>
         /// <returns>The inverse sine value of the <paramref name="sine"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ASin(this float sine) => (float)System.Math.Asin(sine);
 
         /// <summary>
@@ -601,6 +622,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="sine">The sine value.</param>
         /// <returns>The inverse sine value of the <paramref name="sine"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal ASin(this decimal sine) => (decimal)System.Math.Asin((double)sine);
 
         /// <summary>
@@ -608,6 +630,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="sine">The sine value.</param>
         /// <returns>The inverse sine value of the <paramref name="sine"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ASin(this double sine) => System.Math.Asin(sine);
 
         /// <summary>
@@ -615,6 +638,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="cosine">The cosine value.</param>
         /// <returns>The inverse cosine value of the <paramref name="cosine"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ACos(this float cosine) => (float)System.Math.Acos(cosine);
 
         /// <summary>
@@ -622,6 +646,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="cosine">The cosine value.</param>
         /// <returns>The inverse cosine value of the <paramref name="cosine"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal ACos(this decimal cosine) => (decimal)System.Math.Acos((double)cosine);
 
         /// <summary>
@@ -629,6 +654,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="cosine">The cosine value.</param>
         /// <returns>The inverse cosine value of the <paramref name="cosine"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ACos(this double cosine) => System.Math.Acos(cosine);
 
         /// <summary>
@@ -636,6 +662,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="tangent">The tangent value.</param>
         /// <returns>The tangent sine value of the <paramref name="tangent"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ATan(this float tangent) => (float)System.Math.Atan(tangent);
 
         /// <summary>
@@ -643,6 +670,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="tangent">The tangent value.</param>
         /// <returns>The tangent sine value of the <paramref name="tangent"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal ATan(this decimal tangent) => (decimal)System.Math.Atan((double)tangent);
 
         /// <summary>
@@ -650,6 +678,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="tangent">The tangent value.</param>
         /// <returns>The tangent sine value of the <paramref name="tangent"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ATan(this double tangent) => System.Math.Atan(tangent);
 
         /// <summary>
@@ -658,6 +687,7 @@ namespace Gorgon.Math
         /// <param name="y">Vertical slope value to retrieve the inverse tangent from.</param>
         /// <param name="x">Horizontal slope value to retrieve the inverse tangent from.</param>
         /// <returns>The inverse tangent of the slope.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float ATan(this float y, float x) => (float)System.Math.Atan2(y, x);
 
         /// <summary>
@@ -666,6 +696,7 @@ namespace Gorgon.Math
         /// <param name="y">Vertical slope value to retrieve the inverse tangent from.</param>
         /// <param name="x">Horizontal slope value to retrieve the inverse tangent from.</param>
         /// <returns>The inverse tangent of the slope.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal ATan(this decimal y, decimal x) => (decimal)System.Math.Atan2((double)y, (double)x);
 
         /// <summary>
@@ -674,6 +705,7 @@ namespace Gorgon.Math
         /// <param name="y">Vertical slope value to retrieve the inverse tangent from.</param>
         /// <param name="x">Horizontal slope value to retrieve the inverse tangent from.</param>
         /// <returns>The inverse tangent of the slope.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ATan(this double y, double x) => System.Math.Atan2(y, x);
 
         /// <summary>
@@ -684,6 +716,7 @@ namespace Gorgon.Math
         /// <remarks>
         /// <b><i>e</i></b> is a constant value of ~2.71828.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Exp(this double power) => System.Math.Exp(power);
 
         /// <summary>
@@ -694,6 +727,7 @@ namespace Gorgon.Math
         /// <remarks>
         /// <b><i>e</i></b> is a constant value of ~2.71828.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal Exp(this decimal power) => (decimal)System.Math.Exp((double)power);
         /// <summary>
         /// Function to return <b><i>e</i></b> raised to a <see cref="float"/> value as the power.
@@ -703,6 +737,7 @@ namespace Gorgon.Math
         /// <remarks>
         /// <b><i>e</i></b> is a constant value of ~2.71828.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Exp(this float power) => (float)System.Math.Exp(power);
 
         /// <summary>
@@ -711,6 +746,7 @@ namespace Gorgon.Math
         /// <param name="value">The value to raise.</param>
         /// <param name="power">The value representing a power to raise to.</param>
         /// <returns>The <paramref name="value"/> raised to the specified <paramref name="power"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Pow(this double value, double power) => System.Math.Pow(value, power);
 
         /// <summary>
@@ -719,6 +755,7 @@ namespace Gorgon.Math
         /// <param name="value">The value to raise.</param>
         /// <param name="power">The value representing a power to raise to.</param>
         /// <returns>The <paramref name="value"/> raised to the specified <paramref name="power"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal Pow(this decimal value, decimal power) => (decimal)System.Math.Pow((double)value, (double)power);
 
         /// <summary>
@@ -727,6 +764,7 @@ namespace Gorgon.Math
         /// <param name="value">The value to raise.</param>
         /// <param name="power">The value representing a power to raise to.</param>
         /// <returns>The <paramref name="value"/> raised to the specified <paramref name="power"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Pow(this float value, float power) => (float)System.Math.Pow(value, power);
 
         /// <summary>
@@ -735,6 +773,7 @@ namespace Gorgon.Math
         /// <param name="value">The value to compute the logarithim from.</param>
         /// <param name="power">The new base for the logarithm.</param>
         /// <returns>The logarithim value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Log(this float value, float power) => (float)System.Math.Log(value, power);
 
         /// <summary>
@@ -743,6 +782,7 @@ namespace Gorgon.Math
         /// <param name="value">The value to compute the logarithim from.</param>
         /// <param name="power">The new base for the logarithm.</param>
         /// <returns>The logarithim value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Log(this double value, double power) => System.Math.Log(value, power);
 
         /// <summary>
@@ -751,6 +791,7 @@ namespace Gorgon.Math
         /// <param name="value">The value to compute the logarithim from.</param>
         /// <param name="power">The new base for the logarithm.</param>
         /// <returns>The logarithim value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static decimal Log(this decimal value, decimal power) => (decimal)System.Math.Log((double)value, (double)power);
 
         /// <summary>

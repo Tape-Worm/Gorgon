@@ -547,7 +547,7 @@ namespace Gorgon.Examples
         /// <param name="renderer">The 2D renderer used to render the particles.</param>
         /// <param name="particleSprite">Sprite to use for the particle.</param>
         /// <param name="position">The initial position of the emitter.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="renderer"/>, or <paramref name="particleSprite"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or <paramref name="particleSprite"/> parameter is <b>null</b>.</exception>
         public ParticleEmitter(Gorgon2D renderer, GorgonSprite particleSprite, Vector2 position)
         {
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));

@@ -54,7 +54,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 Vector4 values = WorkingSprite?.GetFloatValues(Track.Track.SpriteProperty) ?? GorgonColor.White;
 
-                return AlphaOnly ? new GorgonColor(0, 0, 0, values.X) : (GorgonColor)values;
+                return AlphaOnly ? new GorgonColor(0, 0, 0, values.X) : values;
             }
             set
             {
@@ -71,7 +71,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 OnPropertyChanging();
                 NotifyPropertyChanging(nameof(IKeyValueEditor.Value));
-                WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new Vector4(value.Alpha, 0, 0, 0) : (Vector4)value);
+                WorkingSprite.SetFloatValues(Track.Track.SpriteProperty, AlphaOnly ? new Vector4(value.Alpha, 0, 0, 0) : value);
                 OnPropertyChanged();
                 NotifyPropertyChanged(nameof(IKeyValueEditor.Value));
             }

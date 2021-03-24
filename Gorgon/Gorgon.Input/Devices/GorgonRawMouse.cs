@@ -86,7 +86,7 @@ namespace Gorgon.Input
         // The button used for a double click.
         private MouseButtons _doubleClickButton;
         // The timer used for a double click.
-        private readonly IGorgonTimer _doubleClickTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
+        private readonly IGorgonTimer _doubleClickTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
         // The absolute position of the wheel.
         private int _wheelPosition;
         // The last known position for the mouse.

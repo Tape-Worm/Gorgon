@@ -598,11 +598,11 @@ namespace Gorgon.Examples
         /// <summary>Function called when the associated view is loaded.</summary>
         /// <remarks>
         ///   <para>
-        /// This method should be overridden when there is a need to set up functionality (e.g. events) when the UI first loads with the view model attached. Unlike the <see cref="Gorgon.Editor.UI.ViewModelBase{T, THs}.Initialize"/> method, this
+        /// This method should be overridden when there is a need to set up functionality (e.g. events) when the UI first loads with the view model attached. Unlike the <see cref="ViewModelBase{T, THs}.Initialize"/> method, this
         /// method may be called multiple times during the lifetime of the application.
         /// </para>
         ///   <para>
-        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="Gorgon.Editor.UI.ViewModelBase{T, THs}.OnUnload"/> method.
+        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="ViewModelBase{T, THs}.OnUnload"/> method.
         /// </para>
         /// </remarks>
         public override void OnLoad()
@@ -617,7 +617,7 @@ namespace Gorgon.Examples
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
-        /// <seealso cref="Gorgon.Editor.UI.ViewModelBase{T, THs}.OnLoad" />
+        /// <seealso cref="ViewModelBase{T, THs}.OnLoad" />
         public override void OnUnload()
         {
             // Whenever we set and event, or assign a command on a child view model, we should reset it so we 

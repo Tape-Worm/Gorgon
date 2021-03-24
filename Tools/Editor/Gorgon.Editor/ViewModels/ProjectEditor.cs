@@ -751,7 +751,7 @@ namespace Gorgon.Editor.ViewModels
                 // Function used to update the progress meter display.
                 void SaveProgress(int currentItem, int totalItems, bool allowCancellation)
                 {
-                    panelUpdateArgs.CancelAction = allowCancellation ? CancelOperation : (Action)null;
+                    panelUpdateArgs.CancelAction = allowCancellation ? CancelOperation : null;
                     panelUpdateArgs.PercentageComplete = (float)currentItem / totalItems;
                     UpdateProgress(panelUpdateArgs);
                 }

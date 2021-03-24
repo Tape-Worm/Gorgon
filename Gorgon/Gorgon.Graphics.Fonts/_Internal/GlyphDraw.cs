@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Fonts
 
                 return ((result.Width < 0.1f) || (result.Height < 0.1f))
                     ? null
-                    : (RectangleF?)result;
+                    : result;
             }
             finally
             {

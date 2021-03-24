@@ -375,8 +375,8 @@ namespace Gorgon.Editor.SpriteEditor
                 GorgonSprite sprite = _defaultCodec.FromStream(inStream, texture);
 
                 // If we don't have a texture by this point, then update the preview to show that there's no image attached.
-                return sprite.Texture is null ? ((GorgonSprite sprite, IContentFile imageFile, IGorgonImage thumbNail))(null, null, _noImage.Clone()) 
-                                              : ((GorgonSprite sprite, IContentFile imageFile, IGorgonImage thumbNail))(sprite, imageFile, null);
+                return sprite.Texture is null ? (null, null, _noImage.Clone())
+                                              : (sprite, imageFile, null);
             }
             catch (Exception ex)
             {

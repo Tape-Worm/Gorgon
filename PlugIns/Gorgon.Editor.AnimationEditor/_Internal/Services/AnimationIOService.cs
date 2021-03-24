@@ -185,7 +185,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
             GorgonTexture2DView texture = await _textureCache.GetTextureAsync(imageFile);
             imageFile.IsOpen = true;
 
-            return texture is null ? ((GorgonTexture2DView texture, IContentFile textureFile))(null, null) : (texture, imageFile);
+            return texture is null ? (null, null) : (texture, imageFile);
         }
 
         /// <summary>

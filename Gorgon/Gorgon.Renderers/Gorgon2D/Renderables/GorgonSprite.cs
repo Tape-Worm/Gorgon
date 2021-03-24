@@ -47,13 +47,18 @@ namespace Gorgon.Renderers
         private Vector2 _absoluteAnchor;
 #pragma warning disable IDE0032 // Use auto property
         // The colors for the sprite corners.
-        private readonly GorgonRectangleColors _cornerColors;
+        private readonly GorgonSpriteColors _cornerColors;
         // The offsets for the sprite corners.
         private readonly GorgonRectangleOffsets _cornerOffsets;
 #pragma warning restore IDE0032 // Use auto property
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
-        internal readonly BatchRenderable Renderable = new();
+        internal readonly BatchRenderable Renderable = new()
+        {
+            Vertices = new Gorgon2DVertex[4],
+            ActualVertexCount = 4,
+            IndexCount = 6
+        };
         #endregion
 
         #region Properties.
@@ -63,13 +68,12 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public bool IsUpdated => Renderable.HasTextureChanges
                                      || Renderable.HasTransformChanges
-                                     || Renderable.HasVertexChanges
-                                     || Renderable.HasVertexColorChanges;            
+                                     || Renderable.HasVertexChanges;            
 
         /// <summary>
         /// Property to return the interface that allows colors to be assigned to each corner of the sprite.
         /// </summary>
-        public GorgonRectangleColors CornerColors => _cornerColors;
+        public GorgonSpriteColors CornerColors => _cornerColors;
 
         /// <summary>
         /// Property to set or return the color of the sprite.
@@ -80,7 +84,7 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public GorgonColor Color
         {
-            get => Renderable.UpperLeftColor;
+            get => Renderable.Vertices[0].Color;
             set => _cornerColors.SetAll(in value);
         }
 
@@ -391,7 +395,7 @@ namespace Gorgon.Renderers
         {
             get => Renderable.AlphaTestData.IsEnabled == 0
                     ? null
-                    : (GorgonRangeF?)new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
+                    : new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
             set
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
@@ -498,14 +502,13 @@ namespace Gorgon.Renderers
             sprite.Renderable.HasTextureChanges = true;
             sprite.Renderable.HasTransformChanges = true;
             sprite.Renderable.HasVertexChanges = true;
-            sprite.Renderable.HasVertexColorChanges = true;
         }
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Renderers.GorgonSprite"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="GorgonSprite"/> class.</summary>
         /// <param name="clone">The clone.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="clone"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="clone"/> parameter is <b>null</b>.</exception>
         public GorgonSprite(GorgonSprite clone)
             : this()
         {
@@ -522,13 +525,9 @@ namespace Gorgon.Renderers
         /// </summary>
         public GorgonSprite()
         {
-            _cornerColors = new GorgonRectangleColors(GorgonColor.White, Renderable);
+            _cornerColors = new GorgonSpriteColors(GorgonColor.White, Renderable);
             _cornerOffsets = new GorgonRectangleOffsets(Renderable);
-
-            Renderable.Vertices = new Gorgon2DVertex[4];
-            Renderable.ActualVertexCount = 4;
-            Renderable.IndexCount = 6;
-
+            
             for (int i = 0; i < Renderable.Vertices.Length; ++i)
             {
                 Renderable.Vertices[i].Position.W = 1.0f;

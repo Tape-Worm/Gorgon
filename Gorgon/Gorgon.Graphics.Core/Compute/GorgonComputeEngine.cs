@@ -40,13 +40,6 @@ namespace Gorgon.Graphics.Core
     /// The compute engine sends compuational work to the GPU via a <see cref="GorgonComputeShader"/>. This interface is different from the <see cref="GorgonGraphics"/> interface in that it does not rely 
     /// on the standard GPU pipeline to execute, and is stateful (i.e. applications set a state, run the engine, set another state, run again, etc...).
     /// </para>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// This engine requires a <c>Feature Level 11</c> video adapter or better. If one is not passed to the constructor, then an exception will be thrown.
-    /// </para>
-    /// </note>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
     public sealed class GorgonComputeEngine

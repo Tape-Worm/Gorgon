@@ -127,7 +127,7 @@ namespace Gorgon.Editor.AnimationEditor
 
             return newAnimationForm.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK
                 ? (newAnimationForm.ObjectName, newAnimationForm.Length, newAnimationForm.Fps, newAnimationForm.PrimarySpriteFile, newAnimationForm.BackgroundTextureFile)
-                : ((string, float, float, IContentFile, IContentFile))(null, 0, 0, null, null);
+                : (null, 0, 0, null, null);
         }
         #endregion
 

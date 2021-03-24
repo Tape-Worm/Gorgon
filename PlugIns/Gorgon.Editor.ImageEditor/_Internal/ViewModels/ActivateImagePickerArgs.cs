@@ -77,7 +77,7 @@ namespace Gorgon.Editor.ImageEditor
             set;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.ImageEditor.ActivateImagePickerArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ActivateImagePickerArgs"/> class.</summary>
         /// <param name="files">The files to import.</param>
         /// <param name="imageData">The image data to update.</param>
         public ActivateImagePickerArgs(IReadOnlyList<ImagePickerImportData> files, IGorgonImage imageData)

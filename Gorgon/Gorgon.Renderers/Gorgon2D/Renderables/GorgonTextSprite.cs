@@ -326,7 +326,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the interface that allows colors to be assigned to each corner of an individual font glyph.
         /// </summary>
-        public GorgonRectangleColors GlyphCornerColors
+        public GorgonGlyphColors GlyphCornerColors
         {
             get;
         }
@@ -562,7 +562,7 @@ namespace Gorgon.Renderers
                 BatchRenderable renderable = Renderable;
                 return renderable.AlphaTestData.IsEnabled == 0
                     ? null
-                    : (GorgonRangeF?)new GorgonRangeF(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha);
+                    : new GorgonRangeF(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha);
             }
             set
             {
@@ -633,7 +633,7 @@ namespace Gorgon.Renderers
         {
             Font = font ?? throw new ArgumentNullException(nameof(font));
             Text = text ?? string.Empty;
-            GlyphCornerColors = new GorgonRectangleColors(GorgonColor.White, Renderable);
+            GlyphCornerColors = new GorgonGlyphColors(GorgonColor.White, Renderable);
         }
         #endregion
     }

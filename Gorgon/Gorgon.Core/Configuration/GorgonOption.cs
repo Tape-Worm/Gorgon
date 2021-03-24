@@ -243,8 +243,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(byte),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -280,8 +280,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(sbyte),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -317,8 +317,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(short),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -354,8 +354,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(ushort),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -391,8 +391,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(int),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -428,8 +428,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(uint),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -465,8 +465,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(long),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -502,8 +502,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(ulong),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -536,7 +536,7 @@ namespace Gorgon.Configuration
                 defaultValue = maxValue.Value;
             }
 
-            return new GorgonOption(name, typeof(double), defaultValue, minValue is not null ? (object)minValue.Value : null, maxValue is not null ? (object)maxValue.Value : null, description);
+            return new GorgonOption(name, typeof(double), defaultValue, minValue is not null ? minValue.Value : null, maxValue is not null ? maxValue.Value : null, description);
         }
 
         /// <summary>
@@ -571,8 +571,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(float),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -608,8 +608,8 @@ namespace Gorgon.Configuration
             return new GorgonOption(name,
                                     typeof(decimal),
                                     defaultValue,
-                                    minValue is not null ? (object)minValue.Value : null,
-                                    maxValue is not null ? (object)maxValue.Value : null,
+                                    minValue is not null ? minValue.Value : null,
+                                    maxValue is not null ? maxValue.Value : null,
                                     description);
         }
 
@@ -642,7 +642,7 @@ namespace Gorgon.Configuration
                 defaultValue = maxValue.Value;
             }
 
-            return new GorgonOption(name, typeof(decimal), defaultValue, minValue is not null ? (object)minValue.Value : null, maxValue is not null ? (object)maxValue.Value : null, description);
+            return new GorgonOption(name, typeof(decimal), defaultValue, minValue is not null ? minValue.Value : null, maxValue is not null ? maxValue.Value : null, description);
         }
 
         /// <summary>

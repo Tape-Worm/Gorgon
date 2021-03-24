@@ -84,6 +84,31 @@ namespace Gorgon.Renderers
         public int TextLength;
 
         /// <summary>
+        /// The color of the upper left corner of the renderable.
+        /// </summary>
+        public GorgonColor UpperLeftColor = GorgonColor.White;
+
+        /// <summary>
+        /// The color of the upper right corner of the renderable.
+        /// </summary>
+        public GorgonColor UpperRightColor = GorgonColor.White;
+
+        /// <summary>
+        /// The color of the lower left corner of the renderable.
+        /// </summary>
+        public GorgonColor LowerLeftColor = GorgonColor.White;
+
+        /// <summary>
+        /// The color of the lower right corner of the renderable.
+        /// </summary>
+        public GorgonColor LowerRightColor = GorgonColor.White;
+
+        /// <summary>
+        /// A flag to indicate whether the colors of the individual corners of the renderable have changed.
+        /// </summary>
+        public bool HasVertexColorChanges = true;
+
+        /// <summary>
         /// A list of blocks of text to colorize using embedded codes.
         /// </summary>
         public List<ColorBlock> ColorBlocks = new();

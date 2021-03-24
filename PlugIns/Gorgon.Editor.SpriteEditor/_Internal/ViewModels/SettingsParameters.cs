@@ -47,7 +47,7 @@ namespace Gorgon.Editor.SpriteEditor
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.SpriteEditor.SettingsParameters"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsParameters"/> class.</summary>
         /// <param name="settings">The plug in settings.</param>
         /// <param name="hostServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>

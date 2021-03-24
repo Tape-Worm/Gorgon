@@ -348,7 +348,7 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             // Ensure that we don't get a degenerate rectangle.
-            return ((clipRegion.IsEmpty) || (clipRegion.Width < 0) || (clipRegion.Height < 0)) ? null : (DX.RectangleF?)clipRegion;
+            return ((clipRegion.IsEmpty) || (clipRegion.Width < 0) || (clipRegion.Height < 0)) ? null : clipRegion;
         }
         #endregion
     }

@@ -496,7 +496,7 @@ namespace Gorgon.Examples
 
         /// <summary>
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
@@ -512,7 +512,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.ResizeEnd" /> event.
         /// </summary>
-        /// <param name="e">A <see cref="System.EventArgs" /> that contains the event data.</param>
+        /// <param name="e">A <see cref="EventArgs" /> that contains the event data.</param>
         protected override void OnResizeEnd(EventArgs e)
         {
             base.OnResizeEnd(e);
@@ -599,7 +599,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
         /// </summary>
-        /// <param name="e">An <see cref="System.EventArgs"></see> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"></see> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

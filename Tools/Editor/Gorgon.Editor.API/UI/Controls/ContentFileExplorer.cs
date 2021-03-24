@@ -495,7 +495,7 @@ namespace Gorgon.Editor.UI.Controls
 
         /// <summary>Handles the CheckedChanged event of the CheckboxHeader control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckboxHeader_Click(object sender, EventArgs e)
         {
             var checkBox = (CheckBox)sender;
@@ -976,7 +976,7 @@ namespace Gorgon.Editor.UI.Controls
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

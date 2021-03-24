@@ -90,7 +90,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
         /// <summary>Handles the Click event of the SkipColor control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void SkipColor_Click(object sender, EventArgs e)
         {
             if ((DataContext?.SetEmptySpriteMaskColorCommand is null) || (!DataContext.SetEmptySpriteMaskColorCommand.CanExecute(null)))
@@ -298,7 +298,7 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
         /// <summary>Handles the Click event of the CheckSkipEmpty control.</summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CheckSkipEmpty_Click(object sender, EventArgs e)
         {
             if (DataContext is null)
@@ -311,8 +311,8 @@ namespace Gorgon.Editor.ExtractSpriteTool
         }
 
         /// <summary>Processes a command key.</summary>
-        /// <param name="msg">A <see cref="System.Windows.Forms.Message"/>, passed by reference, that represents the Win32 message to process.</param>
-        /// <param name="keyData">One of the <see cref="System.Windows.Forms.Keys"/> values that represents the key to process.</param>
+        /// <param name="msg">A <see cref="Message"/>, passed by reference, that represents the Win32 message to process.</param>
+        /// <param name="keyData">One of the <see cref="Keys"/> values that represents the key to process.</param>
         /// <returns>
         ///   <span class="keyword">
         ///     <span class="languageSpecificText">

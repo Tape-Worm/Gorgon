@@ -171,7 +171,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.ImageEditor.ViewModels.DimensionSettings"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="DimensionSettings"/> class.</summary>
         public MipMapSettings() => UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);
         #endregion
     }

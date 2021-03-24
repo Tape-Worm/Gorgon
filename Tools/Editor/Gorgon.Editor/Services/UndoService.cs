@@ -237,7 +237,7 @@ namespace Gorgon.Editor.Services
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.Services.UndoService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="UndoService"/> class.</summary>
         /// <param name="log">The log used for debug messaging.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="log" /> parameter is <strong>null</strong>.</exception>
         public UndoService(IGorgonLog log) => _log = log ?? GorgonLog.NullLog;

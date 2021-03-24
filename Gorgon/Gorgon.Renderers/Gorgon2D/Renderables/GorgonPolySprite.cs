@@ -27,7 +27,6 @@
 using System;
 using System.Numerics;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Collections;
 using Gorgon.Core;
@@ -90,8 +89,7 @@ namespace Gorgon.Renderers
         [JsonIgnore]
         public bool IsUpdated => Renderable.HasTextureChanges
                                  || Renderable.HasTransformChanges
-                                 || Renderable.HasVertexChanges
-                                 || Renderable.HasVertexColorChanges;
+                                 || Renderable.HasVertexChanges;
 
         /// <summary>
         /// Property to return whether this sprite contains any index data.
@@ -104,9 +102,9 @@ namespace Gorgon.Renderers
         /// </summary>
         public GorgonColor Color
         {
-            get => Renderable.UpperLeftColor;
-            set => Renderable.UpperLeftColor = Renderable.LowerLeftColor = Renderable.UpperRightColor = Renderable.LowerRightColor = value;
-        }
+            get;
+            set;
+        } = GorgonColor.White;
 
         /// <summary>
         /// Property to set or return the texture array index for the sprite.
@@ -378,7 +376,7 @@ namespace Gorgon.Renderers
         {
             get => Renderable.AlphaTestData.IsEnabled == 0
                     ? null
-                    : (GorgonRangeF?)new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
+                    : new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
             set
             {
                 // ReSharper disable once ConvertIfStatementToSwitchStatement

@@ -542,7 +542,8 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderable">The renderable to interrogate.</param>
         /// <returns>The bounds with transformation applied.</returns>
-        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>   
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DX.RectangleF GetTransformedBounds(BatchRenderable renderable)
         {
             float left = float.MaxValue;
@@ -803,7 +804,7 @@ namespace Gorgon.Renderers
             var polyData = new PolyVertexShaderData
             {
                 World = renderable.WorldMatrix,
-                Color = renderable.LowerLeftColor,
+                Color = sprite.Color,
                 TextureTransform = renderable.TextureTransform,
                 MiscInfo = new Vector4(renderable.HorizontalFlip ? 1 : 0, renderable.VerticalFlip ? 1 : 0, cosValue, sinValue),
                 TextureArrayIndex = renderable.TextureArrayIndex
@@ -845,7 +846,6 @@ namespace Gorgon.Renderers
         /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
         /// <returns>The bounds with transformation applied.</returns>
         /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DX.RectangleF MeasureSprite(GorgonSprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));
@@ -1007,8 +1007,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
         /// <returns>The bounds with transformation applied.</returns>
-        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>   
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>           
         public DX.RectangleF MeasureSprite(GorgonPolySprite sprite)
         {
             if (_initialized != Initialized)

@@ -111,7 +111,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             return newSpriteForm.ShowDialog(GorgonApplication.MainForm) == DialogResult.OK
                 ? (newSpriteForm.ObjectName, newSpriteForm.TextureFile, newSpriteForm.SpriteSize)
-                : ((string spriteName, IContentFile textureFile, DX.Size2F spriteSize))(null, null, DX.Size2F.Zero);
+                : (null, null, DX.Size2F.Zero);
         }
         #endregion
 

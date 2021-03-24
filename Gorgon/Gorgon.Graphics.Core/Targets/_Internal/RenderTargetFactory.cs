@@ -294,7 +294,7 @@ namespace Gorgon.Graphics.Core
         public RenderTargetFactory(GorgonGraphics graphics)
         {
             _graphics = graphics;
-            _expiryTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
+            _expiryTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
         }
         #endregion
     }

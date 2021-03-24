@@ -154,7 +154,7 @@ namespace Gorgon.Editor.ImageSplitTool
 
 			Renderer.Begin();
 			Renderer.DrawFilledRectangle(renderRegion, 
-										 ((DataContext.PreviewImage is null) || (_loading)) ? (GorgonColor)DarkFormsRenderer.DarkBackground : GorgonColor.White, 
+										 ((DataContext.PreviewImage is null) || (_loading)) ? DarkFormsRenderer.DarkBackground : GorgonColor.White, 
 										 _backgroundImage, 
 										 new DX.RectangleF(0, 0, renderRegion.Width / _backgroundImage.Width, renderRegion.Height / _backgroundImage.Height));
 			Renderer.End();

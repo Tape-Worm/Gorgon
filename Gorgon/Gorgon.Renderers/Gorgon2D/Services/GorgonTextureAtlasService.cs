@@ -532,7 +532,7 @@ namespace Gorgon.Renderers.Services
         #endregion
 
         #region Constructor/Finalizer.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Renderers.Services.GorgonTextureAtlasService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="GorgonTextureAtlasService"/> class.</summary>
         /// <param name="renderer">The 2D renderer to use when generating the atlas data.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <strong>null</strong>.</exception>
         public GorgonTextureAtlasService(Gorgon2D renderer)

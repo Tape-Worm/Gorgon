@@ -79,7 +79,7 @@ namespace Gorgon.Editor.Services
             // Get the keyword value.
             string keywordValue = searchText[(searchKeyword.Key.Length + 1)..].TrimStart();
 
-            return string.IsNullOrWhiteSpace(keywordValue) ? ((string keyword, string search))(string.Empty, null) : (searchKeyword.Value, keywordValue);
+            return string.IsNullOrWhiteSpace(keywordValue) ? (string.Empty, null) : (searchKeyword.Value, keywordValue);
         }
 
         /// <summary>

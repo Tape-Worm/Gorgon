@@ -51,7 +51,7 @@ namespace Gorgon.Editor.Services
                     Color = originalColor
                 };
 
-                return picker.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : (GorgonColor?)picker.Color;
+                return picker.ShowDialog(GorgonApplication.MainForm) == DialogResult.Cancel ? null : picker.Color;
             }
             finally
             {

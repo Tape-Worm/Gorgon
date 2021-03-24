@@ -52,26 +52,6 @@ namespace Gorgon.Renderers
         public bool VertexCountChanged;
 
         /// <summary>
-        /// The color of the upper left corner of the renderable.
-        /// </summary>
-        public GorgonColor UpperLeftColor = GorgonColor.White;
-
-        /// <summary>
-        /// The color of the upper right corner of the renderable.
-        /// </summary>
-        public GorgonColor UpperRightColor = GorgonColor.White;
-
-        /// <summary>
-        /// The color of the lower left corner of the renderable.
-        /// </summary>
-        public GorgonColor LowerLeftColor = GorgonColor.White;
-
-        /// <summary>
-        /// The color of the lower right corner of the renderable.
-        /// </summary>
-        public GorgonColor LowerRightColor = GorgonColor.White;
-
-        /// <summary>
         /// The offset of the upper left corner of the renderable.
         /// </summary>
         public Vector3 UpperLeftOffset;
@@ -95,11 +75,6 @@ namespace Gorgon.Renderers
         /// Property to set or return whether the object space information the vertices need updating or not.
         /// </summary>
         public bool HasVertexChanges = true;
-
-        /// <summary>
-        /// A flag to indicate whether the colors of the individual corners of the renderable have changed.
-        /// </summary>
-        public bool HasVertexColorChanges = true;
 
         /// <summary>
         /// Property to set or return whether the texture coordinates for the vertices need updating.

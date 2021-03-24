@@ -59,9 +59,8 @@
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />    
+    <PackageReference Include="System.Drawing.Common" Version="5.0.*" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

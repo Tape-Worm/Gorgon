@@ -152,7 +152,7 @@ namespace Gorgon.Editor.ImageEditor
         #endregion
 
         #region Constructor.
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.ImageEditor.ImportImageDialogService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ImportImageDialogService"/> class.</summary>
         /// <param name="settings">The settings.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" />, or the <paramref name="codecs"/> parameter is <strong>null</strong>.</exception>
         public ImportImageDialogService(ISettings settings, ICodecRegistry codecs)

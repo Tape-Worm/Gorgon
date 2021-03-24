@@ -25,14 +25,14 @@
 #endregion
 
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Gorgon.Math;
-using Gorgon.Graphics;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
+using System.Runtime.CompilerServices;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
 {
+
     /// <summary>
     /// Provides functionality for transforming renderable vertices.
     /// </summary>
@@ -41,78 +41,42 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to build up the renderable vertices.
         /// </summary>
-        /// <param name="bounds">The bounds of the renderable.</param>
-        /// <param name="anchor">The anchor point for the renderable.</param>
-        /// <param name="corners">The corners of the renderable.</param>
-        private static void BuildRenderable(ref DX.RectangleF bounds, ref Vector2 anchor, out Vector4 corners)
+        /// <param name="renderable">The sprite renderable to evaluate.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void BuildRenderable(BatchRenderable renderable)
         {
-            var vectorSize = new Vector2(bounds.Width, bounds.Height);
-            Vector2 axisOffset = default;
-
-            if ((anchor.X != 0) || (anchor.Y != 0))
-            {
-                axisOffset = Vector2.Multiply(anchor, vectorSize);
-            }
-
-            corners = new Vector4(-axisOffset.X, -axisOffset.Y, vectorSize.X - axisOffset.X, vectorSize.Y - axisOffset.Y);
-        }
-
-        /// <summary>
-        /// Function to update the colors for each corner of the renderable.
-        /// </summary>
-        /// <param name="vertices">The vertices for the renderable.</param>
-        /// <param name="upperLeft">The color of the upper left corner.</param>
-        /// <param name="upperRight">The color of the upper right corner.</param>
-        /// <param name="lowerLeft">The color of the lower left corner.</param>
-        /// <param name="lowerRight">The color of the lower right corner.</param>
-        private static void UpdateVertexColors(Gorgon2DVertex[] vertices, ref GorgonColor upperLeft, ref GorgonColor upperRight, ref GorgonColor lowerLeft, ref GorgonColor lowerRight)
-        {
-            vertices[0].Color = upperLeft;
-            vertices[1].Color = upperRight;
-            vertices[2].Color = lowerLeft;
-            vertices[3].Color = lowerRight;
+            var vectorSize = new Vector2(renderable.Bounds.Width, renderable.Bounds.Height);
+            var axisOffset = Vector2.Multiply(renderable.Anchor, vectorSize);
+            renderable.Corners = new Vector4(-axisOffset.X, -axisOffset.Y, vectorSize.X - axisOffset.X, vectorSize.Y - axisOffset.Y);
         }
 
         /// <summary>
         /// Function to update the texture coordinates for the renderable.
         /// </summary>
         /// <param name="vertices">The vertices for the renderable.</param>
-        /// <param name="textureRegion">The texture coordinates.</param>
-        /// <param name="textureArrayIndex">The index into a texture array.</param>
-        /// <param name="horizontalFlip"><b>true</b> if the texture is flipped horizontally.</param>
-        /// <param name="verticalFlip"><b>true</b> if the texture is flipped vertically.</param>
-        /// <param name="perspectCorrect"><b>true</b> to apply perspective correction to sprites with corner offsets, <b>false</b> to use standard affine texturing.</param>
-        private static void UpdateTextureCoordinates(Gorgon2DVertex[] vertices,
-                                                     ref DX.RectangleF textureRegion,
-                                                     int textureArrayIndex,
-                                                     bool horizontalFlip,
-                                                     bool verticalFlip,
-                                                     bool perspectCorrect)
+        /// <param name="renderable">The sprite renderable to evaluate.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void UpdateTextureCoordinates(Gorgon2DVertex[] vertices, BatchRenderable renderable)
         {
-            var rightBottom = new Vector4(textureRegion.Right, textureRegion.Bottom, textureArrayIndex, 1.0f);
-            var leftTop = new Vector4(textureRegion.Left, textureRegion.Top, textureArrayIndex, 1.0f);
+            var rightBottom = new Vector4(renderable.HorizontalFlip ? renderable.TextureRegion.Left : renderable.TextureRegion.Right, 
+                                                 renderable.VerticalFlip ? renderable.TextureRegion.Top : renderable.TextureRegion.Bottom, 
+                                                 renderable.TextureArrayIndex, 1.0f);
+            var leftTop = new Vector4(renderable.HorizontalFlip ? renderable.TextureRegion.Right : renderable.TextureRegion.Left, 
+                                             renderable.VerticalFlip ? renderable.TextureRegion.Bottom : renderable.TextureRegion.Top, 
+                                             renderable.TextureArrayIndex, 1.0f);
 
-            if (horizontalFlip)
+            if ((!renderable.LowerLeftOffset.Equals(Vector3.Zero))
+                || (!renderable.UpperLeftOffset.Equals(Vector3.Zero))
+                || (!renderable.LowerRightOffset.Equals(Vector3.Zero))
+                || (!renderable.UpperRightOffset.Equals(Vector3.Zero)))
             {
-                leftTop.X = textureRegion.Right;
-                rightBottom.X = textureRegion.Left;
-            }
-
-            if (verticalFlip)
-            {
-                leftTop.Y = textureRegion.Bottom;
-                rightBottom.Y = textureRegion.Top;
-            }
-
-            if (perspectCorrect)
-            {
-                BuildPerspectiveModifier(vertices, ref leftTop, ref rightBottom, textureArrayIndex);
+                BuildPerspectiveModifier(vertices, ref leftTop, ref rightBottom, renderable.TextureArrayIndex);
                 return;
             }
             
             vertices[0].UV = leftTop;
-            vertices[1].UV = new Vector4(rightBottom.X, leftTop.Y, textureArrayIndex, 1.0f);
-            vertices[2].UV = new Vector4(leftTop.X, rightBottom.Y, textureArrayIndex, 1.0f);
+            vertices[1].UV = new Vector4(rightBottom.X, leftTop.Y, renderable.TextureArrayIndex, 1.0f);
+            vertices[2].UV = new Vector4(leftTop.X, rightBottom.Y, renderable.TextureArrayIndex, 1.0f);
             vertices[3].UV = rightBottom;            
         }
 
@@ -185,104 +149,61 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to transform each vertex of the renderable to change its location, size and rotation.
         /// </summary>
-        /// <param name="vertices">The vertices for the renderable.</param>
-        /// <param name="corners">The corners of the renderable.</param>
-        /// <param name="bounds">The boundaries for the renderable.</param>
-        /// <param name="scale">The scale of the renderable.</param>
-        /// <param name="angleRads">The cached angle, in radians.</param>
-        /// <param name="angleSin">The cached sine of the angle.</param>
-        /// <param name="angleCos">The cached cosine of the angle.</param>
-        /// <param name="depth">The depth value for the renderable.</param>
-        /// <param name="cornerUpperLeft">The upper left corner offset.</param>
-        /// <param name="cornerUpperRight">The upper right corner offset.</param>
-        /// <param name="cornerLowerLeft">The lower left corner offset.</param>
-        /// <param name="cornerLowerRight">The lower right corner offset.</param>
-        private static void TransformVertices(Gorgon2DVertex[] vertices,
-                                              ref Vector4 corners,
-                                              ref DX.RectangleF bounds,
-                                              ref Vector2 scale,
-                                              float angleRads,
+        /// <param name="renderable">The sprite renderable to render.</param>
+        /// <param name="angleSin">The sine of the rotation angle.</param>
+        /// <param name="angleCos">The cosine of the rotation angle.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void TransformVertices(BatchRenderable renderable,                                              
                                               float angleSin,
-                                              float angleCos,
-                                              float depth,
-                                              ref Vector3 cornerUpperLeft,
-                                              ref Vector3 cornerUpperRight,
-                                              ref Vector3 cornerLowerLeft,
-                                              ref Vector3 cornerLowerRight)
+                                              float angleCos)
         {
-            var upperLeft = new Vector2(corners.X + cornerUpperLeft.X, corners.Y + cornerUpperLeft.Y);
-            var upperRight = new Vector2(corners.Z + cornerUpperRight.X, corners.Y + cornerUpperRight.Y);
-            var lowerRight = new Vector2(corners.Z + cornerLowerRight.X, corners.W + cornerLowerRight.Y);
-            var lowerLeft = new Vector2(corners.X + cornerLowerLeft.X, corners.W + cornerLowerLeft.Y);
+            var upperLeft = new Vector2(renderable.Corners.X + renderable.UpperLeftOffset.X, renderable.Corners.Y + renderable.UpperLeftOffset.Y);
+            var upperRight = new Vector2(renderable.Corners.Z + renderable.UpperRightOffset.X, renderable.Corners.Y + renderable.UpperRightOffset.Y);
+            var lowerRight = new Vector2(renderable.Corners.Z + renderable.LowerRightOffset.X, renderable.Corners.W + renderable.LowerRightOffset.Y);
+            var lowerLeft = new Vector2(renderable.Corners.X + renderable.LowerLeftOffset.X, renderable.Corners.W + renderable.LowerLeftOffset.Y);
 
-            if ((scale.X != 1.0f) || (scale.Y != 1.0f))
-            {
-                upperLeft = Vector2.Multiply(upperLeft, scale);
-                upperRight = Vector2.Multiply(upperRight, scale);
-                lowerRight = Vector2.Multiply(lowerRight, scale);
-                lowerLeft = Vector2.Multiply(lowerLeft, scale);
-            }
+            ref Gorgon2DVertex v1 = ref renderable.Vertices[0];
+            ref Gorgon2DVertex v2 = ref renderable.Vertices[1];
+            ref Gorgon2DVertex v3 = ref renderable.Vertices[2];
+            ref Gorgon2DVertex v4 = ref renderable.Vertices[3];
 
-            ref Gorgon2DVertex v1 = ref vertices[0];
-            ref Gorgon2DVertex v2 = ref vertices[1];
-            ref Gorgon2DVertex v3 = ref vertices[2];
-            ref Gorgon2DVertex v4 = ref vertices[3];
+            v1.Angle = 
+            v2.Angle =
+            v3.Angle = 
+            v4.Angle = new Vector2(angleCos, angleSin);
 
-            if (angleRads != 0.0f)
-            {
-                v1.Position = new Vector4(((upperLeft.X * angleCos) - (upperLeft.Y * angleSin)) + bounds.Left,
-                                    ((upperLeft.X * angleSin) + (upperLeft.Y * angleCos)) + bounds.Top,
-                                    depth + cornerUpperLeft.Z, 1);
-                v1.Angle = new Vector2(angleCos, angleSin);
+            upperLeft = Vector2.Multiply(upperLeft, renderable.Scale);
+            upperRight = Vector2.Multiply(upperRight, renderable.Scale);
+            lowerRight = Vector2.Multiply(lowerRight, renderable.Scale);
+            lowerLeft = Vector2.Multiply(lowerLeft, renderable.Scale);
 
-                v2.Position = new Vector4(((upperRight.X * angleCos) - (upperRight.Y * angleSin)) + bounds.Left,
-                                     ((upperRight.X * angleSin) + (upperRight.Y * angleCos)) + bounds.Top,
-                                      depth + cornerUpperRight.Z, 1);
-                v2.Angle = new Vector2(angleCos, angleSin);
+            v1.Position = new Vector4(((upperLeft.X * angleCos) - (upperLeft.Y * angleSin)) + renderable.Bounds.Left,
+                                ((upperLeft.X * angleSin) + (upperLeft.Y * angleCos)) + renderable.Bounds.Top,
+                                renderable.Depth + renderable.UpperLeftOffset.Z, 1);
 
-                v3.Position = new Vector4(((lowerLeft.X * angleCos) - (lowerLeft.Y * angleSin)) + bounds.Left,
-                                     ((lowerLeft.X * angleSin) + (lowerLeft.Y * angleCos)) + bounds.Top,
-                                      depth + cornerLowerLeft.Z, 1);
-                v3.Angle = new Vector2(angleCos, angleSin);
+            v2.Position = new Vector4(((upperRight.X * angleCos) - (upperRight.Y * angleSin)) + renderable.Bounds.Left,
+                                    ((upperRight.X * angleSin) + (upperRight.Y * angleCos)) + renderable.Bounds.Top,
+                                    renderable.Depth + renderable.UpperRightOffset.Z, 1);
 
-                v4.Position = new Vector4(((lowerRight.X * angleCos) - (lowerRight.Y * angleSin)) + bounds.Left,
-                                     ((lowerRight.X * angleSin) + (lowerRight.Y * angleCos)) + bounds.Top,
-                                      depth + cornerLowerRight.Z, 1);
-                v4.Angle = new Vector2(angleCos, angleSin);
-            }
-            else
-            {
-                v1.Position  = new Vector4(upperLeft.X + bounds.Left,
-                                     upperLeft.Y + bounds.Top,
-                                     depth + cornerUpperLeft.Z, 1);
-                v1.Angle = Vector2.UnitX;
+            v3.Position = new Vector4(((lowerLeft.X * angleCos) - (lowerLeft.Y * angleSin)) + renderable.Bounds.Left,
+                                    ((lowerLeft.X * angleSin) + (lowerLeft.Y * angleCos)) + renderable.Bounds.Top,
+                                    renderable.Depth + renderable.LowerLeftOffset.Z, 1);
 
-                v2.Position = new Vector4(upperRight.X + bounds.Left,
-                                     upperRight.Y + bounds.Top,
-                                     depth + cornerUpperRight.Z, 1);
-                v2.Angle = Vector2.UnitX;
-
-                v3.Position = new Vector4(lowerLeft.X + bounds.Left,
-                                     lowerLeft.Y + bounds.Top,
-                                     depth + cornerLowerLeft.Z, 1);
-                v3.Angle = Vector2.UnitX;
-
-                v4.Position = new Vector4(lowerRight.X + bounds.Left,
-                                     lowerRight.Y + bounds.Top,
-                                     depth + cornerLowerRight.Z, 1);
-                v4.Angle = Vector2.UnitX;
-            }
+            v4.Position = new Vector4(((lowerRight.X * angleCos) - (lowerRight.Y * angleSin)) + renderable.Bounds.Left,
+                                    ((lowerRight.X * angleSin) + (lowerRight.Y * angleCos)) + renderable.Bounds.Top,
+                                    renderable.Depth + renderable.LowerRightOffset.Z, 1);
         }
 
         /// <summary>
         /// Function to transform the vertices for a renderable.
         /// </summary>
         /// <param name="renderable">The renderable to transform.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Transform(BatchRenderable renderable)
         {
             if (renderable.HasVertexChanges)
             {
-                BuildRenderable(ref renderable.Bounds, ref renderable.Anchor, out renderable.Corners);
+                BuildRenderable(renderable);
 
                 // If we've updated the physical dimensions for the renderable, then we need to update the transform as well.
                 renderable.HasTransformChanges = true;
@@ -291,48 +212,18 @@ namespace Gorgon.Renderers
 
             if (renderable.HasTransformChanges)
             {
-                float rads = 0;
-                float sin = 0;
-                float cos = 1;
+                float rads = renderable.AngleDegs.ToRadians();
 
-                if (renderable.AngleDegs != 0)
-                {
-                    rads = renderable.AngleDegs.ToRadians();
-                    sin = rads.FastSin();
-                    cos = rads.FastCos();
-                }
-
-                TransformVertices(renderable.Vertices,
-                                  ref renderable.Corners,
-                                  ref renderable.Bounds,
-                                  ref renderable.Scale,
-                                  rads,
-                                  sin,
-                                  cos,
-                                  renderable.Depth,
-                                  ref renderable.UpperLeftOffset,
-                                  ref renderable.UpperRightOffset,
-                                  ref renderable.LowerLeftOffset,
-                                  ref renderable.LowerRightOffset);
-
+                TransformVertices(renderable, rads.FastSin(), rads.FastCos());
                 renderable.HasTransformChanges = false;                
-            }
-
-            if (renderable.HasVertexColorChanges)
-            {
-                UpdateVertexColors(renderable.Vertices, ref renderable.UpperLeftColor, ref renderable.UpperRightColor, ref renderable.LowerLeftColor, ref renderable.LowerRightColor);
-                renderable.HasVertexColorChanges = false;
             }
 
             if (renderable.HasTextureChanges)
             {
-                UpdateTextureCoordinates(renderable.Vertices, ref renderable.TextureRegion, renderable.TextureArrayIndex, renderable.HorizontalFlip, renderable.VerticalFlip,
-                                       (!renderable.LowerLeftOffset.Equals(Vector3.Zero)) 
-                                    || (!renderable.UpperLeftOffset.Equals(Vector3.Zero))
-                                    || (!renderable.LowerRightOffset.Equals(Vector3.Zero))
-                                    || (!renderable.UpperRightOffset.Equals(Vector3.Zero)));
+                UpdateTextureCoordinates(renderable.Vertices, renderable);                                       
                 renderable.HasTextureChanges = false;
             }            
         }
     }
+
 }

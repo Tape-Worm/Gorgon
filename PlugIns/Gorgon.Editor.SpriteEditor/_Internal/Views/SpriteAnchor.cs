@@ -381,9 +381,9 @@ namespace Gorgon.Editor.SpriteEditor
 
             DataContext.CancelCommand.Execute(null);
         }
-        
+
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load"/> event.</summary>
-        /// <param name="e">An <see cref="System.EventArgs"/> that contains the event data.</param>
+        /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

@@ -39,7 +39,7 @@ namespace Gorgon.Editor.ViewModels
             get;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="Gorgon.Editor.ViewModels.SetProjectWorkspaceArgs"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SetProjectWorkspaceArgs"/> class.</summary>
         /// <param name="projectWorkspace">The path to the project workspace.</param>
         public SetProjectWorkspaceArgs(string projectWorkspace) => WorkspacePath = projectWorkspace;
     }

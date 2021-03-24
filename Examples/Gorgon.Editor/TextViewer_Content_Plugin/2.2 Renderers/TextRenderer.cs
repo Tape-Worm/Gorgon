@@ -118,7 +118,7 @@ namespace Gorgon.Examples
             base.Dispose(disposing);
         }
 
-        /// <summary>Function called when a property on the <see cref="Gorgon.Editor.Rendering.DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
+        /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
         /// <param name="propertyName">The name of the property that was changed.</param>
         /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
         protected override void OnPropertyChanged(string propertyName)
@@ -212,7 +212,7 @@ namespace Gorgon.Examples
         /// <summary>Function called when the renderer needs to load any resource data.</summary>
         /// <remarks>
         /// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
-        /// <see cref="Gorgon.Editor.Rendering.DefaultContentRenderer{T}.OnUnload"/> method.
+        /// <see cref="DefaultContentRenderer{T}.OnUnload"/> method.
         /// </remarks>
         protected override void OnLoad()
         {
@@ -244,7 +244,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function called when the renderer needs to clean up any resource data.
         /// </summary>
-        /// <remarks>Developers should always override this method if they've overridden the <see cref="Gorgon.Editor.Rendering.DefaultContentRenderer{T}.OnLoad" /> method. Failure to do so can cause memory leakage.</remarks>
+        /// <remarks>Developers should always override this method if they've overridden the <see cref="DefaultContentRenderer{T}.OnLoad" /> method. Failure to do so can cause memory leakage.</remarks>
         protected override void OnUnload()
         {
             DataContext.TextColor.PropertyChanged -= TextColor_PropertyChanged;
