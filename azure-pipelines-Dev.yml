@@ -59,8 +59,9 @@ jobs:
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Gorgon'
           Contents: | 
-            **/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)
+            **/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)            
             !**/$(buildConfiguration)/**/net48/**/*
+            !**/$(buildConfiguration)/**/**/ref/**/*
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'
           flattenFolders: true
@@ -81,6 +82,7 @@ jobs:
           Contents: |
             **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt|Gorgon.Editor.runtimeconfig.json)
             !**/TextViewerContentExample.*
+            !**/**/ref/**/*
             !**/net48/**/*
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/Tools'
