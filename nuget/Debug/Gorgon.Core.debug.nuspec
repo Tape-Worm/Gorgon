@@ -16,12 +16,12 @@
     <tags>Gorgon C# .NET</tags>
     <dependencies>
       <group targetFramework="net5.0">
-        <dependency id="System.Composition" version="5.0.1"/>
-        <dependency id="System.Memory" version="4.5.4"/>
-        <dependency id="System.Reflection.Context" version="5.0.0"/>
-        <dependency id="Microsoft.Bcl.HashCode" version="1.1.1"/>
-        <dependency id="CenterCLR.XorRandomGenerator" version="1.1.0"/>
-        <dependency id="Newtonsoft.Json" version="12.0.3"/>
+        <dependency id="System.Composition" version="5.0.*"/>
+        <dependency id="System.Memory" version="4.5.*"/>
+        <dependency id="System.Reflection.Context" version="5.0.*"/>
+        <dependency id="Microsoft.Bcl.HashCode" version="1.1.*"/>
+        <dependency id="CenterCLR.XorRandomGenerator" version="1.1.*"/>
+        <dependency id="Newtonsoft.Json" version="13.0.*"/>
         <dependency id="SharpDX" version="4.2.0"/>
         <dependency id="SharpDX.Mathematics" version="4.2.0"/>
       </group>
