@@ -79,7 +79,7 @@ jobs:
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)'
           Contents: |
-            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
+            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt|Gorgon.Editor.runtimeconfig.json)
             !**/TextViewerContentExample.*
             !**/net48/**/*
           CleanTargetFolder: true

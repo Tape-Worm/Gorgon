@@ -141,7 +141,7 @@ jobs:
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/net472'
           Contents: |
-            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
+            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt|Gorgon.Editor.runtimeconfig.json)
             !**/TextViewerExample.*
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/Gorgon/Tools'
@@ -286,7 +286,7 @@ jobs:
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)/net472'
           Contents: |
-            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt)
+            **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt|Gorgon.Editor.runtimeconfig.json)
             !**/TextViewerExample.*
           CleanTargetFolder: true
           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/Tools'
