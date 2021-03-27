@@ -37,7 +37,7 @@ namespace Gorgon.Renderers
     /// The renderer for renderable objects.
     /// </summary>
     internal sealed class BatchRenderer
-        : ObjectRenderer
+        : IDisposable
     {
         #region Constants.
         /// <summary>
@@ -74,7 +74,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the graphics interface that built this object.
         /// </summary>
-        public override GorgonGraphics Graphics
+        public GorgonGraphics Graphics
         {
             get;
         }
@@ -93,6 +93,24 @@ namespace Gorgon.Renderers
         public TextSpriteTransformer TextSpriteTransformer
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to return the vertex buffer used by the object renderer.
+        /// </summary>
+        public GorgonVertexBufferBinding VertexBuffer
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the index buffer used by the object renderer.
+        /// </summary>
+        public GorgonIndexBuffer IndexBuffer
+        {
+            get;
+            private set;
         }
         #endregion
 
@@ -285,6 +303,15 @@ namespace Gorgon.Renderers
             _currentVertexIndex = 0;
             _allocatedVertexCount = 0;
             _indexCount = 0;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            VertexBuffer.VertexBuffer?.Dispose();
+            IndexBuffer?.Dispose();
         }
         #endregion
 

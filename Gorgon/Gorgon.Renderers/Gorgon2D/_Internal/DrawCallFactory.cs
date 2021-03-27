@@ -73,7 +73,7 @@ namespace Gorgon.Renderers
         /// <param name="batchState">The current batch level state.</param>
         /// <param name="renderer">The renderer used to send renderable data to the GPU.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SetCommonStates<TB, TD>(GorgonDrawCallBuilderCommon<TB, TD> builder, BatchRenderable renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
+        private void SetCommonStates<TB, TD>(GorgonDrawCallBuilderCommon<TB, TD> builder, BatchRenderable renderable, Gorgon2DBatchState batchState, BatchRenderer renderer)
             where TB : GorgonDrawCallBuilderCommon<TB, TD>
             where TD : GorgonDrawCallCommon
         {
@@ -111,7 +111,7 @@ namespace Gorgon.Renderers
         /// <param name="renderer">The renderer that will be </param>
         /// <returns>The draw call.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GorgonDrawCall GetDrawCall(BatchRenderable renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
+        public GorgonDrawCall GetDrawCall(BatchRenderable renderable, Gorgon2DBatchState batchState, BatchRenderer renderer)
         {
             SetCommonStates(_drawBuilder, renderable, batchState, renderer);
             return _drawBuilder.Build(_drawAllocator);
@@ -125,7 +125,7 @@ namespace Gorgon.Renderers
         /// <param name="renderer">The renderer that will be </param>
         /// <returns>The draw call.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GorgonDrawIndexCall GetDrawIndexCall(BatchRenderable renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
+        public GorgonDrawIndexCall GetDrawIndexCall(BatchRenderable renderable, Gorgon2DBatchState batchState, BatchRenderer renderer)
         {
             SetCommonStates(_drawIndexBuilder, renderable, batchState, renderer);
             return _drawIndexBuilder.IndexBuffer(renderer.IndexBuffer)
