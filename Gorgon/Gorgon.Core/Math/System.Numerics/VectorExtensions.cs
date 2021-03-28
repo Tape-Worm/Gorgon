@@ -252,5 +252,56 @@ namespace System.Numerics
             return Vector3.Transform(vector, matrix);
         }
 
+        /// <summary>
+        /// Function to convert a 3D vector to a 2D vector.
+        /// </summary>
+        /// <param name="v">The vector to convert.</param>
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 ToVector2(this Vector3 v) => new Vector2(v.X, v.Y);
+
+        /// <summary>
+        /// Function to convert a 4D vector to a 2D vector.
+        /// </summary>
+        /// <param name="v">The vector to convert.</param>
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 ToVector2(this Vector4 v) => new Vector2(v.X, v.Y);
+
+        /// <summary>
+        /// Function to convert a 2D vector to a 3D vector.
+        /// </summary>
+        /// <param name="v">The vector to convert.</param>
+        /// <param name="z">[Optional] The z value for the vector.</param>
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ToVector3(this Vector2 v, float z = 0) => new Vector3(v.X, v.Y, z);
+
+        /// <summary>
+        /// Function to convert a 4D vector to a 3D vector.
+        /// </summary>
+        /// <param name="v">The vector to convert.</param>
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 ToVector3(this Vector4 v) => new Vector3(v.X, v.Y, v.Z);
+
+        /// <summary>
+        /// Function to convert a 2D vector to a 4D vector.
+        /// </summary>
+        /// <param name="v">The vector to convert.</param>
+        /// <param name="z">[Optional] The z value for the vector.</param>        
+        /// <param name="w">[Optional] The w value for the vector.</param>        
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 ToVector4(this Vector2 v, float z = 0, float w = 0) => new Vector4(v.X, v.Y, z, w);
+
+        /// <summary>
+        /// Function to convert a 3D vector to a 4D vector.
+        /// </summary>
+        /// <param name="v">The vector to convert.</param>
+        /// <param name="w">[Optional] The w value for the vector.</param>        
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 ToVector4(this Vector3 v, float w = 0) => new Vector4(v.X, v.Y, v.Z, w);
     }
 }

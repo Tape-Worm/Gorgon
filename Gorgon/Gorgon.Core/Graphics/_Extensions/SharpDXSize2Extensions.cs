@@ -102,5 +102,19 @@ namespace Gorgon.Graphics
         /// <param name="size">The size to convert.</param>
         /// <returns>The equivalent vector value.</returns>
         public static Vector2 ToVector2(this DX.Size2 size) => new(size.Width, size.Height);
+
+        /// <summary>
+        /// Function to convert a size into a vector.
+        /// </summary>
+        /// <param name="size">The size to convert.</param>
+        /// <returns>The equivalent vector value.</returns>
+        public static Vector3 ToVector3(this DX.Size2 size) => new(size.Width, size.Height, 0);
+
+        /// <summary>
+        /// Function to convert a size into a vector.
+        /// </summary>
+        /// <param name="size">The size to convert.</param>
+        /// <returns>The equivalent vector value.</returns>
+        public static Vector4 ToVector4(this DX.Size2 size) => new(size.Width, size.Height, 0, 0);
     }
 }
