@@ -32,11 +32,6 @@ namespace Gorgon.Graphics.Core
     internal class TempTargetTextureInfo
         : IGorgonTexture2DInfo
     {
-        #region Variables.
-        // The texture binding.
-        private TextureBinding _binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget;
-        #endregion
-
         #region Properties.
         /// <summary>Property to return the width of the texture, in pixels.</summary>
         public int Width
@@ -119,7 +114,11 @@ namespace Gorgon.Graphics.Core
         /// This value is defaulted to <see cref="TextureBinding.ShaderResource" />.
         /// </para>
         /// </remarks>
-        public TextureBinding Binding => _binding;
+        public TextureBinding Binding 
+        { 
+            get; 
+            private set; 
+        } = TextureBinding.ShaderResource | TextureBinding.RenderTarget;
 
         /// <summary>Property to return whether this texture can be shared with other graphics interfaces.</summary>
         /// <remarks>
@@ -143,7 +142,7 @@ namespace Gorgon.Graphics.Core
         public void Initialize(IGorgonTexture2DInfo info)
         {
             Name = info.Name;
-            _binding |= info.Binding;
+            Binding |= info.Binding;
             MultisampleInfo = info.MultisampleInfo;
             MipLevels = info.MipLevels;
             Format = info.Format;

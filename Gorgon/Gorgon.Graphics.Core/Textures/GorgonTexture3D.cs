@@ -1895,7 +1895,7 @@ namespace Gorgon.Graphics.Core
         GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
 #endregion
 
-#region Constructor/Finalizer.
+        #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture3D"/> class.
         /// </summary>
