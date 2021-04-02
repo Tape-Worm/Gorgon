@@ -221,6 +221,89 @@ namespace Gorgon.IO
         }
 
         /// <summary>
+        /// Function to retrieve the dependencies for a file.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns>A dictionary containing the dependencies as where the key is the dependency category, and a list of <see cref="IGorgonVirtualFile"/> entries for that group.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="GorgonException">Thrown if the file system isn't a Gorgon Editor file system, or the file could not be read.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will return a list of files as a <see cref="IGorgonVirtualFile"/> for a dependency category. The category list returned by the dictionarye entry value will only contain files that exist in the 
+        /// file system. Files that do not exist will not be returned.
+        /// </para>
+        /// </remarks>
+        public IReadOnlyDictionary<string, IReadOnlyList<IGorgonVirtualFile>> GetDependencyFiles(string path)
+        {
+            if (path is null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            IGorgonVirtualFile file = _fileSystem.GetFile(path);
+
+            if ((!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata)) || (file is null))
+            {
+                throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
+            }
+
+            var dependencies = new Dictionary<string, List<IGorgonVirtualFile>>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (KeyValuePair<string, List<string>> item in metadata.DependsOn)
+            {
+                if (!dependencies.TryGetValue(item.Key, out List<IGorgonVirtualFile> files))
+                {
+                    files = new List<IGorgonVirtualFile>();
+                    dependencies[item.Key] = files;
+                }
+
+                files.AddRange(item.Value.Select(item => _fileSystem.GetFile(item))
+                                         .Where(item => item != null));
+            }
+
+            return dependencies.ToDictionary(k => k.Key, 
+                                            v => (IReadOnlyList<IGorgonVirtualFile>)v.Value, StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Function to retrieve the attributes for a file in the editor file system.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns>A read only dictionary containing the attributes as a key/value pair.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="GorgonException">Thrown if the file system isn't a Gorgon Editor file system, or the file could not be read.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will return the list of attributes assigned to a file in the editor file system. This metadata can be used by external applications to determine how to handle the file.
+        /// </para>
+        /// </remarks>
+        public IReadOnlyDictionary<string, string> GetFileAttributes(string path)
+        {
+            if (path is null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            IGorgonVirtualFile file = _fileSystem.GetFile(path);
+
+            return (!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata)) || (file is null)
+                ? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path))
+                : metadata.Attributes;
+        }
+
+        /// <summary>
         /// Function to load an animation from the editor file system.
         /// </summary>
         /// <param name="path">The path to the animation content.</param>

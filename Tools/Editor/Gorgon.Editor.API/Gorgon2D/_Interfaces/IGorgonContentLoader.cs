@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Editor;
+using Gorgon.Editor.ProjectData;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -55,6 +56,7 @@ namespace Gorgon.IO
     /// </remarks>
     public interface IGorgonContentLoader
     {
+        #region Properties.
         /// <summary>
         /// Property to return a list of codecs that can be used to load animation content data.
         /// </summary>
@@ -110,6 +112,34 @@ namespace Gorgon.IO
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the dependencies for a file.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns>A dictionary containing the dependencies as where the key is the dependency category, and a list of <see cref="IGorgonVirtualFile"/> entries for that group.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will return a list of files as a <see cref="IGorgonVirtualFile"/> for a dependency category. The category list returned by the dictionarye entry value will only contain files that exist in the 
+        /// file system. Files that do not exist will not be returned.
+        /// </para>
+        /// </remarks>
+        IReadOnlyDictionary<string, IReadOnlyList<IGorgonVirtualFile>> GetDependencyFiles(string path);
+
+        /// <summary>
+        /// Function to retrieve the attributes for a file in the editor file system.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns>A read only dictionary containing the attributes as a key/value pair.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will return the list of attributes assigned to a file in the editor file system. This metadata can be used by external applications to determine how to handle the file.
+        /// </para>
+        /// </remarks>
+        IReadOnlyDictionary<string, string> GetFileAttributes(string path);
+
 
         /// <summary>
         /// Function to load an image from the editor file system.
@@ -251,5 +281,6 @@ namespace Gorgon.IO
         /// </para>
         /// </remarks>
         Task<GorgonSprite> LoadSpriteAsync(string path, GorgonTexture2DView overrideTexture = null);
+        #endregion
     }
 }
