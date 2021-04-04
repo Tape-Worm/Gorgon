@@ -210,8 +210,7 @@ namespace Gorgon.Renderers
         {
             Vector2 intensity = FullScreen ? new Vector2((Intensity * 16) * (1.0f / output.Width), (Intensity * 16) * (1.0f / output.Height))
                 : new Vector2(Intensity * 0.05f, 0);
-            var settings = new Vector4(intensity, output.Width, output.Height);
-            _settings.Buffer.SetData(in settings);
+            _settings.Buffer.SetData(in intensity);
 
             Graphics.SetRenderTarget(output);
 
@@ -243,7 +242,7 @@ namespace Gorgon.Renderers
             _chromeAbShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.ChromaticAberration, "ChromaticAberration", GorgonGraphics.IsDebugEnabled);
             _simpleChromeAbShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.ChromaticAberration, "ChromaticAberrationSimple", GorgonGraphics.IsDebugEnabled);
 
-            _settings = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector4>())
+            _settings = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(16)
             {
                 Name = "Chromatic Aberration Settings Buffer",
                 Usage = ResourceUsage.Default

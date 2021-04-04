@@ -42,6 +42,7 @@ using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using Gorgon.UI;
 using DX = SharpDX;
+using System.Runtime.InteropServices;
 
 namespace Gorgon.Renderers
 {
@@ -87,6 +88,78 @@ namespace Gorgon.Renderers
     public sealed class Gorgon2D
         : IGorgon2DFluent, IGorgon2DDrawingFluent
     {
+        #region Value Types.
+        /// <summary>
+        /// The common miscellaneous values to pass to the shader.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        private readonly struct MiscValues
+            : IGorgonEquatableByRef<MiscValues>
+        {
+            /// <summary>
+            /// The size of the structure, in bytes.
+            /// </summary>
+            public static readonly int SizeInBytes = Unsafe.SizeOf<MiscValues>();
+
+            /// <summary>
+            /// The offset of the current viewport.
+            /// </summary>
+            public readonly Vector2 ViewOffset;
+            /// <summary>
+            /// The size of the current viewport.
+            /// </summary>
+            public readonly Vector2 ViewSize;
+            /// <summary>
+            /// The near plane of the current viewport.
+            /// </summary>
+            public readonly float Near;
+            /// <summary>
+            /// The far plane of the current viewport.
+            /// </summary>
+            public readonly float Far;
+            /// <summary>
+            /// The width of the current render target (slot 0).
+            /// </summary>
+            public readonly float TargetWidth;
+            /// <summary>
+            /// The height of the current render target (slot 0).
+            /// </summary>
+            public readonly float TargetHeight;
+
+            /// <summary>Initializes a new instance of the <see cref="MiscValues" /> struct.</summary>
+            /// <param name="graphics">The graphics interface for this renderer.</param>
+            public MiscValues(GorgonGraphics graphics)
+            {
+                DX.ViewportF view = graphics.Viewports[0];
+                GorgonRenderTargetView target = graphics.RenderTargets[0];
+
+                ViewOffset = new Vector2(view.X, view.Y);
+                ViewSize = new Vector2(view.Width, view.Height);
+                Near = view.MinDepth;
+                Far = view.MaxDepth;
+                TargetWidth = target?.Width ?? 0;
+                TargetHeight = target?.Height ?? 0;
+            }
+
+            /// <summary>Function to compare this instance with another.</summary>
+            /// <param name="other">The other instance to use for comparison.</param>
+            /// <returns>
+            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+            public bool Equals(in MiscValues other) => (ViewOffset.Equals(other.ViewOffset))
+                       && (ViewSize.Equals(other.ViewSize))
+                       && (Near.EqualsEpsilon(other.Near))
+                       && (Far.EqualsEpsilon(other.Far))
+                       && (TargetWidth.EqualsEpsilon(other.TargetWidth))
+                       && (TargetHeight.EqualsEpsilon(other.TargetHeight));
+
+            /// <summary>Function to compare this instance with another.</summary>
+            /// <param name="other">The other instance to use for comparison.</param>
+            /// <returns>
+            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+            public bool Equals(MiscValues other) => Equals(in other);
+        }
+        #endregion
+
         #region Constants.
         /// <summary>
         /// The renderer is not initialized.
@@ -162,8 +235,12 @@ namespace Gorgon.Renderers
         private GorgonOrthoCamera _defaultCamera;
         // The world matrix buffer for objects that use a world matrix.
         private GorgonConstantBufferView _polySpriteDataBuffer;
+        // Values to pass to a shader so it will have the same information as the application (e.g. screen width and height).
+        private GorgonConstantBufferView _miscValuesBuffer;
         // The transformer used for polygons.
         private readonly PolySpriteTransformer _polyTransformer = new();
+        // The currently active miscellaneous values.
+        private MiscValues _currentMiscValues;
         #endregion
 
         #region Properties.
@@ -361,6 +438,11 @@ namespace Gorgon.Renderers
 
             GorgonCameraCommon camera = CurrentCamera ?? _defaultCamera;
             _cameraController.UpdateCamera(camera);
+
+            if (_initialized == Initialized)
+            {
+                UpdateMiscShaderValues();
+            }
         }
 
         /// <summary>
@@ -414,6 +496,31 @@ namespace Gorgon.Renderers
 
             _alphaTest.Buffer.SetData(in currentData);
             _alphaTestData = currentData;
+        }
+
+        /// <summary>
+        /// Function to update miscellaneous shader values for the shaders.
+        /// </summary>
+        private void UpdateMiscShaderValues()
+        {
+            if (_miscValuesBuffer == null)
+            {
+                _currentMiscValues = new MiscValues(Graphics);
+                _miscValuesBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _currentMiscValues, "[Gorgon2D] Miscellaneous values.",
+                                                                                  ResourceUsage.Dynamic);
+
+                return;
+            }
+
+            var newMiscValues = new MiscValues(Graphics);
+
+            if (newMiscValues.Equals(in _currentMiscValues))
+            {
+                return;
+            }
+
+            _miscValuesBuffer.Buffer.SetData(in newMiscValues);
+            _currentMiscValues = newMiscValues;
         }
 
         /// <summary>
@@ -517,6 +624,8 @@ namespace Gorgon.Renderers
                 _polyTransformVertexState.RwConstantBuffers[0] = _cameraController.CameraBuffer;
                 _polyTransformVertexState.RwConstantBuffers[1] = _polySpriteDataBuffer;
                 _polyPixelState.RwConstantBuffers[0] = _alphaTest;
+
+                UpdateMiscShaderValues();
 
                 Graphics.RenderTargetChanging += ValidateBeginEndCall;
                 Graphics.ViewportChanging += ValidateBeginEndCall;
@@ -666,6 +775,11 @@ namespace Gorgon.Renderers
                 _currentBatchState.PixelShaderState.RwConstantBuffers[0] = _alphaTest;
             }
 
+            if ((_miscValuesBuffer is not null) && (_currentBatchState.PixelShaderState.RwConstantBuffers[13] is null))
+            {
+                _currentBatchState.PixelShaderState.RwConstantBuffers[13] = _miscValuesBuffer;
+            }
+
             if (_currentBatchState.VertexShaderState.Shader is null)
             {
                 _currentBatchState.VertexShaderState.Shader = _defaultVertexShader;
@@ -679,6 +793,11 @@ namespace Gorgon.Renderers
             if (_currentBatchState.VertexShaderState.RwConstantBuffers[1] is null)
             {
                 _currentBatchState.VertexShaderState.RwConstantBuffers[1] = _polySpriteDataBuffer;
+            }
+
+            if ((_miscValuesBuffer is not null) && (_currentBatchState.VertexShaderState.RwConstantBuffers[13] is null))
+            {
+                _currentBatchState.VertexShaderState.RwConstantBuffers[13] = _miscValuesBuffer;
             }
 
             return this;
@@ -2288,6 +2407,7 @@ namespace Gorgon.Renderers
             CameraController camController = Interlocked.Exchange(ref _cameraController, null);
             GorgonConstantBufferView world = Interlocked.Exchange(ref _polySpriteDataBuffer, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
+            GorgonConstantBufferView misc = Interlocked.Exchange(ref _miscValuesBuffer, null);
             Lazy<GorgonFontFactory> defaultFont = Interlocked.Exchange(ref _defaultFontFactory, null);
 
             Graphics.RenderTargetChanging -= ValidateBeginEndCall;
@@ -2302,6 +2422,7 @@ namespace Gorgon.Renderers
             }
 
             spriteRenderer?.Dispose();
+            misc?.Buffer?.Dispose();
             alphaTest?.Buffer?.Dispose();
             world?.Buffer?.Dispose();
             camController?.Dispose();

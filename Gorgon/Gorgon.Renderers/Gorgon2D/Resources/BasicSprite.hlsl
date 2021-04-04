@@ -54,6 +54,22 @@ cbuffer GorgonAlphaTest : register(b0)
 	float alphaTestValueHi = 0.0f;
 }
 
+// Miscellaneous values to pass to the shaders.
+cbuffer GorgonMiscValues : register(b13)
+{
+	// The current position of the currently active viewport.
+	float2 ViewportOffset;
+	// The current size (width, height) of the currently active viewport.
+	float2 ViewportSize;
+	// The depth near/far values for the currently active viewport.
+	float DepthNear
+	float DepthFar;
+	// The width of the current render target.
+	float ScreenWidth;
+	// The height of the current render target.
+	float ScreenHeight;	
+}
+
 // Converts an sRGB color value to linear.
 float3 SRgbToLinear(float3 c)
 {
