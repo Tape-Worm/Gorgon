@@ -62,7 +62,7 @@ cbuffer GorgonMiscValues : register(b13)
 	// The current size (width, height) of the currently active viewport.
 	float2 ViewportSize;
 	// The depth near/far values for the currently active viewport.
-	float DepthNear
+	float DepthNear;
 	float DepthFar;
 	// The width of the current render target.
 	float ScreenWidth;
