@@ -134,6 +134,50 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
+        /// A pre-defined batch state that enables depth read testing and no blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState DepthReadNoBlend = new()
+        {
+            BlendState = GorgonBlendState.NoBlending,
+            DepthStencilState = GorgonDepthStencilState.DepthEnabledNoWrite
+        };
+
+        /// <summary>
+        /// A pre-defined batch state that enables depth read testing and modulated blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState DepthRead = new()
+        {
+            BlendState = GorgonBlendState.Default,
+            DepthStencilState = GorgonDepthStencilState.DepthEnabledNoWrite
+        };
+
+        /// <summary>
+        /// A pre-defined batch state that enables depth read testing and additive blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState DepthReadAdditiveBlend = new()
+        {
+            BlendState = GorgonBlendState.Additive,
+            DepthStencilState = GorgonDepthStencilState.DepthEnabledNoWrite
+        };
+
+        /// <summary>
+        /// A pre-defined batch state that enables depth read testing and premultiplied blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState DepthReadPremultipliedBlend = new()
+        {
+            BlendState = GorgonBlendState.Premultiplied,
+            DepthStencilState = GorgonDepthStencilState.DepthEnabledNoWrite
+        };
+
+        /// <summary>
+        /// A pre-defined batch state that sets an inverted blending mode.
+        /// </summary>
+        public static readonly Gorgon2DBatchState InvertedBlend = new()
+        {
+            BlendState = GorgonBlendState.Inverted
+        };
+
+        /// <summary>
         /// A pre-defined batch state that sets scissor rectangle clipping.
         /// </summary>
         public static readonly Gorgon2DBatchState ScissorClipping = new()
