@@ -170,14 +170,6 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
-        /// A pre-defined batch state that sets an inverted blending mode.
-        /// </summary>
-        public static readonly Gorgon2DBatchState InvertedBlend = new()
-        {
-            BlendState = GorgonBlendState.Inverted
-        };
-
-        /// <summary>
         /// A pre-defined batch state that sets scissor rectangle clipping.
         /// </summary>
         public static readonly Gorgon2DBatchState ScissorClipping = new()
