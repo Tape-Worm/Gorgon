@@ -160,21 +160,40 @@ namespace Gorgon.Renderers
         }
         #endregion
 
-        #region Constants.
-        /// <summary>
-        /// The renderer is not initialized.
-        /// </summary>
+        #region Constants.        
+        // The renderer is not initialized.        
         private const int Uninitialized = 0;
 
-        /// <summary>
-        /// The renderer is initializing.
-        /// </summary>
+        // The renderer is initializing.        
         private const int Initializing = 1;
 
-        /// <summary>
-        /// The renderer is initialized.
-        /// </summary>
+        // The renderer is initialized.        
         private const int Initialized = 2;
+
+        /// <summary>
+        /// The name of the shaders used by the 2D renderer when including in external shaders.
+        /// </summary>
+        public const string Gorgon2DShaderIncludeName = "Gorgon2DShaders";
+
+        /// <summary>
+        /// The name of the shaders used by the <see cref="Gorgon2DGBuffer"/> when including in external shaders.
+        /// </summary>
+        public const string GorgonGBufferShaderIncludeName = "Gorgon2DGBufferShaders";
+
+        /// <summary>
+        /// The name of the shaders used by the <see cref="Gorgon2DChromaticAberrationEffect"/>.
+        /// </summary>
+        public const string GorgonChromaticAberrationShaderIncludeName = "Gorgon2DChromaticAberrationShader";
+
+        /// <summary>
+        /// The name of the shaders used by the <see cref="Gorgon2DBloomEffect"/>.
+        /// </summary>
+        public const string GorgonBloomShaderIncludeName = "Gorgon2DHdrBloomShader";
+
+        /// <summary>
+        /// The name of the shaders used by the <see cref="Gorgon2DLightingEffect"/>.
+        /// </summary>
+        public const string GorgonLightingShaderIncludeName = "Gorgon2DLightingShader";
         #endregion
 
         #region Variables.
@@ -2629,10 +2648,11 @@ namespace Gorgon.Renderers
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(Graphics), true);
 
-            if (!GorgonShaderFactory.Includes.ContainsKey("Gorgon2DShaders"))
-            {
-                GorgonShaderFactory.Includes["Gorgon2DShaders"] = new GorgonShaderInclude("Gorgon2DShaders", Resources.BasicSprite);
-            }
+            GorgonShaderFactory.Includes[Gorgon2DShaderIncludeName] = new GorgonShaderInclude(Gorgon2DShaderIncludeName, Resources.BasicSprite);
+            GorgonShaderFactory.Includes[GorgonGBufferShaderIncludeName] = new GorgonShaderInclude(GorgonGBufferShaderIncludeName, Resources.GBuffer);
+            GorgonShaderFactory.Includes[GorgonLightingShaderIncludeName] = new GorgonShaderInclude(GorgonLightingShaderIncludeName, Resources.Lighting);
+            GorgonShaderFactory.Includes[GorgonBloomShaderIncludeName] = new GorgonShaderInclude(GorgonBloomShaderIncludeName, Resources.HdrBloom);
+            GorgonShaderFactory.Includes[GorgonChromaticAberrationShaderIncludeName] = new GorgonShaderInclude(GorgonChromaticAberrationShaderIncludeName, Resources.ChromaticAberration);
         }
         #endregion
     }
