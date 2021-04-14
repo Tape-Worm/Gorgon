@@ -43,7 +43,7 @@ namespace Gorgon.Renderers
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This effect animates an image to appear as though it is being displayed on old film. To animate the image, the <see cref="TimeMultiplier"/> property needs to be updated with a time value (in seconds) every frame.
+    /// This effect animates an image to appear as though it is being displayed on old film. 
     /// </para>
     /// </remarks>
     public class Gorgon2DOldFilmEffect
