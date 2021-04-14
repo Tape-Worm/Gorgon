@@ -48,31 +48,31 @@ namespace Gorgon.IO
         /// <list type="table">
         ///		<listheader>
         ///			<term>Value</term>
-        ///			<description>Meaning</description>
+        ///			<term>Meaning</term>
         ///		</listheader>
         ///		<item>
         ///			<term>
         ///			Less than zero
         ///			</term>
-        ///			<description>
+        ///			<term>
         ///			<paramref name="x" /> is less than <paramref name="y" />.
-        ///			</description>			
+        ///			</term>			
         ///		</item>
         ///		<item>
         ///			<term>
         ///			Zero
         ///			</term>
-        ///			<description>
+        ///			<term>
         ///			<paramref name="x" /> equals <paramref name="y" />.
-        ///			</description>
+        ///			</term>
         ///		</item>
         ///		<item>
         ///			<term>
         ///			Greater than zero
         ///			</term>
-        ///			<description>
+        ///			<term>
         ///			<paramref name="x" /> is greater than <paramref name="y" />.
-        ///			</description>
+        ///			</term>
         ///		</item>
         /// </list>
         /// </returns>

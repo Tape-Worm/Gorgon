@@ -112,7 +112,7 @@ namespace Gorgon.Renderers
             /// <param name="other">The other instance to use for comparison.</param>
             /// <returns>
             ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-            public bool Equals(in TimingValues other) => other.TimingData == TimingData;
+            public bool Equals(in TimingValues other) => (other.TimingData.X == TimingData.X) && (other.TimingData.Z == TimingData.Z);
 
             /// <summary>Function to compare this instance with another.</summary>
             /// <param name="other">The other instance to use for comparison.</param>
@@ -615,7 +615,7 @@ namespace Gorgon.Renderers
             // Spin wait until we're fully initialized.
             var wait = new SpinWait();
 
-            while (Interlocked.Exchange(ref _initialized, Initializing) == Initializing)
+            while (Interlocked.CompareExchange(ref _initialized, Initializing, Uninitialized) == Initializing)
             {
                 // If a thread is currently initialzing the renderer, make it wait until we've finalized initialization before continuing.
                 wait.SpinOnce();
@@ -797,6 +797,64 @@ namespace Gorgon.Renderers
         /// drawing items with the previous blend state.  
         /// </para>
         /// <para>
+        /// If a custom pixel or vertex shader is passed to the <paramref name="batchState"/>, then developers should note which resource slots, and constant buffer slots are used by the 2D renderer 
+        /// itself. Gorgon will allow overriding of these slots, but in those cases, some information may no longer available and things may not work as expected. The following slots are use by the 2D 
+        /// renderer:
+        /// <para>
+        /// <list type="table">
+        ///		<listheader>
+        ///			<term>Shader Type</term>
+        ///			<term>Resource type</term>
+        ///			<term>Slot #</term>
+        ///			<term>Purpose</term>
+        ///		</listheader>
+        ///		<item>
+        ///		    <term>Pixel</term>
+        ///		    <term>Texture/Sampler</term>
+        ///		    <term>0</term>
+        ///		    <term>Primary sprite texture/sampler.</term>
+        ///		</item>
+        ///		<item>
+        ///		    <term>Pixel</term>
+        ///		    <term>Texture</term>
+        ///		    <term>1</term>
+        ///		    <term>Additional texture for effects.</term>
+        ///		</item>
+        ///		<item>
+        ///		    <term>Pixel</term>
+        ///		    <term>Constants</term>
+        ///		    <term>0</term>
+        ///		    <term>Data for alpha testing.</term>
+        ///		</item>
+        ///		<item>
+        ///		    <term>Pixel and Vertex</term>
+        ///		    <term>Constants</term>
+        ///		    <term>12</term>
+        ///		    <term>Timing data.</term>
+        ///		</item>
+        ///		<item>
+        ///		    <term>Pixel and Vertex</term>
+        ///		    <term>Constants</term>
+        ///		    <term>13</term>
+        ///		    <term>Miscellaneous data (e.g. target width and height)</term>
+        ///		</item>
+        ///		<item>
+        ///		    <term>Vertex</term>
+        ///		    <term>Constants</term>
+        ///		    <term>0</term>
+        ///		    <term>View/Projection matrix for the <see cref="CurrentCamera"/> (or the default camera if <b>null</b>).</term>
+        ///		</item>
+        ///		<item>
+        ///		    <term>Vertex</term>
+        ///		    <term>Constants</term>
+        ///		    <term>1</term>
+        ///		    <term>Data for a <see cref="GorgonPolySprite">polygon sprite</see>.</term>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// Following this list, a developer can use any texture slot from 2 and up, and any constant buffer slots between 2 (or 1 for pixel shaders) and 11 for their own data.
+        /// </para>
+        /// <para>
         /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="GorgonCameraCommon"/> object
         /// that defines the projection and view of the scene being rendered. It is possible with this object to change the coordinate system, and to allow perspective rendering for a batch.
         /// </para>
@@ -869,14 +927,10 @@ namespace Gorgon.Renderers
             {
                 GorgonConstantBufferView buffer = _currentBatchState.PixelShaderState.RwConstantBuffers[12];
 
+                UpdateTimingShaderValues();
                 if (buffer is null)
-                {
-                    UpdateTimingShaderValues();
+                {                    
                     _currentBatchState.PixelShaderState.RwConstantBuffers[12] = _timingValuesBuffer;
-                }
-                else if (buffer == _timingValuesBuffer)
-                {
-                    UpdateTimingShaderValues();
                 }                
             }
 
