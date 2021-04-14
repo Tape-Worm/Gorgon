@@ -85,7 +85,7 @@ namespace Gorgon.Renderers
     ///		    <term>Vertex</term>
     ///		    <term>Constants</term>
     ///		    <term>0</term>
-    ///		    <term>View/Projection matrix for the <see cref="CurrentCamera"/> (or the default camera if <b>null</b>).</term>
+    ///		    <term>View/Projection matrix for the <see cref="Gorgon2D.CurrentCamera"/> (or the default camera if <b>null</b>).</term>
     ///		</item>
     ///		<item>
     ///		    <term>Vertex</term>
