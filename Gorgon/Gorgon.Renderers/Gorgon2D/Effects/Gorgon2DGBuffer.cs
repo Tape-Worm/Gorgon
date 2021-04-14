@@ -178,6 +178,17 @@ namespace Gorgon.Renderers
             pixelShader?.Dispose();
         }
 
+        /// <summary>
+        /// Function to compile the pixel shader for the effect.
+        /// </summary>
+        /// <returns>The pixel shader for the effect.</returns>
+        /// <remarks>
+        /// <para>
+        /// Users may override this method to provide a custom pixel shader implementation for rendering the GBuffer.
+        /// </para>
+        /// </remarks>
+        protected virtual GorgonPixelShader OnCompilePixelShader() => GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GBuffer, "GorgonPixelShaderGBuffer", GorgonGraphics.IsDebugEnabled, Macros);
+
         /// <summary>Function called to build a new (or return an existing) 2D batch state.</summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
         /// <param name="builders">The builder types that will manage the state of the effect.</param>
@@ -212,7 +223,7 @@ namespace Gorgon.Renderers
                     Macros.Add(_useArrayMacro);
                 }
 
-                _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GBuffer, "GorgonPixelShaderGBuffer", GorgonGraphics.IsDebugEnabled, Macros);
+                _pixelShader = OnCompilePixelShader();
                 _pixelShaderState = null;
             }
 
