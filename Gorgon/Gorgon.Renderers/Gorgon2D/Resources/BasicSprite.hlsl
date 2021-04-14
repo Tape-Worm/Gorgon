@@ -54,6 +54,19 @@ cbuffer GorgonAlphaTest : register(b0)
 	float alphaTestValueHi = 0.0f;
 }
 
+// Timing values to pass to the shaders.
+cbuffer GorgonTimingValues : register(b12)
+{
+	// The number of seconds between frames.
+	float FrameDelta;
+	// The number of seconds between frames, with a scaling value applied.
+	float ScaledFrameDelta;
+	// The number of seconds since the application was started.
+	float SecondsSinceStart;
+	// The number of frames per second.
+	float Fps;
+}
+
 // Miscellaneous values to pass to the shaders.
 cbuffer GorgonMiscValues : register(b13)
 {

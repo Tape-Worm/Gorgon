@@ -11,12 +11,7 @@
 Texture2D _filmEffectTexture : register(t1);
 SamplerState _gorgonFilmGrainSampler : register(s1);		// Sampler used for film grain random texture.
 
-cbuffer FilmGrainTiming : register(b1)
-{
-	float filmGrainTime = 0.0f;								// Delta time - Used to animate the effect.
-};
-
-cbuffer FilmGrainScratch : register(b2)
+cbuffer FilmGrainScratch : register(b1)
 {
 	float filmGrainSpeed = 0.003f;							// Speed (larger values means longer scratches)	
 	float filmGrainScrollSpeed = 0.01f;						// Side scrolling speed.
@@ -24,7 +19,7 @@ cbuffer FilmGrainScratch : register(b2)
 	float filmGrainScratchWidth = 0.01f;					// Scratch width.
 }
 
-cbuffer FilmGrainSepia : register(b3)
+cbuffer FilmGrainSepia : register(b2)
 {
 	float4 filmGrainLight = float4(1, 0.9f, 0.65f, 1);		// Light coloring.
 	float4 filmGrainDark = float4(0.2f, 0.102f, 0, 1);		// Dark coloring.
@@ -47,8 +42,8 @@ float4 makeSepia(float4 color)
 // Our default pixel shader to apply a film grain effect.
 float4 GorgonPixelShaderFilmGrain(GorgonSpriteVertex vertex) : SV_Target
 {
-	float scanLine = filmGrainTime * filmGrainSpeed;
-	float side = filmGrainTime * filmGrainScrollSpeed;
+	float scanLine = SecondsSinceStart * filmGrainSpeed;
+	float side = SecondsSinceStart * filmGrainScrollSpeed;
 
     float4 texel = _gorgonTexture.Sample(_gorgonSampler, vertex.uv.xyz) * vertex.color;
 	

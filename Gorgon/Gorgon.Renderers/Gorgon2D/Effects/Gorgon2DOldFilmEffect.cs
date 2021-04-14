@@ -43,7 +43,7 @@ namespace Gorgon.Renderers
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This effect animates an image to appear as though it is being displayed on old film. To animate the image, the <see cref="Time"/> property needs to be updated with a time value (in seconds) every frame.
+    /// This effect animates an image to appear as though it is being displayed on old film. To animate the image, the <see cref="TimeMultiplier"/> property needs to be updated with a time value (in seconds) every frame.
     /// </para>
     /// </remarks>
     public class Gorgon2DOldFilmEffect
@@ -110,8 +110,6 @@ namespace Gorgon.Renderers
         #region Variables.
         // Texture used to hold random noise for the shader.
         private GorgonTexture2DView _randomTexture;
-        // Constant buffer for timing.
-        private GorgonConstantBufferView _timingBuffer;
         // Flag to indicate whether the effect has updated parameters or not.
         private bool _isScratchUpdated = true;
         // Flag to indicate whether the effect has updated parameters or not.
@@ -131,8 +129,6 @@ namespace Gorgon.Renderers
         private Gorgon2DShaderState<GorgonPixelShader> _filmState;
         // The batch state to use when rendering.
         private Gorgon2DBatchState _batchState;
-        // The current time, in seconds.
-        private float _time;
         #endregion
 
         #region Properties.
@@ -339,15 +335,6 @@ namespace Gorgon.Renderers
         } = 25;
 
         /// <summary>
-        /// Property to set or return the current time for the effect in seconds.
-        /// </summary>
-        public float Time
-        {
-            get => _time;
-            set => _time = value;
-        }
-
-        /// <summary>
         /// Property to return the noise texture width and height.
         /// </summary>
         /// <remarks>
@@ -439,12 +426,6 @@ namespace Gorgon.Renderers
         {
             GenerateRandomNoise();
 
-            _timingBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(16)
-            {
-                Name = "Gorgon 2D Old Film Effect - Timing data",
-                Usage = ResourceUsage.Dynamic
-            });
-
             _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");
             _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
 
@@ -476,13 +457,13 @@ namespace Gorgon.Renderers
                 _isScratchUpdated = false;
             }
 
-            if (_isSepiaUpdated)
+            if (!_isSepiaUpdated)
             {
-                _sepiaBuffer.Buffer.SetData(in _sepiaSettings);
-                _isSepiaUpdated = false;
+                return;
             }
 
-            _timingBuffer.Buffer.SetData(in _time);
+            _sepiaBuffer.Buffer.SetData(in _sepiaSettings);
+            _isSepiaUpdated = false;
         }
 
         /// <summary>
@@ -497,9 +478,8 @@ namespace Gorgon.Renderers
             if (_batchState is null)
             {
                 _filmState = builders.PixelShaderBuilder
-                              .ConstantBuffer(_timingBuffer, 1)
-                              .ConstantBuffer(_scratchBuffer, 2)
-                              .ConstantBuffer(_sepiaBuffer, 3)
+                              .ConstantBuffer(_scratchBuffer, 1)
+                              .ConstantBuffer(_sepiaBuffer, 2)
                               .ShaderResource(_randomTexture, 1)
                               .SamplerState(GorgonSamplerState.Wrapping, 1)
                               .Shader(_filmShader)
@@ -639,15 +619,13 @@ namespace Gorgon.Renderers
 
             GorgonPixelShader shader = Interlocked.Exchange(ref _filmShader, null);
             GorgonTexture2DView texture = Interlocked.Exchange(ref _randomTexture, null);
-            GorgonConstantBufferView buffer1 = Interlocked.Exchange(ref _timingBuffer, null);
-            GorgonConstantBufferView buffer2 = Interlocked.Exchange(ref _scratchBuffer, null);
-            GorgonConstantBufferView buffer3 = Interlocked.Exchange(ref _sepiaBuffer, null);
+            GorgonConstantBufferView buffer1 = Interlocked.Exchange(ref _scratchBuffer, null);
+            GorgonConstantBufferView buffer2 = Interlocked.Exchange(ref _sepiaBuffer, null);
 
             shader?.Dispose();
             texture?.Dispose();
             buffer1?.Dispose();
             buffer2?.Dispose();
-            buffer3?.Dispose();
         }
 
         /// <summary>

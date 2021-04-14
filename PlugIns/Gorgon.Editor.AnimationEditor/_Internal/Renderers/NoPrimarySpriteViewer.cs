@@ -138,7 +138,6 @@ namespace Gorgon.Editor.AnimationEditor
             if (DataContext.Settings.AnimateNoPrimarySpriteBackground)
             {
                 _oldFilm.DirtRegion = null;
-                _oldFilm.Time = GorgonTiming.SecondsSinceStart;
                 _oldFilm.ShakeOffset = new Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
 
                 if (_stripAnimCount < 30)
@@ -184,7 +183,6 @@ namespace Gorgon.Editor.AnimationEditor
             base.OnLoad();
 
             _stripAnimCount = 0;
-            _oldFilm.Time = 0;
 
             CreateRenderTarget();
         }

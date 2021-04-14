@@ -165,9 +165,6 @@ namespace Gorgon.Examples
 
             Present();
 
-            // This effect requires a time value to animate.  
-            _oldFilmEffect.Time = GorgonTiming.SecondsSinceStart;
-
             // Shake the old film for a few seconds.
             if ((_compositor["Olde Film"].Enabled) && ((GorgonTiming.SecondsSinceStart % 10) >= 6))
             {

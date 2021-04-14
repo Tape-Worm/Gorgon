@@ -43,6 +43,8 @@ using Gorgon.Renderers.Properties;
 using Gorgon.UI;
 using DX = SharpDX;
 using System.Runtime.InteropServices;
+using Gorgon.Timing;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Gorgon.Renderers
 {
@@ -90,7 +92,41 @@ namespace Gorgon.Renderers
     {
         #region Value Types.
         /// <summary>
-        /// The common miscellaneous values to pass to the shader.
+        /// The timing values to pass to the shaders.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        private readonly struct TimingValues
+            : IGorgonEquatableByRef<TimingValues>
+        {
+            /// <summary>
+            /// The size of the structure, in bytes.
+            /// </summary>
+            public static readonly int SizeInBytes = Unsafe.SizeOf<TimingValues>();
+
+            /// <summary>
+            /// The timing data to pass to the shaders.
+            /// </summary>
+            public readonly Vector4 TimingData;
+
+            /// <summary>Function to compare this instance with another.</summary>
+            /// <param name="other">The other instance to use for comparison.</param>
+            /// <returns>
+            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+            public bool Equals(in TimingValues other) => other.TimingData == TimingData;
+
+            /// <summary>Function to compare this instance with another.</summary>
+            /// <param name="other">The other instance to use for comparison.</param>
+            /// <returns>
+            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+            public bool Equals(TimingValues other) => Equals(in other);
+
+            /// <summary>Initializes a new instance of the <see cref="TimingValues" /> struct.</summary>
+            /// <param name="timingData">The timing data.</param>
+            public TimingValues(Vector4 timingData) => TimingData = timingData;            
+        }
+
+        /// <summary>
+        /// The common miscellaneous values to pass to the shaders.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         private readonly struct MiscValues
@@ -256,10 +292,14 @@ namespace Gorgon.Renderers
         private GorgonConstantBufferView _polySpriteDataBuffer;
         // Values to pass to a shader so it will have the same information as the application (e.g. screen width and height).
         private GorgonConstantBufferView _miscValuesBuffer;
+        // Values for timing to pass to a shader.
+        private GorgonConstantBufferView _timingValuesBuffer;
         // The transformer used for polygons.
         private readonly PolySpriteTransformer _polyTransformer = new();
         // The currently active miscellaneous values.
         private MiscValues _currentMiscValues;
+        // The current timing values.
+        private TimingValues _currentTimingValues;
         #endregion
 
         #region Properties.
@@ -461,6 +501,7 @@ namespace Gorgon.Renderers
             if (_initialized == Initialized)
             {
                 UpdateMiscShaderValues();
+                UpdateTimingShaderValues();
             }
         }
 
@@ -518,11 +559,35 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to update timing values for the shaders.
+        /// </summary>
+        private void UpdateTimingShaderValues()
+        {
+            if (_timingValuesBuffer is null)
+            {
+                _currentTimingValues = new TimingValues(new Vector4(GorgonTiming.Delta, GorgonTiming.ScaledDelta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS));
+                _timingValuesBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _currentTimingValues, "[Gorgon2D] Timing values.",
+                                                                                    ResourceUsage.Dynamic);
+                return;
+            }
+
+            var timingValues = new TimingValues(new Vector4(GorgonTiming.Delta, GorgonTiming.ScaledDelta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS));
+
+            if (timingValues.Equals(in _currentTimingValues))
+            {
+                return;
+            }
+
+            _timingValuesBuffer.Buffer.SetData(in timingValues);
+            _currentTimingValues = timingValues;
+        }
+
+        /// <summary>
         /// Function to update miscellaneous shader values for the shaders.
         /// </summary>
         private void UpdateMiscShaderValues()
         {
-            if (_miscValuesBuffer == null)
+            if (_miscValuesBuffer is null)
             {
                 _currentMiscValues = new MiscValues(Graphics);
                 _miscValuesBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _currentMiscValues, "[Gorgon2D] Miscellaneous values.",
@@ -645,6 +710,7 @@ namespace Gorgon.Renderers
                 _polyPixelState.RwConstantBuffers[0] = _alphaTest;
 
                 UpdateMiscShaderValues();
+                UpdateTimingShaderValues();
 
                 Graphics.RenderTargetChanging += ValidateBeginEndCall;
                 Graphics.ViewportChanging += ValidateBeginEndCall;
@@ -772,7 +838,7 @@ namespace Gorgon.Renderers
             {
                 Initialize();
             }
-
+            
             _cameraController.UpdateCamera(camera ?? _defaultCamera);
             CurrentCamera = camera;
 
@@ -799,6 +865,21 @@ namespace Gorgon.Renderers
                 _currentBatchState.PixelShaderState.RwConstantBuffers[13] = _miscValuesBuffer;
             }
 
+            if (_timingValuesBuffer is not null)
+            {
+                GorgonConstantBufferView buffer = _currentBatchState.PixelShaderState.RwConstantBuffers[12];
+
+                if (buffer is null)
+                {
+                    UpdateTimingShaderValues();
+                    _currentBatchState.PixelShaderState.RwConstantBuffers[12] = _timingValuesBuffer;
+                }
+                else if (buffer == _timingValuesBuffer)
+                {
+                    UpdateTimingShaderValues();
+                }                
+            }
+
             if (_currentBatchState.VertexShaderState.Shader is null)
             {
                 _currentBatchState.VertexShaderState.Shader = _defaultVertexShader;
@@ -812,6 +893,11 @@ namespace Gorgon.Renderers
             if (_currentBatchState.VertexShaderState.RwConstantBuffers[1] is null)
             {
                 _currentBatchState.VertexShaderState.RwConstantBuffers[1] = _polySpriteDataBuffer;
+            }
+
+            if ((_timingValuesBuffer is not null) && (_currentBatchState.VertexShaderState.RwConstantBuffers[12] is null))
+            {
+                _currentBatchState.VertexShaderState.RwConstantBuffers[12] = _timingValuesBuffer;
             }
 
             if ((_miscValuesBuffer is not null) && (_currentBatchState.VertexShaderState.RwConstantBuffers[13] is null))
@@ -2427,6 +2513,7 @@ namespace Gorgon.Renderers
             GorgonConstantBufferView world = Interlocked.Exchange(ref _polySpriteDataBuffer, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
             GorgonConstantBufferView misc = Interlocked.Exchange(ref _miscValuesBuffer, null);
+            GorgonConstantBufferView timing = Interlocked.Exchange(ref _timingValuesBuffer, null);
             Lazy<GorgonFontFactory> defaultFont = Interlocked.Exchange(ref _defaultFontFactory, null);
 
             Graphics.RenderTargetChanging -= ValidateBeginEndCall;
@@ -2442,6 +2529,7 @@ namespace Gorgon.Renderers
 
             spriteRenderer?.Dispose();
             misc?.Buffer?.Dispose();
+            timing?.Buffer?.Dispose();
             alphaTest?.Buffer?.Dispose();
             world?.Buffer?.Dispose();
             camController?.Dispose();

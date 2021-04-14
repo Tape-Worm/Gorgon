@@ -162,11 +162,10 @@ namespace Gorgon.Examples
             }
 
             // Render as an old film effect.
-            _oldFilm.Time = GorgonTiming.SecondsSinceStart * 2;
             _oldFilm.ShakeOffset = Vector2.Zero;
-            if (GorgonRandom.RandomInt32(0, 100) > 95)
+            if (GorgonRandom.RandomInt32(0, 100) > 90)
             {
-                _oldFilm.ShakeOffset = new Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
+                _oldFilm.ShakeOffset = new Vector2(GorgonRandom.RandomSingle(-4.0f, 4.0f), GorgonRandom.RandomSingle(-2.0f, 2.0f));
             }
 
             _oldFilm.Render(_postView2, _postTarget1);
@@ -477,9 +476,7 @@ namespace Gorgon.Examples
         {
             try
             {
-#if NET5_0_OR_GREATER
                 Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
