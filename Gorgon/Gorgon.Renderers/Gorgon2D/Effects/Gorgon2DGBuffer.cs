@@ -189,6 +189,20 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected virtual GorgonPixelShader OnCompilePixelShader() => null;
 
+
+        /// <summary>
+        /// Function to assign resources to a custom pixel shader, if one is provided.
+        /// </summary>
+        /// <param name="builder">The builder that will manage the state of the pixel shader resources.</param>
+        /// <remarks>
+        /// <para>
+        /// Users may override this method to provide a custom resources such as textures, samplers and constant buffers to the pixel shader.
+        /// </para>
+        /// </remarks>
+        protected virtual void OnGetPixelShaderResources(Gorgon2DShaderStateBuilder<GorgonPixelShader> builder)
+        {
+        }
+
         /// <summary>Function called to build a new (or return an existing) 2D batch state.</summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
         /// <param name="builders">The builder types that will manage the state of the effect.</param>
@@ -235,6 +249,9 @@ namespace Gorgon.Renderers
             {
                 builders.PixelShaderBuilder.Clear()
                                            .Shader(_pixelShader);
+
+                OnGetPixelShaderResources();
+
                 if (!_useArray)
                 {
                     builders.PixelShaderBuilder.ShaderResource(_normalTexture ?? Renderer.EmptyNormalMapTexture, 1)
