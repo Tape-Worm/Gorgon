@@ -111,10 +111,6 @@ namespace Gorgon.Renderers
 
         #region Constants.
         /// <summary>
-        /// The name of the shader include for Gorgon's <see cref="Gorgon2DLightingEffect"/>.
-        /// </summary>
-        public const string Gorgon2DLightingShaderIncludeName = "LightingShaders";
-        /// <summary>
         /// The maximum number of lights that can be used at one time.
         /// </summary>
         public const int MaxLightCount = 256;
@@ -494,6 +490,11 @@ namespace Gorgon.Renderers
         /// <remarks>Applications must implement this method to ensure that any required resources are created, and configured for the effect.</remarks>
         protected override void OnInitialize()
         {
+            if (_globalBuffer is not null)
+            {
+                return;
+            }
+
             _globalBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                           new GorgonConstantBufferInfo(Unsafe.SizeOf<GlobalEffectData>())
                                                                           {
@@ -514,8 +515,6 @@ namespace Gorgon.Renderers
             _vertexLitTransformShader = CompileShader<GorgonVertexShader>(Resources.Lighting, "GorgonVertexLitShader");
 
             BuildPixelShaderPermutations();
-
-            GorgonShaderFactory.Includes[Gorgon2DLightingShaderIncludeName] = new GorgonShaderInclude(Gorgon2DLightingShaderIncludeName, Resources.Lighting);
         }
 
         /// <summary>

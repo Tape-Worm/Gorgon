@@ -187,7 +187,7 @@ namespace Gorgon.Renderers
         /// Users may override this method to provide a custom pixel shader implementation for rendering the GBuffer.
         /// </para>
         /// </remarks>
-        protected virtual GorgonPixelShader OnCompilePixelShader() => GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GBuffer, "GorgonPixelShaderGBuffer", GorgonGraphics.IsDebugEnabled, Macros);
+        protected virtual GorgonPixelShader OnCompilePixelShader() => null;
 
         /// <summary>Function called to build a new (or return an existing) 2D batch state.</summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
@@ -222,8 +222,12 @@ namespace Gorgon.Renderers
                 {
                     Macros.Add(_useArrayMacro);
                 }
-
+                                
                 _pixelShader = OnCompilePixelShader();
+                if (_pixelShader is null)
+                {
+                    _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GBuffer, "GorgonPixelShaderGBuffer", GorgonGraphics.IsDebugEnabled, Macros);
+                }
                 _pixelShaderState = null;
             }
 
@@ -307,6 +311,8 @@ namespace Gorgon.Renderers
                 Name = "GBuffer Parameters",
                 Usage = ResourceUsage.Default                
             });
+
+            _initialized = true;
         }
 
         /// <summary>
@@ -403,8 +409,7 @@ namespace Gorgon.Renderers
         {
             if (!_initialized)
             {
-                OnInitialize();
-                _initialized = true;
+                OnInitialize();                
             }
 
             if ((_indices.normalIndex != normalMapIndex) || (_indices.specularIndex != specularMapIndex))
