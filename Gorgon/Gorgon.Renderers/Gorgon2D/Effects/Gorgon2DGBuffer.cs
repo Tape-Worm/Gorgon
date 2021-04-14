@@ -250,7 +250,7 @@ namespace Gorgon.Renderers
                 builders.PixelShaderBuilder.Clear()
                                            .Shader(_pixelShader);
 
-                OnGetPixelShaderResources(builders);
+                OnGetPixelShaderResources(builders.PixelShaderBuilder);
 
                 if (!_useArray)
                 {
