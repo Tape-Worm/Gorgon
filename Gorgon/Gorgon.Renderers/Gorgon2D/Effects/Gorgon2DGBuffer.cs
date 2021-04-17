@@ -32,6 +32,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
+using Gorgon.Renderers.Techniques;
 
 namespace Gorgon.Renderers
 {
@@ -39,7 +40,7 @@ namespace Gorgon.Renderers
     /// A GBuffer containing targets for rendering effects that have need of multiple render targets.
     /// </summary>
     public class Gorgon2DGBuffer
-        : Gorgon2DEffect
+        : Gorgon2DEffect, IGorgonGBuffer
     {
         #region Variables.
         // The graphics interface used for target creation.
@@ -142,9 +143,9 @@ namespace Gorgon.Renderers
                 _target[i]?.Dispose();
             }
 
-            GBufferTexture = Specular = Normal = Diffuse = null;                        
+            GBufferTexture = Specular = Normal = Diffuse = null;
             Array.Clear(_target, 0, _target.Length);
-            
+
             _gbuffer?.Dispose();
         }
 
@@ -170,34 +171,9 @@ namespace Gorgon.Renderers
 
             GorgonConstantBufferView paramsBuffer = Interlocked.Exchange(ref _params, null);
             GorgonPixelShader pixelShader = Interlocked.Exchange(ref _pixelShader, null);
-            
+
             paramsBuffer?.Dispose();
             pixelShader?.Dispose();
-        }
-
-        /// <summary>
-        /// Function to compile the pixel shader for the effect.
-        /// </summary>
-        /// <returns>The pixel shader for the effect.</returns>
-        /// <remarks>
-        /// <para>
-        /// Users may override this method to provide a custom pixel shader implementation for rendering the GBuffer.
-        /// </para>
-        /// </remarks>
-        protected virtual GorgonPixelShader OnCompilePixelShader() => null;
-
-
-        /// <summary>
-        /// Function to assign resources to a custom pixel shader, if one is provided.
-        /// </summary>
-        /// <param name="builder">The builder that will manage the state of the pixel shader resources.</param>
-        /// <remarks>
-        /// <para>
-        /// Users may override this method to provide a custom resources such as textures, samplers and constant buffers to the pixel shader.
-        /// </para>
-        /// </remarks>
-        protected virtual void OnGetPixelShaderResources(Gorgon2DShaderStateBuilder<GorgonPixelShader> builder)
-        {
         }
 
         /// <summary>Function called to build a new (or return an existing) 2D batch state.</summary>
@@ -221,7 +197,7 @@ namespace Gorgon.Renderers
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool defaultStatesChanged)
         {
             if (_vertexShaderState is null)
-            {                
+            {
                 _vertexShaderState = builders.VertexShaderBuilder.Shader(_vertexShader)
                                                                  .Build();
             }
@@ -233,12 +209,8 @@ namespace Gorgon.Renderers
                 {
                     Macros.Add(_useArrayMacro);
                 }
-                                
-                _pixelShader = OnCompilePixelShader();
-                if (_pixelShader is null)
-                {
-                    _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GBuffer, "GorgonPixelShaderGBuffer", GorgonGraphics.IsDebugEnabled, Macros);
-                }
+
+                _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GBuffer, "GorgonPixelShaderGBuffer", GorgonGraphics.IsDebugEnabled, Macros);
                 _pixelShaderState = null;
             }
 
@@ -246,8 +218,6 @@ namespace Gorgon.Renderers
             {
                 builders.PixelShaderBuilder.Clear()
                                            .Shader(_pixelShader);
-
-                OnGetPixelShaderResources(builders.PixelShaderBuilder);
 
                 if (!_useArray)
                 {
@@ -323,7 +293,7 @@ namespace Gorgon.Renderers
             _params = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector4>())
             {
                 Name = "GBuffer Parameters",
-                Usage = ResourceUsage.Default                
+                Usage = ResourceUsage.Default
             });
 
             _initialized = true;
@@ -337,7 +307,7 @@ namespace Gorgon.Renderers
             const float normChanValue = 127.0f / 255.0f;
             _target[0].Clear(GorgonColor.BlackTransparent);
             _target[1].Clear(new GorgonColor(normChanValue, normChanValue, 1.0f, 0.0f));
-            _target[2].Clear(GorgonColor.BlackTransparent);            
+            _target[2].Clear(GorgonColor.BlackTransparent);
         }
 
         /// <summary>
@@ -359,7 +329,7 @@ namespace Gorgon.Renderers
             {
                 Name = "GBuffer",
                 ArrayCount = _target.Length,
-                Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,                
+                Binding = TextureBinding.ShaderResource | TextureBinding.RenderTarget,
                 Usage = ResourceUsage.Default
             };
 
@@ -423,7 +393,7 @@ namespace Gorgon.Renderers
         {
             if (!_initialized)
             {
-                OnInitialize();                
+                OnInitialize();
             }
 
             if ((_indices.normalIndex != normalMapIndex) || (_indices.specularIndex != specularMapIndex))
@@ -449,7 +419,7 @@ namespace Gorgon.Renderers
         public void End()
         {
             EndPass(0, _target[0]);
-            EndRender(_target[0]);                        
+            EndRender(_target[0]);
         }
         #endregion
 

@@ -38,6 +38,7 @@ using Gorgon.Memory;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Lights;
+using Gorgon.Renderers.Techniques;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -590,7 +591,7 @@ namespace Gorgon.Renderers
         /// <param name="output">The final output target for the effect.</param>
         /// <param name="camera">[Optional] The camera used to transform the lights to camera space.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gbuffer"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
-        public void Render(Gorgon2DGBuffer gbuffer, GorgonRenderTargetView output, GorgonCameraCommon camera = null)
+        public void Render(IGorgonGBuffer gbuffer, GorgonRenderTargetView output, GorgonCameraCommon camera = null)
         {
             gbuffer.ValidateObject(nameof(gbuffer));
             output.ValidateObject(nameof(output));
