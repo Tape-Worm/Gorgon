@@ -24,7 +24,7 @@ float4 ChromaticAberration(GorgonSpriteVertex vertex) : SV_Target
 	float2 end = start - centeredUv * dot(centeredUv, centeredUv) * _settings.x; 
 	float2 range = end - start;
 	// Figure out how many samples we'll have depending on the size of the current render target.
-	int sampleCount = clamp(int(length(float2(ScreenWidth, ScreenHeight) * (range * 0.5f))), 3, 16);	
+	int sampleCount = clamp(int(length(float2(TargetWidth, TargetHeight) * (range * 0.5f))), 3, 16);	
 
 	// The offset for each sample iteration.
 	float2 delta = range / sampleCount;

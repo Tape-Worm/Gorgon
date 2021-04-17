@@ -187,7 +187,16 @@ namespace Gorgon.Timing
         /// <summary>
         /// Property to return the number of frames that have been presented.
         /// </summary>
-        public static ulong FrameCount
+        public static uint FrameCount
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the number of frames that have been presented (using an unsigned 64 bit value).
+        /// </summary>
+        public static ulong FrameCountULong
         {
             get;
             private set;
@@ -395,6 +404,7 @@ namespace Gorgon.Timing
             unchecked
             {
                 FrameCount++;
+                FrameCountULong++;
 
                 frameDelta = _lastTimerValue - _lastTime;
 
@@ -502,7 +512,7 @@ namespace Gorgon.Timing
             Delta = 0.0f;
             ScaledDelta = 0.0f;
             FPS = 0.0f;
-            FrameCount = 0;
+            FrameCountULong = FrameCount = 0;
             _averageCounter = 0;
             _frameCounter = 0;
             _lastTime = 0.0;

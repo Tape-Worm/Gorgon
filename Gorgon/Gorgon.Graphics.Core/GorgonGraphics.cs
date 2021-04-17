@@ -1359,6 +1359,9 @@ namespace Gorgon.Graphics.Core
             _stateEvaluator = new StateEvaluator(this);
             _stateApplicator = new D3D11StateApplicator(this, _stateEvaluator.RenderTargets);
 
+            // Include shaders used for blitting textures.
+            GorgonShaderFactory.Includes[BlitterShaderIncludeFileName] = new GorgonShaderInclude(BlitterShaderIncludeFileName, Resources.GraphicsShaders);
+
             Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
         }
 

@@ -71,9 +71,6 @@ namespace Gorgon.Renderers
         private (int normalIndex, int specularIndex) _indices;
         // The macro sent to the shader to enable using array indices.
         private readonly GorgonShaderMacro _useArrayMacro = new("USE_ARRAY");
-
-        // The texture information for the main GBuffer targets.
-        //private GorgonTexture2DInfo _mainInfo;
         #endregion
 
         #region Properties.

@@ -59,12 +59,12 @@ cbuffer GorgonTimingValues : register(b12)
 {
 	// The number of seconds between frames.
 	float FrameDelta;
-	// The number of seconds between frames, with a scaling value applied.
-	float ScaledFrameDelta;
 	// The number of seconds since the application was started.
 	float SecondsSinceStart;
 	// The number of frames per second.
 	float Fps;
+	// The number of frames since the application was started.
+	uint FrameCount;
 }
 
 // Miscellaneous values to pass to the shaders.
@@ -77,10 +77,11 @@ cbuffer GorgonMiscValues : register(b13)
 	// The depth near/far values for the currently active viewport.
 	float DepthNear;
 	float DepthFar;
-	// The width of the current render target.
-	float ScreenWidth;
-	// The height of the current render target.
-	float ScreenHeight;	
+	// The width and height of the current render target.
+	float TargetWidth;
+	float TargetHeight;	
+	// The width and height of the current texture, in slot 0.
+	float2 Texture0Size;
 }
 
 // Converts an sRGB color value to linear.

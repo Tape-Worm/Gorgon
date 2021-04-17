@@ -31,6 +31,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using System.Runtime.InteropServices;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -41,10 +43,7 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using Gorgon.UI;
-using DX = SharpDX;
-using System.Runtime.InteropServices;
 using Gorgon.Timing;
-using System.Diagnostics.Eventing.Reader;
 
 namespace Gorgon.Renderers
 {
@@ -92,43 +91,9 @@ namespace Gorgon.Renderers
     {
         #region Value Types.
         /// <summary>
-        /// The timing values to pass to the shaders.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        private readonly struct TimingValues
-            : IGorgonEquatableByRef<TimingValues>
-        {
-            /// <summary>
-            /// The size of the structure, in bytes.
-            /// </summary>
-            public static readonly int SizeInBytes = Unsafe.SizeOf<TimingValues>();
-
-            /// <summary>
-            /// The timing data to pass to the shaders.
-            /// </summary>
-            public readonly Vector4 TimingData;
-
-            /// <summary>Function to compare this instance with another.</summary>
-            /// <param name="other">The other instance to use for comparison.</param>
-            /// <returns>
-            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-            public bool Equals(in TimingValues other) => (other.TimingData.X == TimingData.X) && (other.TimingData.Z == TimingData.Z);
-
-            /// <summary>Function to compare this instance with another.</summary>
-            /// <param name="other">The other instance to use for comparison.</param>
-            /// <returns>
-            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-            public bool Equals(TimingValues other) => Equals(in other);
-
-            /// <summary>Initializes a new instance of the <see cref="TimingValues" /> struct.</summary>
-            /// <param name="timingData">The timing data.</param>
-            public TimingValues(Vector4 timingData) => TimingData = timingData;            
-        }
-
-        /// <summary>
         /// The common miscellaneous values to pass to the shaders.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, Pack = 16)]
         private readonly struct MiscValues
             : IGorgonEquatableByRef<MiscValues>
         {
@@ -138,55 +103,38 @@ namespace Gorgon.Renderers
             public static readonly int SizeInBytes = Unsafe.SizeOf<MiscValues>();
 
             /// <summary>
-            /// The offset of the current viewport.
+            /// The offset of the current viewport (xy offset, zw size).
             /// </summary>
-            public readonly Vector2 ViewOffset;
+            public readonly Vector4 Viewport;
             /// <summary>
-            /// The size of the current viewport.
+            /// The near, far plane of the current viewport (xy) and target slot 0 width and height (zw).
             /// </summary>
-            public readonly Vector2 ViewSize;
+            public readonly Vector4 DepthTarget;
             /// <summary>
-            /// The near plane of the current viewport.
+            /// The width and height of the current texture in slot 0.
             /// </summary>
-            public readonly float Near;
-            /// <summary>
-            /// The far plane of the current viewport.
-            /// </summary>
-            public readonly float Far;
-            /// <summary>
-            /// The width of the current render target (slot 0).
-            /// </summary>
-            public readonly float TargetWidth;
-            /// <summary>
-            /// The height of the current render target (slot 0).
-            /// </summary>
-            public readonly float TargetHeight;
-
+            public readonly Vector2 Texture0;
             /// <summary>Initializes a new instance of the <see cref="MiscValues" /> struct.</summary>
             /// <param name="graphics">The graphics interface for this renderer.</param>
-            public MiscValues(GorgonGraphics graphics)
+            /// <param name="batchState">The currently active state for the batch.</param>            
+            public MiscValues(GorgonGraphics graphics, Gorgon2DBatchState batchState)
             {
                 DX.ViewportF view = graphics.Viewports[0];
                 GorgonRenderTargetView target = graphics.RenderTargets[0];
 
-                ViewOffset = new Vector2(view.X, view.Y);
-                ViewSize = new Vector2(view.Width, view.Height);
-                Near = view.MinDepth;
-                Far = view.MaxDepth;
-                TargetWidth = target?.Width ?? 0;
-                TargetHeight = target?.Height ?? 0;
+                Viewport = new Vector4(view.X, view.Y, view.Width, view.Height);
+                DepthTarget = new Vector4(view.MinDepth, view.MaxDepth, target?.Width ?? -1, target?.Height ?? -1);
+
+                var srv = batchState?.PixelShaderState?.RwSrvs?[0] as GorgonTexture2DView;
+
+                Texture0 = new Vector2(srv?.Width ?? -1, srv?.Height ?? -1);
             }
 
             /// <summary>Function to compare this instance with another.</summary>
             /// <param name="other">The other instance to use for comparison.</param>
             /// <returns>
             ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-            public bool Equals(in MiscValues other) => (ViewOffset.Equals(other.ViewOffset))
-                       && (ViewSize.Equals(other.ViewSize))
-                       && (Near.EqualsEpsilon(other.Near))
-                       && (Far.EqualsEpsilon(other.Far))
-                       && (TargetWidth.EqualsEpsilon(other.TargetWidth))
-                       && (TargetHeight.EqualsEpsilon(other.TargetHeight));
+            public bool Equals(in MiscValues other) => (Viewport.Equals(other.Viewport)) && (DepthTarget.Equals(other.DepthTarget));
 
             /// <summary>Function to compare this instance with another.</summary>
             /// <param name="other">The other instance to use for comparison.</param>
@@ -299,7 +247,9 @@ namespace Gorgon.Renderers
         // The currently active miscellaneous values.
         private MiscValues _currentMiscValues;
         // The current timing values.
-        private TimingValues _currentTimingValues;
+        private Vector4 _currentTimingValues;
+        // The previous frame count.
+        private ulong _lastFrameCount;
         #endregion
 
         #region Properties.
@@ -397,6 +347,11 @@ namespace Gorgon.Renderers
             if ((_currentDrawCall is null) && (_currentDrawIndexCall is null))
             {
                 return;
+            }
+
+            if ((_miscValuesBuffer is not null) && (_currentBatchState.PixelShaderState.ConstantBuffers[13] == _miscValuesBuffer))
+            {
+                UpdateMiscShaderValues();
             }
 
             if (_lastRenderable is not null)
@@ -498,11 +453,13 @@ namespace Gorgon.Renderers
             GorgonCameraCommon camera = CurrentCamera ?? _defaultCamera;
             _cameraController.UpdateCamera(camera);
 
-            if (_initialized == Initialized)
+            if (_initialized != Initialized)
             {
-                UpdateMiscShaderValues();
-                UpdateTimingShaderValues();
+                return;
             }
+
+            UpdateMiscShaderValues();
+            UpdateTimingShaderValues();
         }
 
         /// <summary>
@@ -563,23 +520,35 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpdateTimingShaderValues()
         {
+            if (!GorgonTiming.TimingStarted)
+            {
+                _lastFrameCount = 0;
+                return;
+            }
+
             if (_timingValuesBuffer is null)
             {
-                _currentTimingValues = new TimingValues(new Vector4(GorgonTiming.Delta, GorgonTiming.ScaledDelta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS));
-                _timingValuesBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _currentTimingValues, "[Gorgon2D] Timing values.",
-                                                                                    ResourceUsage.Dynamic);
+                _currentTimingValues = new Vector4(GorgonTiming.Delta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS, GorgonTiming.FrameCount);
+                _timingValuesBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _currentTimingValues, "[Gorgon2D] Timing values.");
+                unchecked
+                {
+                    _lastFrameCount = GorgonTiming.FrameCountULong;
+                }
                 return;
             }
 
-            var timingValues = new TimingValues(new Vector4(GorgonTiming.Delta, GorgonTiming.ScaledDelta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS));
-
-            if (timingValues.Equals(in _currentTimingValues))
+            if ((_lastFrameCount != 0) && (GorgonTiming.FrameCountULong == _lastFrameCount))
             {
                 return;
             }
 
+            var timingValues = new Vector4(GorgonTiming.Delta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS, GorgonTiming.FrameCount);
             _timingValuesBuffer.Buffer.SetData(in timingValues);
             _currentTimingValues = timingValues;
+            unchecked
+            {
+                _lastFrameCount = GorgonTiming.FrameCountULong;
+            }
         }
 
         /// <summary>
@@ -589,14 +558,14 @@ namespace Gorgon.Renderers
         {
             if (_miscValuesBuffer is null)
             {
-                _currentMiscValues = new MiscValues(Graphics);
+                _currentMiscValues = new MiscValues(Graphics, _currentBatchState);
                 _miscValuesBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _currentMiscValues, "[Gorgon2D] Miscellaneous values.",
                                                                                   ResourceUsage.Dynamic);
 
                 return;
             }
 
-            var newMiscValues = new MiscValues(Graphics);
+            var newMiscValues = new MiscValues(Graphics, _currentBatchState);
 
             if (newMiscValues.Equals(in _currentMiscValues))
             {
@@ -836,7 +805,7 @@ namespace Gorgon.Renderers
         ///		    <term>Pixel and Vertex</term>
         ///		    <term>Constants</term>
         ///		    <term>13</term>
-        ///		    <term>Miscellaneous data (e.g. target width and height)</term>
+        ///		    <term>Miscellaneous data (e.g. target width and height, current slot 0 texture size, etc...)</term>
         ///		</item>
         ///		<item>
         ///		    <term>Vertex</term>
@@ -925,13 +894,12 @@ namespace Gorgon.Renderers
 
             if (_timingValuesBuffer is not null)
             {
-                GorgonConstantBufferView buffer = _currentBatchState.PixelShaderState.RwConstantBuffers[12];
-
-                UpdateTimingShaderValues();
-                if (buffer is null)
+                if (_currentBatchState.PixelShaderState.RwConstantBuffers[12] is null)
                 {                    
                     _currentBatchState.PixelShaderState.RwConstantBuffers[12] = _timingValuesBuffer;
-                }                
+                }
+
+                UpdateTimingShaderValues();
             }
 
             if (_currentBatchState.VertexShaderState.Shader is null)
