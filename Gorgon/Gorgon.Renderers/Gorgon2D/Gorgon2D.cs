@@ -114,6 +114,19 @@ namespace Gorgon.Renderers
             /// The width and height of the current texture in slot 0.
             /// </summary>
             public readonly Vector2 Texture0;
+
+            /// <summary>Function to compare this instance with another.</summary>
+            /// <param name="other">The other instance to use for comparison.</param>
+            /// <returns>
+            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+            public bool Equals(in MiscValues other) => (Viewport.Equals(other.Viewport)) && (DepthTarget.Equals(other.DepthTarget)) && (Texture0.Equals(other.Texture0));
+
+            /// <summary>Function to compare this instance with another.</summary>
+            /// <param name="other">The other instance to use for comparison.</param>
+            /// <returns>
+            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+            public bool Equals(MiscValues other) => Equals(in other);
+
             /// <summary>Initializes a new instance of the <see cref="MiscValues" /> struct.</summary>
             /// <param name="graphics">The graphics interface for this renderer.</param>
             /// <param name="batchState">The currently active state for the batch.</param>            
@@ -129,18 +142,6 @@ namespace Gorgon.Renderers
 
                 Texture0 = new Vector2(srv?.Width ?? -1, srv?.Height ?? -1);
             }
-
-            /// <summary>Function to compare this instance with another.</summary>
-            /// <param name="other">The other instance to use for comparison.</param>
-            /// <returns>
-            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-            public bool Equals(in MiscValues other) => (Viewport.Equals(other.Viewport)) && (DepthTarget.Equals(other.DepthTarget));
-
-            /// <summary>Function to compare this instance with another.</summary>
-            /// <param name="other">The other instance to use for comparison.</param>
-            /// <returns>
-            ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-            public bool Equals(MiscValues other) => Equals(in other);
         }
         #endregion
 
