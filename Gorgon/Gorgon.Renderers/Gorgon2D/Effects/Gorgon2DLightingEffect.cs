@@ -540,8 +540,6 @@ namespace Gorgon.Renderers
             if (_usingArray)
             {
                 Macros.Remove(_arrayMacro);
-                _pixelLitShader?.Dispose();
-                _pixelLitShader = null;
                 _usingArray = false;
             }
 
@@ -570,8 +568,6 @@ namespace Gorgon.Renderers
             {
                 _effectData.ArrayIndices = new Vector4(normalMapIndex, specularMapIndex, 0, 0);
                 Macros.Add(_arrayMacro);
-                _pixelLitShader?.Dispose();
-                _pixelLitShader = null;
                 _usingArray = true;
             }
 
@@ -610,7 +606,6 @@ namespace Gorgon.Renderers
             if (!_usingArray)
             {
                 Macros.Add(_arrayMacro);
-                _pixelLitShader = null;
                 _usingArray = true;
             }
 
@@ -644,7 +639,6 @@ namespace Gorgon.Renderers
             if (!_usingArray)
             {
                 Macros.Add(_arrayMacro);
-                _pixelLitShader = null;
                 _usingArray = true;
             }
 
