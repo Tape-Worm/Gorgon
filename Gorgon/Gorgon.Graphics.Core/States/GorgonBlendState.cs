@@ -40,7 +40,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// <para>
     /// The blend state contains 5 common blend states used by applications: <see cref="Default"/> (blending enabled for the first render target, using modulated blending), <see cref="NoBlending"/> 
-    /// (no blending at all), <see cref="Additive"/> (blending enabled on the first render target, using additive ops for source and dest), <see cref="Premultiplied"/> (blending enabled on the first render 
+    /// (no blending at all), <see cref="Additive"/> (blending enabled on the first render target, using additive ops for source and dest), <see cref="PremultipliedAlphaOverwrite"/> (blending enabled on the first render 
     /// target, with premultiplied blending ops for source and dest), and <see cref="Inverted"/> (blending enabled on the first render target, with inverted ops for source and dest). 
     /// </para>
     /// <para>
@@ -83,9 +83,14 @@ namespace Gorgon.Graphics.Core
         public static readonly GorgonBlendState SoftAdditive;
 
         /// <summary>
-        /// Premultiplied alpha blending on render target 0.
+        /// Premultiplied alpha blending on render target 0 
         /// </summary>
         public static readonly GorgonBlendState Premultiplied;
+
+        /// <summary>
+        /// Premultiplied alpha blending on render target 0 with source alpha overwriting the destination alpha.
+        /// </summary>
+        public static readonly GorgonBlendState PremultipliedAlphaOverwrite;
 
         /// <summary>
         /// Inverse color blending on render target 0.
@@ -375,7 +380,19 @@ namespace Gorgon.Graphics.Core
             {
                 IsBlendingEnabled = true,
                 SourceColorBlend = Blend.One,
-                DestinationColorBlend = Blend.InverseSourceAlpha
+                DestinationColorBlend = Blend.InverseSourceAlpha,
+                SourceAlphaBlend = Blend.One,
+                DestinationAlphaBlend = Blend.InverseSourceAlpha
+            };
+
+            // Premultiplied with alpha overwrite.
+            PremultipliedAlphaOverwrite = new GorgonBlendState
+            {
+                IsBlendingEnabled = true,
+                SourceColorBlend = Blend.One,
+                DestinationColorBlend = Blend.InverseSourceAlpha,
+                SourceAlphaBlend = Blend.One,
+                DestinationAlphaBlend = Blend.Zero,
             };
 
             // Inverted

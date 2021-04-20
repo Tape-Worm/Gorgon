@@ -82,6 +82,14 @@ namespace Gorgon.Renderers
         };
 
         /// <summary>
+        /// A pre-defined batch state that sets up premultiplied blendingfor color values, and using the source alpha channel to overwrite the destination alpha channel.
+        /// </summary>
+        public static readonly Gorgon2DBatchState PremultipliedBlendAlphaOverwrite = new()
+        {
+            BlendState = GorgonBlendState.PremultipliedAlphaOverwrite
+        };
+
+        /// <summary>
         /// A pre-defined batch state that sets up wirefame mode with no culling.
         /// </summary>
         public static readonly Gorgon2DBatchState WireFrameNoCulling = new()

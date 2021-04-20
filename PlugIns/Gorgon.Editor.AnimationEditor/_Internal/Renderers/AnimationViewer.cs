@@ -514,7 +514,7 @@ namespace Gorgon.Editor.AnimationEditor
             DrawBackgroundImage();
             Renderer.End();
 
-            Renderer.Begin(Gorgon2DBatchState.PremultipliedBlend, Camera);
+            Renderer.Begin(Gorgon2DBatchState.PremultipliedBlendAlphaOverwrite, Camera);
             Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -Camera.Anchor.X, RenderRegion.Height * -Camera.Anchor.Y, _main.Width, _main.Height),
                                          GorgonColor.White,
                                          _main,
