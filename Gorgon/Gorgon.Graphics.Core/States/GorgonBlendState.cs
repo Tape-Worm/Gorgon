@@ -375,7 +375,9 @@ namespace Gorgon.Graphics.Core
             {
                 IsBlendingEnabled = true,
                 SourceColorBlend = Blend.One,
-                DestinationColorBlend = Blend.InverseSourceAlpha
+                DestinationColorBlend = Blend.InverseSourceAlpha,
+                SourceAlphaBlend = Blend.One,
+                DestinationAlphaBlend = Blend.InverseSourceAlpha
             };
 
             // Inverted
