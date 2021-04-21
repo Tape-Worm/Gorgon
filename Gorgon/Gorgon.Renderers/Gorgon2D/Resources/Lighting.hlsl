@@ -56,7 +56,7 @@ float4 GetSpecularValue(float2 uv, float3 lightDir, float3 normal, float3 toEye,
 #ifndef USE_ARRAY
     float4 specColor = _specularTexture.Sample(_specularSampler, uv);
 #else
-	float4 specColor = _gorgonTexture.Sample(_specularSampler, float3(uv, _arrayIndices.y));
+	float4 specColor = _arrayIndices.y < 0 ? float4(0, 0, 0, 1) : _gorgonTexture.Sample(_specularSampler, float3(uv, _arrayIndices.y));
 #endif
 
     float3 halfWay = normalize(toEye - lightDir);
@@ -76,7 +76,7 @@ float3 GetNormal(float2 uv)
 #ifndef USE_ARRAY
     float4 normalTexel = _normalTexture.Sample(_normalSampler, uv);
 #else
-	float4 normalTexel = _gorgonTexture.Sample(_normalSampler, float3(uv, _arrayIndices.x));
+	float4 normalTexel = _arrayIndices.x < 0 ? float4(0.5f, 0.5f, 1.0f, 1.0f) : _gorgonTexture.Sample(_normalSampler, float3(uv, _arrayIndices.x));
 #endif
 
     float3 normal = normalTexel.rgb * 2 - 1;
