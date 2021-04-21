@@ -66,14 +66,14 @@ GorgonGBufferOutput GorgonPixelShaderGBuffer(GorgonLitVertex vertex) : SV_Target
 
     // Transform normals. If we rotate, the normals in the normal map need to be adjusted.
 #ifdef USE_ARRAY
-	float3 bump = normalize((_gorgonTexture.Sample(_gorgonSampler, float3(texCoords.xy, _arrayIndices.x)).xyz * 2.0f) - 1.0f);	
+	float3 bump = normalize((_arrayIndices.x < 0 ? float3(0.5f, 0.5f, 1.0f) : _gorgonTexture.Sample(_gorgonSampler, float3(texCoords.xy, _arrayIndices.x)).xyz) * 2.0f - 1.0f);	
 #else
     float3 bump = normalize((_normalTexture.Sample(_normalSampler, texCoords.xy).xyz * 2.0f) - 1.0f);
 #endif
     result.Normal = float4((normalize(float3(0, 0, bump.z) + (bump.x * vertex.tangent + bump.y * vertex.bitangent)) + 1.0f) * 0.5f, 1.0f);
 
 #ifdef USE_ARRAY
-	result.Specular = _arrayIndices.y < 0 ? float4(0, 0, 0, 0) : _gorgonTexture.Sample(_gorgonSampler, float3(texCoords.xy, _arrayIndices.y));
+	result.Specular = _arrayIndices.y < 0 ? float4(0, 0, 0, 1) : _gorgonTexture.Sample(_gorgonSampler, float3(texCoords.xy, _arrayIndices.y));
 #else
     result.Specular = _specularTexture.Sample(_specularSampler, texCoords.xy);
 #endif
