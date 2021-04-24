@@ -250,7 +250,6 @@ namespace Gorgon.Examples
                 // Create the effect that will light up our sprite(s).
                 _lightEffect = new Gorgon2DLightingEffect(_renderer)
                 {
-                    SpecularZDistance = _light.Position.Z,
                     AmbientColor = GorgonColor.Black                    
                 };
 
@@ -302,7 +301,6 @@ namespace Gorgon.Examples
                         !e.Shift
                             ? new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z + 1.0f)
                             : new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z - 1.0f);
-                    _lightEffect.SpecularZDistance = _light.Position.Z;
                     break;
                 case Keys.W:
                     _camera.Position = new Vector3(_camera.Position.X, _camera.Position.Y - 10, _camera.Position.Z);

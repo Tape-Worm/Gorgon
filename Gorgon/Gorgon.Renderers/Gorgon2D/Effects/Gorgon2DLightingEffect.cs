@@ -195,31 +195,6 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Property to set or return the distance on the Z axis for specular hilights.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This is the distance of the viewer from the scene on the z axis. If a camera is in use, the Z position of the camera can be used here since that is the actual distance of the viewer from the 
-        /// scene. Otherwise, it can be set to an arbitrary value to mimic view depth when calculating specular.  
-        /// </para>
-        /// <para>
-        /// This value only applies when a light has <see cref="GorgonLightCommon.SpecularEnabled"/> set to <b>true</b>. For lights without specular, then property is not used.
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// If this value is too small, strange artifacts may appear as the Z value gets closer to the drawing plane (Z = 0.0f).
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        public float SpecularZDistance
-        {
-            get;
-            set;
-        } = -127.0f;
-
-        /// <summary>
         /// Property to set or return the global ambient color.
         /// </summary>
         public GorgonColor AmbientColor
@@ -468,7 +443,8 @@ namespace Gorgon.Renderers
         /// <seealso cref="PassContinuationState"/>
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
-            var cameraPos = new Vector4(output.Width * 0.5f, output.Height * 0.5f, SpecularZDistance, 0);
+            float specularZ = output.Width > output.Height ? output.Width * -0.5f : output.Height * -0.5f;
+            var cameraPos = new Vector4(output.Width * 0.5f, output.Height * 0.5f, specularZ < -100 ? -100 : specularZ, 0);
 
             // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
             // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.

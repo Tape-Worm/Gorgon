@@ -252,10 +252,7 @@ namespace Gorgon.Examples
 
             _postProcess["Final Pass"] = finalPostProcess;
 
-            var deferredLighting = new Gorgon2DLightingEffect(_renderer)
-            {
-                SpecularZDistance = -30
-            };
+            var deferredLighting = new Gorgon2DLightingEffect(_renderer);
             var gbuffer = new Gorgon2DGBuffer(_renderer, 1280, 800);
             deferredLighting.AmbientColor = new GorgonColor(0.025f, 0.025f, 0.025f, 1.0f);
             _effects[nameof(bloom)] = bloom;
