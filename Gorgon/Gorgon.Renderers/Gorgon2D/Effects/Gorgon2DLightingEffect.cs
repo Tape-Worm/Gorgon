@@ -194,7 +194,7 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Property to set or return whether to transform the normals when transforming the geometry.
+        /// Property to set or return whether to transform the normal map normals when transforming the geometry.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -207,12 +207,13 @@ namespace Gorgon.Renderers
         /// <para>
         /// <note type="important">
         /// <para>
-        /// When using a <see cref="Gorgon2DGBuffer"/>, this property should be set to <b>false</b> since the gbuffer correctly handles normal rotation on your behalf. 
+        /// This property has no effect when using the <see cref="Render(IGorgonGBuffer, GorgonRenderTargetView, GorgonCameraCommon)"/> method because the <see cref="IGorgonGBuffer"/> normal map will 
+        /// contain rotated normals already.
         /// </para>
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="Gorgon2DGBuffer"/>
+        /// <seealso cref="IGorgonGBuffer"/>
         public bool RotateNormals
         {
             get => _rotateNormals;
