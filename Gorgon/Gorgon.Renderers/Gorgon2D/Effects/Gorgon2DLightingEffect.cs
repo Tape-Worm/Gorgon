@@ -388,11 +388,6 @@ namespace Gorgon.Renderers
                     builders.PixelShaderBuilder.Shader(_rotateNormals ? _pixelLitTransformShader : _pixelLitShader)
                                                .ShaderResource(_normalTexture ?? Renderer.EmptyNormalMapTexture, 1)
                                                .ShaderResource(_specularTexture ?? Renderer.EmptyBlackTexture, 2);
-
-                    builders.BatchBuilder.Clear()
-                                         .BlendState(GorgonBlendState.NoBlending)
-                                         .DepthStencilState(GorgonDepthStencilState.Default)
-                                         .RasterState(GorgonRasterState.Default);
                 }
                 else
                 {
@@ -406,6 +401,9 @@ namespace Gorgon.Renderers
             if (_lightingState is null)
             {
                 _lightingState = builders.BatchBuilder
+                                         .BlendState(GorgonBlendState.NoBlending)
+                                         .DepthStencilState(GorgonDepthStencilState.Default)
+                                         .RasterState(GorgonRasterState.Default)
                                          .PixelShaderState(_pixelLitShaderState)
                                          .VertexShaderState(_vertexLitShaderState)
                                          .Build(BatchStateAllocator);
@@ -444,7 +442,7 @@ namespace Gorgon.Renderers
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             var size = new DX.Size2F(output.Width * 0.5f, output.Height * 0.5f);
-            float specularZ = 127;// (size.Width > size.Height ? size.Width : size.Height).Max(100);
+            float specularZ = (size.Width > size.Height ? size.Width * 0.5f : size.Height * 0.5f).Max(128).Min(640);
             var cameraPos = new Vector4(size.Width, size.Height, -specularZ, 0);
 
             // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
