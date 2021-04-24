@@ -443,8 +443,9 @@ namespace Gorgon.Renderers
         /// <seealso cref="PassContinuationState"/>
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
-            float specularZ = output.Width > output.Height ? output.Width * 0.5f : output.Height * 0.5f;
-            var cameraPos = new Vector4(output.Width * 0.5f, output.Height * 0.5f, specularZ < 100 ? -100 : -specularZ, 0);
+            var size = new DX.Size2F(output.Width * 0.5f, output.Height * 0.5f);
+            float specularZ = 127;// (size.Width > size.Height ? size.Width : size.Height).Max(100);
+            var cameraPos = new Vector4(size.Width, size.Height, -specularZ, 0);
 
             // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
             // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.
@@ -544,7 +545,6 @@ namespace Gorgon.Renderers
             if (!_usingArray)
             {
                 _effectData.ArrayIndices = new Vector4(normalMapIndex, specularMapIndex, 0, 0);
-                Macros.Add(_arrayMacro);
                 _usingArray = true;
             }
 
@@ -580,11 +580,7 @@ namespace Gorgon.Renderers
                 _currentIndices = (1, 2);
             }
 
-            if (!_usingArray)
-            {
-                Macros.Add(_arrayMacro);
-                _usingArray = true;
-            }
+            _usingArray = true;           
 
             OnRender(gbuffer.GBufferTexture, output, camera);
         }
@@ -613,11 +609,7 @@ namespace Gorgon.Renderers
                 _currentIndices = (normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1), specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1));
             }
 
-            if (!_usingArray)
-            {
-                Macros.Add(_arrayMacro);
-                _usingArray = true;
-            }
+            _usingArray = true;
 
             OnRender(diffuse, output, camera);
         }
