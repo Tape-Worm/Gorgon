@@ -443,8 +443,8 @@ namespace Gorgon.Renderers
         /// <seealso cref="PassContinuationState"/>
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
-            float specularZ = output.Width > output.Height ? output.Width * -0.5f : output.Height * -0.5f;
-            var cameraPos = new Vector4(output.Width * 0.5f, output.Height * 0.5f, specularZ < -100 ? -100 : specularZ, 0);
+            float specularZ = output.Width > output.Height ? output.Width * 0.5f : output.Height * 0.5f;
+            var cameraPos = new Vector4(output.Width * 0.5f, output.Height * 0.5f, specularZ < 100 ? -100 : -specularZ, 0);
 
             // If no custom camera is in use, we need to pass in our default viewing information which is normally the output width, and height (by half), and an arbitrary Z value so 
             // the camera position isn't intersecting with the drawing plane (+ height information). Otherwise, our specular hilight will look really messed up.
