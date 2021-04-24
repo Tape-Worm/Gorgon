@@ -140,24 +140,59 @@ namespace Gorgon.Renderers
         private GorgonTexture2DView _specularTexture;
         // The last light count.
         private int _lastLightCount;
-        // The macro to pass in when using array indices instead of separate textures.
-        private readonly GorgonShaderMacro _arrayMacro = new("USE_ARRAY");
         // The data to pass to the effect.
         private GlobalEffectData _effectData = new()
         {
             AmbientColor = GorgonColor.Black
         };
         // Flag to indicate whether separate textures are being used or array indices.
-        private bool _usingArray;
+        private bool _useArray;
         // The currently active render target view.
         private GorgonRenderTargetView _currentRtv;
         // The currently active array indices.
         private (int normalIndex, int specIndex) _currentIndices;
         // Flag to indicate that normals on the normal map should rotate.
         private bool _rotateNormals;
+        // Flag to indicate that a gbuffer is in use.
+        private bool _useGBuffer;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether to use array indices for normal/specular maps.
+        /// </summary>
+        private bool UseArray
+        {
+            set
+            {
+                if (_useArray == value)
+                {
+                    return;
+                }
+
+                _useArray = value;
+                _pixelLitShaderState = null;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether the gbuffer is being used to for normal and specular maps.
+        /// </summary>
+        private bool UseGBuffer
+        {
+            set
+            {
+                if (_useGBuffer == value)
+                {
+                    return;
+                }
+
+                _useGBuffer = value;
+                _pixelLitShaderState = null;
+                _vertexLitShaderState = null;
+            }
+        }
+
         /// <summary>
         /// Property to set or return whether to transform the normals when transforming the geometry.
         /// </summary>
@@ -362,9 +397,11 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
+            bool rotateNormals = (!_useGBuffer) && (_rotateNormals);
+
             if (_vertexLitShaderState is null)
             {
-                _vertexLitShaderState = builders.VertexShaderBuilder.Shader(_rotateNormals ? _vertexLitTransformShader : _vertexLitShader)
+                _vertexLitShaderState = builders.VertexShaderBuilder.Shader(rotateNormals ? _vertexLitTransformShader : _vertexLitShader)
                                                                     .Build(VertexShaderAllocator);
             }
 
@@ -383,15 +420,15 @@ namespace Gorgon.Renderers
                                            .SamplerState(GorgonSamplerState.PointFilteringWrapping, 1)
                                            .SamplerState(GorgonSamplerState.Wrapping, 2);
 
-                if (!_usingArray)
+                if (!_useArray)
                 {
-                    builders.PixelShaderBuilder.Shader(_rotateNormals ? _pixelLitTransformShader : _pixelLitShader)
+                    builders.PixelShaderBuilder.Shader(rotateNormals ? _pixelLitTransformShader : _pixelLitShader)
                                                .ShaderResource(_normalTexture ?? Renderer.EmptyNormalMapTexture, 1)
                                                .ShaderResource(_specularTexture ?? Renderer.EmptyBlackTexture, 2);
                 }
                 else
                 {
-                    builders.PixelShaderBuilder.Shader(_rotateNormals ? _pixelLitArrayTransformShader : _pixelLitArrayShader);
+                    builders.PixelShaderBuilder.Shader(rotateNormals ? _pixelLitArrayTransformShader : _pixelLitArrayShader);
                 }
 
                 _pixelLitShaderState = builders.PixelShaderBuilder.Build(PixelShaderAllocator);
@@ -504,6 +541,8 @@ namespace Gorgon.Renderers
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
         public void Begin(GorgonTexture2DView normal = null, GorgonTexture2DView specular = null, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
+            UseGBuffer = UseArray = false;
+
             _currentRtv = Graphics.RenderTargets[0];            
 
             if ((_normalTexture != normal) || (_specularTexture != specular))
@@ -511,12 +550,6 @@ namespace Gorgon.Renderers
                 _normalTexture = normal;
                 _specularTexture = specular;
                 _pixelLitShaderState = null;
-            }
-
-            if (_usingArray)
-            {
-                Macros.Remove(_arrayMacro);
-                _usingArray = false;
             }
 
             OnBeginRender(blendState, depthStencilState, rasterState, camera);
@@ -538,12 +571,15 @@ namespace Gorgon.Renderers
         /// </remarks>
         public void Begin(int normalMapIndex, int specularMapIndex, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
+            UseGBuffer = false;
+            UseArray = true;
+
             _currentRtv = Graphics.RenderTargets[0];
 
-            if (!_usingArray)
+            if ((_currentIndices.normalIndex != normalMapIndex) || (_currentIndices.specIndex != specularMapIndex))
             {
                 _effectData.ArrayIndices = new Vector4(normalMapIndex, specularMapIndex, 0, 0);
-                _usingArray = true;
+                _currentIndices = (normalMapIndex, specularMapIndex);
             }
 
             OnBeginRender(blendState, depthStencilState, rasterState, camera);
@@ -567,6 +603,8 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gbuffer"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
         public void Render(IGorgonGBuffer gbuffer, GorgonRenderTargetView output, GorgonCameraCommon camera = null)
         {
+            UseGBuffer = UseArray = true;
+
             gbuffer.ValidateObject(nameof(gbuffer));
             output.ValidateObject(nameof(output));
 
@@ -577,8 +615,6 @@ namespace Gorgon.Renderers
                 _effectData.ArrayIndices = new Vector4(1, 2, 0, 0);
                 _currentIndices = (1, 2);
             }
-
-            _usingArray = true;           
 
             OnRender(gbuffer.GBufferTexture, output, camera);
         }
@@ -595,6 +631,9 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="diffuse"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
         public void Render(GorgonTexture2DView diffuse, GorgonRenderTargetView output, int normalMapIndex, int specularMapIndex, GorgonCameraCommon camera = null)
         {
+            UseArray = true;
+            UseGBuffer = false;
+
             diffuse.ValidateObject(nameof(diffuse));
             output.ValidateObject(nameof(output));
 
@@ -605,9 +644,7 @@ namespace Gorgon.Renderers
                 _effectData.ArrayIndices = new Vector4(normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1),
                                                           specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1), 0, 0);
                 _currentIndices = (normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1), specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1));
-            }
-
-            _usingArray = true;
+            }            
 
             OnRender(diffuse, output, camera);
         }
@@ -623,6 +660,8 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="diffuse"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
         public void Render(GorgonTexture2DView diffuse, GorgonRenderTargetView output, GorgonTexture2DView normal = null, GorgonTexture2DView specular = null, GorgonCameraCommon camera = null)
         {
+            UseArray = UseGBuffer = false;
+
             diffuse.ValidateObject(nameof(diffuse));
             output.ValidateObject(nameof(output));
 
@@ -633,13 +672,6 @@ namespace Gorgon.Renderers
                 _normalTexture = normal;
                 _specularTexture = specular;
                 _pixelLitShaderState = null;
-            }
-
-            if (_usingArray)
-            {
-                Macros.Remove(_arrayMacro);                
-                _pixelLitShaderState = null;
-                _usingArray = false;
             }
 
             OnRender(diffuse, output, camera);
