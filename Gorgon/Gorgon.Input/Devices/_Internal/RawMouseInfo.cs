@@ -63,7 +63,7 @@ namespace Gorgon.Input
         /// <summary>
         /// Property to return the device handle.
         /// </summary>
-        public IntPtr Handle
+        public nint Handle
         {
             get;
         }
@@ -110,7 +110,7 @@ namespace Gorgon.Input
         /// <param name="className">The class of device.</param>
         /// <param name="description">The human readable description of this device.</param>
         /// <param name="deviceInfo">The data about the device.</param>
-        public RawMouseInfo(IntPtr deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_MOUSE deviceInfo)
+        public RawMouseInfo(nint deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_MOUSE deviceInfo)
         {
             Handle = deviceHandle;
             Description = description;

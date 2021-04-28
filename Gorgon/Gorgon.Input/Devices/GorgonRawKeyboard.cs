@@ -60,14 +60,14 @@ namespace Gorgon.Input
         // The state values for the keys on the keyboard when translating a key press to a character.
         private static readonly byte[] _charStates = new byte[256];
         // The device handle.
-        private readonly IntPtr _deviceHandle;
+        private readonly nint _deviceHandle;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the handle for the device.
         /// </summary>
-        IntPtr IGorgonRawInputDevice.Handle => _deviceHandle;
+        nint IGorgonRawInputDevice.Handle => _deviceHandle;
 
         /// <summary>
         /// Property to return the type of device.

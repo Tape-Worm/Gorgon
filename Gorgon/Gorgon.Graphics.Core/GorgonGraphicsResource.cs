@@ -188,7 +188,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// The property can be used to interoperate with functionality that require direct access to Direct 3D objects.
         /// </remarks>
-        IntPtr IGorgonNativeResource.Handle => _resource?.NativePointer ?? IntPtr.Zero;
+        nint IGorgonNativeResource.Handle => _resource?.NativePointer ?? IntPtr.Zero;
 
         /// <summary>
         /// Property to return whether or not the resource is disposed.

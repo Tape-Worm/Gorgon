@@ -383,7 +383,7 @@ namespace Gorgon.Graphics.Core
         /// The returned pointer represents the Direct3D device object used by Gorgon.
         /// </para>
         /// </remarks>        
-        IntPtr IGorgonNativeResource.Handle => D3DDevice.NativePointer;
+        nint IGorgonNativeResource.Handle => D3DDevice.NativePointer;
         #endregion
 
         #region Methods.

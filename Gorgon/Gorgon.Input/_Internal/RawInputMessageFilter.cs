@@ -44,7 +44,7 @@ namespace Gorgon.Native
         // Flag to indicate that the message hook has been installed.
         private static int _hookInstalled;
         // The window handle to hook into.
-        private static IntPtr _hwnd = IntPtr.Zero;
+        private static nint _hwnd = IntPtr.Zero;
         // The devices that are registered with the raw input provider.
         private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices;
         private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices;
@@ -58,7 +58,7 @@ namespace Gorgon.Native
         /// <param name="key">The key for the raw input device.</param>
         /// <param name="deviceHandle">The device handle.</param>
         /// <returns></returns>
-        private IGorgonRawInputDeviceData<GorgonRawHIDData> GetRawInputHid(DeviceKey key, IntPtr deviceHandle)
+        private IGorgonRawInputDeviceData<GorgonRawHIDData> GetRawInputHid(DeviceKey key, nint deviceHandle)
         {
             if (_hidDevices.TryGetValue(key, out IGorgonRawInputDeviceData<GorgonRawHIDData> result))
             {
@@ -76,7 +76,7 @@ namespace Gorgon.Native
         /// <param name="key">The key for the raw input device.</param>
         /// <param name="deviceHandle">The device handle.</param>
         /// <returns></returns>
-        private IGorgonRawInputDeviceData<GorgonRawMouseData> GetRawInputMouseDevice(DeviceKey key, IntPtr deviceHandle)
+        private IGorgonRawInputDeviceData<GorgonRawMouseData> GetRawInputMouseDevice(DeviceKey key, nint deviceHandle)
         {
             if (_mouseDevices.TryGetValue(key, out IGorgonRawInputDeviceData<GorgonRawMouseData> result))
             {
@@ -94,7 +94,7 @@ namespace Gorgon.Native
         /// <param name="key">The key for the raw input device.</param>
         /// <param name="deviceHandle">The device handle.</param>
         /// <returns></returns>
-        private IGorgonRawInputDeviceData<GorgonRawKeyboardData> GetRawInputKeyboardDevice(DeviceKey key, IntPtr deviceHandle)
+        private IGorgonRawInputDeviceData<GorgonRawKeyboardData> GetRawInputKeyboardDevice(DeviceKey key, nint deviceHandle)
         {
             if (_keyboardDevices.TryGetValue(key, out IGorgonRawInputDeviceData<GorgonRawKeyboardData> result))
             {
@@ -308,7 +308,7 @@ namespace Gorgon.Native
         public RawInputMessageFilter(
             Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> keyboardDevices,
             Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> pointingDevices,
-            Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> hidDevices, IntPtr hwnd)
+            Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> hidDevices, nint hwnd)
         {
             _keyboardDevices = keyboardDevices;
             _mouseDevices = pointingDevices;

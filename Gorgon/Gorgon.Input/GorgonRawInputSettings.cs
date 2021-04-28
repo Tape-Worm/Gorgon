@@ -59,6 +59,6 @@ namespace Gorgon.Input
         /// If the <see cref="AllowBackground"/> is set to <b>true</b>, then this value must be set.
         /// </para>
         /// </remarks>
-        public IntPtr TargetWindow;
+        public nint TargetWindow;
     }
 }

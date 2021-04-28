@@ -39,7 +39,7 @@ namespace Gorgon.Input
         /// <summary>
         /// Property to return the device handle.
         /// </summary>
-        IntPtr Handle
+        nint Handle
         {
             get;
         }

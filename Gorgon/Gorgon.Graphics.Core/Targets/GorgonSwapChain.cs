@@ -823,7 +823,7 @@ namespace Gorgon.Graphics.Core
 
             try
             {
-                IntPtr monitor = Win32API.MonitorFromWindow(ParentForm.Handle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
+                nint monitor = Win32API.MonitorFromWindow(ParentForm.Handle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
                 IGorgonVideoOutputInfo output = null;
 
                 if (monitor != IntPtr.Zero)
@@ -1416,7 +1416,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed (int* supportsTearing = &_supportsTearing)
                 {
-                    Graphics.DXGIFactory.CheckFeatureSupport(DXGI.Feature.PresentAllowTearing, new IntPtr(supportsTearing), sizeof(int));
+                    Graphics.DXGIFactory.CheckFeatureSupport(DXGI.Feature.PresentAllowTearing, (nint)supportsTearing, sizeof(int));
                 }
             }
             

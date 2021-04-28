@@ -121,7 +121,7 @@ namespace Gorgon.Native
         /// <param name="index">Type of information.</param>
         /// <returns>A pointer to the information.</returns>
         [DllImport("user32.dll", EntryPoint = "GetWindowLong", CharSet = CharSet.Unicode)]
-        private static extern IntPtr GetWindowLongx86(HandleRef hwnd, int index);
+        private static extern nint GetWindowLongx86(HandleRef hwnd, int index);
 
         /// <summary>
         /// Function to retrieve information about the specified window.
@@ -130,7 +130,7 @@ namespace Gorgon.Native
         /// <param name="index">Type of information.</param>
         /// <returns>A pointer to the information.</returns>
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
-        private static extern IntPtr GetWindowLongx64(HandleRef hwnd, int index);
+        private static extern nint GetWindowLongx64(HandleRef hwnd, int index);
 
         /// <summary>
         /// Function to set information for the specified window.
@@ -140,7 +140,7 @@ namespace Gorgon.Native
         /// <param name="info">Information to set.</param>
         /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
         [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
-        private static extern IntPtr SetWindowLongx86(HandleRef hwnd, int index, IntPtr info);
+        private static extern nint SetWindowLongx86(HandleRef hwnd, int index, nint info);
 
         /// <summary>
         /// Function to set information for the specified window.
@@ -150,7 +150,7 @@ namespace Gorgon.Native
         /// <param name="info">Information to set.</param>
         /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
-        private static extern IntPtr SetWindowLongx64(HandleRef hwnd, int index, IntPtr info);
+        private static extern nint SetWindowLongx64(HandleRef hwnd, int index, nint info);
 
         /// <summary>
         /// Function to set the visibility of the pointing device cursor.
@@ -214,7 +214,7 @@ namespace Gorgon.Native
         /// <param name="lParam">Parameter for the message.</param>
         /// <returns>The return value specifies the result of the message processing and depends on the message sent.</returns>
         [DllImport("user32.dll", EntryPoint = "CallWindowProc", CharSet = CharSet.Unicode)]
-        public static extern IntPtr CallWindowProc(IntPtr wndProc, IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
+        public static extern nint CallWindowProc(nint wndProc, nint hwnd, int msg, nint wParam, nint lParam);
 
         /// <summary>
         /// Function to retrieve information about the specified window.
@@ -222,7 +222,7 @@ namespace Gorgon.Native
         /// <param name="hwnd">Window handle to retrieve information from.</param>
         /// <param name="index">Type of information.</param>
         /// <returns>A pointer to the information.</returns>
-        public static IntPtr GetWindowLong(HandleRef hwnd, int index) => !Environment.Is64BitProcess ? GetWindowLongx86(hwnd, index) : GetWindowLongx64(hwnd, index);
+        public static nint GetWindowLong(HandleRef hwnd, int index) => !Environment.Is64BitProcess ? GetWindowLongx86(hwnd, index) : GetWindowLongx64(hwnd, index);
 
         /// <summary>
         /// Function to set information for the specified window.
@@ -231,7 +231,7 @@ namespace Gorgon.Native
         /// <param name="index">Type of information.</param>
         /// <param name="info">Information to set.</param>
         /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-        public static IntPtr SetWindowLong(HandleRef hwnd, int index, IntPtr info) => !Environment.Is64BitProcess ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
+        public static nint SetWindowLong(HandleRef hwnd, int index, nint info) => !Environment.Is64BitProcess ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
 
         /// <summary>
         /// Function to return the scan code for a virtual key.

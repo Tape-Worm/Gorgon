@@ -40,14 +40,14 @@ namespace Gorgon.Native
     {
         [PreserveSig]
         int Add(
-            IntPtr hbmImage,
-            IntPtr hbmMask,
+            nint hbmImage,
+            nint hbmMask,
             ref int pi);
 
         [PreserveSig]
         int ReplaceIcon(
             int i,
-            IntPtr hicon,
+            nint hicon,
             ref int pi);
 
         [PreserveSig]
@@ -58,12 +58,12 @@ namespace Gorgon.Native
         [PreserveSig]
         int Replace(
             int i,
-            IntPtr hbmImage,
-            IntPtr hbmMask);
+            nint hbmImage,
+            nint hbmMask);
 
         [PreserveSig]
         int AddMasked(
-            IntPtr hbmImage,
+            nint hbmImage,
             int crMask,
             ref int pi);
 
@@ -79,7 +79,7 @@ namespace Gorgon.Native
         int GetIcon(
             int i,
             int flags,
-            ref IntPtr picon);
+            ref nint picon);
 
         [PreserveSig]
         int GetImageInfo(
@@ -101,12 +101,12 @@ namespace Gorgon.Native
             int dx,
             int dy,
             ref Guid riid,
-            ref IntPtr ppv);
+            ref nint ppv);
 
         [PreserveSig]
         int Clone(
             ref Guid riid,
-            ref IntPtr ppv);
+            ref nint ppv);
 
         [PreserveSig]
         int GetImageRect(
@@ -151,13 +151,13 @@ namespace Gorgon.Native
 
         [PreserveSig]
         int DragEnter(
-            IntPtr hwndLock,
+            nint hwndLock,
             int x,
             int y);
 
         [PreserveSig]
         int DragLeave(
-            IntPtr hwndLock);
+            nint hwndLock);
 
         [PreserveSig]
         int DragMove(
@@ -180,7 +180,7 @@ namespace Gorgon.Native
             ref POINT ppt,
             ref POINT pptHotspot,
             ref Guid riid,
-            ref IntPtr ppv);
+            ref nint ppv);
 
         [PreserveSig]
         int GetItemFlags(

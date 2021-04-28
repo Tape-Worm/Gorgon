@@ -413,7 +413,7 @@ namespace Gorgon.Graphics.Fonts
             Dictionary<char, ABC> advancementInfo;
             KerningPairs.Clear();
 
-            IntPtr prevGdiHandle = Win32API.SetActiveFont(graphics, font);
+            nint prevGdiHandle = Win32API.SetActiveFont(graphics, font);
 
             try
             {

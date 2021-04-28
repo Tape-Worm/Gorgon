@@ -42,8 +42,8 @@ namespace Gorgon.Native
         /// <summary>Size of the packet of data.</summary>
         public int Size;
         /// <summary>Handle to the device sending the data.</summary>
-        public IntPtr Device;
+        public nint Device;
         /// <summary>wParam from the window message.</summary>
-        public IntPtr wParam;
+        public nint wParam;
     }
 }

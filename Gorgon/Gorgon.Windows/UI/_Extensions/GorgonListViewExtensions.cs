@@ -67,7 +67,7 @@ namespace System.Windows.Forms
                 return Drawing.Rectangle.Empty;
             }
 
-            IntPtr columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
+            nint columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
             UserApi.GetWindowRect(columnHeader, out RECT winRect);
 
             return listView.RectangleToClient(Drawing.Rectangle.FromLTRB(winRect.left, winRect.top, winRect.right, winRect.bottom));
@@ -86,8 +86,8 @@ namespace System.Windows.Forms
                 return;
             }
 
-            IntPtr columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
-            IntPtr dc = UserApi.GetDC(columnHeader);
+            nint columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
+            nint dc = UserApi.GetDC(columnHeader);
             var g = Drawing.Graphics.FromHdc(dc);
 
             try
@@ -122,11 +122,11 @@ namespace System.Windows.Forms
         /// list view is sorted.</remarks>
         public static void SetSortIcon(this ListView listViewControl, int headerIndex, SortOrder order)
         {
-            IntPtr columnHeader = UserApi.SendMessage(listViewControl.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
+            nint columnHeader = UserApi.SendMessage(listViewControl.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
 
             for (int columnNumber = 0; columnNumber < listViewControl.Columns.Count; columnNumber++)
             {
-                var columnPtr = new IntPtr(columnNumber);
+                nint columnPtr = columnNumber;
                 var item = new HDITEM
                 {
                     mask = HeaderFormatMask

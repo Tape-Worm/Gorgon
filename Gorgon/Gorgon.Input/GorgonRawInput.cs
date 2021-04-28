@@ -92,7 +92,7 @@ namespace Gorgon.Input
         // The list of registered devices.
         private readonly Dictionary<DeviceKey, IGorgonRawInputDevice> _devices;
         // The handle to the window that is receiving raw input events.
-        private readonly IntPtr _applicationWindow;
+        private readonly nint _applicationWindow;
         // The list of human interface devices registered on the system.
         private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> _hids = new();
         // The list of keyboard devices registered on the system.
@@ -200,7 +200,7 @@ namespace Gorgon.Input
         {
             MessageFilterHook.AddFilter(_applicationWindow, _filter.Value);
 
-            IntPtr targetHandle = IntPtr.Zero;
+            nint targetHandle = IntPtr.Zero;
             _devices.Add(key, device);
 
             // If we omit the target window, and specify background messages, we'll use the application window instead.

@@ -38,7 +38,7 @@ namespace Gorgon.Native
     internal struct RAWINPUTDEVICELIST
     {
         /// <summary>Device handle.</summary>
-        public IntPtr Device;
+        public nint Device;
         /// <summary>Device type.</summary>
         public RawInputType DeviceType;
     }

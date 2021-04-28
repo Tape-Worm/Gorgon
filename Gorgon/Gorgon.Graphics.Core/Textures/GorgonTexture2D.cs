@@ -682,7 +682,7 @@ namespace Gorgon.Graphics.Core
         /// method will throw an exception.
         /// </para>
         /// </remarks>        
-        IntPtr IGorgonSharedResource.GetSharedHandle()
+        nint IGorgonSharedResource.GetSharedHandle()
         {
             if (!Shared)
             {
@@ -1444,7 +1444,7 @@ namespace Gorgon.Graphics.Core
                                                                      Right = finalBounds.Right,
                                                                      Bottom = finalBounds.Bottom
                                                                  },
-                                                                 new IntPtr(imageBuffer.Data),
+                                                                 imageBuffer.Data,
                                                                  imageBuffer.PitchInformation.RowPitch,
                                                                  imageBuffer.PitchInformation.SlicePitch,
                                                                  (int)copyMode);
@@ -2334,7 +2334,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>Initializes a new instance of the <see cref="GorgonTexture2D" /> class.</summary>
         /// <param name="graphics">The graphics interface used to create this texture.</param>
         /// <param name="surface">The pointer to an external rendering surface.</param>
-        internal GorgonTexture2D(GorgonGraphics graphics, IntPtr surface)
+        internal GorgonTexture2D(GorgonGraphics graphics, nint surface)
             : base(graphics)
         {
             D3D11.Texture2DDescription desc;

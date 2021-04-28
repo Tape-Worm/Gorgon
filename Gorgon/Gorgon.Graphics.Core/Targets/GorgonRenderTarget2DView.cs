@@ -559,7 +559,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-		public static GorgonRenderTarget2DView CreateInteropRenderTarget(GorgonGraphics graphics, IntPtr surface, string name)
+		public static GorgonRenderTarget2DView CreateInteropRenderTarget(GorgonGraphics graphics, nint surface, string name)
 		{
 			if (graphics is null)
 			{

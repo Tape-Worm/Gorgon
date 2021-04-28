@@ -40,14 +40,14 @@ namespace Gorgon.Native
         public int cxy;
         [MarshalAs(UnmanagedType.LPTStr)]
         public string pszText;
-        public IntPtr hbm;
+        public nint hbm;
         public int cchTextMax;
         public int fmt;
-        public IntPtr lParam;
+        public nint lParam;
         public int iImage;
         public int iOrder;
         public uint type;
-        public IntPtr pvFilter;
+        public nint pvFilter;
         public uint state;
     }
 }

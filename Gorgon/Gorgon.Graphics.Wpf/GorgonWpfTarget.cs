@@ -204,7 +204,7 @@ namespace Gorgon.Graphics.Wpf
         /// <summary>
         /// Function to build a render target from the WPF surface.
         /// </summary>
-        private void BuildRenderTarget(IntPtr surfacePtr)
+        private void BuildRenderTarget(nint surfacePtr)
         {
             RenderTargetView?.Dispose();
             Texture?.Dispose();
@@ -248,7 +248,7 @@ namespace Gorgon.Graphics.Wpf
         /// </summary>
         /// <param name="surfacePtr">The pointer to the internal WPF surface.</param>
         /// <param name="needsNewRtv"><b>true</b> if the internal surface has been updated and the render target needs to be rebuilt, <b>false</b> if it does not.</param>
-        private void Render(IntPtr surfacePtr, bool needsNewRtv)
+        private void Render(nint surfacePtr, bool needsNewRtv)
         {
             if (surfacePtr == IntPtr.Zero)
             {

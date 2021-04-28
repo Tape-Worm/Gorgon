@@ -43,6 +43,6 @@ namespace Gorgon.Graphics
         /// This is used to retrieve a handle to the shared resource that allows applications to share the resource with other APIs (e.g. Direct 2D). 
         /// </para>
         /// </remarks>        
-        IntPtr GetSharedHandle();
+        nint GetSharedHandle();
     }
 }

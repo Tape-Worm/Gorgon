@@ -384,7 +384,7 @@ namespace Gorgon.Graphics.Core
                 Graphics.D3DDeviceContext.UpdateSubresource1(Native,
                                                              0,
                                                              region,
-                                                             new IntPtr(srcPtr), count, count, (int)copyMode);
+                                                             (nint)srcPtr, count, count, (int)copyMode);
                 return;
             }
 

@@ -44,7 +44,7 @@ namespace Gorgon.Native
         /// <param name="pnt">The position to pass in.</param>
         /// <returns>A handle to the window.</returns>
         [DllImport("user32.dll")]
-        public static extern IntPtr WindowFromPoint(Point pnt);
+        public static extern nint WindowFromPoint(Point pnt);
 
         /// <summary>
         /// Function to release the captured mouse.
@@ -66,7 +66,7 @@ namespace Gorgon.Native
         /// <returns><b>true</b> if messages are ready for processing, <b>false</b> if not.</returns>
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, uint wFilterMin, uint wFilterMax, uint flags);
+        public static extern bool PeekMessage(out MSG msg, nint hwnd, uint wFilterMin, uint wFilterMax, uint flags);
 
         /// <summary>
         /// Function to send a message to a window.
@@ -77,7 +77,7 @@ namespace Gorgon.Native
         /// <param name="lParam"></param>
         /// <returns></returns>
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+        public static extern nint SendMessage(nint hWnd, uint msg, nint wParam, nint lParam);
 
         /// <summary>
         /// Function to send a message to a window.
@@ -88,7 +88,7 @@ namespace Gorgon.Native
         /// <param name="lParam"></param>
         /// <returns></returns>
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, ref HDITEM lParam);
+        public static extern nint SendMessage(nint hWnd, uint msg, nint wParam, ref HDITEM lParam);
 
         /// <summary>
         /// Function to retrieve the device context for a window.
@@ -96,7 +96,7 @@ namespace Gorgon.Native
         /// <param name="hwnd">The handle to the window.</param>
         /// <returns>The device context handle.</returns>
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr GetDC(IntPtr hwnd);
+        public static extern nint GetDC(nint hwnd);
 
         /// <summary>
         /// Function to release the device context for a window.
@@ -105,7 +105,7 @@ namespace Gorgon.Native
         /// <param name="dc">The device context to release.</param>
         /// <returns>The return value indicates whether the DC was released. If the DC was released, the return value is 1. If the DC was not released, the return value is zero.</returns>
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern int ReleaseDC(IntPtr hwnd, IntPtr dc);
+        public static extern int ReleaseDC(nint hwnd, nint dc);
 
         /// <summary>
         /// Function to retrieve the size of a window.
@@ -115,7 +115,7 @@ namespace Gorgon.Native
         /// <returns><b>true</b> if failed, <b>false</b> if successful.</returns>
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
+        public static extern bool GetWindowRect(nint hwnd, out RECT lpRect);
         #endregion
 
         #region Constructor/Finalizer.

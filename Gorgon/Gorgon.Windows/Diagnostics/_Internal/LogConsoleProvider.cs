@@ -145,7 +145,7 @@ namespace Gorgon.Diagnostics.LogProviders
                 const uint genericRead = 0x80000000;
                 const uint genericWrite = 0x40000000;
 
-                IntPtr filePtr = KernelApi.CreateFileW("CONOUT$",
+                nint filePtr = KernelApi.CreateFileW("CONOUT$",
                                                        (genericRead | genericWrite),
                                                        (uint)FileShare.ReadWrite,
                                                        IntPtr.Zero,

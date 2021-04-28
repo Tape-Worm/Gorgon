@@ -43,6 +43,6 @@ namespace Gorgon.Native
         /// <summary>Mode flag that specifies how to interpret the information provided by UsagePage and Usage.</summary>
         public RawInputDeviceFlags Flags;
         /// <summary>Handle to the target device. If <see cref="IntPtr.Zero"/>, it follows the keyboard focus.</summary>
-        public IntPtr WindowHandle;
+        public nint WindowHandle;
     }
 }

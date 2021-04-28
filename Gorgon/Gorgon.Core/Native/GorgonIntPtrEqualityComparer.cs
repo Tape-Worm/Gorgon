@@ -30,26 +30,26 @@ using System.Collections.Generic;
 namespace Gorgon.Native
 {
     /// <summary>
-    /// An equality comparer for the <see cref="IntPtr"/> type.
+    /// An equality comparer for the <c>nint</c> type.
     /// </summary>
-    public class GorgonIntPtrEqualityComparer
-        : IEqualityComparer<IntPtr>
+    public class GorgonnintEqualityComparer
+        : IEqualityComparer<nint>
     {
-        #region IEqualityComparer<IntPtr> Members
+        #region IEqualityComparer<nint> Members
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>
-        /// <param name="x">The first object of type <see cref="IntPtr"/> to compare.</param>
-        /// <param name="y">The second object of type <see cref="IntPtr"/> to compare.</param>
+        /// <param name="x">The first object of type <c>nint</c> to compare.</param>
+        /// <param name="y">The second object of type <c>nint</c> to compare.</param>
         /// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
-        public bool Equals(IntPtr x, IntPtr y) => x == y;
+        public bool Equals(nint x, nint y) => x == y;
 
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <param name="obj">The <see cref="object" /> for which a hash code is to be returned.</param>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public int GetHashCode(IntPtr obj) => obj.GetHashCode();
+        public int GetHashCode(nint obj) => obj.GetHashCode();
         #endregion
     }
 }

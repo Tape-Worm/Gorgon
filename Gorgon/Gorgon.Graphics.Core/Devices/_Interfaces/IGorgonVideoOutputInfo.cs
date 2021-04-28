@@ -87,7 +87,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the handle to the monitor that is attached to the output.
         /// </summary>
-        IntPtr MonitorHandle
+        nint MonitorHandle
         {
             get;
         }

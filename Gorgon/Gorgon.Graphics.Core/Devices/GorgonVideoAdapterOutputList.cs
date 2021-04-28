@@ -66,7 +66,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="windowHandle">The handle to the window to locate.</param>
         /// <returns>A <see cref="IGorgonVideoOutputInfo"/> that contains the majority of the window, or <b>null</b> if no output could be determined.</returns>
-        public IGorgonVideoOutputInfo GetOutputFromWindowHandle(IntPtr windowHandle)
+        public IGorgonVideoOutputInfo GetOutputFromWindowHandle(nint windowHandle)
         {
             if ((windowHandle == IntPtr.Zero)
                 || (Count == 0))
@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Core
                 return null;
             }
 
-            IntPtr monitor = Win32API.MonitorFromWindow(windowHandle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
+            nint monitor = Win32API.MonitorFromWindow(windowHandle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
 
             return monitor == IntPtr.Zero ? null : this.FirstOrDefault(item => item.MonitorHandle == monitor);
         }

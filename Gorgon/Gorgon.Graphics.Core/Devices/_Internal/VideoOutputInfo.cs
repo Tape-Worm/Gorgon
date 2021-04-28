@@ -75,7 +75,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the handle to the monitor that is attached to the output.
         /// </summary>
-        public IntPtr MonitorHandle => _desc.MonitorHandle;
+        public nint MonitorHandle => _desc.MonitorHandle;
 
         /// <summary>
         /// Property to return the bounds of the output in desktop coordinates.

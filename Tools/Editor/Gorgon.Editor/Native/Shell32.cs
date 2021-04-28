@@ -98,7 +98,7 @@ namespace Gorgon.Editor.Native
         private struct SHFILEOPSTRUCT
         {
 
-            public IntPtr hwnd;
+            public nint hwnd;
             [MarshalAs(UnmanagedType.U4)]
             public FileOperationType wFunc;
             public string pFrom;
@@ -106,7 +106,7 @@ namespace Gorgon.Editor.Native
             public FileOperationFlags fFlags;
             [MarshalAs(UnmanagedType.Bool)]
             public bool fAnyOperationsAborted;
-            public IntPtr hNameMappings;
+            public nint hNameMappings;
             public string lpszProgressTitle;
         }
 

@@ -55,7 +55,7 @@ namespace Gorgon.Input
         /// <summary>
         /// Property to return the device handle.
         /// </summary>
-        public IntPtr Handle
+        public nint Handle
         {
             get;
         }
@@ -118,7 +118,7 @@ namespace Gorgon.Input
         /// <param name="className">Name of the class.</param>
         /// <param name="description">The description.</param>
         /// <param name="deviceInfo">The device information.</param>
-        internal GorgonRawHIDInfo(IntPtr deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_HID deviceInfo)
+        internal GorgonRawHIDInfo(nint deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_HID deviceInfo)
         {
             Handle = deviceHandle;
             HIDPath = hidPath;

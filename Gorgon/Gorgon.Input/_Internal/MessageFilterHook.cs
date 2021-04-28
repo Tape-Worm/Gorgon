@@ -49,19 +49,19 @@ namespace Gorgon.Input
         /// <param name="wParam">Window parameter 1.</param>
         /// <param name="lParam">Window parameter 2.</param>
         /// <returns>The result of processing the message.</returns>
-        private delegate IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
+        private delegate nint WndProc(nint hwnd, int msg, nint wParam, nint lParam);
         #endregion
 
         #region Variables.
         // A list of message hooks registered to varying windows.
-        private static readonly Dictionary<IntPtr, MessageFilterHook> _registeredHooks = new(new GorgonIntPtrEqualityComparer());
+        private static readonly Dictionary<nint, MessageFilterHook> _registeredHooks = new(new GorgonnintEqualityComparer());
         // Default window procedure.
-        private IntPtr _defaultWndProc;
+        private nint _defaultWndProc;
         // Window to hook.
-        private readonly IntPtr _hwnd;
+        private readonly nint _hwnd;
 
         // New window procedure.
-        private IntPtr _newWndProcPtr;
+        private nint _newWndProcPtr;
         // The new window procedure method.
         private WndProc _newWndProc;
         // The list of message filters.
@@ -79,7 +79,7 @@ namespace Gorgon.Input
         /// <param name="wParam">Window parameter 1.</param>
         /// <param name="lParam">Window parameter 2.</param>
         /// <returns>The result of a call to the previous window procedure if the message was not processed, or <see cref="IntPtr.Zero"/> if the message was processed.</returns>
-        private IntPtr NewWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam)
+        private nint NewWndProc(nint hwnd, int msg, nint wParam, nint lParam)
         {
             if (!_hooked)
             {
@@ -119,7 +119,7 @@ namespace Gorgon.Input
         {
             _hooked = false;
 
-            IntPtr currentProc = UserApi.GetWindowLong(new HandleRef(this, _hwnd), UserApi.WindowLongWndProc);
+            nint currentProc = UserApi.GetWindowLong(new HandleRef(this, _hwnd), UserApi.WindowLongWndProc);
 
             if (currentProc == _newWndProcPtr)
             {
@@ -192,7 +192,7 @@ namespace Gorgon.Input
         /// <param name="hwnd">Window handle to hook.</param>
         /// <param name="filter">Filter to install into the hook</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hwnd"/> parameter is <see cref="IntPtr.Zero"/>, or the <paramref name="filter"/> parameter is <b>null</b>.</exception>
-        public static void AddFilter(IntPtr hwnd, RawInputMessageFilter filter)
+        public static void AddFilter(nint hwnd, RawInputMessageFilter filter)
         {
             if (hwnd == IntPtr.Zero)
             {
@@ -223,7 +223,7 @@ namespace Gorgon.Input
         /// <param name="hwnd">Window handle to hook.</param>
         /// <param name="filter">Filter to uninstall from the hook</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hwnd"/> parameter is <see cref="IntPtr.Zero"/>, or the <paramref name="filter"/> parameter is <b>null</b>.</exception>
-        public static void RemoveFilter(IntPtr hwnd, RawInputMessageFilter filter)
+        public static void RemoveFilter(nint hwnd, RawInputMessageFilter filter)
         {
             if (hwnd == IntPtr.Zero)
             {
@@ -256,7 +256,7 @@ namespace Gorgon.Input
         /// Initializes a new instance of the <see cref="MessageFilterHook"/> class.
         /// </summary>
         /// <param name="hwnd">The window handle to hook.</param>
-        private MessageFilterHook(IntPtr hwnd) => _hwnd = hwnd;
+        private MessageFilterHook(nint hwnd) => _hwnd = hwnd;
         #endregion
     }
 }

@@ -33,8 +33,8 @@ namespace Gorgon.Native
     [StructLayout(LayoutKind.Sequential)]
     internal struct IMAGEINFO
     {
-        internal IntPtr hbmImage;
-        internal IntPtr hbmMask;
+        internal nint hbmImage;
+        internal nint hbmMask;
         internal int Unused1;
         internal int Unused2;
         internal RECT rcImage;

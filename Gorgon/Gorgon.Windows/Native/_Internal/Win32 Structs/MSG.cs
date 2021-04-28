@@ -43,10 +43,10 @@ namespace Gorgon.Native
     [StructLayout(LayoutKind.Sequential)]
     internal struct MSG
     {
-        public IntPtr hwnd;
+        public nint hwnd;
         public uint Message;
-        public IntPtr wParam;
-        public IntPtr lParam;
+        public nint wParam;
+        public nint lParam;
         public uint time;
         public Point pt;
     }

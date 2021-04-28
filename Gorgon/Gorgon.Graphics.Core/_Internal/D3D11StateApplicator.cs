@@ -64,15 +64,15 @@ namespace Gorgon.Graphics.Core
 		private readonly GorgonRenderTargetView[] _renderTargets;
 
 		// The updated set stream out method.
-		private static Action<D3D11.StreamOutputStage, int, IntPtr, IntPtr> _setStreamOutTargets;
+		private static Action<D3D11.StreamOutputStage, int, nint, nint> _setStreamOutTargets;
 		// The updated set uavs method.
-		private static Action<D3D11.OutputMergerStage, int, IntPtr, D3D11.DepthStencilView, int, int, IntPtr, IntPtr> _setUavs;
+		private static Action<D3D11.OutputMergerStage, int, nint, D3D11.DepthStencilView, int, int, nint, nint> _setUavs;
 		// The updated set compute shader uavs method.
-		private static Action<D3D11.CommonShaderStage, int, int, IntPtr, IntPtr> _setCsUavs;
+		private static Action<D3D11.CommonShaderStage, int, int, nint, nint> _setCsUavs;
 		// The updated set render targets method.
-		private static Action<D3D11.OutputMergerStage, int, IntPtr, D3D11.DepthStencilView> _setRenderTargets;
+		private static Action<D3D11.OutputMergerStage, int, nint, D3D11.DepthStencilView> _setRenderTargets;
 		// The updated set scissor rectangle method.
-		private static Action<D3D11.RasterizerStage, int, IntPtr> _setScissorRects;
+		private static Action<D3D11.RasterizerStage, int, nint> _setScissorRects;
 
 		// The device context used for applying state and resource information.
 		private readonly GorgonGraphics _graphics;
@@ -84,23 +84,23 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		private static void FixSetScissorRects()
 		{
-			MethodInfo methodInfo = typeof(D3D11.RasterizerStage).GetMethod("SetScissorRects", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(IntPtr) }, null);
+			MethodInfo methodInfo = typeof(D3D11.RasterizerStage).GetMethod("SetScissorRects", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(nint) }, null);
 
 			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-				Debug.Print("[ERROR] Cannot find method SetScissorRects(int, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
+				Debug.Print("[ERROR] Cannot find method SetScissorRects(int, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 				return;
 			}
 
 			ParameterExpression rasterizerParam = Expression.Parameter(typeof(D3D11.RasterizerStage), "rasterizer");
 			ParameterExpression countParam = Expression.Parameter(typeof(int), "count");
-			ParameterExpression ptrParam = Expression.Parameter(typeof(IntPtr), "rectPtr");
+			ParameterExpression ptrParam = Expression.Parameter(typeof(nint), "rectPtr");
 			MethodCallExpression caller = Expression.Call(rasterizerParam, methodInfo, countParam, ptrParam);
 
 			LambdaExpression setScissorRects = Expression.Lambda(caller, rasterizerParam, countParam, ptrParam);
 
-			_setScissorRects = (Action<D3D11.RasterizerStage, int, IntPtr>)setScissorRects.Compile();
+			_setScissorRects = (Action<D3D11.RasterizerStage, int, nint>)setScissorRects.Compile();
 		}
 
 		/// <summary>
@@ -111,7 +111,7 @@ namespace Gorgon.Graphics.Core
 			MethodInfo methodInfo = typeof(D3D11.OutputMergerStage).GetMethod("SetRenderTargets", BindingFlags.NonPublic | BindingFlags.Instance, null, new[]
 			{
 				typeof(int),					// numViews
-				typeof(IntPtr),					// renderTargetViewsOut
+				typeof(nint),					// renderTargetViewsOut
 				typeof(D3D11.DepthStencilView)  // depthStencilViewRef
 			}, null);
 
@@ -119,19 +119,19 @@ namespace Gorgon.Graphics.Core
 			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-				Debug.Print("[ERROR] Cannot find method SetRenderTargets(int, IntPtr, DepthStencilView) in SharpDX.Direct3D11 assembly. Maybe a different version?");
+				Debug.Print("[ERROR] Cannot find method SetRenderTargets(int, nint, DepthStencilView) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 				return;
 			}
 
 			ParameterExpression omParam = Expression.Parameter(typeof(D3D11.OutputMergerStage), "omStage");
 			ParameterExpression numViewsParam = Expression.Parameter(typeof(int), "numViews");
-			ParameterExpression rtvsParam = Expression.Parameter(typeof(IntPtr), "renderTargetViewsOut");
+			ParameterExpression rtvsParam = Expression.Parameter(typeof(nint), "renderTargetViewsOut");
 			ParameterExpression dsvParam = Expression.Parameter(typeof(D3D11.DepthStencilView), "depthStencilViewRef");			
 			MethodCallExpression caller = Expression.Call(omParam, methodInfo, numViewsParam, rtvsParam, dsvParam);
 
 			LambdaExpression resultMethod = Expression.Lambda(caller, omParam, numViewsParam, rtvsParam, dsvParam);
 
-			_setRenderTargets = (Action<D3D11.OutputMergerStage, int, IntPtr, D3D11.DepthStencilView>)resultMethod.Compile();
+			_setRenderTargets = (Action<D3D11.OutputMergerStage, int, nint, D3D11.DepthStencilView>)resultMethod.Compile();
 		}
 
 
@@ -140,33 +140,33 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		private static void FixCsSetUavs()
 		{
-			//internal abstract void SetUnorderedAccessViews(int startSlot, int numBuffers, IntPtr unorderedAccessBuffer, IntPtr uavCount);
+			//internal abstract void SetUnorderedAccessViews(int startSlot, int numBuffers, nint unorderedAccessBuffer, nint uavCount);
 			MethodInfo methodInfo = typeof(D3D11.CommonShaderStage).GetMethod("SetUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance, null, new[]
 			{
 				typeof(int),					// startSlot
 				typeof(int),					// numBuffers
-				typeof(IntPtr),					// unorderedAccessBuffer
-				typeof(IntPtr)					// uavCount
+				typeof(nint),					// unorderedAccessBuffer
+				typeof(nint)					// uavCount
 			}, null);
 
 
 			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-				Debug.Print("[ERROR] Cannot find method SetUnorderedAccessViews(IntPtr, int, int, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
+				Debug.Print("[ERROR] Cannot find method SetUnorderedAccessViews(nint, int, int, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 				return;
 			}
 
 			ParameterExpression stageParam = Expression.Parameter(typeof(D3D11.CommonShaderStage), "commonShaderStage");
 			ParameterExpression startSlotParam = Expression.Parameter(typeof(int), "startSlot");
 			ParameterExpression numBuffersParam = Expression.Parameter(typeof(int), "numBuffers");
-			ParameterExpression uavsParam = Expression.Parameter(typeof(IntPtr), "unorderedAccessBuffer");
-			ParameterExpression countParam = Expression.Parameter(typeof(IntPtr), "uavCount");
+			ParameterExpression uavsParam = Expression.Parameter(typeof(nint), "unorderedAccessBuffer");
+			ParameterExpression countParam = Expression.Parameter(typeof(nint), "uavCount");
 			MethodCallExpression caller = Expression.Call(stageParam, methodInfo, startSlotParam, numBuffersParam, uavsParam, countParam);
 
 			LambdaExpression resultMethod = Expression.Lambda(caller, stageParam, startSlotParam, numBuffersParam, uavsParam, countParam);
 
-			_setCsUavs = (Action<D3D11.CommonShaderStage, int, int, IntPtr, IntPtr>)resultMethod.Compile();
+			_setCsUavs = (Action<D3D11.CommonShaderStage, int, int, nint, nint>)resultMethod.Compile();
 		}
 
 		/// <summary>
@@ -177,35 +177,35 @@ namespace Gorgon.Graphics.Core
 			MethodInfo methodInfo = typeof(D3D11.OutputMergerStage).GetMethod("SetRenderTargetsAndUnorderedAccessViews", BindingFlags.NonPublic | BindingFlags.Instance, null, new[]
 			{ 
 				typeof(int),					// numRTVs
-				typeof(IntPtr),					// renderTargetViewsOut
+				typeof(nint),					// renderTargetViewsOut
 				typeof(D3D11.DepthStencilView), // depthStencilViewRef
 				typeof(int),					// uAvStartSlot
 				typeof(int),					// numUAVs
-				typeof(IntPtr),					// unorderedAccessViewsOut
-				typeof(IntPtr)					// uAVInitialCountsRef
+				typeof(nint),					// unorderedAccessViewsOut
+				typeof(nint)					// uAVInitialCountsRef
 			}, null);
 
 
 			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-				Debug.Print("[ERROR] Cannot find method SetRenderTargetsAndUnorderedAccessViews(int, IntPtr, DepthStencilView, int, int, IntPtr, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
+				Debug.Print("[ERROR] Cannot find method SetRenderTargetsAndUnorderedAccessViews(int, nint, DepthStencilView, int, int, nint, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 				return;
 			}
 
 			ParameterExpression stageParam = Expression.Parameter(typeof(D3D11.OutputMergerStage), "outputMerger");
 			ParameterExpression countParam = Expression.Parameter(typeof(int), "numRtvs");
-			ParameterExpression renderTargetViewsParam = Expression.Parameter(typeof(IntPtr), "renderTargetViewsOut");
+			ParameterExpression renderTargetViewsParam = Expression.Parameter(typeof(nint), "renderTargetViewsOut");
 			ParameterExpression depthStencil = Expression.Parameter(typeof(D3D11.DepthStencilView), "depthStencilViewRef");
 			ParameterExpression startSlotParam = Expression.Parameter(typeof(int), "uAVStartSlot");
 			ParameterExpression numUavsParam = Expression.Parameter(typeof(int), "numUAVs");
-			ParameterExpression uavsParam = Expression.Parameter(typeof(IntPtr), "unorderedAccessViewsOut");
-			ParameterExpression uavsInitCountParam = Expression.Parameter(typeof(IntPtr), "uAVInitialCountsRef");
+			ParameterExpression uavsParam = Expression.Parameter(typeof(nint), "unorderedAccessViewsOut");
+			ParameterExpression uavsInitCountParam = Expression.Parameter(typeof(nint), "uAVInitialCountsRef");
 			MethodCallExpression caller = Expression.Call(stageParam, methodInfo, countParam, renderTargetViewsParam, depthStencil, startSlotParam, numUavsParam, uavsParam, uavsInitCountParam);
 
 			LambdaExpression resultMethod = Expression.Lambda(caller, stageParam, countParam, renderTargetViewsParam, depthStencil, startSlotParam, numUavsParam, uavsParam, uavsInitCountParam);
 
-			_setUavs = (Action<D3D11.OutputMergerStage, int, IntPtr, D3D11.DepthStencilView, int, int, IntPtr, IntPtr>)resultMethod.Compile();
+			_setUavs = (Action<D3D11.OutputMergerStage, int, nint, D3D11.DepthStencilView, int, int, nint, nint>)resultMethod.Compile();
 		}
 
 		/// <summary>
@@ -213,24 +213,24 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		private static void FixSetStreamOut()
 		{
-			MethodInfo methodInfo = typeof(D3D11.StreamOutputStage).GetMethod("SetTargets", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(IntPtr), typeof(IntPtr) }, null);
+			MethodInfo methodInfo = typeof(D3D11.StreamOutputStage).GetMethod("SetTargets", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(int), typeof(nint), typeof(nint) }, null);
 
 			if (methodInfo is null)
 			{
 				// We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-				Debug.Print("[ERROR] Cannot find method SetTargets(int, IntPtr, IntPtr) in SharpDX.Direct3D11 assembly. Maybe a different version?");
+				Debug.Print("[ERROR] Cannot find method SetTargets(int, nint, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 				return;
 			}
 
 			ParameterExpression stageParam = Expression.Parameter(typeof(D3D11.StreamOutputStage), "streamOut");
 			ParameterExpression countParam = Expression.Parameter(typeof(int), "numBuffers");
-			ParameterExpression ptrParam1 = Expression.Parameter(typeof(IntPtr), "sOTargetsOut");
-			ParameterExpression ptrParam2 = Expression.Parameter(typeof(IntPtr), "offsetsRef");
+			ParameterExpression ptrParam1 = Expression.Parameter(typeof(nint), "sOTargetsOut");
+			ParameterExpression ptrParam2 = Expression.Parameter(typeof(nint), "offsetsRef");
 			MethodCallExpression caller = Expression.Call(stageParam, methodInfo, countParam, ptrParam1, ptrParam2);
 
 			LambdaExpression resultMethod = Expression.Lambda(caller, stageParam, countParam, ptrParam1, ptrParam2);
 
-			_setStreamOutTargets = (Action<D3D11.StreamOutputStage, int, IntPtr, IntPtr>)resultMethod.Compile();
+			_setStreamOutTargets = (Action<D3D11.StreamOutputStage, int, nint, nint>)resultMethod.Compile();
 		}
 
 		/// <summary>
@@ -259,7 +259,7 @@ namespace Gorgon.Graphics.Core
 
 			unsafe
 			{
-				IntPtr* bufferPtr = stackalloc IntPtr[indices.Count];
+				nint* bufferPtr = stackalloc nint[indices.Count];
 				int* offsetPtr = stackalloc int[indices.Count];
 				
 				for (int i = 0; i < indices.Count; ++i)
@@ -268,7 +268,7 @@ namespace Gorgon.Graphics.Core
 					offsetPtr[i] = streamOutBindings.Native[i].Offset;					
 				}
 
-				_setStreamOutTargets(_graphics.D3DDeviceContext.StreamOutput, indices.Count, (IntPtr)bufferPtr, (IntPtr)offsetPtr);
+				_setStreamOutTargets(_graphics.D3DDeviceContext.StreamOutput, indices.Count, (nint)bufferPtr, (nint)offsetPtr);
 			}
 		}
 
@@ -287,7 +287,7 @@ namespace Gorgon.Graphics.Core
 
 			unsafe
 			{
-				IntPtr* uavsPtr = stackalloc IntPtr[indices.Count];
+				nint* uavsPtr = stackalloc nint[indices.Count];
 				int* uavInitCountPtr = stackalloc int[indices.Count];
 
 				for (int i = 0; i < indices.Count; ++i)
@@ -299,8 +299,8 @@ namespace Gorgon.Graphics.Core
 				_setCsUavs(_graphics.D3DDeviceContext.ComputeShader,						  
 						  indices.Start,
 						  indices.Count,						  
-						  (IntPtr)uavsPtr,
-						  (IntPtr)uavInitCountPtr);
+						  (nint)uavsPtr,
+						  (nint)uavInitCountPtr);
 			}
 		}
 
@@ -319,7 +319,7 @@ namespace Gorgon.Graphics.Core
 
 			unsafe
 			{
-				IntPtr* uavsPtr = stackalloc IntPtr[indices.Count];
+				nint* uavsPtr = stackalloc nint[indices.Count];
 				int* uavInitCountPtr = stackalloc int[indices.Count];
 				
 				for (int i = 0; i < indices.Count; ++i)
@@ -334,8 +334,8 @@ namespace Gorgon.Graphics.Core
 						 null,
 						 indices.Start,
 						 indices.Count,
-						 (IntPtr)uavsPtr,
-						 (IntPtr)uavInitCountPtr);
+						 (nint)uavsPtr,
+						 (nint)uavInitCountPtr);
 			}
 		}
 
@@ -354,7 +354,7 @@ namespace Gorgon.Graphics.Core
 
 			unsafe
 			{				
-				IntPtr* bufferPtr = stackalloc IntPtr[indices.Count];
+				nint* bufferPtr = stackalloc nint[indices.Count];
 				int* stridePtr = stackalloc int[indices.Count];
 				int* offsetPtr = stackalloc int[indices.Count];
 
@@ -365,7 +365,7 @@ namespace Gorgon.Graphics.Core
 					offsetPtr[i] = vertexBufferBindings.Native[i].Offset;
 				}
 				
-				_graphics.D3DDeviceContext.InputAssembler.SetVertexBuffers(indices.Start, indices.Count, (IntPtr)bufferPtr, (IntPtr)stridePtr, (IntPtr)offsetPtr);
+				_graphics.D3DDeviceContext.InputAssembler.SetVertexBuffers(indices.Start, indices.Count, (nint)bufferPtr, (nint)stridePtr, (nint)offsetPtr);
 			}
 		}
 
@@ -666,13 +666,13 @@ namespace Gorgon.Graphics.Core
 			unsafe
 			{
 				int rtvCount = renderTargets.Length.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
-				IntPtr* rtv = stackalloc IntPtr[rtvCount];
+				nint* rtv = stackalloc nint[rtvCount];
 				for (int i = 0; i < rtvCount; ++i)
 				{
 					rtv[i] = renderTargets[i]?.Native.NativePointer ?? IntPtr.Zero;
 				}
 
-				_setRenderTargets(_graphics.D3DDeviceContext.OutputMerger, rtvCount, (IntPtr)rtv, depthStencil?.Native);
+				_setRenderTargets(_graphics.D3DDeviceContext.OutputMerger, rtvCount, (nint)rtv, depthStencil?.Native);
 			}
 
 			if (_renderTargets[0] is null)
@@ -809,7 +809,7 @@ namespace Gorgon.Graphics.Core
 					scissor[i] = scissors[i];
 				}
 
-				_setScissorRects?.Invoke(_graphics.D3DDeviceContext.Rasterizer, length, (IntPtr)scissor);
+				_setScissorRects?.Invoke(_graphics.D3DDeviceContext.Rasterizer, length, (nint)scissor);
 			}
 		}
 		#endregion

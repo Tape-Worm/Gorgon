@@ -67,7 +67,7 @@ namespace Gorgon.Graphics.Core
                 {
                     fixed (T* dataPtr = &initialData[0])
                     {
-                        result = new D3D11.Buffer(device, new IntPtr(dataPtr), desc)
+                        result = new D3D11.Buffer(device, (nint)dataPtr, desc)
                         {
                             DebugName = $"{name}_ID3D11Buffer"
                         };

@@ -34,9 +34,9 @@ namespace Gorgon.Native
     internal struct IMAGELISTDRAWPARAMS
     {
         internal int cbSize;
-        internal IntPtr himl;
+        internal nint himl;
         internal int i;
-        internal IntPtr hdcDst;
+        internal nint hdcDst;
         internal int x;
         internal int y;
         internal int cx;

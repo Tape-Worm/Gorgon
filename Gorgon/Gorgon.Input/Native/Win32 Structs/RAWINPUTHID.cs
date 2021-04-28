@@ -44,6 +44,6 @@ namespace Gorgon.Native
         public int Count;
         /// <summary>HID data.</summary>
         [FieldOffset(8)]
-        public IntPtr Data;
+        public nint Data;
     }
 }

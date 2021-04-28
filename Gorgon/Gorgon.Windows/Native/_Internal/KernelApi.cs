@@ -121,7 +121,7 @@ namespace Gorgon.Native
         /// <param name="nStdHandle">The standard handle.</param>
         /// <returns></returns>
         [DllImport("kernel32.dll")]
-        public static extern IntPtr GetStdHandle(int nStdHandle);
+        public static extern nint GetStdHandle(int nStdHandle);
 
         /// <summary>
         /// 
@@ -139,14 +139,14 @@ namespace Gorgon.Native
             SetLastError = true,
             CharSet = CharSet.Unicode,
             CallingConvention = CallingConvention.StdCall)]
-        public static extern IntPtr CreateFileW(
+        public static extern nint CreateFileW(
             string lpFileName,
             uint dwDesiredAccess,
             uint dwShareMode,
-            IntPtr lpSecurityAttributes,
+            nint lpSecurityAttributes,
             uint dwCreationDisposition,
             uint dwFlagsAndAttributes,
-            IntPtr hTemplateFile);
+            nint hTemplateFile);
 
         /// <summary>
         /// 
@@ -156,7 +156,7 @@ namespace Gorgon.Native
         /// <returns></returns>
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetConsoleMode(IntPtr handle, uint mode);
+        public static extern bool SetConsoleMode(nint handle, uint mode);
 
         /// <summary>
         /// 
@@ -166,7 +166,7 @@ namespace Gorgon.Native
         /// <returns></returns>
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint mode);
+        public static extern bool GetConsoleMode(nint hConsoleHandle, out uint mode);
 
         /// <summary>
         /// 
@@ -175,7 +175,7 @@ namespace Gorgon.Native
         /// <param name="handle"></param>
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetStdHandle(int nStdHandle, IntPtr handle);
+        public static extern bool SetStdHandle(int nStdHandle, nint handle);
 
         /// <summary>
 	    /// Function to set up a console control handler to intercept console close events.

@@ -56,7 +56,7 @@ namespace Gorgon.Native
     /// <note type="information">
     /// <para>
     /// This type is suitable when the type of data stored in native memory is known. If the type of data in memory is not known (e.g. <c>void *</c>), or refers to an opaque handle (e.g. <c>HWND</c>), 
-    /// an <see cref="IntPtr"/> should be used instead. 
+    /// an <c>nint</c> should be used instead. 
     /// </para>
     /// </note>
     /// </para>
@@ -64,7 +64,7 @@ namespace Gorgon.Native
     /// <note type="important">
     /// <para>
     /// This type is ~3x slower for access than a regular native pointer (x64). This is due to the safety features available to ensure the pointer does not cause a buffer over/underrun. For pure speed, 
-    /// nothing beats a native pointer (or <see cref="IntPtr"/>) and if your code is sensitive to microsecond timings (i.e. it needs to be near realtime/blazing fast), then use a native pointer instead 
+    /// nothing beats a native pointer (or <c>nint</c>) and if your code is sensitive to microsecond timings (i.e. it needs to be near realtime/blazing fast), then use a native pointer instead 
     /// (developers can cast this type to a native pointer). But do so with the understanding that all safety is off and memory corruption is a very real possibility.
     /// </para>
     /// <para>
@@ -324,7 +324,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator IntPtr(GorgonPtr<T> ptr) => ToIntPtr(ptr);
+        public static implicit operator nint(GorgonPtr<T> ptr) => Tonint(ptr);
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -925,7 +925,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr ToIntPtr(GorgonPtr<T> ptr) => (IntPtr)ptr._ptr;
+        public static nint Tonint(GorgonPtr<T> ptr) => (nint)ptr._ptr;
 
         /// <summary>
         /// Function to return a SharpDX DataStream wrapping the memory pointed at by this pointer.
@@ -991,7 +991,7 @@ namespace Gorgon.Native
                 throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
             }
 
-            return new DX.DataStream((IntPtr)(_ptr + index), count.Value * sizeof(T), true, true);
+            return new DX.DataStream((nint)(_ptr + index), count.Value * sizeof(T), true, true);
 #pragma warning restore IDE0046 // Convert to conditional expression
         }
 
@@ -1059,7 +1059,7 @@ namespace Gorgon.Native
                 throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
             }
 
-            return new DX.DataBuffer((IntPtr)(_ptr + index), count.Value * sizeof(T));
+            return new DX.DataBuffer((nint)(_ptr + index), count.Value * sizeof(T));
 #pragma warning restore IDE0046 // Convert to conditional expression
         }
 
@@ -1127,7 +1127,7 @@ namespace Gorgon.Native
                 throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
             }
 
-            return new DX.DataPointer((IntPtr)(_ptr + index), count.Value * sizeof(T));
+            return new DX.DataPointer((nint)(_ptr + index), count.Value * sizeof(T));
 #pragma warning restore IDE0046 // Convert to conditional expression
         }
 
@@ -1504,7 +1504,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonPtr(IntPtr pointer, int count)
+        public GorgonPtr(nint pointer, int count)
         {
             if (pointer == IntPtr.Zero)
             {

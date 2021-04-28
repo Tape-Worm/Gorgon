@@ -39,7 +39,7 @@ namespace Gorgon.IO
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This object extends the functionality of the <see cref="BinaryWriter"/> type by adding extra functions to write to a pointer (or <see cref="IntPtr"/>), and to generic value types.
+    /// This object extends the functionality of the <see cref="BinaryWriter"/> type by adding extra functions to write to a pointer (or <c>nint</c>), and to generic value types.
     /// </para>
     /// </remarks>
     public class GorgonBinaryWriter

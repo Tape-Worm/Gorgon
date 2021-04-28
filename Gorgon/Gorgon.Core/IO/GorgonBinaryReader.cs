@@ -39,7 +39,7 @@ namespace Gorgon.IO
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This object extends the functionality of the <see cref="BinaryReader"/> type by adding extra functions to read from a pointer (or <see cref="IntPtr"/>), and from generic value types.
+    /// This object extends the functionality of the <see cref="BinaryReader"/> type by adding extra functions to read from a pointer (or <c>nint</c>), and from generic value types.
     /// </para>
     /// </remarks>
     public class GorgonBinaryReader

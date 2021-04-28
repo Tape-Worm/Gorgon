@@ -215,7 +215,7 @@ namespace Gorgon.Editor.ImageEditor.Native
         /// <param name="lpResult">The path to the executable file.</param>
         /// <returns>An integer value greater than 32 if successful, less than or equal to 32 if not.</returns>
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        private static extern IntPtr FindExecutable(string lpFile, string lpDirectory, [Out] StringBuilder lpResult);
+        private static extern nint FindExecutable(string lpFile, string lpDirectory, [Out] StringBuilder lpResult);
 
         /// <summary>
         /// Function to retrieve a string for a file.
@@ -243,9 +243,9 @@ namespace Gorgon.Editor.ImageEditor.Native
         public static bool HasAssociation(string filePath)
         {
             var exePath = new StringBuilder(1024);
-            IntPtr result = FindExecutable(filePath, null, exePath);
+            nint result = FindExecutable(filePath, null, exePath);
 
-            return result.ToInt32() > 32 && exePath.Length > 0;
+            return result > 32 && exePath.Length > 0;
         }
 
         /// <summary>

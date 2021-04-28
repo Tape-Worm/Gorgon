@@ -34,7 +34,7 @@ namespace Gorgon.Native
     internal struct SHFILEINFO
     {
         internal const int NAMESIZE = 80;
-        internal IntPtr hIcon;
+        internal nint hIcon;
         internal int iIcon;
         internal uint dwAttributes;
 

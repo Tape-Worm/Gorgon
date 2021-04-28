@@ -35,7 +35,7 @@ namespace Gorgon.Native
     {
         public int cbSize;
         public CursorInfoFlags flags;
-        public IntPtr hCursor;
+        public nint hCursor;
         public POINT ptScreenPos;
     }
 }

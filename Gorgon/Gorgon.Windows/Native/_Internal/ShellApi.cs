@@ -200,7 +200,7 @@ namespace Gorgon.Native
         /// <returns>The Icon if found, or <b>null</b> if not.</returns>
         public static Icon ExtractShellIcon(StandardShellIcons icon)
         {
-            IntPtr hIcon = IntPtr.Zero;
+            nint hIcon = IntPtr.Zero;
             IImageList imageList = null;
 
             // COM interface ID for the shell image list.

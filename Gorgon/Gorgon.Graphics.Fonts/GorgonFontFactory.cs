@@ -326,7 +326,7 @@ namespace Gorgon.Graphics.Fonts
                 {
                     fixed (byte* ptr = data)
                     {
-                        _externalFonts.AddMemoryFont(new IntPtr(ptr), size.Value);
+                        _externalFonts.AddMemoryFont((nint)ptr, size.Value);
                     }
                 }
             }

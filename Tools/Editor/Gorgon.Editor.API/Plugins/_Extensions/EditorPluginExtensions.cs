@@ -74,7 +74,7 @@ namespace Gorgon.Editor.PlugIns
             var records = new List<PlugInAssemblyState>();
 
             // We use this to determine whether the plug in can be loaded into the current platform.
-            AssemblyPlatformType currentPlatform = IntPtr.Size == 8 ? AssemblyPlatformType.x64 : AssemblyPlatformType.x86;
+            AssemblyPlatformType currentPlatform = Environment.Is64BitProcess ? AssemblyPlatformType.x64 : AssemblyPlatformType.x86;
 
             foreach (string file in pluginAssemblyFiles.Select(item => Path.GetFullPath(item)))
             {

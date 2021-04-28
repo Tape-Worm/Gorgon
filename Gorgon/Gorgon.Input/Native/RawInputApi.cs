@@ -287,7 +287,7 @@ namespace Gorgon.Native
         /// <param name="cbSizeHeader">Size of the header.</param>
         /// <returns>0 if successful if pData is null, otherwise number of bytes if pData is not null.</returns>
         [DllImport("user32.dll")]
-        private static extern unsafe int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, void* pData, ref int pcbSize, int cbSizeHeader);
+        private static extern unsafe int GetRawInputData(nint hRawInput, RawInputCommand uiCommand, void* pData, ref int pcbSize, int cbSizeHeader);
 
         /// <summary>
         /// Function to enumerate raw input devices.
@@ -308,7 +308,7 @@ namespace Gorgon.Native
         /// <param name="pcbSize">Size of the data to return.</param>
         /// <returns>0 if successful, otherwise an error code.</returns>
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern unsafe int GetRawInputDeviceInfo(IntPtr hDevice, RawInputCommand uiCommand, void* pData, ref int pcbSize);
+        private static extern unsafe int GetRawInputDeviceInfo(nint hDevice, RawInputCommand uiCommand, void* pData, ref int pcbSize);
 
         /// <summary>
         /// Function to register a raw input device.
@@ -336,7 +336,7 @@ namespace Gorgon.Native
         /// </summary>
         /// <param name="deviceHandle">The handle to the device.</param>
         /// <returns>A pointer to the block of memory holding the HID preparsed data.</returns>
-        public static GorgonNativeBuffer<byte> GetPreparsedDeviceInfoData(IntPtr deviceHandle)
+        public static GorgonNativeBuffer<byte> GetPreparsedDeviceInfoData(nint deviceHandle)
         {
             int dataSize = 0;
             int win32Error;
@@ -373,7 +373,7 @@ namespace Gorgon.Native
         /// <param name="usage">The HID usage code to register.</param>
         /// <param name="targetWindow">The target window for the device.</param>
         /// <param name="flags">Flags used in device registration.</param>
-        public unsafe static void RegisterRawInputDevice(HIDUsage usage, IntPtr targetWindow, RawInputDeviceFlags flags)
+        public unsafe static void RegisterRawInputDevice(HIDUsage usage, nint targetWindow, RawInputDeviceFlags flags)
         {
             RAWINPUTDEVICE* devices = stackalloc RAWINPUTDEVICE[1];
 
@@ -577,7 +577,7 @@ namespace Gorgon.Native
         /// </summary>
         /// <param name="rawInputStructHandle">Handle to a HRAWINPUT structure..</param>
         /// <param name="rawInput">The resulting raw input data.</param>
-        public static void GetRawInputData(IntPtr rawInputStructHandle, ref RAWINPUT rawInput)
+        public static void GetRawInputData(nint rawInputStructHandle, ref RAWINPUT rawInput)
         {
             int dataSize = 0;
 

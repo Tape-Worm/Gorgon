@@ -94,7 +94,7 @@ namespace Gorgon.Input
         // A synchronization object for multiple threads.
         private static readonly object _syncLock = new();
         // The device handle.
-        private readonly IntPtr _deviceHandle;
+        private readonly nint _deviceHandle;
         #endregion
 
         #region Events.
@@ -133,7 +133,7 @@ namespace Gorgon.Input
         /// <summary>
         /// Property to return the handle for the device.
         /// </summary>
-        IntPtr IGorgonRawInputDevice.Handle => _deviceHandle;
+        nint IGorgonRawInputDevice.Handle => _deviceHandle;
 
         /// <summary>
         /// Property to return the HID usage code for this device.

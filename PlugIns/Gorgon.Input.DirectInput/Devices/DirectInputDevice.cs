@@ -129,7 +129,7 @@ namespace Gorgon.Input.DirectInput
         {
             var result = new DI.Joystick(directInput, deviceInfo.DeviceID);
 
-            IntPtr mainWindow = FindMainApplicationWindow();
+            nint mainWindow = FindMainApplicationWindow();
 
             if (mainWindow == IntPtr.Zero)
             {
@@ -176,7 +176,7 @@ namespace Gorgon.Input.DirectInput
         /// Function to attempt to locate the main application window handle.
         /// </summary>
         /// <returns>The window handle, if found. Or <see cref="IntPtr.Zero"/> if not.</returns>
-        private static IntPtr FindMainApplicationWindow()
+        private static nint FindMainApplicationWindow()
         {
             // Try to get the window handle from the GorgonApplication class.
             if (GorgonApplication.MainForm is not null)

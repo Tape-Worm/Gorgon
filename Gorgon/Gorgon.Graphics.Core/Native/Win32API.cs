@@ -120,7 +120,7 @@ namespace Gorgon.Native
         /// <param name="flags">Flags to pass in.</param>
         /// <returns></returns>
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlags flags);
+        public static extern nint MonitorFromWindow(nint hwnd, MonitorFlags flags);
         #endregion
 
         #region Constructor.

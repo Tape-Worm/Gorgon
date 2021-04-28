@@ -44,9 +44,9 @@ namespace Gorgon.Native
     {
         #region Variables.
         // Current device context.
-        private static IntPtr _hdc = IntPtr.Zero;
+        private static nint _hdc = IntPtr.Zero;
         // Font handle.
-        private static IntPtr _hFont = IntPtr.Zero;
+        private static nint _hFont = IntPtr.Zero;
         // Last used graphics interface.
         private static System.Drawing.Graphics _lastGraphics;
         // Temporary font.
@@ -63,7 +63,7 @@ namespace Gorgon.Native
         /// <param name="hObj">A handle to the object to be selected.</param>
         /// <returns>If the selected object is not a region and the function succeeds, the return value is a handle to the object being replaced</returns>
         [DllImport("gdi32.dll", ExactSpelling = true)]
-        private static extern IntPtr SelectObject(IntPtr hDC, IntPtr hObj);
+        private static extern nint SelectObject(nint hDC, nint hObj);
 
         /// <summary>
         /// The DeleteDC function deletes the specified device context (DC).
@@ -71,7 +71,7 @@ namespace Gorgon.Native
         /// <param name="hObj">A handle to the device context.</param>
         /// <returns>If the function succeeds, the return value is nonzero.  If the function fails, the return value is zero.</returns>
         [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        private static extern int DeleteObject(IntPtr hObj);
+        private static extern int DeleteObject(nint hObj);
 
         /// <summary>
         /// The GetCharABCWidths function retrieves the widths, in logical units, of consecutive characters in a specified range from the current TrueType font. This function succeeds only with TrueType fonts.
@@ -83,7 +83,7 @@ namespace Gorgon.Native
         /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
         [DllImport("gdi32.dll", EntryPoint = "GetCharABCWidthsW", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetCharABCWidthsW(IntPtr hdc, uint uFirstChar, uint uLastChar, ABC* lpABC);
+        private static extern bool GetCharABCWidthsW(nint hdc, uint uFirstChar, uint uLastChar, ABC* lpABC);
 
         /// <summary>
         /// The GetKerningPairs function retrieves the character-kerning pairs for the currently selected font for the specified device context.
@@ -93,7 +93,7 @@ namespace Gorgon.Native
         /// <param name="kernPairs">A pointer to an array of KERNINGPAIR structures that receives the kerning pairs. The array must contain at least as many structures as specified by the nNumPairs parameter. If this parameter is <b>null</b>, the function returns the total number of kerning pairs for the font.</param>
         /// <returns>If the function succeeds, the return value is the number of kerning pairs returned.  If the function fails, the return value is zero.</returns>
         [DllImport("gdi32.dll", EntryPoint = "GetKerningPairsW", CharSet = CharSet.Unicode)]
-        private static extern uint GetKerningPairsW(IntPtr hdc, uint numberOfPairs, KERNINGPAIR* kernPairs);
+        private static extern uint GetKerningPairsW(nint hdc, uint numberOfPairs, KERNINGPAIR* kernPairs);
 
         /// <summary>
         /// The SetMapMode function sets the mapping mode of the specified device context. The mapping mode defines the unit of measure used to transform page-space units into device-space units, and also defines the orientation of the device's x and y axes.
@@ -102,7 +102,7 @@ namespace Gorgon.Native
         /// <param name="fnMapMode">The new mapping mode.</param>
         /// <returns>If the function succeeds, the return value identifies the previous mapping mode.  If the function fails, the return value is zero.</returns>
         [DllImport("gdi32.dll", EntryPoint = "SetMapMode", CharSet = CharSet.Auto)]
-        private static extern MapModes SetMapMode(IntPtr hdc, MapModes fnMapMode);
+        private static extern MapModes SetMapMode(nint hdc, MapModes fnMapMode);
         #endregion
 
         #region Methods.
@@ -111,7 +111,7 @@ namespace Gorgon.Native
         /// </summary>
         /// <param name="graphics">Graphics interface to use.</param>
         /// <param name="font">Font to set.</param>
-        public static IntPtr SetActiveFont(System.Drawing.Graphics graphics, Font font)
+        public static nint SetActiveFont(System.Drawing.Graphics graphics, Font font)
         {
             lock (_syncLock)
             {
@@ -133,7 +133,7 @@ namespace Gorgon.Native
         /// Function to restore the last known active object.
         /// </summary>
         /// <param name="lastGdiObj">The previous GDI object that was selected into the device context.</param>
-        public static void RestoreActiveObject(IntPtr lastGdiObj)
+        public static void RestoreActiveObject(nint lastGdiObj)
         {
             lock (_syncLock)
             {

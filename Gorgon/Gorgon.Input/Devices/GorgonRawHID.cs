@@ -63,7 +63,7 @@ namespace Gorgon.Input
         /// <summary>
         /// Property to return the handle for the device.
         /// </summary>
-        public IntPtr Handle => Info.Handle;
+        public nint Handle => Info.Handle;
 
         /// <summary>
         /// Property to return the type of device.

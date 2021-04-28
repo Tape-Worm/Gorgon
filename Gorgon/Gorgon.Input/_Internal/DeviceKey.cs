@@ -42,7 +42,7 @@ namespace Gorgon.Input
         /// <summary>
         /// The handle for the device.
         /// </summary>
-        public IntPtr DeviceHandle;
+        public nint DeviceHandle;
 
         /// <summary>
         /// Function to compare two instances for equality.

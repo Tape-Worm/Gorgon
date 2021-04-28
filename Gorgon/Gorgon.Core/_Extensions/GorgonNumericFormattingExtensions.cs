@@ -589,7 +589,7 @@ namespace Gorgon.Core
         public static string FormatHex(this ulong value) => value.ToString("x").PadLeft(16, '0');
 
         /// <summary>
-        /// Function to format a pointer (IntPtr) value into a hexadecimal string.
+        /// Function to format a pointer (nint) value into a hexadecimal string.
         /// </summary>
         /// <param name="pointer">Pointer to format.</param>
         /// <returns>The formatted address of the pointer.</returns>
@@ -597,14 +597,32 @@ namespace Gorgon.Core
         /// This will return a string with the number formatted as a hexadecimal number. Like other overloads of this method, this will pad zeroes to the left of the value based on the size of the type, but unlike the 
         /// other overloads, it will use the correct number of zeroes based on the platform (x64, x86).  For example:
         /// <code language="csharp">
-        /// IntPtr hexValue = new IntPtr(122388812);
+        /// nint hexValue = 122388812;
         /// 
         /// Console.WriteLine(hexValue.FormatHex()); // Produces "074B814C" for x86, and "00000000074B814C" for x64
         /// </code>
         /// </remarks>
-        public static string FormatHex(this IntPtr pointer) => Environment.Is64BitProcess
-                       ? pointer.ToInt64().ToString("x").PadLeft(16, '0')
-                       : pointer.ToInt32().ToString("x").PadLeft(8, '0');
+        public static string FormatHex(this nint pointer) => Environment.Is64BitProcess
+                       ? ((long)pointer).ToString("x").PadLeft(16, '0')
+                       : ((int)pointer).ToString("x").PadLeft(8, '0');
+
+        /// <summary>
+        /// Function to format a pointer (nuint) value into a hexadecimal string.
+        /// </summary>
+        /// <param name="pointer">Pointer to format.</param>
+        /// <returns>The formatted address of the pointer.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. Like other overloads of this method, this will pad zeroes to the left of the value based on the size of the type, but unlike the 
+        /// other overloads, it will use the correct number of zeroes based on the platform (x64, x86).  For example:
+        /// <code language="csharp">
+        /// nint hexValue = 122388812;
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "074B814C" for x86, and "00000000074B814C" for x64
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this nuint pointer) => Environment.Is64BitProcess
+                       ? ((long)pointer).ToString("x").PadLeft(16, '0')
+                       : ((int)pointer).ToString("x").PadLeft(8, '0');
         #endregion
     }
 }

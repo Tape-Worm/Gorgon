@@ -465,7 +465,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static explicit operator IntPtr(GorgonNativeBuffer<T> buffer) => ToIntPtr(buffer);
+        public static explicit operator nint(GorgonNativeBuffer<T> buffer) => ToNint(buffer);
 
         /// <summary>
         /// Function to return the pointer to the underlying data in the buffer.
@@ -488,7 +488,7 @@ namespace Gorgon.Native
         /// </note>
         /// </para>
         /// </remarks>
-        public static IntPtr ToIntPtr(GorgonNativeBuffer<T> buffer) => buffer is null ? IntPtr.Zero : buffer._memoryBlock;
+        public static nint ToNint(GorgonNativeBuffer<T> buffer) => buffer is null ? IntPtr.Zero : buffer._memoryBlock;
 
         /// <summary>
         /// Operator to implicitly convert this buffer to a span.
