@@ -373,7 +373,7 @@ namespace Gorgon.Editor.SpriteEditor
         public override void OnUnload()
         {
             SpritePickMaskEditor.OnUnload();
-            _imageData?.Dispose();
+            ImageData = null;
             base.OnUnload();
         }
         #endregion

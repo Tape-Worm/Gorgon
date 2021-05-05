@@ -521,6 +521,15 @@ namespace Gorgon.Editor.SpriteEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        internal static string GORSPR_TEXT_LOADING {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_LOADING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading image &apos;{0}&apos;....
         /// </summary>
         internal static string GORSPR_TEXT_LOADING_IMAGE {

@@ -1225,7 +1225,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>
         /// Function to activate (or deactivate) the sprite picker tool.
         /// </summary>
-        private void DoSpritePick()
+        private async void DoSpritePick()
         {
             try
             {
@@ -1241,11 +1241,22 @@ namespace Gorgon.Editor.SpriteEditor
                     HostServices.MessageDisplay.ShowWarning(string.Format(Resources.GORSPR_WRN_LARGE_IMAGE, Texture.Width, Texture.Height));
                 }
 
+                // If the image data is unloaded from the image picker service, then we'll need to upload it.
+                if ((SpritePickContext?.GetImageDataCommand != null) && (SpritePickContext.ImageData is null) && (SpritePickContext.GetImageDataCommand.CanExecute(null)))
+                {
+                    ShowWaitPanel(Resources.GORSPR_TEXT_LOADING);
+                    await SpritePickContext.GetImageDataCommand.ExecuteAsync(null);
+                }
+
                 CommandContext = SpritePickContext;
             }
             catch (Exception ex)
             {
                 HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GORSPR_ERR_TOOL_CHANGE, SpritePickContext.Name));
+            }
+            finally
+            {
+                HideWaitPanel();
             }
         }
 
