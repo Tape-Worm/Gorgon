@@ -81,12 +81,12 @@ namespace Gorgon.Editor
             // 
             this.labelVersion.AutoSize = true;
             this.labelVersion.BackColor = System.Drawing.Color.White;
-            this.labelVersion.Location = new System.Drawing.Point(4, 0);
-            this.labelVersion.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
+            this.labelVersion.Location = new System.Drawing.Point(3, 0);
+            this.labelVersion.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.labelVersion.MaximumSize = new System.Drawing.Size(167, 62);
             this.labelVersion.MinimumSize = new System.Drawing.Size(0, 35);
             this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(60, 35);
+            this.labelVersion.Size = new System.Drawing.Size(48, 35);
             this.labelVersion.TabIndex = 2;
             this.labelVersion.Text = "Version:";
             this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -94,12 +94,12 @@ namespace Gorgon.Editor
             // labelVersionNumber
             // 
             this.labelVersionNumber.AutoSize = true;
-            this.labelVersionNumber.Location = new System.Drawing.Point(64, 0);
+            this.labelVersionNumber.Location = new System.Drawing.Point(51, 0);
             this.labelVersionNumber.Margin = new System.Windows.Forms.Padding(0);
             this.labelVersionNumber.MaximumSize = new System.Drawing.Size(171, 62);
-            this.labelVersionNumber.MinimumSize = new System.Drawing.Size(53, 35);
+            this.labelVersionNumber.MinimumSize = new System.Drawing.Size(52, 35);
             this.labelVersionNumber.Name = "labelVersionNumber";
-            this.labelVersionNumber.Size = new System.Drawing.Size(53, 35);
+            this.labelVersionNumber.Size = new System.Drawing.Size(52, 35);
             this.labelVersionNumber.TabIndex = 3;
             this.labelVersionNumber.Text = "0.0.0.0";
             this.labelVersionNumber.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -108,12 +108,11 @@ namespace Gorgon.Editor
             // 
             this.labelInfo.AutoSize = true;
             this.labelInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelInfo.Location = new System.Drawing.Point(121, 0);
-            this.labelInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelInfo.Location = new System.Drawing.Point(106, 0);
             this.labelInfo.MaximumSize = new System.Drawing.Size(0, 62);
             this.labelInfo.MinimumSize = new System.Drawing.Size(0, 35);
             this.labelInfo.Name = "labelInfo";
-            this.labelInfo.Size = new System.Drawing.Size(18, 35);
+            this.labelInfo.Size = new System.Drawing.Size(16, 35);
             this.labelInfo.TabIndex = 4;
             this.labelInfo.Text = "...";
             this.labelInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -131,16 +130,17 @@ namespace Gorgon.Editor
             // 
             // FormSplash
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(621, 158);
             this.ControlBox = false;
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormSplash";
