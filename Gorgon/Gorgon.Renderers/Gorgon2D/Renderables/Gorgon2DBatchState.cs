@@ -103,7 +103,7 @@ namespace Gorgon.Renderers
         public static readonly Gorgon2DBatchState DepthEnabledNoBlend = new()
         {
             BlendState = GorgonBlendState.NoBlending,
-            DepthStencilState = GorgonDepthStencilState.DepthEnabled
+            DepthStencilState = GorgonDepthStencilState.DepthLessEqualEnabled
         };
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Gorgon.Renderers
         public static readonly Gorgon2DBatchState DepthEnabled = new()
         {
             BlendState = GorgonBlendState.Default,
-            DepthStencilState = GorgonDepthStencilState.DepthEnabled
+            DepthStencilState = GorgonDepthStencilState.DepthLessEqualEnabled
         };
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Gorgon.Renderers
         public static readonly Gorgon2DBatchState DepthEnabledAdditiveBlend = new()
         {
             BlendState = GorgonBlendState.Additive,
-            DepthStencilState = GorgonDepthStencilState.DepthEnabled
+            DepthStencilState = GorgonDepthStencilState.DepthLessEqualEnabled
         };
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Gorgon.Renderers
         public static readonly Gorgon2DBatchState DepthEnabledPremultipliedBlend = new()
         {
             BlendState = GorgonBlendState.Premultiplied,
-            DepthStencilState = GorgonDepthStencilState.DepthEnabled
+            DepthStencilState = GorgonDepthStencilState.DepthLessEqualEnabled
         };
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Gorgon.Renderers
         public static readonly Gorgon2DBatchState DepthReadNoBlend = new()
         {
             BlendState = GorgonBlendState.NoBlending,
-            DepthStencilState = GorgonDepthStencilState.DepthEnabledNoWrite
+            DepthStencilState = GorgonDepthStencilState.DepthLessEqualEnabledNoWrite
         };
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Gorgon.Renderers
         public static readonly Gorgon2DBatchState DepthRead = new()
         {
             BlendState = GorgonBlendState.Default,
-            DepthStencilState = GorgonDepthStencilState.DepthEnabledNoWrite
+            DepthStencilState = GorgonDepthStencilState.DepthLessEqualEnabledNoWrite
         };
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Gorgon.Renderers
         public static readonly Gorgon2DBatchState DepthReadAdditiveBlend = new()
         {
             BlendState = GorgonBlendState.Additive,
-            DepthStencilState = GorgonDepthStencilState.DepthEnabledNoWrite
+            DepthStencilState = GorgonDepthStencilState.DepthLessEqualEnabledNoWrite
         };
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace Gorgon.Renderers
         public static readonly Gorgon2DBatchState DepthReadPremultipliedBlend = new()
         {
             BlendState = GorgonBlendState.Premultiplied,
-            DepthStencilState = GorgonDepthStencilState.DepthEnabledNoWrite
+            DepthStencilState = GorgonDepthStencilState.DepthLessEqualEnabledNoWrite
         };
 
         /// <summary>
