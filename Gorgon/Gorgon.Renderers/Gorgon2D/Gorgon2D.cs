@@ -236,7 +236,7 @@ namespace Gorgon.Renderers
             Vertices = new Gorgon2DVertex[4]
         };
         // The 2D camera used to render the data.
-        private GorgonOrthoCamera _defaultCamera;
+        private GorgonCameraCommon _defaultCamera;
         // The world matrix buffer for objects that use a world matrix.
         private GorgonConstantBufferView _polySpriteDataBuffer;
         // Values to pass to a shader so it will have the same information as the application (e.g. screen width and height).
@@ -401,8 +401,8 @@ namespace Gorgon.Renderers
         private void RenderBatchOnChange(BatchRenderable renderable, bool useIndices, bool createDrawCall = true, bool flush = false)
         {
             // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
-            if ((!flush) 
-                && (((useIndices) && (_currentDrawIndexCall is not null)) || ((!useIndices) && (_currentDrawCall is not null))))                
+            if ((!flush)
+                && (((useIndices) && (_currentDrawIndexCall is not null)) || ((!useIndices) && (_currentDrawCall is not null))))
             {
                 if ((_lastRenderable is not null) && (renderable is not null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))                    
                 {
@@ -652,11 +652,15 @@ namespace Gorgon.Renderers
                 _currentBatchState.RasterState = GorgonRasterState.Default;
                 _currentBatchState.DepthStencilState = GorgonDepthStencilState.Default;
 
-                _defaultCamera = new GorgonOrthoCamera(Graphics,
-                                                       new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height),
-                                                       -100_000.0f,
-                                                       100_000.0f,
-                                                       "Gorgon2D.Default_Camera");
+                if (_defaultCamera is null)
+                {
+                    _defaultCamera = new GorgonOrthoCamera(Graphics,
+                                                           new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height),
+                                                           -100_000.0f,
+                                                           100_000.0f,
+                                                           "Gorgon2D.Default_Camera");
+                }
+
                 _cameraController = new CameraController(Graphics);
                 _cameraController.UpdateCamera(_defaultCamera);
 
@@ -2753,8 +2757,19 @@ namespace Gorgon.Renderers
         /// Initializes a new instance of the <see cref="Gorgon2D"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface to use for rendering.</param>
+        /// <param name="defaultCamera">[Optional] A camera to use as the default camera when rendering.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-        public Gorgon2D(GorgonGraphics graphics)
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="defaultCamera"/> parameter allows a developer to assign a custom <see cref="GorgonCameraCommon">camera</see> as a default camera to fall back on when no camera is passed to 
+        /// the <see cref="Begin(Gorgon2DBatchState, GorgonCameraCommon)"/> method. As such, this allows developers to maintain control over the default camera view, including its transformation (e.g. offset, 
+        /// rotation, etc...) 
+        /// </para>
+        /// <para>
+        /// If the <paramref name="defaultCamera"/> parameter is <b>null</b>, then an internal default camera will be used.
+        /// </para>
+        /// </remarks>
+        public Gorgon2D(GorgonGraphics graphics, GorgonCameraCommon defaultCamera = null)
         {
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(Graphics), true);
@@ -2764,6 +2779,8 @@ namespace Gorgon.Renderers
             GorgonShaderFactory.Includes[GorgonLightingShaderIncludeName] = new GorgonShaderInclude(GorgonLightingShaderIncludeName, Resources.Lighting);
             GorgonShaderFactory.Includes[GorgonBloomShaderIncludeName] = new GorgonShaderInclude(GorgonBloomShaderIncludeName, Resources.HdrBloom);
             GorgonShaderFactory.Includes[GorgonChromaticAberrationShaderIncludeName] = new GorgonShaderInclude(GorgonChromaticAberrationShaderIncludeName, Resources.ChromaticAberration);
+
+            _defaultCamera = defaultCamera;
         }
         #endregion
     }
