@@ -654,8 +654,8 @@ namespace Gorgon.Renderers
 
                 _defaultCamera = new GorgonOrthoCamera(Graphics,
                                                        new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height),
-                                                       0,
-                                                       1.0f,
+                                                       -100_000.0f,
+                                                       100_000.0f,
                                                        "Gorgon2D.Default_Camera");
                 _cameraController = new CameraController(Graphics);
                 _cameraController.UpdateCamera(_defaultCamera);
