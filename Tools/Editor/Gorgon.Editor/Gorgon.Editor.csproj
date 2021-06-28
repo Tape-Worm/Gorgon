@@ -48,7 +48,7 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Krypton.Ribbon.Lite.Signed" Version="5.550.*" />
+    <PackageReference Include="Krypton.Ribbon.Canary.Lite" Version="6.0.*" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>1.0.*</Version>      
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
