@@ -1777,18 +1777,21 @@ namespace Gorgon.Renderers
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.Vertices[0] = new Gorgon2DVertex
             {
+                Angle = new Vector2(1, 0),
                 Color = point1.Color,
                 Position = new Vector4(point1.Position, depth, 1.0f),
                 UV = texture is not null ? new Vector4(point1.TextureCoordinate, point1.TextureArrayIndex, 1) : Vector4.UnitW
             };
             _primitiveRenderable.Vertices[1] = new Gorgon2DVertex
             {
+                Angle = new Vector2(1, 0),
                 Color = point2.Color,
                 Position = new Vector4(point2.Position, depth, 1.0f),
                 UV = texture is not null ? new Vector4(point2.TextureCoordinate, point2.TextureArrayIndex, 1) : Vector4.UnitW
             };
             _primitiveRenderable.Vertices[2] = new Gorgon2DVertex
             {
+                Angle = new Vector2(1, 0),
                 Color = point3.Color,
                 Position = new Vector4(point3.Position, depth, 1.0f),
                 UV = texture is not null ? new Vector4(point3.TextureCoordinate, point3.TextureArrayIndex, 1) : Vector4.UnitW
@@ -2158,10 +2161,12 @@ namespace Gorgon.Renderers
                 v.Position = new Vector4(point, depth, 1.0f);
                 v.Color = color;
                 v.UV = uv;
+                v.Angle = new Vector2(1, 0);
 
                 c.Position = new Vector4(centerPoint, depth, 1.0f);
                 c.Color = color;
                 c.UV = uvCenter;
+                c.Angle = new Vector2(1, 0);
             }
 
             if (textureSampler is null)
@@ -2277,10 +2282,12 @@ namespace Gorgon.Renderers
                 vOuter.Position = new Vector4(outerPoint, depth, 1.0f);
                 vOuter.Color = color;
                 vOuter.UV = uvOuter;
+                vOuter.Angle = new Vector2(1, 0);
 
                 vInner.Position = new Vector4(innerPoint, depth, 1.0f);
                 vInner.Color = color;
                 vInner.UV = uvInner;
+                vInner.Angle = new Vector2(1, 0);
             }
 
             if (textureSampler is null)
@@ -2390,10 +2397,12 @@ namespace Gorgon.Renderers
                 v.Position = new Vector4(point, depth, 1.0f);
                 v.Color = color;
                 v.UV = uv;
+                v.Angle = new Vector2(1, 0);
 
                 c.Position = new Vector4(centerPoint, depth, 1.0f);
                 c.Color = color;
                 c.UV = uvCenter;
+                c.Angle = new Vector2(1, 0);
             }
 
             if (textureSampler is null)
@@ -2504,10 +2513,12 @@ namespace Gorgon.Renderers
                 vOuter.Position = new Vector4(outerPoint, depth, 1.0f);
                 vOuter.Color = color;
                 vOuter.UV = uvOuter;
+                vOuter.Angle = new Vector2(1, 0);
 
                 vInner.Position = new Vector4(innerPoint, depth, 1.0f);
                 vInner.Color = color;
                 vInner.UV = uvInner;
+                vInner.Angle = new Vector2(1, 0);
             }
 
             if (textureSampler is null)
