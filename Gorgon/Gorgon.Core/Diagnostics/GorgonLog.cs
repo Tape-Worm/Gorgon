@@ -370,7 +370,13 @@ namespace Gorgon.Diagnostics
 
                 foreach (string line in formattedLines)
                 {
-                    lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {string.Format(line, arguments)}");
+                    string lineToPrint = line;
+                    if ((arguments is not null) && (arguments.Length > 0))
+                    {
+                        lineToPrint = string.Format(line, arguments);
+                    }
+
+                    lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {lineToPrint}");
                 }
             }
 
