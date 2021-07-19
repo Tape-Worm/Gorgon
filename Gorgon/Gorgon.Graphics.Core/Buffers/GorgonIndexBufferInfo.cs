@@ -36,7 +36,7 @@ namespace Gorgon.Graphics.Core
     public record GorgonIndexBufferInfo(int IndexCount)
         : IGorgonIndexBufferInfo
     {
-        #region Constructor/Finalizer.
+    #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
         /// </summary>
@@ -50,9 +50,9 @@ namespace Gorgon.Graphics.Core
             Use16BitIndices = info.Use16BitIndices;
             Binding = info.Binding;
         }
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return the intended usage for binding to the GPU.
         /// </summary>
@@ -99,7 +99,7 @@ namespace Gorgon.Graphics.Core
             get;
             init;
         } = GorgonGraphicsResource.GenerateName(GorgonIndexBuffer.NamePrefix);
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

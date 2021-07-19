@@ -24,14 +24,14 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.Linq;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Fonts;
+using System.Numerics;
 using Gorgon.Editor.AnimationEditor.Properties;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {

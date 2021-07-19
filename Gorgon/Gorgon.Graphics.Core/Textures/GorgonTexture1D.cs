@@ -64,8 +64,14 @@ namespace Gorgon.Graphics.Core
         private Dictionary<TextureViewKey, GorgonTexture1DReadWriteView> _cachedReadWriteViews = new();
         // The list of cached texture shader resource views.
         private Dictionary<TextureViewKey, GorgonTexture1DView> _cachedSrvs = new();
+#if NET48_OR_GREATER
+#pragma warning disable IDE0044 // Add readonly modifier
+#endif
         // The information used to create the texture.
         private GorgonTexture1DInfo _info;
+#if NET48_OR_GREATER
+#pragma warning restore IDE0044 // Add readonly modifier
+#endif
         #endregion
 
         #region Properties.

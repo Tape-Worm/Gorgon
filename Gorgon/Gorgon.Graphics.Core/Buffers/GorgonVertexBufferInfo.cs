@@ -47,7 +47,7 @@ namespace Gorgon.Graphics.Core
     public record GorgonVertexBufferInfo(int SizeInBytes)
         : IGorgonVertexBufferInfo
     {
-        #region Constructor/Finalizer.
+    #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.
         /// </summary>
@@ -60,9 +60,9 @@ namespace Gorgon.Graphics.Core
             Usage = info.Usage;
             Binding = info.Binding;
         }
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return the binding used to bind this buffer to the GPU.
         /// </summary>
@@ -92,9 +92,9 @@ namespace Gorgon.Graphics.Core
             get;
             init;
         } = GorgonGraphicsResource.GenerateName(GorgonVertexBuffer.NamePrefix);
-        #endregion
+    #endregion
 
-        #region Methods.
+    #region Methods.
         /// <summary>
         /// Function to create a <see cref="GorgonVertexBufferInfo"/> based on the type representing a vertex.
         /// </summary>
@@ -178,7 +178,7 @@ namespace Gorgon.Graphics.Core
                     Usage = usage 
                 };
         }
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

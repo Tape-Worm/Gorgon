@@ -2719,10 +2719,7 @@ namespace Gorgon.Editor.ViewModels
                 {
                     if ((_syncContext != SynchronizationContext.Current) && (!string.IsNullOrWhiteSpace(originalPath)))
                     {
-                        _syncContext.Send(d =>
-                        {
-                            HostServices.MessageDisplay.ShowWarning(string.Format(Resources.GOREDIT_WRN_IMPORT_FILE, Path.GetFileName(originalPath)), details: $"{Resources.GOREDIT_ERR_ERROR}:\n\n{ex.Message}");
-                        }, ex);
+                        _syncContext.Send(d => HostServices.MessageDisplay.ShowWarning(string.Format(Resources.GOREDIT_WRN_IMPORT_FILE, Path.GetFileName(originalPath)), details: $"{Resources.GOREDIT_ERR_ERROR}:\n\n{ex.Message}"), ex);
                     }
                 }
             }

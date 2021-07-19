@@ -30,7 +30,6 @@ using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Editor;
-using Gorgon.Editor.ProjectData;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;

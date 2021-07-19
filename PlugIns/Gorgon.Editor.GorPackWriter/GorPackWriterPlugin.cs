@@ -40,6 +40,7 @@ using Gorgon.Editor.GorPackWriter.Properties;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 using Gorgon.Math;
+using Microsoft.IO;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn
 {
@@ -61,6 +62,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         #endregion
 
         #region Variables.
+        // The memory stream manager for efficient memory usage.
+        private static readonly RecyclableMemoryStreamManager _memStreamManager = new(int.MaxValue, int.MaxValue * 2L);
         // The global buffer used to write out data to a stream.
         private byte[] _globalWriteBuffer;
         #endregion
@@ -515,7 +518,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
         protected override bool OnEvaluateCanWriteFile(string file)
         {
             using FileStream stream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using var memStream = new MemoryStream();
+            using MemoryStream memStream = _memStreamManager.GetStream();
             int byteCount = Encoding.UTF8.GetByteCount(FileHeader) + 5; // Plus string length bytes (potentially up to 4), plus byte order mark.
 
             if (stream.Length <= byteCount)
@@ -567,8 +570,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
             GorgonBinaryWriter writer = null;
             FileStream inStream = null;
             FileStream outStream = null;
-            var fatStream = new MemoryStream();
-            var compressedFatStream = new MemoryStream();
+            MemoryStream fatStream = null;
+            MemoryStream compressedFatStream = null;
 
             _globalWriteBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
 
@@ -593,8 +596,8 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
                 // Copy file layout to a compressed data block.
                 byte[] fatData = Encoding.UTF8.GetBytes(fat.ToStringWithDeclaration());
-                fatStream = new MemoryStream(fatData);
-                compressedFatStream = new MemoryStream();
+                fatStream = _memStreamManager.GetStream(fatData);
+                compressedFatStream =_memStreamManager.GetStream();
 
                 CompressData(fatStream, compressedFatStream, _globalWriteBuffer, (int)(Compression * 9), cancelToken);
 

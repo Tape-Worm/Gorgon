@@ -26,9 +26,15 @@
 
 using System;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
+/* Unmerged change from project 'Gorgon.Graphics.Core (net5.0-windows)'
+Before:
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
+After:
+using D3D11 = SharpDX.Direct3D11;
+using DXGI = SharpDX.DXGI;
+*/
+
 
 namespace Gorgon.Graphics.Core
 {
@@ -59,7 +65,7 @@ namespace Gorgon.Graphics.Core
     /// </remarks>
     public record GorgonMultisampleInfo(int Count, int Quality)
     {
-        #region Variables.
+    #region Variables.
         /// <summary>
         /// The default multisampling value.
         /// </summary>
@@ -77,9 +83,9 @@ namespace Gorgon.Graphics.Core
         /// A pattern where all of the samples are located at the pixel center.
         /// </summary>
         public static readonly int CenteredMultisamplePatternQuality = unchecked((int)0xfffffffe);
-        #endregion
+    #endregion
 
-        #region Methods.
+    #region Methods.
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
@@ -87,7 +93,7 @@ namespace Gorgon.Graphics.Core
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString() => string.Format(Resources.GORGFX_TOSTR_MULTISAMPLEINFO, Count, Quality);
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

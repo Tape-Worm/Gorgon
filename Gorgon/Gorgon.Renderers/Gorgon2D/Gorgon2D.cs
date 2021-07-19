@@ -25,14 +25,13 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Runtime.InteropServices;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -42,8 +41,9 @@ using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
-using Gorgon.UI;
 using Gorgon.Timing;
+using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

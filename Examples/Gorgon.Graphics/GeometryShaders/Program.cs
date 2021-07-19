@@ -25,11 +25,11 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Gorgon.Examples.Properties;
@@ -37,10 +37,10 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
+using Gorgon.Renderers.Cameras;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
-using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Examples
 {

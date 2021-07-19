@@ -171,14 +171,12 @@ namespace Gorgon.Graphics.Core
                 ? throw new ArgumentNullException(nameof(graphics))
                 : graphics.GetDisposables()
                            .Select(item =>
-                                   {
                                        // If the object has been collected/disposed, then do nothing.
-                                       return ((!item.TryGetTarget(out IDisposable disposable))
+                                       ((!item.TryGetTarget(out IDisposable disposable))
                                            || (disposable is not T resource)
                                            || (resource.IsDisposed))
                                            ? null
-                                           : resource;
-                                   })
+                                           : resource)
                            .Where(item => item is not null);
         #endregion
     }

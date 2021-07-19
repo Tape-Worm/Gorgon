@@ -28,6 +28,7 @@ using System.IO;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Microsoft.IO;
 
 namespace Gorgon.Editor
 {
@@ -36,6 +37,11 @@ namespace Gorgon.Editor
     /// </summary>
     public static class CommonEditorResources
     {
+        /// <summary>
+        /// A small memory stream manager pool for loading resource data using <see cref="MemoryStream"/>.
+        /// </summary>
+        public static readonly RecyclableMemoryStreamManager MemoryStreamManager = new(1_048_576, 67_108_864);
+
         /// <summary>
         /// Property to return a checkerboard pattern image (encoded as DDS/DXT1 data) for background images
         /// </summary>
@@ -73,20 +79,14 @@ namespace Gorgon.Editor
         {
             IGorgonImageCodec dds = new GorgonCodecDds();
 
-            using (var stream = new MemoryStream(Resources.Bg_Pattern_256x256, false))
-            {
-                CheckerBoardPatternImage = dds.FromStream(stream);
-            }
+            using MemoryStream stream1 = MemoryStreamManager.GetStream(Resources.Bg_Pattern_256x256);
+            CheckerBoardPatternImage = dds.FromStream(stream1);
 
-            using (var stream = new MemoryStream(Resources.manual_input_24x24, false))
-            {
-                KeyboardIcon = dds.FromStream(stream);
-            }
+            using MemoryStream stream2 = MemoryStreamManager.GetStream(Resources.manual_input_24x24);
+            KeyboardIcon = dds.FromStream(stream2);
 
-            using (var stream = new MemoryStream(Resources.manual_vertex_edit_64x64, false))
-            {
-                KeyboardIconLarge = dds.FromStream(stream);
-            }
+            using MemoryStream stream3 = MemoryStreamManager.GetStream(Resources.manual_vertex_edit_64x64);
+            KeyboardIconLarge = dds.FromStream(stream3);
         }
 
         /// <summary>

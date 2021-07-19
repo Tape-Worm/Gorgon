@@ -25,27 +25,27 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Threading;
 using System.Windows.Forms;
-using DX = SharpDX;
-using Gorgon.Graphics.Imaging.GdiPlus;
+using Gorgon.Core;
+using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
-using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Core;
-using Gorgon.Graphics.Core;
-using System.Threading;
 using Gorgon.Graphics;
-using Gorgon.UI;
-using Gorgon.Renderers;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
-using System.Collections.Specialized;
-using System.IO;
+using Gorgon.Renderers;
+using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {

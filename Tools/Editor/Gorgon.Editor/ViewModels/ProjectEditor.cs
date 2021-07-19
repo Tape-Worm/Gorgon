@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -42,6 +43,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
+using Microsoft.IO;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -807,6 +809,9 @@ namespace Gorgon.Editor.ViewModels
             IContentFile file = null;
             IDirectory directory = null;
             Stream contentStream = null;
+            RecyclableMemoryStream contentData = null;
+            ProjectItemMetadata contentMetadata = null;
+            string contentName = null;
 
             try
             {                
@@ -848,7 +853,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Get a new name (and any default data).
-                (string contentName, byte[] contentData, ProjectItemMetadata contentMetadata) = await plugin.GetDefaultContentAsync(plugin.ContentTypeID, directory.Files.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
+                (contentName, contentData, contentMetadata) = await plugin.GetDefaultContentAsync(plugin.ContentTypeID, directory.Files.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
 
                 if ((contentName is null) || (contentData is null))
                 {
@@ -858,7 +863,10 @@ namespace Gorgon.Editor.ViewModels
                 // Now that we have a file, we need to populate it with default data from the content plugin.
                 string path = $"{directory.FullPath}{contentName.FormatFileName()}";
                 contentStream = ContentFileManager.OpenStream(path, FileMode.Create);
-                contentStream.Write(contentData, 0, contentData.Length);
+                foreach (ReadOnlyMemory<byte> memory in contentData.GetReadOnlySequence())
+                {
+                    contentStream.Write(memory.Span);
+                }                
                 contentStream.Dispose();
 
                 file = ContentFileManager.GetFile(path);

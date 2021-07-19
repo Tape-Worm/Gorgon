@@ -30,6 +30,7 @@ using System.IO;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.PlugIns;
+using Microsoft.IO;
 
 namespace Gorgon.IO.Providers
 {
@@ -65,6 +66,17 @@ namespace Gorgon.IO.Providers
         : GorgonPlugIn, IGorgonFileSystemProvider
     {
         #region Properties.
+        /// <summary>
+        /// Property to return a memory stream manager for efficient usage of the <see cref="MemoryStream"/> type.
+        /// </summary>
+        /// <remarks>
+        /// Developers should use this instead of creating new MemoryStream objects.
+        /// </remarks>
+        protected RecyclableMemoryStreamManager MemoryStreamManager
+        {
+            get;
+        } = new RecyclableMemoryStreamManager(int.MaxValue, int.MaxValue * 2L);
+
         /// <summary>
         /// Property to return whether this provider only gives read only access to the physical file system.
         /// </summary>

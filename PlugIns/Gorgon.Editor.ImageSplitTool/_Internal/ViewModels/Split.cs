@@ -33,14 +33,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.ImageSplitTool.Properties;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.ImageSplitTool.Properties;
+using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
-using Gorgon.Editor.Tools;
 
 namespace Gorgon.Editor.ImageSplitTool
 {

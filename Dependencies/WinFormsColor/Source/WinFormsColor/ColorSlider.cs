@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.ComponentModel;
 
 namespace Fetze.WinFormsColor
 {
 #pragma warning disable IDE0090 // Use 'new(...)'
-	public class ColorSlider : UserControl
+    public class ColorSlider : UserControl
 	{
 		private Bitmap srcImage = null;
 		private int pickerSize = 5;

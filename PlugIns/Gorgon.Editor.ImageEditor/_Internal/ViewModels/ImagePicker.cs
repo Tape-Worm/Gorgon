@@ -26,10 +26,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -39,7 +39,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
-using System.Collections.ObjectModel;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {

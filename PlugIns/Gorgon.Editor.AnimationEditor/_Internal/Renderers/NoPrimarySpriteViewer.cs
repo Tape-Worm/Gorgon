@@ -24,20 +24,20 @@
 // 
 #endregion
 
-using System.Numerics;
-using System.Linq;
 using System.IO;
-using DX = SharpDX;
-using Gorgon.Editor.Rendering;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Graphics;
-using Gorgon.Editor.AnimationEditor.Properties;
-using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Timing;
+using System.Linq;
+using System.Numerics;
 using Gorgon.Core;
+using Gorgon.Editor.AnimationEditor.Properties;
+using Gorgon.Editor.Rendering;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Renderers;
+using Gorgon.Timing;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {
@@ -199,14 +199,12 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function called during resource creation.</summary>
         public void CreateResources()
         {
-            using (var stream = new MemoryStream(Resources.filmstripbg))
+            using MemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.filmstripbg);
+            _noSprite = GorgonTexture2DView.FromStream(Graphics, stream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
             {
-                _noSprite = GorgonTexture2DView.FromStream(Graphics, stream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
-                {
-                    Name = "Animation Editor - No primary sprite texture",
-                    Usage = ResourceUsage.Immutable
-                });
-            }
+                Name = "Animation Editor - No primary sprite texture",
+                Usage = ResourceUsage.Immutable
+            });
 
             _font = _fontFactory.GetFont(new GorgonFontInfo("Century", 64.0f, FontHeightMode.Points)
             {

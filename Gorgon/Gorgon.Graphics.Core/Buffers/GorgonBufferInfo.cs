@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Core
     public record GorgonBufferInfo(int SizeInBytes)
         : IGorgonBufferInfo
     {
-        #region Constructor/Finalizer.
+    #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
         /// </summary>
@@ -58,9 +58,9 @@ namespace Gorgon.Graphics.Core
             AllowRawView = info.AllowRawView;
             IndirectArgs = info.IndirectArgs;
         }
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return whether to allow the CPU read access to the buffer.
         /// </summary>
@@ -190,7 +190,7 @@ namespace Gorgon.Graphics.Core
             get;
             init;
         } = GorgonGraphicsResource.GenerateName(GorgonBuffer.NamePrefix);
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

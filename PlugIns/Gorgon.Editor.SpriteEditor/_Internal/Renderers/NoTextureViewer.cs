@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -89,7 +89,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnCreateResources();
 
-            using var stream = new MemoryStream(Resources.SpriteEditor_Bg_1024x1024);
+            using MemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.SpriteEditor_Bg_1024x1024);
             _noImage = GorgonTexture2DView.FromStream(Graphics, stream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
             {
                 Name = "Sprite Editor - No texture default texture",

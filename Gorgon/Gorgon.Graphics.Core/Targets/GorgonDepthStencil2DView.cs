@@ -676,7 +676,7 @@ namespace Gorgon.Graphics.Core
 					binding |= TextureBinding.ShaderResource;
 				}
 				else
-				{
+				{					
 					// Do this to notify the user that something is amiss.
 					graphics.Log.Print($"WARNING: Depth Stencil View {info.Name} - Depth/stencil texture has a binding of {TextureBinding.ShaderResource}, but has a view flags of {viewFlags}.  The view will not be bindable to the shader pipeline.",
 									   LoggingLevel.Simple);

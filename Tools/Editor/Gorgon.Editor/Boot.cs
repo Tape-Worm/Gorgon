@@ -197,19 +197,16 @@ namespace Gorgon.Editor
             var defaultLocation = new Point((Screen.PrimaryScreen.WorkingArea.Width / 2) - (defaultSize.Width / 2) + Screen.PrimaryScreen.WorkingArea.X,
                                               (Screen.PrimaryScreen.WorkingArea.Height / 2) - (defaultSize.Height / 2) + Screen.PrimaryScreen.WorkingArea.Y);
 
-            EditorSettings CreateEditorSettings()
+            EditorSettings CreateEditorSettings() => new()
             {
-                return new EditorSettings
-                {
-                    WindowBounds = new DX.Rectangle(defaultLocation.X,
+                WindowBounds = new DX.Rectangle(defaultLocation.X,
                                                            defaultLocation.Y,
                                                            defaultSize.Width,
                                                            defaultSize.Height),
-                    WindowState = (int)FormWindowState.Maximized,
-                    LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar),
-                    LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
-                };
-            }
+                WindowState = (int)FormWindowState.Maximized,
+                LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar),
+                LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
+            };
 
             if (!settingsFile.Exists)
             {

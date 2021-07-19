@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Core
     public record GorgonConstantBufferInfo(int SizeInBytes)
         : IGorgonConstantBufferInfo
     {
-        #region Constructor/Finalizer.
+    #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
         /// </summary>
@@ -54,9 +54,9 @@ namespace Gorgon.Graphics.Core
             Name = info.Name;
             Usage = info.Usage;
         }
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return the intended usage flags for this buffer.
         /// </summary>
@@ -77,9 +77,9 @@ namespace Gorgon.Graphics.Core
             get;
             init;
         } = GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix);
-        #endregion
+    #endregion
 
-        #region Methods.
+    #region Methods.
         /// <summary>
         /// Function to create a <see cref="IGorgonConstantBufferInfo"/> based on the type representing a vertex.
         /// </summary>
@@ -139,7 +139,7 @@ namespace Gorgon.Graphics.Core
 
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, dataType.FullName));
         }
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

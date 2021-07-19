@@ -25,8 +25,8 @@
 #endregion
 
 using System.Numerics;
-using Gorgon.Editor.UI;
 using Gorgon.Editor.AnimationEditor.Properties;
+using Gorgon.Editor.UI;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.AnimationEditor

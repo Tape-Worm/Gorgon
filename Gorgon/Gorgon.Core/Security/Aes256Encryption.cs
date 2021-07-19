@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Properties;
+using Microsoft.IO;
 
 namespace Gorgon.Security
 {
@@ -15,6 +16,8 @@ namespace Gorgon.Security
         : IEncryption
     {
         #region Variables.
+        // The stream pool used to retrieve memory streams.
+        private static readonly RecyclableMemoryStreamManager _streamManager = new(int.MaxValue / 2, int.MaxValue * 2L);
         // The initialization vector and key.
         private readonly (byte[] IV, byte[] Key) _ivKey;
         #endregion
@@ -32,7 +35,7 @@ namespace Gorgon.Security
                 return _ivKey;
             }
 
-            using var stream = new MemoryStream(keyData);
+            using MemoryStream stream = _streamManager.GetStream(keyData);
             using var reader = new BinaryReader(stream, Encoding.Default, false);
             int ivLength = reader.ReadInt32();
             int keyLength = reader.ReadInt32();
@@ -71,7 +74,7 @@ namespace Gorgon.Security
 
             using var aes = new AesManaged();
             using ICryptoTransform transform = aes.CreateDecryptor(_ivKey.Key, _ivKey.IV);
-            using var stream = new MemoryStream();
+            using MemoryStream stream = _streamManager.GetStream();
             using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
             writer.Write(data, 0, data.Length);
 
@@ -103,7 +106,7 @@ namespace Gorgon.Security
 
             using var aes = new AesManaged();
             using ICryptoTransform transform = aes.CreateEncryptor(_ivKey.Key, _ivKey.IV);
-            using var stream = new MemoryStream();
+            using MemoryStream stream = _streamManager.GetStream();
             using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
             writer.Write(data, 0, data.Length);
             writer.FlushFinalBlock();
@@ -196,7 +199,7 @@ namespace Gorgon.Security
         /// If the <paramref name="salt"/> parameter is omitted, then the code will generate one on your behalf.
         /// </para>
         /// </remarks>
-	    public static (byte[] IV, byte[] Key) GenerateIvKey(string password, byte[] salt = null)
+        public static (byte[] IV, byte[] Key) GenerateIvKey(string password, byte[] salt = null)
         {
             using var rndGen = RandomNumberGenerator.Create();
             if (salt is null)

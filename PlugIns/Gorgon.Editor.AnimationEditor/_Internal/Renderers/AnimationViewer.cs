@@ -24,17 +24,17 @@
 // 
 #endregion
 
+using System.ComponentModel;
 using System.Numerics;
-using DX = SharpDX;
+using System.Threading;
+using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using Gorgon.Graphics;
-using System.Threading;
-using Gorgon.Editor.UI;
-using System.Windows.Forms;
-using System.ComponentModel;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {

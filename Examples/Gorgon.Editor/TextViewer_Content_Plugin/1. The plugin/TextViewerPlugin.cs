@@ -25,25 +25,26 @@
 #endregion
 
 using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.Editor;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
-using Gorgon.Examples.Properties;
-using Gorgon.Editor.Metadata;
-using Gorgon.Editor;
+using Microsoft.IO;
 
 namespace Gorgon.Examples
 {
@@ -280,7 +281,7 @@ namespace Gorgon.Examples
         /// If an empty string (or whitespace) is returned for the name, then the <paramref name="generatedName" /> will be used.
         /// </para>
         /// </remarks>
-        protected override Task<(string name, byte[] data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata)
+        protected override Task<(string name, RecyclableMemoryStream data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata)
         {
             // This is the method that we can use to prompt the user for a new name, and/or provide defaults for our content, and create a 
             // default piece of content that can be persisted to the file system.
@@ -294,8 +295,9 @@ namespace Gorgon.Examples
             // example, so we'll use the default name provided by the editor.
 
             byte[] defaultText = Encoding.UTF8.GetBytes(Resources.DEFAULT_TEXT);
+            var stream = CommonEditorResources.MemoryStreamManager.GetStream(defaultText) as RecyclableMemoryStream;
 
-            return Task.FromResult<(string, byte[])>((generatedName, defaultText));
+            return Task.FromResult<(string, RecyclableMemoryStream)>((generatedName, stream));
         }
 
         /// <summary>Function to open a content object from this plugin.</summary>

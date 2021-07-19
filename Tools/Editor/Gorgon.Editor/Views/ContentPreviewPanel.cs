@@ -25,11 +25,11 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
@@ -175,17 +175,15 @@ namespace Gorgon.Editor.Views
                 LayoutArea = new DX.Size2F(_swapChain.Width, _swapChain.Height)
             };
 
-            using (var stream = new MemoryStream(Resources.no_thumbnail_256x256))
+            using MemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.no_thumbnail_256x256);
+            _defaultTexture = GorgonTexture2DView.FromStream(GraphicsContext.Graphics, stream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
             {
-                _defaultTexture = GorgonTexture2DView.FromStream(GraphicsContext.Graphics, stream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
-                {
-                    Name = "DefaultPreviewTexture",
-                    Binding = TextureBinding.ShaderResource,
-                    Usage = ResourceUsage.Immutable
-                });
-            }
+                Name = "DefaultPreviewTexture",
+                Binding = TextureBinding.ShaderResource,
+                Usage = ResourceUsage.Immutable
+            });
 
-            using var loadingStream = new MemoryStream(Resources.LoadingBg);
+            using MemoryStream loadingStream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.LoadingBg);
             _loadingTexture = GorgonTexture2DView.FromStream(GraphicsContext.Graphics, loadingStream, new GorgonCodecDds(), options: new GorgonTexture2DLoadOptions
             {
                 Name = "LoadingPreviewTexture",

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -718,10 +718,7 @@ namespace Gorgon.Examples
                 _window.MouseDown += Mouse_Down;
                 _window.MouseWheel += Mouse_Wheel;
 
-                _swapChain.SwapChainResizing += (sender, args) =>
-                                                     {
-                                                         _graphics.SetDepthStencil(null);
-                                                     };
+                _swapChain.SwapChainResizing += (sender, args) => _graphics.SetDepthStencil(null);
 
                 // When we resize, update the projection and viewport to match our client size.
                 _swapChain.SwapChainResized += (sender, args) =>

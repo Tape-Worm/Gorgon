@@ -26,9 +26,9 @@
 
 using System;
 using System.ComponentModel;
-using DX = SharpDX;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {

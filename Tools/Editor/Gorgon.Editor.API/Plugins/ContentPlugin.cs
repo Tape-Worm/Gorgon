@@ -39,6 +39,7 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
 using Gorgon.UI;
+using Microsoft.IO;
 
 namespace Gorgon.Editor.PlugIns
 {
@@ -224,7 +225,7 @@ namespace Gorgon.Editor.PlugIns
         /// If an empty string (or whitespace) is returned for the name, then the <paramref name="generatedName"/> will be used.
         /// </para>
         /// </remarks>
-        protected virtual Task<(string name, byte[] data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata) => Task.FromResult((generatedName, Array.Empty<byte>()));
+        protected virtual Task<(string name, RecyclableMemoryStream data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata) => Task.FromResult<(string, RecyclableMemoryStream)>((generatedName, null));
 
         /// <summary>
         /// Function to register plug in specific search keywords with the system search.
@@ -252,7 +253,7 @@ namespace Gorgon.Editor.PlugIns
         /// If an empty string (or whitespace) is returned for the name, then the <paramref name="generatedName"/> will be used.
         /// </para>
         /// </remarks>
-        public async Task<(string name, byte[] data, ProjectItemMetadata metadata)> GetDefaultContentAsync(string generatedName, HashSet<string> existingNames)
+        public async Task<(string name, RecyclableMemoryStream data, ProjectItemMetadata metadata)> GetDefaultContentAsync(string generatedName, HashSet<string> existingNames)
         {
             // First try to ensure the generated name is available.
             int count = 0;
@@ -279,8 +280,8 @@ namespace Gorgon.Editor.PlugIns
                     Thumbnail = null
                 };
 
-                (string name, byte[] data) = await OnGetDefaultContentAsync(generatedName, metadata);
-
+                (string name, RecyclableMemoryStream data) = await OnGetDefaultContentAsync(generatedName, metadata);
+                                
                 if ((string.IsNullOrEmpty(name)) && (!string.IsNullOrWhiteSpace(generatedName)))
                 {
                     name = generatedName;

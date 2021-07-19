@@ -25,18 +25,18 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
-using Krypton.Ribbon;
-using Krypton.Toolkit;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Krypton.Ribbon;
+using Krypton.Toolkit;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor

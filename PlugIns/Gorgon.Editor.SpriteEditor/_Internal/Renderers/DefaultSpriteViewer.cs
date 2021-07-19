@@ -26,15 +26,15 @@
 
 using System.Linq;
 using System.Numerics;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Graphics;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
-using Gorgon.Math;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {

@@ -24,12 +24,12 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.Collections.Generic;
-using DX = SharpDX;
+using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {

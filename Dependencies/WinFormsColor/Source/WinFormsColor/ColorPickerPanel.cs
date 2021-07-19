@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace Fetze.WinFormsColor
 {
 #pragma warning disable IDE0090 // Use 'new(...)'
-	public partial class ColorPickerPanel 
+    public partial class ColorPickerPanel 
 		: UserControl
 	{
 		public enum PrimaryAttrib

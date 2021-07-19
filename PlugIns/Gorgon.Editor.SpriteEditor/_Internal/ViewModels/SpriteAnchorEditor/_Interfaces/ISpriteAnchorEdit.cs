@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using System.Numerics;
 using System.Collections.Generic;
+using System.Numerics;
 using Gorgon.Editor.UI;
 using DX = SharpDX;
 

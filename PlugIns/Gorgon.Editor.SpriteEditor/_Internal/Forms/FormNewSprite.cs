@@ -33,7 +33,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
@@ -44,6 +43,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
 {

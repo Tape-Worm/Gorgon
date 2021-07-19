@@ -25,17 +25,17 @@
 #endregion
 
 using System.Numerics;
-using DX = SharpDX;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.ImageSplitTool.Properties;
+using Gorgon.Editor.Rendering;
+using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Editor.UI;
-using Gorgon.Math;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
-using Gorgon.Graphics.Fonts;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageSplitTool
 {

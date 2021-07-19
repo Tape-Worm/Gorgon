@@ -25,17 +25,17 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
-using Krypton.Ribbon;
-using Krypton.Toolkit;
+using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
-using Gorgon.Animation;
+using Krypton.Ribbon;
+using Krypton.Toolkit;
 
 namespace Gorgon.Editor.AnimationEditor
 {

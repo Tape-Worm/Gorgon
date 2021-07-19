@@ -25,19 +25,19 @@
 #endregion
 
 using System;
-using System.Numerics;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Animation;
-using Gorgon.Graphics;
-using Gorgon.Editor.Rendering;
-using System.Windows.Forms;
-using System.Threading;
-using Gorgon.Editor.Services;
 using System.Buffers;
+using System.Numerics;
+using System.Threading;
+using System.Windows.Forms;
+using Gorgon.Animation;
+using Gorgon.Editor.Rendering;
+using Gorgon.Editor.Services;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Renderers;
 using Gorgon.Renderers.Geometry;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {

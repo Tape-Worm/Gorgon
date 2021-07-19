@@ -25,21 +25,21 @@
 #endregion
 
 using System;
-using System.Numerics;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
+using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
-using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using DX = SharpDX;
-using System.Collections.Specialized;
-using System.Collections.Generic;
 
 namespace Gorgon.Editor.AnimationEditor
 {
@@ -342,16 +342,14 @@ namespace Gorgon.Editor.AnimationEditor
         {
             base.OnSetupContentRenderer(context, swapChain);
 
-            using (var stream = new MemoryStream(Resources.anchor_24x24))
-            {
-                _anchorTexture = GorgonTexture2DView.FromStream(context.Graphics, stream, new GorgonCodecDds(),
-                    options: new GorgonTexture2DLoadOptions
-                    {
-                        Name = "Animation Editor Anchor Sprite",
-                        Binding = TextureBinding.ShaderResource,
-                        Usage = ResourceUsage.Immutable
-                    });
-            }
+            using MemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.anchor_24x24);
+            _anchorTexture = GorgonTexture2DView.FromStream(context.Graphics, stream, new GorgonCodecDds(),
+                options: new GorgonTexture2DLoadOptions
+                {
+                    Name = "Animation Editor Anchor Sprite",
+                    Binding = TextureBinding.ShaderResource,
+                    Usage = ResourceUsage.Immutable
+                });
 
             _marchingAnts = new MarchingAnts(context.Renderer2D);
             _clipper = new RectClipperService(context.Renderer2D, _marchingAnts);

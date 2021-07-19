@@ -24,13 +24,13 @@
 // 
 #endregion
 
-using DX = SharpDX;
+using System.Diagnostics;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using System.Diagnostics;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {

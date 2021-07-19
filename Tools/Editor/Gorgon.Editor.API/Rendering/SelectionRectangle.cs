@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
@@ -93,10 +93,8 @@ namespace Gorgon.Editor.Rendering
         {
             GorgonTexture2DView result;
 
-            using (var stream = new MemoryStream(Resources.selection_16x16))
-            {
-                result = GorgonTexture2DView.FromStream(_renderer.Graphics, stream, new GorgonCodecDds());
-            }
+            using MemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.selection_16x16);
+            result = GorgonTexture2DView.FromStream(_renderer.Graphics, stream, new GorgonCodecDds());
 
             return result;
         }

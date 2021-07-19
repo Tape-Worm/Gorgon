@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Fetze.WinFormsColor
 {
-	public static class ExtMethodsSystemDrawingColor
+    public static class ExtMethodsSystemDrawingColor
 	{
         public static float GetLuminance(this System.Drawing.Color color) => (0.2126f * color.R + 0.7152f * color.G + 0.0722f * color.B) / 255.0f;
         public static float GetHSVHue(this System.Drawing.Color color) => color.GetHue() / 360.0f;

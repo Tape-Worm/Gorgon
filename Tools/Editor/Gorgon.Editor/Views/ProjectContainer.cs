@@ -29,12 +29,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
-using Krypton.Ribbon;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
 using Gorgon.Math;
+using Krypton.Ribbon;
 
 namespace Gorgon.Editor.Views
 {

@@ -30,8 +30,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using Gorgon.Editor.Services;
 using Gorgon.Editor.AnimationEditor.Properties;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
 

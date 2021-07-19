@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Linq;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;

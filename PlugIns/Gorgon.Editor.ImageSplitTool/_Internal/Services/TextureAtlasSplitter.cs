@@ -24,23 +24,23 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.ImageSplitTool.Properties;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
-using Gorgon.Graphics;
 using Gorgon.UI;
-using Gorgon.Editor.ImageSplitTool.Properties;
-using System;
-using System.Threading;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageSplitTool
 {

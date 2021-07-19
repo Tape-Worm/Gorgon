@@ -33,6 +33,7 @@ using System.Xml.Linq;
 using Gorgon.IO.GorPack.Properties;
 using Gorgon.IO.Providers;
 using ICSharpCode.SharpZipLib.BZip2;
+using Microsoft.IO;
 
 namespace Gorgon.IO.GorPack
 {
@@ -62,13 +63,13 @@ namespace Gorgon.IO.GorPack
         /// Function to decompress a data block.
         /// </summary>
         /// <param name="data">Data to decompress.</param>
-        /// <returns>The uncompressed data.</returns>
-        private static byte[] Decompress(byte[] data)
+        /// <returns>The uncompressed data memory stream.</returns>
+        private RecyclableMemoryStream Decompress(byte[] data)
         {
-            using var sourceStream = new MemoryStream(data);
-            using var decompressedStream = new MemoryStream();
-            BZip2.Decompress(sourceStream, decompressedStream, true);
-            return decompressedStream.ToArray();
+            using MemoryStream sourceStream = MemoryStreamManager.GetStream(data);
+            var decompressedStream = MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+            BZip2.Decompress(sourceStream, decompressedStream, false);
+            return decompressedStream;
         }
 
         /// <summary>
@@ -230,8 +231,8 @@ namespace Gorgon.IO.GorPack
 
             int indexLength = reader.ReadInt32();
 
-            byte[] indexData = Decompress(reader.ReadBytes(indexLength));
-            string xmlData = Encoding.UTF8.GetString(indexData);
+            using RecyclableMemoryStream indexData = Decompress(reader.ReadBytes(indexLength));
+            string xmlData = Encoding.UTF8.GetString(indexData.GetReadOnlySequence());
             var index = XDocument.Parse(xmlData, LoadOptions.None);
 
             return new GorgonPhysicalFileSystemData(EnumerateDirectories(index, mountPoint),

@@ -27,10 +27,10 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using Gorgon.Editor.UI.Controls;
-using Gorgon.Editor.UI;
-using Gorgon.Math;
 using Gorgon.Editor.ImageEditor.Properties;
+using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Controls;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.ImageEditor
 {

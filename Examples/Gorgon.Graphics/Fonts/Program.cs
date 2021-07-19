@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Core;
@@ -44,7 +44,6 @@ using Gorgon.Timing;
 using Gorgon.UI;
 using Drawing = System.Drawing;
 using DX = SharpDX;
-using System.Xml.Linq;
 
 namespace Gorgon.Examples
 {

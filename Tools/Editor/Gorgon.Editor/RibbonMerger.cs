@@ -29,8 +29,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using Krypton.Ribbon;
 using Gorgon.Math;
+using Krypton.Ribbon;
 
 namespace Gorgon.Editor
 {

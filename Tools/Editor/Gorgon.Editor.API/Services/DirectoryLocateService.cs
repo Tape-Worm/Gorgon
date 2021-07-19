@@ -66,15 +66,9 @@ namespace Gorgon.Editor.Services
                 initialDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
             }
 
-            void OnSelected(object sender, FolderSelectedArgs e)
-            {
-                onSelected(e);
-            }
+            void OnSelected(object sender, FolderSelectedArgs e) => onSelected(e);
 
-            void OnEntered(object sender, FolderSelectedArgs e)
-            {
-                onEntered(e);
-            }
+            void OnEntered(object sender, FolderSelectedArgs e) => onEntered(e);
 
             Form parent = GetParentForm();
             FormDirectoryLocator locatorUI = null;

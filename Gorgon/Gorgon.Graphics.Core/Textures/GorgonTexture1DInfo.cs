@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core
     public record GorgonTexture1DInfo(int Width, BufferFormat Format)
         : IGorgonTexture1DInfo, IGorgonImageInfo
     {
-        #region Constructor.
+    #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture1DInfo"/> class.
         /// </summary>
@@ -53,9 +53,9 @@ namespace Gorgon.Graphics.Core
             MipLevels = info.MipLevels;
             Usage = info.Usage;
         }
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return the name of the texture.
         /// </summary>
@@ -173,7 +173,7 @@ namespace Gorgon.Graphics.Core
         /// Property to return whether the size of the texture is a power of 2 or not.
         /// </summary>
         bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0);
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

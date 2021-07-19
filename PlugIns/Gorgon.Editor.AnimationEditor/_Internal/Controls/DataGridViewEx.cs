@@ -27,11 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Math;
-using System.Drawing;
-using System.Threading;
 
 namespace Gorgon.Editor.AnimationEditor
 {

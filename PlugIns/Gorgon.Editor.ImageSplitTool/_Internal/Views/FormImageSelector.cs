@@ -26,15 +26,15 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.ImageSplitTool.Properties;
+using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics.Core;
 using Gorgon.UI;
-using Gorgon.Editor.UI.Views;
-using System.Threading.Tasks;
 
 namespace Gorgon.Editor.ImageSplitTool
 {

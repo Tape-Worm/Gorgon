@@ -25,10 +25,20 @@
 #endregion
 
 using System.Numerics;
-using Gorgon.Math;
+using System.Runtime.CompilerServices;
+
+/* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'
+Before:
 using Gorgon.Renderers.Geometry;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
+After:
+using Gorgon.Graphics;
+using System.Runtime.Math;
+using Gorgon.Renderers.Geometry;
+*/
+using Gorgon.Math;
+using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Renderers
 {

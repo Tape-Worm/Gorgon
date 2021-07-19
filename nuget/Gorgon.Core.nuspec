@@ -24,6 +24,7 @@
         <dependency id="Newtonsoft.Json" version="13.0.1"/>
         <dependency id="SharpDX" version="4.2.0"/>
         <dependency id="SharpDX.Mathematics" version="4.2.0"/>
+        <dependency id="Microsoft.IO.RecyclableMemoryStream" version="2.1.2"/>
       </group>
     </dependencies>
   </metadata>

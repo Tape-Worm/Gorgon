@@ -25,21 +25,21 @@
 #endregion
 
 using System;
-using System.Numerics;
+using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
-using DX = SharpDX;
+using System.Windows.Forms;
+using Gorgon.Animation;
+using Gorgon.Core;
+using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using Gorgon.Core;
-using System.Windows.Forms;
-using Gorgon.Math;
-using Gorgon.Animation;
-using Gorgon.Editor.UI;
-using System.ComponentModel;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Math;
+using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering
 {

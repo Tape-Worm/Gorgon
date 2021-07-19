@@ -25,17 +25,16 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -53,6 +52,8 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Microsoft.IO;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {
@@ -867,12 +868,12 @@ namespace Gorgon.Editor.AnimationEditor
         /// If an empty string (or whitespace) is returned for the name, then the <paramref name="generatedName" /> will be used.
         /// </para>
         /// </remarks>
-        protected override Task<(string name, byte[] data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata)
+        protected override Task<(string name, RecyclableMemoryStream data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata)
         {
             string currentDirectory = ContentFileManager.CurrentDirectory.FormatDirectory('/');
 
             // Creates an animation object and converts it to a byte array.
-            byte[] CreateAnimation(string name, float length, float fps, IContentFile primarySpriteFile, IContentFile bgTextureFile)
+            RecyclableMemoryStream CreateAnimation(string name, float length, float fps, IContentFile primarySpriteFile, IContentFile bgTextureFile)
             {
                 var builder = new GorgonAnimationBuilder();                
 
@@ -917,16 +918,16 @@ namespace Gorgon.Editor.AnimationEditor
 
                 IGorgonAnimation animation = builder.Build(currentDirectory + name.FormatFileName(), fps, length);
 
-                using var stream = new MemoryStream();
+                var stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
                 _defaultCodec.Save(animation, stream);
-                return stream.ToArray();
+                return stream;
             }
                         
             (string newName, float animLength, float animFps, IContentFile primarySprite, IContentFile bgTexture) = _newAnimation.GetNewAnimationName(currentDirectory, generatedName, null, null);
 
             return !string.IsNullOrWhiteSpace(newName)
-                ? Task.FromResult<(string, byte[])>((newName, CreateAnimation(newName, animLength, animFps, primarySprite, bgTexture)))
-                : Task.FromResult<(string, byte[])>((null, null));
+                ? Task.FromResult<(string, RecyclableMemoryStream)>((newName, CreateAnimation(newName, animLength, animFps, primarySprite, bgTexture)))
+                : Task.FromResult<(string, RecyclableMemoryStream)>((null, null));
         }
 
         /// <summary>Function to create an empty key frame view model for texture data.</summary>
@@ -1133,7 +1134,7 @@ namespace Gorgon.Editor.AnimationEditor
         public Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken) =>
             Task.Run(() =>
                     {
-                        using var imageStream = new MemoryStream(Resources.anim_thumbnail_256x256);
+                        using MemoryStream imageStream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.anim_thumbnail_256x256);
                         return _defaultImageCodec.FromStream(imageStream);
                     });
 

@@ -25,19 +25,19 @@
 #endregion
 
 using System;
-using System.Numerics;
+using System.Buffers;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Animation;
+using Gorgon.Collections;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.UI;
-using System.Buffers;
-using Gorgon.Collections;
-using System.Threading;
-using System.ComponentModel;
 using Gorgon.Editor.Services;
+using Gorgon.Editor.UI;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.AnimationEditor

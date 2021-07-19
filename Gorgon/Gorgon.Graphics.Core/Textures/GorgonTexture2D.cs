@@ -25,11 +25,19 @@
 #endregion
 
 using System;
+
+/* Unmerged change from project 'Gorgon.Graphics.Core (net5.0-windows)'
+Before:
 using System.Numerics;
 using System.Collections.Generic;
+After:
+using System.Collections.Generic;
 using System.ComponentModel;
+*/
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
@@ -70,8 +78,14 @@ namespace Gorgon.Graphics.Core
         private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = new();
         // The list of cached depth/stencil resource views.
         private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = new();
+#if NET48_OR_GREATER
+#pragma warning disable IDE0044 // Add readonly modifier
+#endif
         // The information used to create the texture.
         private GorgonTexture2DInfo _info;
+#if NET48_OR_GREATER
+#pragma warning restore IDE0044 // Add readonly modifier
+#endif
         // List of typeless formats that are compatible with a depth view format.
         private static readonly HashSet<BufferFormat> _typelessDepthFormats = new()
         {

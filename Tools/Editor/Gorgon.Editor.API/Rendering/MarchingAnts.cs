@@ -91,7 +91,7 @@ namespace Gorgon.Editor.Rendering
         /// <returns>A new instance of the marching ants texture.</returns>
         private GorgonTexture2DView Build()
         {
-            using var image = new MemoryStream(Resources.march_ants_diag_32x32);
+            using MemoryStream image = CommonEditorResources.MemoryStreamManager.GetStream(Resources.march_ants_diag_32x32);
             return GorgonTexture2DView.FromStream(_renderer.Graphics, image, new GorgonCodecDds(),
                 options: new GorgonTexture2DLoadOptions
                 {

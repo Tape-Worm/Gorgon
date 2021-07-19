@@ -25,8 +25,9 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using Gorgon.Core;
@@ -39,7 +40,6 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
 using DX = SharpDX;
-using System.Runtime.CompilerServices;
 
 namespace Gorgon.Examples
 {

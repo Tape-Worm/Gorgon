@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.SpriteEditor.Properties;

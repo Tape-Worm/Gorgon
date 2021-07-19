@@ -30,18 +30,18 @@ using System.Windows.Forms;
 
 namespace Gorgon.Editor.UI
 {
-	/// <summary>
-	/// A renderer to draw the visual styles for UI elements.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Plug in developers should use this class to ensure that the color theme of the UI for the plug in matches the rest of the application (as close as possible). 
-	/// </para>
-	/// <para>
-	/// The theme will be applied to any winforms controls that support themed rendering automatically.
-	/// </para>
-	/// </remarks>
-	public class DarkFormsRenderer
+    /// <summary>
+    /// A renderer to draw the visual styles for UI elements.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Plug in developers should use this class to ensure that the color theme of the UI for the plug in matches the rest of the application (as close as possible). 
+    /// </para>
+    /// <para>
+    /// The theme will be applied to any winforms controls that support themed rendering automatically.
+    /// </para>
+    /// </remarks>
+    public class DarkFormsRenderer
 		: ToolStripRenderer
 	{
 		/// <summary>

@@ -4,8 +4,8 @@
 // Licensed under the MIT license.
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
-using Gorgon.Math;
 using System.Numerics;
+using Gorgon.Math;
 
 namespace GorgonTriangulator
 {

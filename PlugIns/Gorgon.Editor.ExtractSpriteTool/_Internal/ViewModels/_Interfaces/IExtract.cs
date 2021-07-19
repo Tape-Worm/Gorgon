@@ -25,13 +25,13 @@
 #endregion
 
 using System.Collections.Generic;
-using DX = SharpDX;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Core;
 using Gorgon.Graphics;
-using Gorgon.Editor.Services;
+using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool
 {

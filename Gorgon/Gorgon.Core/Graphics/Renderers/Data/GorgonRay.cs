@@ -72,13 +72,13 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers.Data
 {

@@ -27,22 +27,22 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Services;
 using DX = SharpDX;
-using Gorgon.Graphics.Imaging;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using Gorgon.Graphics;
-using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ImageAtlasTool
 {

@@ -25,16 +25,16 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
-using Krypton.Toolkit;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Examples.Properties;
+using Gorgon.Graphics.Imaging;
+using Krypton.Toolkit;
 
 namespace Gorgon.Examples
 {

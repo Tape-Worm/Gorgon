@@ -25,13 +25,12 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
-using Krypton.Toolkit;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
@@ -39,6 +38,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Krypton.Toolkit;
 
 namespace Gorgon.Editor.ImageEditor
 {

@@ -29,6 +29,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -36,7 +37,6 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using System.Windows.Forms;
 
 namespace Gorgon.Editor.ImageEditor
 {

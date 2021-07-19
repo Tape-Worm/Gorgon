@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Xml.Linq;
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core
@@ -40,7 +39,7 @@ namespace Gorgon.Graphics.Core
     public record GorgonTexture2DInfo(int Width, int Height, BufferFormat Format)
         : IGorgonTexture2DInfo, IGorgonImageInfo
     {
-        #region Constructor.
+    #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture2DInfo"/> class.
         /// </summary>
@@ -58,9 +57,9 @@ namespace Gorgon.Graphics.Core
             Usage = info.Usage;
             Shared = info.Shared;
         }
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return the type of image data.
         /// </summary>
@@ -209,7 +208,7 @@ namespace Gorgon.Graphics.Core
             get;
             init;
         }
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

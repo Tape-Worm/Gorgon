@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Linq;
-using Gorgon.Renderers;
-using Gorgon.Math;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
+using Gorgon.Math;
+using Gorgon.Renderers;
 using Gorgon.Timing;
 
 namespace Gorgon.Examples

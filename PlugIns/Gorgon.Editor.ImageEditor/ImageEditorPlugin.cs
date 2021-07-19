@@ -36,6 +36,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.PlugIns;
@@ -44,12 +45,11 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.Math;
 using DX = SharpDX;
-using Gorgon.Editor.ImageEditor.Fx;
 
 namespace Gorgon.Editor.ImageEditor
 {

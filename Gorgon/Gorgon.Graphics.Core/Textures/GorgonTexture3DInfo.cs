@@ -40,7 +40,7 @@ namespace Gorgon.Graphics.Core
     public record GorgonTexture3DInfo(int Width, int Height, int Depth, BufferFormat Format)
         : IGorgonTexture3DInfo, IGorgonImageInfo
     {
-        #region Constructor/Finalizer.
+    #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture3DInfo"/> class.
         /// </summary>
@@ -54,9 +54,9 @@ namespace Gorgon.Graphics.Core
             MipLevels = info.MipLevels;
             Usage = info.Usage;
         }
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return the type of image data.
         /// </summary>
@@ -149,7 +149,7 @@ namespace Gorgon.Graphics.Core
             get;
             init;
         } = TextureBinding.ShaderResource;
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

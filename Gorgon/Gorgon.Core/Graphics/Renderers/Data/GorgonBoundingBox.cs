@@ -72,14 +72,14 @@
 #endregion
 
 using System;
-using System.Numerics;
+using System.ComponentModel;
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Properties;
-using Gorgon.Math;
 using Gorgon.Core;
-using System.ComponentModel;
+using Gorgon.Math;
+using Gorgon.Properties;
 
 namespace Gorgon.Renderers.Data
 {

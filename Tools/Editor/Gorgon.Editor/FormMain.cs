@@ -32,14 +32,14 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Krypton.Ribbon;
-using Krypton.Toolkit;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.Editor.Views;
+using Krypton.Ribbon;
+using Krypton.Toolkit;
 using DX = SharpDX;
 
 namespace Gorgon.Editor

@@ -26,8 +26,8 @@
 
 using System;
 using System.ComponentModel;
-using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI;
+using Gorgon.Editor.UI.Controls;
 
 namespace Gorgon.Editor.ImageEditor
 {

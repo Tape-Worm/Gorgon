@@ -28,14 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Linq;
-using Krypton.Ribbon;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
 using Gorgon.UI;
+using Krypton.Ribbon;
 
 namespace Gorgon.Editor.UI.Views
 {

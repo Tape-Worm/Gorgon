@@ -37,9 +37,9 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Native;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -175,7 +175,13 @@ namespace Gorgon.Graphics.Core
         // The textures used by the back buffer.
         private readonly GorgonTexture2D[] _backBufferTextures;
         // The information used to create the swap chain.
+#if NET48_OR_GREATER
+#pragma warning disable IDE0044 // Add readonly modifier
+#endif
         private GorgonSwapChainInfo _info;
+#if NET48_OR_GREATER
+#pragma warning restore IDE0044 // Add readonly modifier
+#endif
         // Information used when resizing the back buffers or performing a state transition.
         private readonly ResizeState _resizeState = new();
         // The current full screen video mode.

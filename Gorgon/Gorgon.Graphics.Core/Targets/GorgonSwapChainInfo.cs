@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Core
     public record GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
         : IGorgonSwapChainInfo
     {
-        #region Constructor.
+    #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
         /// </summary>
@@ -58,9 +58,9 @@ namespace Gorgon.Graphics.Core
             Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
             StretchBackBuffer = info.StretchBackBuffer;
         }
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
         /// </summary>
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
             get;
             init;
         } = GorgonGraphicsResource.GenerateName(GorgonSwapChain.NamePrefix);
-        #endregion
+    #endregion
     }
 #else
     /// <summary> 

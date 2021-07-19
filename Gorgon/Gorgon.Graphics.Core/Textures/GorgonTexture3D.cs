@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
@@ -66,8 +66,14 @@ namespace Gorgon.Graphics.Core
         private Dictionary<TextureViewKey, GorgonTexture3DView> _cachedSrvs = new();
         // The list of cached render target resource views.
         private Dictionary<TextureViewKey, GorgonRenderTarget3DView> _cachedRtvs = new();
+#if NET48_OR_GREATER
+#pragma warning disable IDE0044 // Add readonly modifier
+#endif
         // The information used to create the texture.
         private GorgonTexture3DInfo _info;
+#if NET48_OR_GREATER
+#pragma warning restore IDE0044 // Add readonly modifier
+#endif
         #endregion
 
         #region Properties.

@@ -25,14 +25,14 @@
 #endregion
 
 using System.Numerics;
-using Gorgon.Editor.Rendering;
 using Gorgon.Editor.ImageAtlasTool.Properties;
+using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers;
-using DX = SharpDX;
-using Gorgon.Renderers.Cameras;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageAtlasTool
 {

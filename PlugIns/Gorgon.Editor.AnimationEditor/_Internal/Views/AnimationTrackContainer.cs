@@ -26,18 +26,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
-using Gorgon.Math;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using System.Collections.Specialized;
-using System.Threading;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.AnimationEditor
 {

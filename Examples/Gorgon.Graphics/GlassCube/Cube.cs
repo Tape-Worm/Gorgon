@@ -28,7 +28,6 @@ using System;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Native;
 using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples

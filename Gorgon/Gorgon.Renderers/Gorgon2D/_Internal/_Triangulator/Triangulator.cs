@@ -7,14 +7,27 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+
+/* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'
+Before:
+using System.Text;
+After:
+using System.Numerics;
+using System.Text;
+*/
+using System.Numerics;
 using System.Text;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
-using Gorgon.Native;
-using Gorgon.Renderers;
+using Gorgon.Renderers
+/* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'
+Before:
 using System.Numerics;
-using DX = SharpDX;
+After:
 using Gorgon.Renderers.Geometry;
+*/
+.Geometry;
+using DX = SharpDX;
 
 namespace GorgonTriangulator
 {

@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Gorgon.Examples.Properties;

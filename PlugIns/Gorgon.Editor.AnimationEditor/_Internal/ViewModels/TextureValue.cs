@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using DX = SharpDX;
-using Gorgon.Graphics.Core;
 using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
-using Gorgon.Math;
 using Gorgon.Editor.Content;
+using Gorgon.Graphics.Core;
+using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor
 {

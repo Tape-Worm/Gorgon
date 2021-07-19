@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Fonts
     public record GorgonFontInfo(string FontFamilyName, float Size, FontHeightMode FontHeightMode)
         : IGorgonFontInfo
     {
-        #region Constructor/Destructor.
+    #region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonFontInfo"/> class.
         /// </summary>
@@ -71,18 +71,18 @@ namespace Gorgon.Graphics.Fonts
             UsePremultipliedTextures = fontInfo.UsePremultipliedTextures;
             UseKerningPairs = fontInfo.UseKerningPairs;
         }
-        #endregion
+    #endregion
 
-        #region Variables.
+    #region Variables.
         // Texture size.
         private DX.Size2 _textureSize = new(256, 256);
         // The list of characters supported by the font.
         private char[] _characters = Enumerable.Range(32, 224).Select(Convert.ToChar).Where(c => !char.IsControl(c)).ToArray();
         // Packing spacing.
         private int _packSpace = 1;
-        #endregion
+    #endregion
 
-        #region Properties.
+    #region Properties.
         /// <summary>
         /// Property to return the width of the texture(s) used as the backing store for the bitmap font data.
         /// </summary>
@@ -407,7 +407,7 @@ namespace Gorgon.Graphics.Fonts
             get;
             init;
         } = $"{FontFamilyName} {Size}{FontHeightMode}";
-        #endregion
+    #endregion
     }
 #else
     /// <summary>

@@ -27,14 +27,14 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Drawing;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Numerics;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {

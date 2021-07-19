@@ -26,14 +26,14 @@
 
 using System.Linq;
 using System.Threading;
-using DX = SharpDX;
-using Gorgon.Renderers;
+using Gorgon.Core;
 using Gorgon.Editor.Rendering;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using Gorgon.Graphics;
-using Gorgon.Core;
+using Gorgon.Renderers;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
 {

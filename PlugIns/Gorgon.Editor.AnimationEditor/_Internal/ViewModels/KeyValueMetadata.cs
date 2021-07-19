@@ -26,9 +26,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Math;
-using Gorgon.Core;
 
 namespace Gorgon.Editor.AnimationEditor
 {

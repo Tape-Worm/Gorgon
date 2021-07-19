@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -52,6 +52,7 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
+using Microsoft.IO;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor
@@ -590,10 +591,8 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 Name = $"Sprite_Editor_Bg_Preview_{Guid.NewGuid():N}"
             }, CommonEditorResources.CheckerBoardPatternImage);
-            using (var noImageStream = new MemoryStream(Resources.NoImage_256x256))
-            {
-                _noImage = _ddsCodec.FromStream(noImageStream);
-            }
+            using MemoryStream noImageStream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.NoImage_256x256);
+            _noImage = _ddsCodec.FromStream(noImageStream);
 
             SpriteEditorSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteEditorSettings>(SettingsFilename, new JsonSharpDxRectConverter());
             if (settings is not null)
@@ -616,10 +615,10 @@ namespace Gorgon.Editor.SpriteEditor
         /// If an empty string (or whitespace) is returned for the name, then the <paramref name="generatedName" /> will be used.
         /// </para>
         /// </remarks>
-        protected override Task<(string name, byte[] data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata)
+        protected override Task<(string name, RecyclableMemoryStream data)> OnGetDefaultContentAsync(string generatedName, ProjectItemMetadata metadata)
         {
             // Creates a sprite object and converts it to a byte array.
-            byte[] CreateSprite(DX.Size2F size, IContentFile textureFile)
+            RecyclableMemoryStream CreateSprite(DX.Size2F size, IContentFile textureFile)
             {
                 var sprite = new GorgonSprite
                 {
@@ -648,11 +647,11 @@ namespace Gorgon.Editor.SpriteEditor
 
                 metadata.Attributes[CodecAttr] = _defaultCodec.GetType().FullName;
 
-                using var stream = new MemoryStream();
+                var stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
                 _defaultCodec.Save(sprite, stream);
                 // We don't need this now.
                 sprite.Texture?.Dispose();
-                return stream.ToArray();
+                return stream;
             }
 
             // Find all available textures in our file system.
@@ -678,7 +677,7 @@ namespace Gorgon.Editor.SpriteEditor
                 }
             }
 
-            return Task.FromResult<(string, byte[])>((null, null));
+            return Task.FromResult<(string, RecyclableMemoryStream)>((null, null));
         }
 
         /// <summary>

@@ -25,11 +25,11 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
@@ -682,16 +682,14 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnSetupContentRenderer(context, swapChain);
 
-            using (var stream = new MemoryStream(Resources.anchor_24x24))
-            {
-                _anchorTexture = GorgonTexture2DView.FromStream(context.Graphics, stream, new GorgonCodecDds(),
-                    options: new GorgonTexture2DLoadOptions
-                    {
-                        Name = "Sprite Editor Anchor Sprite",
-                        Binding = TextureBinding.ShaderResource,
-                        Usage = ResourceUsage.Immutable
-                    });
-            }
+            using MemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(Resources.anchor_24x24);
+            _anchorTexture = GorgonTexture2DView.FromStream(context.Graphics, stream, new GorgonCodecDds(),
+                options: new GorgonTexture2DLoadOptions
+                {
+                    Name = "Sprite Editor Anchor Sprite",
+                    Binding = TextureBinding.ShaderResource,
+                    Usage = ResourceUsage.Immutable
+                });
 
             _marchAnts = new MarchingAnts(context.Renderer2D);
             _clipperService = new RectClipperService(context.Renderer2D, _marchAnts);

@@ -25,8 +25,8 @@
 #endregion
 
 using System;
-using System.Numerics;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -38,8 +38,8 @@ using Gorgon.Memory;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Lights;
-using Gorgon.Renderers.Techniques;
 using Gorgon.Renderers.Properties;
+using Gorgon.Renderers.Techniques;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers

@@ -26,10 +26,10 @@
 
 using System;
 using System.Numerics;
-using DX = SharpDX;
 using Gorgon.Core;
-using Gorgon.Graphics;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Editor.Rendering
 {
