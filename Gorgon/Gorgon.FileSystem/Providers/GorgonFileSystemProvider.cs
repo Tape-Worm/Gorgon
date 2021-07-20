@@ -75,7 +75,7 @@ namespace Gorgon.IO.Providers
         protected RecyclableMemoryStreamManager MemoryStreamManager
         {
             get;
-        } = new RecyclableMemoryStreamManager(int.MaxValue, int.MaxValue * 2L);
+        } = new RecyclableMemoryStreamManager(int.MaxValue / 2, int.MaxValue);
 
         /// <summary>
         /// Property to return whether this provider only gives read only access to the physical file system.

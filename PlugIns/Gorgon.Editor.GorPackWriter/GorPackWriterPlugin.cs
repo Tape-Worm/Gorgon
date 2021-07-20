@@ -63,7 +63,7 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 
         #region Variables.
         // The memory stream manager for efficient memory usage.
-        private static readonly RecyclableMemoryStreamManager _memStreamManager = new(int.MaxValue, int.MaxValue * 2L);
+        private static readonly RecyclableMemoryStreamManager _memStreamManager = new(1_048_576, 16_777_216);
         // The global buffer used to write out data to a stream.
         private byte[] _globalWriteBuffer;
         #endregion

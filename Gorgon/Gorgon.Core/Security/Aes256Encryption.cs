@@ -17,7 +17,7 @@ namespace Gorgon.Security
     {
         #region Variables.
         // The stream pool used to retrieve memory streams.
-        private static readonly RecyclableMemoryStreamManager _streamManager = new(int.MaxValue / 2, int.MaxValue * 2L);
+        private static readonly RecyclableMemoryStreamManager _streamManager = new(int.MaxValue / 2, int.MaxValue);
         // The initialization vector and key.
         private readonly (byte[] IV, byte[] Key) _ivKey;
         #endregion
