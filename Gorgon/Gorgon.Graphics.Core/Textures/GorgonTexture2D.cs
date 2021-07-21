@@ -2445,13 +2445,13 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="graphics">The graphics interface used to create this texture.</param>
         /// <param name="image">The image to copy into the texture.</param>
-        /// <param name="options">The options to use when loading the texture.</param>
+        /// <param name="options">[Optional] The options to use when loading the texture.</param>
         /// <remarks>
         /// <para>
         /// This constructor is used when converting an image to a texture.
         /// </para>
         /// </remarks>
-        internal GorgonTexture2D(GorgonGraphics graphics, IGorgonImage image, GorgonTexture2DLoadOptions options)
+        public GorgonTexture2D(GorgonGraphics graphics, IGorgonImage image, GorgonTexture2DLoadOptions options = null)
             : base(graphics)
         {
             bool isCubeMap;
