@@ -108,7 +108,7 @@ float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
     float3 lightDirection = normalize(lightRange);
     float distance = length(lightRange);
 
-    float atten = clamp(light.Attributes.z / distance, 0, 1);
+    float atten = clamp(abs(light.Attributes.z / distance), 0, 1);
 
     float diffuseAmount = saturate(dot(normal, lightDirection)) * atten * atten;
     result = float3(color.rgb * diffuseAmount * light.Color.rgb * light.Attributes.y);
