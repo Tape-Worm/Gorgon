@@ -64,6 +64,8 @@ namespace Gorgon.Renderers.Lights
         private bool _specularEnabled;
         // The specular power.
         private float _specularPower = 64.0f;
+        // The specular intensity.
+        private float _specIntensity = 1.0f;
         // The intensity of the light.
         private float _intensity = 1.0f;
         #endregion
@@ -105,7 +107,7 @@ namespace Gorgon.Renderers.Lights
         }
 
         /// <summary>
-        /// Property to set or return whether to enable specular hilighting.
+        /// Property to set or return whether to enable specular highlights.
         /// </summary>
         public bool SpecularEnabled
         {
@@ -123,7 +125,7 @@ namespace Gorgon.Renderers.Lights
         }
 
         /// <summary>
-        /// Property to set or return the intensity of the specular hilight.
+        /// Property to set or return the intensity of the specular highlight.
         /// </summary>
         public float SpecularPower
         {
@@ -136,6 +138,24 @@ namespace Gorgon.Renderers.Lights
                 }
 
                 _specularPower = value;
+                IsUpdated = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the intensity of the specular highlight.
+        /// </summary>
+        public float SpecularIntensity
+        {
+            get => _specIntensity;
+            set
+            {
+                if (_specIntensity.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _specIntensity = value;
                 IsUpdated = true;
             }
         }

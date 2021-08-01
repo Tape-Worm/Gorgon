@@ -189,14 +189,11 @@ namespace Gorgon.Renderers.Lights
         {
             if (IsUpdated)
             {
-                _lightData = new GorgonGpuLightData(new Vector3(Position.X, Position.Y, -Position.Z),
-                                                    new Vector3(_attenuationA, _attenuationB, _attenuationC),
-                                                    LightType, 
-                                                    Color, 
-                                                    _range,
-                                                    SpecularEnabled, 
-                                                    SpecularPower, 
-                                                    Intensity);
+                _lightData = new GorgonGpuLightData(LightType,
+                                                    new Vector3(Position.X, Position.Y, -Position.Z),
+                                                    new Vector4(_attenuationA, _attenuationB, _attenuationC, _range), 
+                                                    Color,
+                                                    new Vector4(SpecularPower, Intensity, SpecularIntensity, SpecularEnabled ? 1 : 0));
                 IsUpdated = false;
             }
 

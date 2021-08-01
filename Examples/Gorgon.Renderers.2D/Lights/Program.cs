@@ -247,6 +247,7 @@ namespace Gorgon.Examples
                     SpecularEnabled = true,
                     SpecularPower = 6.0f,
                     Intensity = 2,
+                    SpecularIntensity = 4,
                     Position = new Vector3(0, 0, _camera.Position.Z),
                     Range = 4000
                 };

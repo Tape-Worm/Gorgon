@@ -104,11 +104,12 @@ float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
 #endif
 	
     int specularEnabled = int(light.Attributes.w);
+    float specularIntensity = light.Attributes.z;
     float3 result;
     float3 lightRange = light.Position.xyz - vertex.worldPos;
     float distance = length(lightRange);
 
-    if ((distance >= light.Attributes.z) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
+    if ((distance >= light.Attenuation.w) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
     {
         return _ambientColor * color;
     }
@@ -118,9 +119,9 @@ float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
     float NDotL = saturate(dot(normal, lightDirection));
     result = float3(color.rgb * NDotL * light.Color.rgb * light.Attributes.y);
 
-    if (specularEnabled != 0)
+    if ((specularEnabled != 0) && (specularIntensity != 0))
     {        
-        result += color.rgb * GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
+        result += color.rgb * GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
     }
 
     float atten = 1.0f / (light.Attenuation.x + (distance * light.Attenuation.y) + (distance * distance * light.Attenuation.z));
@@ -143,6 +144,7 @@ float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
 #endif
 	
     int specularEnabled = int(light.Attributes.w);
+    float specularIntensity = light.Attributes.z;
     float3 result;
     float3 lightDir = normalize(light.Position.xyz);
     float NDotL;
@@ -151,10 +153,10 @@ float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
 
     result = float3(color.rgb * NDotL * light.Color.rgb * light.Attributes.y) + _ambientColor.rgb;
 	
-    if (specularEnabled != 0)
+    if ((specularEnabled != 0) && (specularIntensity != 0))
     {        
 		// Oddly enough, if we don't normalize Direction, our specular shows up correctly, and if we do normalize it, it gets weird at 0x0.
-        result += color.rgb * GetSpecularValue(uv, -light.Position, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
+        result += color.rgb * GetSpecularValue(uv, -light.Position, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
     }
     
     return saturate(float4(result, color.a));

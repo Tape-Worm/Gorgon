@@ -55,7 +55,7 @@ namespace Gorgon.Renderers.Data
         /// The attenuation values for a point light, these are all 0 for directional lights.
         /// </summary>
         /// <remarks>
-        /// The X value represents the constant attenuation value, the Y value represents the linear attenuation value, and the Z value represents the quadratic attenuation value.
+        /// The X value represents the constant attenuation value, the Y value represents the linear attenuation value, the Z value represents the quadratic attenuation value, and W represents the range of the light.
         /// </remarks>
         public readonly Vector4 LightAttenuation;
 
@@ -63,7 +63,7 @@ namespace Gorgon.Renderers.Data
         /// Extra attributes for the light.
         /// </summary>
         /// <remarks>
-        /// X = Specular Power, Y = Intensity, Z = light range (point light only), W = Specular on/off
+        /// X = Specular Power, Y = Intensity, Z = specular intensity, W = Specular on/off
         /// </remarks>
         public readonly Vector4 LightAttributes;
 
@@ -73,20 +73,17 @@ namespace Gorgon.Renderers.Data
         public readonly GorgonColor LightColor;
 
         /// <summary>Initializes a new instance of the <see cref="GorgonGpuLightData" /> struct.</summary>
+        /// <param name="lightType">Type of the light.</param>
         /// <param name="positionDirection">The position or direction for the light, depending on the type.</param>
         /// <param name="attenuation">The attenuation values for a point light.</param>
-        /// <param name="lightType">Type of the light.</param>
         /// <param name="color">The color of the light.</param>
-        /// <param name="range">The range of the light.</param>
-        /// <param name="specularEnabled">if set to <c>true</c> [specular enabled].</param>
-        /// <param name="specularPower">The specular power.</param>
-        /// <param name="intensity">The intensity.</param>
-        internal GorgonGpuLightData(Vector3 positionDirection, Vector3 attenuation, LightType lightType, GorgonColor color, float range, bool specularEnabled, float specularPower, float intensity)
+        /// <param name="attributes">The attributes for the light.</param>
+        internal GorgonGpuLightData(LightType lightType, Vector3 positionDirection, Vector4 attenuation, GorgonColor color, Vector4 attributes)
         {
             PositionDirection = new Vector4(positionDirection.X, positionDirection.Y, positionDirection.Z, (int)lightType);
-            LightAttenuation = new Vector4(attenuation, 0);
+            LightAttenuation = attenuation;
             LightColor = color;
-            LightAttributes = new Vector4(specularPower, intensity, range, specularEnabled ? 1 : 0);
+            LightAttributes = attributes;
         }
     }
 }
