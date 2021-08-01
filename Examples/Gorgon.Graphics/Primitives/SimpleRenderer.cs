@@ -81,14 +81,9 @@ namespace Gorgon.Examples
         /// <summary>
         /// Material data.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 16, Size = 32)]
+        [StructLayout(LayoutKind.Sequential, Pack = 16, Size = 16)]
         private struct Material
         {
-            /// <summary>
-            /// The albdeo color.
-            /// </summary>
-            public Vector4 Albedo;
-
             /// <summary>
             /// The offset of the texture.
             /// </summary>
@@ -385,7 +380,6 @@ namespace Gorgon.Examples
         {
             var materialData = new Material
             {
-                Albedo = material.Albedo,
                 UVOffset = material.TextureOffset,
                 SpecularPower = material.SpecularPower
             };
@@ -410,10 +404,8 @@ namespace Gorgon.Examples
                 if ((Camera.Changes & CameraChange.View) == CameraChange.View)
                 {
                     ref readonly Matrix4x4 view = ref Camera.GetViewMatrix();
-                    Vector3 translate = view.GetTranslation();
-                    var camPos = new Vector3(-translate.X, -translate.Y, -translate.Z);
-
-                    _cameraBuffer.Buffer.SetData(in camPos);
+                    
+                    _cameraBuffer.Buffer.SetData(Camera.Position);
                 }
 
                 var viewProjData = new ViewProjectionData

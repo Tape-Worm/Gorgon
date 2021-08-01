@@ -84,7 +84,7 @@ namespace Gorgon.Examples
                 {
                     new Light(new GorgonPointLight
                     {
-                        Attenuation = float.MaxValue.Sqrt(),
+                        LinearAttenuation = 1.0f,
                         Color = GorgonColor.White,
                         SpecularPower = 6.0f,
                         Intensity = 13.07f
@@ -133,7 +133,7 @@ namespace Gorgon.Examples
             // Add an ambient light to the planet so we can see some details without a major light source.
             planetLayer.Lights.Add(new Light(new GorgonPointLight
             {
-                Attenuation = float.MaxValue.Sqrt(),
+                LinearAttenuation = 1.0f,
                 Color = GorgonColor.White,
                 SpecularPower = 0.0f,
                 Intensity = 0.37f

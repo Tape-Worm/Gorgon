@@ -284,7 +284,6 @@ namespace Gorgon.Examples
                 Material =
                 {
                     SpecularPower = 0.0f,
-                    Albedo = GorgonColor.Gray20,
                     PixelShader = "PlanetPS",				// The 3D model materials are quite simple.  They just reference their resources by name. We do live in the age of super duper 
 					VertexShader = "PlanetVS",				// fast computers, so doing a few lookups is not going to kill our performance. This allows us to weakly reference the resources 
 					Textures =								// which in turn keeps things nicely decoupled.
@@ -308,7 +307,6 @@ namespace Gorgon.Examples
                 Material =									// ensures that the clouds appear on top.
                 {
                     SpecularPower = 0,
-                    Albedo = GorgonColor.Gray20,
                     PixelShader = "PlanetCloudPS",
                     VertexShader = "PlanetVS",
                     BlendState = GorgonBlendState.Additive,

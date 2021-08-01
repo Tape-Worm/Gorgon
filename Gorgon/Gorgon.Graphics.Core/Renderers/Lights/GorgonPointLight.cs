@@ -42,7 +42,11 @@ namespace Gorgon.Renderers.Lights
         // The position for a point light.
         private Vector3 _position;
         // The attenuation of a point light.
-        private float _attenuation = float.MaxValue.Sqrt();
+        private float _attenuationA = 1.0f;
+        private float _attenuationB = 0.0f;
+        private float _attenuationC = 0.0f;
+        // The range for the light.
+        private float _range = float.MaxValue.Sqrt();
         // The GPU data for the light.
         private GorgonGpuLightData _lightData;
         #endregion
@@ -52,6 +56,33 @@ namespace Gorgon.Renderers.Lights
         /// Property to set or return the type of light to render.
         /// </summary>
         public override LightType LightType => LightType.Point;
+
+        /// <summary>
+        /// Property to set or return the range for the point light.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The range is the area that is affected by the light. If an object vertex minus the position of the light is greater than the range value, it will not be lit.
+        /// </para>
+        /// <para>
+        /// The default value is the square root of the floating point <see cref="float.MaxValue"/>.
+        /// </para>
+        /// </remarks>
+        public float Range
+        {
+            get => _range;
+            set
+            {
+                value = value.Max(1e-06f);
+                if (_range.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _range = value;
+                IsUpdated = true;
+            }
+        }
 
         /// <summary>
         /// Property to set or return the position for the light.
@@ -72,22 +103,55 @@ namespace Gorgon.Renderers.Lights
         }
 
         /// <summary>
-        /// Property to set or return the intensity/falloff for the light.
+        /// Property to set or return the constant intensity falloff for the light.
         /// </summary>
-        /// <remarks>
-        /// This property does not apply if the <see cref="LightType"/> property is set to <see cref="LightType.Directional"/>.
-        /// </remarks>
-        public float Attenuation
+        public float ConstantAttenuation
         {
-            get => _attenuation;
+            get => _attenuationA;
             set
             {
-                if (_attenuation.EqualsEpsilon(value))
+                if (_attenuationA.EqualsEpsilon(value))
                 {
                     return;
                 }
 
-                _attenuation = value;
+                _attenuationA = value;
+                IsUpdated = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the linear intensity falloff for the light.
+        /// </summary>
+        public float LinearAttenuation
+        {
+            get => _attenuationB;
+            set
+            {
+                if (_attenuationB.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _attenuationB = value;
+                IsUpdated = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the quadratic intensity falloff for the light.
+        /// </summary>
+        public float QuadraticAttenuation
+        {
+            get => _attenuationC;
+            set
+            {
+                if (_attenuationC.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _attenuationC = value;
                 IsUpdated = true;
             }
         }
@@ -108,7 +172,9 @@ namespace Gorgon.Renderers.Lights
         ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
         /// </returns>
         public bool Equals(GorgonPointLight other) => (other is not null) && (LightType == other.LightType)
-                && (Attenuation.EqualsEpsilon(other.Attenuation))
+                && (_attenuationA.EqualsEpsilon(other._attenuationA))
+                && (_attenuationB.EqualsEpsilon(other._attenuationB))
+                && (_attenuationC.EqualsEpsilon(other._attenuationC))
                 && (Intensity.EqualsEpsilon(other.Intensity))
                 && (SpecularPower.EqualsEpsilon(other.SpecularPower))
                 && (SpecularEnabled == other.SpecularEnabled)
@@ -123,7 +189,14 @@ namespace Gorgon.Renderers.Lights
         {
             if (IsUpdated)
             {
-                _lightData = new GorgonGpuLightData(Position, LightType, Vector3.Zero, Color, SpecularEnabled, SpecularPower, Intensity, Attenuation);
+                _lightData = new GorgonGpuLightData(new Vector3(Position.X, Position.Y, -Position.Z),
+                                                    new Vector3(_attenuationA, _attenuationB, _attenuationC),
+                                                    LightType, 
+                                                    Color, 
+                                                    _range,
+                                                    SpecularEnabled, 
+                                                    SpecularPower, 
+                                                    Intensity);
                 IsUpdated = false;
             }
 
@@ -154,7 +227,9 @@ namespace Gorgon.Renderers.Lights
             }
 
             Position = copy.Position;
-            Attenuation = copy.Attenuation;
+            _attenuationA = copy._attenuationA;
+            _attenuationB = copy._attenuationB;
+            _attenuationC = copy._attenuationC;
         }
         #endregion
     }

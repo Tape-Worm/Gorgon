@@ -5,8 +5,9 @@ struct Light
 {
 	// w = Light type.
     float4 Position;
-    float4 Direction;
-	// Attributes (X = Specular Power, Y = Intensity, Z = Attenuation (point light only), W = Specular on/off).
+    // Point light only. X = constant, Y = linear, Z = quadratic.
+    float4 Attenuation;
+	// Attributes (X = Specular Power, Y = Intensity, Z = range (point light only), W = Specular on/off).
     float4 Attributes;
     float4 Color;
 };
@@ -105,20 +106,25 @@ float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
     int specularEnabled = int(light.Attributes.w);
     float3 result;
     float3 lightRange = light.Position.xyz - vertex.worldPos;
-    float3 lightDirection = normalize(lightRange);
     float distance = length(lightRange);
 
-    float atten = clamp(abs(light.Attributes.z / distance), 0, 1);
+    if ((distance >= light.Attributes.z) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
+    {
+        return _ambientColor * color;
+    }
 
-    float diffuseAmount = saturate(dot(normal, lightDirection)) * atten * atten;
-    result = float3(color.rgb * diffuseAmount * light.Color.rgb * light.Attributes.y);
+    float3 lightDirection = lightRange / distance;
+
+    float NDotL = saturate(dot(normal, lightDirection));
+    result = float3(color.rgb * NDotL * light.Color.rgb * light.Attributes.y);
 
     if (specularEnabled != 0)
     {        
-        result += diffuseAmount * GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
+        result += color.rgb * GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
     }
 
-    return saturate(float4(result + (color.rgb * _ambientColor.rgb), color.a));
+    float atten = 1.0f / (light.Attenuation.x + (distance * light.Attenuation.y) + (distance * distance * light.Attenuation.z));
+    return saturate(float4((result * atten) + (color.rgb * _ambientColor.rgb), color.a));
 }
 
 // Simulates a directional light (e.g. the sun) with optional specular highlighting.
@@ -138,20 +144,20 @@ float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
 	
     int specularEnabled = int(light.Attributes.w);
     float3 result;
-    float3 lightDir = normalize(light.Direction);
-    float diffuseAmount;
+    float3 lightDir = normalize(light.Position.xyz);
+    float NDotL;
 	
-    diffuseAmount = saturate(dot(normal, lightDir));
+    NDotL = saturate(dot(normal, lightDir));
 
-    result = float3(color.rgb * diffuseAmount * light.Color.rgb * light.Attributes.y);
+    result = float3(color.rgb * NDotL * light.Color.rgb * light.Attributes.y) + _ambientColor.rgb;
 	
     if (specularEnabled != 0)
     {        
 		// Oddly enough, if we don't normalize Direction, our specular shows up correctly, and if we do normalize it, it gets weird at 0x0.
-        result += diffuseAmount * GetSpecularValue(uv, -light.Direction, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
+        result += color.rgb * GetSpecularValue(uv, -light.Position, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb;
     }
     
-    return saturate(float4(result + (color.rgb * _ambientColor.rgb), color.a));
+    return saturate(float4(result, color.a));
 }
 
 // Updated vertex shader that will capture the world position of the vertex prior to sending to the pixel shader.

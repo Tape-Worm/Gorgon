@@ -22,7 +22,6 @@ cbuffer WorldMatrix : register(b1)
 
 cbuffer Material : register(b2)
 {
-	float4 albedo;
 	float2 uvOffset;
 	float matSpecularPower;
 }
@@ -31,8 +30,6 @@ cbuffer Material : register(b2)
 cbuffer Camera : register(b0)
 {
 	float3 CameraPosition;
-	float3 CameraLookAt;
-	float3 CameraUp;
 }
 
 // The light used for lighting calculations.
@@ -41,7 +38,7 @@ cbuffer Light : register(b1)
 	struct LightData
 	{
 		float4 LightPosition;
-		float4 LightDirection;
+		float4 LightAttenuation;
 		float4 LightAttributes;
 		float4 LightColor;
 	} lights[8];
@@ -104,27 +101,45 @@ float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 		LightData light = lights[i];
 
 		float specularPower = light.LightAttributes.x;
-		float attenuation = light.LightAttributes.z;
+		float lightMaxRange = light.LightAttributes.z;
 
-		if (attenuation <= 0.0f)
+		if ((light.LightAttenuation.x <= 0.0f)
+			&& (light.LightAttenuation.y <= 0.0f)
+			&& (light.LightAttenuation.z <= 0.0f))
 		{			
+			output += float3(0.392157f * 0.025f, 0.584314f * 0.025f, 0.929412f * 0.025f);
 			continue;
 		}
 
-		float3 lightDirection = normalize(vertex.worldPos - light.LightPosition);
-		float diffuse = saturate(dot(normal, -lightDirection)) * clamp(attenuation / length(light.LightPosition - vertex.worldPos), 0, 1);
+		float3 lightPos = float3(light.LightPosition.x, light.LightPosition.y, -light.LightPosition.z);
+		float3 lightRange = lightPos - vertex.worldPos;
+		float distance = length(lightRange);
 
-		output += float3(textureColor.rgb * float3(1, 1, 1) * light.LightColor.rgb * diffuse * 0.6); // Use light diffuse vector as intensity multiplier
+		// If the distance between the light and the vertex is larger than the range, then we won't be lighting today.
+		if (distance >= lightMaxRange)
+		{
+			output += float3(0.392157f * 0.025f, 0.584314f * 0.025f, 0.929412f * 0.025f);
+			continue;
+		}
+
+		float3 lightDirection = lightRange / distance; 
+		float atten = 1.0f / (light.LightAttenuation.x + (distance * light.LightAttenuation.y) + (distance * distance * light.LightAttenuation.z));
+		float ndotl = saturate(dot(lightDirection, normal));
+
+		float3 result = textureColor.rgb * ndotl * light.LightColor.rgb; 
 				
 		if ((matSpecularPower > 0) && (specularPower >= 1.0f))
 		{
 			// Using Blinn half angle modification for performance over correctness
-			float3 h = normalize(normalize(CameraPosition - vertex.worldPos) - lightDirection);
-			float specLighting = pow(saturate(dot(normal, h)), specularPower);
-			output = output + (specLighting * 0.5 * spec.r * matSpecularPower);
-		}
-	}	
+			float3 h = normalize(normalize(CameraPosition - vertex.worldPos) + lightRange);
+			float specLighting = pow(saturate(dot(h, normal)), specularPower);
+			result += textureColor.rgb * (specLighting * 0.5 * spec.r * matSpecularPower);
+		}		
 
+		result *= atten;
+		output += saturate(result);
+	}	
+	
 	return float4(saturate(float3(0.392157f * 0.025f, 0.584314f * 0.025f, 0.929412f * 0.025f) + output), textureColor.a);	
 }
 

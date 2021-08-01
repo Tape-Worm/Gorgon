@@ -23,7 +23,6 @@ cbuffer WorldMatrix : register(b1)
 // The material for our object.
 cbuffer Material : register(b2)
 {
-	float4 matAlbedo;
 	float2 uvOffset;
 	float specularPower;
 }
@@ -89,7 +88,7 @@ VertexOut PrimVS(PrimVertex vertex)
 // Function to perform blinn/phong lighting.
 float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 {
-	float4 textureColor = _texture.Sample(_sampler, vertex.uv) * matAlbedo;
+	float4 textureColor = _texture.Sample(_sampler, vertex.uv) * float4(0.2, 0.2, 0.2, 1.0);
 	float3 output = float3(0, 0, 0);
 
 	clip(textureColor.a < 0.02f ? -1 : 1);
@@ -131,7 +130,7 @@ float4 PrimPSNoBump(VertexOut vertex) : SV_Target
 	float4 textureColor = _texture.Sample(_sampler, vertex.uv);		
 	float4 result = blinn(vertex, vertex.normal, float3(1, 0, 0));
 
-	return result * matAlbedo + (textureColor * 0.25f);
+	return result * float4(0.2, 0.2, 0.2, 1.0) + (textureColor * 0.25f);
 }
 
 // Our bump mapped pixel shader that will render the bump mapped texture.

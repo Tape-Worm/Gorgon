@@ -164,7 +164,6 @@ namespace Gorgon.Examples
             // Send the material data over to the shader.
             var materialData = new Material
             {
-                Albedo = mesh.Material.Albedo,
                 UVOffset = mesh.Material.TextureOffset,
                 SpecularPower = mesh.Material.SpecularPower
             };

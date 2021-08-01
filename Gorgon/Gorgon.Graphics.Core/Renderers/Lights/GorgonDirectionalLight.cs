@@ -102,7 +102,14 @@ namespace Gorgon.Renderers.Lights
         {
             if (IsUpdated)
             {
-                _lightData = new GorgonGpuLightData(Vector3.Zero, LightType, LightDirection, Color, SpecularEnabled, SpecularPower, Intensity, 0);
+                _lightData = new GorgonGpuLightData(new Vector3(-LightDirection.X, -LightDirection.Y, LightDirection.Z), 
+                                                    Vector3.Zero, 
+                                                    LightType, 
+                                                    Color,
+                                                    0,
+                                                    SpecularEnabled, 
+                                                    SpecularPower, 
+                                                    Intensity);
                 IsUpdated = false;
             }
 

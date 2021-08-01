@@ -240,27 +240,24 @@ namespace Gorgon.Examples
                 // This is the light we'll control with the mouse.
                 _light = new GorgonPointLight("Main Point Light")
                 {
-                    Attenuation = 100,
-                    Color = new GorgonColor(0.25f, 0.25f, 0.25f),
+                    ConstantAttenuation = 0,
+                    LinearAttenuation = 0.007f,
+                    QuadraticAttenuation = 0.0002f,
+                    Color = GorgonColor.White,
                     SpecularEnabled = true,
                     SpecularPower = 6.0f,
-                    Position = new Vector3(0, 0, _camera.Position.Z)
+                    Intensity = 2,
+                    Position = new Vector3(0, 0, _camera.Position.Z),
+                    Range = 4000
                 };
 
                 // Create the effect that will light up our sprite(s).
                 _lightEffect = new Gorgon2DLightingEffect(_renderer)
                 {
-                    AmbientColor = GorgonColor.Black                    
+                    AmbientColor = new GorgonColor(0.06f, 0.06f, 0.06f)
                 };
 
                 _lightEffect.Lights.Add(_light);
-                _lightEffect.Lights.Add(new GorgonDirectionalLight("Ambient Directional Light")
-                {
-                    Color = GorgonColor.White,
-                    Intensity = 0.075f,
-                    SpecularEnabled = false,                    
-                    LightDirection = new Vector3(0, 0, 1)
-                });
 
                 GorgonExample.LoadResources(_graphics);
 

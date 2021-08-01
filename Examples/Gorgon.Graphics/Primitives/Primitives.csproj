@@ -47,11 +47,6 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Camera.cs" />
-    <Compile Remove="Light.cs" />
-    <Compile Remove="Vertex3D.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Resources\earthbump1k_NRM.dds" />
     <None Remove="Resources\earthcloudmap.png" />
     <None Remove="Resources\earthmap1k.jpg" />

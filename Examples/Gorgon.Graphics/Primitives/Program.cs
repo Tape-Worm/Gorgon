@@ -643,7 +643,8 @@ namespace Gorgon.Examples
             {
                 Position = new Vector3(1.0f, 2.0f, -3.0f),
                 SpecularPower = 256.0f,
-                Attenuation = 2.5f
+                ConstantAttenuation = 1.0f,
+                LinearAttenuation = 0.25f
             };
 
             _renderer.Lights[1] = new GorgonPointLight
@@ -651,15 +652,19 @@ namespace Gorgon.Examples
                 Position = new Vector3(-5.0f, 5.0f, 4.5f),
                 Color = Color.Yellow,
                 SpecularPower = 1024.0f,
-                Attenuation = 2.75f
+                ConstantAttenuation = 1.0f,
+                LinearAttenuation = 0.09f,
+                QuadraticAttenuation = 0.032f,
+                Range = 50.0f
             };
 
             _renderer.Lights[2] = new GorgonPointLight
             {
-                Position = new Vector3(5.0f, 6.25f, 9.5f),
+                Position = new Vector3(5.0f, 5.25f, 9.5f),
                 Color = Color.Red,                
                 SpecularPower = 0.0f,
-                Attenuation = 6.0f
+                ConstantAttenuation = 0,
+                QuadraticAttenuation = 0.25f
             };
         }
 
@@ -780,7 +785,7 @@ namespace Gorgon.Examples
             {
                 GorgonExample.UnloadResources();
 
-                _2DRenderer.Dispose();
+                _2DRenderer?.Dispose();
 
                 _input?.Dispose();
 
