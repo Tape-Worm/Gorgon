@@ -125,6 +125,7 @@ float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
     }
 
     float atten = 1.0f / (light.Attenuation.x + (distance * light.Attenuation.y) + (distance * distance * light.Attenuation.z));
+
     return saturate(float4((result * atten) + (color.rgb * _ambientColor.rgb), color.a));
 }
 
@@ -151,7 +152,7 @@ float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
 	
     NDotL = saturate(dot(normal, lightDir));
 
-    result = float3(color.rgb * NDotL * light.Color.rgb * light.Attributes.y) + _ambientColor.rgb;
+    result = float3(color.rgb * NDotL * light.Color.rgb * light.Attributes.y);
 	
     if ((specularEnabled != 0) && (specularIntensity != 0))
     {        
@@ -159,7 +160,7 @@ float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
         result += color.rgb * GetSpecularValue(uv, -light.Position, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
     }
     
-    return saturate(float4(result, color.a));
+    return saturate(float4(result + (color.rgb * _ambientColor.rgb), color.a));
 }
 
 // Updated vertex shader that will capture the world position of the vertex prior to sending to the pixel shader.
