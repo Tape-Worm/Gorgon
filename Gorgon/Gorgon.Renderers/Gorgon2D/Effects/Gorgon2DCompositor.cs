@@ -52,8 +52,6 @@ namespace Gorgon.Renderers
         : IDisposable, IGorgonGraphicsObject, IReadOnlyList<IGorgon2DCompositorPass>
     {
         #region Variables.
-        // The final output for the scene.
-        private GorgonRenderTargetView _final;
         // The ping render target in the ping-pong target scheme.
         private GorgonRenderTarget2DView _pingTarget;
         // The pong render target in the ping-pong target scheme.
@@ -120,29 +118,24 @@ namespace Gorgon.Renderers
 
         #region Methods.
         /// <summary>
-        /// Function to determine if the resources need updating or not.
-        /// </summary>
-        /// <param name="outputTarget">The final render output target.</param>
-        /// <returns><b>true</b> if the resources need updating, or <b>false</b> if not.</returns>
-        private bool NeedsResourceUpdate(GorgonRenderTargetView outputTarget) => (_final is null)
-                                                                                 || (_pingTarget.Width != outputTarget.Width)
-                                                                                 || (_pingTarget.Height != outputTarget.Height)
-                                                                                 || (_pingTarget.Format != outputTarget.Format);
-
-        /// <summary>
         /// Function to free any resources allocated by the compositor.
         /// </summary>
         private void FreeResources()
         {
-            GorgonTexture2DView pingTexture = Interlocked.Exchange(ref _pingTexture, null);
-            GorgonTexture2DView pongTexture = Interlocked.Exchange(ref _pongTexture, null);
+            Interlocked.Exchange(ref _pingTexture, null);
+            Interlocked.Exchange(ref _pongTexture, null);
             GorgonRenderTarget2DView pingTarget = Interlocked.Exchange(ref _pingTarget, null);
             GorgonRenderTarget2DView pongTarget = Interlocked.Exchange(ref _pongTarget, null);
 
-            pingTexture?.Dispose();
-            pongTexture?.Dispose();
-            pingTarget?.Dispose();
-            pongTarget?.Dispose();
+            if (pingTarget is not null)
+            {
+                Graphics.TemporaryTargets.Return(pingTarget);
+            }
+
+            if (pongTarget is not null)
+            {
+                Graphics.TemporaryTargets.Return(pongTarget);
+            }
         }
 
         /// <summary>
@@ -152,20 +145,18 @@ namespace Gorgon.Renderers
         private void CreateResources(GorgonRenderTargetView outputTarget)
         {
             FreeResources();
-
-            _final = outputTarget;
-
-            _pingTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo(outputTarget.Width, outputTarget.Height, outputTarget.Format)
+            
+            _pingTarget = Graphics.TemporaryTargets.Rent(new GorgonTexture2DInfo(outputTarget.Width, outputTarget.Height, outputTarget.Format) 
             {
                 Name = "Gorgon 2D Post Process Ping Render Target",
                 Binding = TextureBinding.ShaderResource
-            });
+            }, "Gorgon 2D Post Process Ping Render Target", true);
             _pingTexture = _pingTarget.GetShaderResourceView();
 
-            _pongTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, new GorgonTexture2DInfo(_pingTarget)
+            _pongTarget = Graphics.TemporaryTargets.Rent(new GorgonTexture2DInfo(_pingTarget)
             {
                 Name = "Gorgon 2D Post Process Pong Render Target"
-            });
+            }, "Gorgon 2D Post Process Pong Render Target", true);
             _pongTexture = _pongTarget.GetShaderResourceView();
         }
 
@@ -173,13 +164,14 @@ namespace Gorgon.Renderers
         /// Function to render the initial scene to the initial render target.
         /// </summary>
         /// <param name="lastTargetTexture">The last texture used as a target.</param>
-        private void CopyToFinal(GorgonTexture2DView lastTargetTexture)
+        /// <param name="final">The final output render target.</param>
+        private void CopyToFinal(GorgonTexture2DView lastTargetTexture, GorgonRenderTargetView final)
         {
-            Graphics.SetRenderTarget(_final);
+            Graphics.SetRenderTarget(final);
 
             if (_finalClear is not null)
             {
-                _final.Clear(_finalClear.Value);
+                final.Clear(_finalClear.Value);
             }
 
             // Copy the composited output into the final render target specified by the user.
@@ -239,11 +231,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
-        {
-            Interlocked.Exchange(ref _final, null);
-            FreeResources();
-        }
+        public void Dispose() => FreeResources();
 
         /// <summary>
         /// Function to assign the color to use when clearing the initial render target when rendering begins.
@@ -471,15 +459,13 @@ namespace Gorgon.Renderers
             output.ValidateObject(nameof(output));
 
             // Create or update our resources
-            if ((_final != output) || (NeedsResourceUpdate(output)))
-            {
-                CreateResources(output);
-            }
+            CreateResources(output);
 
             // If we have no effects, then, just output the scene to the render target as-is.
             if (_passLookup.Count == 0)
             {
-                CopyToFinal(source);
+                CopyToFinal(source, output);
+                FreeResources();
                 return this;
             }
 
@@ -523,8 +509,9 @@ namespace Gorgon.Renderers
                 current = (nextTarget, nextTexture);
             }
 
-            CopyToFinal(current.texture);
+            CopyToFinal(current.texture, output);
 
+            FreeResources();
             return this;
         }
 
