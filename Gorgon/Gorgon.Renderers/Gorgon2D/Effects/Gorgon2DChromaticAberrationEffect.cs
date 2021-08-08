@@ -188,7 +188,7 @@ namespace Gorgon.Renderers
 
 
                 _chromeAbBatchState = builders.BatchBuilder.Clear()
-                                                           .BlendState(GorgonBlendState.NoBlending)
+                                                           .BlendState(GorgonBlendState.Premultiplied)
                                                            .PixelShaderState(_chromeAbShaderState)
                                                            .Build(BatchStateAllocator);
 
