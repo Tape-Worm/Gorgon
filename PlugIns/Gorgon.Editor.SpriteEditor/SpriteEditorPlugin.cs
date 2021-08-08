@@ -746,7 +746,7 @@ namespace Gorgon.Editor.SpriteEditor
 
                 // Get rid of the anchor prior to retrieving the AABB, we'll be recalculating it anyway.
                 sprite.Anchor = Vector2.Zero;
-                DX.RectangleF bounds = HostContentServices.GraphicsContext.Renderer2D.GetAABB(sprite);
+                DX.RectangleF bounds = HostContentServices.GraphicsContext.Renderer2D.MeasureSprite(sprite);
                 float scale = (maxSize / bounds.Width).Min(maxSize / bounds.Height);
                 RenderThumbnail(ref thumbnailImage, sprite, scale, bounds);
 

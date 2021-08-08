@@ -223,7 +223,7 @@ namespace Gorgon.Editor.SpriteEditor
         {
             base.OnRenderBackground();
 
-            DX.RectangleF spriteRegion = Renderer.GetAABB(Sprite);
+            DX.RectangleF spriteRegion = Renderer.MeasureSprite(Sprite);
 
             Vector3 topLeft = Camera.Unproject(new Vector3(spriteRegion.Left, spriteRegion.Top, 0));
             Vector3 bottomRight = Camera.Unproject(new Vector3(spriteRegion.Right, spriteRegion.Bottom, 0));
@@ -266,7 +266,7 @@ namespace Gorgon.Editor.SpriteEditor
             // We'll need to readjust the sprite for this specific scenario.
             Sprite.Color = GorgonColor.White;
             Sprite.TextureSampler = GorgonSamplerState.PointFiltering;
-            SpriteRegion = Renderer.GetAABB(Sprite);
+            SpriteRegion = Renderer.MeasureSprite(Sprite);
 
             _vertexEditor.SelectedVertexIndex = DataContext.SpriteVertexEditContext.SelectedVertexIndex;
             _vertexEditor.Camera = Camera;

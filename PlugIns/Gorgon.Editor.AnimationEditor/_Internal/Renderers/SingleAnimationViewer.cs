@@ -197,7 +197,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DX.RectangleF aabb = Renderer.GetAABB(Sprite);
+            DX.RectangleF aabb = Renderer.MeasureSprite(Sprite);
             aabb.Offset(-RenderRegion.Width * Camera.Anchor.X, -RenderRegion.Height * Camera.Anchor.Y);
             aabb = ToClient(aabb);
 

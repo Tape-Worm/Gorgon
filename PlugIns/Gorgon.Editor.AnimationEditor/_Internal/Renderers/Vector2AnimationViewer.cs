@@ -166,14 +166,14 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 if (oldTarget == MainRenderTarget)
                 {
-                    _clipper.Rectangle = Renderer.GetAABB(Sprite).Truncate();
+                    _clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
                     return;
                 }
 
                 // The camera relies on the target size of our swap chain for its projection, so we have to switch to our main 
                 // render target temporarily.
                 Graphics.SetRenderTarget(MainRenderTarget);
-                _clipper.Rectangle = Renderer.GetAABB(Sprite).Truncate();
+                _clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
                 Graphics.SetRenderTarget(oldTarget);
             }
             finally
@@ -199,7 +199,7 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 _vertexEditor.SpriteCorner = SelectedTrackID;
 
-                DX.RectangleF bounds = Renderer.GetAABB(_vertexEditSprite);
+                DX.RectangleF bounds = Renderer.MeasureSprite(_vertexEditSprite);
                 ref readonly Gorgon2DVertex[] spriteVertices = ref Renderer.GetVertices(_vertexEditSprite);
                 vertices = ArrayPool<Vector2>.Shared.Rent(4);
 

@@ -108,7 +108,7 @@ namespace Gorgon.Editor.SpriteEditor
             Sprite.Anchor = new Vector2(0.5f, 0.5f);
             Sprite.Size = DataContext.Size;
 
-            SpriteRegion = Renderer.GetAABB(Sprite);
+            SpriteRegion = Renderer.MeasureSprite(Sprite);
         }
 
         /// <summary>

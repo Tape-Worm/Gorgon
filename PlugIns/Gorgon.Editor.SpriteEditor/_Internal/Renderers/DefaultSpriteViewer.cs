@@ -121,7 +121,7 @@ namespace Gorgon.Editor.SpriteEditor
                                               spriteTextureLocation.Y + (int)(RenderRegion.Height * -0.5f));
             _sprite.Size = DataContext.Size;
 
-            Renderer.GetAABB(_sprite, out _spriteRegion);            
+            _spriteRegion = Renderer.MeasureSprite(_sprite);            
         }
 
         /// <summary>

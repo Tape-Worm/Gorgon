@@ -140,7 +140,7 @@ namespace Gorgon.Editor.SpriteEditor
                                               DataContext.SpritePickContext.SpriteRectangle.Y - (RenderRegion.Height * 0.5f))
                                      .Truncate();
 
-            Renderer.GetAABB(_sprite, out _spriteRegion);
+            _spriteRegion = Renderer.MeasureSprite(_sprite);
         }
 
         /// <summary>Function to handle a mouse up event.</summary>

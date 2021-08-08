@@ -1350,62 +1350,6 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function to retrieve the axis-aligned bounding box for a sprite.
-        /// </summary>
-        /// <param name="sprite">The sprite to retrieve the AABB from.</param>
-        /// <returns>A rectangle containing the axis aligned bounding box.</returns>
-        public DX.RectangleF GetAABB(GorgonSprite sprite)
-        {
-            GetAABB(sprite, out DX.RectangleF result);
-            return result;
-        }
-
-        /// <summary>
-        /// Function to retrieve the axis-aligned bounding box for a sprite.
-        /// </summary>
-        /// <param name="sprite">The sprite to retrieve the AABB from.</param>
-        /// <param name="aabb">A rectangle containing the axis-aligned bounding box.</param>
-        public void GetAABB(GorgonSprite sprite, out DX.RectangleF aabb)
-        {
-            if (_initialized == Uninitialized)
-            {
-                Initialize();
-            }
-
-            float x1 = float.MaxValue;
-            float x2 = float.MinValue;
-            float y1 = float.MaxValue;
-            float y2 = float.MinValue;
-
-            BatchRenderable renderable = sprite.Renderable;
-
-            if (sprite.IsUpdated)
-            {
-                _batchRenderer.SpriteTransformer.Transform(renderable);
-            }
-
-            Gorgon2DVertex[] vertices = renderable.Vertices;
-
-            for (int i = 0; i < vertices.Length; ++i)
-            {
-                ref readonly Gorgon2DVertex vertex = ref vertices[i];
-
-                x1 = x1.Min(vertex.Position.X);
-                y1 = y1.Min(vertex.Position.Y);
-                x2 = x2.Max(vertex.Position.X);
-                y2 = y2.Max(vertex.Position.Y);
-            }
-
-            aabb = new DX.RectangleF
-            {
-                Left = x1,
-                Top = y1,
-                Right = x2,
-                Bottom = y2
-            };
-        }
-
-        /// <summary>
         /// Function to draw text.
         /// </summary>
         /// <param name="text">The text to render.</param>

@@ -93,7 +93,7 @@ namespace Gorgon.Examples
             sprite.Scale = new Vector2(entity.Scale);
             sprite.Anchor = entity.Anchor;
 
-            Renderer.GetAABB(sprite, out DX.RectangleF bounds);
+            DX.RectangleF bounds = Renderer.MeasureSprite(sprite);
 
             if ((Camera.ViewableRegion.Intersects(bounds))
                 && (entity.Visible))

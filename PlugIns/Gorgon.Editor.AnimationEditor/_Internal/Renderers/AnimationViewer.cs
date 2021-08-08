@@ -606,7 +606,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DX.RectangleF spriteRegion = Renderer.GetAABB(sprite);
+            DX.RectangleF spriteRegion = Renderer.MeasureSprite(sprite);
             spriteRegion.Inflate(spriteRegion.Width * 0.5f, spriteRegion.Height * 0.5f);
             DX.RectangleF originalRegion = spriteRegion;
 
