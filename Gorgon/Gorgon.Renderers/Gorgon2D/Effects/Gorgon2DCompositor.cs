@@ -330,14 +330,21 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="name">A name for the pass.</param>
         /// <param name="effect">The effect to add as a pass.</param>
+        /// <param name="clearColor">[Optional] The color used to clear the pass target with prior to rendering.</param>
         /// <returns>The fluent interface for the effects processor.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="effect"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        public Gorgon2DCompositor EffectPass(string name, IGorgon2DCompositorEffect effect) => effect is null
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="clearColor"/> parameter is <b>null</b>, then the pass target will not be cleared.
+        /// </para>
+        /// </remarks>
+        public Gorgon2DCompositor EffectPass(string name, IGorgon2DCompositorEffect effect, GorgonColor? clearColor = null) => effect is null
                 ? throw new ArgumentNullException(nameof(effect))
                 : Pass(new CompositionPass(name)
                 {
-                    Effect = effect
+                    Effect = effect,
+                    ClearColor = clearColor
                 });
 
         /// <summary>

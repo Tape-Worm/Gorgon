@@ -498,7 +498,7 @@ namespace Gorgon.Renderers
                     // This guy changes frequently, so we'll use an allocator to ensure our GCs are kept minimal.
                     _finalPassBatchState = builders.BatchBuilder
                                                     .Clear()
-                                                    .BlendState(GorgonBlendState.NoBlending)
+                                                    .BlendState(GorgonBlendState.Additive)
                                                     .PixelShaderState(_shaderBuilder.Clear()
                                                                                     .Shader(_finalPassShader)
                                                                                     .SamplerState(GorgonSamplerState.Default, 1)

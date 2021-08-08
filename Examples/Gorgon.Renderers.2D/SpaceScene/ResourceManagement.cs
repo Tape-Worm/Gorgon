@@ -247,8 +247,8 @@ namespace Gorgon.Examples
                 .Clear()
                 .InitialClearColor(GorgonColor.BlackTransparent)
                 .FinalClearColor(GorgonColor.BlackTransparent)
-                .EffectPass("Chromatic Aberration", chromatic)
-                .EffectPass("Bloom", bloom);
+                .EffectPass("Bloom", bloom)                
+                .EffectPass("Chromatic Aberration", chromatic);
 
             _postProcess["Final Pass"] = finalPostProcess;
 
