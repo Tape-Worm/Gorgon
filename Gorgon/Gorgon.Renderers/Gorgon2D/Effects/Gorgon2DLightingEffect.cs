@@ -439,7 +439,7 @@ namespace Gorgon.Renderers
             if (_lightingState is null)
             {
                 _lightingState = builders.BatchBuilder
-                                         .BlendState(GorgonBlendState.NoBlending)
+                                         .BlendState(GorgonBlendState.Premultiplied)
                                          .DepthStencilState(GorgonDepthStencilState.Default)
                                          .RasterState(GorgonRasterState.Default)
                                          .PixelShaderState(_pixelLitShaderState)
