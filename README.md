@@ -168,7 +168,8 @@ http://millionthvector.blogspot.com/
 This following image(s) is/are not redistributable without permission from the original author.
 
 ["HotPocket.dds"](Resources/Textures/HotPocket.DDS) by Starkiteckt 
-https://www.deviantart.com/starkiteckt/art/Hot-Pocket-433337115
+https://www.artstation.com/starkiteckt
+
 Electronics.DDS, Halifax.DDS, Handmaid.DDS and PewterPup.DDS by [Colleen MacLean](https://www.flickr.com/photos/148757141@N07/)
 
 Third Party True Type fonts:
