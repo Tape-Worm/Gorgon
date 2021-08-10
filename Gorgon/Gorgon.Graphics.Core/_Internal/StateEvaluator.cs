@@ -41,8 +41,8 @@ namespace Gorgon.Graphics.Core
     internal class StateEvaluator
     {
 		#region Variables.
-		// The previous depth/stencil reference value.
-		private int _depthStencilReference;
+		// The previous stencil reference value.
+		private int _stencilReference;
 		// The previous blend sample mask.
 		private int _blendSampleMask = int.MinValue;
 		// The previous blend factor.
@@ -599,9 +599,9 @@ namespace Gorgon.Graphics.Core
 		/// <param name="newState">The new pipeline state to apply</param>
 		/// <param name="blendFactor">The factor used to modulate the pixel shader, render target or both.</param>
 		/// <param name="blendSampleMask">The mask used to define which samples get updated in the active render targets.</param>
-		/// <param name="depthStencilReference">The depth/stencil reference value used when performing a depth/stencil test.</param>
+		/// <param name="stencilReference">The stencil reference value used when performing a stencil test.</param>
 		/// <returns>The changed individual states as a combined set of flags.</returns>
-		public PipelineStateChanges GetPipelineStateChanges(GorgonPipelineState newState, in GorgonColor blendFactor, int blendSampleMask, int depthStencilReference)
+		public PipelineStateChanges GetPipelineStateChanges(GorgonPipelineState newState, in GorgonColor blendFactor, int blendSampleMask, int stencilReference)
         {
 			PipelineStateChanges changes = PipelineStateChanges.None;
 
@@ -632,10 +632,10 @@ namespace Gorgon.Graphics.Core
 				changes |= PipelineStateChanges.BlendSampleMask;
 			}
 
-			if (depthStencilReference != _depthStencilReference)
+			if (stencilReference != _stencilReference)
 			{
-				_depthStencilReference = depthStencilReference;
-				changes |= PipelineStateChanges.DepthStencilReference;
+				_stencilReference = stencilReference;
+				changes |= PipelineStateChanges.StencilReference;
 			}
 			
 			return changes;
@@ -809,7 +809,7 @@ namespace Gorgon.Graphics.Core
 			Array.Clear(RenderTargets, 0, RenderTargets.Length);
 			DepthStencil = null;
 
-			_depthStencilReference = 0;
+			_stencilReference = 0;
 			_blendFactor = GorgonColor.White;
 			_blendSampleMask = int.MinValue;
 		}

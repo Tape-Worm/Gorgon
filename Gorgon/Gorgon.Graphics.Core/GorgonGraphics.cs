@@ -572,9 +572,9 @@ namespace Gorgon.Graphics.Core
         /// <param name="state">The state to evaluate and apply.</param>
         /// <param name="factor">The current blend factor.</param>
         /// <param name="blendSampleMask">The blend sample mask.</param>
-        /// <param name="depthStencilReference">The depth stencil reference.</param>
+        /// <param name="stencilReference">The stencil reference.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SetDrawStates(D3DState state, in GorgonColor factor, int blendSampleMask, int depthStencilReference)
+        private void SetDrawStates(D3DState state, in GorgonColor factor, int blendSampleMask, int stencilReference)
         {
             // Before we draw, flush any expired render targets that are cached in the system.
             if ((_rtExpireTimer.Seconds > 30) && (_rtvFactory.AvailableCount > 0))
@@ -583,8 +583,8 @@ namespace Gorgon.Graphics.Core
                 _rtExpireTimer.Reset();
             }
 
-            PipelineStateChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, in factor, blendSampleMask, depthStencilReference);
-            _stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, in factor, blendSampleMask, depthStencilReference);
+            PipelineStateChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, in factor, blendSampleMask, stencilReference);
+            _stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, in factor, blendSampleMask, stencilReference);
 
             ResourceRanges resourceChanges = _stateEvaluator.GetResourceStateChanges(state, stateChanges);
             _stateApplicator.BindResourceState(resourceChanges, state);
@@ -1000,12 +1000,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="drawCall">The draw call to execute.</param>
         /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
         /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
-        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
+        /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-        public void Submit(GorgonDrawCall drawCall, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
+        public void Submit(GorgonDrawCall drawCall, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
-            SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
+            SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
             D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
             unchecked
             {
@@ -1020,12 +1020,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="drawCall">The draw call to execute.</param>
         /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
         /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
-        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
+        /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-        public void Submit(GorgonInstancedCall drawCall, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
+        public void Submit(GorgonInstancedCall drawCall, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
-            SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
+            SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
             D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
             unchecked
             {
@@ -1040,15 +1040,15 @@ namespace Gorgon.Graphics.Core
         /// <param name="drawIndexCall">The draw call to execute.</param>
         /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
         /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
-        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
+        /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
         public void Submit(GorgonDrawIndexCall drawIndexCall,
                            in GorgonColor? blendFactor = null,
                            int blendSampleMask = int.MinValue,
-                           int depthStencilReference = 0)
+                           int stencilReference = 0)
         {
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
-            SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
+            SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
             D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
             unchecked
             {
@@ -1063,15 +1063,15 @@ namespace Gorgon.Graphics.Core
         /// <param name="drawIndexCall">The draw call to execute.</param>
         /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
         /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
-        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
+        /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
         public void Submit(GorgonInstancedIndexCall drawIndexCall,
                            in GorgonColor? blendFactor = null,
                            int blendSampleMask = int.MinValue,
-                           int depthStencilReference = 0)
+                           int stencilReference = 0)
         {
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
-            SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
+            SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
             D3DDeviceContext.DrawIndexedInstanced(drawIndexCall.IndexCountPerInstance,
                                                   drawIndexCall.InstanceCount,
                                                   drawIndexCall.IndexStart,
@@ -1181,7 +1181,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="drawCall">The draw call to submit.</param>
         /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
         /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
-        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
+        /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
@@ -1204,7 +1204,7 @@ namespace Gorgon.Graphics.Core
         public void SubmitStreamOut(GorgonStreamOutCall drawCall,
                                     in GorgonColor? blendFactor = null,
                                     int blendSampleMask = int.MinValue,
-                                    int depthStencilReference = 0)
+                                    int stencilReference = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
 
@@ -1215,7 +1215,7 @@ namespace Gorgon.Graphics.Core
             }
 #endif
 
-            SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
+            SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
             D3DDeviceContext.DrawAuto();
             unchecked
             {

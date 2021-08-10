@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Renderers
@@ -228,6 +229,33 @@ namespace Gorgon.Renderers
         {
             get;
             internal set;
+        }
+
+        /// <summary>
+        /// Property to set or return the blending factor used to modulate with the pixel shader, current render target or both.
+        /// </summary>
+        public GorgonColor BlendFactor
+        {
+            get;
+            set;
+        } = GorgonColor.White;
+
+        /// <summary>
+        /// Property to set or return the mask used to define which samples get updated in the active render target(s).
+        /// </summary>
+        public int BlendSampleMask
+        {
+            get;
+            set;
+        } = int.MinValue;
+
+        /// <summary>
+        /// Property to set or return the stencil reference value used when performing a stencil test.
+        /// </summary>
+        public int StencilReference
+        {
+            get;
+            set;
         }
 
         /// <summary>

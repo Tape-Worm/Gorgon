@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         PipelineStatistics = D3D11.QueryType.PipelineStatistics,
         /// <summary>
-        /// Same as <see cref="Occlusion"/>, except this indicates whether any samples passed the depth/stencil test.
+        /// Same as <see cref="Occlusion"/>, except this indicates whether any samples passed the depth test.
         /// </summary>
         OcclusionPredicate = D3D11.QueryType.OcclusionPredicate,
         /// <summary>

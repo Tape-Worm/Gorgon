@@ -368,11 +368,11 @@ namespace Gorgon.Renderers
 
             if (_currentDrawIndexCall is not null)
             {
-                _batchRenderer.RenderBatches(_currentDrawIndexCall);
+                _batchRenderer.RenderBatches(_currentDrawIndexCall, _currentBatchState.BlendFactor, _currentBatchState.BlendSampleMask, _currentBatchState.StencilReference);
             }
             else if (_currentDrawCall is not null)
             {
-                _batchRenderer.RenderBatches(_currentDrawCall);
+                _batchRenderer.RenderBatches(_currentDrawCall, _currentBatchState.BlendFactor, _currentBatchState.BlendSampleMask, _currentBatchState.StencilReference);
             }
         }
 
@@ -886,6 +886,9 @@ namespace Gorgon.Renderers
             _currentBatchState.BlendState = batchState?.BlendState ?? GorgonBlendState.Default;
             _currentBatchState.RasterState = batchState?.RasterState ?? GorgonRasterState.Default;
             _currentBatchState.DepthStencilState = batchState?.DepthStencilState ?? GorgonDepthStencilState.Default;
+            _currentBatchState.BlendFactor = batchState?.BlendFactor ?? GorgonColor.White;
+            _currentBatchState.BlendSampleMask = batchState?.BlendSampleMask ?? int.MinValue;
+            _currentBatchState.StencilReference = batchState?.StencilReference ?? 0;
 
             // If we didn't assign shaders, then use our defaults.
             if (_currentBatchState.PixelShaderState.Shader is null)
@@ -1079,7 +1082,7 @@ namespace Gorgon.Renderers
                 _currentDrawIndexCall.IndexCount = renderable.IndexCount;
             }
 
-            Graphics.Submit(_currentDrawIndexCall);
+            Graphics.Submit(_currentDrawIndexCall, _currentBatchState.BlendFactor, _currentBatchState.BlendSampleMask, _currentBatchState.StencilReference);
 
             if (prevVShader is not null)
             {

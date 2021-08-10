@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -213,7 +214,10 @@ namespace Gorgon.Renderers
         /// Function to flush the cache data into the buffers and render the renderables.
         /// </summary>
         /// <param name="drawCall">The draw call that will be used to render the renderables.</param>
-        public void RenderBatches(GorgonDrawCall drawCall)
+        /// <param name="blendFactor">The factor used to modulate the pixel shader, render target or both.</param>
+        /// <param name="blendMask">The mask used to define which samples get updated in the active render targets.</param>
+        /// <param name="stencilRef">The stencil reference value used when performing a stencil test.</param>
+        public void RenderBatches(GorgonDrawCall drawCall, GorgonColor blendFactor, int blendMask, int stencilRef)
         {
             GorgonVertexBuffer vertexBuffer = VertexBuffer.VertexBuffer;
             int cacheIndex = _currentVertexIndex - _allocatedVertexCount;
@@ -239,7 +243,7 @@ namespace Gorgon.Renderers
 
                 drawCall.VertexStartIndex = _vertexBufferIndex;
                 drawCall.VertexCount = vertexCount;
-                Graphics.Submit(drawCall);
+                Graphics.Submit(drawCall, blendFactor, blendMask, stencilRef);
 
                 // Move to the next block of bytes to render.
                 _vertexBufferByteOffset += byteCount;
@@ -259,7 +263,10 @@ namespace Gorgon.Renderers
         /// Function to flush the cache data into the buffers and render the renderables.
         /// </summary>
         /// <param name="drawCall">The draw call that will be used to render the renderables.</param>
-        public void RenderBatches(GorgonDrawIndexCall drawCall)
+        /// <param name="blendFactor">The factor used to modulate the pixel shader, render target or both.</param>
+        /// <param name="blendMask">The mask used to define which samples get updated in the active render targets.</param>
+        /// <param name="stencilRef">The stencil reference value used when performing a stencil test.</param>
+        public void RenderBatches(GorgonDrawIndexCall drawCall, GorgonColor blendFactor, int blendMask, int stencilRef)
         {
             GorgonVertexBuffer vertexBuffer = VertexBuffer.VertexBuffer;
             int cacheIndex = _currentVertexIndex - _allocatedVertexCount;
@@ -288,7 +295,7 @@ namespace Gorgon.Renderers
                 drawCall.BaseVertexIndex = _indexBufferBaseVertexIndex;
                 drawCall.IndexStart = _indexStart;
                 drawCall.IndexCount = indexCount;
-                Graphics.Submit(drawCall);
+                Graphics.Submit(drawCall, blendFactor, blendMask, stencilRef);
 
                 // Move to the next block of bytes to render.
                 _vertexBufferByteOffset += byteCount;

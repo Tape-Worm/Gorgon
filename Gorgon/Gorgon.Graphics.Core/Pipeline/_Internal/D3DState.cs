@@ -222,9 +222,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         BlendSampleMask = 0x400,
         /// <summary>
-        /// The depth/stencil reference value has changed.
+        /// The stencil reference value has changed.
         /// </summary>
-        DepthStencilReference = 0x800,
+        StencilReference = 0x800,
         /// <summary>
         /// All pipeline states without blend flags.
         /// </summary>
@@ -251,7 +251,7 @@ namespace Gorgon.Graphics.Core
             | HullShader
             | BlendFactor
             | BlendSampleMask
-            | DepthStencilReference
+            | StencilReference
     }
 
     /// <summary>

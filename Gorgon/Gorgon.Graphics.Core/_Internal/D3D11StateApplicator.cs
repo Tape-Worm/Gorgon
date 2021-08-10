@@ -690,8 +690,8 @@ namespace Gorgon.Graphics.Core
 		/// <param name="changes">The state changes to apply.</param>
 		/// <param name="blendFactor">The factor used to modulate the pixel shader, render target or both.</param>
 		/// <param name="blendSampleMask">The mask used to define which samples get updated in the active render targets.</param>
-		/// <param name="depthStencilRef">The depth/stencil reference value used when performing a depth/stencil test.</param>
-		public void ApplyPipelineState(GorgonPipelineState state, PipelineStateChanges changes, in GorgonColor blendFactor, int blendSampleMask, int depthStencilRef)
+		/// <param name="stencilRef">The stencil reference value used when performing a stencil test.</param>
+		public void ApplyPipelineState(GorgonPipelineState state, PipelineStateChanges changes, in GorgonColor blendFactor, int blendSampleMask, int stencilRef)
         {
             if (changes == PipelineStateChanges.None)
             {
@@ -708,9 +708,9 @@ namespace Gorgon.Graphics.Core
 				_graphics.D3DDeviceContext.OutputMerger.BlendSampleMask = blendSampleMask;
 			}
 
-			if ((changes & PipelineStateChanges.DepthStencilReference) == PipelineStateChanges.DepthStencilReference)
+			if ((changes & PipelineStateChanges.StencilReference) == PipelineStateChanges.StencilReference)
 			{
-				_graphics.D3DDeviceContext.OutputMerger.DepthStencilReference = depthStencilRef;
+				_graphics.D3DDeviceContext.OutputMerger.DepthStencilReference = stencilRef;
 			}
 
 			if ((changes & PipelineStateChanges.Topology) == PipelineStateChanges.Topology)

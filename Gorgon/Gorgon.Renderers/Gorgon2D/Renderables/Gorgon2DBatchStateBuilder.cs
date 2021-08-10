@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System.Windows.Markup;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Memory;
 
@@ -44,6 +46,63 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Function to assign a blending factor used to modulate with the pixel shader, current render target or both.
+        /// </summary>
+        /// <param name="factor">The blending factor.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <remarks>
+        /// <para>
+        /// This property is read/write on the <see cref="Gorgon2DBatchState"/>, so it can be changed at any time.
+        /// </para>
+        /// <para>
+        /// The default value is <see cref="GorgonColor.White"/>.
+        /// </para>
+        /// </remarks>
+        public Gorgon2DBatchStateBuilder BlendFactor(GorgonColor factor)
+        {
+            _worker.BlendFactor = factor;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign the mask used to define which samples get updated in the active render target(s).
+        /// </summary>
+        /// <param name="mask">The mask value.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <remarks>
+        /// <para>
+        /// This property is read/write on the <see cref="Gorgon2DBatchState"/>, so it can be changed at any time.
+        /// </para>
+        /// <para>
+        /// The default value is <see cref="int.MinValue"/>.
+        /// </para>
+        /// </remarks>
+        public Gorgon2DBatchStateBuilder BlendSampleMask(int mask)
+        {
+            _worker.BlendSampleMask = mask;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign the stencil reference value used when performing a stencil test.
+        /// </summary>
+        /// <param name="value">The stencil reference value.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <remarks>
+        /// <para>
+        /// This property is read/write on the <see cref="Gorgon2DBatchState"/>, so it can be changed at any time.
+        /// </para>
+        /// <para>
+        /// The default value is 0.
+        /// </para>
+        /// </remarks>
+        public Gorgon2DBatchStateBuilder StencilReferenceValue(int value)
+        {
+            _worker.StencilReference = value;
+            return this;
+        }
+
         /// <summary>
         /// Function to assign the blend state to the batch state.
         /// </summary>
@@ -168,7 +227,10 @@ namespace Gorgon.Renderers
                 VertexShaderState = _worker.VertexShaderState,
                 BlendState = _worker.BlendState,
                 DepthStencilState = _worker.DepthStencilState,
-                RasterState = _worker.RasterState
+                RasterState = _worker.RasterState,
+                BlendFactor = _worker.BlendFactor,
+                BlendSampleMask = _worker.BlendSampleMask,
+                StencilReference = _worker.StencilReference
             };
 
             return result;
@@ -185,6 +247,9 @@ namespace Gorgon.Renderers
             _worker.BlendState = null;
             _worker.DepthStencilState = null;
             _worker.RasterState = null;
+            _worker.BlendFactor = GorgonColor.White;
+            _worker.BlendSampleMask = int.MinValue;
+            _worker.StencilReference = 0;
             return this;
         }
 
@@ -225,6 +290,9 @@ namespace Gorgon.Renderers
             _worker.BlendState = builderObject.BlendState;
             _worker.DepthStencilState = builderObject.DepthStencilState;
             _worker.RasterState = builderObject.RasterState;
+            _worker.BlendFactor = builderObject.BlendFactor;
+            _worker.BlendSampleMask = builderObject.BlendSampleMask;
+            _worker.StencilReference = builderObject.StencilReference;
 
             return this;
         }
@@ -255,6 +323,9 @@ namespace Gorgon.Renderers
             state.BlendState = _worker.BlendState;
             state.DepthStencilState = _worker.DepthStencilState;
             state.RasterState = _worker.RasterState;
+            state.BlendFactor = _worker.BlendFactor;
+            state.BlendSampleMask = _worker.BlendSampleMask;
+            state.StencilReference = _worker.StencilReference;
 
             return state;
         }
