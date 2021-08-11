@@ -167,12 +167,6 @@ namespace Gorgon.Renderers
         /// <param name="final">The final output render target.</param>
         private void CopyToFinal(GorgonTexture2DView lastTargetTexture, GorgonRenderTargetView final)
         {
-            // We cannot copy a texture to itself, and it's pointless to do so, so just leave.
-            if (lastTargetTexture.Resource == final.Resource)
-            {
-                return;
-            }
-
             Graphics.SetRenderTarget(final);
 
             if (_finalClear is not null)
@@ -461,6 +455,80 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to disable a pass by index.
+        /// </summary>
+        /// <param name="index">The index of the pass to disable or disable.</param>
+        /// <returns>The fluent interface for the effects processor.</returns>
+        public Gorgon2DCompositor DisablePass(int index)
+        {
+            if ((index < 0) || (index >= _passes.Count))
+            {
+                return this;
+            }
+
+            _passes[index].Enabled = false;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to disable a pass by name.
+        /// </summary>
+        /// <param name="passName">The name of the pass to disable or disable.</param>
+        /// <returns>The fluent interface for the effects processor.</returns>
+        public Gorgon2DCompositor DisablePass(string passName)
+        {
+            if (string.IsNullOrWhiteSpace(passName))
+            {
+                return this;
+            }
+
+            if (!_passLookup.TryGetValue(passName, out int index))
+            {
+                return this;
+            }
+
+            _passes[index].Enabled = false;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to enable a pass by index.
+        /// </summary>
+        /// <param name="index">The index of the pass to enable or disable.</param>
+        /// <returns>The fluent interface for the effects processor.</returns>
+        public Gorgon2DCompositor EnablePass(int index)
+        {
+            if ((index < 0) || (index >= _passes.Count))
+            {
+                return this;
+            }
+
+            _passes[index].Enabled = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to enable a pass by name.
+        /// </summary>
+        /// <param name="passName">The name of the pass to enable or disable.</param>
+        /// <returns>The fluent interface for the effects processor.</returns>
+        public Gorgon2DCompositor EnablePass(string passName)
+        {
+            if (string.IsNullOrWhiteSpace(passName))
+            {
+                return this;
+            }
+
+            if (!_passLookup.TryGetValue(passName, out int index))
+            {
+                return this;
+            }
+
+            _passes[index].Enabled = true;
+            return this;
+        }
+
+        /// <summary>
         /// Function to render the scene for the compositor effects.
         /// </summary>
         /// <param name="source">The texture used to begin the post processing.</param>
@@ -470,6 +538,12 @@ namespace Gorgon.Renderers
         {
             source.ValidateObject(nameof(source));
             output.ValidateObject(nameof(output));
+
+            // We cannot copy a texture to itself, and it's pointless to do so, so just leave.
+            if (source.Resource == output.Resource)
+            {
+                return this;
+            }
 
             // Create or update our resources
             CreateResources(output);
