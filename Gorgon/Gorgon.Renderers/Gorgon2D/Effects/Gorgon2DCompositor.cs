@@ -167,6 +167,12 @@ namespace Gorgon.Renderers
         /// <param name="final">The final output render target.</param>
         private void CopyToFinal(GorgonTexture2DView lastTargetTexture, GorgonRenderTargetView final)
         {
+            // We cannot copy a texture to itself, and it's pointless to do so, so just leave.
+            if (lastTargetTexture.Resource == final.Resource)
+            {
+                return;
+            }
+
             Graphics.SetRenderTarget(final);
 
             if (_finalClear is not null)
