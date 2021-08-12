@@ -346,7 +346,7 @@ namespace Gorgon.Examples
 		/// <returns><b>true</b> to keep running, <b>false</b> to exit.</returns>
 		private static bool Idle()
 		{
-			if (!_paused)
+			//if (!_paused)
 			{
 				// Update the simulation at our desired frame rate.
 				if (GorgonTiming.Delta < MinSimulationFPS)
@@ -720,7 +720,7 @@ namespace Gorgon.Examples
 				Application.SetCompatibleTextRenderingDefault(false);
 
 				Initialize();
-
+				
 				GorgonApplication.Run(_window, Idle);
 			}
 			catch (Exception ex)

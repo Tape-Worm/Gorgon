@@ -373,8 +373,8 @@ namespace Gorgon.Timing
         /// </remarks>
         public static void Update()
         {
-            double theTime;             // Time value.
-            double frameDelta;          // Frame delta.
+            double theTime;
+            double frameDelta;
 
             // If we've not assigned a timer yet, then just leave, we can't gather anything meaningful without one.
             if (_timer is null)
@@ -386,7 +386,6 @@ namespace Gorgon.Timing
             {
                 theTime = _timer.Milliseconds;
                 frameDelta = (theTime - _lastTimerValue);
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
             } while (frameDelta is < 0.000001 and not 0.0);
 
             Delta = (float)frameDelta / 1000.0f;

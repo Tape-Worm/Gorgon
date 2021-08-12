@@ -505,6 +505,7 @@ namespace Gorgon.UI
             // Check for application focus. If we didn't assign a main form, or one was not assigned to the application context, then 
             // run regardless since we have an idle method to execute.
             bool appShouldProcess = MainForm is null || AllowBackground || IsForeground;
+            bool shouldUpdateTiming = true;
 
             if (!GorgonTiming.TimingStarted)
             {
@@ -521,7 +522,17 @@ namespace Gorgon.UI
                         
             while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG _, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
             {
-                GorgonTiming.Update();
+                // Only update the time when we have focus, otherwise reset the time so we don't get super weird values
+                // spiking in the background.
+                if ((IsForeground) || (AllowBackground))
+                {
+                    GorgonTiming.Update();
+                }
+                else
+                {
+                    GorgonTiming.Reset();
+                    continue;
+                }
 
                 if (!IdleMethod())
                 {
