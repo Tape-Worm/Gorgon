@@ -540,7 +540,8 @@ namespace Gorgon.Renderers
             output.ValidateObject(nameof(output));
 
             // We cannot copy a texture to itself, and it's pointless to do so, so just leave.
-            if (source.Resource == output.Resource)
+            if ((source.Resource == output.Resource)
+                && (_passLookup.Count == 0))
             {
                 return this;
             }
