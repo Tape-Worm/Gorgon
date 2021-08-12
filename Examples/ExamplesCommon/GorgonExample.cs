@@ -217,7 +217,8 @@ namespace Gorgon.Examples
         {
             renderer.ValidateObject(nameof(renderer));
 
-            GorgonRenderTargetView currentRtv = renderer.Graphics.RenderTargets[0];
+            GorgonGraphics graphics = _factory?.Graphics;
+            GorgonRenderTargetView currentRtv = graphics.RenderTargets[0];
 
             if ((currentRtv is null) || (_logo is null) || (_statsFont is null))
             {
@@ -225,7 +226,7 @@ namespace Gorgon.Examples
             }
 
             // We won't include these in the draw call count. 
-            ref readonly GorgonGraphicsStatistics stats = ref renderer.Graphics.Statistics;
+            ref readonly GorgonGraphicsStatistics stats = ref graphics.Statistics;
 
             _statsText.Length = 0;            
             _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2} ({3} triangles)", GorgonTiming.AverageFPS, GorgonTiming.Delta, stats.DrawCallCount, stats.TriangleCount);

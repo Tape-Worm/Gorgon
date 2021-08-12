@@ -87,7 +87,7 @@ namespace Gorgon.Renderers
     /// <seealso cref="GorgonGraphics"/>
     /// <seealso cref="Gorgon2DBatchState"/>
     public sealed class Gorgon2D
-        : IGorgon2DFluent, IGorgon2DDrawingFluent
+        : IGorgon2DFluent, IGorgon2DDrawingFluent, IGorgonGraphicsObject
     {
         #region Value Types.
         /// <summary>

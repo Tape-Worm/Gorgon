@@ -505,7 +505,6 @@ namespace Gorgon.UI
             // Check for application focus. If we didn't assign a main form, or one was not assigned to the application context, then 
             // run regardless since we have an idle method to execute.
             bool appShouldProcess = MainForm is null || AllowBackground || IsForeground;
-            bool shouldUpdateTiming = true;
 
             if (!GorgonTiming.TimingStarted)
             {

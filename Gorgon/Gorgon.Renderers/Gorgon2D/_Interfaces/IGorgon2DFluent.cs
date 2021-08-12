@@ -40,7 +40,7 @@ namespace Gorgon.Renderers
     /// A fluent interface for the <see cref="Gorgon2D"/> object.
     /// </summary>
     public interface IGorgon2DFluent
-        : IDisposable, IGorgonGraphicsObject
+        : IDisposable
     {
         /// <summary>
         /// Function to begin rendering a batch.
