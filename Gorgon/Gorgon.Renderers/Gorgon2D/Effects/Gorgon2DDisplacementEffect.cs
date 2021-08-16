@@ -89,6 +89,15 @@ namespace Gorgon.Renderers
                 _isUpdated = true;
             }
         }
+
+        /// <summary>
+        /// Property to set or return the sampler state to use when displacing texture data.
+        /// </summary>
+        public GorgonSamplerState DisplacementSampler
+        {
+            get;
+            set;
+        } = GorgonSamplerState.Default;
         #endregion
 
         #region Methods.
@@ -318,7 +327,7 @@ namespace Gorgon.Renderers
             EndPass(0, _displacementTarget);            
 
             BeginPass(1, _workerTarget);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White, target.GetShaderResourceView(), new DX.RectangleF(0, 0, 1, 1));
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White, target.GetShaderResourceView(), new DX.RectangleF(0, 0, 1, 1), textureSampler: DisplacementSampler);
             EndPass(1, _workerTarget);
             EndRender(target);
         }
