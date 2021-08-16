@@ -253,6 +253,16 @@ namespace Gorgon.Collections
         }
 
         /// <summary>
+        /// Function to mark the specified range of indices as dirty.
+        /// </summary>
+        /// <param name="range">The range to mark dirty.</param>
+        public void MarkDirty(Range range)
+        {
+            _dirtyIndices = 0;
+            _dirtyItems = !range.Start.IsFromEnd ? (range.Start.Value, range.End.Value) : (range.End.Value, range.Start.Value);
+        }
+
+        /// <summary>
         /// Function to reset the value at the specified index, and remove it from the dirty range.
         /// </summary>
         /// <param name="index">The index of the item to reset.</param>

@@ -255,6 +255,8 @@ namespace Gorgon.Graphics.Core
 
 					srvs[s] = null;
 				}
+
+				srvs.MarkDirty(indices.Start..(indices.Count + indices.Start));
 			}
 
 			for (int r = 0; r < _graphics.RenderTargets.Count; ++r)
@@ -281,8 +283,11 @@ namespace Gorgon.Graphics.Core
 					{
 						_log.Print($"[Warning] The shader resource '{srvResource.Name}' is bound for input and as a render target. It will be unbound from the shader resources.", LoggingLevel.Verbose);
 					}
+
 					srvs[s] = null;
 				}
+
+				srvs.MarkDirty(indices.Start..(indices.Count + indices.Start));
 			}
 		}
 
@@ -328,6 +333,9 @@ namespace Gorgon.Graphics.Core
 
 					srvs[s] = null;
 				}
+
+				// Mark the same item(s) as dirty.
+				srvs.MarkDirty(srvIndices.Start..(srvIndices.Count + srvIndices.Start));
 			}
 		}
 
@@ -394,6 +402,9 @@ namespace Gorgon.Graphics.Core
 				srvs[s] = null;
 				shaderStage.SetShaderResource(s, null);
 			}
+
+			// Mark the same item(s) as dirty.
+			srvs.MarkDirty(indices.Start..(indices.Count + indices.Start));
 		}
 
 		/// <summary>
@@ -420,9 +431,9 @@ namespace Gorgon.Graphics.Core
 
 			for (int s = indices.Start; s < indices.Count + indices.Start; ++s)
 			{
-				GorgonGraphicsResource srv = srvs[s]?.Resource;
+				GorgonGraphicsResource srvResource = srvs[s]?.Resource;
 
-				if ((srv is null) || ((srv.BindFlags & D3D11.BindFlags.RenderTarget) != D3D11.BindFlags.RenderTarget) || (srv != rtvResource))
+				if ((srvResource is null) || ((srvResource.BindFlags & D3D11.BindFlags.RenderTarget) != D3D11.BindFlags.RenderTarget) || (srvResource != rtvResource))
 				{
 					continue;
 				}
@@ -430,6 +441,9 @@ namespace Gorgon.Graphics.Core
 				srvs[s] = null;
 				shaderStage.SetShaderResource(s, null);
 			}
+
+			// Mark the same item(s) as dirty.
+			srvs.MarkDirty(indices.Start..(indices.Count + indices.Start));
 		}
 
 		/// <summary>

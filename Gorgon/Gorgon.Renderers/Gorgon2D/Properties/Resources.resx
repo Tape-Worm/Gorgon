@@ -259,6 +259,9 @@
   <data name="GOR2D_ERR_INVALID_SAMPLER_INDEX" xml:space="preserve">
     <value>The sampler index must be 0 or less than {1}.</value>
   </data>
+  <data name="GOR2D_ERR_INVALID_TARGET" xml:space="preserve">
+    <value>The render target needs to also be a shader resource.</value>
+  </data>
   <data name="GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS" xml:space="preserve">
     <value>A minimum of 3 vertices is required for a polygonal sprite.</value>
   </data>

@@ -103,6 +103,7 @@ namespace Gorgon.Examples
         private static bool Idle()
         {
             _postTarget1.Clear(GorgonColor.Black);
+            _postTarget2.Clear(GorgonColor.BlackTransparent);
 
             Vector2 textureSize = _background.Texture.ToTexel(new Vector2(_postTarget1.Width, _postTarget1.Height));
 
@@ -121,27 +122,27 @@ namespace Gorgon.Examples
             float strength = _cloakController.CloakAmount;
 
             if (strength > 0.0f)
-            {                
+            {
+                _shipSprite.Color = GorgonColor.White;
+
                 _graphics.SetRenderTarget(_postTarget2);
+                _renderer.Begin();                
+                _renderer.DrawSprite(_shipSprite);
+                _renderer.End();
 
                 _displacement.Strength = strength;
-                _displacement.Begin(_postView1);
-                _shipSprite.Color = GorgonColor.White;
-                _renderer.DrawSprite(_shipSprite);
-                _displacement.End();
+                _displacement.Render(_postView2, _postTarget1);
             }
-            else
-            {
-                // Send the undisplaced image to the 2nd post process target.
-                _graphics.SetRenderTarget(_postTarget2);
 
-                _renderer.Begin();
-                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
-                                              GorgonColor.White,
-                                              _postView1,
-                                              new DX.RectangleF(0, 0, 1, 1));
-                _renderer.End();
-            }
+            // Send the undisplaced image to the 2nd post process target.
+            _graphics.SetRenderTarget(_postTarget2);
+
+            _renderer.Begin();
+            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
+                                          GorgonColor.White,
+                                          _postView1,
+                                          new DX.RectangleF(0, 0, 1, 1));
+            _renderer.End();
 
             // Smooth our results.
             int blurRadiusUpdate = GorgonRandom.RandomInt32(0, 1000000);

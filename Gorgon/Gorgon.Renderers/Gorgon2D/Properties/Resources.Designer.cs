@@ -545,6 +545,15 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GOR2D_ERR_INVALID_TARGET {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_INVALID_TARGET", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS", resourceCulture);
@@ -586,10 +595,6 @@ namespace Gorgon.Renderers.Properties {
             }
         }
         
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
