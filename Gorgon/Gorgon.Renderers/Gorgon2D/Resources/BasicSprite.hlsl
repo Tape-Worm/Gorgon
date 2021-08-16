@@ -344,7 +344,12 @@ float4 GorgonPixelShaderWaveEffect(GorgonSpriteVertex vertex) : SV_Target
 // Displacement effect variables.
 cbuffer GorgonDisplacementEffect : register(b1)
 {
-	float4 displaceSizeAmount;
+	// Settings for the displacement effect.
+	// X = texel size of horizontal pixel position.
+	// Y = texel size of vertical pixel position.
+	// Z = Displacement strength.
+	// W = 0 - Chromatic aberration off, 1 - Chromatic aberration on.
+	float4 displacementSettings;
 }
 
 // The displacement shader encoder.
@@ -352,22 +357,34 @@ float2 GorgonPixelShaderDisplacementEncoder(float4 uv)
 {
 	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, uv.xyz / uv.w);
 
+	REJECT_ALPHA(offset.a);
+
 	float4 basisX = offset.x >= 0.5f ? float4(offset.x, 0.0f, 0.0f, 0) : float4(0.0f, 0.0f, -offset.x, 0.0f);
 	float4 basisY = offset.y >= 0.5f ? float4(0.0f, offset.y, 0.0f, 0) : float4(0.0f, 0.0f, 0.0f, -offset.y);	
-	float4 displacement = (basisX + basisY) * displaceSizeAmount.z;
+	float4 displacement = (basisX + basisY) * displacementSettings.z;
 
-	return (displacement.xy + displacement.zw) * displaceSizeAmount.xy;
+	return ((displacement.xy + displacement.zw) * displacementSettings.xy) * offset.a;
 }
 
 // The displacement shader decoder.
 float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Target
 {	
 	float2 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv);		
-	float4 color = SampleMainTexture(float4(vertex.uv.xy + offset.xy, vertex.uv.z, vertex.uv.w), vertex.color);	
-
+	float4 color = SampleMainTexture(float4(vertex.uv.x + offset.x, vertex.uv.y + offset.y, vertex.uv.z, vertex.uv.w), vertex.color);	
+	
 	REJECT_ALPHA(color.a);
 
-	return color;
+	float r = color.r;
+	float b = color.b;
+		
+	if (displacementSettings.w != 0)
+	{
+		float adjustment = displacementSettings.x * displacementSettings.z * 0.5f;
+		r = SampleMainTexture(float4(vertex.uv.x + offset.x - adjustment, vertex.uv.y + offset.y, vertex.uv.z, vertex.uv.w), vertex.color).r;
+		b = SampleMainTexture(float4(vertex.uv.x + offset.x + adjustment, vertex.uv.y + offset.y, vertex.uv.z, vertex.uv.w), vertex.color).b;
+	}
+
+	return float4(r, color.g, b, color.a);
 }
 #endif
 

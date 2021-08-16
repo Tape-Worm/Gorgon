@@ -63,6 +63,8 @@ namespace Gorgon.Renderers
         private float _displacementStrength = 0.25f;
         // The batch state.
         private Gorgon2DBatchState _batchState;
+        // Flag to indicate that chromatic aberration should be applied.
+        private bool _chromatic = true;
         #endregion
 
         #region Properties.
@@ -86,6 +88,24 @@ namespace Gorgon.Renderers
                 }
 
                 _displacementStrength = value;
+                _isUpdated = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to turn chromatic aberration on or off.
+        /// </summary>
+        public bool ChromaticAberration
+        {
+            get => _chromatic;
+            set
+            {
+                if (_chromatic == value)
+                {
+                    return;
+                }
+
+                _chromatic = value;
                 _isUpdated = true;
             }
         }
@@ -204,7 +224,7 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            var settings = new Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, 0);
+            var settings = new Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, _chromatic ? 1 : 0);
             _displacementSettingsBuffer.Buffer.SetData(in settings);
             _isUpdated = false;
         }
