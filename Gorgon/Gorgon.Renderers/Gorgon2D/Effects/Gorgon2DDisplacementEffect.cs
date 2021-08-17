@@ -431,6 +431,20 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to cancel the displacement batch.
+        /// </summary>
+        public void CancelDisplacementBatch()
+        {
+            if (_currentPass == -1)
+            {
+                return;
+            }
+
+            EndDisplacementBatch();
+            EndRender(_currentRtv);
+        }
+
+        /// <summary>
         /// Function to end the batch.
         /// </summary>
         /// <remarks>
