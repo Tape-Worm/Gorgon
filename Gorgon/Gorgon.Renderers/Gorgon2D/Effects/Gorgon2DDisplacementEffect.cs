@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -42,7 +41,7 @@ namespace Gorgon.Renderers
     /// An effect that displaces the pixels on an image using the pixels from another image for weighting.
     /// </summary>
     public class Gorgon2DDisplacementEffect
-        : Gorgon2DEffect, IGorgon2DCompositorEffect
+        : Gorgon2DEffect
     {
         #region Value Type.
         /// <summary>
@@ -87,10 +86,8 @@ namespace Gorgon.Renderers
         private GorgonTexture2DInfo _targetInfo;
         // The displacement render targets.
         private GorgonRenderTarget2DView _displacementTarget;
-        private GorgonRenderTarget2DView _workerTarget;
         // The displacement texture view.
         private GorgonTexture2DView _displacementView;
-        private GorgonTexture2DView _workerView;
         // The constant buffer for displacement settings.
         private GorgonConstantBufferView _displacementSettingsBuffer;
         // Flag to indicate that the parameters have been updated.
@@ -103,6 +100,10 @@ namespace Gorgon.Renderers
         private bool _chromatic = true;
         // The scale of the chromatic aberration color channel separation.
         private Vector2 _chromaAbScale = new(0.5f, 0);
+        // The currently active render target view.
+        private GorgonRenderTargetView _currentRtv;
+        // The current pass.
+        private int _currentPass = -1;
         #endregion
 
         #region Properties.
@@ -233,9 +234,6 @@ namespace Gorgon.Renderers
             _displacementTarget = Graphics.TemporaryTargets.Rent(_targetInfo, "Effect.Displacement.RT");
             _displacementView = _displacementTarget.GetShaderResourceView();
 
-            _workerTarget = Graphics.TemporaryTargets.Rent(_displacementTarget, "Effect.Displacement.Worker");
-            _workerView = _workerTarget.GetShaderResourceView();
-
             _isUpdated = true;
         }
 
@@ -268,15 +266,8 @@ namespace Gorgon.Renderers
                 Graphics.TemporaryTargets.Return(_displacementTarget);
             }
 
-            if (_workerTarget is not null)
-            {
-                Graphics.TemporaryTargets.Return(_workerTarget);
-            }
-
             _displacementState = null;
             _batchState = null;
-            _workerTarget = _displacementTarget = null;
-            _workerView = _displacementView = null;            
         }
 
         /// <summary>
@@ -292,6 +283,11 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
+            if (output is null)
+            {
+                return;
+            }
+
             UpdateDisplacementMap(output, sizeChanged);
 
             if (!_isUpdated)
@@ -311,6 +307,20 @@ namespace Gorgon.Renderers
             _isUpdated = false;
         }
 
+        /// <summary>Function called after rendering is complete.</summary>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <remarks>
+        /// This method is called after all passes are finished and the effect is ready to complete its rendering. Developers should override this method to finalize any custom rendering. For example
+        /// an effect author can use this method to render the final output of an effect to the final render target.
+        /// </remarks>
+        protected override void OnAfterRender(GorgonRenderTargetView output)
+        {
+            _currentPass = -1;
+            _currentRtv = null;
+
+            FreeResources();
+        }
+
         /// <summary>
         /// Function called prior to rendering a pass.
         /// </summary>
@@ -328,29 +338,13 @@ namespace Gorgon.Renderers
         {
             if (passIndex == 0)
             {
-                _workerTarget.Clear(GorgonColor.BlackTransparent);
-                _displacementTarget.Clear(GorgonColor.BlackTransparent);                
+                output.Clear(GorgonColor.BlackTransparent);                
             }
 
             Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
 
+            _currentPass = passIndex;
             return PassContinuationState.Continue;
-        }
-
-
-        /// <summary>Function called after rendering is complete.</summary>
-        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-        /// <remarks>
-        /// This method is called after all passes are finished and the effect is ready to complete its rendering. Developers should override this method to finalize any custom rendering. For example
-        /// an effect author can use this method to render the final output of an effect to the final render target.
-        /// </remarks>
-        protected override void OnAfterRender(GorgonRenderTargetView output)
-        {            
-            Renderer.Begin(Gorgon2DBatchState.PremultipliedBlend);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColor.White, _workerView);
-            Renderer.End();
-
-            FreeResources();
         }
 
         /// <summary>
@@ -375,8 +369,7 @@ namespace Gorgon.Renderers
                 }
 
                 _batchState = builders.BatchBuilder.Clear()                                
-                              .PixelShaderState(_displacementState)
-                              .BlendState(GorgonBlendState.Premultiplied)
+                              .PixelShaderState(_displacementState)                              
                               .Build(BatchStateAllocator);
             }
 
@@ -401,43 +394,78 @@ namespace Gorgon.Renderers
 
             displacementBuffer?.Dispose();
             shader?.Dispose();
+        }        
+
+        /// <summary>
+        /// Function to begin a batch for rendering the objects used to displace the target.
+        /// </summary>
+        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
+        /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
+        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
+        /// <param name="camera">[Optional] The camera to use when rendering.</param>
+        /// <returns><b>true</b> if the pass can continue, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// This is the first pass in the effect. It will receive rendering using objects like sprites, primitives, etc... that will be used to displace the pixels on an image in the next pass.
+        /// </para>
+        /// <para>
+        /// When this method is called, the <see cref="EndDisplacementBatch"/> method <b>must</b> be called prior to moving to the next pass. If this is not done, an exception will be thrown. If this method 
+        /// returns <b>false</b>, the <see cref="EndDisplacementBatch"/> still must be called.
+        /// </para>
+        /// </remarks>
+        public bool BeginDisplacementBatch(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
+        {
+            // Get the current render target, this will receive output.
+            _currentPass = -1;
+            _currentRtv = Graphics.RenderTargets[0];
+
+            BeginRender(_currentRtv, blendState, depthStencilState, rasterState);
+
+            if (BeginPass(0, _displacementTarget, camera) != PassContinuationState.Continue)
+            {
+                EndRender(_currentRtv);                
+                return false;
+            }
+            
+            return true;
         }
 
         /// <summary>
-        /// Function to render the specified texture as a displacement for the target texture data.
+        /// Function to end the batch.
         /// </summary>
-        /// <param name="texture">The texture to use as a displacement for the specified render target.</param>
-        /// <param name="target">The target whos image will be displaced by the texture.</param>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="target"/> cannot be bound as a shader resource.</exception>
         /// <remarks>
         /// <para>
-        /// The <paramref name="target"/> must be created with a binding of <see cref="TextureBinding.ShaderResource"/>, otherwise this method will throw an exception.
+        /// This method must be called when <see cref="BeginDisplacementBatch"/> is called. The will mark the beginning of the next pass, <see cref="Render"/>, which will render the actual displacement.
         /// </para>
         /// </remarks>
-        public void Render(GorgonTexture2DView texture, GorgonRenderTarget2DView target)
+        public void EndDisplacementBatch() => EndPass(0, _displacementTarget);
+
+        /// <summary>
+        /// Function to render the displacement effect.
+        /// </summary>
+        /// <param name="backgroundTexture">The texture to displace.</param>
+        /// <param name="target">The render target that will receive the effect rendering.</param>
+        /// <exception cref="GorgonException">Thrown if the current pass is not the second pass.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method must be called after <see cref="EndDisplacementBatch"/>
+        /// </para>
+        /// </remarks>
+        public void Render(GorgonTexture2DView backgroundTexture, GorgonRenderTargetView target)
         {
-            if ((target.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource)
+            if (_currentPass != 0)
             {
-                throw new ArgumentException(Resources.GOR2D_ERR_INVALID_TARGET, nameof(target));
+                throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GOR2D_ERR_INCORRECT_DISPLACEMENT_PASS, _currentPass, 1));
             }
 
-            
+            BeginPass(1, target);
+            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White, backgroundTexture, new DX.RectangleF(0, 0, 1, 1));
+            EndPass(1, target);
 
-            BeginRender(target, GorgonBlendState.Premultiplied);
-            BeginPass(0, _displacementTarget);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
-            EndPass(0, _displacementTarget);            
+            EndRender(_currentRtv);
 
-            BeginPass(1, _workerTarget);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White, target.GetShaderResourceView(), new DX.RectangleF(0, 0, 1, 1), textureSampler: DisplacementSampler);
-            EndPass(1, _workerTarget);
-            EndRender(target);
+            _currentPass = -1;
         }
-
-        /// <summary>Function to render an effect under the <see cref="Gorgon2DCompositor" />.</summary>
-        /// <param name="texture">The texture to render into the next target.</param>
-        /// <param name="output">The render target that will receive the final output.</param>
-        void IGorgon2DCompositorEffect.Render(GorgonTexture2DView texture, GorgonRenderTargetView output) => Render(texture, (GorgonRenderTarget2DView)output);
         #endregion
 
         #region Constructor/Destructor.

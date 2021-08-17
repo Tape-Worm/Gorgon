@@ -241,6 +241,9 @@
   <data name="GOR2D_ERR_CBUFFER_SLOT_INVALID" xml:space="preserve">
     <value>The constant buffer slot must be 0 or less than {0}.</value>
   </data>
+  <data name="GOR2D_ERR_DISPLACEMENT_PASS_ALREADY_CALLED" xml:space="preserve">
+    <value>The pass is already started. Please call the associated End method.</value>
+  </data>
   <data name="GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED" xml:space="preserve">
     <value>The BeginRender method has already been called on the '{0}' effect.</value>
   </data>
@@ -255,6 +258,9 @@
   </data>
   <data name="GOR2D_ERR_EFFECT_PASS_RENDER_CALLED" xml:space="preserve">
     <value>The BeginPass method has already been called for pass #{0} on effect '{1}'.</value>
+  </data>
+  <data name="GOR2D_ERR_INCORRECT_DISPLACEMENT_PASS" xml:space="preserve">
+    <value>The current pass is #{0}, but the call is for pass #{1}.</value>
   </data>
   <data name="GOR2D_ERR_INVALID_SAMPLER_INDEX" xml:space="preserve">
     <value>The sampler index must be 0 or less than {1}.</value>

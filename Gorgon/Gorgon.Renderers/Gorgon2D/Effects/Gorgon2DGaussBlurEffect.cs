@@ -272,9 +272,9 @@ namespace Gorgon.Renderers
                 _needOffsetUpdate = true;
             }
         }
-#endregion
+        #endregion
 
-#region Methods.
+        #region Methods.
         /// <summary>
         /// Function to update the render target.
         /// </summary>
@@ -628,9 +628,9 @@ namespace Gorgon.Renderers
 
             EndRender(output);
         }
-#endregion
+        #endregion
 
-#region Constructor/Finalizer.
+        #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="Gorgon2DGaussBlurEffect"/> class.
         /// </summary>
@@ -674,6 +674,6 @@ namespace Gorgon.Renderers
             Macros.Add(new GorgonShaderMacro("GAUSS_BLUR_EFFECT"));
             Macros.Add(new GorgonShaderMacro("MAX_KERNEL_SIZE", KernelSize.ToString(CultureInfo.InvariantCulture)));
         }
-#endregion
+        #endregion
     }
 }

@@ -491,6 +491,15 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GOR2D_ERR_DISPLACEMENT_PASS_ALREADY_CALLED {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_DISPLACEMENT_PASS_ALREADY_CALLED", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED", resourceCulture);
@@ -530,6 +539,15 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_ERR_EFFECT_PASS_RENDER_CALLED {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_EFFECT_PASS_RENDER_CALLED", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GOR2D_ERR_INCORRECT_DISPLACEMENT_PASS {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_INCORRECT_DISPLACEMENT_PASS", resourceCulture);
             }
         }
         

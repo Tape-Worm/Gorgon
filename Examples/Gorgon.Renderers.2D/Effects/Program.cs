@@ -102,7 +102,7 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
-            _postTarget1.Clear(GorgonColor.Black);
+            _postTarget1.Clear(GorgonColor.BlackTransparent);
             _postTarget2.Clear(GorgonColor.BlackTransparent);
 
             Vector2 textureSize = _background.Texture.ToTexel(new Vector2(_postTarget1.Width, _postTarget1.Height));
@@ -125,25 +125,36 @@ namespace Gorgon.Examples
             {
                 _shipSprite.Color = GorgonColor.White;
 
-                _graphics.SetRenderTarget(_postTarget2);
-                _renderer.Begin();                
+                _displacement.BeginDisplacementBatch();
                 _renderer.DrawSprite(_shipSprite);
-                _renderer.End();
+                _displacement.EndDisplacementBatch();
 
                 _displacement.Strength = strength;
                 _displacement.ChromaticAberrationScale = new Vector2(_shipSprite.Angle.ToRadians().Cos() * 0.5f + 1.0f, _shipSprite.Angle.ToRadians().Sin() * 0.5f + 1.0f);
-                _displacement.Render(_postView2, _postTarget1);
+                _displacement.Render(_postView1, _postTarget2);
+
+                // Send the undisplaced image to the 2nd post process target.
+                _graphics.SetRenderTarget(_postTarget1);
+
+                _renderer.Begin();
+                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
+                                              GorgonColor.White,
+                                              _postView2,
+                                              new DX.RectangleF(0, 0, 1, 1));
+                _renderer.End();
             }
+            else
+            {
+                // Send the undisplaced image to the 2nd post process target.
+                _graphics.SetRenderTarget(_postTarget2);
 
-            // Send the undisplaced image to the 2nd post process target.
-            _graphics.SetRenderTarget(_postTarget2);
-
-            _renderer.Begin();
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
-                                          GorgonColor.White,
-                                          _postView1,
-                                          new DX.RectangleF(0, 0, 1, 1));
-            _renderer.End();
+                _renderer.Begin();
+                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
+                                              GorgonColor.White,
+                                              _postView1,
+                                              new DX.RectangleF(0, 0, 1, 1));
+                _renderer.End();
+            }
 
             // Smooth our results.
             int blurRadiusUpdate = GorgonRandom.RandomInt32(0, 1000000);
@@ -159,7 +170,7 @@ namespace Gorgon.Examples
             // If we didn't blur (radius = 0), then just use the original view.
             if (_gaussBlur.BlurRadius > 0)
             {
-                _gaussBlur.Render(_postView2, _postTarget2);
+                _gaussBlur.Render(_postView1, _postTarget2);
             }
 
             // Render as an old film effect.
