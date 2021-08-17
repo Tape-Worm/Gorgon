@@ -343,9 +343,26 @@ namespace Gorgon.Renderers
 
             Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
 
-            _currentPass = passIndex;
             return PassContinuationState.Continue;
         }
+
+        /// <summary>
+        /// Function called after a pass is finished rendering.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass that was rendered.</param>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <remarks><para>
+        /// This method is called after rendering a single pass. Developers may use this to perform any clean up required, or any last minute rendering at the end of a pass.
+        /// </para>
+        /// <para>
+        ///   <note type="important">
+        ///     <para>
+        /// The <see cref="Gorgon2D" />.<see cref="Gorgon2D.End()" /> method is already called prior to this method. Developers are free to use <see cref="Gorgon2D.Begin" /> and
+        /// <see cref="Gorgon2D.End" /> to perform any last minute rendering (e.g. blending multiple targets together into the <paramref name="output" />).
+        /// </para>
+        ///   </note>
+        /// </para></remarks>
+        protected override void OnAfterRenderPass(int passIndex, GorgonRenderTargetView output) => _currentPass = passIndex;
 
         /// <summary>
         /// Function called to build a new (or return an existing) 2D batch state.
@@ -403,6 +420,7 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
+        /// <exception cref="GorgonException">Thrown if this method is called without calling <see cref="EndDisplacementBatch"/>, or <see cref="CancelDisplacementBatch"/>.</exception>
         /// <returns><b>true</b> if the pass can continue, <b>false</b> if not.</returns>
         /// <remarks>
         /// <para>
@@ -412,11 +430,18 @@ namespace Gorgon.Renderers
         /// When this method is called, the <see cref="EndDisplacementBatch"/> method <b>must</b> be called prior to moving to the next pass. If this is not done, an exception will be thrown. If this method 
         /// returns <b>false</b>, the <see cref="EndDisplacementBatch"/> still must be called.
         /// </para>
+        /// <para>
+        /// Users may call <see cref="CancelDisplacementBatch"/> if they wish to cancel a current batch.
+        /// </para>
         /// </remarks>
         public bool BeginDisplacementBatch(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             // Get the current render target, this will receive output.
-            _currentPass = -1;
+            if (_currentPass != -1)
+            {
+                throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR2D_ERR_DISPLACEMENT_PASS_ALREADY_CALLED);
+            }
+
             _currentRtv = Graphics.RenderTargets[0];
 
             BeginRender(_currentRtv, blendState, depthStencilState, rasterState);
@@ -435,12 +460,11 @@ namespace Gorgon.Renderers
         /// </summary>
         public void CancelDisplacementBatch()
         {
-            if (_currentPass == -1)
+            if (_currentPass == 0)
             {
-                return;
+                EndDisplacementBatch();
             }
-
-            EndDisplacementBatch();
+            
             EndRender(_currentRtv);
         }
 
@@ -467,7 +491,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         public void Render(GorgonTexture2DView backgroundTexture, GorgonRenderTargetView target)
         {
-            if (_currentPass != 0)
+            if (_currentPass == -1)
             {
                 throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GOR2D_ERR_INCORRECT_DISPLACEMENT_PASS, _currentPass, 1));
             }
@@ -477,8 +501,6 @@ namespace Gorgon.Renderers
             EndPass(1, target);
 
             EndRender(_currentRtv);
-
-            _currentPass = -1;
         }
         #endregion
 
