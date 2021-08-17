@@ -350,12 +350,15 @@ cbuffer GorgonDisplacementEffect : register(b1)
 	// Z = Displacement strength.
 	// W = 0 - Chromatic aberration off, 1 - Chromatic aberration on.
 	float4 displacementSettings;
+	// The scale to apply to the separation of the color channels when chromatic aberration is on.
+	// If chromatic aberration is off, then this will do nothing.
+	float2 chromAbScale;
 }
 
 // The displacement shader encoder.
 float2 GorgonPixelShaderDisplacementEncoder(float4 uv)
 {
-	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, uv.xyz / uv.w);
+	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, float3(uv.xy / uv.w, uv.z));
 
 	REJECT_ALPHA(offset.a);
 
@@ -379,9 +382,10 @@ float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Targ
 		
 	if (displacementSettings.w != 0)
 	{
-		float adjustment = displacementSettings.x * displacementSettings.z * 0.5f;
-		r = SampleMainTexture(float4(vertex.uv.x + offset.x - adjustment, vertex.uv.y + offset.y, vertex.uv.z, vertex.uv.w), vertex.color).r;
-		b = SampleMainTexture(float4(vertex.uv.x + offset.x + adjustment, vertex.uv.y + offset.y, vertex.uv.z, vertex.uv.w), vertex.color).b;
+		float2 adjustment = float2(displacementSettings.x * displacementSettings.z * chromAbScale.x, 
+								   displacementSettings.y * displacementSettings.z * chromAbScale.y);
+		r = SampleMainTexture(float4(vertex.uv.x + offset.x - adjustment.x, vertex.uv.y + offset.y + adjustment.y, vertex.uv.z, vertex.uv.w), vertex.color).r;
+		b = SampleMainTexture(float4(vertex.uv.x + offset.x + adjustment.x, vertex.uv.y + offset.y - adjustment.y, vertex.uv.z, vertex.uv.w), vertex.color).b;
 	}
 
 	return float4(r, color.g, b, color.a);

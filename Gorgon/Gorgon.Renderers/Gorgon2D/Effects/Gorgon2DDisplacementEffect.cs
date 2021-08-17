@@ -27,6 +27,7 @@
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -43,6 +44,41 @@ namespace Gorgon.Renderers
     public class Gorgon2DDisplacementEffect
         : Gorgon2DEffect, IGorgon2DCompositorEffect
     {
+        #region Value Type.
+        /// <summary>
+        /// The constant buffer GPU data.
+        /// </summary>
+        [StructLayout(LayoutKind.Explicit, Size = 32)]
+        private struct GpuData
+        {
+            /// <summary>
+            /// The number of bytes for the structure.
+            /// </summary>
+            public static readonly int SizeInBytes = Unsafe.SizeOf<GpuData>();
+
+            /// <summary>
+            /// The size of a texel.
+            /// </summary>
+            [FieldOffset(0)]
+            public Vector2 TexelSize;
+            /// <summary>
+            /// The strength of displacement.
+            /// </summary>
+            [FieldOffset(8)]
+            public float Strength;
+            /// <summary>
+            /// Flag to enable or disable chromatic aberration.
+            /// </summary>
+            [FieldOffset(12)]
+            public float ChromAbEnable;
+            /// <summary>
+            /// The scale between color channels when chromatic aberration is activated.
+            /// </summary>
+            [FieldOffset(16)]
+            public Vector2 ChromaAbScale;
+        }
+        #endregion
+
         #region Variables.
         // The shader used for displacement.
         private GorgonPixelShader _displacementShader;
@@ -65,6 +101,8 @@ namespace Gorgon.Renderers
         private Gorgon2DBatchState _batchState;
         // Flag to indicate that chromatic aberration should be applied.
         private bool _chromatic = true;
+        // The scale of the chromatic aberration color channel separation.
+        private Vector2 _chromaAbScale = new(0.5f, 0);
         #endregion
 
         #region Properties.
@@ -93,8 +131,45 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Property to set or return the scaling for the color channel separation when chromatic aberration is applied.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This scales the distance between color channels (along with <see cref="Strength"/>). 
+        /// </para>
+        /// <para>
+        /// If the <see cref="ChromaticAberration"/> value is <b>false</b>, the this value is ignored.
+        /// </para>
+        /// <para>
+        /// The default value is <c>(0.5f, 0.0f)</c>.
+        /// </para>
+        /// </remarks>
+        public Vector2 ChromaticAberrationScale
+        {
+            get => _chromaAbScale;
+            set
+            {
+                if (_chromaAbScale == value)
+                {
+                    return;
+                }
+
+                _chromaAbScale = value;
+                _isUpdated = true;
+            }
+        }
+
+        /// <summary>
         /// Property to turn chromatic aberration on or off.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Setting this value to <b>false</b> may improve performance.
+        /// </para>
+        /// <para>
+        /// The default value is <b>true</b>.
+        /// </para>
+        /// </remarks>
         public bool ChromaticAberration
         {
             get => _chromatic;
@@ -174,7 +249,7 @@ namespace Gorgon.Renderers
         {
             _displacementSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
                                                                                         new
-                                                                                        GorgonConstantBufferInfo(Unsafe.SizeOf<Vector4>())
+                                                                                        GorgonConstantBufferInfo(GpuData.SizeInBytes)
                                                                                         {
                                                                                             Name = "Gorgon2DDisplacementEffect Constant Buffer",
                                                                                             Usage = ResourceUsage.Dynamic                                                                                            
@@ -224,8 +299,15 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            var settings = new Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, _chromatic ? 1 : 0);
-            _displacementSettingsBuffer.Buffer.SetData(in settings);
+            GpuData data = new()
+            {
+                TexelSize = new Vector2(1.0f / output.Width, 1.0f / output.Height),
+                Strength = _displacementStrength * 100,
+                ChromAbEnable = _chromatic ? 1 : 0,
+                ChromaAbScale = _chromaAbScale
+            };
+
+            _displacementSettingsBuffer.Buffer.SetData(in data);            
             _isUpdated = false;
         }
 

@@ -131,6 +131,7 @@ namespace Gorgon.Examples
                 _renderer.End();
 
                 _displacement.Strength = strength;
+                _displacement.ChromaticAberrationScale = new Vector2(_shipSprite.Angle.ToRadians().Cos() * 0.5f + 1.0f, _shipSprite.Angle.ToRadians().Sin() * 0.5f + 1.0f);
                 _displacement.Render(_postView2, _postTarget1);
             }
 
