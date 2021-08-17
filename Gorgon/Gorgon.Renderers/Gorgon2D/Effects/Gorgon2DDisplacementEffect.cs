@@ -350,7 +350,7 @@ namespace Gorgon.Renderers
                                           .Build(PixelShaderAllocator);
                 }
 
-                _batchState = builders.BatchBuilder.Clear()                                
+                _batchState = builders.BatchBuilder
                               .PixelShaderState(_displacementState)                              
                               .Build(BatchStateAllocator);
             }
