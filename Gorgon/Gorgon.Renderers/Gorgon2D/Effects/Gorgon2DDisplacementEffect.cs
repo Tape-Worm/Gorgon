@@ -92,8 +92,9 @@ namespace Gorgon.Renderers
         private bool _isUpdated = true;
         // Strength of the displacement map.
         private float _displacementStrength = 0.25f;
-        // The batch state.
-        private Gorgon2DBatchState _batchState;
+        // The batch states.
+        private Gorgon2DBatchState _p1BatchState;
+        private Gorgon2DBatchState _p2BatchState;
         // Flag to indicate that chromatic aberration should be applied.
         private bool _chromatic = true;
         // The scale of the chromatic aberration color channel separation.
@@ -218,7 +219,8 @@ namespace Gorgon.Renderers
             _displacementView = _displacementTarget.GetShaderResourceView();
 
             _displacementState = null;
-            _batchState = null;
+            _p1BatchState = null;
+            _p2BatchState = null;
 
             _isUpdated = true;
         }
@@ -253,7 +255,8 @@ namespace Gorgon.Renderers
             rtv?.Dispose();
 
             _displacementState = null;
-            _batchState = null;
+            _p1BatchState = null;
+            _p2BatchState = null;
         }
 
         /// <summary>
@@ -337,9 +340,8 @@ namespace Gorgon.Renderers
         /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
-        {           
-
-            if ((_batchState is null) || (statesChanged))
+        {
+            if ((statesChanged) || (_displacementState is null) || (_p1BatchState is null) || (_p2BatchState is null))
             {
                 if (_displacementState is null)
                 {
@@ -350,12 +352,15 @@ namespace Gorgon.Renderers
                                           .Build(PixelShaderAllocator);
                 }
 
-                _batchState = builders.BatchBuilder
-                              .PixelShaderState(_displacementState)                              
-                              .Build(BatchStateAllocator);
+                _p1BatchState = builders.BatchBuilder
+                                .ResetShader(ShaderType.Pixel)
+                                .Build(BatchStateAllocator);
+                _p2BatchState = builders.BatchBuilder
+                              .PixelShaderState(_displacementState)
+                              .Build(BatchStateAllocator);                
             }
 
-            return passIndex == 0 ? null : _batchState;
+            return passIndex == 0 ? _p1BatchState : _p2BatchState;
         }
 
         /// <summary>
