@@ -82,8 +82,6 @@ namespace Gorgon.Renderers
         // The shader used for displacement.
         private GorgonPixelShader _displacementShader;
         private Gorgon2DShaderState<GorgonPixelShader> _displacementState;
-        // Information for building render targets.
-        private GorgonTexture2DInfo _targetInfo;
         // The displacement render targets.
         private GorgonRenderTarget2DView _displacementTarget;
         // The displacement texture view.
@@ -199,9 +197,10 @@ namespace Gorgon.Renderers
         /// Function to update the displacement map render target.
         /// </summary>
         /// <param name="output">The final output render target.</param>
-        /// <param name="isSizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
-        private void UpdateDisplacementMap(GorgonRenderTargetView output, bool isSizeChanged)
+        private void UpdateDisplacementMap(GorgonRenderTargetView output)
         {
+            FreeResources();
+
 #if DEBUG
             if (!Graphics.FormatSupport[output.Format].IsRenderTargetFormat)
             {
@@ -210,27 +209,16 @@ namespace Gorgon.Renderers
             }
 #endif
 
-            if (_targetInfo is null)
-            {
-                _targetInfo = new GorgonTexture2DInfo(output.Width, output.Height, output.Format)
-                {
-                    Name = "Effect.Displacement.RT",
-                    Binding = TextureBinding.ShaderResource
-                };
-            }
-            else if (isSizeChanged)
-            {
-#if NET5_0_OR_GREATER
-                _targetInfo = _targetInfo with
-                {
-                    Width = output.Width,
-                    Height = output.Height
-                };
-#endif
-            }
-
-            _displacementTarget = Graphics.TemporaryTargets.Rent(_targetInfo, "Effect.Displacement.RT");
+            _displacementTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
+                                                                              new GorgonTexture2DInfo(output.Width, output.Height, output.Format)
+                                                                              {
+                                                                                  Name = "Effect.Displacement.RT",
+                                                                                  Binding = TextureBinding.ShaderResource
+                                                                              });
             _displacementView = _displacementTarget.GetShaderResourceView();
+
+            _displacementState = null;
+            _batchState = null;
 
             _isUpdated = true;
         }
@@ -259,10 +247,10 @@ namespace Gorgon.Renderers
         /// </summary>
         public void FreeResources()
         {
-            if (_displacementTarget is not null)
-            {
-                Graphics.TemporaryTargets.Return(_displacementTarget);
-            }
+            GorgonTexture2DView view = Interlocked.Exchange(ref _displacementView, null);
+            GorgonRenderTarget2DView rtv = Interlocked.Exchange(ref _displacementTarget, null);
+            view?.Dispose();
+            rtv?.Dispose();
 
             _displacementState = null;
             _batchState = null;
@@ -286,7 +274,10 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            UpdateDisplacementMap(output, sizeChanged);
+            if ((_displacementView is null) || (sizeChanged))
+            {
+                UpdateDisplacementMap(output);
+            }
 
             if (!_isUpdated)
             {
@@ -311,11 +302,7 @@ namespace Gorgon.Renderers
         /// This method is called after all passes are finished and the effect is ready to complete its rendering. Developers should override this method to finalize any custom rendering. For example
         /// an effect author can use this method to render the final output of an effect to the final render target.
         /// </remarks>
-        protected override void OnAfterRender(GorgonRenderTargetView output)
-        {
-            _currentRtv = null;
-            FreeResources();
-        }
+        protected override void OnAfterRender(GorgonRenderTargetView output) =>_currentRtv = null; 
 
         /// <summary>
         /// Function called prior to rendering a pass.
@@ -450,11 +437,29 @@ namespace Gorgon.Renderers
         /// </remarks>
         public void Render(GorgonTexture2DView backgroundTexture, GorgonRenderTargetView target)
         {
+            GorgonRenderTarget2DView workerRtv = null;
+
+            // If the background and target are the same, then copy to a working texture instead.
+            if (backgroundTexture.Resource == target.Resource)
+            {
+                workerRtv = Graphics.TemporaryTargets.Rent(backgroundTexture, "Temporary Worker Target for Displacement", true);
+                Graphics.SetRenderTarget(workerRtv);
+                Renderer.Begin();
+                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, workerRtv.Width, workerRtv.Height), GorgonColor.White, backgroundTexture, new DX.RectangleF(0, 0, 1, 1));
+                Renderer.End();
+                backgroundTexture = workerRtv.GetShaderResourceView();
+            }
+
             BeginRender(target);
             BeginPass(1, target);
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White, backgroundTexture, new DX.RectangleF(0, 0, 1, 1));
             EndPass(1, target);
             EndRender(target);
+
+            if (workerRtv is not null)
+            {
+                Graphics.TemporaryTargets.Return(workerRtv);
+            }
         }
         #endregion
 
