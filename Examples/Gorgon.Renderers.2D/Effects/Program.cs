@@ -130,6 +130,11 @@ namespace Gorgon.Examples
                 _displacement.BeginDisplacementBatch(_postView1, _postTarget2);
                 _renderer.DrawSprite(_shipSprite);
                 _displacement.EndDisplacementBatch();
+
+                _graphics.SetRenderTarget(_postTarget1);
+                _renderer.Begin();
+                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height), GorgonColor.White, _postView2, new DX.RectangleF(0, 0, 1, 1));
+                _renderer.End();
             }
 
             // Smooth our results.
