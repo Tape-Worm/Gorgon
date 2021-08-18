@@ -265,7 +265,6 @@ namespace Gorgon.Renderers
         /// <seealso cref="PassContinuationState"/>
         protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
-            output.Clear(GorgonColor.BlackTransparent);                
             Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
 
             return PassContinuationState.Continue;
