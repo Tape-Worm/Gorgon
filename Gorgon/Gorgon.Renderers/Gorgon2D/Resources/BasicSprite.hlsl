@@ -356,24 +356,29 @@ cbuffer GorgonDisplacementEffect : register(b1)
 }
 
 // The displacement shader encoder.
-float2 GorgonPixelShaderDisplacementEncoder(float4 uv)
+float2 GorgonPixelShaderDisplacementEncoder(float4 displaceValue)
 {
-	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, float3(uv.xy / uv.w, uv.z));
+	REJECT_ALPHA(displaceValue.a);
 
-	REJECT_ALPHA(offset.a);
-
-	float4 basisX = offset.x >= 0.5f ? float4(offset.x, 0.0f, 0.0f, 0) : float4(0.0f, 0.0f, -offset.x, 0.0f);
-	float4 basisY = offset.y >= 0.5f ? float4(0.0f, offset.y, 0.0f, 0) : float4(0.0f, 0.0f, 0.0f, -offset.y);	
+	float4 basisX = displaceValue.x >= 0.5f ? float4(displaceValue.x, 0.0f, 0.0f, 0) : float4(0.0f, 0.0f, -displaceValue.x, 0.0f);
+	float4 basisY = displaceValue.y >= 0.5f ? float4(0.0f, displaceValue.y, 0.0f, 0) : float4(0.0f, 0.0f, 0.0f, -displaceValue.y);	
 	float4 displacement = (basisX + basisY) * displacementSettings.z;
 
-	return ((displacement.xy + displacement.zw) * displacementSettings.xy) * offset.a;
+	return ((displacement.xy + displacement.zw) * displacementSettings.xy) * displaceValue.a;
 }
 
 // The displacement shader decoder.
 float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Target
 {	
-	float2 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv);		
-	float4 color = SampleMainTexture(float4(vertex.uv.x + offset.x, vertex.uv.y + offset.y, vertex.uv.z, vertex.uv.w), vertex.color);	
+	// The texel used to displace the underlying texels.
+	float4 displaceTexel = SampleMainTexture(vertex.uv, vertex.color);
+	// Project our UV coordinates into the coordinate space of the background image.
+	float2 backUV = vertex.position.xy * displacementSettings.xy;
+	// Calculate the offset.
+	float2 offset = backUV + GorgonPixelShaderDisplacementEncoder(displaceTexel);
+	
+	// Get the background color to offset.
+	float4 color = _gorgonEffectTexture.Sample(_gorgonSampler, offset);
 	
 	REJECT_ALPHA(color.a);
 
@@ -384,8 +389,9 @@ float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Targ
 	{
 		float2 adjustment = float2(displacementSettings.x * displacementSettings.z * chromAbScale.x, 
 								   displacementSettings.y * displacementSettings.z * chromAbScale.y);
-		r = SampleMainTexture(float4(vertex.uv.x + offset.x - adjustment.x, vertex.uv.y + offset.y + adjustment.y, vertex.uv.z, vertex.uv.w), vertex.color).r;
-		b = SampleMainTexture(float4(vertex.uv.x + offset.x + adjustment.x, vertex.uv.y + offset.y - adjustment.y, vertex.uv.z, vertex.uv.w), vertex.color).b;
+		
+		r = _gorgonEffectTexture.Sample(_gorgonSampler, float2(offset.x - adjustment.x, offset.y + adjustment.y)).r;
+		b = _gorgonEffectTexture.Sample(_gorgonSampler, float2(offset.x + adjustment.x, offset.y - adjustment.y)).b;
 	}
 
 	return float4(r, color.g, b, color.a);

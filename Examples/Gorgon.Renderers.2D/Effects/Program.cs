@@ -124,14 +124,12 @@ namespace Gorgon.Examples
             if (strength > 0.0f)
             {
                 _shipSprite.Color = GorgonColor.White;
-
-                _displacement.BeginDisplacementBatch();
-                _renderer.DrawSprite(_shipSprite);
-                _displacement.EndDisplacementBatch();
-
                 _displacement.Strength = strength;
                 _displacement.ChromaticAberrationScale = new Vector2(_shipSprite.Angle.ToRadians().Cos() * 0.5f + 1.0f, _shipSprite.Angle.ToRadians().Sin() * 0.5f + 1.0f);
-                _displacement.Render(_postView1, _postTarget2);
+
+                _displacement.BeginDisplacementBatch(_postView1, _postTarget2);
+                _renderer.DrawSprite(_shipSprite);
+                _displacement.EndDisplacementBatch();
 
                 // Send the undisplaced image to the 2nd post process target.
                 _graphics.SetRenderTarget(_postTarget1);

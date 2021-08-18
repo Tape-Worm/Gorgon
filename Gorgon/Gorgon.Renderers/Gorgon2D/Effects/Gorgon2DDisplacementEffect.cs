@@ -101,6 +101,9 @@ namespace Gorgon.Renderers
         private Vector2 _chromaAbScale = new(0.5f, 0);
         // The currently active render target view.
         private GorgonRenderTargetView _currentRtv;
+        // The texture that will be displaced by the objects being rendered.
+        private GorgonTexture2DView _displaceTexture;
+        private GorgonRenderTarget2DView _output;
         #endregion
 
         #region Properties.
@@ -272,16 +275,6 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
-            if (output is null)
-            {
-                return;
-            }
-
-            if ((_displacementView is null) || (sizeChanged))
-            {
-                UpdateDisplacementMap(output);
-            }
-
             if (!_isUpdated)
             {
                 return;
@@ -324,7 +317,8 @@ namespace Gorgon.Renderers
         {
             if (passIndex == 0)
             {
-                output.Clear(GorgonColor.BlackTransparent);                
+#warning Need this?
+                //output.Clear(GorgonColor.BlackTransparent);                
             }
 
             Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
@@ -348,7 +342,7 @@ namespace Gorgon.Renderers
                     _displacementState = builders.PixelShaderBuilder.Clear()
                                           .Shader(_displacementShader)
                                           .ConstantBuffer(_displacementSettingsBuffer, 1)
-                                          .ShaderResource(_displacementView, 1)
+                                          .ShaderResource(_displaceTexture, 1)
                                           .Build(PixelShaderAllocator);
                 }
 
@@ -360,7 +354,7 @@ namespace Gorgon.Renderers
                               .Build(BatchStateAllocator);                
             }
 
-            return passIndex == 0 ? _p1BatchState : _p2BatchState;
+            return passIndex == 0 ? _p2BatchState : _p2BatchState;
         }
 
         /// <summary>
@@ -386,9 +380,9 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to begin a batch for rendering the objects used to displace the target.
         /// </summary>
-        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
+        /// <param name="backgroundTexture">The texture that will be displaced.</param>
+        /// <param name="output">The output render target that will receive the displaced rendering.</param>
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
-        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
         /// <returns><b>true</b> if the pass can continue, <b>false</b> if not.</returns>
         /// <remarks>
@@ -400,13 +394,21 @@ namespace Gorgon.Renderers
         /// returns <b>false</b>, the <see cref="EndDisplacementBatch"/> still must be called.
         /// </para>
         /// </remarks>
-        public bool BeginDisplacementBatch(GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
+        public bool BeginDisplacementBatch(GorgonTexture2DView backgroundTexture, GorgonRenderTarget2DView output, GorgonDepthStencilState depthStencilState = null, GorgonCameraCommon camera = null)
         {
             _currentRtv = Graphics.RenderTargets[0];
+            _displaceTexture = backgroundTexture;
+            _output = output;
 
-            BeginRender(_currentRtv, blendState, depthStencilState, rasterState);
+            // No texture? Nothing to displace.
+            if ((_displaceTexture is null) || (output is null))
+            {
+                return false;
+            }
 
-            if (BeginPass(0, _displacementTarget, camera) != PassContinuationState.Continue)
+            BeginRender(_currentRtv, depthStencilState: depthStencilState);
+
+            if (BeginPass(0, output, camera) != PassContinuationState.Continue)
             {
                 EndRender(_currentRtv);                
                 return false;
@@ -425,8 +427,12 @@ namespace Gorgon.Renderers
         /// </remarks>
         public void EndDisplacementBatch()
         {
-            EndPass(0, _displacementTarget);
+            EndPass(0, _output);
             EndRender(_currentRtv);
+
+            _currentRtv = null;
+            _displaceTexture = null;
+            _output = null;
         }
 
         /// <summary>
@@ -440,7 +446,7 @@ namespace Gorgon.Renderers
         /// This method must be called after <see cref="EndDisplacementBatch"/>
         /// </para>
         /// </remarks>
-        public void Render(GorgonTexture2DView backgroundTexture, GorgonRenderTargetView target)
+        /*public void Render(GorgonTexture2DView backgroundTexture, GorgonRenderTargetView target)
         {
             GorgonRenderTarget2DView workerRtv = null;
 
@@ -465,7 +471,7 @@ namespace Gorgon.Renderers
             {
                 Graphics.TemporaryTargets.Return(workerRtv);
             }
-        }
+        }*/
         #endregion
 
         #region Constructor/Destructor.
@@ -474,7 +480,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to render this effect.</param>
         public Gorgon2DDisplacementEffect(Gorgon2D renderer)
-            : base(renderer, Resources.GOR2D_EFFECT_DISPLACEMENT, Resources.GOR2D_EFFECT_DISPLACEMENT_DESC, 2) => Macros.Add(new GorgonShaderMacro("DISPLACEMENT_EFFECT"));
+            : base(renderer, Resources.GOR2D_EFFECT_DISPLACEMENT, Resources.GOR2D_EFFECT_DISPLACEMENT_DESC, 1) => Macros.Add(new GorgonShaderMacro("DISPLACEMENT_EFFECT"));
         #endregion
     }
 }
