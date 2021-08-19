@@ -111,12 +111,6 @@ namespace Gorgon.Renderers
             get => _displacementStrength;
             set
             {
-                if (value < 0.0f)
-                {
-                    value = 0.0f;
-                }
-
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (_displacementStrength == value)
                 {
                     return;
