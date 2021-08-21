@@ -43,6 +43,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
+using Gorgon.Timing;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -54,7 +55,8 @@ namespace Gorgon.Editor.ViewModels
     {
         #region Constants.
         // The amount of time, in milliseconds, to pause an operation so the user can cancel the operation.
-        private const int UserInteractionTimeMilliseconds = 50;
+        private const int MaxUserInteractionTimeMilliseconds = 50;
+        private const int MinUserInteractionTimeMilliseconds = 5;
         #endregion
 
         #region Events.
@@ -157,6 +159,10 @@ namespace Gorgon.Editor.ViewModels
         private ObservableCollection<IFile> _selectedFiles = new();
         // The clipboard handler.
         private IClipboardHandler _clipboardHandler;
+        // Timer used to determine how long it takes to update UI.
+        private int _userInteractionTimeMilliseconds = MaxUserInteractionTimeMilliseconds;
+        private readonly IGorgonTimer _uiTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
+        private double _lastTime = -1;
         #endregion
 
         #region Properties.
@@ -1252,6 +1258,39 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to pause an operation so the user has time to react.
+        /// </summary>
+        private void SleepUI()
+        {
+            double time = _uiTimer.Seconds;
+
+            if (_lastTime == -1)
+            {
+                _uiTimer.Reset();
+                time = 0;
+                _lastTime = 0;
+                _userInteractionTimeMilliseconds = MaxUserInteractionTimeMilliseconds;
+            }
+
+            if (_userInteractionTimeMilliseconds > MinUserInteractionTimeMilliseconds)
+            {
+                double currentTime = time - _lastTime;
+
+                if (currentTime > 5)
+                {
+                    _userInteractionTimeMilliseconds = MinUserInteractionTimeMilliseconds;
+                    _lastTime = time;
+                }
+                else if (currentTime > 3)
+                {
+                    _userInteractionTimeMilliseconds = MaxUserInteractionTimeMilliseconds / 5;
+                }
+            }
+            
+            Thread.Sleep(_userInteractionTimeMilliseconds);
+        }
+
+        /// <summary>
         /// Function to delete a directory.
         /// </summary>
         /// <param name="args">The arguments for the command.</param>
@@ -1303,7 +1342,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Give our UI time to update.  
                 // We do this here so the user is able to click the Cancel button should they need it.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             IDirectory directory = null;
@@ -1414,6 +1453,7 @@ namespace Gorgon.Editor.ViewModels
                 HideProgress();
                 HideWaitPanel();
                 cancelSource.Dispose();
+                _lastTime = -1;
             }
         }
 
@@ -1447,7 +1487,7 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 // Wait for a bit in order to give users time to react.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             // Function called to locate the file view model.
@@ -1570,6 +1610,7 @@ namespace Gorgon.Editor.ViewModels
                 _fileSystemWriter.VirtualFileDeleted -= OnDeleted;
                 HostServices.BusyService.SetIdle();
                 HideProgress();
+                _lastTime = -1;
             }
         }
 
@@ -1914,7 +1955,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Give our UI time to update.  
                 // We do this here so the user is able to click the Cancel button should they need it.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             // Event handler to retrieve the list of source and destination directories, and source and destination files that were moved.
@@ -2011,6 +2052,7 @@ namespace Gorgon.Editor.ViewModels
                 _fileSystemWriter.VirtualDirectoryMoved -= DirectoryMoved;
                 HideProgress();
                 cancelSource?.Dispose();
+                _lastTime = -1;
             }
         }        
 
@@ -2080,7 +2122,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Give our UI time to update.  
                 // We do this here so the user is able to click the Cancel button should they need it.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             // Event handler to retrieve the list of source and destination directories, and source and destination files that were moved.
@@ -2170,6 +2212,7 @@ namespace Gorgon.Editor.ViewModels
                 _fileSystemWriter.VirtualFileMoved -= FilesMoved;
                 HideProgress();
                 cancelSource?.Dispose();
+                _lastTime = -1;
             }
         }
 
@@ -2213,7 +2256,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Give our UI time to update.  
                 // We do this here so the user is able to click the Cancel button should they need it.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             // Event handler to retrieve the list of files that were copied.
@@ -2278,6 +2321,7 @@ namespace Gorgon.Editor.ViewModels
                 _fileSystemWriter.VirtualFileCopied -= FilesCopied;
                 HideProgress();
                 cancelSource?.Dispose();
+                _lastTime = -1;
             }
         }
 
@@ -2344,7 +2388,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Give our UI time to update.  
                 // We do this here so the user is able to click the Cancel button should they need it.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             // Event handler to retrieve the list of directories, and files that were copied.
@@ -2406,6 +2450,7 @@ namespace Gorgon.Editor.ViewModels
                 _fileSystemWriter.VirtualDirectoryCopied -= DirectoryCopied;
                 HideProgress();
                 cancelSource?.Dispose();
+                _lastTime = -1;
             }
         }
 
@@ -2485,7 +2530,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Give our UI time to update.  
                 // We do this here so the user is able to click the Cancel button should they need it.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             try
@@ -2522,6 +2567,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 HideProgress();
                 cancelSource?.Dispose();
+                _lastTime = -1;
             }
         }
 
@@ -2578,7 +2624,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Give our UI time to update.  
                 // We do this here so the user is able to click the Cancel button should they need it.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             try
@@ -2614,6 +2660,7 @@ namespace Gorgon.Editor.ViewModels
             {
                 cancelSource.Dispose();
                 HideProgress();
+                _lastTime = -1;
             }
         }
 
@@ -2662,7 +2709,7 @@ namespace Gorgon.Editor.ViewModels
 
                 // Give our UI time to update.  
                 // We do this here so the user is able to click the Cancel button should they need it.
-                Thread.Sleep(UserInteractionTimeMilliseconds);
+                SleepUI();
             }
 
             // Event handler to retrieve the list of directories, and files that were imported.
@@ -2828,6 +2875,7 @@ namespace Gorgon.Editor.ViewModels
                 _fileSystemWriter.Imported -= Imported;
                 HideProgress();
                 cancelSource?.Dispose();
+                _lastTime = -1;
             }
         }
 

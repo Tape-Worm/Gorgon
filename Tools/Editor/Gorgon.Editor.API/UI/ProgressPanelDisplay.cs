@@ -55,7 +55,7 @@ namespace Gorgon.Editor.UI
         /// Function to unassign the events from the view model.
         /// </summary>
         private void UnassignEvents()
-        {
+        {            
             _progressCancelAction?.Invoke();
 
             if (_viewModel is null)
@@ -119,7 +119,11 @@ namespace Gorgon.Editor.UI
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose() => UnassignEvents();
+        public void Dispose()
+        {
+            _progressCancelAction = null;
+            UnassignEvents();
+        }
         #endregion
 
         #region Constructor/Finalizer.
