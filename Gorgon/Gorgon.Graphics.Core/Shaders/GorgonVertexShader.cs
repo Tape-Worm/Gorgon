@@ -92,14 +92,10 @@ namespace Gorgon.Graphics.Core
         /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
         /// <param name="byteCode">The byte code for the shader..</param>
         internal GorgonVertexShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode)
-            : base(graphics, name, isDebug, byteCode)
-        {
-            graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);
-            _nativeShader = new D3D11.VertexShader(graphics.D3DDevice, byteCode)
+            : base(graphics, name, isDebug, byteCode) => _nativeShader = new D3D11.VertexShader(graphics.D3DDevice, byteCode)
             {
                 DebugName = name + " D3D11VertexShader"
             };
-        }
         #endregion
     }
 }

@@ -368,6 +368,8 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, codecTypeName));
             }
 
+            _graphics.Log.Print($"Loading animation '{path}'...", LoggingLevel.Verbose);
+
             if ((metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths)) 
                 && (paths is not null)
                 && (paths.Count > 0))
@@ -448,6 +450,8 @@ namespace Gorgon.IO
             {
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, codecTypeName));
             }
+
+            _graphics.Log.Print($"Loading image data for '{path}'...", LoggingLevel.Verbose);
 
             using Stream stream = file.OpenStream();
             return imageCodec.FromStream(stream, (int)file.Size);
@@ -634,6 +638,8 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_UNSUPPORTED_CODEC, codecTypeName));
             }
 
+            _graphics.Log.Print($"Loading sprite '{path}'...", LoggingLevel.Verbose);
+
             // If we've not provided an override, then load the texture dependencies.
             if ((overrideTexture is null)
                 && (metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths))
@@ -643,6 +649,10 @@ namespace Gorgon.IO
                 IEnumerable<Task<GorgonTexture2D>> dependencies = paths.Select(item => TextureCache.GetTextureAsync(item, ReadTextureAsync));
                 GorgonTexture2D[] textures = await Task.WhenAll(dependencies);
                 overrideTexture = textures.FirstOrDefault(item => string.Equals(item?.Name, paths[0], StringComparison.OrdinalIgnoreCase))?.GetShaderResourceView();
+            }
+            else
+            {
+                _graphics.Log.Print($"Sprite texture has been overridden with texture '{overrideTexture.Resource.Name}'.", LoggingLevel.Verbose);
             }
 
             using Stream stream = spriteFile.OpenStream();

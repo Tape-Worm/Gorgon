@@ -371,6 +371,8 @@ namespace Gorgon.Graphics.Core
             ID = Interlocked.Increment(ref _shaderID);
             _isDebug = isDebug;
             _byteCode = byteCode;
+
+            graphics.Log.Print($"Creating {ShaderType} Shader '{name}' ({ID})", LoggingLevel.Verbose);
         }
         #endregion
     }

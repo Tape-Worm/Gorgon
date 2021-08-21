@@ -148,11 +148,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="byteCode">The byte code for the shader.</param>
         /// <param name="soShader">The stream out shader.</param>
         private GorgonGeometryShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode, D3D11.GeometryShader soShader)
-            : base(graphics, name, isDebug, byteCode)
-        {
-            graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);
-            _shader = soShader;
-        }
+            : base(graphics, name, isDebug, byteCode) => _shader = soShader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonGeometryShader" /> class.
@@ -162,14 +158,10 @@ namespace Gorgon.Graphics.Core
         /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
         /// <param name="byteCode">The byte code for the shader.</param>
         internal GorgonGeometryShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode)
-            : base(graphics, name, isDebug, byteCode)
-        {
-            graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);
-            _shader = new D3D11.GeometryShader(graphics.D3DDevice, byteCode)
+            : base(graphics, name, isDebug, byteCode) => _shader = new D3D11.GeometryShader(graphics.D3DDevice, byteCode)
             {
                 DebugName = name + "_ID3D11GeometryShader"
             };
-        }
         #endregion
     }
 }
