@@ -31,6 +31,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -41,6 +42,7 @@ using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.AnimationEditor.Properties;
+using Gorgon.Editor.AnimationEditor.Services;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -135,6 +137,33 @@ namespace Gorgon.Editor.AnimationEditor
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Property to set or return the starting position of the primary sprite.
+        /// </summary>
+        public Vector2 PrimarySpriteStartPosition
+        {
+            get => WorkingSprite?.Position ?? Vector2.Zero;
+            set
+            {
+                if (WorkingSprite is null)
+                {
+                    return;
+                }
+
+                if (WorkingSprite.Position.Equals(value))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                WorkingSprite.Position = value;
+                OnPropertyChanged();
+                UpdatePrimarySprite();
+
+                ContentState = ContentState.Modified;
+            }
         }
 
         /// <summary>
@@ -541,23 +570,12 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         private void UpdatePrimarySprite()
         {
-            Vector2 position;
-
             if (PrimarySprite is null)
             {
                 return;
             }
 
-            if (BackgroundImage is null)
-            {
-                position = new Vector2((int)(Settings.DefaultResolution.Width * 0.5f), (int)(Settings.DefaultResolution.Height * 0.5f));
-            }
-            else
-            {
-                position = new Vector2((int)(BackgroundImage.Width * 0.5f), (int)(BackgroundImage.Height * 0.5f));
-            }
-
-            PrimarySprite.Position = position;
+            PrimarySprite.Position = PrimarySpriteStartPosition;
         }
 
         /// <summary>
@@ -614,7 +632,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 _controller.Play(WorkingSprite, _animation);
                 _controller.Time = currentTime;
-                _controller.Refresh();
+                _controller.Refresh();                
 
                 NotifyPropertyChanged(nameof(WorkingSprite));
 
@@ -1980,7 +1998,7 @@ namespace Gorgon.Editor.AnimationEditor
 
                 RebuildAnimation();
 
-                await _contentServices.IOService.SaveAnimation(File.Path, _animation, _backImage.file, _primarySprite.spriteFile, _contentServices.KeyProcessor.GetKeyframeTextureFiles(Tracks), _unsupportedTracks);
+                await _contentServices.IOService.SaveAnimation(File.Path, _animation, _backImage.file, PrimarySpriteStartPosition, _primarySprite.spriteFile, _contentServices.KeyProcessor.GetKeyframeTextureFiles(Tracks), _unsupportedTracks);
 
                 ContentState = ContentState.Unmodified;
             }
@@ -2019,7 +2037,7 @@ namespace Gorgon.Editor.AnimationEditor
                     {
                         case MessageResponse.Yes:
                             RebuildAnimation();
-                            await _contentServices.IOService.SaveAnimation(File.Path, _animation, _backImage.file, _primarySprite.spriteFile, textureFiles, _unsupportedTracks);
+                            await _contentServices.IOService.SaveAnimation(File.Path, _animation, _backImage.file, PrimarySpriteStartPosition, _primarySprite.spriteFile, textureFiles, _unsupportedTracks);
                             ContentState = ContentState.Unmodified;
                             break;
                         case MessageResponse.Cancel:
@@ -2099,7 +2117,7 @@ namespace Gorgon.Editor.AnimationEditor
                 RebuildAnimation();
 
                 // Write the updated data.
-                File = await _contentServices.IOService.SaveAnimation(animationPath, _animation, _backImage.file, _primarySprite.spriteFile, textureFiles, _unsupportedTracks);
+                File = await _contentServices.IOService.SaveAnimation(animationPath, _animation, _backImage.file, PrimarySpriteStartPosition, _primarySprite.spriteFile, textureFiles, _unsupportedTracks);
 
                 // Remove all undo states since we're now working with a new file.
                 ContentState = ContentState.Unmodified;
@@ -2144,11 +2162,26 @@ namespace Gorgon.Editor.AnimationEditor
             Tracks = injectionParameters.Tracks;
             _trackList.AddRange(Tracks);
 
+            float x = 0;
+            float y = 0;
+
+            if (File.Metadata.Attributes.TryGetValue(AnimationIOService.StartPositionAttrX, out string startX))
+            {
+                float.TryParse(startX, NumberStyles.Float, CultureInfo.InvariantCulture, out x);
+            }
+
+            if (File.Metadata.Attributes.TryGetValue(AnimationIOService.StartPositionAttrY, out string startY))
+            {
+                float.TryParse(startY, NumberStyles.Float, CultureInfo.InvariantCulture, out y);
+            }
+                       
             if (WorkingSprite is not null)
             {
                 _controller.Play(WorkingSprite, _animation);
                 _controller.Pause();
-            }            
+            }
+
+            PrimarySprite.Position = WorkingSprite.Position = new Vector2(x, y);
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>

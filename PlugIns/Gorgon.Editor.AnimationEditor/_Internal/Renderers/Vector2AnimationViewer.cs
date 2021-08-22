@@ -55,8 +55,6 @@ namespace Gorgon.Editor.AnimationEditor
         #endregion
 
         #region Variables.
-        // The clipper service used to manipulate a sprite.
-        private readonly IRectClipperService _clipper;
         // The anchor editor service.
         private readonly IAnchorEditService _anchorEdit;
         // The editor used to modify sprite vertices.
@@ -78,7 +76,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            _clipper.RectChanged += Clipper_RectChanged;
+            Clipper.RectChanged += Clipper_RectChanged;
             _anchorEdit.AnchorChanged += AnchorEdit_AnchorChanged;
             _vertexEditor.VerticesChanged += Vertex_Changed;
         }
@@ -93,7 +91,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            _clipper.RectChanged -= Clipper_RectChanged;
+            Clipper.RectChanged -= Clipper_RectChanged;
             _anchorEdit.AnchorChanged -= AnchorEdit_AnchorChanged;
             _vertexEditor.VerticesChanged -= Vertex_Changed;
         }
@@ -142,11 +140,11 @@ namespace Gorgon.Editor.AnimationEditor
             switch (SelectedTrackID)
             {
                 case TrackSpriteProperty.Position:
-                    Vector2 offset = new Vector2(Sprite.Anchor.X * _clipper.Rectangle.Width, Sprite.Anchor.Y * _clipper.Rectangle.Height).Truncate();
-                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4(_clipper.Rectangle.X + offset.X, _clipper.Rectangle.Y + offset.Y, 0, 0);
+                    Vector2 offset = new Vector2(Sprite.Anchor.X * Clipper.Rectangle.Width, Sprite.Anchor.Y * Clipper.Rectangle.Height).Truncate();
+                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4(Clipper.Rectangle.X + offset.X, Clipper.Rectangle.Y + offset.Y, 0, 0);
                     break;
                 case TrackSpriteProperty.Size:
-                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4(_clipper.Rectangle.Width, _clipper.Rectangle.Height, 0, 0);
+                    DataContext.KeyEditor.CurrentEditor.Value = new Vector4(Clipper.Rectangle.Width, Clipper.Rectangle.Height, 0, 0);
                     break;
             }
         }
@@ -166,14 +164,14 @@ namespace Gorgon.Editor.AnimationEditor
             {
                 if (oldTarget == MainRenderTarget)
                 {
-                    _clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
+                    Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
                     return;
                 }
 
                 // The camera relies on the target size of our swap chain for its projection, so we have to switch to our main 
                 // render target temporarily.
                 Graphics.SetRenderTarget(MainRenderTarget);
-                _clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
+                Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
                 Graphics.SetRenderTarget(oldTarget);
             }
             finally
@@ -247,7 +245,7 @@ namespace Gorgon.Editor.AnimationEditor
                 case TrackSpriteProperty.AnchorAbsolute:
                 case TrackSpriteProperty.Angle:
                 case TrackSpriteProperty.Position:
-                    _clipper.Refresh();
+                    Clipper.Refresh();
                     break;
                 case TrackSpriteProperty.UpperLeft:
                 case TrackSpriteProperty.UpperRight:
@@ -351,11 +349,11 @@ namespace Gorgon.Editor.AnimationEditor
             switch (propertyName)
             {
                 case nameof(IAnimationContent.Selected):
-                    _clipper.AllowMove = SelectedTrackID == TrackSpriteProperty.Position;
+                    Clipper.AllowMove = SelectedTrackID == TrackSpriteProperty.Position;
                     UpdateVertexEditorSprite(false);
                     break;
                 case nameof(IAnimationContent.BackgroundImage):
-                    _clipper.Bounds = RenderRegion;
+                    Clipper.Bounds = RenderRegion;
                     break;
             }
         }
@@ -374,7 +372,7 @@ namespace Gorgon.Editor.AnimationEditor
             switch (SelectedTrackID)
             {
                 case TrackSpriteProperty.Position:
-                    args.Handled = _clipper.MouseDown(args);
+                    args.Handled = Clipper.MouseDown(args);
                     break;
                 case TrackSpriteProperty.AnchorAbsolute:
                 case TrackSpriteProperty.Anchor:
@@ -405,7 +403,7 @@ namespace Gorgon.Editor.AnimationEditor
             switch (SelectedTrackID)
             {
                 case TrackSpriteProperty.Position:
-                    args.Handled = _clipper.MouseMove(args);
+                    args.Handled = Clipper.MouseMove(args);
                     break;
                 case TrackSpriteProperty.AnchorAbsolute:
                 case TrackSpriteProperty.Anchor:
@@ -436,7 +434,7 @@ namespace Gorgon.Editor.AnimationEditor
             switch (SelectedTrackID)
             {
                 case TrackSpriteProperty.Position:
-                    args.IsInputKey = _clipper.KeyDown(args.KeyCode, args.Modifiers);
+                    args.IsInputKey = Clipper.KeyDown(args.KeyCode, args.Modifiers);
                     break;
                 case TrackSpriteProperty.AnchorAbsolute:
                 case TrackSpriteProperty.Anchor:
@@ -461,7 +459,7 @@ namespace Gorgon.Editor.AnimationEditor
             switch (SelectedTrackID)
             {
                 case TrackSpriteProperty.Position:
-                    args.Handled = _clipper.MouseUp(args);
+                    args.Handled = Clipper.MouseUp(args);
                     break;
                 case TrackSpriteProperty.AnchorAbsolute:
                 case TrackSpriteProperty.Anchor:
@@ -518,7 +516,7 @@ namespace Gorgon.Editor.AnimationEditor
                 case TrackSpriteProperty.Position:
                     Renderer.Begin();
                     
-                    _clipper.Render();
+                    Clipper.Render();
                     DrawAnchorPoint();
 
                     Renderer.End();
@@ -526,7 +524,7 @@ namespace Gorgon.Editor.AnimationEditor
                 case TrackSpriteProperty.AnchorAbsolute:
                 case TrackSpriteProperty.Anchor:
                     Renderer.Begin();
-                    _clipper.Render();
+                    Clipper.Render();
                     _anchorEdit.Render();
                     Renderer.End();
                     break;
@@ -577,12 +575,12 @@ namespace Gorgon.Editor.AnimationEditor
         {
             base.OnLoad();            
 
-            _vertexEditor.Camera = _anchorEdit.Camera = _clipper.Camera = Camera;
-            _clipper.Bounds = RenderRegion;
-            _clipper.ClipAgainstBoundaries = false;
-            _clipper.AllowResize = false;
-            _clipper.AllowManualInput = false;
-            _clipper.AllowMove = SelectedTrackID == TrackSpriteProperty.Position;
+            _vertexEditor.Camera = _anchorEdit.Camera = Clipper.Camera = Camera;
+            Clipper.Bounds = RenderRegion;
+            Clipper.ClipAgainstBoundaries = false;
+            Clipper.AllowResize = false;
+            Clipper.AllowManualInput = false;
+            Clipper.AllowMove = SelectedTrackID == TrackSpriteProperty.Position;
             _vertexEditSprite = new GorgonSprite();
             UpdateVertexEditorSprite(false);
 
@@ -623,9 +621,8 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="anchorEditor">The anchor editor interface.</param>
         /// <param name="vertexEditor">The editor for sprite vertices.</param>
         public Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, IAnchorEditService anchorEditor, VertexEditService vertexEditor)
-            : base(ViewerName, renderer, swapChain, dataContext, true)
-        {            
-            _clipper = clipper;
+            : base(ViewerName, renderer, swapChain, dataContext, clipper, true)
+        {   
             _anchorEdit = anchorEditor;
             _vertexEditor = vertexEditor;
         }

@@ -268,7 +268,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="swapChain">The swap chain for the content view.</param>
         /// <param name="dataContext">The view model to assign to the renderer.</param>        
         public SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext)
-            : base(ViewerName, renderer, swapChain, dataContext, true)
+            : base(ViewerName, renderer, swapChain, dataContext, null, true)
         {
         }        
         #endregion

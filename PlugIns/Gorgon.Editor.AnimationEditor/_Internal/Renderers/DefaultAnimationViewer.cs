@@ -27,6 +27,8 @@
 using System.Linq;
 using System.Numerics;
 using Gorgon.Editor.AnimationEditor.Properties;
+using Gorgon.Editor.Rendering;
+using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
@@ -58,6 +60,48 @@ namespace Gorgon.Editor.AnimationEditor
         #endregion
 
         #region Methods.
+        /// <summary>Function called when the camera is panned.</summary>
+        /// <remarks>Developers can override this method to implement a custom action when the camera is panned around the view.</remarks>
+        protected override void OnCameraMoved() => Clipper?.Refresh();
+
+        /// <summary>Function called when the camera is zoomed.</summary>
+        /// <remarks>Developers can override this method to implement a custom action when the camera is zoomed in or out.</remarks>
+        protected override void OnCameraZoomed() => Clipper?.Refresh();
+
+        /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext" /> has been changed.</summary>
+        /// <param name="propertyName">The name of the property that was changed.</param>
+        /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
+        protected override void OnPropertyChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(IAnimationContent.WorkingSprite):
+                case nameof(IAnimationContent.PrimarySprite):
+                    if (Clipper is not null)
+                    {
+                        Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
+                        Clipper.Refresh();
+                    }
+                    break;
+                case nameof(IAnimationContent.BackgroundImage):
+                    if (Clipper is not null)
+                    {
+                        Clipper.Bounds = RenderRegion;
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>Function called when the renderer needs to clean up any resource data.</summary>
+        /// <remarks>Developers should always override this method if they've overridden the <see cref="DefaultContentRenderer{T}.OnLoad" /> method. Failure to do so can cause memory leakage.</remarks>
+        protected override void OnUnload()
+        {
+            if (Clipper is not null)
+            {
+                Clipper.RectChanged -= Clipper_RectChanged;
+            }
+        }
+
         /// <summary>Function called when the renderer needs to load any resource data.</summary>
         /// <remarks>
         /// Developers can override this method to set up their own resources specific to their renderer. Any resources set up in this method should be cleaned up in the associated
@@ -87,6 +131,27 @@ namespace Gorgon.Editor.AnimationEditor
 
             _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
             _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
+
+            if (Clipper is not null)
+            {
+                Clipper.Camera = Camera;
+                Clipper.AllowResize = false;
+                Clipper.AllowManualInput = false;
+                Clipper.AllowMove = true;
+                Clipper.ClipAgainstBoundaries = false;
+                Clipper.Bounds = RenderRegion;
+                Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
+                Clipper.RectChanged += Clipper_RectChanged;
+            }
+        }
+
+        /// <summary>Handles the RectChanged event of the Clipper control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
+        private void Clipper_RectChanged(object sender, System.EventArgs e)
+        {
+            Vector2 offset = new Vector2(Sprite.Anchor.X * Clipper.Rectangle.Width, Sprite.Anchor.Y * Clipper.Rectangle.Height).Truncate();
+            DataContext.PrimarySpriteStartPosition = new Vector2(Clipper.Rectangle.Left + offset.X, Clipper.Rectangle.Top + offset.Y);
         }
 
         /// <summary>Function called when the view has been resized.</summary>
@@ -98,7 +163,36 @@ namespace Gorgon.Editor.AnimationEditor
             _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
             _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
 
+            Clipper?.Refresh();
+
             base.OnResizeEnd();
+        }
+
+        /// <summary>Function to handle a mouse move event.</summary>
+        /// <param name="args">The arguments for the event.</param>
+        /// <remarks>Developers can override this method to handle a mouse move event in their own content view.</remarks>
+        protected override void OnMouseMove(MouseArgs args)
+        {
+            Clipper?.MouseMove(args);
+            base.OnMouseMove(args);
+        }
+
+        /// <summary>Function to handle a mouse down event.</summary>
+        /// <param name="args">The arguments for the event.</param>
+        /// <remarks>Developers can override this method to handle a mouse down event in their own content view.</remarks>
+        protected override void OnMouseDown(MouseArgs args)
+        {
+            Clipper?.MouseDown(args);
+            base.OnMouseDown(args);
+        }
+
+        /// <summary>Function to handle a mouse up event.</summary>
+        /// <param name="args">The arguments for the event.</param>
+        /// <remarks>Developers can override this method to handle a mouse up event in their own content view.</remarks>
+        protected override void OnMouseUp(MouseArgs args) 
+        {
+            Clipper?.MouseUp(args);
+            base.OnMouseUp(args);
         }
 
         /// <summary>Function to draw any gizmos for UI components.</summary>
@@ -108,6 +202,11 @@ namespace Gorgon.Editor.AnimationEditor
 
             if ((DataContext.CommandContext != DataContext.KeyEditor) || (SelectedTrackID != TrackSpriteProperty.Texture))
             {
+                
+                Renderer.Begin();
+                Clipper.Render();
+                Renderer.End();
+
                 return;
             }
 
@@ -132,10 +231,8 @@ namespace Gorgon.Editor.AnimationEditor
             }
 
             DataContext.UpdateAnimationPreviewCommand.Execute(null);
-        }
-        #endregion
+        }        
 
-        #region Methods.
         /// <summary>Function to set the default zoom/offset for the viewer.</summary>
         public override void DefaultZoom()
         {
@@ -153,8 +250,9 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="renderer">The main renderer for the content view.</param>
         /// <param name="swapChain">The swap chain for the content view.</param>
         /// <param name="dataContext">The view model to assign to the renderer.</param>        
-        public DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext)
-            : base(ViewerName, renderer, swapChain, dataContext, false)
+        /// <param name="clipper">The service used to clip rectangular areas of an image.</param>
+        public DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper)
+            : base(ViewerName, renderer, swapChain, dataContext, clipper, false)
         {            
         }        
         #endregion

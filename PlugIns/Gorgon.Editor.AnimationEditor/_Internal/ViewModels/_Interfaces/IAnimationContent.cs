@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
@@ -45,6 +46,15 @@ namespace Gorgon.Editor.AnimationEditor
         IAddTrack AddTrack
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to set or return the starting position of the primary sprite.
+        /// </summary>
+        Vector2 PrimarySpriteStartPosition
+        {
+            get;
+            set;
         }
 
         /// <summary>

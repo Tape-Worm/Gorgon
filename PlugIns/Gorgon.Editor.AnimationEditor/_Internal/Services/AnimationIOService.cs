@@ -27,8 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
@@ -45,6 +47,14 @@ namespace Gorgon.Editor.AnimationEditor.Services
     /// </summary>
     internal class AnimationIOService
     {
+        #region Constants.
+        /// <summary>
+        /// The name of the attributes that define the start position.
+        /// </summary>
+        public const string StartPositionAttrX = "SpriteStartPositionX";
+        public const string StartPositionAttrY = "SpriteStartPositionY";
+        #endregion
+
         #region Classes.
         /// <summary>
         /// The primary sprite dependency data.
@@ -412,11 +422,12 @@ namespace Gorgon.Editor.AnimationEditor.Services
         /// <param name="path">The path to the file to write to.</param>
         /// <param name="animation">The animation to save.</param>
         /// <param name="backgroundImage">The file containing the background image.</param>
+        /// <param name="startPos">The starting position for the source sprite.</param>
         /// <param name="primarySpriteFile">The file containing the primary sprite.</param>
         /// <param name="textureFiles">The texture files used by the keyframes in the animation.</param>
         /// <param name="excluded">The list of tracks that are excluded from the animation.</param>
         /// <returns>The file containing the animation.</returns>
-        public async Task<IContentFile> SaveAnimation(string path, IGorgonAnimation animation, IContentFile backgroundImage, IContentFile primarySpriteFile, IReadOnlyList<IContentFile> textureFiles, IReadOnlyList<ITrack> excluded) 
+        public async Task<IContentFile> SaveAnimation(string path, IGorgonAnimation animation, IContentFile backgroundImage, Vector2 startPos, IContentFile primarySpriteFile, IReadOnlyList<IContentFile> textureFiles, IReadOnlyList<ITrack> excluded) 
         {
             Stream stream = null;
             IContentFile animFile = null;
@@ -493,6 +504,8 @@ namespace Gorgon.Editor.AnimationEditor.Services
                     animFile.Metadata.DependsOn[CommonEditorContentTypes.ImageType] = files;
                 }
 
+                animFile.Metadata.Attributes[StartPositionAttrX] = startPos.X.ToString("0.0#####", CultureInfo.InvariantCulture);
+                animFile.Metadata.Attributes[StartPositionAttrY] = startPos.Y.ToString("0.0#####", CultureInfo.InvariantCulture);
                 animFile.Metadata.Attributes.Remove(CommonEditorConstants.IsNewAttr);
 
                 // Persist the metadata.

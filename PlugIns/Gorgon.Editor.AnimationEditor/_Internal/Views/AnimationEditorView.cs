@@ -369,7 +369,7 @@ namespace Gorgon.Editor.AnimationEditor
             _vertexEditorService = new VertexEditService(context.Renderer2D);
 
             var noSprite = new NoPrimarySpriteViewer(context.Renderer2D, swapChain, context.FontFactory, DataContext);
-            var defaultView = new DefaultAnimationViewer(context.Renderer2D, swapChain, DataContext);
+            var defaultView = new DefaultAnimationViewer(context.Renderer2D, swapChain, DataContext, _clipper);
             var singleEditorView = new SingleAnimationViewer(context.Renderer2D, swapChain, DataContext);
             var vec2EditorView = new Vector2AnimationViewer(context.Renderer2D, swapChain, DataContext, _clipper, _anchorService, _vertexEditorService);
 

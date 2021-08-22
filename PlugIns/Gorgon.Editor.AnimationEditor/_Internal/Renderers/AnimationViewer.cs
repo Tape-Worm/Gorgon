@@ -25,11 +25,13 @@
 #endregion
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Numerics;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -62,6 +64,15 @@ namespace Gorgon.Editor.AnimationEditor
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the rectangle clipper interface.
+        /// </summary>
+        protected IRectClipperService Clipper
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the silhouette effect for the onion skin.
         /// </summary>
@@ -391,6 +402,9 @@ namespace Gorgon.Editor.AnimationEditor
 
             switch (propertyName)
             {
+                case nameof(IAnimationContent.PrimarySpriteStartPosition):
+                    Sprite.Position = DataContext.PrimarySpriteStartPosition;
+                    break;
                 case nameof(IAnimationContent.CommandContext):
                 case nameof(IAnimationContent.CurrentPanel):
                     if (DataContext.CommandContext != DataContext.KeyEditor)
@@ -532,7 +546,7 @@ namespace Gorgon.Editor.AnimationEditor
             if ((args.ButtonClickCount > 1) && ((args.Modifiers & Keys.Control) == Keys.Control) && (Sprite is not null))
             {
                 ZoomToSprite(Sprite);
-                args.Handled = true;                
+                args.Handled = true;
             }
 
             base.OnMouseDown(args);
@@ -660,9 +674,14 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="renderer">The main renderer for the content view.</param>
         /// <param name="swapChain">The swap chain for the content view.</param>
         /// <param name="dataContext">The view model to assign to the renderer.</param>        
+        /// <param name="clipper">The service used to clip rectangular areas of an image.</param>
         /// <param name="supportOnionSkin"><b>true</b> if the view supports onion skinning, or <b>false</b> if not.</param>
-        protected AnimationViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, bool supportOnionSkin)
-            : base(name, renderer, swapChain, dataContext) => SupportsOnionSkinning = supportOnionSkin;
+        protected AnimationViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, bool supportOnionSkin)
+            : base(name, renderer, swapChain, dataContext)
+        {
+            Clipper = clipper;
+            SupportsOnionSkinning = supportOnionSkin;
+        }
         #endregion
     }
 }
