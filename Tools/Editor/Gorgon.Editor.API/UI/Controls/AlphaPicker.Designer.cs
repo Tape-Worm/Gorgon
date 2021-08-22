@@ -35,9 +35,10 @@
         private void InitializeComponent()
         {
             this.TableAlpha = new System.Windows.Forms.TableLayoutPanel();
-            this.NumericAlpha = new System.Windows.Forms.NumericUpDown();
-            this.LabelAlpha = new System.Windows.Forms.Label();
             this.PanelAlpha = new System.Windows.Forms.Panel();
+            this.LabelAlpha = new System.Windows.Forms.Label();
+            this.NumericAlpha = new System.Windows.Forms.NumericUpDown();
+            this.PanelIndicator = new System.Windows.Forms.Panel();
             this.TableAlpha.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericAlpha)).BeginInit();
             this.SuspendLayout();
@@ -50,6 +51,7 @@
             this.TableAlpha.Controls.Add(this.PanelAlpha, 0, 0);
             this.TableAlpha.Controls.Add(this.LabelAlpha, 0, 2);
             this.TableAlpha.Controls.Add(this.NumericAlpha, 1, 2);
+            this.TableAlpha.Controls.Add(this.PanelIndicator, 0, 1);
             this.TableAlpha.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TableAlpha.Location = new System.Drawing.Point(0, 0);
             this.TableAlpha.Name = "TableAlpha";
@@ -60,6 +62,33 @@
             this.TableAlpha.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.TableAlpha.Size = new System.Drawing.Size(411, 168);
             this.TableAlpha.TabIndex = 1;
+            // 
+            // PanelAlpha
+            // 
+            this.PanelAlpha.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PanelAlpha.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Transparency_Pattern;
+            this.TableAlpha.SetColumnSpan(this.PanelAlpha, 2);
+            this.PanelAlpha.Location = new System.Drawing.Point(5, 3);
+            this.PanelAlpha.Margin = new System.Windows.Forms.Padding(5, 3, 5, 0);
+            this.PanelAlpha.Name = "PanelAlpha";
+            this.PanelAlpha.Size = new System.Drawing.Size(401, 29);
+            this.PanelAlpha.TabIndex = 0;
+            this.PanelAlpha.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelAlpha_Paint);
+            this.PanelAlpha.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelAlpha_MouseDown);
+            this.PanelAlpha.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelAlpha_MouseDown);
+            // 
+            // LabelAlpha
+            // 
+            this.LabelAlpha.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.LabelAlpha.AutoSize = true;
+            this.LabelAlpha.Location = new System.Drawing.Point(3, 57);
+            this.LabelAlpha.Margin = new System.Windows.Forms.Padding(3);
+            this.LabelAlpha.Name = "LabelAlpha";
+            this.LabelAlpha.Size = new System.Drawing.Size(41, 15);
+            this.LabelAlpha.TabIndex = 0;
+            this.LabelAlpha.Text = "Alpha:";
             // 
             // NumericAlpha
             // 
@@ -78,32 +107,18 @@
             this.NumericAlpha.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.NumericAlpha.ValueChanged += new System.EventHandler(this.NumericAlpha_ValueChanged);
             // 
-            // LabelAlpha
+            // PanelIndicator
             // 
-            this.LabelAlpha.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.LabelAlpha.AutoSize = true;
-            this.LabelAlpha.Location = new System.Drawing.Point(3, 57);
-            this.LabelAlpha.Margin = new System.Windows.Forms.Padding(3);
-            this.LabelAlpha.Name = "LabelAlpha";
-            this.LabelAlpha.Size = new System.Drawing.Size(41, 15);
-            this.LabelAlpha.TabIndex = 0;
-            this.LabelAlpha.Text = "Alpha:";
-            // 
-            // PanelAlpha
-            // 
-            this.PanelAlpha.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PanelAlpha.BackgroundImage = global::Gorgon.Editor.Properties.Resources.Transparency_Pattern;
-            this.TableAlpha.SetColumnSpan(this.PanelAlpha, 2);
-            this.PanelAlpha.Location = new System.Drawing.Point(5, 3);
-            this.PanelAlpha.Margin = new System.Windows.Forms.Padding(5, 3, 5, 0);
-            this.PanelAlpha.Name = "PanelAlpha";
-            this.PanelAlpha.Size = new System.Drawing.Size(401, 29);
-            this.PanelAlpha.TabIndex = 0;
-            this.PanelAlpha.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelAlpha_Paint);
-            this.PanelAlpha.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelAlpha_MouseDown);
-            this.PanelAlpha.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelAlpha_MouseDown);
+            this.TableAlpha.SetColumnSpan(this.PanelIndicator, 2);
+            this.PanelIndicator.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelIndicator.Location = new System.Drawing.Point(0, 32);
+            this.PanelIndicator.Margin = new System.Windows.Forms.Padding(0);
+            this.PanelIndicator.Name = "PanelIndicator";
+            this.PanelIndicator.Size = new System.Drawing.Size(411, 16);
+            this.PanelIndicator.TabIndex = 2;
+            this.PanelIndicator.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelIndicator_Paint);
+            this.PanelIndicator.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelAlpha_MouseDown);
+            this.PanelIndicator.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelAlpha_MouseDown);
             // 
             // AlphaPicker
             // 
@@ -127,5 +142,6 @@
         private System.Windows.Forms.Label LabelAlpha;
         private System.Windows.Forms.NumericUpDown NumericAlpha;
         private System.Windows.Forms.Panel PanelAlpha;
+        private System.Windows.Forms.Panel PanelIndicator;
     }
 }
