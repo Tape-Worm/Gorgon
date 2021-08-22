@@ -57,6 +57,8 @@ namespace Gorgon.Editor.AnimationEditor
         private GorgonTextSprite _instructions;
         // The size of the text sprite.
         private DX.Size2F _textSize;
+        // Flag to indicate that we'll allow movement of the sprite.
+        private bool _allowMove;
         #endregion
 
         #region Methods.
@@ -73,16 +75,15 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
         protected override void OnPropertyChanged(string propertyName)
         {
+            base.OnPropertyChanged(propertyName);
+
+            if (!IsEnabled)
+            {
+                return;
+            }
+
             switch (propertyName)
             {
-                case nameof(IAnimationContent.WorkingSprite):
-                case nameof(IAnimationContent.PrimarySprite):
-                    if (Clipper is not null)
-                    {
-                        Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
-                        Clipper.Refresh();
-                    }
-                    break;
                 case nameof(IAnimationContent.BackgroundImage):
                     if (Clipper is not null)
                     {
@@ -150,8 +151,13 @@ namespace Gorgon.Editor.AnimationEditor
         /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
         private void Clipper_RectChanged(object sender, System.EventArgs e)
         {
+            if (!_allowMove)
+            {
+                return;
+            }
+
             Vector2 offset = new Vector2(Sprite.Anchor.X * Clipper.Rectangle.Width, Sprite.Anchor.Y * Clipper.Rectangle.Height).Truncate();
-            DataContext.PrimarySpriteStartPosition = new Vector2(Clipper.Rectangle.Left + offset.X, Clipper.Rectangle.Top + offset.Y);
+            Sprite.Position = new Vector2(Clipper.Rectangle.Left + offset.X, Clipper.Rectangle.Top + offset.Y);
         }
 
         /// <summary>Function called when the view has been resized.</summary>
@@ -173,7 +179,36 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers can override this method to handle a mouse move event in their own content view.</remarks>
         protected override void OnMouseMove(MouseArgs args)
         {
-            Clipper?.MouseMove(args);
+            if ((Clipper is not null) && (!Clipper.IsDragging))
+            {
+                DX.RectangleF bounds = Renderer.MeasureSprite(Sprite);
+                var half = new Vector3(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f, 0);
+                Vector3 upperLeft = new Vector3(bounds.Left, bounds.Top, 0) - half;
+                Vector3 lowerRight = new Vector3(bounds.Right, bounds.Bottom, 0) - half;
+
+                upperLeft = Camera.Unproject(upperLeft);
+                lowerRight = Camera.Unproject(lowerRight);
+
+                bounds.Left = upperLeft.X;
+                bounds.Top = upperLeft.Y;
+                bounds.Right = lowerRight.X;
+                bounds.Bottom = lowerRight.Y;
+
+                if (bounds.Contains(args.ClientPosition))
+                {
+                    _allowMove = true;
+                }
+                else
+                {
+                    _allowMove = false;
+                }
+            }
+
+            if ((_allowMove) && (Clipper?.MouseMove(args) ?? false))
+            {
+                return;
+            }
+
             base.OnMouseMove(args);
         }
 
@@ -182,7 +217,11 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers can override this method to handle a mouse down event in their own content view.</remarks>
         protected override void OnMouseDown(MouseArgs args)
         {
-            Clipper?.MouseDown(args);
+            if ((_allowMove) && (Clipper?.MouseDown(args) ?? false))
+            {
+                return;
+            }
+
             base.OnMouseDown(args);
         }
 
@@ -191,7 +230,12 @@ namespace Gorgon.Editor.AnimationEditor
         /// <remarks>Developers can override this method to handle a mouse up event in their own content view.</remarks>
         protected override void OnMouseUp(MouseArgs args) 
         {
-            Clipper?.MouseUp(args);
+            if ((_allowMove) && (Clipper?.MouseUp(args) ?? false))
+            {
+                DataContext.PrimarySpriteStartPosition = Sprite.Position;
+                return;
+            }
+
             base.OnMouseUp(args);
         }
 
@@ -202,11 +246,12 @@ namespace Gorgon.Editor.AnimationEditor
 
             if ((DataContext.CommandContext != DataContext.KeyEditor) || (SelectedTrackID != TrackSpriteProperty.Texture))
             {
-                
-                Renderer.Begin();
-                Clipper.Render();
-                Renderer.End();
-
+                if (_allowMove)
+                {
+                    Renderer.Begin();
+                    Clipper.Render();
+                    Renderer.End();
+                }
                 return;
             }
 

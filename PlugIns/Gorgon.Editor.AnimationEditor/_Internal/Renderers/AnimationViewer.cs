@@ -402,9 +402,6 @@ namespace Gorgon.Editor.AnimationEditor
 
             switch (propertyName)
             {
-                case nameof(IAnimationContent.PrimarySpriteStartPosition):
-                    Sprite.Position = DataContext.PrimarySpriteStartPosition;
-                    break;
                 case nameof(IAnimationContent.CommandContext):
                 case nameof(IAnimationContent.CurrentPanel):
                     if (DataContext.CommandContext != DataContext.KeyEditor)

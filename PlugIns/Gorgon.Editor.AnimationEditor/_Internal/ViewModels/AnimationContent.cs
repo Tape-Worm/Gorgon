@@ -127,6 +127,8 @@ namespace Gorgon.Editor.AnimationEditor
         private IReadOnlyList<ITrack> _unsupportedTracks;
         // The list of selected tracks and keys.
         private IReadOnlyList<TrackKeySelection> _selected = Array.Empty<TrackKeySelection>();
+        // The starting position of the primary sprite.
+        private Vector2 _primaryStart;
         #endregion
 
         #region Properties.
@@ -144,23 +146,24 @@ namespace Gorgon.Editor.AnimationEditor
         /// </summary>
         public Vector2 PrimarySpriteStartPosition
         {
-            get => WorkingSprite?.Position ?? Vector2.Zero;
+            get => _primaryStart;
             set
             {
-                if (WorkingSprite is null)
-                {
-                    return;
-                }
-
-                if (WorkingSprite.Position.Equals(value))
+                if (_primaryStart.Equals(value))
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                WorkingSprite.Position = value;
+                _primaryStart = value;
                 OnPropertyChanged();
+                                
                 UpdatePrimarySprite();
+
+                if (WorkingSprite is not null)
+                {
+                    WorkingSprite.Position = _primaryStart;
+                }
 
                 ContentState = ContentState.Modified;
             }
@@ -2162,8 +2165,8 @@ namespace Gorgon.Editor.AnimationEditor
             Tracks = injectionParameters.Tracks;
             _trackList.AddRange(Tracks);
 
-            float x = 0;
-            float y = 0;
+            float x = _primarySprite.sprite.Position.X;
+            float y = _primarySprite.sprite.Position.Y;
 
             if (File.Metadata.Attributes.TryGetValue(AnimationIOService.StartPositionAttrX, out string startX))
             {
@@ -2181,7 +2184,7 @@ namespace Gorgon.Editor.AnimationEditor
                 _controller.Pause();
             }
 
-            PrimarySprite.Position = WorkingSprite.Position = new Vector2(x, y);
+            _primaryStart = PrimarySprite.Position = WorkingSprite.Position = new Vector2(x, y);
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
