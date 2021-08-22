@@ -140,6 +140,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the plug in settings for the image editor.
+        /// </summary>
+        public ISettingsPlugins PluginSettings
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the original format for the image.
         /// </summary>
         public BufferFormat OriginalFormat
@@ -177,6 +185,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="fileManager">The file manager for content files.</param>
         /// <param name="file">The file for the image content.</param>
         /// <param name="settings">The settings for the image editor.</param>
+        /// <param name="pluginSettings">The plug in settings for the image editor.</param>
         /// <param name="imagePicker">The image picker used to import image data into the current image.</param>
         /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
         /// <param name="dimensionSettings">The image dimensions settings view model.</param>
@@ -191,6 +200,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         public ImageContentParameters(IContentFileManager fileManager,
             IContentFile file,
             ISettings settings,
+            ISettingsPlugins pluginSettings,
             IImagePicker imagePicker,
             ICropResizeSettings cropResizeSettings,
             IDimensionSettings dimensionSettings,
@@ -204,6 +214,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             : base(fileManager, file, services.HostContentServices ?? throw new ArgumentNullException(nameof(services)))
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            PluginSettings = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
             WorkingFile = imageData.workingFile ?? throw new ArgumentNullException(nameof(imageData.workingFile));
             Image = imageData.image ?? throw new ArgumentNullException(nameof(imageData.image));
             FormatSupport = formatSupport ?? throw new ArgumentNullException(nameof(formatSupport));

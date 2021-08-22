@@ -193,6 +193,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private ObservableCollection<BufferFormat> _pixelFormats = new();
         // The settings for the image editor plugin.
         private ISettings _settings;
+        // The settings for the image editor plugin.
+        private ISettingsPlugins _pluginSettings;
         // The file used for working changes.
         private IGorgonVirtualFile _workingFile;
         // The service used to read/write image data.
@@ -2123,7 +2125,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                                 
                 workImage.Dispose();
 
-                // Launch the editor.
+                // Launch the editor.                
                 if (!_externalEditor.EditImage(workImageFile))
                 {
 
@@ -2827,7 +2829,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[Error] Error showing fx options.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Error showing fx options.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }
@@ -3012,6 +3014,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _alphaSettings = injectionParameters.AlphaSettings;
             FxContext = injectionParameters.FxContext;
             _settings = injectionParameters.Settings;
+            _pluginSettings = injectionParameters.PluginSettings;
             _workingFile = injectionParameters.WorkingFile;
             ImageData = injectionParameters.Image;
             _formatSupport = injectionParameters.FormatSupport;
@@ -3044,9 +3047,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             _dimensionSettings.MipSupport = MipSupport;
 
-            if (_settings.CodecPlugInPaths is not null)
+            if (_pluginSettings.CodecPlugInPaths is not null)
             {
-                _settings.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
+                _pluginSettings.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
             }
 
             FxContext.ApplyCommand = new EditorCommand<object>(DoApplyFx, CanApplyFx);
@@ -3061,9 +3064,9 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
             try
             {
-                if (_settings.CodecPlugInPaths is not null)
+                if (_pluginSettings.CodecPlugInPaths is not null)
                 {
-                    _settings.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
+                    _pluginSettings.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
                 }
 
                 CurrentPanel = null;

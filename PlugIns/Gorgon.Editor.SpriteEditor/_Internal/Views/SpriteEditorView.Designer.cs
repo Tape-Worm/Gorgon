@@ -102,6 +102,7 @@ namespace Gorgon.Editor.SpriteEditor
             this.ButtonNextArrayIndex = new System.Windows.Forms.Button();
             this.LabelArrayIndex = new System.Windows.Forms.Label();
             this.StatusPanel.SuspendLayout();
+            this.HostPanel.SuspendLayout();
             this.HostPanelControls.SuspendLayout();
             this.PanelImageViewControls.SuspendLayout();
             this.SuspendLayout();
@@ -118,6 +119,11 @@ namespace Gorgon.Editor.SpriteEditor
             this.PresentationPanel.Size = new System.Drawing.Size(844, 739);
             // 
             // HostPanel
+            // 
+            this.HostPanel.Location = new System.Drawing.Point(844, 21);
+            this.HostPanel.Size = new System.Drawing.Size(393, 763);
+            // 
+            // HostPanelControls
             // 
             this.HostPanelControls.Controls.Add(this.SpriteAnchorSelector);
             this.HostPanelControls.Controls.Add(this.SpriteColorSelector);
@@ -293,6 +299,8 @@ namespace Gorgon.Editor.SpriteEditor
             this.Size = new System.Drawing.Size(1237, 784);
             this.StatusPanel.ResumeLayout(false);
             this.StatusPanel.PerformLayout();
+            this.HostPanel.ResumeLayout(false);
+            this.HostPanel.PerformLayout();
             this.HostPanelControls.ResumeLayout(false);
             this.HostPanelControls.PerformLayout();
             this.PanelImageViewControls.ResumeLayout(false);

@@ -310,7 +310,7 @@ namespace Gorgon.Editor.ImageEditor.Fx
             }
             catch (Exception ex)
             {
-                _hostServices.Log.Print("[Error] Cannot cancel the effects operation.", LoggingLevel.Simple);
+                _hostServices.Log.Print("ERROR: Cannot cancel the effects operation.", LoggingLevel.Simple);
                 _hostServices.Log.LogException(ex);
             }
         }

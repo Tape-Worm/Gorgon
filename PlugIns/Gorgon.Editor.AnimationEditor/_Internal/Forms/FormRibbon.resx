@@ -117,12 +117,27 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ButtonAnimationLoadBack.ToolTipBody" xml:space="preserve">
+    <value>Loads the selected image file in the file selector as a background 
+reference image to help visualize building the animation.
+
+Loading an image as a reference, and moving the main sprite to 
+line up with a part of the image can help visualize how an 
+animation will appear when rendered.
+
+NOTE: This is only for animation design purposes and will not be 
+stored with the animation file.</value>
+  </data>
   <data name="ButtonAnimationSprite.ToolTipBody" xml:space="preserve">
-    <value>Assigns the primary sprite for the animation.
+    <value>Assigns the sprite selected in the file selector as a primary 
+sprite for the animation.
 
 The primary sprite provides visual feedback for the animation 
 to show how it will be applied. Ideally this would be the sprite 
 intended for use with the animation.
+
+This sprite can be moved so that it can use a point on the 
+background image as a reference.
 
 NOTE: This is not saved with the animation file and is used for
 designing the animation.</value>
@@ -130,6 +145,19 @@ designing the animation.</value>
   <metadata name="MenuZoom.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>444, 17</value>
   </metadata>
+  <data name="ButtonZoomAnimation.ToolTipBody" xml:space="preserve">
+    <value>Zooms in or out on the animation frame by the specified percentage.
+
+Zooming can also be done by holding CTRL and moving the mouse 
+wheel up and down.
+
+To pan around a zoomed in area, use the scrollbars, or hold down on 
+the mouse wheel (middle mouse button) and move the mouse. 
+
+The view can also be panned up and down by moving the mousewheel 
+up and down, and can be horizontally panned by holding SHIFT and 
+moving the mousewheel up and down.</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>78</value>
   </metadata>

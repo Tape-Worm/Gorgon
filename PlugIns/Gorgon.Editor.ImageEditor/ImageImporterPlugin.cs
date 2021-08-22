@@ -45,7 +45,7 @@ namespace Gorgon.Editor.ImageEditor
     {
         #region Variables.
         // The image editor settings.
-        private ISettings _settings;
+        private ISettingsPlugins _settings;
 
         // The codec registry.
         private ICodecRegistry _codecs;
@@ -58,7 +58,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>
         ///   <para>
         /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
-        /// the base <see cref="ISettingsCategory"/> type.
+        /// the base <see cref="ISettingsPluginsCategory"/> type.
         /// </para>
         ///   <para>
         /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method in the
@@ -72,10 +72,10 @@ namespace Gorgon.Editor.ImageEditor
         /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
         protected override void OnInitialize()
         {
-            ViewFactory.Register<ISettings>(() => new ImageCodecSettingsPanel());
+            ViewFactory.Register<ISettingsPlugins>(() => new ImageCodecSettingsPanel());
 
             // Retrieve the shared settings.
-            (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);
+            (_codecs, _, _settings) = SharedDataFactory.GetSharedData(HostContentServices);
         }
 
         /// <summary>Function to provide clean up for the plugin.</summary>
@@ -89,7 +89,7 @@ namespace Gorgon.Editor.ImageEditor
                     _settings.WriteSettingsCommand.Execute(null);
                 }
 
-                ViewFactory.Unregister<ISettings>();
+                ViewFactory.Unregister<ISettingsPlugins>();
 
                 foreach (IDisposable codec in _codecs.Codecs.OfType<IDisposable>())
                 {

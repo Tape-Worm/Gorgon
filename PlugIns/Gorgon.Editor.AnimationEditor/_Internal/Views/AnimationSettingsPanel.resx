@@ -117,33 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CheckAnimatePrimaryBg.ToolTip" xml:space="preserve">
-    <value>If the animation does not have a sprite to animate, then a little animation will
-play in the background of the main editor area.  
-
-This setting will turn off the animation if users find it annoying.</value>
-  </data>
-  <data name="CheckOnionSkin.ToolTip" xml:space="preserve">
-    <value>Onion skinning shows the previous and next key frame value in the edit area as 
-translucent silhouettes of the sprite being animated. This is useful for acting as a 
-guide when trying to determine how to update the current key frame.
-
-Note: Some tracks do not support onion skinning, in those cases no 
-silhouettes will be shown.
-
-
-</value>
-  </data>
   <metadata name="TipSettings.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="CheckUnsupported.ToolTip" xml:space="preserve">
-    <value>When checked, a warning will be shown when an animation is loaded 
-into the editor and contains any tracks not supported by this editor.
-
-Unchecking this will suppress this warning. However, the warnings will 
-still appear in the application log.</value>
-  </data>
   <data name="label1.ToolTip" xml:space="preserve">
     <value>The default resolution defines the ideal area in which the sprite should be 
 rendered when no background image is present.
@@ -199,5 +175,29 @@ The initial value is the current screen resolution of the primary monitor.
 
 Note: This is not a hard limit, that is, the animated sprite will NOT clip to 
 the resolution provided.</value>
+  </data>
+  <data name="CheckAnimatePrimaryBg.ToolTip" xml:space="preserve">
+    <value>If the animation does not have a sprite to animate, then a little animation will
+play in the background of the main editor area.  
+
+This setting will turn off the animation if users find it annoying.</value>
+  </data>
+  <data name="CheckOnionSkin.ToolTip" xml:space="preserve">
+    <value>Onion skinning shows the previous and next key frame value in the edit area as 
+translucent silhouettes of the sprite being animated. This is useful for acting as a 
+guide when trying to determine how to update the current key frame.
+
+Note: Some tracks do not support onion skinning, in those cases no 
+silhouettes will be shown.
+
+
+</value>
+  </data>
+  <data name="CheckUnsupported.ToolTip" xml:space="preserve">
+    <value>When checked, a warning will be shown when an animation is loaded 
+into the editor and contains any tracks not supported by this editor.
+
+Unchecking this will suppress this warning. However, the warnings will 
+still appear in the application log.</value>
   </data>
 </root>

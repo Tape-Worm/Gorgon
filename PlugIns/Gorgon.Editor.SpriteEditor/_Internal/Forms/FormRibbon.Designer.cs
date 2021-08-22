@@ -41,7 +41,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRibbon));
             this.RibbonSpriteContent = new Krypton.Ribbon.KryptonRibbon();
             this.ContextClipSprite = new Krypton.Ribbon.KryptonRibbonContext();
@@ -67,14 +66,14 @@
             this.ButtonSpriteVertexOffsets = new Krypton.Ribbon.KryptonRibbonGroupButton();
             this.LinesSprite1 = new Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonSpriteTextureFilter = new Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.MenuFiltering = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MenuFiltering = new System.Windows.Forms.ContextMenuStrip();
             this.MenuItemSmooth = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemPixelated = new System.Windows.Forms.ToolStripMenuItem();
             this.ButtonSpriteTextureWrap = new Krypton.Ribbon.KryptonRibbonGroupButton();
             this.kryptonRibbonGroupSeparator1 = new Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.LinesSprite2 = new Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonZoomSprite = new Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.MenuZoom = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MenuZoom = new System.Windows.Forms.ContextMenuStrip();
             this.ItemZoomToWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.Item12Percent = new System.Windows.Forms.ToolStripMenuItem();
@@ -144,8 +143,7 @@
             this.RibbonTabSpriteManualInput,
             this.RibbonTabCornerEditing,
             this.RibbonTabSpritePick});
-            this.RibbonSpriteContent.SelectedContext = null;
-            this.RibbonSpriteContent.SelectedTab = this.RibbonTabCornerEditing;
+            this.RibbonSpriteContent.SelectedTab = this.TabSprite;
             this.RibbonSpriteContent.Size = new System.Drawing.Size(1594, 115);
             this.RibbonSpriteContent.TabIndex = 0;
             // 
@@ -418,7 +416,7 @@
             this.ButtonZoomSprite.ImageSmall = global::Gorgon.Editor.SpriteEditor.Properties.Resources.zoom_16x16;
             this.ButtonZoomSprite.KeyTip = "Z";
             this.ButtonZoomSprite.TextLine1 = "Zoom";
-            this.ButtonZoomSprite.ToolTipBody = "Zooms in or out on the sprite texture by the specified percentage.";
+            this.ButtonZoomSprite.ToolTipBody = resources.GetString("ButtonZoomSprite.ToolTipBody");
             this.ButtonZoomSprite.ToolTipTitle = "Zoom";
             // 
             // MenuZoom

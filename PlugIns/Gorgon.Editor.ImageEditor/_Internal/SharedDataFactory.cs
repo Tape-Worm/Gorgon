@@ -50,7 +50,7 @@ namespace Gorgon.Editor.ImageEditor
         // The factory that creates/loads the codec registry.
         private static readonly Lazy<ICodecRegistry> _codecRegistryFactory;
         // The factory that creates/loads the settings view model.
-        private static readonly Lazy<ISettings> _settingsViewModelFactory;
+        private static readonly Lazy<(Settings settings, SettingsPlugins pluginSettings)> _settingsViewModelFactory;        
         #endregion
 
         #region Methods.
@@ -103,7 +103,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to retrieve the settings view model.
         /// </summary>
         /// <returns>The settings view model.</returns>
-        private static ISettings GetSettingsViewModel()
+        private static (Settings settings, SettingsPlugins plugins) GetSettingsViewModel()
         {
             if (!_hostServices.TryGetTarget(out IHostContentServices commonServices))
             {
@@ -116,20 +116,22 @@ namespace Gorgon.Editor.ImageEditor
                 FileFilter = Resources.GORIMG_FILTER_SELECT_CODEC
             };
 
-            var result = new Settings();
-            result.Initialize(new SettingsParameters(_settingsFactory.Value, _codecRegistryFactory.Value, dialog, _plugInCache.Value, commonServices));
-            return result;
+            Settings settings = new();
+            SettingsPlugins settingsPlugins = new();
+            settings.Initialize(new SettingsParameters(_settingsFactory.Value, commonServices));
+            settingsPlugins.Initialize(new SettingsPluginsParameters(_settingsFactory.Value, _codecRegistryFactory.Value, dialog, _plugInCache.Value, commonServices));
+            return (settings, settingsPlugins);
         }
 
         /// <summary>
         /// Function to retrieve the shared data for the plug ins in this assembly.
         /// </summary>
         /// <param name="hostServices">The services passed from the host application.</param>
-        /// <returns>A tuple containing the shared codec registry and the settings view model.</returns>
-        public static (ICodecRegistry codecRegisry, ISettings settingsViewModel) GetSharedData(IHostContentServices hostServices)
+        /// <returns>A tuple containing the shared codec registry and the settings view models.</returns>
+        public static (ICodecRegistry codecRegisry, ISettings settingsViewModel, ISettingsPlugins pluginSettingsViewModel) GetSharedData(IHostContentServices hostServices)
         {
             Interlocked.CompareExchange(ref _hostServices, new WeakReference<IHostContentServices>(hostServices), null);
-            return (_codecRegistryFactory.Value, _settingsViewModelFactory.Value);
+            return (_codecRegistryFactory.Value, _settingsViewModelFactory.Value.settings, _settingsViewModelFactory.Value.pluginSettings);
         }
         #endregion
 
@@ -140,7 +142,7 @@ namespace Gorgon.Editor.ImageEditor
             _plugInCache = new Lazy<GorgonMefPlugInCache>(GetPlugInCache, LazyThreadSafetyMode.ExecutionAndPublication);
             _settingsFactory = new Lazy<ImageEditorSettings>(LoadSettings, LazyThreadSafetyMode.ExecutionAndPublication);
             _codecRegistryFactory = new Lazy<ICodecRegistry>(GetCodecRegistry, LazyThreadSafetyMode.ExecutionAndPublication);
-            _settingsViewModelFactory = new Lazy<ISettings>(GetSettingsViewModel, LazyThreadSafetyMode.ExecutionAndPublication);
+            _settingsViewModelFactory = new Lazy<(Settings, SettingsPlugins)>(GetSettingsViewModel, LazyThreadSafetyMode.ExecutionAndPublication);
         }
         #endregion
     }

@@ -46,8 +46,8 @@
             this.NumericYRes = new System.Windows.Forms.NumericUpDown();
             this.TipSettings = new System.Windows.Forms.ToolTip(this.components);
             this.CheckAddTextureTrack = new System.Windows.Forms.CheckBox();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.CheckUnsupported = new System.Windows.Forms.CheckBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.PanelBody.SuspendLayout();
             this.TableRes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NumericXRes)).BeginInit();
@@ -230,6 +230,20 @@
             this.CheckAddTextureTrack.UseVisualStyleBackColor = true;
             this.CheckAddTextureTrack.Click += new System.EventHandler(this.CheckAddTextureTrack_Click);
             // 
+            // CheckUnsupported
+            // 
+            this.CheckUnsupported.AutoSize = true;
+            this.CheckUnsupported.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.CheckUnsupported.Location = new System.Drawing.Point(3, 93);
+            this.CheckUnsupported.Name = "CheckUnsupported";
+            this.CheckUnsupported.Size = new System.Drawing.Size(238, 19);
+            this.CheckUnsupported.TabIndex = 2;
+            this.CheckUnsupported.Text = "Warn on unsupported animation tracks?";
+            this.CheckUnsupported.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.TipSettings.SetToolTip(this.CheckUnsupported, resources.GetString("CheckUnsupported.ToolTip"));
+            this.CheckUnsupported.UseVisualStyleBackColor = true;
+            this.CheckUnsupported.Click += new System.EventHandler(this.CheckUnsupported_Click);
+            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.AutoSize = true;
@@ -255,26 +269,12 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(600, 445);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // CheckUnsupported
-            // 
-            this.CheckUnsupported.AutoSize = true;
-            this.CheckUnsupported.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.CheckUnsupported.Location = new System.Drawing.Point(3, 93);
-            this.CheckUnsupported.Name = "CheckUnsupported";
-            this.CheckUnsupported.Size = new System.Drawing.Size(238, 19);
-            this.CheckUnsupported.TabIndex = 2;
-            this.CheckUnsupported.Text = "Warn on unsupported animation tracks?";
-            this.CheckUnsupported.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.TipSettings.SetToolTip(this.CheckUnsupported, resources.GetString("CheckUnsupported.ToolTip"));
-            this.CheckUnsupported.UseVisualStyleBackColor = true;
-            this.CheckUnsupported.Click += new System.EventHandler(this.CheckUnsupported_Click);
-            // 
             // AnimationSettingsPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "AnimationSettingsPanel";
-            this.Text = "Animation Settings";
+            this.Text = "Animation Editor Settings";
             this.PanelBody.ResumeLayout(false);
             this.PanelBody.PerformLayout();
             this.TableRes.ResumeLayout(false);

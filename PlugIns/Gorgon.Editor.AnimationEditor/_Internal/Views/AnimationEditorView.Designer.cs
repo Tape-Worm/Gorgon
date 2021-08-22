@@ -86,18 +86,18 @@ namespace Gorgon.Editor.AnimationEditor
             // StatusPanel
             // 
             this.StatusPanel.Location = new System.Drawing.Point(0, 569);
-            this.StatusPanel.Size = new System.Drawing.Size(869, 0);
+            this.StatusPanel.Size = new System.Drawing.Size(844, 0);
             this.StatusPanel.Visible = false;
             // 
             // PresentationPanel
             // 
             this.PresentationPanel.Location = new System.Drawing.Point(0, 21);
-            this.PresentationPanel.Size = new System.Drawing.Size(869, 548);
+            this.PresentationPanel.Size = new System.Drawing.Size(844, 548);
             // 
             // HostPanel
             // 
-            this.HostPanel.Location = new System.Drawing.Point(869, 21);
-            this.HostPanel.Size = new System.Drawing.Size(368, 548);
+            this.HostPanel.Location = new System.Drawing.Point(844, 21);
+            this.HostPanel.Size = new System.Drawing.Size(393, 548);
             // 
             // HostPanelControls
             // 
@@ -105,7 +105,7 @@ namespace Gorgon.Editor.AnimationEditor
             this.HostPanelControls.Controls.Add(this.FloatValuesEditor);
             this.HostPanelControls.Controls.Add(this.AnimationProperties);
             this.HostPanelControls.Controls.Add(this.AddTracks);
-            this.HostPanelControls.Size = new System.Drawing.Size(367, 547);
+            this.HostPanelControls.Size = new System.Drawing.Size(392, 547);
             // 
             // PanelTrackingControls
             // 
@@ -148,7 +148,7 @@ namespace Gorgon.Editor.AnimationEditor
             this.AddTracks.ForeColor = System.Drawing.Color.White;
             this.AddTracks.Location = new System.Drawing.Point(0, 0);
             this.AddTracks.Name = "AddTracks";
-            this.AddTracks.Size = new System.Drawing.Size(364, 548);
+            this.AddTracks.Size = new System.Drawing.Size(389, 548);
             this.AddTracks.TabIndex = 0;
             this.AddTracks.Text = "Add new track(s)";
             this.AddTracks.Visible = false;
@@ -160,7 +160,7 @@ namespace Gorgon.Editor.AnimationEditor
             this.AnimationProperties.ForeColor = System.Drawing.Color.White;
             this.AnimationProperties.Location = new System.Drawing.Point(0, 24);
             this.AnimationProperties.Name = "AnimationProperties";
-            this.AnimationProperties.Size = new System.Drawing.Size(364, 468);
+            this.AnimationProperties.Size = new System.Drawing.Size(389, 468);
             this.AnimationProperties.TabIndex = 1;
             this.AnimationProperties.Text = "Properties";
             this.AnimationProperties.Visible = false;
@@ -173,19 +173,20 @@ namespace Gorgon.Editor.AnimationEditor
             this.FloatValuesEditor.IsModal = false;
             this.FloatValuesEditor.Location = new System.Drawing.Point(0, 48);
             this.FloatValuesEditor.Name = "FloatValuesEditor";
-            this.FloatValuesEditor.Size = new System.Drawing.Size(364, 201);
+            this.FloatValuesEditor.Size = new System.Drawing.Size(389, 201);
             this.FloatValuesEditor.TabIndex = 2;
             this.FloatValuesEditor.Text = "Value Editor";
             // 
             // ColorValuesEditor
             // 
+            this.ColorValuesEditor.AutoSize = true;
             this.ColorValuesEditor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.ColorValuesEditor.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.ColorValuesEditor.ForeColor = System.Drawing.Color.White;
             this.ColorValuesEditor.IsModal = false;
             this.ColorValuesEditor.Location = new System.Drawing.Point(0, 72);
             this.ColorValuesEditor.Name = "ColorValuesEditor";
-            this.ColorValuesEditor.Size = new System.Drawing.Size(364, 331);
+            this.ColorValuesEditor.Size = new System.Drawing.Size(389, 406);
             this.ColorValuesEditor.TabIndex = 3;
             this.ColorValuesEditor.Text = "Color Editor";
             // 
@@ -205,6 +206,7 @@ namespace Gorgon.Editor.AnimationEditor
             this.HostPanel.ResumeLayout(false);
             this.HostPanel.PerformLayout();
             this.HostPanelControls.ResumeLayout(false);
+            this.HostPanelControls.PerformLayout();
             this.PanelTrackingControls.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -26,21 +26,31 @@
 
 using System;
 using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Parameters to pass to the <see cref="ISettings"/> view model.
+    /// Parameters to pass to the <see cref="ISettingsPlugins"/> view model.
     /// </summary>
-    internal class SettingsParameters
-        : SettingsCategoryViewModelParameters
+    internal class SettingsPluginsParameters
+        : PlugInsCategoryViewModelParameters
     {
         #region Properties.
         /// <summary>
         /// Property to return the settings for the image editor plugin.
         /// </summary>
         public ImageEditorSettings Settings
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the codecs loaded into the system.
+        /// </summary>
+        public ICodecRegistry Codecs
         {
             get;
         }
@@ -54,9 +64,12 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="plugInCache">The cache for plug in assemblies.</param>
         /// <param name="hostServices">Common application services.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public SettingsParameters(ImageEditorSettings settings, IHostContentServices hostServices)            
-            : base(hostServices)
-            => Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        public SettingsPluginsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)            
+            : base(openCodecDialog, plugInCache, hostServices)
+        {
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            Codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
+        }
         #endregion
     }
 }

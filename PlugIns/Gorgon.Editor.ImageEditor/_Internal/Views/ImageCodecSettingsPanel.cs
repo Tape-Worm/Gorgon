@@ -38,7 +38,7 @@ namespace Gorgon.Editor.ImageEditor
     /// The panel used to display settings for image codec support.
     /// </summary>
     internal partial class ImageCodecSettingsPanel
-        : SettingsBaseControl, IDataContext<ISettings>
+        : SettingsBaseControl, IDataContext<ISettingsPlugins>
     {
         #region Properties.
         /// <summary>Property to return the ID of the panel.</summary>
@@ -47,7 +47,7 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Property to return the data context assigned to this view.</summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public ISettings DataContext
+        public ISettingsPlugins DataContext
         {
             get;
             private set;
@@ -74,7 +74,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to populate the list of codecs.
         /// </summary>
         /// <param name="dataContext">The current data context.</param>
-        private void FillList(ISettings dataContext)
+        private void FillList(ISettingsPlugins dataContext)
         {
             ListCodecs.BeginUpdate();
 
@@ -274,7 +274,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to initialize the control from the specified data context.
         /// </summary>
         /// <param name="dataContext">The data context to apply.</param>
-        private void InitializeFromDataContext(ISettings dataContext)
+        private void InitializeFromDataContext(ISettingsPlugins dataContext)
         {
             if (dataContext is null)
             {
@@ -297,7 +297,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function to assign a data context to the view as a view model.</summary>
         /// <param name="dataContext">The data context to assign.</param>
         /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-        public void SetDataContext(ISettings dataContext)
+        public void SetDataContext(ISettingsPlugins dataContext)
         {
             UnassignEvents();
 

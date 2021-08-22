@@ -123,6 +123,20 @@
   <metadata name="MenuZoom.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>444, 17</value>
   </metadata>
+  <data name="ButtonZoomSprite.ToolTipBody" xml:space="preserve">
+    <value>Zooms in or out on the sprite texture by the specified percentage.
+
+Zooming can also be done by holding CTRL and moving the mouse 
+wheel up and down.
+
+To pan around a zoomed in area, use the scrollbars, or hold down on 
+the mouse wheel (middle mouse button) and move the mouse. 
+
+The view can also be panned up and down by moving the mousewheel 
+up and down, and can be horizontally panned by holding SHIFT and 
+moving the mousewheel up and down.
+</value>
+  </data>
   <data name="ButtonSpriteCornerManualInput.ToolTipBody" xml:space="preserve">
     <value>Allows for precise adjustment of the sprite corner offsets via numeric values typed in by the user.
 

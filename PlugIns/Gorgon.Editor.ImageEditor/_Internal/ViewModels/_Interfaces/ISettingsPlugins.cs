@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,88 +20,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 20, 2019 2:21:44 PM
+// Created: August 22, 2021 1:37:20 PM
 // 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Gorgon.Core;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor
 {
     /// <summary>
-    /// Settings view model for image codecs.
+    /// The settings interface for plug ins.
     /// </summary>
-    internal interface ISettings
+    internal interface ISettingsPlugins
         : ISettingsCategory
     {
+
         /// <summary>
-        /// Property to return the path to the image editor to use when editing the texture.
-        /// </summary>        
-        string ImageEditorApplicationPath
+        /// Property to return the list of selected codecs.
+        /// </summary>
+        ObservableCollection<CodecSetting> SelectedCodecs
         {
             get;
         }
 
         /// <summary>
-        /// Property to set or return the to the directory that was last used for importing/exporting.
+        /// Propery to return the paths to the codec plug ins.
         /// </summary>
-        string LastImportExportPath
+        ObservableCollection<CodecSetting> CodecPlugInPaths
         {
             get;
-            set;
         }
 
         /// <summary>
-        /// Property to set or return the last used alpha value when setting the alpha channel on an image.
+        /// Property to return the command for writing setting data.
         /// </summary>
-        int LastAlphaValue
+        IEditorCommand<object> WriteSettingsCommand
         {
             get;
-            set;
         }
 
         /// <summary>
-        /// Property to set or return the width of the picker window.
+        /// Property to return the command for loading a plug in assembly.
         /// </summary>
-        int PickerWidth
+        IEditorCommand<object> LoadPlugInAssemblyCommand
         {
             get;
-            set;
         }
 
         /// <summary>
-        /// Property to set or return the height of the picker window.
+        /// Property to return the command to unloading a plug in assembly.
         /// </summary>
-        int PickerHeight
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the state of the picker window.
-        /// </summary>
-        int PickerWindowState
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the last used alpha value when setting the alpha channel on an image.
-        /// </summary>
-        GorgonRange LastAlphaRange
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the command used to update the path.
-        /// </summary>
-        IEditorCommand<string> UpdatePathCommand
+        IEditorCommand<object> UnloadPlugInAssembliesCommand
         {
             get;
         }

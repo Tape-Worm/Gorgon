@@ -117,50 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ButtonImport.ToolTipBody" xml:space="preserve">
-    <value>Imports the selected image file in the file selector and places it in the 
-current mip level, array index and/or depth slice.
-
-When this method imports image data, the current image data for the 
-mip level, array index and/or depth slice will be lost.</value>
-  </data>
-  <metadata name="MenuCodecs.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="TipSettings.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="ButtonExport.ToolTipBody" xml:space="preserve">
-    <value>Exports the image to a file on the disk as the specified codec.
-
-Only codecs that support the current pixel format, mip map 
-level count, array level count and image type will appear in 
-this list.</value>
-  </data>
-  <metadata name="MenuImageFormats.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>140, 17</value>
-  </metadata>
-  <metadata name="MenuImageType.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>301, 17</value>
-  </metadata>
-  <data name="ButtonImageType.ToolTipBody" xml:space="preserve">
-    <value>Converts the image from one type to another type (e.g. 2D to 3D)
-
-Please note that this is a destructive operation. If the image is 3D and is converted to 2D or a 2D cube, then all depth slice information will be lost on conversion.
-
-If converting to an image cube, then the array size will be set to a multiple of 6.</value>
-  </data>
-  <metadata name="MenuZoom.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>444, 17</value>
-  </metadata>
-  <data name="ButtonZoom.ToolTipBody" xml:space="preserve">
-    <value>Zooms in or out on the image by the specified percentage.
-
-To pan around a zoomed in area, use the scrollbars, or hold down on 
-the mouse wheel (middle mouse button) and move the mouse. 
-
-The view can also be panned up and down by moving the mousewheel 
-up and down, and can be horizontally panned by holding SHIFT and 
-moving the mousewheel up and down.</value>
-  </data>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>78</value>
+  <metadata name="DialogFileOpen.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>129, 17</value>
   </metadata>
 </root>

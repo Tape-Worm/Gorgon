@@ -407,7 +407,7 @@ namespace Gorgon.Editor.ImageEditor
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[Error] Error cancelling the resize/crop operation.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Error cancelling the resize/crop operation.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }
@@ -776,7 +776,7 @@ namespace Gorgon.Editor.ImageEditor
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("[Error] Cannot deactivate the image picker.", LoggingLevel.Simple);
+                HostServices.Log.Print("ERROR: Cannot deactivate the image picker.", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
         }

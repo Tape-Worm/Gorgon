@@ -125,7 +125,7 @@ namespace Gorgon.Graphics.Core
 
 					if (GorgonGraphics.IsDebugEnabled)
 					{
-						_log.Print($"[Warning] The index buffer '{state.IndexBuffer.Name}' is bound for input and stream out. It will be unbound from the input assembler.", LoggingLevel.Verbose);
+						_log.Print($"WARNING: The index buffer '{state.IndexBuffer.Name}' is bound for input and stream out. It will be unbound from the input assembler.", LoggingLevel.Verbose);
 					}
 
 					state.IndexBuffer = null;
@@ -177,7 +177,7 @@ namespace Gorgon.Graphics.Core
 
 					if (GorgonGraphics.IsDebugEnabled)
 					{
-						_log.Print($"[Warning] The vertex buffer '{vBuffer.Name}' is bound for input and stream out. It will be unbound from the vertex buffers.", LoggingLevel.Verbose);
+						_log.Print($"WARNING: The vertex buffer '{vBuffer.Name}' is bound for input and stream out. It will be unbound from the vertex buffers.", LoggingLevel.Verbose);
 					}
 					vertexBuffers.ResetAt(v);
 				}
@@ -250,7 +250,7 @@ namespace Gorgon.Graphics.Core
 
 					if (GorgonGraphics.IsDebugEnabled)
 					{
-						_log.Print($"[Warning] The shader resource '{srvResource.Name}' is bound for input and as a depth/stencil. It will be unbound from the shader resources.", LoggingLevel.Verbose);
+						_log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as a depth/stencil. It will be unbound from the shader resources.", LoggingLevel.Verbose);
 					}
 
 					srvs[s] = null;
@@ -281,7 +281,7 @@ namespace Gorgon.Graphics.Core
 
 					if (GorgonGraphics.IsDebugEnabled)
 					{
-						_log.Print($"[Warning] The shader resource '{srvResource.Name}' is bound for input and as a render target. It will be unbound from the shader resources.", LoggingLevel.Verbose);
+						_log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as a render target. It will be unbound from the shader resources.", LoggingLevel.Verbose);
 					}
 
 					srvs[s] = null;
@@ -328,7 +328,7 @@ namespace Gorgon.Graphics.Core
 
 					if (GorgonGraphics.IsDebugEnabled)
 					{
-						_log.Print($"[Warning] The shader resource '{srvResource.Name}' is bound for input and as an unordered access view. It will be unbound from the shader resources.", LoggingLevel.Verbose);
+						_log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as an unordered access view. It will be unbound from the shader resources.", LoggingLevel.Verbose);
 					}
 
 					srvs[s] = null;
@@ -396,7 +396,7 @@ namespace Gorgon.Graphics.Core
 
 				if (GorgonGraphics.IsDebugEnabled)
 				{
-					_log.Print($"[Warning] The depth buffer resource '{depth.Resource.Name}' is bound as an input. Unbinding...", LoggingLevel.Verbose);
+					_log.Print($"WARNING: The depth buffer resource '{depth.Resource.Name}' is bound as an input. Unbinding...", LoggingLevel.Verbose);
 				}
 
 				srvs[s] = null;

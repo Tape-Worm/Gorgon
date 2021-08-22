@@ -153,6 +153,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap delete_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("delete_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap dodge_16x16 {
             get {
                 object obj = ResourceManager.GetObject("dodge_16x16", resourceCulture);
@@ -496,6 +506,17 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The executable &apos;{0}&apos; could not be found. 
+        ///
+        ///Please locate an appropriate editor using the settings interface..
+        /// </summary>
+        internal static string GORIMG_ERR_CANT_FIND_EDITOR {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CANT_FIND_EDITOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while converting the image type..
         /// </summary>
         internal static string GORIMG_ERR_CHANGE_TYPE {
@@ -673,6 +694,17 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while setting the application path.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GORIMG_ERR_SETTING_EXE_PATH {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_SETTING_EXE_PATH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error performing the undo action.
         ///
         ///Please try again..
@@ -738,6 +770,15 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static string GORIMG_SEARCH_KEYWORD_CODEC {
             get {
                 return ResourceManager.GetString("GORIMG_SEARCH_KEYWORD_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Image Editor.
+        /// </summary>
+        internal static string GORIMG_SETTINGS_DESC {
+            get {
+                return ResourceManager.GetString("GORIMG_SETTINGS_DESC", resourceCulture);
             }
         }
         
@@ -1294,6 +1335,16 @@ namespace Gorgon.Editor.ImageEditor.Properties {
         internal static System.Drawing.Bitmap opactiy_16x16 {
             get {
                 object obj = ResourceManager.GetObject("opactiy_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap open_folder_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("open_folder_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

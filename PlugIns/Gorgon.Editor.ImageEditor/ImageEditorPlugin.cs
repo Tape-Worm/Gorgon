@@ -71,6 +71,7 @@ namespace Gorgon.Editor.ImageEditor
 
         // The plug in settings.
         private ISettings _settings;
+        private ISettingsPlugins _pluginSettings;
 
         // No thumbnail image.
         private IGorgonImage _noThumbnail;
@@ -259,6 +260,21 @@ namespace Gorgon.Editor.ImageEditor
         /// <param name="searchService">The search service to use for registration.</param>
         protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
 
+
+        /// <summary>Function to retrieve the settings interface for this plug in.</summary>
+        /// <returns>The settings interface view model.</returns>
+        /// <remarks>
+        ///   <para>
+        /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
+        /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug in does not have settings that can be managed externally.
+        /// </para>
+        ///   <para>
+        /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plug in first loaded,
+        /// or else the panel will not show in the main settings area.
+        /// </para>
+        /// </remarks>
+        protected override ISettingsCategory OnGetSettings() => _settings;
+
         /// <summary>Function to open a content object from this plugin.</summary>
         /// <param name="file">The file that contains the content.</param>
         /// <param name = "fileManager" > The file manager used to access other content files.</param>
@@ -302,7 +318,7 @@ namespace Gorgon.Editor.ImageEditor
                 ImageIO = imageIO,
                 UndoService = undoService,
                 ImageUpdater = new ImageUpdaterService(),
-                ExternalEditorService = new ImageExternalEditService(HostContentServices.Log)
+                ExternalEditorService = new ImageExternalEditService(_settings, HostContentServices.Log)
             };
 
             var imagePicker = new ImagePicker();
@@ -349,6 +365,7 @@ namespace Gorgon.Editor.ImageEditor
             content.Initialize(new ImageContentParameters(fileManager,
                 file,
                 _settings,
+                _pluginSettings,
                 imagePicker,
                 cropResizeSettings,
                 dimensionSettings,
@@ -369,12 +386,10 @@ namespace Gorgon.Editor.ImageEditor
             _fxServices?.Dispose();
             _noThumbnail?.Dispose();
 
-            if ((_settings?.WriteSettingsCommand is not null) && (_settings.WriteSettingsCommand.CanExecute(null)))
-            {
-                _settings.WriteSettingsCommand.Execute(null);
-            }
+            HostContentServices.ContentPlugInService.WriteContentSettings(typeof(ImageEditorPlugIn).FullName, _settings);
 
             ViewFactory.Unregister<IImageContent>();
+            ViewFactory.Unregister<ISettings>();
 
             base.OnShutdown();
         }
@@ -384,12 +399,14 @@ namespace Gorgon.Editor.ImageEditor
         protected override void OnInitialize()
         {
             ViewFactory.Register<IImageContent>(() => new ImageEditorView());
-            (_codecs, _settings) = SharedDataFactory.GetSharedData(HostContentServices);
+            (_codecs, _settings, _pluginSettings) = SharedDataFactory.GetSharedData(HostContentServices);
 
             _fxServices = new FxService(HostContentServices.GraphicsContext);
             _fxServices.LoadResources();
 
             _noThumbnail = Resources.no_thumb_64x64.ToGorgonImage();
+
+            ViewFactory.Register<ISettings>(() => new ImageSettingsPanel());
         }
 
         /// <summary>Function to determine if the content plugin can open the specified file.</summary>

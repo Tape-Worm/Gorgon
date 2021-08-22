@@ -35,7 +35,6 @@ namespace Gorgon.Editor.ImageEditor
     /// </summary>
     internal class ImageEditorSettings
     {
-
         /// <summary>
         /// Property to return the list of additional image codec plug ins to load.
         /// </summary>
@@ -115,6 +114,16 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Property to set or return the state of the picker window.</summary>
         [JsonProperty]
         public int PickerWindowState
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the path to the image editor to use when editing the texture.
+        /// </summary>
+        [JsonProperty]
+        public string ImageEditorApplicationPath
         {
             get;
             set;

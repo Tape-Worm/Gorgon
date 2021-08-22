@@ -117,10 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="posterize_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\posterize_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GORIMG_UNDO_DESC_IMPORT" xml:space="preserve">
     <value>Import file '{0}'</value>
   </data>
@@ -133,6 +129,7 @@
   <data name="GORIMG_TEXT_ALIGN_TO" xml:space="preserve">
     <value>Align</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ImageViewShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ImageViewShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -142,11 +139,20 @@
   <data name="image_effect_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_effect_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED" xml:space="preserve">
+    <value>The codec plug in '{0}' was already loaded.</value>
+  </data>
   <data name="GORIMG_ERR_APPLYING_EFFECTS" xml:space="preserve">
     <value>There was an error applying effects to the image.</value>
   </data>
+  <data name="GORIMG_TEXT_PLEASE_WAIT" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
   <data name="image_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_FILEMASK_ALL_FILES" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
   </data>
   <data name="GORIMG_TEXT_SRC_IMG_PICKER_DESC_ARRAY" xml:space="preserve">
     <value>The source image '{0}' has multiple array indices and/or multiple mip map levels.
@@ -183,6 +189,9 @@ Please check the Details pane for more information.</value>
   </data>
   <data name="gauss_blur_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gauss_blur_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="export_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\export_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORIMG_TIP_IMAGE2D" xml:space="preserve">
     <value>Image Type: {0}
@@ -257,14 +266,16 @@ Please try again.</value>
   <data name="dodge_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dodge_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="onebit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\onebit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="open_folder_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\open_folder_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="left_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\left_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="generate_mip_maps_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\generate_mip_maps_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GORIMG_CONFIRM_OVERWRITE_DEPTH_SLICE" xml:space="preserve">
+    <value>This will overwrite the image data at depth slice {0}, mip level {1}.
+
+Continue?</value>
   </data>
   <data name="GORIMG_TEXT_RESIZE_CROP_IMPORT_SIZE" xml:space="preserve">
     <value>Import image dimensions: {0}x{1}</value>
@@ -300,11 +311,15 @@ Please try again.</value>
 
 Do you wish to continue?</value>
   </data>
-  <data name="GORIMG_TEXT_ARRAY_INDEX" xml:space="preserve">
-    <value>Array Index:</value>
+  <data name="edge_detect_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edge_detect_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_TEXT_IMAGE_SIZE_DETAILS" xml:space="preserve">
-    <value>Image width and height: {0}x{1}</value>
+  <data name="GORIMG_TEXT_COLOR_VALUES" xml:space="preserve">
+    <value>Red: {0} Green: {1} Blue: {2}
+Alpha: {3}</value>
+  </data>
+  <data name="GORIMG_SETTINGS_DESC" xml:space="preserve">
+    <value>Gorgon Image Editor</value>
   </data>
   <data name="image_dimensions_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_dimensions_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -329,6 +344,11 @@ Please try again.</value>
   <data name="sharpen_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sharpen_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GORIMG_ERR_REDO" xml:space="preserve">
+    <value>There was an error performing the redo action.
+
+Please try again.</value>
+  </data>
   <data name="GORIMG_ERR_COMPRESSED_RESIZE_MULTIPLE_4" xml:space="preserve">
     <value>This image is using a compressed format [{0}]. Compressed formats require that the image width and height be a multiple of 4.  
 
@@ -337,14 +357,14 @@ The request image size ({1}x{2}) is not a multiple of 4.</value>
   <data name="pixel_format_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pixel_format_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="generate_mip_maps_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\generate_mip_maps_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="GORIMG_ERR_CODEC_LOAD_FAIL" xml:space="preserve">
     <value>There was an error loading the '{0}' codec.</value>
   </data>
-  <data name="edit_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\edit_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORIMG_ERR_IMPORT_FAIL" xml:space="preserve">
-    <value>There was an error importing the file '{0}'.</value>
+  <data name="image_size_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_size_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Transparency_Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Transparency_Pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -373,13 +393,25 @@ Please try again.</value>
   <data name="image_size_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_size_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GORIMG_TIP_DISABLED_FORMAT" xml:space="preserve">
+    <value>[{0}] is disabled because the image width or height is not a multiple of 4.</value>
+  </data>
   <data name="emboss_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\emboss_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="edge_detect_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edge_detect_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_ARRAY_INDEX" xml:space="preserve">
+    <value>Array Index:</value>
   </data>
   <data name="GORIMG_CONFIRM_3D_TO_2D" xml:space="preserve">
     <value>This image has more than 1 depth slice. Converting this image to a 2D/Cube image will discard all depth slices after the 1st one.  
 
 Are you sure you wish to continue?</value>
+  </data>
+  <data name="GORIMG_TEXT_RESIZE_CROP_IMAGE_SIZE" xml:space="preserve">
+    <value>Target image dimensions: {0}x{1}</value>
   </data>
   <data name="image_dimensions_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_dimensions_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -395,8 +427,8 @@ Are you sure you wish to continue?</value>
 
 Chose one of the options below to fit the imported image into the dimensions of the target image.</value>
   </data>
-  <data name="GORIMG_UNDO_DESC_SET_ALPHA" xml:space="preserve">
-    <value>Set alpha value</value>
+  <data name="GORIMG_ERR_EXPORT_CONVERT" xml:space="preserve">
+    <value>Cannot convert [{0}] to a format supported by the codec.</value>
   </data>
   <data name="generate_mip_maps_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\generate_mip_maps_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -415,13 +447,11 @@ Are you sure you want to do this?</value>
   <data name="GORIMG_TEXT_IMG_PICKER_INSTRUCTION" xml:space="preserve">
     <value>Drag an image into the panel below to import into {0}.</value>
   </data>
+  <data name="right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="GORIMG_TEXT_LOADING_IMAGES" xml:space="preserve">
     <value>Loading Image(s)...</value>
-  </data>
-  <data name="GORIMG_ERR_IMAGE_INFO" xml:space="preserve">
-    <value>There was an error while trying to retrieve the current image information.
-
-Please try again.</value>
   </data>
   <data name="emboss_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\emboss_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -432,17 +462,28 @@ Please try again.</value>
   <data name="GORIMG_TEXT_MIP_MAPS" xml:space="preserve">
     <value>Mip Maps</value>
   </data>
+  <data name="grayscale_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\grayscale_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="opactiy_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\opactiy_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="GORIMG_TEXT_ARRAY_INDEX_COUNT" xml:space="preserve">
     <value>Array index count:</value>
   </data>
-  <data name="GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED" xml:space="preserve">
-    <value>The codec plug in '{0}' was already loaded.</value>
+  <data name="GORIMG_ERR_IMAGE_INFO" xml:space="preserve">
+    <value>There was an error while trying to retrieve the current image information.
+
+Please try again.</value>
   </data>
   <data name="GORIMG_TEXT_DEPTH_SLICE" xml:space="preserve">
     <value>Depth Slice:</value>
   </data>
   <data name="cancel_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cancel_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_UNDO_DESC_SET_ALPHA" xml:space="preserve">
+    <value>Set alpha value</value>
   </data>
   <data name="pixel_format_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pixel_format_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -456,14 +497,16 @@ Please try again.</value>
   <data name="GORIMG_SEARCH_KEYWORD_CODEC" xml:space="preserve">
     <value>codec</value>
   </data>
-  <data name="zoom_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\zoom_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="image_size_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image_size_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="undo_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\undo_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="confirm_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\confirm_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_ERR_CANT_FIND_EDITOR" xml:space="preserve">
+    <value>The executable '{0}' could not be found. 
+
+Please locate an appropriate editor using the settings interface.</value>
   </data>
   <data name="GORIMG_TEXT_MIP_DETAILS" xml:space="preserve">
     <value>{0}/{1} ({2}x{3})</value>
@@ -483,25 +526,17 @@ Please try again.</value>
   <data name="onebit_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\onebit_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_ERR_EXPORT_CONVERT" xml:space="preserve">
-    <value>Cannot convert [{0}] to a format supported by the codec.</value>
-  </data>
   <data name="sharpen_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sharpen_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="grayscale_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\grayscale_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GORIMG_DESC_UNDO_PREMULTIPLY" xml:space="preserve">
+    <value>Premultiplied alpha</value>
   </data>
   <data name="GORIMG_TEXT_ARRAY_INDICES" xml:space="preserve">
     <value>Array Indices</value>
   </data>
   <data name="GORIMG_TEXT_SAVING" xml:space="preserve">
     <value>Saving '{0}'...</value>
-  </data>
-  <data name="GORIMG_CONFIRM_OVERWRITE_DEPTH_SLICE" xml:space="preserve">
-    <value>This will overwrite the image data at depth slice {0}, mip level {1}.
-
-Continue?</value>
   </data>
   <data name="GORIMG_UNDO_DESC_MIP_GEN" xml:space="preserve">
     <value>Mipmap generation</value>
@@ -515,22 +550,17 @@ Continue?</value>
   <data name="GORIMG_ERR_CANNOT_CONVERT" xml:space="preserve">
     <value>The pixel format [{0}] cannot be converted to [{1}].</value>
   </data>
-  <data name="GORIMG_FILEMASK_ALL_FILES" xml:space="preserve">
-    <value>All files (*.*)|*.*</value>
-  </data>
-  <data name="GORIMG_ERR_REDO" xml:space="preserve">
-    <value>There was an error performing the redo action.
-
-Please try again.</value>
-  </data>
-  <data name="GORIMG_TEXT_IMPORTING" xml:space="preserve">
-    <value>Importing...</value>
-  </data>
-  <data name="export_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\export_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="zoom_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zoom_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="VolumeRenderShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\VolumeRenderShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GORIMG_ERR_IMPORT_FAIL" xml:space="preserve">
+    <value>There was an error importing the file '{0}'.</value>
+  </data>
+  <data name="GORIMG_TEXT_IMPORTING" xml:space="preserve">
+    <value>Importing...</value>
   </data>
   <data name="save_content_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\save_content_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -562,11 +592,11 @@ Would you like to continue?</value>
   <data name="GORIMG_UNDO_DESC_EFFECTS" xml:space="preserve">
     <value>Apply effects to image</value>
   </data>
-  <data name="undo_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\undo_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="edit_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edit_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_TEXT_RESIZE_CROP_IMAGE_SIZE" xml:space="preserve">
-    <value>Target image dimensions: {0}x{1}</value>
+  <data name="posterize_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\posterize_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORIMG_TIP_IMAGE3D" xml:space="preserve">
     <value>Image Type: {0}
@@ -574,8 +604,11 @@ Size: {1}x{2}x{3}
 Format: {4}
 Mip Count: {5}</value>
   </data>
-  <data name="opactiy_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\opactiy_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="onebit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\onebit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_SIZE_DETAILS" xml:space="preserve">
+    <value>Image width and height: {0}x{1}</value>
   </data>
   <data name="image_effect_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_effect_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -583,26 +616,12 @@ Mip Count: {5}</value>
   <data name="import_image_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\import_image_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="edge_detect_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\edge_detect_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="delete_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\delete_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="edge_detect_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\edge_detect_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORIMG_TEXT_COLOR_VALUES" xml:space="preserve">
-    <value>Red: {0} Green: {1} Blue: {2}
-Alpha: {3}</value>
-  </data>
-  <data name="GORIMG_DESC_UNDO_PREMULTIPLY" xml:space="preserve">
-    <value>Premultiplied alpha</value>
-  </data>
-  <data name="GORIMG_TIP_DISABLED_FORMAT" xml:space="preserve">
-    <value>[{0}] is disabled because the image width or height is not a multiple of 4.</value>
-  </data>
-  <data name="GORIMG_TEXT_PLEASE_WAIT" xml:space="preserve">
-    <value>Please wait...</value>
-  </data>
-  <data name="right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GORIMG_ERR_SETTING_EXE_PATH" xml:space="preserve">
+    <value>There was an error while setting the application path.
+
+Please try again.</value>
   </data>
 </root>

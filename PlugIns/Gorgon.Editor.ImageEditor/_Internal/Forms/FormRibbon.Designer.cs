@@ -128,6 +128,7 @@
             this.RibbonImageContent.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabImage,
             this.TabEffects});
+            this.RibbonImageContent.SelectedContext = null;
             this.RibbonImageContent.SelectedTab = this.TabImage;
             this.RibbonImageContent.Size = new System.Drawing.Size(1293, 115);
             this.RibbonImageContent.TabIndex = 0;
@@ -203,9 +204,7 @@
             this.ButtonExport.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.export_image_16x16;
             this.ButtonExport.KeyTip = "E";
             this.ButtonExport.TextLine1 = "Export";
-            this.ButtonExport.ToolTipBody = "Exports the image to a file on the disk as the specified codec.\r\n\r\nOnly codecs th" +
-    "at support the current pixel format, mip map level count, array level count \r\nan" +
-    "d image type will appear in this list.";
+            this.ButtonExport.ToolTipBody = resources.GetString("ButtonExport.ToolTipBody");
             this.ButtonExport.ToolTipTitle = "Export Image";
             // 
             // MenuCodecs
@@ -239,9 +238,9 @@
             this.ButtonEditInApp.KeyTip = "E";
             this.ButtonEditInApp.TextLine1 = "Edit In";
             this.ButtonEditInApp.TextLine2 = "Application";
-            this.ButtonEditInApp.ToolTipBody = "Launches the associated application and opens the image for editing.\r\n\r\nWhen the " +
-    "image editor application is launched, Gorgon\'s UI will remain locked until the a" +
-    "pplication exits.\r\n";
+            this.ButtonEditInApp.ToolTipBody = "Launches the associated application and opens the image \r\nfor editing.\r\n\r\nWhen th" +
+    "e image editor application is launched, Gorgon\'s \r\nUI will remain locked until t" +
+    "he application exits.\r\n";
             this.ButtonEditInApp.ToolTipTitle = "Edit In Application";
             this.ButtonEditInApp.Click += new System.EventHandler(this.ButtonEditInApp_Click);
             // 
@@ -437,7 +436,7 @@
             this.ButtonZoom.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.zoom_16x16;
             this.ButtonZoom.KeyTip = "Z";
             this.ButtonZoom.TextLine1 = "Zoom";
-            this.ButtonZoom.ToolTipBody = "Zooms in or out on the image by the specified percentage.";
+            this.ButtonZoom.ToolTipBody = resources.GetString("ButtonZoom.ToolTipBody");
             this.ButtonZoom.ToolTipTitle = "Zoom";
             // 
             // MenuZoom

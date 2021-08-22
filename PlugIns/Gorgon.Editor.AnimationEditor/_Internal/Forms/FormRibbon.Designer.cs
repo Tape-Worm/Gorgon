@@ -132,7 +132,8 @@
             this.RibbonAnimationContent.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabAnimation,
             this.TabKeyEditor});
-            this.RibbonAnimationContent.SelectedTab = this.TabKeyEditor;
+            this.RibbonAnimationContent.SelectedContext = null;
+            this.RibbonAnimationContent.SelectedTab = this.TabAnimation;
             this.RibbonAnimationContent.Size = new System.Drawing.Size(1594, 115);
             this.RibbonAnimationContent.TabIndex = 0;
             // 
@@ -273,12 +274,10 @@
             this.ButtonAnimationLoadBack.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.load_image_16x16;
             this.ButtonAnimationLoadBack.KeyTip = "S";
             this.ButtonAnimationLoadBack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.ButtonAnimationLoadBack.TextLine1 = "Set";
+            this.ButtonAnimationLoadBack.TextLine1 = "Set Reference";
             this.ButtonAnimationLoadBack.TextLine2 = "Image";
-            this.ButtonAnimationLoadBack.ToolTipBody = "Loads an image to place in the background to use as a guide when\r\nbuilding an ani" +
-    "mation.\r\n\r\nNOTE: This is only for animation design purposes and will not be \r\nst" +
-    "ored with the animation file.";
-            this.ButtonAnimationLoadBack.ToolTipTitle = "Load background";
+            this.ButtonAnimationLoadBack.ToolTipBody = resources.GetString("ButtonAnimationLoadBack.ToolTipBody");
+            this.ButtonAnimationLoadBack.ToolTipTitle = "Set reference image";
             this.ButtonAnimationLoadBack.Click += new System.EventHandler(this.ButtonAnimationLoadBack_Click);
             // 
             // ButtonAnimationClearBack
@@ -286,11 +285,11 @@
             this.ButtonAnimationClearBack.ImageLarge = global::Gorgon.Editor.AnimationEditor.Properties.Resources.clear_image_48x48;
             this.ButtonAnimationClearBack.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.clear_image_16x16;
             this.ButtonAnimationClearBack.KeyTip = "C";
-            this.ButtonAnimationClearBack.TextLine1 = "Clear";
+            this.ButtonAnimationClearBack.TextLine1 = "Clear Reference";
             this.ButtonAnimationClearBack.TextLine2 = "Image";
-            this.ButtonAnimationClearBack.ToolTipBody = "Clears the background image if one is loaded.\r\n\r\nNOTE: This is only for animation" +
-    " design purposes and will not be \r\nstored with the animation file.\r\n";
-            this.ButtonAnimationClearBack.ToolTipTitle = "Clear image";
+            this.ButtonAnimationClearBack.ToolTipBody = "Clears the reference image if one is loaded.\r\n\r\nNOTE: This is only for animation " +
+    "design purposes and will not be \r\nstored with the animation file.\r\n";
+            this.ButtonAnimationClearBack.ToolTipTitle = "Clear reference image";
             this.ButtonAnimationClearBack.Click += new System.EventHandler(this.ButtonAnimationClearBack_Click);
             // 
             // LineGroupAnimation
@@ -306,10 +305,10 @@
             this.ButtonAnimationSprite.KeyTip = "P";
             this.ButtonAnimationSprite.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.P)));
-            this.ButtonAnimationSprite.TextLine1 = "Set";
+            this.ButtonAnimationSprite.TextLine1 = "Set Main";
             this.ButtonAnimationSprite.TextLine2 = "Sprite";
             this.ButtonAnimationSprite.ToolTipBody = resources.GetString("ButtonAnimationSprite.ToolTipBody");
-            this.ButtonAnimationSprite.ToolTipTitle = "Set sprite";
+            this.ButtonAnimationSprite.ToolTipTitle = "Set main sprite";
             this.ButtonAnimationSprite.Click += new System.EventHandler(this.ButtonAnimationSprite_Click);
             // 
             // CheckAnimationLoop
@@ -506,7 +505,7 @@
             this.ButtonZoomAnimation.ImageSmall = global::Gorgon.Editor.AnimationEditor.Properties.Resources.zoom_16x16;
             this.ButtonZoomAnimation.KeyTip = "Z";
             this.ButtonZoomAnimation.TextLine1 = "Zoom";
-            this.ButtonZoomAnimation.ToolTipBody = "Zooms in or out on the animation frame by the specified percentage.";
+            this.ButtonZoomAnimation.ToolTipBody = resources.GetString("ButtonZoomAnimation.ToolTipBody");
             this.ButtonZoomAnimation.ToolTipTitle = "Zoom";
             // 
             // MenuZoom

@@ -288,6 +288,7 @@ namespace Gorgon.Editor.SpriteEditor
                     break;
                 case nameof(ISpritePickContext.ArrayIndex):
                     _sprite.TextureArrayIndex = DataContext.SpritePickContext.ArrayIndex;
+                    _picker.ImageData = DataContext.SpritePickContext.ImageData?.Buffers[0, DataContext.SpritePickContext.ArrayIndex];
                     break;
                 case nameof(ISpritePickContext.Padding):
                     _picker.Padding = DataContext.SpritePickContext.Padding;
@@ -302,7 +303,7 @@ namespace Gorgon.Editor.SpriteEditor
         protected override void OnPropertyChanged(string propertyName)
         {
             switch (propertyName)
-            {
+            {                
                 case nameof(ISpriteContent.Texture):
                     UpdateWorkingSprite();
                     break;
