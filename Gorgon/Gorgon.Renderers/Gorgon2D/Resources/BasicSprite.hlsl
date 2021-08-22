@@ -629,7 +629,7 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 float4 GorgonPixelShaderSilhouettePixelShader(GorgonSpriteVertex vertex) : SV_Target
 {
 	float3 color = vertex.color.rgb;
-	float alpha = SampleMainTexture(vertex.uv, float(0, 0, 0, 1)) * vertex.color.a;
+	float alpha = SampleMainTexture(vertex.uv, float4(0, 0, 0, 1)).a * vertex.color.a;
 		
 	REJECT_ALPHA(alpha);
 	
