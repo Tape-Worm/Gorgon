@@ -728,10 +728,10 @@ namespace Gorgon.Editor.AnimationEditor
 
                 try
                 {
-                    int destIndex = args.DestKeyIndex;
-
                     foreach (TrackKeySelection trackSel in args.Keys)
                     {
+                        int destIndex = args.DestKeyIndex;
+
                         if (trackSel.Track.KeyType == AnimationTrackKeyType.Texture2D)
                         {
                             ShowWaitPanel(Resources.GORANM_TEXT_PLEASE_WAIT);
