@@ -837,7 +837,7 @@ namespace Gorgon.Editor.SpriteEditor
                 if (Size != size)
                 {
                     Size = size;
-                    TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);
+                    TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);                    
                     ContentState = ContentState.Modified;
                 }
 
@@ -1645,6 +1645,36 @@ namespace Gorgon.Editor.SpriteEditor
             ColorEditor.OkCommand = new EditorCommand<object>(DoCommitColorChange, CanCommitColorChange);
             AnchorEditor.OkCommand = new EditorCommand<object>(DoCommitAnchorChange, CanCommitAnchorChange);
             WrappingEditor.OkCommand = new EditorCommand<object>(DoCommitWrappingChange, CanCommitWrappingChange);
+        }
+
+        /// <summary>
+        /// Function to initialize the view model in-place.
+        /// </summary>
+        /// <param name="sprite">The sprite used to update the view model.</param>
+        /// <param name="file">The new file.</param>
+        /// <param name="undoService">The undo service to use when correcting mistakes.</param>
+        public void Initialize(GorgonSprite sprite, IContentFile file, IUndoService undoService)
+        {
+            NotifyAllPropertiesChanging();
+
+            // We must replace our undo service, otherwise we'll be undoing into the previous file.
+            _contentServices.UndoService = undoService;
+            File = file;
+            _sprite = sprite;
+
+            SpriteClipContext spriteClipContext = new();
+            SpritePickContext spritePickContext = new();
+            SpriteVertexEditContext spriteVertexEditContext = new();
+
+            spriteClipContext.Initialize(new SpriteClipContextParameters(this, HostServices));
+            spritePickContext.Initialize(new SpritePickContextParameters(this, SpritePickContext.SpritePickMaskEditor, _contentServices.TextureService, HostServices));
+            spriteVertexEditContext.Initialize(new SpriteVertexEditContextParameters(this, HostServices));
+
+            SpriteClipContext = spriteClipContext;
+            SpritePickContext = spritePickContext;
+            SpriteVertexEditContext = spriteVertexEditContext;
+
+            NotifyAllPropertiesChanged();
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>

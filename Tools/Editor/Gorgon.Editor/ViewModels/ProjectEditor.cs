@@ -654,12 +654,17 @@ namespace Gorgon.Editor.ViewModels
 
                 file = _contentFileManager.GetFile(FileExplorer.SelectedFiles[0].FullPath);
 
-                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_LOADING_CONTENT, file.Name));
+                bool inPlaceOpen = file.Metadata.ContentMetadata.CanOpenInPlace(file, CurrentContent);
 
                 // Close the current content. It should be saved at this point.
-                ResetContent();
+                if (!inPlaceOpen)
+                {
+                    ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_LOADING_CONTENT, file.Name));
 
-                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
+                    ResetContent();
+
+                    ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
+                }
 
                 // Find the associated plug in.
                 if (!HostServices.ContentPlugInService.PlugIns.TryGetValue(file.Metadata.PlugInName, out ContentPlugIn plugIn))
@@ -670,20 +675,34 @@ namespace Gorgon.Editor.ViewModels
 
                 // Create a new instance of an undo service. Undo services are separate between content types, thus we need to create new instances.
                 IUndoService undoService = new UndoService(HostServices.Log);
-                
-                // Create a content object.                
-                IEditorContent content = await plugIn.OpenContentAsync(file, _contentFileManager, _projectData, undoService);
 
-                if (content is null)
+                // Create a content object.                
+                if (!inPlaceOpen)
                 {
+                    IEditorContent content = await plugIn.OpenContentAsync(file, _contentFileManager, _projectData, undoService);
+
+                    if (content is null)
+                    {
+                        return;
+                    }
+
+                    // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
+                    RefreshFilePreview(file.Path);
+
+                    // Load the content.
+                    file.IsOpen = true;
+
+                    if (!inPlaceOpen)
+                    {
+                        CurrentContent = content;
+                    }
+
                     return;
                 }
-                // Always generate a thumbnail now so we don't have to later, this also serves to refresh the thumbnail.
-                RefreshFilePreview(file.Path);
-
-                // Load the content.
-                file.IsOpen = true;
-                CurrentContent = content;
+                else
+                {
+                    plugIn.OpenInPlace(file, CurrentContent, undoService);
+                }
             }
             catch (Exception ex)
             {

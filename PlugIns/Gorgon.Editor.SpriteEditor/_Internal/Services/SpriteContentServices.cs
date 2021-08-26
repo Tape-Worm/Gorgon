@@ -52,11 +52,12 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>
-        /// Property to return the service used to handle undo/redo.
+        /// Property to set or return the service used to handle undo/redo.
         /// </summary>
         public IUndoService UndoService
         {
             get;
+            set;
         }
 
         /// <summary>

@@ -528,6 +528,12 @@ namespace Gorgon.Editor.SpriteEditor
                     RenderControl.Cursor = Cursor.Current = Cursors.Default;
                     ValidateButtons();
                     break;
+                case nameof(ISpriteContent.SpriteClipContext):
+                    DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
+                    break;
+                case nameof(ISpriteContent.SpritePickContext):
+                    DataContext.SpritePickContext.PropertyChanged -= SpritePickContext_PropertyChanged;
+                    break;
             }
         }
 
@@ -600,6 +606,17 @@ namespace Gorgon.Editor.SpriteEditor
                     break;
                 case nameof(ISpriteContent.ArrayIndex):                                        
                     UpdateArrayPanel();
+                    break;
+                case nameof(ISpriteContent.SpriteClipContext):
+                    _manualRectEditor.SetDataContext(DataContext.SpriteClipContext);
+                    //DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;                    
+                    break;
+                case nameof(ISpriteContent.SpritePickContext):
+                    SpritePickMaskColor.SetDataContext(DataContext.SpritePickContext.SpritePickMaskEditor);
+                    //DataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
+                    break;
+                case nameof(ISpriteContent.SpriteVertexEditContext):
+                    //_manualVertexEditor.SetDataContext(DataContext.SpriteVertexEditContext);
                     break;
             }
 

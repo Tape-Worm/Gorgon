@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.PlugIns
@@ -105,6 +106,16 @@ namespace Gorgon.Editor.PlugIns
         /// <param name="cancelToken">The token used to cancel the thumbnail generation.</param>
         /// <returns>A <see cref="IGorgonImage"/> containing the thumbnail image data.</returns>
         Task<IGorgonImage> GetThumbnailAsync(IContentFile contentFile, string filePath, CancellationToken cancelToken);
+
+        /// <summary>
+        /// Function to determine if a file can be opened in place, instead of closing and reopening the content document.
+        /// </summary>
+        /// <param name="file">The file containing the content to evaluate.</param>
+        /// <param name="currentContent">The currently loaded content.</param>
+        /// <returns><b>true</b> if it can be opened in-place, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
+        bool CanOpenInPlace(IContentFile file, IEditorContent currentContent);
+
 
         /// <summary>
         /// Function to determine if the content plugin can open the specified file.

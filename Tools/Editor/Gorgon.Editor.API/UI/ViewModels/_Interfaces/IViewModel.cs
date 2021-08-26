@@ -133,6 +133,16 @@ namespace Gorgon.Editor.UI
         void NotifyPropertyChanging(string propertyName);
 
         /// <summary>
+        /// Function to notify that all properties on this type are changing their values.
+        /// </summary>
+        void NotifyAllPropertiesChanging();
+
+        /// <summary>
+        /// Function to notify that all properties on this type have changed their values.
+        /// </summary>
+        void NotifyAllPropertiesChanged();
+
+        /// <summary>
         /// Function called when the associated view is loaded.
         /// </summary>
         void OnLoad();

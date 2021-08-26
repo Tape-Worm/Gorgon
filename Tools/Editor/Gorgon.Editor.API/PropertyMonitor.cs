@@ -81,54 +81,65 @@ namespace Gorgon.Editor
 
         #region Methods.
         /// <summary>
+        /// Function to retrieve all property names.
+        /// </summary>
+        [DebuggerStepThrough]
+        private void GetProperties()
+        {
+            if (_properties is not null)
+            {
+                return;
+            }
+
+            Type thisType = GetType();
+
+            _properties = new HashSet<string>(StringComparer.Ordinal);
+            PropertyInfo[] props = thisType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+            foreach (PropertyInfo prop in props)
+            {
+                if (!_properties.Contains(prop.Name))
+                {
+                    _properties.Add(prop.Name);
+                }
+            }
+
+            // Get any explicitly implemented properties from interfaces.
+            props = GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+
+            var name = new StringBuilder(128);
+
+            foreach (PropertyInfo prop in props)
+            {
+                // We only care about the member name, not which interface owns it, so strip off the declaring part.
+                name.Length = 0;
+                name.Append(prop.Name);
+                int lastIndex = name.LastIndexOf('.');
+
+                if ((lastIndex != -1) && (lastIndex < name.Length - 1))
+                {
+                    name.Remove(0, lastIndex + 1);
+                }
+
+                string finalName = name.ToString();
+
+                if (!_properties.Contains(finalName))
+                {
+                    _properties.Add(finalName);
+                }
+            }
+
+            Debug.Assert(_properties is not null, "This object does not contain public properties!");
+        }
+
+        /// <summary>
         /// Function to validate whether the specified property exists on this object.
         /// </summary>
         /// <param name="propertyName">Name of the property to look up.</param>
         [DebuggerStepThrough]
         private void ValidatePropertyName(string propertyName)
         {
-            if (_properties is null)
-            {
-                Type thisType = GetType();
-
-                _properties = new HashSet<string>(StringComparer.Ordinal);
-                PropertyInfo[] props = thisType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-
-                foreach (PropertyInfo prop in props)
-                {
-                    if (!_properties.Contains(prop.Name))
-                    {
-                        _properties.Add(prop.Name);
-                    }
-                }
-
-                // Get any explicitly implemented properties from interfaces.
-                props = GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-                var name = new StringBuilder(128);
-
-                foreach (PropertyInfo prop in props)
-                {
-                    // We only care about the member name, not which interface owns it, so strip off the declaring part.
-                    name.Length = 0;
-                    name.Append(prop.Name);
-                    int lastIndex = name.LastIndexOf('.');
-
-                    if ((lastIndex != -1) && (lastIndex < name.Length - 1))
-                    {
-                        name.Remove(0, lastIndex + 1);
-                    }
-
-                    string finalName = name.ToString();
-
-                    if (!_properties.Contains(finalName))
-                    {
-                        _properties.Add(finalName);
-                    }
-                }
-
-                Debug.Assert(_properties is not null, "This object does not contain public properties!");
-            }
+            GetProperties();
 
             if (!_properties.Contains(propertyName))
             {
@@ -250,6 +261,34 @@ namespace Gorgon.Editor
             PropertyChangingEventHandler handler = PropertyChanging;
 
             handler?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Function to notify that all properties on this type are changing their values.
+        /// </summary>
+        public void NotifyAllPropertiesChanging()
+        {
+            GetProperties();
+
+            foreach (string propName in _properties)
+            {
+                PropertyChangingEventHandler handler = PropertyChanging;
+                handler?.Invoke(this, new PropertyChangingEventArgs(propName));
+            }
+        }
+
+        /// <summary>
+        /// Function to notify that all properties on this type have changed their values.
+        /// </summary>
+        public void NotifyAllPropertiesChanged()
+        {
+            GetProperties();
+
+            foreach (string propName in _properties)
+            {
+                PropertyChangedEventHandler handler = PropertyChanged;
+                handler?.Invoke(this, new PropertyChangedEventArgs(propName));
+            }
         }
         #endregion
     }

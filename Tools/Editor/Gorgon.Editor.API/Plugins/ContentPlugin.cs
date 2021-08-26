@@ -191,6 +191,17 @@ namespace Gorgon.Editor.PlugIns
         protected abstract Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService);
 
         /// <summary>
+        /// Function to open a content object in place from this plugin.
+        /// </summary>
+        /// <param name="file">The file that contains the content.</param>
+        /// <param name="current">The currently open content.</param>
+        /// <param name="undoService">The undo service to use when correcting mistakes.</param>
+        /// <returns>A new <see cref="IEditorContent"/> object.</returns>
+        protected virtual void OnOpenInPlace(IContentFile file, IEditorContent current, IUndoService undoService)
+        {
+        }
+
+        /// <summary>
         /// Function to register plug in specific search keywords with the system search.
         /// </summary>
         /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
@@ -304,6 +315,73 @@ namespace Gorgon.Editor.PlugIns
                 return (name, data, metadata);
             }
             while (true);
+        }
+
+        /// <summary>
+        /// Function to determine if a file can be loaded in-place.
+        /// </summary>
+        /// <param name="file">The file to evaluate.</param>
+        /// <param name="currentContent">The currently loaded content.</param>
+        /// <returns><b>true</b> if it can be opened in-place, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// Developers can override this method to implement the correct checking for content information for their plug ins.
+        /// </para>
+        /// </remarks>
+        protected virtual bool OnCanOpenInPlace(IContentFile file, IEditorContent currentContent) => false;
+
+        /// <summary>
+        /// Function to determine if a file can be opened in place, instead of closing and reopening the content document.
+        /// </summary>
+        /// <param name="file">The file containing the content to evaluate.</param>
+        /// <param name="currentContent">The currently loaded content.</param>
+        /// <returns><b>true</b> if it can be opened in-place, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
+        public bool CanOpenInPlace(IContentFile file, IEditorContent currentContent)
+        {
+            if (file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            if (currentContent is null)
+            {
+                return false;
+            }
+
+            return OnCanOpenInPlace(file, currentContent);
+        }
+
+        /// <summary>
+        /// Function to open the file in-place.
+        /// </summary>
+        /// <param name="file">The file that contains the content.</param>
+        /// <param name="current">The current content.</param>
+        /// <param name="undoService">The undo service to use when correcting mistakes.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/>, or the <paramref name="current"/> parameter is <b>null</b>.</exception>
+        public void OpenInPlace(IContentFile file, IEditorContent current, IUndoService undoService)
+        {
+            if (file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            if (current is null)
+            {
+                throw new ArgumentNullException(nameof(current));
+            }
+
+            // Ensure the temp directory contents are up to date.
+            TemporaryFileSystem.FileSystem.Refresh();
+
+            current.File.IsOpen = false;
+
+            OnOpenInPlace(file, current, undoService);
+
+            current.File.IsOpen = true;
+
+            // Reset the content state.
+            current.ContentState = ContentState.Unmodified;
         }
 
         /// <summary>

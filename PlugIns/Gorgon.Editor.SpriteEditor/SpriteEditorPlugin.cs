@@ -433,6 +433,60 @@ namespace Gorgon.Editor.SpriteEditor
             return needsRefresh;
         }
 
+        /// <summary>
+        /// Function to determine if a file can be loaded in-place.
+        /// </summary>
+        /// <param name="file">The file to evaluate.</param>
+        /// <param name="currentContent">The currently loaded content.</param>
+        /// <returns><b>true</b> if it can be opened in-place, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// Developers can override this method to implement the correct checking for content information for their plug ins.
+        /// </para>
+        /// </remarks>
+        protected override bool OnCanOpenInPlace(IContentFile file, IEditorContent currentContent)
+        {
+            if (currentContent is not SpriteContent current)
+            {
+                return false;
+            }
+
+            if ((!file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string contentType))
+                || (!string.Equals(contentType, ContentTypeID, StringComparison.OrdinalIgnoreCase)))
+            {
+                return false;
+            }
+
+            if ((!file.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> imagePaths))
+                || (imagePaths.Count == 0) || (current.Texture is null))
+            {
+                return false;
+            }
+
+            return string.Equals(current.Texture.Resource.Name, imagePaths[0], StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Function to open a content object in place from this plugin.
+        /// </summary>
+        /// <param name="file">The file that contains the content.</param>
+        /// <param name="current">The currently open content.</param>
+        /// <param name="undoService">The undo service to use when correcting mistakes.</param>
+        protected override void OnOpenInPlace(IContentFile file, IEditorContent current, IUndoService undoService)
+        {
+            var content = current as SpriteContent;
+
+            Debug.Assert(content is not null, "The content is not a sprite.");
+
+            GorgonSprite sprite;
+
+            // Load the sprite now. 
+            using Stream stream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
+            sprite = _defaultCodec.FromStream(stream, content.Texture);
+
+            content.Initialize(sprite, file, undoService);
+        }
+
         /// <summary>Function to register plug in specific search keywords with the system search.</summary>
         /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
         /// <param name="searchService">The search service to use for registration.</param>
