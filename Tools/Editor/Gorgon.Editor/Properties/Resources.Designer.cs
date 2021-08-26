@@ -996,6 +996,24 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to dependencies.
+        /// </summary>
+        internal static string GOREDIT_SEARCH_KEYWORD_DEPENDENCIES {
+            get {
+                return ResourceManager.GetString("GOREDIT_SEARCH_KEYWORD_DEPENDENCIES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to depends-on.
+        /// </summary>
+        internal static string GOREDIT_SEARCH_KEYWORD_DEPENDS_ON {
+            get {
+                return ResourceManager.GetString("GOREDIT_SEARCH_KEYWORD_DEPENDS_ON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plug ins.
         /// </summary>
         internal static string GOREDIT_SETTINGS_CATEGORY_PLUGINS {

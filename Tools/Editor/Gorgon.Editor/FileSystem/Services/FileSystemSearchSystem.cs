@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
@@ -46,7 +47,18 @@ namespace Gorgon.Editor.Services
         // The type of search keywords that can be used.
         private readonly Dictionary<string, string> _searchKeywords = new(StringComparer.CurrentCultureIgnoreCase)
         {
-            { Resources.GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE, CommonEditorConstants.ContentTypeAttr }
+            {
+                Resources.GOREDIT_SEARCH_KEYWORD_CONTENT_TYPE,
+                CommonEditorConstants.ContentTypeAttr
+            },
+            {
+                Resources.GOREDIT_SEARCH_KEYWORD_DEPENDENCIES,
+                Resources.GOREDIT_SEARCH_KEYWORD_DEPENDENCIES
+            },
+            {
+                Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON,
+                Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON
+            }        
         };
         #endregion
 
@@ -129,7 +141,7 @@ namespace Gorgon.Editor.Services
 
             _searchKeywords[keyword] = attribute;
         }
-
+        
 
         /// <summary>
         /// Function to check if the requested keyword value is within the attribute metadata for the file node content.
@@ -194,6 +206,92 @@ namespace Gorgon.Editor.Services
         }
 
         /// <summary>
+        /// Function to determine if a file name matches the specified wildcard mode.
+        /// </summary>
+        /// <param name="mode">The wild card mode currently active.</param>
+        /// <param name="file">The file to evaluate.</param>
+        /// <param name="modeSearchText">The search text with the wild card info stripped.</param>
+        /// <returns></returns>
+        private bool MatchesWildcard(SearchMode mode, IFile file, string modeSearchText)
+        {
+            switch (mode)
+            {
+                case SearchMode.OnlyWord when string.Equals(file.Name, modeSearchText, StringComparison.CurrentCultureIgnoreCase):
+                case SearchMode.StartsWith when file.Name.StartsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
+                case SearchMode.EndsWith when file.Name.EndsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
+                case SearchMode.Contains when (file.Name.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):
+                case SearchMode.All:
+                    return true;                    
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Function to check special keywords prior to peforming a regular search.
+        /// </summary>
+        /// <param name="keyword">The keyword to evaluate.</param>
+        /// <param name="keywordValue">The keyword value.</param>
+        /// <param name="mode">The current search mode.</param>
+        /// <param name="modeSearchText">The text from the search.</param>
+        /// <param name="searchResults">The list of search results to populate.</param>
+        /// <returns><b>true</b> if regular search should be stopped, <b>false</b> if it should continue.</returns>
+        private bool CheckKeyword(string keyword, string keywordValue, SearchMode mode, string modeSearchText, List<IFile> searchResults)
+        {
+            IEnumerable<IFile> files = _rootDirectory.Directories.Traverse(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files);
+
+            if (string.Equals(keyword, Resources.GOREDIT_SEARCH_KEYWORD_DEPENDENCIES, StringComparison.CurrentCultureIgnoreCase))
+            {
+                IFile searchFile = files.FirstOrDefault(item => MatchesWildcard(mode, item, modeSearchText));
+
+                if (searchFile is null)
+                {
+                    return true;
+                }
+
+                // Find the files.
+                foreach (string dependencyPath in searchFile.Metadata.DependsOn.SelectMany(item => item.Value))
+                {
+                    IFile dependencyFile = files.FirstOrDefault(item => string.Equals(item.FullPath, dependencyPath, StringComparison.CurrentCultureIgnoreCase));
+
+                    if (dependencyFile is not null)
+                    {
+                        searchResults.Add(dependencyFile);
+                    }
+                }
+                
+                return true;
+            }
+
+            if (string.Equals(keyword, Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON, StringComparison.CurrentCultureIgnoreCase))
+            {
+                IFile[] searchFiles = files.Where(item => MatchesWildcard(mode, item, modeSearchText)).ToArray();
+
+                if (searchFiles.Length == 0)
+                {
+                    return true;
+                }
+
+                // Find the files.
+                foreach (IFile dependencyFile in files.Where(item => Array.IndexOf(searchFiles, item) == -1))
+                {
+                    foreach (IFile searchFile in searchFiles)
+                    {
+                        if ((!searchResults.Contains(dependencyFile)) && (dependencyFile.Metadata.DependsOn.SelectMany(item => item.Value)
+                                                                                                           .Any(item => string.Equals(searchFile.FullPath, item, StringComparison.CurrentCultureIgnoreCase))))
+                        {
+                            searchResults.Add(dependencyFile);
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Function to perform the actual search.
         /// </summary>
         /// <param name="searchText">The text to search for.</param>
@@ -213,11 +311,16 @@ namespace Gorgon.Editor.Services
             {
                 searchText = updatedSearchText;
             }
-
-            (SearchMode mode, string modeSearchText) = ExtractSearchMode(searchText);
+                        
+            (SearchMode mode, string modeSearchText) = ExtractSearchMode(string.IsNullOrWhiteSpace(searchText) ? keywordValue : searchText);
 
             // Test code for search:
             var searchResults = new List<IFile>();
+
+            if ((!string.IsNullOrWhiteSpace(keyword)) && (CheckKeyword(keyword, keywordValue, mode, modeSearchText, searchResults)))
+            {
+                return searchResults;
+            }
 
             foreach (IFile node in _rootDirectory.Directories.Traverse(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files))
             {
@@ -229,17 +332,11 @@ namespace Gorgon.Editor.Services
                 if ((!string.IsNullOrWhiteSpace(keyword)) && (!CheckItemAttribute(node, keyword, keywordValue)))
                 {
                     continue;
-                }
+                }                
 
-                switch (mode)
+                if (MatchesWildcard(mode, node, modeSearchText))
                 {
-                    case SearchMode.OnlyWord when string.Equals(node.Name, modeSearchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.StartsWith when node.Name.StartsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.EndsWith when node.Name.EndsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
-                    case SearchMode.Contains when (node.Name.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):
-                    case SearchMode.All:
-                        searchResults.Add(node);
-                        break;
+                    searchResults.Add(node);
                 }
             }
 

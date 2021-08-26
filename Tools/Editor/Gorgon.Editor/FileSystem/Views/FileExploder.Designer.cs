@@ -46,7 +46,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.TreeNodeIcons = new System.Windows.Forms.ImageList(this.components);
             this.SplitFileSystem = new System.Windows.Forms.SplitContainer();
-            this.TreeDirectories = new Gorgon.Editor.Views.TreeEx();
             this.MenuDirectory = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MenuItemExportDirectoryTo = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSepDirEdit = new System.Windows.Forms.ToolStripSeparator();
@@ -61,15 +60,6 @@
             this.MenuItemDirCreateContent = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSepExclude = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemExcludeFromPackfile = new System.Windows.Forms.ToolStripMenuItem();
-            this.GridFiles = new Gorgon.Editor.Views.DataGridViewEx();
-            this.ColumnID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnIcon = new System.Windows.Forms.DataGridViewImageColumn();
-            this.ColumnFilename = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnPath = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnDummy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MenuFiles = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MenuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemFileCreateContent = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,15 +79,25 @@
             this.MenuItemMoveTo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MenuItemCancel = new System.Windows.Forms.ToolStripMenuItem();
+            this.TreeDirectories = new Gorgon.Editor.Views.TreeEx();
+            this.GridFiles = new Gorgon.Editor.Views.DataGridViewEx();
+            this.ColumnID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnIcon = new System.Windows.Forms.DataGridViewImageColumn();
+            this.ColumnFilename = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnPath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnDummy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.SplitFileSystem)).BeginInit();
             this.SplitFileSystem.Panel1.SuspendLayout();
             this.SplitFileSystem.Panel2.SuspendLayout();
             this.SplitFileSystem.SuspendLayout();
             this.MenuDirectory.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.GridFiles)).BeginInit();
             this.MenuFiles.SuspendLayout();
             this.panel1.SuspendLayout();
             this.MenuCopyMove.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.GridFiles)).BeginInit();
             this.SuspendLayout();
             // 
             // TreeNodeIcons
@@ -126,32 +126,6 @@
             this.SplitFileSystem.SplitterDistance = 145;
             this.SplitFileSystem.TabIndex = 0;
             this.SplitFileSystem.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitFileSystem_SplitterMoved);
-            // 
-            // TreeDirectories
-            // 
-            this.TreeDirectories.AllowDrop = true;
-            this.TreeDirectories.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.TreeDirectories.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TreeDirectories.ContextMenuStrip = this.MenuDirectory;
-            this.TreeDirectories.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TreeDirectories.ForeColor = System.Drawing.Color.White;
-            this.TreeDirectories.ImageIndex = 0;
-            this.TreeDirectories.ImageList = this.TreeNodeIcons;
-            this.TreeDirectories.Location = new System.Drawing.Point(0, 0);
-            this.TreeDirectories.Name = "TreeDirectories";
-            this.TreeDirectories.PathSeparator = "/";
-            this.TreeDirectories.SelectedImageIndex = 0;
-            this.TreeDirectories.Size = new System.Drawing.Size(600, 145);
-            this.TreeDirectories.TabIndex = 0;
-            this.TreeDirectories.EditCanceled += new System.EventHandler(this.TreeDirectories_EditCanceled);
-            this.TreeDirectories.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.TreeDirectories_ItemDrag);
-            this.TreeDirectories.DragDrop += new System.Windows.Forms.DragEventHandler(this.TreeDirectories_DragDrop);
-            this.TreeDirectories.DragEnter += new System.Windows.Forms.DragEventHandler(this.TreeDirectories_DragEnter);
-            this.TreeDirectories.DragOver += new System.Windows.Forms.DragEventHandler(this.TreeDirectories_DragOver);
-            this.TreeDirectories.DragLeave += new System.EventHandler(this.TreeDirectories_DragLeave);
-            this.TreeDirectories.Enter += new System.EventHandler(this.TreeDirectories_Enter);
-            this.TreeDirectories.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeDirectories_KeyUp);
-            this.TreeDirectories.Leave += new System.EventHandler(this.TreeDirectories_Leave);
             // 
             // MenuDirectory
             // 
@@ -263,164 +237,6 @@
             this.MenuItemExcludeFromPackfile.Size = new System.Drawing.Size(211, 22);
             this.MenuItemExcludeFromPackfile.Text = "Excluded from packed file";
             this.MenuItemExcludeFromPackfile.Click += new System.EventHandler(this.MenuItemExcludeFromPackfile_Click);
-            // 
-            // GridFiles
-            // 
-            this.GridFiles.AllowDrop = true;
-            this.GridFiles.AllowUserToAddRows = false;
-            this.GridFiles.AllowUserToDeleteRows = false;
-            this.GridFiles.AllowUserToResizeRows = false;
-            this.GridFiles.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.GridFiles.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.GridFiles.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.GridFiles.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
-            this.GridFiles.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
-            this.GridFiles.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.GridFiles.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.GridFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.GridFiles.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ColumnID,
-            this.ColumnFile,
-            this.ColumnIcon,
-            this.ColumnFilename,
-            this.ColumnType,
-            this.ColumnSize,
-            this.ColumnPath,
-            this.ColumnDummy});
-            this.GridFiles.ContextMenuStrip = this.MenuFiles;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.SteelBlue;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.GridFiles.DefaultCellStyle = dataGridViewCellStyle2;
-            this.GridFiles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GridFiles.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.GridFiles.EnableHeadersVisualStyles = false;
-            this.GridFiles.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.GridFiles.Location = new System.Drawing.Point(0, 0);
-            this.GridFiles.Name = "GridFiles";
-            this.GridFiles.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.SteelBlue;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.GridFiles.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.GridFiles.RowHeadersVisible = false;
-            this.GridFiles.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.SteelBlue;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.GridFiles.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.GridFiles.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.GridFiles.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.GridFiles.ShowCellErrors = false;
-            this.GridFiles.ShowEditingIcon = false;
-            this.GridFiles.ShowRowErrors = false;
-            this.GridFiles.Size = new System.Drawing.Size(600, 292);
-            this.GridFiles.StandardTab = true;
-            this.GridFiles.TabIndex = 0;
-            this.GridFiles.RowsDrag += new System.EventHandler<Gorgon.Editor.Views.RowsDragEventArgs>(this.GridFiles_RowsDrag);
-            this.GridFiles.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridFiles_CellDoubleClick);
-            this.GridFiles.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridFiles_CellEndEdit);
-            this.GridFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.GridFiles_CellFormatting);
-            this.GridFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.GridFiles_DragDrop);
-            this.GridFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.GridFiles_DragEnter);
-            this.GridFiles.DragOver += new System.Windows.Forms.DragEventHandler(this.GridFiles_DragOver);
-            this.GridFiles.Enter += new System.EventHandler(this.GridFiles_Enter);
-            this.GridFiles.Leave += new System.EventHandler(this.GridFiles_Leave);
-            // 
-            // ColumnID
-            // 
-            this.ColumnID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.ColumnID.DataPropertyName = "ID";
-            this.ColumnID.HeaderText = "ID";
-            this.ColumnID.Name = "ColumnID";
-            this.ColumnID.Visible = false;
-            // 
-            // ColumnFile
-            // 
-            this.ColumnFile.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.ColumnFile.HeaderText = "File";
-            this.ColumnFile.Name = "ColumnFile";
-            this.ColumnFile.Visible = false;
-            // 
-            // ColumnIcon
-            // 
-            this.ColumnIcon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.ColumnIcon.DataPropertyName = "Image";
-            this.ColumnIcon.HeaderText = "";
-            this.ColumnIcon.Image = global::Gorgon.Editor.Properties.Resources.generic_file_20x20;
-            this.ColumnIcon.Name = "ColumnIcon";
-            this.ColumnIcon.ReadOnly = true;
-            this.ColumnIcon.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.ColumnIcon.Width = 20;
-            // 
-            // ColumnFilename
-            // 
-            this.ColumnFilename.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.ColumnFilename.DataPropertyName = "Filename";
-            this.ColumnFilename.FillWeight = 80F;
-            this.ColumnFilename.HeaderText = "Filename";
-            this.ColumnFilename.MaxInputLength = 250;
-            this.ColumnFilename.MinimumWidth = 100;
-            this.ColumnFilename.Name = "ColumnFilename";
-            this.ColumnFilename.Width = 300;
-            // 
-            // ColumnType
-            // 
-            this.ColumnType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.ColumnType.DataPropertyName = "Type";
-            this.ColumnType.FillWeight = 10F;
-            this.ColumnType.HeaderText = "Type";
-            this.ColumnType.Name = "ColumnType";
-            this.ColumnType.ReadOnly = true;
-            this.ColumnType.Width = 55;
-            // 
-            // ColumnSize
-            // 
-            this.ColumnSize.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.ColumnSize.DataPropertyName = "Size";
-            this.ColumnSize.FillWeight = 10F;
-            this.ColumnSize.HeaderText = "Size";
-            this.ColumnSize.Name = "ColumnSize";
-            this.ColumnSize.ReadOnly = true;
-            this.ColumnSize.Width = 51;
-            // 
-            // ColumnPath
-            // 
-            this.ColumnPath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.ColumnPath.FillWeight = 10F;
-            this.ColumnPath.HeaderText = "Directory";
-            this.ColumnPath.Name = "ColumnPath";
-            this.ColumnPath.ReadOnly = true;
-            this.ColumnPath.Visible = false;
-            // 
-            // ColumnDummy
-            // 
-            this.ColumnDummy.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ColumnDummy.FillWeight = 1F;
-            this.ColumnDummy.HeaderText = "";
-            this.ColumnDummy.MinimumWidth = 2;
-            this.ColumnDummy.Name = "ColumnDummy";
-            this.ColumnDummy.ReadOnly = true;
-            this.ColumnDummy.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.ColumnDummy.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // MenuFiles
             // 
@@ -588,6 +404,190 @@
             this.MenuItemCancel.Size = new System.Drawing.Size(135, 22);
             this.MenuItemCancel.Text = "Cancel";
             // 
+            // TreeDirectories
+            // 
+            this.TreeDirectories.AllowDrop = true;
+            this.TreeDirectories.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.TreeDirectories.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TreeDirectories.ContextMenuStrip = this.MenuDirectory;
+            this.TreeDirectories.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TreeDirectories.ForeColor = System.Drawing.Color.White;
+            this.TreeDirectories.ImageIndex = 0;
+            this.TreeDirectories.ImageList = this.TreeNodeIcons;
+            this.TreeDirectories.Location = new System.Drawing.Point(0, 0);
+            this.TreeDirectories.Name = "TreeDirectories";
+            this.TreeDirectories.PathSeparator = "/";
+            this.TreeDirectories.SelectedImageIndex = 0;
+            this.TreeDirectories.Size = new System.Drawing.Size(600, 145);
+            this.TreeDirectories.TabIndex = 0;
+            this.TreeDirectories.EditCanceled += new System.EventHandler(this.TreeDirectories_EditCanceled);
+            this.TreeDirectories.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.TreeDirectories_ItemDrag);
+            this.TreeDirectories.DragDrop += new System.Windows.Forms.DragEventHandler(this.TreeDirectories_DragDrop);
+            this.TreeDirectories.DragEnter += new System.Windows.Forms.DragEventHandler(this.TreeDirectories_DragEnter);
+            this.TreeDirectories.DragOver += new System.Windows.Forms.DragEventHandler(this.TreeDirectories_DragOver);
+            this.TreeDirectories.DragLeave += new System.EventHandler(this.TreeDirectories_DragLeave);
+            this.TreeDirectories.Enter += new System.EventHandler(this.TreeDirectories_Enter);
+            this.TreeDirectories.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeDirectories_KeyUp);
+            this.TreeDirectories.Leave += new System.EventHandler(this.TreeDirectories_Leave);
+            // 
+            // GridFiles
+            // 
+            this.GridFiles.AllowDrop = true;
+            this.GridFiles.AllowUserToAddRows = false;
+            this.GridFiles.AllowUserToDeleteRows = false;
+            this.GridFiles.AllowUserToResizeRows = false;
+            this.GridFiles.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.GridFiles.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.GridFiles.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.GridFiles.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            this.GridFiles.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
+            this.GridFiles.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.GridFiles.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.GridFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.GridFiles.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ColumnID,
+            this.ColumnFile,
+            this.ColumnIcon,
+            this.ColumnFilename,
+            this.ColumnType,
+            this.ColumnSize,
+            this.ColumnPath,
+            this.ColumnDummy});
+            this.GridFiles.ContextMenuStrip = this.MenuFiles;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.SteelBlue;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.GridFiles.DefaultCellStyle = dataGridViewCellStyle2;
+            this.GridFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GridFiles.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.GridFiles.EnableHeadersVisualStyles = false;
+            this.GridFiles.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.GridFiles.Location = new System.Drawing.Point(0, 0);
+            this.GridFiles.Name = "GridFiles";
+            this.GridFiles.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(37)))));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.SteelBlue;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.GridFiles.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.GridFiles.RowHeadersVisible = false;
+            this.GridFiles.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.SteelBlue;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.GridFiles.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.GridFiles.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.GridFiles.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.GridFiles.ShowCellErrors = false;
+            this.GridFiles.ShowEditingIcon = false;
+            this.GridFiles.ShowRowErrors = false;
+            this.GridFiles.Size = new System.Drawing.Size(600, 292);
+            this.GridFiles.StandardTab = true;
+            this.GridFiles.TabIndex = 0;
+            this.GridFiles.RowsDrag += new System.EventHandler<Gorgon.Editor.Views.RowsDragEventArgs>(this.GridFiles_RowsDrag);
+            this.GridFiles.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridFiles_CellDoubleClick);
+            this.GridFiles.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridFiles_CellEndEdit);
+            this.GridFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.GridFiles_CellFormatting);
+            this.GridFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.GridFiles_DragDrop);
+            this.GridFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.GridFiles_DragEnter);
+            this.GridFiles.DragOver += new System.Windows.Forms.DragEventHandler(this.GridFiles_DragOver);
+            this.GridFiles.Enter += new System.EventHandler(this.GridFiles_Enter);
+            this.GridFiles.Leave += new System.EventHandler(this.GridFiles_Leave);
+            // 
+            // ColumnID
+            // 
+            this.ColumnID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.ColumnID.DataPropertyName = "ID";
+            this.ColumnID.HeaderText = "ID";
+            this.ColumnID.Name = "ColumnID";
+            this.ColumnID.Visible = false;
+            // 
+            // ColumnFile
+            // 
+            this.ColumnFile.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.ColumnFile.HeaderText = "File";
+            this.ColumnFile.Name = "ColumnFile";
+            this.ColumnFile.Visible = false;
+            // 
+            // ColumnIcon
+            // 
+            this.ColumnIcon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.ColumnIcon.DataPropertyName = "Image";
+            this.ColumnIcon.HeaderText = "";
+            this.ColumnIcon.Image = global::Gorgon.Editor.Properties.Resources.generic_file_20x20;
+            this.ColumnIcon.Name = "ColumnIcon";
+            this.ColumnIcon.ReadOnly = true;
+            this.ColumnIcon.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.ColumnIcon.Width = 20;
+            // 
+            // ColumnFilename
+            // 
+            this.ColumnFilename.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.ColumnFilename.DataPropertyName = "Filename";
+            this.ColumnFilename.FillWeight = 80F;
+            this.ColumnFilename.HeaderText = "Filename";
+            this.ColumnFilename.MaxInputLength = 250;
+            this.ColumnFilename.MinimumWidth = 100;
+            this.ColumnFilename.Name = "ColumnFilename";
+            this.ColumnFilename.Width = 300;
+            // 
+            // ColumnType
+            // 
+            this.ColumnType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.ColumnType.DataPropertyName = "Type";
+            this.ColumnType.FillWeight = 10F;
+            this.ColumnType.HeaderText = "Type";
+            this.ColumnType.Name = "ColumnType";
+            this.ColumnType.ReadOnly = true;
+            this.ColumnType.Width = 55;
+            // 
+            // ColumnSize
+            // 
+            this.ColumnSize.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.ColumnSize.DataPropertyName = "Size";
+            this.ColumnSize.FillWeight = 10F;
+            this.ColumnSize.HeaderText = "Size";
+            this.ColumnSize.Name = "ColumnSize";
+            this.ColumnSize.ReadOnly = true;
+            this.ColumnSize.Width = 51;
+            // 
+            // ColumnPath
+            // 
+            this.ColumnPath.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.ColumnPath.FillWeight = 10F;
+            this.ColumnPath.HeaderText = "Directory";
+            this.ColumnPath.Name = "ColumnPath";
+            this.ColumnPath.ReadOnly = true;
+            this.ColumnPath.Visible = false;
+            // 
+            // ColumnDummy
+            // 
+            this.ColumnDummy.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ColumnDummy.FillWeight = 1F;
+            this.ColumnDummy.HeaderText = "";
+            this.ColumnDummy.MinimumWidth = 2;
+            this.ColumnDummy.Name = "ColumnDummy";
+            this.ColumnDummy.ReadOnly = true;
+            this.ColumnDummy.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.ColumnDummy.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
             // FileExploder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -600,11 +600,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.SplitFileSystem)).EndInit();
             this.SplitFileSystem.ResumeLayout(false);
             this.MenuDirectory.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.GridFiles)).EndInit();
             this.MenuFiles.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.MenuCopyMove.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.GridFiles)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

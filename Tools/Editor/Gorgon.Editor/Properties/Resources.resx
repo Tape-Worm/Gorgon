@@ -643,4 +643,10 @@ Would you like to create a new project there?</value>
 
 Are you sure you wish to continue?</value>
   </data>
+  <data name="GOREDIT_SEARCH_KEYWORD_DEPENDENCIES" xml:space="preserve">
+    <value>dependencies</value>
+  </data>
+  <data name="GOREDIT_SEARCH_KEYWORD_DEPENDS_ON" xml:space="preserve">
+    <value>depends-on</value>
+  </data>
 </root>

@@ -28,8 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -1645,6 +1647,45 @@ namespace Gorgon.Editor.Views
             }
         }
 
+        /// <summary>
+        /// Function to retrieve tool tip data for a cell.
+        /// </summary>
+        /// <param name="file">The file being evaluated.</param>
+        /// <param name="cell">The cell to update.</param>
+        private void GetToolTip(IFile file, DataGridViewCell cell)
+        {
+            // TODO: Move to view model and add "required by"
+            StringBuilder result = new();
+
+            result.Append(file.Name);
+            result.Append("\n\nPath:\n");
+            result.Append(file.FullPath);
+            result.Append("\n\nPhysical Path:\n");
+            result.Append(file.PhysicalPath);
+            result.Append("\n\nSize:\n");
+            result.Append(file.SizeInBytes.FormatMemory());
+
+            if (file.Metadata.DependsOn.Count > 0)
+            {
+                result.Append("\n\nDepends on:\n");
+
+                StringBuilder dependencyList = new();
+                foreach (string filePath in file.Metadata.DependsOn.SelectMany(item => item.Value))
+                {
+                    if (dependencyList.Length > 0)
+                    {
+                        dependencyList.Append("\n");
+                    }
+
+                    dependencyList.Append(filePath);
+                }
+
+                result.Append(dependencyList);
+            }
+
+            cell.ToolTipText = result.ToString();
+        }
+
         /// <summary>Handles the CellFormatting event of the GridFiles control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellFormattingEventArgs"/> instance containing the event data.</param>
@@ -1661,6 +1702,9 @@ namespace Gorgon.Editor.Views
             {
                 return;
             }
+
+            // Get the tooltip data for the file.
+            GetToolTip(file, row.Cells[e.ColumnIndex]);
 
             if (file.IsCut)
             {
