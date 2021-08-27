@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Drawing = System.Drawing;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -40,6 +41,14 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
     internal interface IImageContent
         : IVisualEditorContent, IUndoHandler
     {
+        /// <summary>
+        /// Property to return the settings for the image editor plugin.
+        /// </summary>
+        ISettings Settings
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the image data.
         /// </summary>
@@ -286,7 +295,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Porperty to return the command used to edit the image in an external application.
         /// </summary>
-        IEditorCommand<object> EditInAppCommand
+        IEditorCommand<string> EditInAppCommand
         {
             get;
         }
@@ -305,6 +314,22 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         IEditorAsyncCommand<CopyToImageArgs> CopyToImageCommand
         {
             get;
-        }        
+        }
+
+        /// <summary>
+        /// Property to return information about the external editor.
+        /// </summary>
+        ref readonly (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) ExternalEditorInfo
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return information about the user defined editor.
+        /// </summary>
+        ref readonly (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) UserEditorInfo
+        {
+            get;
+        }
     }
 }

@@ -113,6 +113,7 @@
             this.ButtonFxDodge = new Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonFxOneBit = new Krypton.Ribbon.KryptonRibbonGroupButton();
             this.ButtonFxPosterize = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.MenuExternalEdit = new System.Windows.Forms.ContextMenuStrip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.RibbonImageContent)).BeginInit();
             this.MenuImageType.SuspendLayout();
             this.MenuZoom.SuspendLayout();
@@ -232,6 +233,8 @@
             // 
             // ButtonEditInApp
             // 
+            this.ButtonEditInApp.ButtonType = Krypton.Ribbon.GroupButtonType.Split;
+            this.ButtonEditInApp.ContextMenuStrip = this.MenuExternalEdit;
             this.ButtonEditInApp.Enabled = false;
             this.ButtonEditInApp.ImageLarge = global::Gorgon.Editor.ImageEditor.Properties.Resources.edit_image_48x48;
             this.ButtonEditInApp.ImageSmall = global::Gorgon.Editor.ImageEditor.Properties.Resources.edit_image_16x16;
@@ -756,6 +759,12 @@
             this.ButtonFxPosterize.ToolTipTitle = "Posterize";
             this.ButtonFxPosterize.Click += new System.EventHandler(this.ButtonFxPosterize_Click);
             // 
+            // MenuExternalEdit
+            // 
+            this.MenuExternalEdit.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.MenuExternalEdit.Name = "MenuExternalEdit";
+            this.MenuExternalEdit.Size = new System.Drawing.Size(61, 4);
+            // 
             // FormRibbon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -844,5 +853,6 @@
         private Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxEdgeDetect;
         private Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxEmboss;
         private Krypton.Ribbon.KryptonRibbonGroupButton ButtonFxSharpen;
+        private System.Windows.Forms.ContextMenuStrip MenuExternalEdit;
     }
 }

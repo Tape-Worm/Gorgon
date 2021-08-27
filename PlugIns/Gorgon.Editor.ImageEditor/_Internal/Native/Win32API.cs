@@ -256,7 +256,7 @@ namespace Gorgon.Editor.ImageEditor.Native
         public static string GetFriendlyExeName(string filePath)
         {
             int size = 0;
-            _ = AssocQueryString(AssociationFlags.Verify,
+            _ = AssocQueryString(AssociationFlags.Verify | AssociationFlags.OpenByExeName,
                              AssociationStringType.FriendlyApplicationName,
                              filePath,
                              null,
@@ -270,7 +270,7 @@ namespace Gorgon.Editor.ImageEditor.Native
 
             var result = new StringBuilder(size);
 
-            return AssocQueryString(AssociationFlags.Verify,
+            return AssocQueryString(AssociationFlags.Verify | AssociationFlags.OpenByExeName,
                                     AssociationStringType.FriendlyApplicationName,
                                     filePath,
                                     null,

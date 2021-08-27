@@ -37,7 +37,8 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to edit the image data in an external application.
         /// </summary>
         /// <param name="workingFile">The file containing the image data to edit.</param>
+        /// <param name="exePath">Path to the executable.</param>
         /// <returns><b>true</b> if the image data was changed, <b>false</b> if not.</returns>
-        bool EditImage(IGorgonVirtualFile workingFile);
+        bool EditImage(IGorgonVirtualFile workingFile, string exePath);
     }
 }

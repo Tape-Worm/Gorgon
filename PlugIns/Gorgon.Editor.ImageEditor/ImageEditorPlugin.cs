@@ -27,12 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Drawing = System.Drawing;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -49,6 +49,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Editor.ImageEditor.Native;
 using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor
@@ -318,7 +319,7 @@ namespace Gorgon.Editor.ImageEditor
                 ImageIO = imageIO,
                 UndoService = undoService,
                 ImageUpdater = new ImageUpdaterService(),
-                ExternalEditorService = new ImageExternalEditService(_settings, HostContentServices.Log)
+                ExternalEditorService = new ImageExternalEditService(HostContentServices.Log)
             };
 
             var imagePicker = new ImagePicker();
@@ -350,6 +351,7 @@ namespace Gorgon.Editor.ImageEditor
             edgeDetectSettings.Initialize(injector);
             posterizeSettings.Initialize(injector);
 
+            
             imagePicker.Initialize(new ImagePickerParameters(fileManager, file, HostContentServices)
             {
                 ImageServices = services,
@@ -453,7 +455,7 @@ namespace Gorgon.Editor.ImageEditor
         /// Function to retrieve the small icon for the content plug in.
         /// </summary>
         /// <returns>An image for the small icon.</returns>
-        public Image GetSmallIcon() => Resources.image_20x20;
+        public Drawing.Image GetSmallIcon() => Resources.image_20x20;
 
         /// <summary>Function to retrieve a thumbnail for the content.</summary>
         /// <param name="contentFile">The content file used to retrieve the data to build the thumbnail with.</param>
@@ -552,7 +554,7 @@ namespace Gorgon.Editor.ImageEditor
 
         /// <summary>Function to retrieve the icon used for new content creation.</summary>
         /// <returns>An image for the icon.</returns>
-        public Image GetNewIcon() => null;
+        public Drawing.Image GetNewIcon() => null;
         #endregion
 
         #region Constructor/Finalizer.

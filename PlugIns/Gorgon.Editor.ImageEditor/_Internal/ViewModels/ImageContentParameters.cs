@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Drawing = System.Drawing;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -195,6 +196,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <param name="imageData">The image data and related information.</param>
         /// <param name="videoAdapter">Information about the current video adapter.</param>
         /// <param name="formatSupport">A list of <see cref="IGorgonFormatSupportInfo"/> objects for each pixel format.</param>
+        /// <param name="extEditorInfo">The external image editor information.</param>
+        /// <param name="userEditorInfo">The external image editor information.</param>
         /// <param name="services">The services required by the image editor.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
         public ImageContentParameters(IContentFileManager fileManager,
@@ -207,8 +210,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             IMipMapSettings mipMapSettings,
             IAlphaSettings alphaSettings,
             IFxContext fxContext,
-            (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,
-            IGorgonVideoAdapterInfo videoAdapter,
+            (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData,            
+            IGorgonVideoAdapterInfo videoAdapter,            
             IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> formatSupport,
             ImageEditorServices services)
             : base(fileManager, file, services.HostContentServices ?? throw new ArgumentNullException(nameof(services)))

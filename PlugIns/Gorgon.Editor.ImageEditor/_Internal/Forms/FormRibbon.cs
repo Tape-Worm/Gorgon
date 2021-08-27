@@ -31,6 +31,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
+using Gorgon.Editor.ImageEditor.Native;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
@@ -196,6 +197,9 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImageContent.CurrentPixelFormat):
                     ButtonImageFormat.TextLine1 = $"{Resources.GORIMG_TEXT_IMAGE_FORMAT}: {DataContext.CurrentPixelFormat}";
                     UpdatePixelFormatMenuSelection(DataContext);
+                    break;
+                case nameof(IImageContent.Settings):
+                    RefreshExternalEditButton(DataContext);
                     break;
             }
 
@@ -494,18 +498,35 @@ namespace Gorgon.Editor.ImageEditor
             }
         }
 
+        /// <summary>Handles the MenuItemClick event of the ExternalEditor control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
+        private void ExternalEditor_MenuItemClick(object sender, EventArgs e)
+        {
+            string exePath = GetExePath((ToolStripMenuItem)sender);
+
+            if ((DataContext?.EditInAppCommand is null) || (!DataContext.EditInAppCommand.CanExecute(exePath)))
+            {
+                return;
+            }
+
+            DataContext.EditInAppCommand.Execute(exePath);
+            ValidateButtons();
+        }
 
         /// <summary>Handles the Click event of the ButtonEditInApp control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ButtonEditInApp_Click(object sender, EventArgs e)
         {
-            if ((DataContext?.EditInAppCommand is null) || (!DataContext.EditInAppCommand.CanExecute(null)))
+            string exePath = GetExePath(null);
+
+            if ((DataContext?.EditInAppCommand is null) || (!DataContext.EditInAppCommand.CanExecute(exePath)))
             {
                 return;
             }
 
-            DataContext.EditInAppCommand.Execute(null);
+            DataContext.EditInAppCommand.Execute(exePath);
             ValidateButtons();
         }
 
@@ -567,6 +588,26 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to retrieve the correct path to use for the external editor.
+        /// </summary>
+        /// <param name="item">The menu item that was used.</param>
+        /// <returns>The path to the exe.</returns>
+        private string GetExePath(ToolStripMenuItem item)
+        {
+            if (DataContext is null)
+            {
+                return string.Empty;
+            }
+
+            if (item is null)
+            {
+                return string.IsNullOrWhiteSpace(DataContext.UserEditorInfo.ExePath) ? DataContext.ExternalEditorInfo.ExePath : DataContext.UserEditorInfo.ExePath;
+            }
+
+            return DataContext.ExternalEditorInfo.ExePath;
+        }
+
+        /// <summary>
         /// Function to validate the state of the buttons.
         /// </summary>
         private void ValidateButtons()
@@ -577,7 +618,7 @@ namespace Gorgon.Editor.ImageEditor
             }
 
             ButtonImport.Enabled = DataContext.ImportFileCommand?.CanExecute(0) ?? false;
-            ButtonEditInApp.Enabled = DataContext.EditInAppCommand?.CanExecute(null) ?? false;
+            ButtonEditInApp.Enabled = DataContext.EditInAppCommand?.CanExecute(GetExePath(null)) ?? false;
             ButtonDimensions.Enabled = DataContext.ShowImageDimensionsCommand?.CanExecute(null) ?? false;
             ButtonGenerateMipMaps.Enabled = DataContext.ShowMipGenerationCommand?.CanExecute(null) ?? false;
             ButtonImageFormat.Enabled = DataContext.ConvertFormatCommand?.CanExecute(BufferFormat.Unknown) ?? false;
@@ -749,6 +790,8 @@ namespace Gorgon.Editor.ImageEditor
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
 
+        
+
         /// <summary>
         /// Function to reset the view when no data context is assigned.
         /// </summary>
@@ -845,6 +888,54 @@ namespace Gorgon.Editor.ImageEditor
         }
 
         /// <summary>
+        /// Function to refresh the external edit button.
+        /// </summary>
+        /// <param name="dataContext">The current data context.</param>
+        private void RefreshExternalEditButton(IImageContent dataContext)
+        {
+            if (!string.IsNullOrWhiteSpace(dataContext.UserEditorInfo.ExePath))
+            {
+                ButtonEditInApp.TextLine2 = dataContext.UserEditorInfo.FriendlyName;
+                if (dataContext.UserEditorInfo.IconLarge is not null)
+                {
+                    ButtonEditInApp.ImageLarge = dataContext.UserEditorInfo.IconLarge;
+                }
+
+                if (dataContext.UserEditorInfo.IconSmall is not null)
+                {
+                    ButtonEditInApp.ImageSmall = dataContext.UserEditorInfo.IconSmall;
+                }
+
+                ButtonEditInApp.ButtonType = Krypton.Ribbon.GroupButtonType.Split;
+
+                foreach (ToolStripMenuItem item in MenuExternalEdit.Items)
+                {
+                    item.Click -= ExternalEditor_MenuItemClick;
+                    item.Dispose();
+                }
+
+                MenuExternalEdit.Items.Clear();
+
+                ToolStripMenuItem newItem = new(dataContext.ExternalEditorInfo.FriendlyName, dataContext.ExternalEditorInfo.IconSmall, ExternalEditor_MenuItemClick);
+                MenuExternalEdit.Items.Add(newItem);
+
+                return;
+            }
+
+            ButtonEditInApp.ButtonType = Krypton.Ribbon.GroupButtonType.Push;
+            ButtonEditInApp.TextLine2 = dataContext.ExternalEditorInfo.FriendlyName;
+
+            if (dataContext.ExternalEditorInfo.IconLarge is not null)
+            {
+                ButtonEditInApp.ImageLarge = dataContext.ExternalEditorInfo.IconLarge;
+            }
+            if (dataContext.ExternalEditorInfo.IconSmall is not null)
+            {
+                ButtonEditInApp.ImageSmall = dataContext.ExternalEditorInfo.IconSmall;
+            }
+        }        
+
+        /// <summary>
         /// Function to initialize the view based on the data context.
         /// </summary>
         /// <param name="dataContext">The data context used to initialize.</param>
@@ -867,6 +958,8 @@ namespace Gorgon.Editor.ImageEditor
             UpdatePixelFormatMenuSelection(dataContext);
             UpdateZoomMenu();
             UpdateImageTypeMenu(dataContext);
+
+            RefreshExternalEditButton(dataContext);
 
             CheckPremultipliedAlpha.Checked = dataContext.IsPremultiplied;
         }

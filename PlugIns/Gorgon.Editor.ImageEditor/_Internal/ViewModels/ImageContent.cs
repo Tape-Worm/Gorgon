@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Drawing = System.Drawing;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -50,6 +51,7 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.UI;
 using DX = SharpDX;
+using Gorgon.Editor.ImageEditor.Native;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels
 {
@@ -192,8 +194,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         // The available pixel formats, based on codec.
         private ObservableCollection<BufferFormat> _pixelFormats = new();
         // The settings for the image editor plugin.
-        private ISettings _settings;
-        // The settings for the image editor plugin.
         private ISettingsPlugins _pluginSettings;
         // The file used for working changes.
         private IGorgonVirtualFile _workingFile;
@@ -227,9 +227,32 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         private IImageExternalEditService _externalEditor;
         // Flag to indicate that the image should use premultiplied alpha.
         private bool _isPremultiplied;
+        // Information for the external editor.
+        private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _externalEditorInfo;
+        // Information for the user defined editor.
+        private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _userEditorInfo;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the settings for the image editor plugin.
+        /// </summary>
+        public ISettings Settings
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return information about the external editor.
+        /// </summary>
+        public ref readonly (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) ExternalEditorInfo => ref _externalEditorInfo;
+
+        /// <summary>
+        /// Property to return information about the user defined editor.
+        /// </summary>
+        public ref readonly (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) UserEditorInfo => ref _userEditorInfo;
+
         /// <summary>
         /// Property to return whether mip maps are supported for the current format.
         /// </summary>
@@ -633,7 +656,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Porperty to return the command used to edit the image in an external application.
         /// </summary>
-        public IEditorCommand<object> EditInAppCommand
+        public IEditorCommand<string> EditInAppCommand
         {
             get;
         }
@@ -1431,7 +1454,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                     return;
                 }
 
-                _settings.LastImportExportPath = exportedFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+                Settings.LastImportExportPath = exportedFile.Directory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
             {
@@ -1465,7 +1488,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
 
                 if ((!string.IsNullOrWhiteSpace(CropOrResizeSettings.ImportFileDirectory)) && (Directory.Exists(CropOrResizeSettings.ImportFileDirectory)))
                 {
-                    _settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
+                    Settings.LastImportExportPath = CropOrResizeSettings.ImportFileDirectory;
                 }
             }
             catch (Exception ex)
@@ -2068,13 +2091,36 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         /// <summary>
         /// Function to determine if the image can be edited in an external application.
         /// </summary>
-        /// <returns></returns>
-        private bool CanEditInApp() => (CurrentPanel is null) && (CommandContext is null);
+        /// <param name="exePath">The path to the executable file.</param>
+        /// <returns><b>true</b> if the image can be edited, <b>false</b> if not.</returns>
+        private bool CanEditInApp(string exePath)
+        {
+            if ((CurrentPanel is not null) || (CommandContext is not null) || (string.IsNullOrWhiteSpace(exePath)))
+            {
+                return false;
+            }
+
+            if ((!string.Equals(_userEditorInfo.ExePath, exePath, StringComparison.OrdinalIgnoreCase)) && (!string.Equals(_externalEditorInfo.ExePath, exePath, StringComparison.OrdinalIgnoreCase)))
+            {
+                return false;
+            }
+
+            try
+            {
+                return System.IO.File.Exists(exePath);
+            }
+            catch(Exception ex)
+            {
+                HostServices.Log.LogException(ex);
+                return false;
+            }            
+        }
 
         /// <summary>
         /// Function to edit the current image in an application.
         /// </summary>
-        private void DoEditInApp()
+        /// <param name="exePath">The path to the executable.</param>
+        private void DoEditInApp(string exePath)
         {
             IGorgonImage workImage = null;
             IGorgonVirtualFile workImageFile = null;
@@ -2126,9 +2172,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 workImage.Dispose();
 
                 // Launch the editor.                
-                if (!_externalEditor.EditImage(workImageFile))
+                if (!_externalEditor.EditImage(workImageFile, exePath))
                 {
-
                     return;
                 }
 
@@ -2665,8 +2710,8 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                             ArrayIndex = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex
                         };
 
-                        _settings.LastAlphaValue = redoArgs.Alpha;
-                        _settings.LastAlphaRange = redoArgs.MinMax;
+                        Settings.LastAlphaValue = redoArgs.Alpha;
+                        Settings.LastAlphaRange = redoArgs.MinMax;
                     }
 
                     newImage = _imageUpdater.SetAlphaValue(ImageData, redoArgs.MipLevel, redoArgs.ArrayIndex, redoArgs.Alpha, redoArgs.MinMax);
@@ -2976,6 +3021,96 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Function called when settings are changed.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ISettings.ImageEditorApplicationPath):
+                    NotifyPropertyChanging(nameof(IImageContent.Settings));
+                    UpdateExternalEditorInfo();
+                    NotifyPropertyChanged(nameof(IImageContent.Settings));
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve the external image editor from Windows and the icon (large and small) for that application.
+        /// </summary>
+        /// <param name="scratchArea">The scratch area used to write a dummy image.</param>
+        /// <param name="exePath">[Optional] The path to the image editor if we already know it.</param>
+        /// <returns>The path to the image editor Exe file, the friendly application name, the large 32x32 icon, and the small 16x16 icon.</returns>
+        private (string ExePath, string FriendlyName, Drawing.Bitmap IconLg, Drawing.Bitmap IconSm) GetImageEditorAndIcon(IGorgonFileSystemWriter<Stream> scratchArea, string exePath = null)
+        {
+            Drawing.Bitmap bitmap;
+            Drawing.Bitmap bitmapSm;
+
+            if (string.IsNullOrWhiteSpace(exePath))
+            {
+                using Drawing.Bitmap fakePng = new(32, 32);
+                using Stream stream = scratchArea.OpenStream("/Dummy.png", FileMode.Create);
+                fakePng.Save(stream, Drawing.Imaging.ImageFormat.Png);
+                stream.Close();
+
+                HostServices.Log.Print($"Retrieving associated executable for files.", LoggingLevel.Verbose);
+                IGorgonVirtualFile pngFile = scratchArea.FileSystem.GetFile("/Dummy.png");
+                exePath = Win32API.GetAssociatedExecutable(pngFile.PhysicalFile.FullPath);
+
+                if (string.IsNullOrWhiteSpace(exePath))
+                {
+                    HostServices.Log.Print($"WARNING: No executable found for files of type 'PNG'. Check to see if the UWP photo app hasn't messed with file registrations for 'PNG' files.", LoggingLevel.Verbose);
+                    return (string.Empty, string.Empty, null, null);
+                }
+
+                HostServices.Log.Print($"Found executable path {exePath}.", LoggingLevel.Verbose);
+
+                using var icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
+                bitmap = Drawing.Bitmap.FromHicon(icon.Handle);
+                bitmapSm = new(bitmap, 16, 16);
+            }
+            else
+            {
+                using var icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
+                bitmap = Drawing.Bitmap.FromHicon(icon.Handle);
+                bitmapSm = new(bitmap, 16, 16);
+            }
+
+            string friendlyName = Win32API.GetFriendlyExeName(exePath);
+
+            if (string.IsNullOrWhiteSpace(friendlyName))
+            {
+                friendlyName = Path.GetFileNameWithoutExtension(exePath);
+            }
+
+            return (exePath, friendlyName, bitmap, bitmapSm);
+        }
+
+        /// <summary>
+        /// Function to refresh the external image editor information.
+        /// </summary>
+        private void UpdateExternalEditorInfo()
+        {
+            _externalEditorInfo.IconLarge?.Dispose();
+            _externalEditorInfo.IconSmall?.Dispose();
+            _userEditorInfo.IconLarge?.Dispose();
+            _userEditorInfo.IconSmall?.Dispose();
+
+            _userEditorInfo = _externalEditorInfo = (string.Empty, string.Empty, null, null);
+
+            // Get the default editor.
+            _externalEditorInfo = GetImageEditorAndIcon(_imageIO.ScratchArea);
+
+            // Get the user defined editor.
+            if (!string.IsNullOrWhiteSpace(Settings.ImageEditorApplicationPath))
+            {
+                _userEditorInfo = GetImageEditorAndIcon(_imageIO.ScratchArea, Settings.ImageEditorApplicationPath);
+            }
+        }
+
         /// <summary>Function to determine the action to take when this content is closing.</summary>
         /// <returns>
         ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
@@ -3013,7 +3148,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _mipMapSettings = injectionParameters.MipMapSettings;
             _alphaSettings = injectionParameters.AlphaSettings;
             FxContext = injectionParameters.FxContext;
-            _settings = injectionParameters.Settings;
+            Settings = injectionParameters.Settings;
             _pluginSettings = injectionParameters.PluginSettings;
             _workingFile = injectionParameters.WorkingFile;
             ImageData = injectionParameters.Image;
@@ -3053,11 +3188,25 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             }
 
             FxContext.ApplyCommand = new EditorCommand<object>(DoApplyFx, CanApplyFx);
+
+            UpdateExternalEditorInfo();
+        }
+
+        /// <summary>Function called when the associated view is loaded.</summary>
+        public override void OnLoad()
+        {
+            base.OnLoad();                       
+
+            Settings.PropertyChanged += Settings_PropertyChanged;
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         public override void OnUnload()
         {
+            Settings.PropertyChanged -= Settings_PropertyChanged;
+
+            _externalEditorInfo.IconLarge?.Dispose();
+            _externalEditorInfo.IconSmall?.Dispose();
             ImageData?.Dispose();
             FxContext.ApplyCommand = null;
             FxContext?.OnUnload();
@@ -3106,7 +3255,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             ImportFileCommand = new EditorAsyncCommand<float>(DoImportFileAsync, CanImportFile);
             ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
             ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
-            EditInAppCommand = new EditorCommand<object>(DoEditInApp, CanEditInApp);
+            EditInAppCommand = new EditorCommand<string>(DoEditInApp, CanEditInApp);
             PremultipliedAlphaCommand = new EditorAsyncCommand<bool>(DoSetPremultipliedAlphaAsync, CanSetPremultipliedAlpha);
             ShowSetAlphaCommand = new EditorCommand<object>(DoShowSetAlphaValue, CanShowSetAlphaValue);
             CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);
