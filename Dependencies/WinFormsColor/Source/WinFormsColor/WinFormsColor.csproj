@@ -43,4 +43,10 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>1701;1702;1591;1006</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Code\GitHubRepos\Gorgon\develop\Dependencies\WinFormsColor\Source\WinFormsColor\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Code\GitHubRepos\Gorgon\develop\Dependencies\WinFormsColor\Source\WinFormsColor\.editorconfig" />
+  </ItemGroup>
 </Project>
