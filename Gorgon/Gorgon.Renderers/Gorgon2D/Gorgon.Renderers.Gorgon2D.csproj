@@ -85,7 +85,6 @@
       <PackagePath>
       </PackagePath>
     </None>
-    <None Include="..\..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj" />

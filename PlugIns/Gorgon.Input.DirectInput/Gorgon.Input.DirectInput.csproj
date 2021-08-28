@@ -58,7 +58,6 @@ This assembly contains a plug in that will use Microsoft DirectInput to allow ac
       <PackagePath>
       </PackagePath>
     </None>
-    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj" />

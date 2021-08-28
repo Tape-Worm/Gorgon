@@ -52,7 +52,6 @@
       </PackagePath>
     </None>
     <None Include="..\..\app.manifest" Link="app.manifest" />
-    <None Include="..\..\NoRules.ruleset" Link="NoRules.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />

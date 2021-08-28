@@ -50,7 +50,6 @@
       <PackagePath>
       </PackagePath>
     </None>
-    <None Include="..\..\..\..\NoRules.ruleset" Link="NoRules.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Example004.csproj" />

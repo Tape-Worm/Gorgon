@@ -5,6 +5,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Core", "Gorgon\Gorgon.Core\Gorgon.Core.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E656298C-C1C6-4274-87B5-A19C6BA689CB}"
+	ProjectSection(SolutionItems) = preProject
+		Examples\.editorconfig = Examples\.editorconfig
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example001", "Examples\Gorgon.Core\Example001\Example001.csproj", "{92184B11-8908-40DE-A81B-827CE74FE8C7}"
 EndProject
@@ -160,8 +163,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF42E404-7542-42B7-B467-A04BE64C3350}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		Gorgon\NoLiteralBugFix.ruleset = Gorgon\NoLiteralBugFix.ruleset
-		Examples\NoRules.ruleset = Examples\NoRules.ruleset
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Editor.ExtractSpriteTool", "PlugIns\Gorgon.Editor.ExtractSpriteTool\Gorgon.Editor.ExtractSpriteTool.csproj", "{0CA64289-C2EF-48D8-BEBE-F8BAEFE0BE3A}"
@@ -224,7 +225,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlassCube.WPF", "Examples\G
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Wpf.Interop.DirectX_winsdk", "Dependencies\Microsoft.Wpf.Interop.DirectX\src\Microsoft.Wpf.Interop.DirectX\Microsoft.Wpf.Interop.DirectX_winsdk.vcxproj", "{157A478D-FE02-4EB2-BD7C-8CF3BF1CB9A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsColor", "Dependencies\WinFormsColor\Source\WinFormsColor\WinFormsColor.csproj", "{E1E3F636-D272-462C-AD70-96414B318766}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsColor", "Dependencies\WinFormsColor\Source\WinFormsColor\WinFormsColor.csproj", "{E1E3F636-D272-462C-AD70-96414B318766}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

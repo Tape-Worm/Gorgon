@@ -265,3 +265,39 @@ dotnet_naming_style.camel_case.required_prefix =
 dotnet_naming_style.camel_case.required_suffix = 
 dotnet_naming_style.camel_case.word_separator = 
 dotnet_naming_style.camel_case.capitalization = camel_case
+
+# IDE0058: Expression value is never used
+dotnet_diagnostic.IDE0058.severity = none
+
+# IDE0047: Remove unnecessary parentheses
+dotnet_diagnostic.IDE0047.severity = none
+
+# IDE0130: Namespace does not match folder structure
+dotnet_diagnostic.IDE0130.severity = none
+dotnet_diagnostic.CA1070.severity=warning
+dotnet_diagnostic.CA1507.severity=warning
+dotnet_diagnostic.CA1820.severity=error
+dotnet_diagnostic.CA1824.severity=silent
+
+[*.{cs,vb}]
+dotnet_diagnostic.CA1063.severity=silent
+dotnet_diagnostic.CA1002.severity=silent
+dotnet_diagnostic.CA1008.severity=silent
+dotnet_diagnostic.CA1012.severity=error
+dotnet_diagnostic.CA1014.severity=silent
+dotnet_diagnostic.CA1017.severity=silent
+dotnet_diagnostic.CA1021.severity=silent
+dotnet_diagnostic.CA1028.severity=suggestion
+dotnet_diagnostic.CA1031.severity=silent
+dotnet_diagnostic.CA1040.severity=error
+dotnet_diagnostic.CA1041.severity=warning
+dotnet_diagnostic.CA1043.severity=suggestion
+dotnet_diagnostic.CA1044.severity=error
+dotnet_diagnostic.CA1045.severity=silent
+dotnet_diagnostic.CA1046.severity=error
+dotnet_diagnostic.CA1401.severity=warning
+dotnet_diagnostic.CA1700.severity=error
+dotnet_diagnostic.CA1806.severity=silent
+dotnet_diagnostic.CA1813.severity=silent
+dotnet_diagnostic.CA1819.severity=silent
+dotnet_diagnostic.CA1821.severity=warning

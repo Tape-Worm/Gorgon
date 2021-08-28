@@ -59,7 +59,6 @@
       </PackagePath>
     </None>
     <None Include="..\..\app.manifest" Link="app.manifest" />
-    <None Include="..\..\NoRules.ruleset" Link="NoRules.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />

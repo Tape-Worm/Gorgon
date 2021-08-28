@@ -89,7 +89,6 @@
       <PackagePath>
       </PackagePath>
     </None>
-    <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
     <None Include="System\Index.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -58,7 +58,6 @@
       <PackagePath>
       </PackagePath>
     </None>
-    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />

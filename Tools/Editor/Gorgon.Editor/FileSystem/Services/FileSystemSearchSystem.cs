@@ -231,12 +231,11 @@ namespace Gorgon.Editor.Services
         /// Function to check special keywords prior to peforming a regular search.
         /// </summary>
         /// <param name="keyword">The keyword to evaluate.</param>
-        /// <param name="keywordValue">The keyword value.</param>
         /// <param name="mode">The current search mode.</param>
         /// <param name="modeSearchText">The text from the search.</param>
         /// <param name="searchResults">The list of search results to populate.</param>
         /// <returns><b>true</b> if regular search should be stopped, <b>false</b> if it should continue.</returns>
-        private bool CheckKeyword(string keyword, string keywordValue, SearchMode mode, string modeSearchText, List<IFile> searchResults)
+        private bool CheckKeyword(string keyword, SearchMode mode, string modeSearchText, List<IFile> searchResults)
         {
             IEnumerable<IFile> files = _rootDirectory.Directories.Traverse(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files);
 
@@ -317,7 +316,7 @@ namespace Gorgon.Editor.Services
             // Test code for search:
             var searchResults = new List<IFile>();
 
-            if ((!string.IsNullOrWhiteSpace(keyword)) && (CheckKeyword(keyword, keywordValue, mode, modeSearchText, searchResults)))
+            if ((!string.IsNullOrWhiteSpace(keyword)) && (CheckKeyword(keyword, mode, modeSearchText, searchResults)))
             {
                 return searchResults;
             }

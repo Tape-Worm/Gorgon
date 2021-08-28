@@ -53,7 +53,6 @@
       </PackagePath>
     </None>
     <None Include="..\..\app.manifest" Link="app.manifest" />
-    <None Include="..\..\NoRules.ruleset" Link="NoRules.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj" />

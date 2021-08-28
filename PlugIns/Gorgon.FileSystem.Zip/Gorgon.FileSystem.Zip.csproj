@@ -58,7 +58,6 @@ This assembly contains a plug in that will read a zip file as a file system.</De
       <PackagePath>
       </PackagePath>
     </None>
-    <None Include="..\..\Gorgon\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj" />

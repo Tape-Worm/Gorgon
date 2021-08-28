@@ -60,7 +60,6 @@
       <PackagePath>
       </PackagePath>
     </None>
-    <None Include="..\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">

@@ -49,7 +49,6 @@
       <PackagePath>
       </PackagePath>
     </None>
-    <None Include="..\..\..\Gorgon\NoLiteralBugFix.ruleset" Link="NoLiteralBugFix.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krypton.Ribbon.Lite.Signed" Version="5.550.2103" />
