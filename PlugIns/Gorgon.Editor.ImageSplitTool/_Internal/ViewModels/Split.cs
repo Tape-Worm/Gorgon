@@ -501,10 +501,10 @@ namespace Gorgon.Editor.ImageSplitTool
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
-            
+
             foreach (ContentFileExplorerFileEntry file in SpriteFileEntries.SelectMany(item => item.Files))
             {
                 file.PropertyChanged += File_PropertyChanged;
@@ -512,7 +512,7 @@ namespace Gorgon.Editor.ImageSplitTool
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             foreach (ContentFileExplorerFileEntry file in SpriteFileEntries.SelectMany(item => item.Files))
             {

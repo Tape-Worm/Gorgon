@@ -808,16 +808,21 @@ namespace Gorgon.Editor.ImageEditor
         /// method may be called multiple times during the lifetime of the application.
         /// </para>
         ///   <para>
-        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="OnUnload"/> method.
+        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="Unload"/> method.
         /// </para>
         /// </remarks>
         /// <seealso cref="ViewModelBase.Initialize" />
-        /// <seealso cref="OnUnload" />
-        public override void OnLoad() => ChangedSubResources.Clear();
+        /// <seealso cref="Unload" />
+        protected override void OnLoad()
+        {
+            base.OnLoad();
+
+            ChangedSubResources.Clear();
+        }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             SourcePicker.SourceImage?.Dispose();
             SourcePicker.SourceImage = null;

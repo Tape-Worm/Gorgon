@@ -147,7 +147,7 @@ namespace Gorgon.Editor.Views
                     panel.SendToBack();
                     panel.Visible = false;
 
-                    category.OnLoad();
+                    category.Load();
 
                     _panelLookup[panel.PanelID] = panel;
                 }

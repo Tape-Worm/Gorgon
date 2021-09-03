@@ -172,6 +172,9 @@
   <data name="GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID" xml:space="preserve">
     <value>The texture format for the glyph is not valid.</value>
   </data>
+  <data name="GORGFX_ERR_GLYPH_TEXTURE_NOT_FOUND" xml:space="preserve">
+    <value>There is no image data for the glyph texture brush.</value>
+  </data>
   <data name="GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>

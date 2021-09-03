@@ -305,7 +305,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 return;
             }
 
-            DataContext?.OnUnload();
+            DataContext?.Unload();
         }
 
         /// <summary>Raises the Load event.</summary>
@@ -319,7 +319,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             ValidateControls();
         }

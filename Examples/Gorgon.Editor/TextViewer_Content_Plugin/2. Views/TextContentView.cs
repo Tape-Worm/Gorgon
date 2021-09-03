@@ -143,7 +143,7 @@ namespace Gorgon.Examples
 
             // Always call the OnLoad for the data context here so the view model can perform any required initialization
             // after the control is created and loaded.
-            DataContext?.OnLoad();            
+            DataContext?.Load();            
 
             // The control that we render our content into is selectable, so we should default selection into it.
             RenderControl?.Select();            
@@ -154,7 +154,7 @@ namespace Gorgon.Examples
         {
             // Always call unload when the control is shutting down. This will enable us to perform any necessary clean up 
             // on the view model.
-            DataContext?.OnUnload();
+            DataContext?.Unload();
             base.OnShutdown();
         }
 

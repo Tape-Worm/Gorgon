@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -19,19 +20,23 @@ namespace Fetze.WinFormsColor
 		private	Color	clrTopRight		= Color.Transparent;
 		private	Color	clrBottomLeft	= Color.Transparent;
 		private	Color	clrBottomRight	= Color.Transparent;
-        private readonly Timer	pickerDragTimer	= null;
 		private	bool	designSerializeColor = false;
+        private int _dragState;
 
 
 		public event EventHandler ValueChanged = null;
 		public event EventHandler PercentualValueChanged = null;
 
 
+        [Browsable(false)]
         public Rectangle ColorAreaRectangle => new Rectangle(
                 ClientRectangle.X + 2,
                 ClientRectangle.Y + 2,
                 ClientRectangle.Width - 4,
                 ClientRectangle.Height - 4);
+
+        [Browsable(false)]
+        public bool IsDragging => _dragState == 1;
 
         [DefaultValue(8)]
         public int PickerSize
@@ -53,7 +58,7 @@ namespace Fetze.WinFormsColor
                 pickerPos = new PointF(
                     Math.Min(1.0f, Math.Max(0.0f, value.X)),
                     Math.Min(1.0f, Math.Max(0.0f, value.Y)));
-                if (pickerPos != last)
+                if ((pickerPos != last) || (_dragState == 2))
                 {
                     OnPercentualValueChanged();
                     UpdateColorValue();
@@ -61,6 +66,7 @@ namespace Fetze.WinFormsColor
                 }
             }
         }
+        [Browsable(false)]
         public Color Value { get;
             private set;
         }
@@ -116,12 +122,6 @@ namespace Fetze.WinFormsColor
 
         public ColorPanel()
         {
-            pickerDragTimer = new Timer
-            {
-                Interval = 10
-            };
-            pickerDragTimer.Tick += new EventHandler(PickerDragTimer_Tick);
-
 			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			SetStyle(ControlStyles.Opaque, true);
@@ -294,7 +294,7 @@ namespace Fetze.WinFormsColor
             Value = srcImage.GetPixel(
                 (int)Math.Round((srcImage.Width - 1) * pickerPos.X), 
                 (int)Math.Round((srcImage.Height - 1) * (1.0f - pickerPos.Y)));
-			if (oldVal != Value)
+			if ((oldVal != Value) && (_dragState != 1))
             {
                 OnValueChanged();
             }
@@ -360,29 +360,43 @@ namespace Fetze.WinFormsColor
             base.OnMouseDown(e);
             if (e.Button == MouseButtons.Left)
             {
+                _dragState = 1;
                 Focus();
                 ValuePercentual = new PointF(
                     (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
 					1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
-				pickerDragTimer.Start();
             }
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (_dragState != 1)
+            {
+                return;
+            }
+            
+            ValuePercentual = new PointF(
+                (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
+                1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
-			pickerDragTimer.Stop();
+            _dragState = 2;
+
+            ValuePercentual = new PointF(
+                (e.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
+                1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
+
+            _dragState = 0;
         }
-		private void PickerDragTimer_Tick(object sender, EventArgs e)
-		{
-			Point pos = PointToClient(Cursor.Position);
-			ValuePercentual = new PointF(
-                (pos.X - ColorAreaRectangle.X) / (float)ColorAreaRectangle.Width,
-				1.0f - (pos.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height);
-		}
-        protected override void OnMouseLeave(EventArgs e) => base.OnMouseLeave(e);
+        
         protected override void OnLostFocus(EventArgs e)
         {
             base.OnLostFocus(e);
+            _dragState = 0;
             Invalidate();
         }
         protected override void OnGotFocus(EventArgs e)

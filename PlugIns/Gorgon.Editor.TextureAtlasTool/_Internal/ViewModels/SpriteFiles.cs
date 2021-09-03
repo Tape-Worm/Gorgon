@@ -324,10 +324,10 @@ namespace Gorgon.Editor.TextureAtlasTool
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
-            
+
             foreach (ContentFileExplorerFileEntry file in SpriteFileEntries.SelectMany(item => item.Files))
             {
                 file.PropertyChanged += File_PropertyChanged;
@@ -335,7 +335,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             foreach (ContentFileExplorerFileEntry file in SpriteFileEntries.SelectMany(item => item.Files))
             {
@@ -350,7 +350,7 @@ namespace Gorgon.Editor.TextureAtlasTool
             IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);            
             Interlocked.Exchange(ref _loadPreviewTask, null);
             currentImage?.Dispose();
-            
+
             base.OnUnload();
         }
         #endregion

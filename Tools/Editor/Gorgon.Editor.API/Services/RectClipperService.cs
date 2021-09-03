@@ -712,7 +712,7 @@ namespace Gorgon.Editor.Services
                 }
 
                 // 9 is the keyboard icon index, and if we're dragging we shouldn't draw it.
-                if ((i == 9) && (IsDragging))
+                if ((i == 9) && ((IsDragging) || (!AllowManualInput)))
                 {
                     continue;
                 }

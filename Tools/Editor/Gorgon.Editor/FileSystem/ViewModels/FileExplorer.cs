@@ -132,8 +132,6 @@ namespace Gorgon.Editor.ViewModels
         // The synchronization locks for the file system events.
         private readonly object _fsUpdatedEventLock = new();
         private readonly object _selectedChangedEventLock = new();
-        // Flag to indicate that the view model is loaded.
-        private int _isLoaded;
         // The project file system and writer.
         private IGorgonFileSystemWriter<FileStream> _fileSystemWriter;
         // The directory locator dialog service.
@@ -2995,14 +2993,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
-
-            if (Interlocked.Exchange(ref _isLoaded, 1) == 1)
-            {
-                return;
-            }
 
             Root.Directories.CollectionChanged += Directories_CollectionChanged;
             Root.Files.CollectionChanged += Files_CollectionChanged;            
@@ -3018,7 +3011,7 @@ namespace Gorgon.Editor.ViewModels
         }        
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             // Unsubscribe everyone from the event.
             FileSystemUpdatedEvent = null;
@@ -3034,8 +3027,7 @@ namespace Gorgon.Editor.ViewModels
 
             Root.Directories.CollectionChanged -= Directories_CollectionChanged;
             Root.Files.CollectionChanged -= Files_CollectionChanged;
-
-            Interlocked.Exchange(ref _isLoaded, 0);
+                        
             base.OnUnload();
         }
 

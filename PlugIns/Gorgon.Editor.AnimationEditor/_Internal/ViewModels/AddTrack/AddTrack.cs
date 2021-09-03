@@ -111,10 +111,10 @@ namespace Gorgon.Editor.AnimationEditor
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>        
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             _selectedTracks.Clear();
-            base.OnUnload();
+            base.Unload();
         }
         #endregion
 

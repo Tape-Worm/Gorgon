@@ -1301,13 +1301,15 @@ namespace Gorgon.Editor.AnimationEditor
         /// method may be called multiple times during the lifetime of the application.
         /// </para>
         ///   <para>
-        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="ViewModelBase{T, THs}.OnUnload"/> method.
+        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="ViewModelBase{T, THs}.Unload"/> method.
         /// </para>
         /// </remarks>
         /// <seealso cref="ViewModelBase{T, THs}.Initialize(T)" />
-        /// <seealso cref="ViewModelBase{T, THs}.OnUnload" />
-        public override void OnLoad() 
+        /// <seealso cref="ViewModelBase{T, THs}.Unload" />
+        protected override void OnLoad() 
         {
+            base.OnLoad();
+
             CurrentEditor = null;
             HostServices.ClipboardService.Clear();
             _content.PropertyChanged += Content_PropertyChanged;
@@ -1317,8 +1319,8 @@ namespace Gorgon.Editor.AnimationEditor
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
-        /// <seealso cref="ViewModelBase{T, THs}.OnLoad" />
-        public override void OnUnload()
+        /// <seealso cref="ViewModelBase{T, THs}.Load" />
+        protected override void OnUnload()
         {
             HostServices.ClipboardService.Clear();
             _content.PropertyChanged -= Content_PropertyChanged;
@@ -1330,6 +1332,8 @@ namespace Gorgon.Editor.AnimationEditor
             }
 
             CurrentEditor = null;
+
+            base.OnUnload();
         }
         #endregion
 

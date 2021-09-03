@@ -240,7 +240,7 @@ namespace Gorgon.Editor.AnimationEditor
             switch (propertyName)
             {
                 case nameof(IAnimationContent.CommandContext):
-                    DataContext.CommandContext?.OnUnload();
+                    DataContext.CommandContext?.Unload();
                     RenderControl.Cursor = Cursor.Current = Cursors.Default;
                     ValidateButtons();
                     break;
@@ -292,7 +292,7 @@ namespace Gorgon.Editor.AnimationEditor
                     }
                     else
                     {
-                        DataContext.CommandContext.OnLoad();
+                        DataContext.CommandContext.Load();
                         _spriteLoader = DataContext.CommandContext as ISpriteLoader;
                     }
                     break;
@@ -303,7 +303,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
         protected override void OnShutdown()
         {
-            DataContext?.OnUnload();
+            DataContext?.Unload();
 
             _vertexEditorService?.Dispose();
             _anchorTexture?.Dispose();
@@ -404,7 +404,7 @@ namespace Gorgon.Editor.AnimationEditor
                 _ribbonForm.CreateControl();
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
             ShowFocusState(true);
             RenderControl?.Select();
 

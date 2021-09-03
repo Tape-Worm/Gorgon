@@ -40,6 +40,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
+using Gorgon.UI;
 
 namespace Gorgon.Editor.UI.Views
 {
@@ -412,6 +413,14 @@ namespace Gorgon.Editor.UI.Views
                     string viewModelTypeName = _dataContext.CurrentPanel.GetType().FullName;
                     Control hostControl = GetRegisteredPanel<EditorSubPanelCommon>(viewModelTypeName);
 
+                    if (hostControl is null)
+                    {
+#if DEBUG
+                        GorgonDialogs.ErrorBox(GorgonApplication.MainForm, string.Format(Resources.GOREDIT_ERR_HOST_PANEL_NULL, viewModelTypeName));
+#endif
+                        return;
+                    }
+
                     ShowHostedPanel(hostControl);
                     SetupScrollBars();
                     break;
@@ -549,6 +558,7 @@ namespace Gorgon.Editor.UI.Views
                 offset = Renderer.Offset;
                 zoomLevel = Renderer.ZoomLevel;
                 Renderer.IsEnabled = false;
+                Renderer.RenderRegionChanged -= CurrentRenderer_RenderRegionChanged;
                 Renderer.OffsetChanged -= CurrentRenderer_Offset;
                 Renderer.ZoomScaleChanged -= CurrentRenderer_ZoomScale;
                 Renderer.UnloadResources();
@@ -580,8 +590,29 @@ namespace Gorgon.Editor.UI.Views
 
             ButtonCenter.Enabled = Renderer?.CanZoom ?? false;
 
+            Renderer.RenderRegionChanged += CurrentRenderer_RenderRegionChanged;
+
             // Reset the timing for the idle loop so we don't end up with stupid delta values because it takes time to switch.
             GorgonTiming.Reset();
+        }
+
+        /// <summary>Handles the RenderRegionChanged event of the CurrentRenderer control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        private void CurrentRenderer_RenderRegionChanged(object sender, EventArgs e)
+        {
+            Renderer.RenderRegionChanged -= CurrentRenderer_RenderRegionChanged;
+            try
+            {
+                if ((Renderer.CanPanHorizontally) || (Renderer.CanPanVertically))
+                {
+                    SetupScrollBars();
+                }
+            }
+            finally
+            {
+                Renderer.RenderRegionChanged += CurrentRenderer_RenderRegionChanged;
+            }
         }
 
         /// <summary>

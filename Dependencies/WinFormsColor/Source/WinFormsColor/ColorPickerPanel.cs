@@ -351,6 +351,11 @@ namespace Fetze.WinFormsColor
 					break;
 			}
 
+			if (colorSlider.IsDragging)
+			{
+				return;
+			}
+
             ColorChanged?.Invoke(this, EventArgs.Empty);
         }
 		private void UpdateSelectedColorFromPanelValue()
@@ -396,13 +401,19 @@ namespace Fetze.WinFormsColor
 					break;
 			}
 
-            ColorChanged?.Invoke(this, EventArgs.Empty);
+			if (!colorPanel.IsDragging)
+			{
+				ColorChanged?.Invoke(this, EventArgs.Empty);
+			}
         }
 		private void UpdateSelectedColorFromAlphaValue()
 		{
 			_selColor.A = alphaSlider.ValuePercentual;
 
-            ColorChanged?.Invoke(this, EventArgs.Empty);
+			if (!alphaSlider.IsDragging)
+			{
+				ColorChanged?.Invoke(this, EventArgs.Empty);
+			}
         }
 
 		protected override void OnLoad(EventArgs e)

@@ -129,7 +129,7 @@ namespace Gorgon.Editor.Views
             }
 
             UnassignEvents();
-            DataContext.OnUnload();
+            DataContext.Unload();
             DataContext = null;
 
             ImageKey = string.Empty;

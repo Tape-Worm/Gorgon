@@ -1293,7 +1293,7 @@ namespace Gorgon.Editor
                 return;
             }
 
-            DataContext.OnLoad();
+            DataContext.Load();
 
             Stage.CanOpen = (DataContext.OpenPackFileCommand is not null) && (DataContext.OpenPackFileCommand.CanExecute(null));
 

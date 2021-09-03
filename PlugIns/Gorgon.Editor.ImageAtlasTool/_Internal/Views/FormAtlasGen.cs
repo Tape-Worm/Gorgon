@@ -453,7 +453,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             ValidateControls();
         }

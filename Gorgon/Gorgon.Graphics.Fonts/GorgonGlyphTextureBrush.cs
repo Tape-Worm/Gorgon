@@ -27,12 +27,16 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
+using System.Linq;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
+using Gorgon.Memory;
+using Gorgon.Native;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
@@ -81,13 +85,31 @@ namespace Gorgon.Graphics.Fonts
     /// <seealso cref="GorgonGlyphLinearGradientBrush"/>
     /// <seealso cref="GorgonGlyphPathGradientBrush"/>
     public class GorgonGlyphTextureBrush
-        : GorgonGlyphBrush, IDisposable
+        : GorgonGlyphBrush
     {
+        #region Variables.
+        // The data for the image.
+        private byte[] _imageData = Array.Empty<byte>();
+        // The width and height of the texture.
+        private int _width;
+        private int _height;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the type of brush.
         /// </summary>
         public override GlyphBrushType BrushType => GlyphBrushType.Texture;
+
+        /// <summary>
+        /// Property to return the width of the texture, in pixels.
+        /// </summary>
+        public int TextureWidth => _width;
+
+        /// <summary>
+        /// Property to return the height of the texture, in pixels.
+        /// </summary>
+        public int TextureHeight => _height;
 
         /// <summary>
         /// Property to set or return the wrapping mode for the gradient fill.
@@ -111,13 +133,9 @@ namespace Gorgon.Graphics.Fonts
         }
 
         /// <summary>
-        /// Property to set or return the <see cref="IGorgonImage"/> to apply to the brush.
+        /// Property to return the image data to apply to the brush.
         /// </summary>
-        public IGorgonImage Image
-        {
-            get;
-            private set;
-        }
+        public Span<byte> Image => _imageData;
         #endregion
 
         #region Methods.
@@ -136,7 +154,8 @@ namespace Gorgon.Graphics.Fonts
             long size = writer.BaseStream.Length;
             var codec = new GorgonCodecPng();
 
-            codec.Save(Image, writer.BaseStream);
+            using IGorgonImage image = ToGorgonImage();
+            codec.Save(image, writer.BaseStream);
 
             // Calculate the number of bytes written.
             size = writer.BaseStream.Length - size;
@@ -156,10 +175,22 @@ namespace Gorgon.Graphics.Fonts
             WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
             TextureRegion = reader.ReadValue<DX.RectangleF>();
             int imageSize = reader.ReadInt32();
-
-            Image?.Dispose();
+                        
             var codec = new GorgonCodecPng();
-            Image = codec.FromStream(reader.BaseStream, imageSize);
+            using IGorgonImage image = codec.FromStream(reader.BaseStream, imageSize);
+
+            if (image.Format != BufferFormat.R8G8B8A8_UNorm)
+            {
+                image.BeginUpdate()
+                     .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                     .EndUpdate();
+            }
+
+            _imageData = new byte[image.Buffers[0].PitchInformation.SlicePitch];
+            image.Buffers[0].Data.CopyTo(_imageData.AsSpan());
+
+            _width = image.Width;
+            _height = image.Height;
         }
 
         /// <summary>
@@ -170,26 +201,11 @@ namespace Gorgon.Graphics.Fonts
         /// </returns>
         internal override Brush ToGDIBrush()
         {
-            if (Image is null)
-            {
-                return null;
-            }
-
             Bitmap brushBitmap = null;
-            IGorgonImage image = Image;
 
             try
             {
-                // Clone the image data and convert it into a GDI+ compatible bitmap so we can use it as a brush.
-                if (image.FormatInfo.IsCompressed)
-                {
-                    // If the image data is compressed, convert it back into standard 32 bit RGBA format, GDI+ doesn't 
-                    // work with block compression.
-                    image = Image.Clone()
-                                 .Decompress()
-                                 .EndUpdate();
-                }
-
+                using IGorgonImage image = ToGorgonImage();
                 brushBitmap = image.Buffers[0].ToBitmap();
 
                 var textureRect = new RectangleF(0, 0, image.Width, image.Height);
@@ -212,24 +228,38 @@ namespace Gorgon.Graphics.Fonts
             }
             finally
             {
-                if (image != Image)
-                {
-                    image.Dispose();
-                }
                 brushBitmap?.Dispose();
             }
         }
 
+        /// <summary>
+        /// Function to convert this brush into a regular image.
+        /// </summary>
+        /// <returns>A new <see cref="IGorgonImage"/> containing the brush image data.</returns>
+        public IGorgonImage ToGorgonImage() => new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        {
+            Width = _width,
+            Height = _height
+        }, _imageData.AsSpan());
+
         /// <summary>Function to clone an object.</summary>
         /// <returns>The cloned object.</returns>
-        public override GorgonGlyphBrush Clone() => new GorgonGlyphTextureBrush(Image) // The image is cloned in the constructor.
-        {            
-            WrapMode = WrapMode,
-            TextureRegion = TextureRegion
-        };
-
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose() => Image?.Dispose();
+        public override GorgonGlyphBrush Clone()
+        {
+            byte[] imageData = new byte[_imageData.Length];
+            if (_imageData.Length > 0)
+            {
+                Array.Copy(_imageData, imageData, _imageData.Length);
+            }
+            return new GorgonGlyphTextureBrush(null) // The image is cloned in the constructor.
+            {
+                _imageData = imageData,
+                _width = _width,
+                _height = _height,
+                WrapMode = WrapMode,
+                TextureRegion = TextureRegion
+            };
+        }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -251,14 +281,7 @@ namespace Gorgon.Graphics.Fonts
             return ((brush == this) || ((brush is not null)
                 && (brush.WrapMode == WrapMode)
                 && (brush.TextureRegion.Equals(TextureRegion))
-                && ((brush.Image == Image) || ((brush.Image.ImageType == Image.ImageType)
-                        && (brush.Image.SizeInBytes == Image.SizeInBytes)
-                        && (brush.Image.Format == Image.Format)
-                        && (brush.Image.Width == Image.Width)
-                        && (brush.Image.Height == Image.Height)
-                        && (brush.Image.MipCount == Image.MipCount)
-                        && (brush.Image.ArrayCount == Image.ArrayCount)
-                        && (brush.Image.Depth == Image.Depth)))));
+                && (brush.Image.SequenceEqual(Image))));
         }
         #endregion
 
@@ -279,20 +302,20 @@ namespace Gorgon.Graphics.Fonts
         /// A copy of the <paramref name="textureImage"/> is stored in this object instead of a direct reference to the original image.
         /// </para>
         /// </remarks>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="textureImage"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="textureImage"/> parameter uses an unsupported format or is not a 2D image.</exception>
         public GorgonGlyphTextureBrush(IGorgonImage textureImage)
         {
             if (textureImage is null)
             {
-                throw new ArgumentNullException(nameof(textureImage));
+                _imageData = Array.Empty<byte>();
+                TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+                WrapMode = GlyphBrushWrapMode.Clamp;
+                return;
             }
 
-            if ((textureImage.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
-                && (textureImage.Format != BufferFormat.R8G8B8A8_UNorm)
-                && (textureImage.Format != BufferFormat.B8G8R8A8_UNorm)
-                && (textureImage.Format != BufferFormat.B8G8R8A8_UNorm_SRgb)
-                && (!textureImage.FormatInfo.IsCompressed))
+            if ((textureImage.Format != BufferFormat.R8G8B8A8_UNorm)
+                && (!textureImage.FormatInfo.IsCompressed)
+                && (!textureImage.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm)))
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, textureImage.Format), nameof(textureImage));
             }
@@ -302,7 +325,25 @@ namespace Gorgon.Graphics.Fonts
                 throw new ArgumentException(Resources.GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D, nameof(textureImage));
             }
 
-            Image = textureImage.Clone();
+            using IGorgonImage tempImage = textureImage.Clone();
+            if (textureImage.FormatInfo.IsCompressed)
+            {
+                tempImage.Decompress()
+                         .EndUpdate();
+            }
+
+            if (textureImage.Format != BufferFormat.R8G8B8A8_UNorm)
+            {
+                tempImage.BeginUpdate()
+                         .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                         .EndUpdate();
+            }
+
+            _width = tempImage.Width;
+            _height = tempImage.Height;
+
+            _imageData = new byte[tempImage.Buffers[0].PitchInformation.SlicePitch];
+            tempImage.Buffers[0].Data.CopyTo(_imageData.AsSpan());            
             TextureRegion = new DX.RectangleF(0, 0, 1, 1);
         }
         #endregion

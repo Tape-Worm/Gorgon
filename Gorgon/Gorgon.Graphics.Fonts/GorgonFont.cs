@@ -702,9 +702,6 @@ namespace Gorgon.Graphics.Fonts
                 glyphTexture.Dispose();
             }
 
-            var brush = _info.Brush as IDisposable;
-            brush?.Dispose();
-
             KerningPairs.Clear();
             Glyphs.Clear();
         }

@@ -183,7 +183,7 @@ namespace Gorgon.Editor.ImageEditor
         /// </remarks>
         /// <seealso cref="ViewModelBase.Initialize" />
         /// <seealso cref="ViewModelBase.OnUnload" />
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
 
@@ -194,7 +194,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
         /// <seealso cref="ViewModelBase.OnLoad" />
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             CurrentArrayIndexDepthSlice = 0;
             CurrentMipLevel = 0;

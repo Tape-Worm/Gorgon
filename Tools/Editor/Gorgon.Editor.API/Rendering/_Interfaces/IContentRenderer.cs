@@ -54,6 +54,10 @@ namespace Gorgon.Editor.Rendering
         /// Event triggered when the camera is moved.
         /// </summary>
         event EventHandler<OffsetEventArgs> OffsetChanged;
+        /// <summary>
+        /// Event triggered when the render region has changed its size.
+        /// </summary>
+        event EventHandler RenderRegionChanged;
         #endregion
 
         #region Properties.

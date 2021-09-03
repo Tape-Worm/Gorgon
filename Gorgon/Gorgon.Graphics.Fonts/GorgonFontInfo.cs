@@ -406,7 +406,7 @@ namespace Gorgon.Graphics.Fonts
         {
             get;
             init;
-        } = $"{FontFamilyName} {Size}{FontHeightMode}";
+        } = $"{FontFamilyName} {Size} {FontHeightMode}";
     #endregion
     }
 #else

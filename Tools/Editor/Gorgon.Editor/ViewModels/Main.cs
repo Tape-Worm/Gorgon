@@ -339,12 +339,12 @@ namespace Gorgon.Editor.ViewModels
                 projectEditor.ProgressDeactivated += HideProgressEvent;
 
                 // Temporarily load in the view model so we can make use of events.
-                projectEditor.OnLoad();
+                projectEditor.Load();
                 await projectEditor.FileExplorer.ImportCommand.ExecuteAsync(importArgs);
             }
             finally
             {
-                projectEditor.OnUnload();
+                projectEditor.Unload();
 
                 projectEditor.ProgressUpdated -= UpdateProgressEvent;
                 projectEditor.ProgressDeactivated -= HideProgressEvent;
@@ -752,7 +752,7 @@ namespace Gorgon.Editor.ViewModels
 
                 try
                 {
-                    OnUnload();
+                    Unload();
                     SaveSettings();
                 }
                 catch (Exception ex)
@@ -798,7 +798,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function called when the associated view is loaded.
         /// </summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
 
@@ -811,7 +811,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function called when the associated view is unloaded.
         /// </summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             HideWaitPanel();
 
@@ -821,6 +821,8 @@ namespace Gorgon.Editor.ViewModels
             NewProject.WaitPanelDeactivated -= NewProject_WaitPanelDeactivated;
             RecentFiles.WaitPanelActivated -= NewProject_WaitPanelActivated;
             RecentFiles.WaitPanelDeactivated -= NewProject_WaitPanelDeactivated;
+
+            base.OnUnload();
         }
         #endregion
 

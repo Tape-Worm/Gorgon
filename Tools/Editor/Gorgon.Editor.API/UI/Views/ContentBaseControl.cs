@@ -34,6 +34,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.UI;
 using Krypton.Ribbon;
 
@@ -431,16 +432,23 @@ namespace Gorgon.Editor.UI.Views
 
                 control.Left = 0;
                 control.Top = 0;
+                float dpiScale = 1;
+                int maxSize = ClientSize.Width - (Margin.Left + Margin.Right);
 
-                // Our control width should be within this range.  
-                if (control.Width > 640)
+                if (DeviceDpi != 96)
                 {
-                    control.Width = 640;
+                    dpiScale = DeviceDpi / 96.0f;
                 }
 
-                if (control.Width < 300)
+                // Our control width should be within this range.  
+                if (control.Width > maxSize)
                 {
-                    control.Width = 300;
+                    control.Width = maxSize;
+                }
+
+                if (control.Width < (int)(300 * dpiScale).FastFloor())
+                {
+                    control.Width = (int)(300 * dpiScale).FastFloor();
                 }
 
                 int newWidth = control.Width + PanelHost.Padding.Left;
@@ -714,9 +722,12 @@ namespace Gorgon.Editor.UI.Views
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return string.IsNullOrWhiteSpace(id)
-                ? throw new ArgumentEmptyException(nameof(id))
-                : !_panelViews.TryGetValue(id, out Control result) ? null : (T)result;
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentEmptyException(nameof(id));
+            }
+
+            return (!_panelViews.TryGetValue(id, out Control result)) ? null : (T)result;
 #pragma warning restore IDE0046 // Convert to conditional expression
         }
 
@@ -750,7 +761,7 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>
         /// Function to register a child panel with this content control.
         /// </summary>
-        /// <param name="id">The ID of the panel.</param>
+        /// <param name="id">The ID for the panel, this should be the view model fully qualified type name.</param>
         /// <param name="control">The control representing the child panel.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="id"/>, or the <paramref name="control"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="id"/> parameter is empty.</exception>

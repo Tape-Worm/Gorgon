@@ -286,7 +286,7 @@ namespace Gorgon.Editor.Views
         {
             base.OnLoad(e);
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
         }
 
         /// <summary>

@@ -394,7 +394,7 @@ namespace Gorgon.Editor.TextureAtlasTool
         {
             base.OnFormClosing(e);
 
-            DataContext?.OnUnload();
+            DataContext?.Unload();
         }
 
         /// <summary>Raises the <see cref="Control.Resize"/> event.</summary>
@@ -437,7 +437,7 @@ namespace Gorgon.Editor.TextureAtlasTool
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             ValidateControls();
         }

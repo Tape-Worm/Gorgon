@@ -597,16 +597,18 @@ namespace Gorgon.Editor.ImageEditor.Fx
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
+
             EffectsUpdated = false;
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             _fxService.SetImage(null, 0, 0);
+
             base.OnUnload();
         }
         #endregion

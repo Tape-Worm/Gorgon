@@ -1678,7 +1678,7 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
 
@@ -1688,23 +1688,23 @@ namespace Gorgon.Editor.SpriteEditor
                 _textureFile.IsOpen = true;
             }
 
-            SpriteClipContext?.OnLoad();
-            SpritePickContext?.OnLoad();
-            SpriteVertexEditContext?.OnLoad();
-            ColorEditor?.OnLoad();
-            AnchorEditor?.OnLoad();
-            WrappingEditor?.OnLoad();
+            SpriteClipContext?.Load();
+            SpritePickContext?.Load();
+            SpriteVertexEditContext?.Load();
+            ColorEditor?.Load();
+            AnchorEditor?.Load();
+            WrappingEditor?.Load();
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
-            WrappingEditor?.OnUnload();
-            AnchorEditor?.OnUnload();
-            ColorEditor?.OnUnload();
-            SpriteVertexEditContext?.OnUnload();
-            SpritePickContext?.OnUnload();
-            SpriteClipContext?.OnUnload();
+            WrappingEditor?.Unload();
+            AnchorEditor?.Unload();
+            ColorEditor?.Unload();
+            SpriteVertexEditContext?.Unload();
+            SpritePickContext?.Unload();
+            SpriteClipContext?.Unload();
 
             if (CurrentPanel is not null)
             {

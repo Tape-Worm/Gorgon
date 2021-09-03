@@ -3193,15 +3193,15 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
-            base.OnLoad();                       
+            base.OnLoad();
 
             Settings.PropertyChanged += Settings_PropertyChanged;
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             Settings.PropertyChanged -= Settings_PropertyChanged;
 
@@ -3209,7 +3209,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
             _externalEditorInfo.IconSmall?.Dispose();
             ImageData?.Dispose();
             FxContext.ApplyCommand = null;
-            FxContext?.OnUnload();
+            FxContext?.Unload();
 
             try
             {
@@ -3237,8 +3237,10 @@ namespace Gorgon.Editor.ImageEditor.ViewModels
                 HostServices.Log.Print("There was an error cleaning up the working file.", LoggingLevel.Verbose);
                 HostServices.Log.LogException(ex);
             }
-
-            base.OnUnload();
+            finally
+            {
+                base.OnUnload();
+            }
         }
         #endregion
 

@@ -232,13 +232,13 @@ namespace Gorgon.Editor.ImageSplitTool
 
             if (_closeState != 0)
             {
-                DataContext?.OnUnload();
+                DataContext?.Unload();
                 return;
             }
 
             if ((DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
-                DataContext?.OnUnload();
+                DataContext?.Unload();
                 return;
             }
 
@@ -270,7 +270,7 @@ namespace Gorgon.Editor.ImageSplitTool
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             ValidateControls();
         }

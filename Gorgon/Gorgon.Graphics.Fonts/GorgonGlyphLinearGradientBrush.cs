@@ -74,8 +74,7 @@ namespace Gorgon.Graphics.Fonts
                 // ReSharper disable once InvertIf
                 if (Interpolation.Count == 0)
                 {
-                    Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
-                    Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.White));
+                    return GorgonColor.BlackTransparent;
                 }
 
                 return Interpolation[0].Color;
@@ -87,7 +86,6 @@ namespace Gorgon.Graphics.Fonts
                 if (Interpolation.Count == 0)
                 {
                     Interpolation.Add(newValue);
-                    Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
                 }
                 else
                 {
@@ -103,17 +101,12 @@ namespace Gorgon.Graphics.Fonts
         {
             get
             {
-                switch (Interpolation.Count)
+                if (Interpolation.Count == 0)
                 {
-                    case 0:
-                        Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
-                        break;
-                    case 1:
-                        Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
-                        break;
+                    return GorgonColor.BlackTransparent;
                 }
 
-                return Interpolation[Interpolation.Count - 1].Color;
+                return Interpolation[^1].Color;
             }
             set
             {
@@ -129,7 +122,7 @@ namespace Gorgon.Graphics.Fonts
                         Interpolation.Add(newValue);
                         break;
                     default:
-                        Interpolation[Interpolation.Count - 1] = newValue;
+                        Interpolation[^1] = newValue;
                         break;
                 }
             }
@@ -250,6 +243,7 @@ namespace Gorgon.Graphics.Fonts
                 ScaleAngle = ScaleAngle,
                 GammaCorrection = GammaCorrection
             };
+            brush.Interpolation.Clear();
 
             for (int i = 0; i < Interpolation.Count; ++i)
             {

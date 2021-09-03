@@ -20,7 +20,7 @@
 
             if (disposing)
             {
-                DataContext?.OnUnload();
+                DataContext?.Unload();
                 UnassignEvents();
             }
 

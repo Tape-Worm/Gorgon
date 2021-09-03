@@ -17,14 +17,17 @@ namespace Fetze.WinFormsColor
 		private float pickerPos = 0.5f;
 		private Color min = Color.Transparent;
 		private Color max = Color.Transparent;
-		private readonly Timer pickerDragTimer = null;
 		private bool designSerializeColor = false;
-
+		private int _dragState;
 
 		public event EventHandler ValueChanged = null;
 		public event EventHandler PercentualValueChanged = null;
 
 
+		[Browsable(false)]
+		public bool IsDragging => _dragState == 1;
+
+		[Browsable(false)]
 		public Rectangle ColorAreaRectangle => new Rectangle(
 				ClientRectangle.X + pickerSize + 2,
 				ClientRectangle.Y + pickerSize + 2,
@@ -54,7 +57,7 @@ namespace Fetze.WinFormsColor
 			{
 				float lastVal = pickerPos;
 				pickerPos = Math.Min(1.0f, Math.Max(0.0f, value));
-				if (pickerPos != lastVal)
+				if ((pickerPos != lastVal) || (_dragState == 2))
 				{
 					OnPercentualValueChanged();
 					UpdateColorValue();
@@ -62,6 +65,8 @@ namespace Fetze.WinFormsColor
 				}
 			}
 		}
+
+		[Browsable(false)]
 		public Color Value
 		{
 			get;
@@ -95,12 +100,6 @@ namespace Fetze.WinFormsColor
 
 		public ColorSlider()
 		{
-			pickerDragTimer = new Timer
-			{
-				Interval = 10
-			};
-			pickerDragTimer.Tick += new EventHandler(PickerDragTimer_Tick);
-
 			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			SetStyle(ControlStyles.Selectable, true);
@@ -178,7 +177,7 @@ namespace Fetze.WinFormsColor
 		{
 			Color oldVal = Value;
 			Value = srcImage.GetPixel(0, (int)Math.Round((srcImage.Height - 1) * (1.0f - pickerPos)));
-			if (oldVal != Value)
+			if ((oldVal != Value) && (_dragState != 1))
 			{
 				OnValueChanged();
 			}
@@ -257,26 +256,35 @@ namespace Fetze.WinFormsColor
 			base.OnMouseDown(e);
 			if (e.Button == MouseButtons.Left)
 			{
+				_dragState = 1;
 				Focus();
 				ValuePercentual = 1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height;
-				pickerDragTimer.Enabled = true;
 			}
+		}
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+			if (_dragState != 1)
+			{
+				return;
+			}
+
+			ValuePercentual = 1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height;
 		}
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
-			pickerDragTimer.Enabled = false;
-		}
 
-		private void PickerDragTimer_Tick(object sender, EventArgs e)
-		{
-			Point pos = PointToClient(Cursor.Position);
-			ValuePercentual = 1.0f - (pos.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height;
+			_dragState = 2;
+			ValuePercentual = 1.0f - (e.Y - ColorAreaRectangle.Y) / (float)ColorAreaRectangle.Height;
+			_dragState = 0;
 		}
 
 		protected override void OnLostFocus(EventArgs e)
 		{
 			base.OnLostFocus(e);
+			_dragState = 0;
 			Invalidate();
 		}
 		protected override void OnGotFocus(EventArgs e)

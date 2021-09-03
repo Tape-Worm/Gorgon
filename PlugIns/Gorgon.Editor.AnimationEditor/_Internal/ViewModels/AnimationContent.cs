@@ -2022,7 +2022,7 @@ namespace Gorgon.Editor.AnimationEditor
         private bool CanCreateAnimation() => (CommandContext is null) && (CurrentPanel is null);
 
         /// <summary>
-        /// Function to create a new animation based on the current sprite.
+        /// Function to create a new animation based on the current animation.
         /// </summary>
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoCreateAnimationAsync()
@@ -2188,7 +2188,7 @@ namespace Gorgon.Editor.AnimationEditor
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
 
@@ -2209,7 +2209,7 @@ namespace Gorgon.Editor.AnimationEditor
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             KeyEditor.PropertyChanged -= KeyEditor_PropertyChanged;
             KeyEditor.WaitPanelActivated -= KeyEditor_WaitPanelActivated;

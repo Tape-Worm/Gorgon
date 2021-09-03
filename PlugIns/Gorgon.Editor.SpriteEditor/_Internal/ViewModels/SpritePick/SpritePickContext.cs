@@ -361,19 +361,20 @@ namespace Gorgon.Editor.SpriteEditor
         /// method may be called multiple times during the lifetime of the application.
         /// </para>
         /// </remarks>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
 
-            SpritePickMaskEditor.OnLoad();
+            SpritePickMaskEditor.Load();
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>        
-        public override void OnUnload()
+        protected override void OnUnload()
         {
-            SpritePickMaskEditor.OnUnload();
+            SpritePickMaskEditor.Unload();
             ImageData = null;
+
             base.OnUnload();
         }
         #endregion

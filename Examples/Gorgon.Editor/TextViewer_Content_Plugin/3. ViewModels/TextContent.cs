@@ -595,6 +595,7 @@ namespace Gorgon.Examples
             _color = new GorgonColor(colorValue);
         }
 
+
         /// <summary>Function called when the associated view is loaded.</summary>
         /// <remarks>
         ///   <para>
@@ -602,10 +603,11 @@ namespace Gorgon.Examples
         /// method may be called multiple times during the lifetime of the application.
         /// </para>
         ///   <para>
-        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="ViewModelBase{T, THs}.OnUnload"/> method.
+        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="ViewModelBase{T, THs}.Unload"/> method.
         /// </para>
         /// </remarks>
-        public override void OnLoad()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0022:Use expression body for methods", Justification = "<Pending>")]
+        protected override void OnLoad()
         {
             base.OnLoad();
 
@@ -615,10 +617,12 @@ namespace Gorgon.Examples
             TextColor.OkCommand = new EditorCommand<object>(DoSetColor, CanSetColor);
         }
 
+
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
-        /// <seealso cref="ViewModelBase{T, THs}.OnLoad" />
-        public override void OnUnload()
+        /// <seealso cref="ViewModelBase{T, THs}.Load" />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0022:Use expression body for methods", Justification = "<Pending>")]
+        protected override void OnUnload()
         {
             // Whenever we set and event, or assign a command on a child view model, we should reset it so we 
             // avoid potential event leakage.

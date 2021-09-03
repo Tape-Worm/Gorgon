@@ -224,6 +224,15 @@ namespace Gorgon.Graphics.Fonts.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no image data for the glyph texture brush..
+        /// </summary>
+        internal static string GORGFX_ERR_GLYPH_TEXTURE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_GLYPH_TEXTURE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY {

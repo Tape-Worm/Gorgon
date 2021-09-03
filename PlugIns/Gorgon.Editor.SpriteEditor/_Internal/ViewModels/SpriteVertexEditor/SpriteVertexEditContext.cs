@@ -233,9 +233,10 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             base.OnLoad();
+
             SelectedVertexIndex = -1;
             for (int i = 0; i < _vertices.Length; ++i)
             {
@@ -244,10 +245,11 @@ namespace Gorgon.Editor.SpriteEditor
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             SelectedVertexIndex = -1;
             Array.Clear(_vertices, 0, _vertices.Length);
+
             base.OnUnload();
         }
         #endregion

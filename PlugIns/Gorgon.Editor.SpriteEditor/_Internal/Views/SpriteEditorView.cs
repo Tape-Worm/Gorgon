@@ -524,7 +524,7 @@ namespace Gorgon.Editor.SpriteEditor
             switch (propertyName)
             {
                 case nameof(ISpriteContent.CommandContext):
-                    DataContext.CommandContext?.OnUnload();
+                    DataContext.CommandContext?.Unload();
                     RenderControl.Cursor = Cursor.Current = Cursors.Default;
                     ValidateButtons();
                     break;
@@ -592,7 +592,7 @@ namespace Gorgon.Editor.SpriteEditor
                     }
                     else
                     {
-                        DataContext.CommandContext.OnLoad();
+                        DataContext.CommandContext.Load();
                         rendererName = DataContext.CommandContext.Name;                        
                     }
 
@@ -641,7 +641,7 @@ namespace Gorgon.Editor.SpriteEditor
         /// <summary>Function called to shut down the view and perform any clean up required (including user defined graphics objects).</summary>
         protected override void OnShutdown()
         {
-            DataContext?.OnUnload();
+            DataContext?.Unload();
                         
             _clipperService?.Dispose();            
             _vertexEditService?.Dispose();
@@ -777,7 +777,7 @@ namespace Gorgon.Editor.SpriteEditor
                 _ribbonForm.CreateControl();
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
             ShowFocusState(true);
             RenderControl?.Select();
 

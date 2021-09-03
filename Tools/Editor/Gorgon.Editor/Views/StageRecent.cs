@@ -261,7 +261,7 @@ namespace Gorgon.Editor.Views
 
             DataContext.Files.CollectionChanged -= Files_CollectionChanged;
 
-            DataContext.OnUnload();
+            DataContext.Unload();
             DataContext = null;
         }
 
@@ -271,7 +271,7 @@ namespace Gorgon.Editor.Views
         {
             base.OnLoad(e);
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             FillList();
         }

@@ -429,12 +429,12 @@ namespace Gorgon.Editor.Views
             // Remove all controls.
             while (PanelContent.Controls.Count > 0)
             {
-                if (PanelContent.Controls[PanelContent.Controls.Count - 1] is ContentBaseControl contentControl)
+                if (PanelContent.Controls[^1] is ContentBaseControl contentControl)
                 {
                     contentControl.ContentClosed -= ContentClosed;
                 }
 
-                PanelContent.Controls[PanelContent.Controls.Count - 1].Dispose();
+                PanelContent.Controls[^1]?.Dispose();
             }
 
             // No content, so we can go now.
@@ -601,7 +601,7 @@ namespace Gorgon.Editor.Views
             DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
 
-            DataContext.OnUnload();
+            DataContext.Unload();
         }
 
         /// <summary>
@@ -683,7 +683,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
             ActiveControl = null;
             FileExplorer.Select();
             ActiveControl = FileExplorer;
@@ -774,7 +774,7 @@ namespace Gorgon.Editor.Views
             _deferDataContextLoad = !IsHandleCreated;
             if (!_deferDataContextLoad)
             {
-                DataContext.OnLoad();
+                DataContext.Load();
             }
 
             ActiveControl = null;

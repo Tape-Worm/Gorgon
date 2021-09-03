@@ -404,6 +404,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
             try
             {
                 ulong fileData = reader.ReadUInt64();
+
+                if (fileData != GorgonChunkFileReader.FileFormatHeaderIDv0100)
+                {
+                    return false;
+                }
+
+                fileData = reader.ReadUInt64();
+
                 return fileData == fileHeaderID;
             }
             finally

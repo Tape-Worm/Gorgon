@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net48;net5.0-windows</TargetFrameworks>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <Version>3.2.0</Version>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>A Gorgon Editor plug in that will allow creation and editing of fonts.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2021</Copyright>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms, Fonts</PackageTags>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <RootNamespace>Gorgon.Editor.FontEditor</RootNamespace>
+    <NeutralLanguage>
+    </NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <FileVersion>3.2.0.0</FileVersion>
+    <LangVersion>9</LangVersion>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="2. Views\**" />
+    <Compile Remove="2.1. Ribbon\**" />
+    <Compile Remove="2.2 Renderers\**" />
+    <Compile Remove="3.1. Services\**" />
+    <Compile Remove="4. Settings\**" />
+    <Compile Remove="_Internal\2.2 Renderers\**" />
+    <EmbeddedResource Remove="2. Views\**" />
+    <EmbeddedResource Remove="2.1. Ribbon\**" />
+    <EmbeddedResource Remove="2.2 Renderers\**" />
+    <EmbeddedResource Remove="3.1. Services\**" />
+    <EmbeddedResource Remove="4. Settings\**" />
+    <EmbeddedResource Remove="_Internal\2.2 Renderers\**" />
+    <None Remove="2. Views\**" />
+    <None Remove="2.1. Ribbon\**" />
+    <None Remove="2.2 Renderers\**" />
+    <None Remove="3.1. Services\**" />
+    <None Remove="4. Settings\**" />
+    <None Remove="_Internal\2.2 Renderers\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="_Internal\ViewModels\TextContent.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\Gorgon\g.png" Link="g.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <Version>1.0.*</Version>      
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="_Internal\Views\FontCharacterSelectionView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="_Internal\Views\FontTextureBrushView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="_Internal\Views\FontSolidBrushView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="_Internal\Views\FontPaddingView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="_Internal\Views\FontTextureSizeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="_Internal\Views\FontOutlineView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)PlugIns\Content&quot; $(TargetFileName) $(TargetName).pdb /Z /R:3 /W:3&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0&#xD;&#xA;" />
+  </Target>
+</Project>

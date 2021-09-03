@@ -277,7 +277,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             ValidateOk();
         }

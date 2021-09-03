@@ -187,9 +187,9 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
-            base.OnUnload();
+            base.Unload();
             Files.CollectionChanged -= Files_CollectionChanged;
         }
         #endregion

@@ -359,7 +359,7 @@ namespace Gorgon.Editor.ViewModels
         private void ResetContent()
         {
             SaveProjectMetadata();
-            CurrentContent?.OnUnload();
+            CurrentContent?.Unload();
             CurrentContent = null;
         }
 
@@ -999,22 +999,24 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function called when the associated view is loaded.
         /// </summary>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
-            HostServices.BusyService.SetBusy();
+            base.OnLoad();
+
+            HostServices.BusyService.SetBusy();            
 
             try
             {
                 if (FileExplorer is not null)
                 {
-                    FileExplorer.OnLoad();
+                    FileExplorer.Load();
 
                     FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
                 }
                 
                 if (ContentPreviewer is not null)
                 {
-                    ContentPreviewer.OnLoad();
+                    ContentPreviewer.Load();
                     ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
                 }
                 
@@ -1033,7 +1035,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Function called when the associated view is unloaded.
         /// </summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             if (FileExplorer is not null)
             {
@@ -1041,14 +1043,16 @@ namespace Gorgon.Editor.ViewModels
             }
 
             ToolButtons = null;
-            ContentPreviewer?.OnUnload();
-            FileExplorer?.OnUnload();
+            ContentPreviewer?.Unload();
+            FileExplorer?.Unload();
 
             HideWaitPanel();
             HideProgress();
             UnassignEvents();
 
             CurrentContent = null;
+
+            base.OnUnload();
         }
         #endregion
 

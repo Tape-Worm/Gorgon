@@ -348,6 +348,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
             }
 
+            if (size is null)
+            {
+                size = stream.Length;
+            }
+
             if (size + stream.Position > stream.Length)
             {
                 throw new EndOfStreamException();
@@ -359,11 +364,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }
 
             long basePosition = stream.Position;
-
-            if (size is null)
-            {
-                size = stream.Length;
-            }
 
             Stream externalStream = stream;
 

@@ -1,0 +1,520 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="undo_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\undo_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="char_list_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\char_list_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_TEXT_SIZE_POINTS" xml:space="preserve">
+    <value>Points</value>
+  </data>
+  <data name="zoom_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zoom_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_UNDO_ITALIC" xml:space="preserve">
+    <value>Set Italic</value>
+  </data>
+  <data name="GORFNT_TEXT_CONTEXT_TYPE" xml:space="preserve">
+    <value>Font</value>
+  </data>
+  <data name="GORFNT_TEXT_DEFAULT_MAIN_PREVIEW" xml:space="preserve">
+    <value>the quick brown fox jumped over the lazy dog.
+The quick brown fox jumped over the lazy dog.
+THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG.
+
+1234567890
+!@#$%^&amp;*()</value>
+  </data>
+  <data name="GORFNT_TEXT_SAVING" xml:space="preserve">
+    <value>Saving font...</value>
+  </data>
+  <data name="color_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\color_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_ERR_SET_SIZE" xml:space="preserve">
+    <value>There was an error whlie setting the size of the font.
+
+Please try again.</value>
+  </data>
+  <data name="font_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\font_20x20.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_UNDO_SET_PREMULTIPLIED" xml:space="preserve">
+    <value>Set Texture State: Premultiplied</value>
+  </data>
+  <data name="undo_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\undo_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ZOOM_TEXT" xml:space="preserve">
+    <value>Zoom: {0}</value>
+  </data>
+  <data name="glyph_pad_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\glyph_pad_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_UNDO_BOLD" xml:space="preserve">
+    <value>Set Bold</value>
+  </data>
+  <data name="change_text_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\change_text_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="image_dimensions_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_dimensions_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="outlined_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\outlined_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_UNDO_ANTIALIAS" xml:space="preserve">
+    <value>Set Antialiasing</value>
+  </data>
+  <data name="alpha_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\alpha_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="redo_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\redo_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_TEXT_PLEASE_WAIT_GEN_FONT" xml:space="preserve">
+    <value>Generating font...</value>
+  </data>
+  <data name="GORFNT_UNDO_POINTS" xml:space="preserve">
+    <value>Set Font Unit Points</value>
+  </data>
+  <data name="GORFNT_ERR_SET_FONT_FAMILY" xml:space="preserve">
+    <value>There was an error setting the font family.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_UNDO_FONT_SIZE" xml:space="preserve">
+    <value>Font Size</value>
+  </data>
+  <data name="edit_image_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edit_image_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="redo_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\redo_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_TEXT_PREVIEW" xml:space="preserve">
+    <value>Font: {0}
+
+The quick brown fox
+jumped
+over
+the lazy dog.
+
+1234567890</value>
+  </data>
+  <data name="GORFNT_TEXT_FILE_OPEN_DESC" xml:space="preserve">
+    <value>Font files (*.gorFont)</value>
+  </data>
+  <data name="GORFNT_TEXT_SELECT_ALL_OF" xml:space="preserve">
+    <value>Select all of</value>
+  </data>
+  <data name="edit_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edit_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="image_dimensions_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_dimensions_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_UNDO_OUTLINE" xml:space="preserve">
+    <value>Set Font Outline</value>
+  </data>
+  <data name="change_text_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\change_text_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="font_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\font_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="kerning_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\kerning_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="font_missing_96x96" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\font_missing_96x96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="glyph_pad_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\glyph_pad_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="font_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\font_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="save_content_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_content_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_ERR_FONT_FAMILY_NO_STYLE" xml:space="preserve">
+    <value>The font family '{0}' has no font style for a regular, bold or italic font.
+
+Please choose another font family.</value>
+  </data>
+  <data name="font_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\font_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sprite_color_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sprite_color_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sprite_color_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sprite_color_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_UNDO_PIXEL" xml:space="preserve">
+    <value>Set Font Unit Pixels</value>
+  </data>
+  <data name="DEFAULT_TEXT" xml:space="preserve">
+    <value>This is an example plug in for the Gorgon Editor.
+
+While this is not the most comprehensive example of using the content plug in system, it should be enough to get you started.
+
+You'll notice that we've got text displaying in our main area, and a ribbon above with some commands that we can execute against the text content.
+
+We can also zoom in and out on the content by pressing CTRL+Mouse Wheel, and we can pan around the content by pressing the middle mouse button.
+
+Please examine the [c#FF828EFF]TextViewerContentExample[/c] source code for more details.</value>
+  </data>
+  <data name="zoom_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zoom_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="char_list_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\char_list_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="outlined_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\outlined_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="export_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\export_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_TEXT_SIZE_PIXELS" xml:space="preserve">
+    <value>Pixels</value>
+  </data>
+  <data name="color_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\color_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_UNDO_FONT_FAMILY" xml:space="preserve">
+    <value>Font Family</value>
+  </data>
+  <data name="alpha_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\alpha_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="save_content_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_content_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UnicodeData" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UnicodeData.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="kerning_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\kerning_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="resize_all_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\resize_all_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_ERR_FONT_OUTLINE" xml:space="preserve">
+    <value>There was an error activating the font outline.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_SET_STYLE" xml:space="preserve">
+    <value>There was an error setting the style on the font.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_TEXT_PLUGIN_DESC" xml:space="preserve">
+    <value>An editor used to create/edit Gorgon fonts.</value>
+  </data>
+  <data name="export_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\export_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UnicodeBlocks" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UnicodeBlocks.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="GORFNT_ERR_SAVING" xml:space="preserve">
+    <value>There was an error saving the font.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_SET_UNITS" xml:space="preserve">
+    <value>There was an error while setting the font measurement units.
+
+Please try again.</value>
+  </data>
+  <data name="resize_all_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\resize_all_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_first_key_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_first_key_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_first_key_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_first_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_last_key_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_last_key_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_last_key_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_last_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_next_key_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_next_key_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_next_key_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_next_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_prev_key_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_prev_key_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="anim_prev_key_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\anim_prev_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_UNDO_TEXTURE_RESIZE" xml:space="preserve">
+    <value>Set Texture Size</value>
+  </data>
+  <data name="GORFNT_ERR_PADDING" xml:space="preserve">
+    <value>There was an error applying glyph padding to the texture.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_UNDO_PADDING" xml:space="preserve">
+    <value>Set Padding</value>
+  </data>
+  <data name="GORFNT_ERR_CHAR_SELECTION" xml:space="preserve">
+    <value>There was an error while updating the character glyph list.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_UNDO_SELECT_CHARS" xml:space="preserve">
+    <value>Select Characters</value>
+  </data>
+  <data name="GORFNT_CONFIRM_FILE_EXISTS" xml:space="preserve">
+    <value>The file '{0}' already exists.  Would you like to overwrite it?</value>
+  </data>
+  <data name="GORFNT_CONFIRM_UNSAVED_CHANGES" xml:space="preserve">
+    <value>The file '{0}' has unsaved changes.
+
+Would you like to save now?</value>
+  </data>
+  <data name="GORFNT_ERR_CREATE" xml:space="preserve">
+    <value>There was an error while creating the new font.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_FILE_OPEN_CANNOT_OVERWRITE" xml:space="preserve">
+    <value>The file '{0}' is open for editing and cannot be overwritten.
+
+Please close the file and try again.</value>
+  </data>
+  <data name="GORFNT_ERR_REDO" xml:space="preserve">
+    <value>There was an error while redoing the operation.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_UNDO" xml:space="preserve">
+    <value>There was an error while undoing the previous operation.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_APPLY_BRUSH" xml:space="preserve">
+    <value>There was an error applying the brush to the glyphs on the texture.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_UNDO_SOLID_BRUSH" xml:space="preserve">
+    <value>Applying Solid Brush</value>
+  </data>
+  <data name="add_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="clear_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\clear_fs_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="copy_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\copy_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="remove_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\remove_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Transparency_Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Transparency_Pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_CONFIRM_BRUSH_GRAD_DELETE_NODE" xml:space="preserve">
+    <value>Are you sure you wish to delete this gradient node?</value>
+  </data>
+  <data name="GORFNT_CONFIRM_BRUSH_NODES_CLEAR" xml:space="preserve">
+    <value>Are you sure you wish to clear all of the gradient nodes?</value>
+  </data>
+  <data name="GORFNT_ERR_ADD_NODE" xml:space="preserve">
+    <value>There was an error adding the node to the gradient.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_SET_NODE_WEIGHT" xml:space="preserve">
+    <value>There was an error setting the selected node weight.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_BUILD_BRUSH" xml:space="preserve">
+    <value>There was an error assembling the brush.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_REMOVE_NODE" xml:space="preserve">
+    <value>There was an error removing the node.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_SET_NODE_COLOR" xml:space="preserve">
+    <value>There was an error setting the color for the node.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_ERR_DUPE_NODE" xml:space="preserve">
+    <value>There was an error while duplicating the node.
+
+Please try again.</value>
+  </data>
+  <data name="open_folder_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\open_folder_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_TEXT_CLAMP" xml:space="preserve">
+    <value>Clamp</value>
+  </data>
+  <data name="GORFNT_TEXT_TILE" xml:space="preserve">
+    <value>Tile</value>
+  </data>
+  <data name="GORFNT_TEXT_TILE_FILP_HORZ" xml:space="preserve">
+    <value>Tile and flip horizontally</value>
+  </data>
+  <data name="GORFNT_TEXT_TILE_FLIP" xml:space="preserve">
+    <value>Tile and flip</value>
+  </data>
+  <data name="GORFNT_TEXT_TILE_FLIP_VERT" xml:space="preserve">
+    <value>Tile and flip vertically</value>
+  </data>
+  <data name="SpriteEditor_Bg_1024x1024" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SpriteEditor_Bg_1024x1024.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="GORFNT_ERR_LOAD_TEXTURE" xml:space="preserve">
+    <value>There was an error loading the brush texture.
+
+Please try again.</value>
+  </data>
+  <data name="GORFNT_TEXT_LOADING" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="GORFNT_ERR_SET_REGION" xml:space="preserve">
+    <value>There was an error setting the region for the texture.
+
+Please try again.</value>
+  </data>
+</root>

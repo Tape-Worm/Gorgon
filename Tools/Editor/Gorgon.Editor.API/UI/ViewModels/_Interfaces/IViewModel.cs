@@ -145,12 +145,12 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Function called when the associated view is loaded.
         /// </summary>
-        void OnLoad();
+        void Load();
 
         /// <summary>
         /// Function called when the associated view is unloaded.
         /// </summary>
-        void OnUnload();
+        void Unload();
         #endregion
     }
 }

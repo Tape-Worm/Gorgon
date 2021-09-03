@@ -23,7 +23,7 @@
                 _previewTexture?.Dispose();
                 _previewTexture = null;
                 CleanupResources();
-                DataContext?.OnUnload();
+                DataContext?.Unload();
                 UnassignEvents();
             }
             base.Dispose(disposing);

@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Math;
 
@@ -115,6 +116,11 @@ namespace Gorgon.Editor.UI
         /// Event triggered when the progress overlay should be deactivated.
         /// </summary>
         public event EventHandler ProgressDeactivated;
+        #endregion
+
+        #region Variables.
+        // Flag to indicate that the view model has been loaded.
+        private int _loaded;
         #endregion
 
         #region Properties.
@@ -240,14 +246,13 @@ namespace Gorgon.Editor.UI
         /// method may be called multiple times during the lifetime of the application.
         /// </para>
         /// <para>
-        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="OnUnload"/> method.
+        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="Unload"/> method.
         /// </para>
         /// </remarks>
         /// <seealso cref="Initialize(T)"/>
-        /// <seealso cref="OnUnload"/>
-        public virtual void OnLoad()
+        /// <seealso cref="Unload"/>
+        protected virtual void OnLoad()
         {
-
         }
 
         /// <summary>
@@ -258,10 +263,52 @@ namespace Gorgon.Editor.UI
         /// This method is used to perform tear down and clean up of resources.
         /// </para>
         /// </remarks>
-        /// <seealso cref="OnLoad"/>
-        public virtual void OnUnload()
+        /// <seealso cref="Load"/>
+        protected virtual void OnUnload()
         {
+        }
 
+        /// <summary>
+        /// Function called when the associated view is loaded.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method should be overridden when there is a need to set up functionality (e.g. events) when the UI first loads with the view model attached. Unlike the <see cref="Initialize(T)"/> method, this 
+        /// method may be called multiple times during the lifetime of the application.
+        /// </para>
+        /// <para>
+        /// Anything that requires tear down should have their tear down functionality in the accompanying <see cref="Unload"/> method.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="Initialize(T)"/>
+        /// <seealso cref="Unload"/>
+        public void Load()
+        {
+            if (Interlocked.Exchange(ref _loaded, 1) == 1)
+            {
+                return;
+            }
+
+            OnLoad();
+        }
+
+        /// <summary>
+        /// Function called when the associated view is unloaded.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method is used to perform tear down and clean up of resources.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="Load"/>
+        public void Unload()
+        {
+            if (Interlocked.Exchange(ref _loaded, 0) == 0)
+            {
+                return;
+            }
+
+            OnUnload();
         }
 
         /// <summary>

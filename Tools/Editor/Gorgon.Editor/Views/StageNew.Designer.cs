@@ -18,7 +18,7 @@ namespace Gorgon.Editor.Views
         {
             if (disposing)
             {
-                DataContext?.OnUnload();
+                DataContext?.Unload();
 
                 UnassignEvents();
             }

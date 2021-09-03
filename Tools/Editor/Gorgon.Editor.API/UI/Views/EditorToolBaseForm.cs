@@ -561,7 +561,7 @@ namespace Gorgon.Editor.UI.Views
 
             try
             {
-                _dataContext?.OnUnload();
+                _dataContext?.Unload();
                 ShutdownGraphics();
             }
             finally
@@ -583,7 +583,7 @@ namespace Gorgon.Editor.UI.Views
                 return;
             }
 
-            _dataContext?.OnLoad();
+            _dataContext?.Load();
             RenderControl?.Select();
         }
 

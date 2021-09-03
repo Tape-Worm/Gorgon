@@ -362,7 +362,7 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImageContent.CommandContext):
                     if (DataContext.CommandContext is not null)
                     {
-                        DataContext.CommandContext.OnUnload();
+                        DataContext.CommandContext.Unload();
                     }
                     break;
             }
@@ -418,7 +418,7 @@ namespace Gorgon.Editor.ImageEditor
                         break;
                     }
 
-                    DataContext.CommandContext.OnLoad();
+                    DataContext.CommandContext.Load();
                     SwitchRenderer(DataContext.CommandContext.Name, false);
                     break;
                 case nameof(IImageContent.CurrentPanel) when (DataContext.CurrentPanel is null) && (DataContext.CommandContext is null):
@@ -480,7 +480,7 @@ namespace Gorgon.Editor.ImageEditor
         /// <summary>Function called to shut down the view.</summary>
         protected override void OnShutdown()
         {
-            DataContext?.OnUnload();
+            DataContext?.Unload();
 
             // Reset the view.
             SetDataContext(null);
@@ -531,7 +531,7 @@ namespace Gorgon.Editor.ImageEditor
                 _ribbonForm.CreateControl();
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             RenderControl?.Select();
 

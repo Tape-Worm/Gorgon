@@ -1195,7 +1195,7 @@ namespace Gorgon.Editor.ImageEditor
                     ListImages.SelectedItems.Clear();
                     break;
                 case nameof(IImagePicker.SourceHasMultipleSubresources):
-                    DataContext.SourcePicker.OnUnload();
+                    DataContext.SourcePicker.Unload();
                     CleanupSourceImagePicking();
                     break;
                 case nameof(IImagePicker.IsActive):
@@ -1223,7 +1223,7 @@ namespace Gorgon.Editor.ImageEditor
                     if (DataContext.SourceHasMultipleSubresources)
                     {
                         InitializeSourceImagePicking();
-                        DataContext.SourcePicker.OnLoad();
+                        DataContext.SourcePicker.Load();
                     }
                     break;
                 case nameof(IImagePicker.FilesToImport):
@@ -1259,13 +1259,13 @@ namespace Gorgon.Editor.ImageEditor
                 case nameof(IImagePicker.IsActive):
                     if (!DataContext.IsActive)
                     {
-                        DataContext.OnUnload();
+                        DataContext.Unload();
                         ResetDataContext();                        
                         Hide();
                         break;
                     }
 
-                    DataContext.OnLoad();
+                    DataContext.Load();
                     SetUIText(DataContext);
                     InitializeGraphics();
                     
@@ -1429,7 +1429,7 @@ namespace Gorgon.Editor.ImageEditor
 
             _deferredImages.Clear();
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             ValidateButtons(DataContext);
 
@@ -1479,7 +1479,7 @@ namespace Gorgon.Editor.ImageEditor
                 DataContext.DeactivateCommand.Execute(null);
             }
 
-            DataContext?.OnUnload();
+            DataContext?.Unload();
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>

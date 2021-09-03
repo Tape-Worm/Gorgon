@@ -903,7 +903,7 @@ namespace Gorgon.Editor.Views
                     directoryNode.Nodes.Add(newNode);
                     _directoryNodes[directory.ID] = newNode;
                     newNode.SetDataContext(directory);
-                    newNode.DataContext.OnLoad();
+                    newNode.DataContext.Load();
 
                     directory.Directories.CollectionChanged += Directories_CollectionChanged;
                     directory.PropertyChanged += Directory_PropertyChanged;
@@ -1305,7 +1305,7 @@ namespace Gorgon.Editor.Views
             }
 
             _directoryNodes.Clear();
-            DataContext.OnUnload();
+            DataContext.Unload();
 
             foreach (DirectoryTreeNode node in TreeDirectories.Nodes.OfType<DirectoryTreeNode>().Traverse(n => n.Nodes.OfType<DirectoryTreeNode>()))
             {
@@ -2787,7 +2787,7 @@ namespace Gorgon.Editor.Views
                     parentNode.Nodes.Add(node);
                     _directoryNodes[subDir.ID] = node;
                     node.SetDataContext(subDir);
-                    node.DataContext.OnLoad();
+                    node.DataContext.Load();
 
                     subDir.Directories.CollectionChanged += Directories_CollectionChanged;
                     subDir.PropertyChanged += Directory_PropertyChanged;
@@ -2856,7 +2856,7 @@ namespace Gorgon.Editor.Views
                     Tag = dataContext.Root
                 };
                 _rootNode.SetDataContext(dataContext.Root);
-                _rootNode.DataContext.OnLoad();
+                _rootNode.DataContext.Load();
                 _directoryNodes[dataContext.Root.ID] = _rootNode;
 
                 SetSplitterDistance(Settings.SplitDirFileDistance);
@@ -2891,7 +2891,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             ControlContext = FileExplorerContext.FileList;
             if (GridFiles.Rows.Count > 0)

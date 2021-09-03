@@ -467,7 +467,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>
-        public async override void OnLoad()
+        protected async override void OnLoad()
         {
             _fileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
             _fileExplorer.PropertyChanging += FileExplorer_PropertyChanging;
@@ -485,7 +485,7 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>Function called when the associated view is unloaded.</summary>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             _cancelSource?.Cancel();
 

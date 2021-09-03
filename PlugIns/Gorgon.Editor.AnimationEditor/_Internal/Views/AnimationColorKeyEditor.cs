@@ -285,7 +285,7 @@ namespace Gorgon.Editor.AnimationEditor
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
         }
 
         /// <summary>Function to assign a data context to the view as a view model.</summary>

@@ -324,7 +324,7 @@ namespace Gorgon.Editor.ImageAtlasTool
             if ((_closeState == 1) || (DataContext?.CancelCommand is null) || (!DataContext.CancelCommand.CanExecute(null)))
             {
                 _closeState = 0;
-                DataContext?.OnUnload();
+                DataContext?.Unload();
                 return;
             }
 
@@ -333,7 +333,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 
             e.Cancel = false;
             _closeState = 1;
-            DataContext?.OnUnload();
+            DataContext?.Unload();
         }
 
         /// <summary>Raises the Load event.</summary>
@@ -347,7 +347,7 @@ namespace Gorgon.Editor.ImageAtlasTool
                 return;
             }
 
-            DataContext?.OnLoad();
+            DataContext?.Load();
 
             ValidateControls();
         }

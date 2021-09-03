@@ -361,4 +361,7 @@ These platforms are incompatible and cannot be mixed.</value>
   <data name="GOREDIT_ERR_NOT_ANIMATION" xml:space="preserve">
     <value>The file '{0}' is not an animation.</value>
   </data>
+  <data name="GOREDIT_ERR_HOST_PANEL_NULL" xml:space="preserve">
+    <value>There is no panel registered to the view model of '{0}'.</value>
+  </data>
 </root>

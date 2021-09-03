@@ -32,6 +32,7 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.Views;
 using Gorgon.IO;
+using SharpDX.IO;
 
 namespace Gorgon.Editor.UI
 {
@@ -446,9 +447,11 @@ namespace Gorgon.Editor.UI
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
-        /// <seealso cref="ViewModelBase{T, Ths}.OnLoad" />
-        public override void OnUnload()
+        /// <seealso cref="ViewModelBase{T, Ths}.Load" />
+        protected override void OnUnload()
         {
+            CommandContext = null;
+
             // Unassign events and reset state, but do not set to NULL, that'll be handled later on.
             ContentFileManager.SelectedFilesChanged -= ContentFileManager_SelectedFilesChanged;
             _file.Renamed -= File_Renamed;

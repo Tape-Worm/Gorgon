@@ -83,6 +83,7 @@ namespace Gorgon.Editor.Rendering
         // The synchronization lock for events.
         private readonly object _zoomEventLock = new();
         private readonly object _offsetEventLock = new();
+        private readonly object _regionEventLock = new();
         // Flag to indicate that the resources are loaded.
         private int _resourcesLoading;
         // The swap chain for the content view.
@@ -118,6 +119,38 @@ namespace Gorgon.Editor.Rendering
         private EventHandler<ZoomScaleEventArgs> _zoomEvent;
         // The event triggered when the camera is moved.
         private EventHandler<OffsetEventArgs> _offsetEvent;
+        // The event triggered when the render region has changed its size.
+        private EventHandler _renderRegionChangedEvent;
+
+        /// <summary>Event triggered when the render region has changed its size.</summary>
+        event EventHandler IContentRenderer.RenderRegionChanged
+        {
+            add
+            {
+                lock (_regionEventLock)
+                {
+                    if (value is null)
+                    {
+                        _renderRegionChangedEvent = null;
+                        return;
+                    }
+
+                    _renderRegionChangedEvent += value;
+                }
+            }
+            remove
+            {
+                lock (_regionEventLock)
+                {
+                    if (value is null)
+                    {
+                        return;
+                    }
+
+                    _renderRegionChangedEvent -= value;
+                }
+            }
+        }
 
         /// <summary>
         /// Event triggered when the camera is moved.
@@ -298,6 +331,8 @@ namespace Gorgon.Editor.Rendering
                 {
                     _camera.ViewDimensions = new DX.Size2F(_renderRegion.Width, _renderRegion.Height);
                 }
+
+                _renderRegionChangedEvent?.Invoke(this, EventArgs.Empty);
             }
         }
 

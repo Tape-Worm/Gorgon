@@ -216,6 +216,8 @@ namespace Gorgon.Examples
         /// </remarks>
         protected override void OnLoad()
         {
+            base.OnLoad();
+
             // This method is called whenever the renderer is switched, and has a corresponding OnUnload method for cleanup.
             // In more complicated scenarios, one renderer doesn't really cut it, so we need to switch between them depending 
             // on the context of our editor operation. However, we don't want transitory resources to stick around when they

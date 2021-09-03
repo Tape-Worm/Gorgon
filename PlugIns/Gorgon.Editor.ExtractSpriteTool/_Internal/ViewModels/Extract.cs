@@ -666,10 +666,10 @@ namespace Gorgon.Editor.ExtractSpriteTool
 
         /// <summary>Function called when the associated view is unloaded.</summary>
         /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             _cancelSource?.Dispose();
-            base.OnUnload();
+            base.Unload();
         }
         #endregion
 

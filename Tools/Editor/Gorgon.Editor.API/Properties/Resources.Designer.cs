@@ -318,6 +318,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no panel registered to the view model of &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_HOST_PANEL_NULL {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_HOST_PANEL_NULL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The plug in &apos;{0}&apos; did not produce any content..
         /// </summary>
         internal static string GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN {

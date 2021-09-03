@@ -17,7 +17,7 @@
             {
                 IsRenamingChangedEvent = null;
                 ControlContextChangedEvent = null;
-                DataContext?.OnUnload();
+                DataContext?.Unload();
                 UnassignEvents();
 
                 _openFileFont?.Dispose();

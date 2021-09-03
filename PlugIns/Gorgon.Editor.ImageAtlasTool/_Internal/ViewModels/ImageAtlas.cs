@@ -866,7 +866,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		}
 
 		/// <summary>Function called when the associated view is loaded.</summary>
-		public override void OnLoad()
+		protected override void OnLoad()
 		{
 			base.OnLoad();
 
@@ -878,7 +878,7 @@ namespace Gorgon.Editor.ImageAtlasTool
 		}
 
 		/// <summary>Function called when the associated view is unloaded.</summary>
-		public override void OnUnload()
+		protected override void OnUnload()
 		{
 			CurrentImage = (null, null);
 
