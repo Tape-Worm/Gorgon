@@ -101,7 +101,7 @@ float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 		LightData light = lights[i];
 
 		float specularPower = light.LightAttributes.x;
-		float lightMaxRange = light.LightAttributes.z;
+		float lightMaxRange = light.LightAttenuation.w;
 
 		if ((light.LightAttenuation.x <= 0.0f)
 			&& (light.LightAttenuation.y <= 0.0f)
