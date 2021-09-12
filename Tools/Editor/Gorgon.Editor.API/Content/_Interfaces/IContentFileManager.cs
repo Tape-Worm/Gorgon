@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Gorgon.Graphics.Core;
+using Gorgon.IO;
 
 namespace Gorgon.Editor.Content
 {
@@ -166,6 +168,19 @@ namespace Gorgon.Editor.Content
         /// Function to notify the application that the metadata for the file system should be flushed back to the disk.
         /// </summary>
         void FlushMetadata();
+
+        /// <summary>
+        /// Function to create a content loader for loading in content information.
+        /// </summary>
+        /// <param name="textureCache">The cache used to hold texture data.</param>
+        /// <returns>A new content loader interface.</returns>
+        IGorgonContentLoader GetContentLoader(GorgonTextureCache<GorgonTexture2D> textureCache);
+
+        /// <summary>
+        /// Function to convert the content file manager to a standard read-only Gorgon virtual file system.
+        /// </summary>
+        /// <returns>The <see cref="IGorgonFileSystem"/> for this content manager.</returns>
+        IGorgonFileSystem ToGorgonFileSystem();
         #endregion
     }
 }

@@ -42,7 +42,9 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics.Core;
 using Gorgon.IO;
+using Gorgon.Renderers;
 using Gorgon.Timing;
 
 namespace Gorgon.Editor.ViewModels
@@ -3498,6 +3500,19 @@ namespace Gorgon.Editor.ViewModels
         /// Function to notify the application that the metadata for the file system should be flushed back to the disk.
         /// </summary>
         void IContentFileManager.FlushMetadata() => OnFileSystemUpdated();
+
+        /// <summary>
+        /// Function to create a content loader for loading in content information.
+        /// </summary>
+        /// <param name="textureCache">The cache used to hold texture data.</param>
+        /// <returns>A new content loader interface.</returns>
+        IGorgonContentLoader IContentFileManager.GetContentLoader(GorgonTextureCache<GorgonTexture2D> textureCache) => _fileSystemWriter.FileSystem.CreateContentLoader(HostServices.GraphicsContext.Renderer2D, textureCache);
+
+        /// <summary>
+        /// Function to convert the content file manager to a standard read-only Gorgon virtual file system.
+        /// </summary>
+        /// <returns>The <see cref="IGorgonFileSystem"/> for this content manager.</returns>
+        IGorgonFileSystem IContentFileManager.ToGorgonFileSystem() => _fileSystemWriter.FileSystem;
         #endregion
 
         #region Constructor/Finalizer.
