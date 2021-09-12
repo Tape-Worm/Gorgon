@@ -129,6 +129,31 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to retrieve the texture directly from the cache.
+        /// </summary>
+        /// <param name="textureName">The name of the texture to look up.</param>
+        /// <param name="texture">The texture that was found.</param>
+        /// <param name="entry">The cache entry for the texture.</param>
+        /// <returns><b>true</b> if the texture was returned successfully, <b>false</b> if not.</returns>
+        private bool GetTextureFromCache(string textureName, out T texture, out Lazy<TextureEntry> entry)
+        {
+            texture = null;
+
+            if ((_cache.TryGetValue(textureName, out entry)) && (entry?.Value?.Texture is not null))
+            {
+                if (entry.Value.Texture.TryGetTarget(out T textureRef))
+                {
+                    entry.Value.Users++;
+                    _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
+                }
+                texture = textureRef;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Function to return the texture to cache.
         /// </summary>
         /// <param name="texture">The texture to return.</param>
@@ -252,25 +277,6 @@ namespace Gorgon.Graphics.Core
                 missingTextureAction = DefaultTextureLocator;
             }
 
-            // Function to retrieve the texture from the cache.
-            bool GetTextureFromCache(out T texture, out Lazy<TextureEntry> entry)
-            {
-                texture = null;
-
-                if ((_cache.TryGetValue(textureName, out entry)) && (entry?.Value?.Texture is not null))
-                {
-                    if (entry.Value.Texture.TryGetTarget(out T textureRef))
-                    {
-                        entry.Value.Users++;
-                        _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
-                    }
-                    texture = textureRef;
-                    return true;
-                }
-
-                return false;
-            }
-
             _graphics.Log.Print($"Retrieving texture '{textureName}'.", LoggingLevel.Verbose);
 
             try
@@ -286,10 +292,10 @@ namespace Gorgon.Graphics.Core
                     _graphics.Log.Print($"Requested texture '{textureName}' is currently being loaded on another thread, waiting for it to become available.", LoggingLevel.Verbose);
 
                     // If we're requesting a texture that's in the process of loading, then wait until the previous guy is done.
-                    await Task.Run(() => SpinWait.SpinUntil(() => (!_scheduledTextures.Contains(textureName)) || (GetTextureFromCache(out result, out _))));
+                    await Task.Run(() => SpinWait.SpinUntil(() => (!_scheduledTextures.Contains(textureName)) || (GetTextureFromCache(textureName, out result, out _))));
                 }
 
-                if ((result is not null) || ((GetTextureFromCache(out result, out Lazy<TextureEntry> entry)) && (result is not null)))
+                if ((result is not null) || ((GetTextureFromCache(textureName, out result, out Lazy<TextureEntry> entry)) && (result is not null)))
                 {
                     return result;
                 }
@@ -354,6 +360,59 @@ namespace Gorgon.Graphics.Core
                 _scheduledTextures.Remove(textureName);
                 _cacheLock.Release();
             }
+        }
+
+        /// <summary>
+        /// Function to retrieve a previously cached texture.
+        /// </summary>
+        /// <param name="textureName">The name of the texture to look up.</param>
+        /// <returns>The cached texture, or <b>null</b> if it was not cached.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="textureName"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="textureName"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will retrieve the texture associated with the <paramref name="textureName"/> from the cache if it has been loaded into the cache. If it was not loaded, then the method will return 
+        /// <b>null</b>.
+        /// </para>
+        /// <para>
+        /// If a texture was reclaimed by the garbage collector, then this method will return <b>null</b>.
+        /// </para>
+        /// <para>
+        /// Every call to this method will increment an internal reference count for a cached texture. The texture will not be disposed of until this reference count hits zero. This can only be done with a 
+        /// call to <see cref="ReturnTexture"/>. However, since the texture is stored as a weak reference internally, the garbage collector can still free the texture, so calling 
+        /// <see cref="ReturnTexture"/> is not mandatory. However, it is best practice to call the method when it is no longer in use.
+        /// </para>
+        /// <para>
+        /// This method is thread safe.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// Do <b>not</b> dispose of the returned texture manually. Doing so will leave the reference count incorrect, and the cached value returned will be invalid until the garbage collector picks it up.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public T FindTexture(string textureName)            
+        {
+            if (textureName is null)
+            {
+                throw new ArgumentNullException(nameof(textureName));
+            }
+
+            if (string.IsNullOrWhiteSpace(textureName))
+            {
+                throw new ArgumentEmptyException(nameof(textureName));
+            }
+
+            _graphics.Log.Print($"Locating texture '{textureName}'.", LoggingLevel.Verbose);
+
+            if ((GetTextureFromCache(textureName, out T result, out Lazy<TextureEntry> _)) && (result is not null))
+            {
+                return result;
+            }
+
+            return null;
         }
 
         /// <summary>
