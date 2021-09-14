@@ -146,6 +146,11 @@ namespace Gorgon.Graphics.Core
                     entry.Value.Users++;
                     _graphics.Log.Print($"Texture '{textureName}' exists in cache with {entry.Value.Users} users.", LoggingLevel.Verbose);
                 }
+                else
+                {
+                    _graphics.Log.Print($"WARNING: Texture '{textureName}' exists in the cache with {entry.Value.Users} users, but was garbage collected!", LoggingLevel.Intermediate);
+                }
+
                 texture = textureRef;
                 return true;
             }
