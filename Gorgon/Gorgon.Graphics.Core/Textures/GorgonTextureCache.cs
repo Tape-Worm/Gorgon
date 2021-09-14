@@ -405,11 +405,20 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentEmptyException(nameof(textureName));
             }
 
-            _graphics.Log.Print($"Locating texture '{textureName}'.", LoggingLevel.Verbose);
+            _cacheLock.Wait();
 
-            if ((GetTextureFromCache(textureName, out T result, out Lazy<TextureEntry> _)) && (result is not null))
+            try
             {
-                return result;
+                _graphics.Log.Print($"Locating texture '{textureName}'.", LoggingLevel.Verbose);
+
+                if ((GetTextureFromCache(textureName, out T result, out Lazy<TextureEntry> _)) && (result is not null))
+                {
+                    return result;
+                }
+            }
+            finally
+            {
+                _cacheLock.Release();
             }
 
             return null;
