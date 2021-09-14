@@ -650,7 +650,10 @@ namespace Gorgon.Editor.AnimationEditor
             }
             finally
             {
-                ArrayPool<ITrack>.Shared.Return(trackList, true);
+                if (trackList is not null)
+                {
+                    ArrayPool<ITrack>.Shared.Return(trackList, true);
+                }
             }
         }
 
@@ -1349,7 +1352,10 @@ namespace Gorgon.Editor.AnimationEditor
             }
             finally
             {
-                ArrayPool<ITrack>.Shared.Return(tracks, true);
+                if (tracks is not null)
+                {
+                    ArrayPool<ITrack>.Shared.Return(tracks, true);
+                }
             }
         }
 

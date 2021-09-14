@@ -1340,7 +1340,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
             }
         }
 
@@ -1690,7 +1690,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
             }
         }
 
@@ -1855,7 +1855,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer,true);
             }
         }
 
@@ -1980,7 +1980,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
             }
         }
 
@@ -2131,7 +2131,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
             }
         }
 
@@ -2377,7 +2377,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
             }
         }
 

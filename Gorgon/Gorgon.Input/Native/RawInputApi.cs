@@ -491,7 +491,7 @@ namespace Gorgon.Native
                 }
                 finally
                 {
-                    pool.Return(deviceList);
+                    pool.Return(deviceList, true);
                 }
             }
         }

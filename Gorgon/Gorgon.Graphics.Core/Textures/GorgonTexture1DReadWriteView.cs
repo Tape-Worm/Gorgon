@@ -388,7 +388,7 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects);
+                GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects, true);
             }
         }
 

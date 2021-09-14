@@ -82,7 +82,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                pool.Return(readBuffer);
+                pool.Return(readBuffer, true);
             }
         }
 
@@ -109,7 +109,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                pool.Return(writeBuffer);
+                pool.Return(writeBuffer, true);
             }
         }
 
@@ -150,7 +150,7 @@ namespace Gorgon.IO
             }
             finally
             {
-                GorgonArrayPool<byte>.SharedTiny.Return(buffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(buffer, true);
             }
         }
 
@@ -470,8 +470,8 @@ namespace Gorgon.IO
             }
             finally
             {
-                GorgonArrayPool<byte>.SharedTiny.Return(buffer);
-                GorgonArrayPool<char>.SharedTiny.Return(charBuffer);
+                GorgonArrayPool<byte>.SharedTiny.Return(buffer, true);
+                GorgonArrayPool<char>.SharedTiny.Return(charBuffer, true);
             }
         }
 

@@ -332,7 +332,7 @@ namespace Gorgon.Graphics.Fonts
             }
             finally
             {
-                pool.Return(data);
+                pool.Return(data, true);
             }
 
             return GetExternalFontFamily(currentFonts);

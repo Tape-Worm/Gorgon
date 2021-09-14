@@ -218,7 +218,7 @@ namespace Gorgon.Editor.SpriteEditor
             vertices[2] = new Vector2(Sprite.CornerOffsets.LowerRight.X + halfSize.X, Sprite.CornerOffsets.LowerRight.Y + halfSize.Y).Truncate();
             vertices[3] = new Vector2(Sprite.CornerOffsets.LowerLeft.X - halfSize.X, Sprite.CornerOffsets.LowerLeft.Y + halfSize.Y).Truncate();
             DataContext.AnchorEditor.SpriteBounds = vertices;
-            ArrayPool<Vector2>.Shared.Return(vertices);
+            ArrayPool<Vector2>.Shared.Return(vertices, true);
 
             DataContext.AnchorEditor.Anchor = _anchorService.AnchorPosition = new Vector2(DataContext.Size.Width * DataContext.Anchor.X - halfSize.X,
                                                                                              DataContext.Size.Height * DataContext.Anchor.Y - halfSize.Y);

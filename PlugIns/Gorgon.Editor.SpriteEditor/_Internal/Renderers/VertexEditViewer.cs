@@ -92,7 +92,7 @@ namespace Gorgon.Editor.SpriteEditor
             vertices[2] = new Vector2(Sprite.Size.Width + DataContext.SpriteVertexEditContext.Vertices[2].X, Sprite.Size.Height + DataContext.SpriteVertexEditContext.Vertices[2].Y);
             vertices[3] = new Vector2(DataContext.SpriteVertexEditContext.Vertices[3].X, Sprite.Size.Height + DataContext.SpriteVertexEditContext.Vertices[3].Y);
             _vertexEditor.Vertices = vertices;
-            ArrayPool<Vector2>.Shared.Return(vertices);
+            ArrayPool<Vector2>.Shared.Return(vertices,true);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Gorgon.Editor.SpriteEditor
             DataContext.SpriteVertexEditContext.Vertices = verts;
             DataContext.SpriteVertexEditContext.Offset = DataContext.SpriteVertexEditContext.Vertices[DataContext.SpriteVertexEditContext.SelectedVertexIndex];            
 
-            ArrayPool<Vector2>.Shared.Return(verts);
+            ArrayPool<Vector2>.Shared.Return(verts, true);
         }
 
         /// <summary>Handles the VertexSelected event of the VertexEditor control.</summary>

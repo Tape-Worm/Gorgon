@@ -759,7 +759,7 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                GorgonArrayPool<GorgonRenderTargetView>.SharedTiny.Return(renderTargets);
+                GorgonArrayPool<GorgonRenderTargetView>.SharedTiny.Return(renderTargets, true);
             }
         }
 
@@ -863,7 +863,7 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                GorgonArrayPool<DX.Rectangle>.SharedTiny.Return(rects);
+                GorgonArrayPool<DX.Rectangle>.SharedTiny.Return(rects, true);
             }
         }
 
@@ -918,7 +918,7 @@ namespace Gorgon.Graphics.Core
             }
             finally
             {
-                GorgonArrayPool<DX.ViewportF>.SharedTiny.Return(viewports);
+                GorgonArrayPool<DX.ViewportF>.SharedTiny.Return(viewports, true);
             }
         }
 

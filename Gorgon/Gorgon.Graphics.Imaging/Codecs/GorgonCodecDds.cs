@@ -807,7 +807,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }
             finally
             {
-                GorgonArrayPool<uint>.SharedTiny.Return(actualPalette);
+                if (actualPalette != palette)
+                {
+                    GorgonArrayPool<uint>.SharedTiny.Return(actualPalette, true);
+                }
             }
         }
 

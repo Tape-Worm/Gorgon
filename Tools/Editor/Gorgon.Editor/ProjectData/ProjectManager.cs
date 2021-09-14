@@ -298,7 +298,7 @@ namespace Gorgon.Editor.ProjectData
 
             foreach (byte[] buffer in buffers)
             {
-                ArrayPool<byte>.Shared.Return(buffer);
+                ArrayPool<byte>.Shared.Return(buffer, true);
             }
             buffers.Clear();
 
@@ -323,7 +323,7 @@ namespace Gorgon.Editor.ProjectData
             {
                 readStream.Dispose();
                 writeStream.Dispose();
-                ArrayPool<byte>.Shared.Return(writeBuffer);
+                ArrayPool<byte>.Shared.Return(writeBuffer, true);
             }
 
             File.SetAttributes(metaDataOutput, FileAttributes.Archive | FileAttributes.Normal);

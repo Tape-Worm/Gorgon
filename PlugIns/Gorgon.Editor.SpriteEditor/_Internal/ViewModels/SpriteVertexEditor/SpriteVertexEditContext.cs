@@ -203,7 +203,7 @@ namespace Gorgon.Editor.SpriteEditor
             {
                 if (defaultPos is not null)
                 {
-                    ArrayPool<Vector2>.Shared.Return(defaultPos);
+                    ArrayPool<Vector2>.Shared.Return(defaultPos, true);
                 }
             }
         }

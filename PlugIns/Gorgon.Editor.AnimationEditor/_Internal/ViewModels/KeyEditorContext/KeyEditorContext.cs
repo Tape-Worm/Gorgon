@@ -321,7 +321,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     if (keyFrames is not null)
                     {
-                        ArrayPool<IKeyFrame>.Shared.Return(keyFrames);
+                        ArrayPool<IKeyFrame>.Shared.Return(keyFrames, true);
                     }
                     HideWaitPanel();
                 }
@@ -375,7 +375,7 @@ namespace Gorgon.Editor.AnimationEditor
                 {
                     if (keyFrames is not null)
                     {
-                        ArrayPool<IKeyFrame>.Shared.Return(keyFrames);
+                        ArrayPool<IKeyFrame>.Shared.Return(keyFrames, true);
                     }
                     HostServices.BusyService.SetIdle();
                 }

@@ -189,7 +189,7 @@ namespace Gorgon.IO
                 stream.Position = pos;
                 if (fileBuffer is not null)
                 {
-                    ArrayPool<byte>.Shared.Return(fileBuffer);
+                    ArrayPool<byte>.Shared.Return(fileBuffer, true);
                 }
             }
         }
