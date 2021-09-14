@@ -117,12 +117,56 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CheckAntiAlias.ToolTipBody" xml:space="preserve">
+    <value>Applies anti-aliasing to the edges of the font glyphs.
+
+This setting should be turned on with small font sizes, otherwise the edges 
+of the font may look strange.
+
+Please note that ClearType anti-aliasing is not supported at this time.</value>
+  </data>
   <metadata name="MenuZoom.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>33, 23</value>
   </metadata>
+  <data name="ButtonZoom.ToolTipBody" xml:space="preserve">
+    <value>Zooms in or out on the sprite texture by the specified percentage.
+
+Zooming can also be done by holding CTRL and moving the mouse 
+wheel up and down.
+
+To pan around a zoomed in area, use the scrollbars, or hold down on 
+the mouse wheel (middle mouse button) and move the mouse. 
+
+The view can also be panned up and down by moving the mousewheel 
+up and down, and can be horizontally panned by holding SHIFT and 
+moving the mousewheel up and down.</value>
+  </data>
   <metadata name="MenuBrushes.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>148, 23</value>
   </metadata>
+  <data name="kryptonRibbonGroupButton1.ToolTipBody" xml:space="preserve">
+    <value>This will apply a brush when drawing the glyphs to the textures.
+
+Currently there are 4 supported types in this editor:
+1. Solid - Use a solid color. This is the default, with the color being set to White.
+2. Pattern - Uses one of several predefined patterns to draw the glyphs.
+3. Linear Gradient - Uses a linear gradient to shift the color of the glyph from one 
+color to another.
+4. Texture - Uses an image from the file system to draw the glyphs.</value>
+  </data>
+  <data name="ButtonResizeTexture.ToolTipBody" xml:space="preserve">
+    <value>Alters the size of the backing textures.
+
+The default width and height of the texture may not be suitable for some font 
+sizes. So, by increasing the size of the texture, more glyphs can be packed into it.
+
+The advantage of a single texture is that when rendering text, the system will not
+have to switch textures, and will perform better.
+
+Please note that Gorgon uses Texture arrays to pack fonts on the texture, so the 
+impact from texture switching does not exist until the maximum array count of 
+4096 indices is reached.</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>78</value>
   </metadata>

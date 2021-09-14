@@ -42,6 +42,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRibbon));
             this.RibbonTextContent = new Krypton.Ribbon.KryptonRibbon();
             this.ContextTextureEditor = new Krypton.Ribbon.KryptonRibbonContext();
             this.TabFont = new Krypton.Ribbon.KryptonRibbonTab();
@@ -126,8 +127,9 @@
             this.RibbonTextContent.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFont,
             this.TabTexture});
+            this.RibbonTextContent.SelectedContext = null;
             this.RibbonTextContent.SelectedTab = this.TabFont;
-            this.RibbonTextContent.Size = new System.Drawing.Size(1293, 115);
+            this.RibbonTextContent.Size = new System.Drawing.Size(1437, 115);
             this.RibbonTextContent.TabIndex = 0;
             // 
             // ContextTextureEditor
@@ -169,6 +171,8 @@
             this.ButtonNew.KeyTip = "N";
             this.ButtonNew.TextLine1 = "New";
             this.ButtonNew.TextLine2 = "Font";
+            this.ButtonNew.ToolTipBody = "Creates a new font using the current font settings as a base.";
+            this.ButtonNew.ToolTipTitle = "New Font";
             this.ButtonNew.Click += new System.EventHandler(this.ButtonNew_Click);
             // 
             // ButtonSaveFont
@@ -208,6 +212,8 @@
             this.ButtonOutline.ImageSmall = global::Gorgon.Editor.FontEditor.Properties.Resources.outlined_16x16;
             this.ButtonOutline.KeyTip = "O";
             this.ButtonOutline.TextLine1 = "Outline";
+            this.ButtonOutline.ToolTipBody = "Settings for providing an outline around the glyphs of the font.";
+            this.ButtonOutline.ToolTipTitle = "Outline";
             this.ButtonOutline.Click += new System.EventHandler(this.ButtonOutline_Click);
             // 
             // kryptonRibbonGroupLines5
@@ -224,6 +230,8 @@
             this.ButtonTexture.KeyTip = "T";
             this.ButtonTexture.TextLine1 = "Texture";
             this.ButtonTexture.TextLine2 = "Settings";
+            this.ButtonTexture.ToolTipBody = "Settings for the backing textures that contain the font glyphs.";
+            this.ButtonTexture.ToolTipTitle = "Texture Settings";
             this.ButtonTexture.Click += new System.EventHandler(this.ButtonTexture_Click);
             // 
             // ButtonCharacterSelection
@@ -233,6 +241,9 @@
             this.ButtonCharacterSelection.KeyTip = "L";
             this.ButtonCharacterSelection.TextLine1 = "Character";
             this.ButtonCharacterSelection.TextLine2 = "List";
+            this.ButtonCharacterSelection.ToolTipBody = "Provides the selection of letters, numbers, symbols that can be used as \r\nglyphs " +
+    "in the font.";
+            this.ButtonCharacterSelection.ToolTipTitle = "Character List";
             this.ButtonCharacterSelection.Click += new System.EventHandler(this.ButtonCharacterSelection_Click);
             // 
             // kryptonRibbonGroupLines2
@@ -248,7 +259,7 @@
             this.ButtonTextUndo.KeyTip = "Z";
             this.ButtonTextUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.ButtonTextUndo.TextLine1 = "Undo";
-            this.ButtonTextUndo.ToolTipBody = "Restores the text back to the original text before it was changed.";
+            this.ButtonTextUndo.ToolTipBody = "Restores the font back to the previous state.";
             this.ButtonTextUndo.ToolTipTitle = "Undo";
             this.ButtonTextUndo.Click += new System.EventHandler(this.ButtonFontUndo_Click);
             // 
@@ -259,7 +270,7 @@
             this.ButtonTextRedo.KeyTip = "Y";
             this.ButtonTextRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
             this.ButtonTextRedo.TextLine1 = "Redo";
-            this.ButtonTextRedo.ToolTipBody = "Resets the text to the changed text.";
+            this.ButtonTextRedo.ToolTipBody = "Resets the font to the next state.";
             this.ButtonTextRedo.ToolTipTitle = "Redo";
             this.ButtonTextRedo.Click += new System.EventHandler(this.ButtonFontRedo_Click);
             // 
@@ -288,6 +299,8 @@
             // 
             this.LabelFontFamily.TextLine1 = "Font";
             this.LabelFontFamily.TextLine2 = "Family:";
+            this.LabelFontFamily.ToolTipBody = "The list of True Type fonts that can be used to generate the bitmap font.";
+            this.LabelFontFamily.ToolTipTitle = "Font Family";
             // 
             // CustomFonts
             // 
@@ -316,6 +329,9 @@
             // LabelSize
             // 
             this.LabelSize.TextLine1 = "Size:";
+            this.LabelSize.ToolTipBody = "The height of the font.\r\n\r\nThe units for the height are assigned via the radio bu" +
+    "ttons below.";
+            this.LabelSize.ToolTipTitle = "Size";
             // 
             // CustomControlSize
             // 
@@ -361,12 +377,17 @@
             this.RadioPointUnits.Checked = true;
             this.RadioPointUnits.KeyTip = "P";
             this.RadioPointUnits.TextLine1 = "Points";
+            this.RadioPointUnits.ToolTipBody = "Sets the font height units to Points.\r\n\r\nThis is useful for making the font respe" +
+    "ct the current DPI.";
+            this.RadioPointUnits.ToolTipTitle = "Font Height: Points";
             this.RadioPointUnits.CheckedChanged += new System.EventHandler(this.RadioPointUnits_CheckedChanged);
             // 
             // RadioPixelUnits
             // 
             this.RadioPixelUnits.KeyTip = "X";
             this.RadioPixelUnits.TextLine1 = "Pixels";
+            this.RadioPixelUnits.ToolTipBody = "Sets the font height units to Pixels.\r\n\r\nThis is useful for making the font fit a" +
+    "n exact height on the screen.";
             this.RadioPixelUnits.CheckedChanged += new System.EventHandler(this.RadioPixelUnits_CheckedChanged);
             // 
             // kryptonRibbonGroupLines4
@@ -380,18 +401,22 @@
             // 
             this.CheckBold.KeyTip = "B";
             this.CheckBold.TextLine1 = "Bold";
+            this.CheckBold.ToolTipBody = "Sets the glyph style to bold.";
+            this.CheckBold.ToolTipTitle = "Bold";
             this.CheckBold.CheckedChanged += new System.EventHandler(this.CheckBold_CheckedChanged);
             // 
             // CheckItalics
             // 
             this.CheckItalics.KeyTip = "I";
             this.CheckItalics.TextLine1 = "Italic";
+            this.CheckItalics.ToolTipBody = "Sets the glyph style to italic.";
             this.CheckItalics.CheckedChanged += new System.EventHandler(this.CheckItalics_CheckedChanged);
             // 
             // CheckAntiAlias
             // 
             this.CheckAntiAlias.KeyTip = "A";
             this.CheckAntiAlias.TextLine1 = "Antialiasing";
+            this.CheckAntiAlias.ToolTipBody = resources.GetString("CheckAntiAlias.ToolTipBody");
             this.CheckAntiAlias.CheckedChanged += new System.EventHandler(this.CheckAntiAlias_CheckedChanged);
             // 
             // kryptonRibbonGroupLines3
@@ -407,7 +432,7 @@
             this.ButtonZoom.ImageSmall = global::Gorgon.Editor.FontEditor.Properties.Resources.zoom_16x16;
             this.ButtonZoom.KeyTip = "Z";
             this.ButtonZoom.TextLine1 = "Zoom";
-            this.ButtonZoom.ToolTipBody = "Zooms in or out on the content by the specified percentage.";
+            this.ButtonZoom.ToolTipBody = resources.GetString("ButtonZoom.ToolTipBody");
             this.ButtonZoom.ToolTipTitle = "Zoom";
             // 
             // MenuZoom
@@ -566,6 +591,8 @@
             this.kryptonRibbonGroupButton1.ImageSmall = global::Gorgon.Editor.FontEditor.Properties.Resources.sprite_color_16x16;
             this.kryptonRibbonGroupButton1.TextLine1 = "Change";
             this.kryptonRibbonGroupButton1.TextLine2 = "Brush";
+            this.kryptonRibbonGroupButton1.ToolTipBody = resources.GetString("kryptonRibbonGroupButton1.ToolTipBody");
+            this.kryptonRibbonGroupButton1.ToolTipTitle = "Change Glyph Brush";
             // 
             // MenuBrushes
             // 
@@ -577,33 +604,33 @@
             this.MenuItemGradient,
             this.MenuItemTextured});
             this.MenuBrushes.Name = "MenuBrushes";
-            this.MenuBrushes.Size = new System.Drawing.Size(181, 114);
+            this.MenuBrushes.Size = new System.Drawing.Size(162, 92);
             // 
             // MenuItemSolid
             // 
             this.MenuItemSolid.Name = "MenuItemSolid";
-            this.MenuItemSolid.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemSolid.Size = new System.Drawing.Size(161, 22);
             this.MenuItemSolid.Text = "&Solid Brush...";
             this.MenuItemSolid.Click += new System.EventHandler(this.MenuItemSolid_Click);
             // 
             // MenuItemPattern
             // 
             this.MenuItemPattern.Name = "MenuItemPattern";
-            this.MenuItemPattern.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemPattern.Size = new System.Drawing.Size(161, 22);
             this.MenuItemPattern.Text = "&Pattern Brush...";
             this.MenuItemPattern.Click += new System.EventHandler(this.MenuItemPattern_Click);
             // 
             // MenuItemGradient
             // 
             this.MenuItemGradient.Name = "MenuItemGradient";
-            this.MenuItemGradient.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemGradient.Size = new System.Drawing.Size(161, 22);
             this.MenuItemGradient.Text = "&Gradient Brush...";
             this.MenuItemGradient.Click += new System.EventHandler(this.MenuItemGradient_Click);
             // 
             // MenuItemTextured
             // 
             this.MenuItemTextured.Name = "MenuItemTextured";
-            this.MenuItemTextured.Size = new System.Drawing.Size(180, 22);
+            this.MenuItemTextured.Size = new System.Drawing.Size(161, 22);
             this.MenuItemTextured.Text = "&Textured Brush...";
             this.MenuItemTextured.Click += new System.EventHandler(this.MenuItemTextured_Click);
             // 
@@ -621,6 +648,8 @@
             this.ButtonResizeTexture.KeyTip = "R";
             this.ButtonResizeTexture.TextLine1 = "Resize";
             this.ButtonResizeTexture.TextLine2 = "Texture";
+            this.ButtonResizeTexture.ToolTipBody = resources.GetString("ButtonResizeTexture.ToolTipBody");
+            this.ButtonResizeTexture.ToolTipTitle = "Resize Texture";
             this.ButtonResizeTexture.Click += new System.EventHandler(this.ButtonResizeTexture_Click);
             // 
             // ButtonGlyphPad
@@ -630,6 +659,10 @@
             this.ButtonGlyphPad.KeyTip = "P";
             this.ButtonGlyphPad.TextLine1 = "Pad";
             this.ButtonGlyphPad.TextLine2 = "Glyphs";
+            this.ButtonGlyphPad.ToolTipBody = "Provides a border around each glyph, in pixels.\r\n\r\nNote: Setting this value to le" +
+    "ss than 1 may cause issues with glyphs \"bleeding\" into \r\ntheir neighbours when r" +
+    "endering.";
+            this.ButtonGlyphPad.ToolTipTitle = "Pad Glyphs";
             this.ButtonGlyphPad.Click += new System.EventHandler(this.ButtonGlyphPad_Click);
             // 
             // CheckPremultiply
@@ -640,6 +673,9 @@
             this.CheckPremultiply.KeyTip = "M";
             this.CheckPremultiply.TextLine1 = "Premultiply";
             this.CheckPremultiply.TextLine2 = "Alpha";
+            this.CheckPremultiply.ToolTipBody = "Multiplies the color of the pixel with the alpha value to use with a premultiplie" +
+    "d \r\nalpha blending state.";
+            this.CheckPremultiply.ToolTipTitle = "Premultiply Alpha";
             this.CheckPremultiply.Click += new System.EventHandler(this.CheckPremultiply_Click);
             // 
             // GroupTextureNav
@@ -667,6 +703,10 @@
             this.ButtonPrevTexture.KeyTip = "P";
             this.ButtonPrevTexture.TextLine1 = "Previous";
             this.ButtonPrevTexture.TextLine2 = "Texture";
+            this.ButtonPrevTexture.ToolTipBody = "Switches to the previous texture on the screen.\r\n\r\nNote: Currently this provides " +
+    "no functional benefit other than to show the user \r\nwhat the texture looks like." +
+    "\r\n";
+            this.ButtonPrevTexture.ToolTipTitle = "Previous Texture";
             this.ButtonPrevTexture.Click += new System.EventHandler(this.ButtonPrevTexture_Click);
             // 
             // ButtonNextTexture
@@ -677,6 +717,9 @@
             this.ButtonNextTexture.KeyTip = "N";
             this.ButtonNextTexture.TextLine1 = "Next";
             this.ButtonNextTexture.TextLine2 = "Texture";
+            this.ButtonNextTexture.ToolTipBody = "Switches to the next texture on the screen.\r\n\r\nNote: Currently this provides no f" +
+    "unctional benefit other than to show the user \r\nwhat the texture looks like.\r\n";
+            this.ButtonNextTexture.ToolTipTitle = "Next Texture";
             this.ButtonNextTexture.Click += new System.EventHandler(this.ButtonNextTexture_Click);
             // 
             // ButtonfirstTexture
@@ -687,6 +730,9 @@
             this.ButtonfirstTexture.KeyTip = "F";
             this.ButtonfirstTexture.TextLine1 = "First";
             this.ButtonfirstTexture.TextLine2 = "Texture";
+            this.ButtonfirstTexture.ToolTipBody = "Switches to the first texture on the screen.\r\n\r\nNote: Currently this provides no " +
+    "functional benefit other than to show the user \r\nwhat the texture looks like.\r\n";
+            this.ButtonfirstTexture.ToolTipTitle = "First Texture";
             this.ButtonfirstTexture.Click += new System.EventHandler(this.ButtonfirstTexture_Click);
             // 
             // ButtonLastTexture
@@ -697,13 +743,15 @@
             this.ButtonLastTexture.KeyTip = "L";
             this.ButtonLastTexture.TextLine1 = "Last";
             this.ButtonLastTexture.TextLine2 = "Texture";
+            this.ButtonLastTexture.ToolTipBody = "Switches to the last texture on the screen.\r\n\r\nNote: Currently this provides no f" +
+    "unctional benefit other than to show the user \r\nwhat the texture looks like.\r\n";
             this.ButtonLastTexture.Click += new System.EventHandler(this.ButtonLastTexture_Click);
             // 
             // FormRibbon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1293, 399);
+            this.ClientSize = new System.Drawing.Size(1437, 399);
             this.Controls.Add(this.RibbonTextContent);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Name = "FormRibbon";
