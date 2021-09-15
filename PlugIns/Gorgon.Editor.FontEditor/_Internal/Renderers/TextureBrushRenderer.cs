@@ -64,7 +64,7 @@ namespace Gorgon.Editor.FontEditor
         private GorgonRenderTarget2DView _target;
         private GorgonTexture2DView _targetTexture;
         // The clipper used to cut out a part of the texture.
-        private IRectClipperService _clipper;
+        private readonly IRectClipperService _clipper;
         #endregion
 
         #region Methods.
@@ -211,24 +211,6 @@ namespace Gorgon.Editor.FontEditor
             }
 
             _context.SetRegionCommand.Execute(_clipper.Rectangle);
-        }
-
-        /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext" /> is changing.</summary>
-        /// <param name="propertyName">The name of the property that is changing.</param>
-        /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
-        protected override void OnPropertyChanging(string propertyName)
-        {
-            base.OnPropertyChanging(propertyName);
-
-        }
-
-        /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
-        /// <param name="propertyName">The name of the property that was changed.</param>
-        /// <remarks>Developers should override this method to detect changes on the content view model and reflect those changes in the rendering.</remarks>
-        protected override void OnPropertyChanged(string propertyName)
-        {
-            base.OnPropertyChanged(propertyName);
-
         }
 
         /// <summary>Function to render the background.</summary>

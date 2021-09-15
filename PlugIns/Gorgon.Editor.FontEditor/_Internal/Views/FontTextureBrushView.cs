@@ -126,7 +126,7 @@ namespace Gorgon.Editor.FontEditor
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void ComboWrapMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            WrapModeComboItem item = (WrapModeComboItem)ComboWrapMode.SelectedItem;            
+            var item = (WrapModeComboItem)ComboWrapMode.SelectedItem;            
 
             if ((DataContext?.SetWrappingModeCommand is null) || (!DataContext.SetWrappingModeCommand.CanExecute(item.WrapMode)))
             {
