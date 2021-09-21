@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Forms;
+using Drawing = System.Drawing;
 using Gorgon.Math;
 using Krypton.Ribbon;
 
@@ -346,6 +348,8 @@ namespace Gorgon.Editor
             // Restore the selected tab.
             TargetRibbon.SelectedContext = selectedContext;
             TargetRibbon.SelectedTab = selectedTab;
+
+            FixGroupWidths();
         }
 
         /// <summary>
@@ -376,6 +380,24 @@ namespace Gorgon.Editor
             else
             {
                 TargetRibbon.ResetSelectedTab();
+            }
+        }
+
+        /// <summary>
+        /// Function to correct the clipping for groups that have long names, but little content.
+        /// </summary>
+        public void FixGroupWidths()
+        {
+            using Drawing.Graphics g = Drawing.Graphics.FromHwnd(TargetRibbon.Parent.Handle);
+            double dpi = g.DpiY / 96.0;
+
+            foreach (KryptonRibbonTab tab in TargetRibbon.RibbonTabs)
+            {
+                foreach (KryptonRibbonGroup grp in tab.Groups)
+                {
+                    Drawing.Size size = TextRenderer.MeasureText(g, grp.TextLine1 + (string.IsNullOrWhiteSpace(grp.TextLine2) ? " " + grp.TextLine2 : string.Empty), TargetRibbon.Parent.Font);
+                    grp.MinimumWidth = size.Width + (int)(8 * dpi);
+                }
             }
         }
         #endregion

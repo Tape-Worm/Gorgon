@@ -1435,6 +1435,7 @@ namespace Gorgon.Editor
 
             RibbonMain.AllowFormIntegrate = false;
             PanelProject.MainRibbon = RibbonMain;
+            _ribbonMerger.FixGroupWidths();
         }
 
         /// <summary>Initializes a new instance of the <see cref="FormMain"/> class.</summary>
