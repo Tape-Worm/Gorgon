@@ -56,6 +56,13 @@ namespace Gorgon.Editor.Content
 
         #region Methods.
         /// <summary>
+        /// Function to determine if a directory is excluded from a packed file.
+        /// </summary>
+        /// <param name="directory">Path to the directory to evaluate.</param>
+        /// <returns><b>true</b> if excluded, <b>false</b> if not.</returns>
+        bool IsDirectoryExcluded(string directory);
+
+        /// <summary>
         /// Function to create a new directory
         /// </summary>
         /// <param name="directory">The path to the new directory.</param>

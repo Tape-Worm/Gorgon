@@ -3513,6 +3513,47 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <returns>The <see cref="IGorgonFileSystem"/> for this content manager.</returns>
         IGorgonFileSystem IContentFileManager.ToGorgonFileSystem() => _fileSystemWriter.FileSystem;
+
+        /// <summary>
+        /// Function to determine if a directory is excluded from a packed file.
+        /// </summary>
+        /// <param name="directory">Path to the directory to evaluate.</param>
+        /// <returns><b>true</b> if excluded, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directory"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directory"/> parameter is empty.</exception>
+        /// <exception cref="DirectoryNotFoundException">Thrown if the directory does not exist.</exception>
+        bool IContentFileManager.IsDirectoryExcluded(string directory)
+        {
+            if (directory is null)
+            {
+                throw new ArgumentNullException(nameof(directory));
+            }
+
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                throw new ArgumentEmptyException(nameof(directory));
+            }
+
+            directory = directory.FormatDirectory('/');
+
+            if (!directory.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+
+                directory = "/" + directory;
+            }
+                        
+            if (!_directories.TryGetValue(directory, out IDirectory dir))
+            {
+                throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directory));
+            }
+
+            if (dir is not IExcludable excluder)
+            {
+                return false;
+            }
+
+            return excluder.IsExcluded;
+        }
         #endregion
 
         #region Constructor/Finalizer.
