@@ -3326,10 +3326,10 @@ namespace Gorgon.Editor.ViewModels
 
             return searchPatternState switch
             {
-                1 => paths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase)),
-                2 => paths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase)),
-                3 => paths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1),
-                _ => usePattern ? paths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)) : paths,
+                1 => paths.Where(item => item.Name.EndsWith(mask, StringComparison.OrdinalIgnoreCase)),
+                2 => paths.Where(item => item.Name.StartsWith(mask, StringComparison.OrdinalIgnoreCase)),
+                3 => paths.Where(item => item.Name.IndexOf(mask, StringComparison.OrdinalIgnoreCase) != -1),
+                _ => usePattern ? paths.Where(item => string.Equals(item.Name, mask, StringComparison.OrdinalIgnoreCase)) : paths,
             };
         }
 
@@ -3374,10 +3374,10 @@ namespace Gorgon.Editor.ViewModels
 
             return searchPatternState switch
             {
-                1 => paths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
-                2 => paths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
-                3 => paths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath),
-                _ => usePattern ? paths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
+                1 => paths.Where(item => item.Name.EndsWith(mask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
+                2 => paths.Where(item => item.Name.StartsWith(mask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
+                3 => paths.Where(item => item.Name.IndexOf(mask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath),
+                _ => usePattern ? paths.Where(item => string.Equals(item.Name, mask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
 : paths.Select(item => item.FullPath),
             };
         }
@@ -3427,11 +3427,11 @@ namespace Gorgon.Editor.ViewModels
 
             return searchPatternState switch
             {
-                1 => allPaths.Where(item => item.Name.EndsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
-                2 => allPaths.Where(item => item.Name.StartsWith(searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
-                3 => allPaths.Where(item => item.Name.IndexOf(searchMask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath),
-                _ => usePattern ? allPaths.Where(item => string.Equals(item.Name, searchMask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
-: allPaths.Select(item => item.FullPath),
+                1 => allPaths.Where(item => item.Name.EndsWith(mask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
+                2 => allPaths.Where(item => item.Name.StartsWith(mask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
+                3 => allPaths.Where(item => item.Name.IndexOf(mask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath),
+                _ => usePattern ? allPaths.Where(item => string.Equals(item.Name, mask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
+                                : allPaths.Select(item => item.FullPath),
             };
         }
 
