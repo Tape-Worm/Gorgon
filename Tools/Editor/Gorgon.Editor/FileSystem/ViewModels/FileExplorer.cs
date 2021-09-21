@@ -3378,7 +3378,7 @@ namespace Gorgon.Editor.ViewModels
                 2 => paths.Where(item => item.Name.StartsWith(mask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath),
                 3 => paths.Where(item => item.Name.IndexOf(mask, StringComparison.OrdinalIgnoreCase) != -1).Select(item => item.FullPath),
                 _ => usePattern ? paths.Where(item => string.Equals(item.Name, mask, StringComparison.OrdinalIgnoreCase)).Select(item => item.FullPath)
-: paths.Select(item => item.FullPath),
+                                : paths.Select(item => item.FullPath),
             };
         }
 
@@ -3541,8 +3541,10 @@ namespace Gorgon.Editor.ViewModels
 
                 directory = "/" + directory;
             }
+
+            IDirectory dir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, directory, StringComparison.OrdinalIgnoreCase));
                         
-            if (!_directories.TryGetValue(directory, out IDirectory dir))
+            if (dir is null)
             {
                 throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, directory));
             }
