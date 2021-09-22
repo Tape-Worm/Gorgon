@@ -349,11 +349,8 @@ namespace Gorgon.Renderers
                 _targetInfo.Width = w;
                 _targetInfo.Height = h;
 
-                (GorgonRenderTarget2DView up, GorgonRenderTarget2DView down) targets = (i == 0 ? _blurRtv : Graphics.TemporaryTargets.Rent(_targetInfo, $"UpSample_{i}", false),
-                                                                                                            Graphics.TemporaryTargets.Rent(_targetInfo, $"DownSample_{i}", false));
-
-                targets.up.Clear(GorgonColor.BlackTransparent);
-                targets.down.Clear(GorgonColor.BlackTransparent);
+                (GorgonRenderTarget2DView up, GorgonRenderTarget2DView down) targets = (i == 0 ? _blurRtv : Graphics.TemporaryTargets.Rent(_targetInfo, $"UpSample_{i}"),
+                                                                                                            Graphics.TemporaryTargets.Rent(_targetInfo, $"DownSample_{i}"));
 
                 var texelSize = new Vector2(1.0f / src.Width, 1.0f / src.Height);
                 _textureSettingsBuffer.Buffer.SetData(in texelSize);
@@ -555,6 +552,7 @@ namespace Gorgon.Renderers
             }
 
             _sceneRtv.Clear(GorgonColor.BlackTransparent);
+            _blurRtv.Clear(GorgonColor.BlackTransparent);
 
             _targetInfo.Width = (_sceneSrv.Width >> 1).Max(1);
             _targetInfo.Height = (_sceneSrv.Height >> 1).Max(1);
