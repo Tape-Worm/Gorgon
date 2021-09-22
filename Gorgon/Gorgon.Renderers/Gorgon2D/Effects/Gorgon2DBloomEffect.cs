@@ -352,6 +352,9 @@ namespace Gorgon.Renderers
                 (GorgonRenderTarget2DView up, GorgonRenderTarget2DView down) targets = (i == 0 ? _blurRtv : Graphics.TemporaryTargets.Rent(_targetInfo, $"UpSample_{i}", false),
                                                                                                             Graphics.TemporaryTargets.Rent(_targetInfo, $"DownSample_{i}", false));
 
+                targets.up.Clear(GorgonColor.BlackTransparent);
+                targets.down.Clear(GorgonColor.BlackTransparent);
+
                 var texelSize = new Vector2(1.0f / src.Width, 1.0f / src.Height);
                 _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
