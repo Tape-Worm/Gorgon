@@ -329,11 +329,9 @@ namespace Gorgon.Renderers
 
             // Check target and state arrays for changes.
             if ((_sampleTargets is null) || (_sampleTargets.Length != sampleIterations))
-            {                
-                Array.Resize(ref _sampleTargets, sampleIterations);
-                Array.Resize(ref _sampleTargetStates, sampleIterations);
-                Array.Clear(_sampleTargets, 0, _sampleTargets.Length);
-                Array.Clear(_sampleTargetStates, 0, _sampleTargetStates.Length);
+            {
+                _sampleTargets = new (GorgonRenderTarget2DView up, GorgonRenderTarget2DView down)[sampleIterations];
+                _sampleTargetStates = new Gorgon2DBatchState[sampleIterations];
             }
         }
 
