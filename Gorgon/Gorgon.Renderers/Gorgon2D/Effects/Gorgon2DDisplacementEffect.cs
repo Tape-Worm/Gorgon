@@ -337,6 +337,7 @@ namespace Gorgon.Renderers
             if (_displaceTexture != backgroundTexture)
             {
                 _displaceTexture = backgroundTexture;
+                _displacementState = null;
                 _displaceTextureUpdated = true;
             }
             _output = output;
