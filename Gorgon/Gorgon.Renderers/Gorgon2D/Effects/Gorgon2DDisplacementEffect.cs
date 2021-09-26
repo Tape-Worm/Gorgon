@@ -100,6 +100,8 @@ namespace Gorgon.Renderers
         private GorgonTexture2DView _displaceTexture;
         // The output render target.
         private GorgonRenderTarget2DView _output;
+        // Flag to indicate that the displacement texture has changed.
+        private bool _displaceTextureUpdated = true;
         #endregion
 
         #region Properties.
@@ -273,7 +275,7 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            if ((statesChanged) || (_displacementState is null) || (_batchState is null))
+            if ((statesChanged) || (_displacementState is null) || (_batchState is null) || (_displaceTextureUpdated))
             {
                 if (_displacementState is null)
                 {
@@ -287,6 +289,8 @@ namespace Gorgon.Renderers
                 _batchState = builders.BatchBuilder
                                 .PixelShaderState(_displacementState)
                                 .Build(BatchStateAllocator);
+
+                _displaceTextureUpdated = false;
             }
 
             return _batchState;
@@ -330,7 +334,11 @@ namespace Gorgon.Renderers
         public bool BeginDisplacementBatch(GorgonTexture2DView backgroundTexture, GorgonRenderTarget2DView output, GorgonDepthStencilState depthStencilState = null, GorgonCameraCommon camera = null)
         {
             _currentRtv = Graphics.RenderTargets[0];
-            _displaceTexture = backgroundTexture;
+            if (_displaceTexture != backgroundTexture)
+            {
+                _displaceTexture = backgroundTexture;
+                _displaceTextureUpdated = true;
+            }
             _output = output;
 
             // No texture? Nothing to displace.
