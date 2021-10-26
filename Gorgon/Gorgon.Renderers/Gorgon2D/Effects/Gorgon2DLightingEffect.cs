@@ -302,7 +302,7 @@ namespace Gorgon.Renderers
 
             int lightCount = Lights.Count.Min(MaxLightCount);
 
-            GorgonGpuLightData[] lightData = GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Rent(lightCount.Max(1));
+            GorgonGpuLightData[] lightData = GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Rent(_lastLightCount.Max(1));
 
             try
             {
@@ -322,10 +322,11 @@ namespace Gorgon.Renderers
 
                 if (lightCount > 0)
                 {
-                    _lightBuffer.Buffer.SetData<GorgonGpuLightData>(lightData.AsSpan(0, lightCount));
+                    _lightBuffer.Buffer.SetData<GorgonGpuLightData>(lightData.AsSpan(0, _lastLightCount));
                 }
                 else
                 {
+                    lightData[0] = default;
                     _lightBuffer.Buffer.SetData(lightData[0]);
                 }
 
