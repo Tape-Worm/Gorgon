@@ -209,6 +209,11 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
 				color = DirectionalLight(vertex, light);
                 result = float4(result.rgb + color.rgb, color.a);
                 break;			
+            default:
+                color = SampleMainTexture(vertex.uv, vertex.color);
+                REJECT_ALPHA(color.a);
+                result = float4(result.rgb * _ambientColor.rgb, color.a);
+                return result;
         }
     }
 

@@ -263,7 +263,7 @@ namespace Gorgon.Renderers
             lightShader = Interlocked.Exchange(ref _pixelLitTransformShader, null);
             lightShader?.Dispose();
 
-            int newLightBufferSize = ((Lights.Count + 7) & ~7).Min(MaxLightCount);
+            int newLightBufferSize = ((Lights.Count + 7) & ~7).Min(MaxLightCount).Max(8);
             var arrayMacro = new GorgonShaderMacro("USE_ARRAY");
 
             Macros.Clear();
@@ -298,16 +298,11 @@ namespace Gorgon.Renderers
         /// <returns>A flag indicate whether to continue rendering or not.</returns>
         private PassContinuationState OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, GorgonCameraCommon camera)
         {
-            if (Lights.Count == 0)
-            {
-                return PassContinuationState.Stop;
-            }
-
             BeginRender(_currentRtv, blendState, depthStencilState, rasterState);
 
             int lightCount = Lights.Count.Min(MaxLightCount);
 
-            GorgonGpuLightData[] lightData = GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Rent(lightCount);
+            GorgonGpuLightData[] lightData = GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Rent(lightCount.Max(1));
 
             try
             {
@@ -317,6 +312,7 @@ namespace Gorgon.Renderers
 
                     if (light is null)
                     {
+                        lightData[i] = default;
                         continue;
                     }
 
@@ -324,7 +320,14 @@ namespace Gorgon.Renderers
                     lightData[i] = gpuLight;
                 }
 
-                _lightBuffer.Buffer.SetData<GorgonGpuLightData>(lightData.AsSpan(0, lightCount));
+                if (lightCount > 0)
+                {
+                    _lightBuffer.Buffer.SetData<GorgonGpuLightData>(lightData.AsSpan(0, lightCount));
+                }
+                else
+                {
+                    _lightBuffer.Buffer.SetData(lightData[0]);
+                }
 
                 return BeginPass(0, _currentRtv, camera);
             }
