@@ -263,7 +263,7 @@ namespace Gorgon.Renderers
             lightShader = Interlocked.Exchange(ref _pixelLitTransformShader, null);
             lightShader?.Dispose();
 
-            int newLightBufferSize = ((Lights.Count + 7) & ~7).Min(MaxLightCount).Max(8);
+            int newLightBufferSize = ((Lights.Count + 8) & ~7).Min(MaxLightCount).Max(8);
             var arrayMacro = new GorgonShaderMacro("USE_ARRAY");
 
             Macros.Clear();
@@ -411,7 +411,7 @@ namespace Gorgon.Renderers
             }
 
             // If we added a light and we've exceeded the buffer size, then we need to recompile.
-            if (_lastLightCount <= Lights.Count)
+            if (Lights.Count >= _lastLightCount)
             {
                 BuildPixelShaderPermutations();
             }
