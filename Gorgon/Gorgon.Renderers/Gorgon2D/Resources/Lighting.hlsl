@@ -89,20 +89,8 @@ float3 GetNormal(float2 uv)
 }
 
 // Simulates a point light with attenuationuation falloff and optional specular highlighting.
-float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
+float4 PointLight(float4 color, float3 normal, GorgonSpriteLitVertex vertex, float2 uv, Light light)
 {
-    float4 color = SampleMainTexture(vertex.uv, vertex.color);
-
-    REJECT_ALPHA(color.a);    
-
-    float2 uv = vertex.uv.xy / vertex.uv.w;
-        	
-#ifdef TRANSFORM
-    float3 normal = GetNormal(uv, vertex.tangent, vertex.bitangent);
-#else
-    float3 normal = GetNormal(uv);
-#endif
-	
     int specularEnabled = int(light.Attributes.w);
     float specularIntensity = light.Attributes.z;
     float3 result;
@@ -111,7 +99,7 @@ float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
 
     if ((distance >= light.Attenuation.w) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
     {
-        return _ambientColor * color;
+        return float4(0, 0, 0, 1);
     }
 
     float3 lightDirection = lightRange / distance;
@@ -126,24 +114,12 @@ float4 PointLight(GorgonSpriteLitVertex vertex, Light light)
 
     float atten = 1.0f / (light.Attenuation.x + (distance * light.Attenuation.y) + (distance * distance * light.Attenuation.z));
 
-    return saturate(float4((result * atten) + (color.rgb * _ambientColor.rgb), color.a));
+    return saturate(float4((result * atten), color.a));
 }
 
 // Simulates a directional light (e.g. the sun) with optional specular highlighting.
-float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
+float4 DirectionalLight(float4 color, float3 normal, GorgonSpriteLitVertex vertex, float2 uv,Light light)
 {
-    float4 color = SampleMainTexture(vertex.uv, vertex.color);
-	
-    REJECT_ALPHA(color.a);
-
-    float2 uv = vertex.uv.xy / vertex.uv.w;
-
-#ifdef TRANSFORM
-    float3 normal = GetNormal(uv, vertex.tangent, vertex.bitangent);
-#else
-    float3 normal = GetNormal(uv);
-#endif
-	
     int specularEnabled = int(light.Attributes.w);
     float specularIntensity = light.Attributes.z;
     float3 result;
@@ -160,7 +136,7 @@ float4 DirectionalLight(GorgonSpriteLitVertex vertex, Light light)
         result += color.rgb * GetSpecularValue(uv, -light.Position, normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
     }
     
-    return saturate(float4(result + (color.rgb * _ambientColor.rgb), color.a));
+    return saturate(float4(result, color.a));
 }
 
 // Updated vertex shader that will capture the world position of the vertex prior to sending to the pixel shader.
@@ -192,13 +168,22 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
     float4 result = float4(0, 0, 0, 1);
     float4 color = float4(0, 0, 0, 0);
 
+    float4 diffuseColor = SampleMainTexture(vertex.uv, vertex.color);
+    REJECT_ALPHA(diffuseColor.a);
+    
     if (int(_lights[0].Position.w) == 0)
-    {
-        color = SampleMainTexture(vertex.uv, vertex.color);
-        REJECT_ALPHA(color.a);
-        result = float4(color.rgb * _ambientColor.rgb, color.a);
+    {        
+        result = float4(diffuseColor.rgb, color.a);
         return result;
     }
+
+    float2 uv = vertex.uv.xy / vertex.uv.w;    
+        	
+#ifdef TRANSFORM
+    float3 normal = GetNormal(uv, vertex.tangent, vertex.bitangent);
+#else
+    float3 normal = GetNormal(uv);
+#endif
 
     for (int i = 0; i < MAX_LIGHTS; ++i)
     {
@@ -209,17 +194,17 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
         {			
             case 1:
                 // Point lights.
-                color = PointLight(vertex, light);
+                color = PointLight(diffuseColor, normal, vertex, uv, light);
                 result = float4(result.rgb + color.rgb, color.a);                
                 break;
             case 2:
                 // Directional lights.
-				color = DirectionalLight(vertex, light);
+				color = DirectionalLight(diffuseColor, normal, vertex, uv, light);
                 result = float4(result.rgb + color.rgb, color.a);
                 break;			
         }
     }
 
-    return saturate(result);
+    return saturate(float4(result.rgb + (diffuseColor.rgb * _ambientColor.rgb), result.a));
 }
 #endif
