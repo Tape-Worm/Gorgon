@@ -411,7 +411,7 @@ namespace Gorgon.Renderers
             }
 
             // If we added a light and we've exceeded the buffer size, then we need to recompile.
-            if (_lastLightCount < Lights.Count)
+            if (_lastLightCount <= Lights.Count)
             {
                 BuildPixelShaderPermutations();
             }
