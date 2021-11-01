@@ -26,11 +26,13 @@
 
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Input;
 using Gorgon.Math;
+using Gorgon.Renderers;
 using Gorgon.Timing;
 
 namespace Gorgon.Examples
@@ -305,6 +307,13 @@ namespace Gorgon.Examples
             if ((_layerController is null) || (_ai is not null))
             {
                 return;
+            }
+
+            if (keys[Keys.Q] == KeyState.Down)
+            {
+                var effect = (Gorgon2DBloomEffect)_layer.Effects["bloom"];
+                effect.LowQuality = !effect.LowQuality;
+                Thread.Sleep(2000);
             }
 
             if (keys[Keys.Back] == KeyState.Down)

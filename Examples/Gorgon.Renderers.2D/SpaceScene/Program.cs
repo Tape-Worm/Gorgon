@@ -136,14 +136,15 @@ namespace Gorgon.Examples
             _renderer.Begin();
             if (_showInstructions)
             {
-                _textSprite.Text = string.Format("{0}\n\nShip 1: {1:0.0}x{2:0.0}\nShip 2: {3:0.0}x{4:0.0}\nBig Ship: {5:0.0}x{6:0.0}",
+                _textSprite.Text = string.Format("{0}\n\nShip 1: {1:0.0}x{2:0.0}\nShip 2: {3:0.0}x{4:0.0}\nBig Ship: {5:0.0}x{6:0.0}\nBloom Quality: {7}",
                                                             Resources.Instructions,
                                                             _ship.Position.X * 100,
                                                             _ship.Position.Y * 100,
                                                             _shipDeux.Position.X * 100,
                                                             _shipDeux.Position.Y * 100,
                                                             _bigShip.Position.X * 100,
-                                                            _bigShip.Position.Y * 100);
+                                                            _bigShip.Position.Y * 100,
+                                                            ((Gorgon2DBloomEffect)_resources.Effects["bloom"]).LowQuality ? "low" : "high");
                 _renderer.DrawTextSprite(_textSprite);
             }
 
@@ -203,7 +204,7 @@ namespace Gorgon.Examples
 
             RenderGui(destRegion);
 
-            _screen.Present(1);
+            _screen.Present();
             return true;
         }
 
@@ -354,7 +355,7 @@ namespace Gorgon.Examples
                 {
                     Name = "Segoe UI 10pt",
                     OutlineSize = 2,
-                    Characters = (Resources.Instructions + "S:1234567890x").Distinct().ToArray(),
+                    Characters = (Resources.Instructions + "yQHS:1234567890x").Distinct().ToArray(),
                     FontStyle = FontStyle.Bold,
                     AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                     OutlineColor1 = GorgonColor.Black,

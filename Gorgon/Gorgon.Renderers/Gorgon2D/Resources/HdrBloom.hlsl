@@ -51,52 +51,22 @@ float4 FilterColor(float4 color, float threshold, float3 curve)
 // Function to upsample the texture data.
 float4 UpSample(Texture2DArray t, SamplerState s, float2 uv)
 {
-	float4 delta = _texelSize.xyxy * float4(1.0, 1.0, -1.0, 0.0) * _blurAmountIntensity.x; // X = Blur Amount (blur radius, allows for spreading the blur).
-
-    float4 output;
-    output =  t.Sample(s, float3(uv - delta.xy, 0));
-    output += t.Sample(s, float3(uv - delta.wy, 0)) * 2.0;
-    output += t.Sample(s, float3(uv - delta.zy, 0));
-
-    output += t.Sample(s, float3(uv + delta.zw, 0)) * 2.0;
-    output += t.Sample(s, float3(uv, 0)) * 4.0;
-    output += t.Sample(s, float3(uv + delta.xw, 0)) * 2.0;
-
-    output += t.Sample(s, float3(uv + delta.zy, 0));
-    output += t.Sample(s, float3(uv + delta.wy, 0)) * 2.0;
-    output += t.Sample(s, float3(uv + delta.xy, 0));
-
-    return output * (1.0f / 16.0f);
+#ifdef LOW_QUALITY_BLOOM
+	return BoxSample4Tap(t, s, _texelSize, uv, _blurAmountIntensity.x * 0.5f);
+#else
+	return TentSample9Tap(t, s, _texelSize, uv, _blurAmountIntensity.x * 0.5f);
+#endif
 }
 
 
 // Function to down sample the texture data.
 float4 DownSample(Texture2DArray t, SamplerState s, float2 uv)
 {
-	float4 A = t.Sample(s, float3(uv + _texelSize * float2(-1.0, -1.0), 0));
-    float4 B = t.Sample(s, float3(uv + _texelSize * float2( 0.0, -1.0), 0));
-    float4 C = t.Sample(s, float3(uv + _texelSize * float2( 1.0, -1.0), 0));
-    float4 D = t.Sample(s, float3(uv + _texelSize * float2(-0.5, -0.5), 0));
-    float4 E = t.Sample(s, float3(uv + _texelSize * float2( 0.5, -0.5), 0));
-    float4 F = t.Sample(s, float3(uv + _texelSize * float2(-1.0,  0.0), 0));
-    float4 G = t.Sample(s, float3(uv, 0));
-    float4 H = t.Sample(s, float3(uv + _texelSize * float2( 1.0,  0.0), 0));
-    float4 I = t.Sample(s, float3(uv + _texelSize * float2(-0.5,  0.5), 0));
-    float4 J = t.Sample(s, float3(uv + _texelSize * float2( 0.5,  0.5), 0));
-    float4 K = t.Sample(s, float3(uv + _texelSize * float2(-1.0,  1.0), 0));
-    float4 L = t.Sample(s, float3(uv + _texelSize * float2( 0.0,  1.0), 0));
-    float4 M = t.Sample(s, float3(uv + _texelSize * float2( 1.0,  1.0), 0));
-
-    float2 scale = float2(0.125, 0.03125);
-
-	// Average the output so we minimize the "firefly" effect (although in the right context, it looks pretty cool).
-    float4 output = (D + E + I + J) * scale.x;
-    output += (A + B + G + F) * scale.y;
-    output += (B + C + H + G) * scale.y;
-    output += (F + G + L + K) * scale.y;
-    output += (G + H + M + L) * scale.y;
-
-    return output;
+#ifdef LOW_QUALITY_BLOOM
+	return BoxSample4Tap(t, s, _texelSize, uv, 1.0f);
+#else
+	return TentSample13Tap(t, s, _texelSize, uv);
+#endif
 }
 
 static float _clamp = pow(65472.0f, 2.2f);

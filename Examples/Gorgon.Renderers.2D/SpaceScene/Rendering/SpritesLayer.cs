@@ -50,6 +50,14 @@ namespace Gorgon.Examples
 
         #region Properties.
         /// <summary>
+        /// Property to return the effects for the system.
+        /// </summary>
+        public IReadOnlyDictionary<string, Gorgon2DEffect> Effects
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the sprites for this layer.
         /// </summary>
         public List<SpriteEntity> Sprites
@@ -267,10 +275,9 @@ namespace Gorgon.Examples
         #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="SpritesLayer"/> class.</summary>
         /// <param name="renderer">The 2D renderer for the application.</param>
-        public SpritesLayer(Gorgon2D renderer)
+        public SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgon2DEffect> effects)
             : base(renderer)
-        {
-        }
+            => Effects = effects;
         #endregion
     }
 }

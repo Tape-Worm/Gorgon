@@ -68,7 +68,7 @@ namespace Gorgon.Examples
         public static SpritesLayer GetSunLayer(Gorgon2D renderer, ResourceManagement resources)
         {
             GorgonSprite sunSprite = resources.Sprites["/sprites/Star"];
-            var sunLayer = new SpritesLayer(renderer)
+            var sunLayer = new SpritesLayer(renderer, resources.Effects)
             {
                 ParallaxLevel = 2980.0f,			// The sun is pretty far away the last I checked.
                 Sprites =
@@ -160,7 +160,7 @@ namespace Gorgon.Examples
         /// <returns>The sprite layer containing our ship.</returns>
         public static SpritesLayer GetShipLayer(Gorgon2D renderer, ResourceManagement resources)
         {
-            var ship = new SpritesLayer(renderer)
+            var ship = new SpritesLayer(renderer, resources.Effects)
             {
                 DeferredLighter = resources.Effects["deferredLighting"] as Gorgon2DLightingEffect,
                 GBuffer = resources.Effects["gbuffer"] as Gorgon2DGBuffer,

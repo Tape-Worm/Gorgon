@@ -108,6 +108,70 @@ float4 SampleMainTexture(float4 uv, float4 vertexColor)
     return _gorgonTexture.Sample(_gorgonSampler, float3(uv.xy / uv.w, uv.z)) * vertexColor;
 }
 
+// Function to perform a simple 4-tap box sample.
+float4 BoxSample4Tap(Texture2DArray t, SamplerState s, float2 texelSize, float2 uv, float spread)
+{
+    float4 delta = texelSize.xyxy * float4(-1.0, -1.0, 1.0, 1.0) * spread;
+
+    float4 output;
+    output =  t.Sample(s, float3(uv + delta.xy, 0));    
+    output += t.Sample(s, float3(uv + delta.zy, 0));
+    output += t.Sample(s, float3(uv + delta.xw, 0));
+    output += t.Sample(s, float3(uv + delta.zw, 0));
+
+    return output / 4.0f;
+}
+
+// Function to perform a 9-tap tent sample.
+float4 TentSample9Tap(Texture2DArray t, SamplerState s, float2 texelSize, float2 uv, float spread)
+{
+	float4 delta = texelSize.xyxy * float4(1.0, 1.0, -1.0, 0.0) * spread;
+
+    float4 output;
+    output =  t.Sample(s, float3(uv - delta.xy, 0));
+    output += t.Sample(s, float3(uv - delta.wy, 0)) * 2.0;
+    output += t.Sample(s, float3(uv - delta.zy, 0));
+
+    output += t.Sample(s, float3(uv + delta.zw, 0)) * 2.0;
+    output += t.Sample(s, float3(uv, 0)) * 4.0;
+    output += t.Sample(s, float3(uv + delta.xw, 0)) * 2.0;
+
+    output += t.Sample(s, float3(uv + delta.zy, 0));
+    output += t.Sample(s, float3(uv + delta.wy, 0)) * 2.0;
+    output += t.Sample(s, float3(uv + delta.xy, 0));
+
+    return output / 16.0f;
+}
+
+// Function to perform a 13-tap tent sample.
+float4 TentSample13Tap(Texture2DArray t, SamplerState s, float2 texelSize, float2 uv)
+{
+	float4 A = t.Sample(s, float3(uv + texelSize * float2(-1.0, -1.0), 0));
+    float4 B = t.Sample(s, float3(uv + texelSize * float2( 0.0, -1.0), 0));
+    float4 C = t.Sample(s, float3(uv + texelSize * float2( 1.0, -1.0), 0));
+    float4 D = t.Sample(s, float3(uv + texelSize * float2(-0.5, -0.5), 0));
+    float4 E = t.Sample(s, float3(uv + texelSize * float2( 0.5, -0.5), 0));
+    float4 F = t.Sample(s, float3(uv + texelSize * float2(-1.0,  0.0), 0));
+    float4 G = t.Sample(s, float3(uv, 0));
+    float4 H = t.Sample(s, float3(uv + texelSize * float2( 1.0,  0.0), 0));
+    float4 I = t.Sample(s, float3(uv + texelSize * float2(-0.5,  0.5), 0));
+    float4 J = t.Sample(s, float3(uv + texelSize * float2( 0.5,  0.5), 0));
+    float4 K = t.Sample(s, float3(uv + texelSize * float2(-1.0,  1.0), 0));
+    float4 L = t.Sample(s, float3(uv + texelSize * float2( 0.0,  1.0), 0));
+    float4 M = t.Sample(s, float3(uv + texelSize * float2( 1.0,  1.0), 0));
+
+    float2 scale = float2(0.125, 0.03125);
+
+	// Average the output so we minimize the "firefly" effect (although in the right context, it looks pretty cool).
+    float4 output = (D + E + I + J) * scale.x;
+    output += (A + B + G + F) * scale.y;
+    output += (B + C + H + G) * scale.y;
+    output += (F + G + L + K) * scale.y;
+    output += (G + H + M + L) * scale.y;
+
+    return output;
+}
+
 // Creates a 4x4 matrix from the 4, 4 component floating point values (columns).
 float4x4 CreateFrom4x4FromFloat4(float4 c0, float4 c1, float4 c2, float4 c3)
 {

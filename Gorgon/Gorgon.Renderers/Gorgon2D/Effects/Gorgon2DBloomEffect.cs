@@ -126,6 +126,8 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Variables.
+        // Macro used to define low quality bloom code.
+        private readonly GorgonShaderMacro _lowQualityMacro = new("LOW_QUALITY_BLOOM");
         // The shader that applies bright pass filtering.
         private GorgonPixelShader _filterShader;
         private Gorgon2DBatchState _filterBatchState;
@@ -170,9 +172,28 @@ namespace Gorgon.Renderers
         private readonly BloomTextureInfo _targetInfo;
         private readonly BloomTextureInfo _sceneTargetInfo;
         private readonly BloomTextureInfo _blurTargetInfo;
+        // Flag to use lower quality functions to improve performance.
+        private bool _lowQuality;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether to use lower quality rendering to improve performance.
+        /// </summary>
+        public bool LowQuality
+        {
+            get => _lowQuality;
+            set
+            {
+                if (_lowQuality == value)
+                {
+                    return;
+                }
+
+                _lowQuality = value;
+            }
+        }
+
         /// <summary>
         /// Property to set or return the blurring level for the bloom effect.
         /// </summary>
@@ -300,7 +321,7 @@ namespace Gorgon.Renderers
             float logSize = ((float)maxSize).Log(2) + BlurAmount - 10;
             float floorLog = logSize.FastFloor();
 
-            int sampleIterations = (int)floorLog.Min(MaxIterations).Max(1);
+            int sampleIterations = (int)floorLog.Min(MaxIterations).Max(1);            
             float knee = linearThreshold * BrightPassCurveKnee + 1e-5f;
 
             settings.FilterValues = new Vector4(linearThreshold, linearThreshold - knee, knee * 2, 0.25f / knee);
@@ -440,6 +461,38 @@ namespace Gorgon.Renderers
             _sceneRtv?.Dispose();
         }
 
+        /// <summary>
+        /// Function to compile the shaders needed for the effect.
+        /// </summary>
+        private void CompileShaders()
+        {
+            _finalPassShader?.Dispose();
+            _downSampleShader?.Dispose();
+            _upSampleShader?.Dispose();
+            _filterShader?.Dispose();
+
+            if (_lowQuality)
+            {
+                Macros.Add(_lowQualityMacro);
+            }
+            else
+            {
+                Macros.Remove(_lowQualityMacro);
+            }
+
+            _filterShader = CompileShader<GorgonPixelShader>(Resources.HdrBloom, "FilterBrightPass");
+            _downSampleShader = CompileShader<GorgonPixelShader>(Resources.HdrBloom, "DownSampleBlur");
+            _upSampleShader = CompileShader<GorgonPixelShader>(Resources.HdrBloom, "UpSampleBlur");
+            _finalPassShader = CompileShader<GorgonPixelShader>(Resources.HdrBloom, "FinalPass");
+
+            _filterBatchState = null;
+            _downSampleBatchState = null;
+            _pass0State = null;
+            _finalPassBatchState = null;
+            _sceneTargetInfo.Height = _sceneTargetInfo.Width = 0;
+            _sampleTargets = null;
+        }
+
         /// <summary>Function called to build a new (or return an existing) 2D batch state.</summary>
         /// <param name="passIndex">The index of the current rendering pass.</param>
         /// <param name="builders">The builder types that will manage the state of the effect.</param>
@@ -525,30 +578,30 @@ namespace Gorgon.Renderers
         /// </remarks>
         protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
-            // Function to resize static render targets should we require it.
-            void UpdateStaticRenderTargets(int width, int height)
+            // Check to see if we need to rebuild our shaders.
+            if (((Macros.Contains(_lowQualityMacro)) && (!_lowQuality))
+                || (!Macros.Contains(_lowQualityMacro) && (_lowQuality)))
+            {
+                CompileShaders();
+            }
+
+            // Allocate a render target that matches the size of our output.
+            // We will render our data into this.
+            if ((_sceneTargetInfo.Width != output.Width) || (_sceneTargetInfo.Height != output.Height))
             {
                 _sceneSrv?.Dispose();
                 _blurSrv?.Dispose();
                 _sceneRtv?.Dispose();
                 _blurRtv?.Dispose();
 
-                _blurTargetInfo.Width = _sceneTargetInfo.Width = width;
-                _blurTargetInfo.Height = _sceneTargetInfo.Height = height;
+                _blurTargetInfo.Width = _sceneTargetInfo.Width = output.Width;
+                _blurTargetInfo.Height = _sceneTargetInfo.Height = output.Height;
 
                 _sceneRtv = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, _sceneTargetInfo);
                 _blurRtv = GorgonRenderTarget2DView.CreateRenderTarget(Graphics, _blurTargetInfo);
 
                 _sceneSrv = _sceneRtv.GetShaderResourceView();
                 _blurSrv = _blurRtv.GetShaderResourceView();
-            }
-
-            // Allocate a render target that matches the size of our output.
-            // We will render our data into this.
-
-            if ((_sceneTargetInfo.Width != output.Width) || (_sceneTargetInfo.Height != output.Height))
-            {
-                UpdateStaticRenderTargets(output.Width, output.Height);
             }
 
             _sceneRtv.Clear(GorgonColor.BlackTransparent);
@@ -642,10 +695,7 @@ namespace Gorgon.Renderers
                 Usage = ResourceUsage.Dynamic
             });
 
-            _filterShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.HdrBloom, "FilterBrightPass", GorgonGraphics.IsDebugEnabled);
-            _downSampleShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.HdrBloom, "DownSampleBlur", GorgonGraphics.IsDebugEnabled);
-            _upSampleShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.HdrBloom, "UpSampleBlur", GorgonGraphics.IsDebugEnabled);
-            _finalPassShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.HdrBloom, "FinalPass", GorgonGraphics.IsDebugEnabled);
+            CompileShaders();
         }
         #endregion
 
