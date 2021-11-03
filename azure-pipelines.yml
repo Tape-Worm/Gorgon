@@ -90,10 +90,10 @@ jobs:
       - task: CopyFiles@2
         displayName: 'Copying nuget files to artifacts'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/nuget/release'
+          SourceFolder: '$(Build.SourcesDirectory)/nuget'
           Contents: '**/*'
           CleanTargetFolder: true
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/NugetSupport/Release'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/NugetSupport'
 
       - task: PublishBuildArtifacts@1
         inputs:
