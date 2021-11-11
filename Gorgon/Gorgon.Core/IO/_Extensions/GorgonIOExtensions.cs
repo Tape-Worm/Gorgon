@@ -739,7 +739,7 @@ namespace Gorgon.IO
 
             if (chunkName.Length > 8)
             {
-                chunkName = chunkName.Substring(0, 8);
+                chunkName = chunkName[..8];
             }
             else if (chunkName.Length < 8)
             {

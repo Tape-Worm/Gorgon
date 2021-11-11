@@ -99,7 +99,7 @@ namespace Gorgon.Editor.Services
 
             if (spaceIndex > -1)
             {
-                keywordValue = searchText.Substring(0, spaceIndex);
+                keywordValue = searchText[..spaceIndex];
                 searchText = searchText[spaceIndex..].TrimStart();
             }
             else

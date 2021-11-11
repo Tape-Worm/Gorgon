@@ -44,7 +44,7 @@ This assembly contains a plug in that will read a zip file as a file system.</De
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>1.0.*</Version>      
+      <Version>1.1.1</Version>      
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

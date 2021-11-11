@@ -22,14 +22,14 @@ namespace Fetze.WinFormsColor
 		{
 			hue *= 360.0f;
 
-			int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
-			double f = hue / 60 - Math.Floor(hue / 60);
+			var hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
+			var f = hue / 60 - Math.Floor(hue / 60);
 
 			value *= 255;
-			int v = Convert.ToInt32(value);
-			int p = Convert.ToInt32(value * (1 - saturation));
-			int q = Convert.ToInt32(value * (1 - f * saturation));
-			int t = Convert.ToInt32(value * (1 - (1 - f) * saturation));
+			var v = Convert.ToInt32(value);
+			var p = Convert.ToInt32(value * (1 - saturation));
+			var q = Convert.ToInt32(value * (1 - f * saturation));
+			var t = Convert.ToInt32(value * (1 - (1 - f) * saturation));
 
             switch (hi)
             {

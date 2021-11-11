@@ -123,7 +123,7 @@ namespace Gorgon.Editor.ImageEditor.Services
             }
             else
             {
-                outputFilePath = outputFilePath.Substring(0, lastExt) + "." + ddsCodec.CodecCommonExtensions[0];
+                outputFilePath = outputFilePath[..lastExt] + "." + ddsCodec.CodecCommonExtensions[0];
             }
 
             using (Stream fileStream = File.Open(physicalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))

@@ -393,11 +393,11 @@ namespace Gorgon.Core
                         // else only print the first characters.
                         if (difference > ellipses.Length)
                         {
-                            lines[i] = lines[i].Substring(0, difference - ellipses.Length) + ellipses;
+                            lines[i] = lines[i][..(difference - ellipses.Length)] + ellipses;
                         }
                         else
                         {
-                            lines[i] = lines[i].Substring(0, maxWidth);
+                            lines[i] = lines[i][..maxWidth];
                         }
                     }
                     else
@@ -473,7 +473,7 @@ namespace Gorgon.Core
         /// <param name="value">The string to examine.</param>
         /// <returns><b>true</b> if the string is composed of whitespace, or is empty. <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
-	    public static bool IsWhiteSpaceOrEmpty(this string value)
+        public static bool IsWhiteSpaceOrEmpty(this string value)
         {
             if (value is null)
             {

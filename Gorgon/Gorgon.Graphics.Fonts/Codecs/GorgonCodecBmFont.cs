@@ -153,7 +153,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                 return result;
             }
 
-            result[lineItems.Substring(0, keySep).Trim()] = string.Empty;
+            result[lineItems[..keySep].Trim()] = string.Empty;
             lineItems = lineItems[(keySep + 1)..].Trim();
 
             // Parse items.
@@ -166,7 +166,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     break;
                 }
 
-                string key = lineItems.Substring(0, valueSep).Trim();
+                string key = lineItems[..valueSep].Trim();
                 string value = string.Empty;
                 
                 lineItems = lineItems[(valueSep + 1)..].Trim();
@@ -199,7 +199,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
                     if (valueEndSep != -1)
                     {
-                        value = lineItems.Substring(0, valueEndSep).Trim();
+                        value = lineItems[..valueEndSep].Trim();
                         lineItems = lineItems[(valueEndSep + 1)..].Trim();
                     }
                     else 

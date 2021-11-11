@@ -627,7 +627,7 @@ namespace Fetze.WinFormsColor
 			}
 
 
-            if (!int.TryParse(textBoxHex.Text, NumberStyles.HexNumber, CultureInfo.CurrentUICulture, out int argb))
+            if (!int.TryParse(textBoxHex.Text, NumberStyles.HexNumber, CultureInfo.CurrentUICulture, out var argb))
             {
                 return;
             }

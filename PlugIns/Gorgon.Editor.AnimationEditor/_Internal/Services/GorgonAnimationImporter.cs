@@ -124,7 +124,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
                 int extensionDot = textureName.LastIndexOf('.');
                 if ((textureFile is null) && (extensionDot > 1))
                 {
-                    textureFile = LocateTextureFile(textureName.Substring(0, extensionDot));
+                    textureFile = LocateTextureFile(textureName[..extensionDot]);
                 }
 
                 // We have not loaded the texture yet.  Do so now.
@@ -186,7 +186,7 @@ namespace Gorgon.Editor.AnimationEditor.Services
                 }
                 else
                 {
-                    outputFilePath = outputFilePath.Substring(0, lastExt) + "." + animationCodec.FileExtensions[0].Extension;
+                    outputFilePath = outputFilePath[..lastExt] + "." + animationCodec.FileExtensions[0].Extension;
                 }
 
                 fileStream = File.Open(physicalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);

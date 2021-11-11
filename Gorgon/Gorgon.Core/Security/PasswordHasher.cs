@@ -112,7 +112,7 @@ namespace Gorgon.Security
 
 			if (password.Length > MaxiumumPasswordLength)
 			{
-				password = password.Substring(0, MaxiumumPasswordLength);
+				password = password[..MaxiumumPasswordLength];
 			}
 
             using var hashProvider = new Rfc2898DeriveBytes(password, salt, PasswordHashIterations);

@@ -118,7 +118,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
             int extensionDot = textureName.LastIndexOf('.');
             if ((textureFile is null) && (extensionDot > 1))
             {
-                textureName = textureName.Substring(0, extensionDot);
+                textureName = textureName[..extensionDot];
                 textureFile = LocateTextureFile(textureName);
             }
 
@@ -180,7 +180,7 @@ namespace Gorgon.Editor.SpriteEditor.Services
                 }
                 else
                 {
-                    outputFilePath = outputFilePath.Substring(0, lastExt) + "." + spriteCodec.FileExtensions[0].Extension;
+                    outputFilePath = outputFilePath[..lastExt] + "." + spriteCodec.FileExtensions[0].Extension;
                 }
 
                 fileStream = File.Open(physicalFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);

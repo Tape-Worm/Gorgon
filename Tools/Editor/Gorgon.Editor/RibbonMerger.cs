@@ -388,7 +388,7 @@ namespace Gorgon.Editor
         /// </summary>
         public void FixGroupWidths()
         {
-            using Drawing.Graphics g = Drawing.Graphics.FromHwnd(TargetRibbon.Parent.Handle);
+            using var g = Drawing.Graphics.FromHwnd(TargetRibbon.Parent.Handle);
             double dpi = g.DpiY / 96.0;
 
             foreach (KryptonRibbonTab tab in TargetRibbon.RibbonTabs)

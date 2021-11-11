@@ -235,7 +235,7 @@ namespace Gorgon.Diagnostics.LogProviders
                 if (end != -1)
                 {
                     ++end;
-                    string dateTime = line.Substring(0, end);
+                    string dateTime = line[..end];
 
                     line = (line.Length - end) > 0 ? line[end..] : string.Empty;
 

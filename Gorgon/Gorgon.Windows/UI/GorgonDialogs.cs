@@ -95,7 +95,7 @@ namespace Gorgon.UI
 
                 if ((inIndex > -1) && (pathIndex > -1))
                 {
-                    lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i][(pathIndex + 1)..];
+                    lines[i] = lines[i][..(inIndex + 5)] + lines[i][(pathIndex + 1)..];
                 }
 
                 result.Append(lines[i]);

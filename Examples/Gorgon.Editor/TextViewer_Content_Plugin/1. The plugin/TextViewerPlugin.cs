@@ -335,7 +335,7 @@ namespace Gorgon.Examples
                 // Trim the text down to 8,192 (16 KB) characters.  We don't need to render a book here.
                 if (text.Length > 8192)
                 {
-                    text = text.Substring(0, 8192);
+                    text = text[..8192];
                 }
 
                 // This is a view model used for editing the color of the text.

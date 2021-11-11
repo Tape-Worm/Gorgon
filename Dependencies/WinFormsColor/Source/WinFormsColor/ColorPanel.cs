@@ -54,7 +54,7 @@ namespace Fetze.WinFormsColor
             get => pickerPos;
             set
             {
-                PointF last = pickerPos;
+                var last = pickerPos;
                 pickerPos = new PointF(
                     Math.Min(1.0f, Math.Max(0.0f, value.X)),
                     Math.Min(1.0f, Math.Max(0.0f, value.Y)));
@@ -290,7 +290,7 @@ namespace Fetze.WinFormsColor
 
         protected void UpdateColorValue()
         {
-			Color oldVal = Value;
+			var oldVal = Value;
             Value = srcImage.GetPixel(
                 (int)Math.Round((srcImage.Width - 1) * pickerPos.X), 
                 (int)Math.Round((srcImage.Height - 1) * (1.0f - pickerPos.Y)));
@@ -317,7 +317,7 @@ namespace Fetze.WinFormsColor
                 colorBoxOuter.Y + 1,
                 colorBoxOuter.Width - 2,
                 colorBoxOuter.Height - 2);
-            Rectangle colorArea = ColorAreaRectangle;
+            var colorArea = ColorAreaRectangle;
             var pickerVisualPos = new Point(
 				colorArea.X + (int)Math.Round(pickerPos.X * colorArea.Width),
 				colorArea.Y + (int)Math.Round((1.0f - pickerPos.Y) * colorArea.Height));
@@ -329,7 +329,7 @@ namespace Fetze.WinFormsColor
 
             e.Graphics.DrawImage(srcImage, colorArea, 0, 0, srcImage.Width - 1, srcImage.Height - 1, GraphicsUnit.Pixel);
 
-			Pen innerPickerPen = Value.GetLuminance() > 0.5f ? Pens.Black : Pens.White;
+			var innerPickerPen = Value.GetLuminance() > 0.5f ? Pens.Black : Pens.White;
 			if (Enabled)
 			{
 				e.Graphics.DrawEllipse(innerPickerPen,

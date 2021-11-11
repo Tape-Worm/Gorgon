@@ -124,7 +124,7 @@ namespace Gorgon.Editor.FontEditor
                     continue;
                 }
 
-                var range = new GorgonRange(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), NumberStyles.HexNumber), 
+                var range = new GorgonRange(int.Parse(items[0][..items[0].IndexOf('.')], NumberStyles.HexNumber), 
                                             int.Parse(items[0][(items[0].LastIndexOf('.') + 1)..], NumberStyles.HexNumber));
 
                 // Combine the first 2 latin categories into the one category.

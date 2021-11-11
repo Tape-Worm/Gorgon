@@ -159,7 +159,7 @@ namespace Gorgon.Editor.ImageEditor
 
                 if (errorData.StartsWith("Invalid value", StringComparison.OrdinalIgnoreCase))
                 {
-                    errorData = errorData.Substring(0, errorData.IndexOf("\n", StringComparison.OrdinalIgnoreCase));
+                    errorData = errorData[..errorData.IndexOf("\n", StringComparison.OrdinalIgnoreCase)];
                     throw new GorgonException(GorgonResult.CannotWrite, Resources.GORIMG_ERR_CANNOT_COMPRESS, new IOException(errorData));
                 }
 

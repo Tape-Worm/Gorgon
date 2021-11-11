@@ -420,7 +420,7 @@ namespace Gorgon.IO
                 {
                     if (header.Length > 8)
                     {
-                        header = header.Substring(0, 8);
+                        header = header[..8];
                     }
 
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_VERSION_MISMATCH, header));
