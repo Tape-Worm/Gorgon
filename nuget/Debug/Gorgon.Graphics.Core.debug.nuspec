@@ -28,7 +28,7 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Graphics.Core.dll" target="lib\net5.0\Gorgon.Graphics.Core.dll" />
-    <file src="..\lib\Gorgon.Graphics.Core.xml" target="lib\net5.0\Gorgon.Graphics.Core.xml" />
+    <file src="..\lib\Gorgon.Graphics.Core.dll" target="lib\net6.0\Gorgon.Graphics.Core.dll" />
+    <file src="..\lib\Gorgon.Graphics.Core.xml" target="lib\net6.0\Gorgon.Graphics.Core.xml" />
   </files>
 </package>

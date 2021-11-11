@@ -22,7 +22,7 @@
   </metadata>
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
-    <file src="..\lib\Gorgon.Windows.dll" target="lib\net5.0\Gorgon.Windows.dll" />
-    <file src="..\lib\Gorgon.Windows.xml" target="lib\net5.0\Gorgon.Windows.xml" />
+    <file src="..\lib\Gorgon.Windows.dll" target="lib\net6.0\Gorgon.Windows.dll" />
+    <file src="..\lib\Gorgon.Windows.xml" target="lib\net6.0\Gorgon.Windows.xml" />
   </files>
 </package>
