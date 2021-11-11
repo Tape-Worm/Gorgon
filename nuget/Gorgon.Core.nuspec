@@ -15,7 +15,7 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET</tags>
     <dependencies>
-      <group targetFramework="net5.0">
+      <group targetFramework="net6.0">
         <dependency id="System.ComponentModel.Composition.Registration" version="5.0.0"/>
         <dependency id="System.Composition" version="5.0.1"/>        
         <dependency id="System.Memory" version="4.5.4"/>

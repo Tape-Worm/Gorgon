@@ -15,7 +15,7 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows</tags>
     <dependencies>
-      <group targetFramework="net5.0" >
+      <group targetFramework="net6.0" >
         <dependency id="SharpDX" version="4.2.0"/>
         <dependency id="SharpDX.D3DCompiler" version="4.2.0"/>
         <dependency id="SharpDX.Direct3D11" version="4.2.0"/>

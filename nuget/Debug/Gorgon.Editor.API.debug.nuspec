@@ -15,7 +15,7 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Input GorgonEditor Animation</tags>
     <dependencies>
-      <group targetFramework="net5.0" >
+      <group targetFramework="net6.0" >
         <dependency id="Krypton.Ribbon.Lite.Signed" version="5.550.2103"/>        
         <dependency id="Gorgon.Renderers.Gorgon2D.Debug" version="$version$-beta"/>
         <dependency id="Gorgon.Input.Debug" version="$version$-beta"/>        

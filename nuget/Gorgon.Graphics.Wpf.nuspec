@@ -15,7 +15,7 @@
     <copyright>Copyright 2021 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows WPF</tags>
     <dependencies>
-      <group targetFramework="net5.0" >
+      <group targetFramework="net6.0" >
         <dependency id="Gorgon.Graphics.Core" version="$version$"/>
       </group>
     </dependencies>

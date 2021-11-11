@@ -15,7 +15,7 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Direct3D SharpDX Graphics 2D Windows Animation Fonts</tags>
     <dependencies>
-      <group targetFramework="net5.0" >
+      <group targetFramework="net6.0" >
         <dependency id="Gorgon.Graphics.Fonts.Debug" version="$version$-beta"/>
         <dependency id="Gorgon.Animation.Debug" version="$version$-beta"/>
         <dependency id="Gorgon.FileSystem.Debug" version="$version$-beta"/>

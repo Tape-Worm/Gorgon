@@ -15,7 +15,7 @@
     <copyright>Copyright 2020 Tape_Worm</copyright>
     <tags>Gorgon C# .NET Windows Win32</tags>
     <dependencies>
-      <group targetFramework="net5.0" >
+      <group targetFramework="net6.0" >
         <dependency id="Gorgon.Core" version="$version$"/>
       </group>
     </dependencies>
