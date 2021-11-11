@@ -58,21 +58,13 @@ namespace Gorgon.Security
 		#endregion
 
 		#region Methods.
+#if NET6_0_OR_GREATER
 		/// <summary>
 		/// Function to generate a salt value.
 		/// </summary>
 		/// <returns>A byte array containing the salt data.</returns>
-		public static byte[] GenerateSalt()
-		{
-			byte[] result = new byte[SaltLength];
-
-			using (var cryptoRngProvider = new RNGCryptoServiceProvider())
-			{
-				cryptoRngProvider.GetBytes(result);
-			}
-
-			return result;
-		}
+		public static byte[] GenerateSalt() => RandomNumberGenerator.GetBytes(SaltLength);
+#endif
 
 		/// <summary>
 		/// Function to hash and salt a password and return a base-64 encoded string containing encrypted hash and salt values.

@@ -72,7 +72,7 @@ namespace Gorgon.Security
                 return Array.Empty<byte>();
             }
 
-            using var aes = new AesManaged();
+            using var aes = Aes.Create();
             using ICryptoTransform transform = aes.CreateDecryptor(_ivKey.Key, _ivKey.IV);
             using MemoryStream stream = _streamManager.GetStream();
             using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
@@ -104,7 +104,7 @@ namespace Gorgon.Security
                 return Array.Empty<byte>();
             }
 
-            using var aes = new AesManaged();
+            using var aes = Aes.Create();
             using ICryptoTransform transform = aes.CreateEncryptor(_ivKey.Key, _ivKey.IV);
             using MemoryStream stream = _streamManager.GetStream();
             using var writer = new CryptoStream(stream, transform, CryptoStreamMode.Write);
@@ -208,7 +208,7 @@ namespace Gorgon.Security
                 rndGen.GetBytes(salt);
             }
 
-            using var aes = new AesManaged();
+            using var aes = Aes.Create();
             using var hashGen = new Rfc2898DeriveBytes(password, salt, 100);
             return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
         }
