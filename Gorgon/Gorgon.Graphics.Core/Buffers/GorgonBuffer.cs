@@ -239,7 +239,7 @@ namespace Gorgon.Graphics.Core
 
             if ((bufferInfo.SizeInBytes != sizeInBytes) || (bufferInfo.StructureSize != structureSize))
             {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 bufferInfo = bufferInfo with
                 {
                     StructureSize = structureSize,
@@ -318,7 +318,7 @@ namespace Gorgon.Graphics.Core
             // Implicitly allow reading for staging resources.
             if (_info.Usage == ResourceUsage.Staging)
             {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     AllowCpuRead = true

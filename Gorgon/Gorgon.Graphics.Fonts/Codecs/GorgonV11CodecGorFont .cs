@@ -127,7 +127,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
             }
 
             reader = fontFile.OpenChunk(TextureInfoChunk);
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             info = info with
             {
                 PackingSpacing = reader.ReadInt32(),
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     fontBrush = new GorgonGlyphSolidBrush();
                 }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 fontInfo = fontInfo with
                 {
                     Brush = fontBrush
@@ -344,7 +344,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     fontBrush = new GorgonGlyphSolidBrush();
                 }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 fontInfo = fontInfo with
                 {
                     Brush = fontBrush

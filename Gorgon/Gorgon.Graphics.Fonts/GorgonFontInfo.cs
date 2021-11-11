@@ -32,7 +32,7 @@ using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Provides information used to create a new <see cref="GorgonFont"/>.
     /// </summary>

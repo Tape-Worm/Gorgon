@@ -28,7 +28,7 @@ using System;
 
 namespace Gorgon.Graphics.Core
 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Provides the necessary information required to set up a index buffer.
     /// </summary>

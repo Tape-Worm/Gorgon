@@ -38,7 +38,7 @@ using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Values to define the number and quality of multisampling.
     /// </summary>

@@ -440,7 +440,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
             string characters = ParseCharacters(reader);
             ParseKerning(reader);
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             result = result with
             {
                 Characters = characters,

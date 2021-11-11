@@ -191,7 +191,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="info">Information used to create this image.</param>
         private void SanitizeInfo(GorgonImageInfo info)
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             int maxMipCount = CalculateMaxMipCount(info);
 
             GorgonImageInfo newInfo = info with

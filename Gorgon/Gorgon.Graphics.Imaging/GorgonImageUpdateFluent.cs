@@ -718,7 +718,7 @@ namespace Gorgon.Graphics.Imaging
                     return;
                 }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _imageInfo = _imageInfo with
                 {
                     HasPreMultipliedAlpha = false
@@ -770,7 +770,7 @@ namespace Gorgon.Graphics.Imaging
                     return;
                 }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _imageInfo = _imageInfo with
                 {
                     HasPreMultipliedAlpha = true

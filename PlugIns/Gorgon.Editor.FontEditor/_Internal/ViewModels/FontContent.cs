@@ -96,7 +96,7 @@ namespace Gorgon.Editor.FontEditor
                 OnPropertyChanged();
 
                 if (_currentPanel is not null)
-                {                    
+                {
                     _currentPanel.IsActive = true;
                     _currentPanel.PropertyChanged += CurrentPanel_PropertyChanged;
                 }
@@ -140,7 +140,7 @@ namespace Gorgon.Editor.FontEditor
                 Drawing.FontFamily family = Interlocked.Exchange(ref _fontFamily, null);
                 family?.Dispose();
                 _fontFamily = new Drawing.FontFamily(value);
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     FontFamilyName = value,
@@ -165,7 +165,7 @@ namespace Gorgon.Editor.FontEditor
                 }
 
                 OnPropertyChanging();
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     Size = value,
@@ -190,7 +190,7 @@ namespace Gorgon.Editor.FontEditor
                 }
 
                 OnPropertyChanging();
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     FontHeightMode = value,
@@ -215,7 +215,7 @@ namespace Gorgon.Editor.FontEditor
                 }
 
                 OnPropertyChanging();
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _isBold = value;
                 _info = _info with
                 {
@@ -240,7 +240,7 @@ namespace Gorgon.Editor.FontEditor
                 }
 
                 OnPropertyChanging();
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _isItalic = value;
                 _info = _info with
                 {
@@ -266,7 +266,7 @@ namespace Gorgon.Editor.FontEditor
                 }
 
                 OnPropertyChanging();
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     AntiAliasingMode = value ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None
@@ -432,7 +432,7 @@ namespace Gorgon.Editor.FontEditor
                     CurrentPanel = TextureEditor.CurrentPanel;
                     break;
                 case nameof(ITextureEditorContext.CurrentBrush):
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                     _info = _info with
                     {
                         Brush = TextureEditor.CurrentBrush
@@ -441,7 +441,7 @@ namespace Gorgon.Editor.FontEditor
 #endif
                     break;
                 case nameof(ITextureEditorContext.FontPadding):
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                     _info = _info with
                     {
                         PackingSpacing = TextureEditor.FontPadding.Padding
@@ -450,7 +450,7 @@ namespace Gorgon.Editor.FontEditor
 #endif
                     break;
                 case nameof(ITextureEditorContext.TextureSize):
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                     _info = _info with
                     {
                         TextureHeight = TextureEditor.TextureSize.Height,
@@ -460,7 +460,7 @@ namespace Gorgon.Editor.FontEditor
 #endif
                     break;
                 case nameof(ITextureEditorContext.UsePremultipliedAlpha):
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                     _info = _info with
                     {
                         UsePremultipliedTextures = TextureEditor.UsePremultipliedAlpha
@@ -468,7 +468,7 @@ namespace Gorgon.Editor.FontEditor
                     ContentState = ContentState.Modified;
 #endif
                     break;
-            }            
+            }
         }
 
         /// <summary>
@@ -478,7 +478,7 @@ namespace Gorgon.Editor.FontEditor
         /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
         private async void FontOutline_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch(e.PropertyName)
+            switch (e.PropertyName)
             {
                 case nameof(IFontOutline.SelectedEndColor):
                 case nameof(IFontOutline.SelectedStartColor):
@@ -494,7 +494,7 @@ namespace Gorgon.Editor.FontEditor
         /// <returns>A task for asynchronous operation.</returns>
         private async Task UpdateFontOutlineAsync()
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> UpdateFontAsync(GorgonFontInfo args)
             {
                 try
@@ -548,7 +548,7 @@ namespace Gorgon.Editor.FontEditor
 #endif
         }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         /// <summary>
         /// Function to retrieve the font style from the style flags.
         /// </summary>
@@ -595,7 +595,7 @@ namespace Gorgon.Editor.FontEditor
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoSetItalicAsync(bool flag)
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> SetItalicAsync(GorgonFontInfo args)
             {
                 ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -658,7 +658,7 @@ namespace Gorgon.Editor.FontEditor
             {
                 return false;
             }
-                        
+
             return _fontFamily.IsStyleAvailable(Drawing.FontStyle.Bold);
         }
 
@@ -669,7 +669,7 @@ namespace Gorgon.Editor.FontEditor
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoSetBoldAsync(bool flag)
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> SetBoldAsync(GorgonFontInfo args)
             {
                 ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -735,7 +735,7 @@ namespace Gorgon.Editor.FontEditor
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoSetAntiAliasAsync(bool flag)
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> SetAntiAliasAsync(GorgonFontInfo args)
             {
                 ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -801,7 +801,7 @@ namespace Gorgon.Editor.FontEditor
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoSetFontUnitsAsync(bool points)
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> SetUnitsAsync(GorgonFontInfo args)
             {
                 ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -868,7 +868,7 @@ namespace Gorgon.Editor.FontEditor
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoSetSizeAsync(float value)
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> SetSizeAsync(GorgonFontInfo args)
             {
                 ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -928,7 +928,7 @@ namespace Gorgon.Editor.FontEditor
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoSetFontFamilyAsync(string fontFamily)
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> SetFamilyAsync(GorgonFontInfo args)
             {                
                 ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -1034,7 +1034,7 @@ namespace Gorgon.Editor.FontEditor
             Stream outStream = null;
 
             ShowWaitPanel(Resources.GORFNT_TEXT_SAVING);
-            
+
             try
             {
                 File.IsOpen = false;
@@ -1107,7 +1107,7 @@ namespace Gorgon.Editor.FontEditor
                     CommandContext = null;
                     return;
                 }
-                                
+
                 CommandContext = TextureEditor;
                 TextureEditor.UsePremultipliedAlpha = _info.UsePremultipliedTextures;
                 TextureEditor.PropertyChanged += TextureEditor_PropertyChanged;
@@ -1152,7 +1152,7 @@ namespace Gorgon.Editor.FontEditor
         /// </summary>
         private async void DoSelectCharactersAsync()
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> SelectCharsAsync(GorgonFontInfo args)
             {
                 ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);
@@ -1212,7 +1212,7 @@ namespace Gorgon.Editor.FontEditor
         private async Task DoCreateFontAsync()
         {
             try
-            {                
+            {
                 // If this content is currently in a modified state, ask if we want to save first.
                 if (ContentState != ContentState.Unmodified)
                 {
@@ -1380,8 +1380,8 @@ namespace Gorgon.Editor.FontEditor
             _info = new GorgonFontInfo(WorkingFont);
             _isBold = _info.FontStyle is FontStyle.Bold or FontStyle.BoldItalics;
             _isItalic = _info.FontStyle is FontStyle.Italics or FontStyle.BoldItalics;
-            
-            _fontFamily = new Drawing.FontFamily(_info.FontFamilyName);            
+
+            _fontFamily = new Drawing.FontFamily(_info.FontFamilyName);
         }
 
         /// <summary>
@@ -1430,9 +1430,9 @@ namespace Gorgon.Editor.FontEditor
 
             base.OnUnload();
         }
-#endregion
+        #endregion
 
-#region Constructor/Finalizer.
+        #region Constructor/Finalizer.
         /// <summary>Initializes a new instance of the <see cref="FontContent"/> class.</summary>
         public FontContent()
         {
@@ -1450,6 +1450,6 @@ namespace Gorgon.Editor.FontEditor
             ActivateCharacterSelectionCommand = new EditorCommand<object>(DoActivateCharacterSelection, CanActivateCharacterSelection);
             NewFontCommand = new EditorAsyncCommand<object>(DoCreateFontAsync, CanCreateFont);
         }
-#endregion
+        #endregion
     }
 }

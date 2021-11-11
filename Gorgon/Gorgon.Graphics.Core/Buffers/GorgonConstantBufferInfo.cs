@@ -34,7 +34,7 @@ using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core
 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Provides information on how to set up a constant buffer.
     /// </summary>

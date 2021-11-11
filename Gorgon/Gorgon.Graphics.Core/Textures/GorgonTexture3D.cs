@@ -368,7 +368,7 @@ namespace Gorgon.Graphics.Core
             // Ensure the number of mip levels is not outside of the range for the width/height.
             int mipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, Height, 1)).Max(1);
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             if (mipLevels != _info.MipLevels)
             {
                 _info = _info with
@@ -1031,7 +1031,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
             }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             GorgonTexture3DInfo info = _info with
             {
                 Name = $"{Name}_[Staging]",

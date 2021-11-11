@@ -491,7 +491,7 @@ namespace Gorgon.Graphics.Core
                                                         Format));
             }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             if ((arrayCount == _info.ArrayCount) && (mipLevels == _info.MipLevels))
             {
                 return;

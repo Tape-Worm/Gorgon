@@ -365,7 +365,7 @@ namespace Gorgon.Editor.FontEditor
         /// <returns>A task for asynchronous operation.</returns>
         private async Task DoChangePremultiplied(bool value)
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             async Task<bool> SetValueAsync(GorgonFontInfo args)
             {
                 ShowWaitPanel(Resources.GORFNT_TEXT_PLEASE_WAIT_GEN_FONT);

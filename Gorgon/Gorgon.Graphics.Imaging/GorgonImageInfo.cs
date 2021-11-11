@@ -29,7 +29,7 @@ using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging
 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// A record used to define the properties of a <see cref="IGorgonImage"/>.
     /// </summary>

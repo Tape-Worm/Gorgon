@@ -24,12 +24,11 @@
 // 
 #endregion
 
-
+#if NET48
 namespace System
 {
-#if NET48
     /// <summary>
-    /// A placeholder to allow the .NET 4.8 functionality to compile.
+    /// A placeholder to allow the .NET 4.8 functionality to compile. <b>DO NOT USE!</b>
     /// </summary>
     public struct Index
         : IEquatable<Index>
@@ -89,5 +88,5 @@ namespace System
         public bool Equals(Index other) => true;
 #pragma warning restore IDE0060 // Remove unused parameter
     }
-#endif
 }
+#endif

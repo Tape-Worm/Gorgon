@@ -82,7 +82,7 @@ namespace Gorgon.Editor.ImageEditor
         public IGorgonImage ConvertTo2D(IGorgonImage image, bool isCubeMap)
         {
             IGorgonImage result = null;
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             try
             {
                 var info = new GorgonImageInfo(image)

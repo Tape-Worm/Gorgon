@@ -497,7 +497,7 @@ namespace Gorgon.Graphics.Fonts
             {
                 if ((image is null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
                 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                     imageSettings = imageSettings with
                     {
                         ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount)
@@ -549,7 +549,7 @@ namespace Gorgon.Graphics.Fonts
             {
                 if (textureSettings.ArrayCount != image.ArrayCount)
                 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                     textureSettings = textureSettings with
                     {
                         ArrayCount = image.ArrayCount

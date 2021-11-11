@@ -786,7 +786,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, info.Format));
             }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             // Constrain sizes.            
             info = info with
             {
@@ -878,7 +878,7 @@ namespace Gorgon.Graphics.Core
                 // Ensure that we have an up-to-date copy of the video mode information.
                 _fullScreenVideoMode = modeDesc.ToGorgonVideoMode();
                 FullscreenOutput = output;
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     Width = _fullScreenVideoMode.Value.Width,
@@ -1013,7 +1013,7 @@ namespace Gorgon.Graphics.Core
                 _fullScreenVideoMode = resizeMode.ToGorgonVideoMode();
                 FullscreenOutput = output;
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     Width = _fullScreenVideoMode.Value.Width,
@@ -1103,7 +1103,7 @@ namespace Gorgon.Graphics.Core
                 _resizeState.ResizeFormat = desc.Format;
 
                 DXGISwapChain.ResizeTarget(ref desc);
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _info = _info with
                 {
                     Width = desc.Width,
@@ -1171,7 +1171,7 @@ namespace Gorgon.Graphics.Core
             DXGISwapChain.ResizeBuffers((IsWindowed || _isFullScreenBorderless) ? 2 : 3, newWidth, newHeight, _resizeState.ResizeFormat, flags);
 
             var oldSize = new DX.Size2(_info.Width, _info.Height);
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             _info = _info with
             {
                 Width = newWidth,

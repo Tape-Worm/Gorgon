@@ -169,7 +169,7 @@ namespace Gorgon.Examples
         /// </summary>
         private static void Main()
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 #endif
 

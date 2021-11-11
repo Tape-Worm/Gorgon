@@ -207,7 +207,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     fontBrush = new GorgonGlyphSolidBrush();
                 }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 fontInfo = fontInfo with
                 {
                     Brush = fontBrush
@@ -276,7 +276,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
                     fontBrush = new GorgonGlyphSolidBrush();
                 }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 fontInfo = fontInfo with
                 {
                     Brush = fontBrush

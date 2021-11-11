@@ -213,7 +213,7 @@ namespace Gorgon.Renderers
                 }
 
                 _blurTargetFormat = value;
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 _blurRtvInfo = _blurRtvInfo with
                 {
                     Format = value
@@ -257,7 +257,7 @@ namespace Gorgon.Renderers
                 value.Width = value.Width.Max(3).Min(Graphics.VideoAdapter.MaxTextureWidth);
                 value.Height = value.Height.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
                 if (_blurRtvInfo is not null)
                 {
                     _blurRtvInfo = _blurRtvInfo with

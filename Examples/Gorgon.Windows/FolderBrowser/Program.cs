@@ -41,7 +41,7 @@ namespace Gorgon.Examples
         [STAThread()]
         private static void Main()
         {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 #endif
             // This is here for any windows forms elements that get displayed.

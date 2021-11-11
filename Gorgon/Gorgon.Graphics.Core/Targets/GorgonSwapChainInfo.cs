@@ -29,7 +29,7 @@ using SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary> 
     /// Settings for defining the set up for a swap chain.
     /// </summary>

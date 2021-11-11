@@ -310,7 +310,7 @@ namespace Gorgon.Graphics.Core
             // Ensure the number of mip levels is not outside of the range for the width/height.
             int mipLevels = MipLevels.Min(GorgonImage.CalculateMaxMipCount(Width, 1, 1)).Max(1);
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             if (mipLevels != _info.MipLevels)
             {
                 _info = _info with

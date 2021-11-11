@@ -29,7 +29,7 @@ using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core
 {
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Information used to create a texture object.
     /// </summary>
