@@ -3,7 +3,7 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
-name: 3.1.$(Rev:r).$(DayOfYear)
+name: 3.2.$(Rev:r).$(DayOfYear)
 
 trigger:
   branches:
@@ -13,7 +13,7 @@ trigger:
 jobs:
   - job: 'BugFixes_Debug'
     pool:
-      vmImage: 'windows-2019'
+      vmImage: 'windows-2022'
 
     variables:
       solution: 'Gorgon.sln'

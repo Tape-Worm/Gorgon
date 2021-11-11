@@ -13,7 +13,7 @@ trigger:
 jobs:
   - job: 'develop'
     pool:
-      vmImage: 'windows-2019'
+      vmImage: 'windows-2022'
 
     variables:
       solution: 'Gorgon.sln'

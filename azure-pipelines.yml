@@ -13,7 +13,7 @@ trigger:
 jobs:
   - job: 'Release'
     pool:
-      vmImage: 'windows-2019'
+      vmImage: 'windows-2022'
 
     variables:
       solution: 'Gorgon.sln'
@@ -167,7 +167,7 @@ jobs:
 
   - job: 'Debug'
     pool:
-      vmImage: 'windows-2019'
+      vmImage: 'windows-2022'
 
     variables:
       solution: 'Gorgon.sln'
