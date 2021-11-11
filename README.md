@@ -131,24 +131,24 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 What's required?
 ----------------
 
-  * [.NET 5.0](https://dotnet.microsoft.com/download)
+  * [.NET 6.0](https://dotnet.microsoft.com/download)
   * Windows 10 (Build 15063 or later).
   * A video card that supports Microsoft DirectX 11.2 or better
 
 To compile the library
 ----------------------
 
-  * [Visual C# 2019](https://www.microsoft.com/en-us/store/b/visualstudio) [v16.9](https://docs.microsoft.com/en-us/visualstudio/releases/2019/release-notes) or later. 
+  * [Visual C# 2022](https://visualstudio.microsoft.com/vs/community/) [v17.0](https://docs.microsoft.com/en-us/visualstudio/releases/2022/release-notes) or later. 
 
 To use the library
 ------------------
 
-  * You may use any .NET 5.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
+  * You may use any .NET 6.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
 
 Source code
 -----------
 
-The master branch contains the current release version of Gorgon 3.1.  
+The master branch contains the current release version of Gorgon 3.2.  
 
 Acknowledgements
 ================
