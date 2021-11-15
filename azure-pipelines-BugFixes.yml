@@ -21,6 +21,41 @@ jobs:
       buildConfiguration: 'Debug'
 
     steps:
+      - checkout: self
+        submodules: true
+
+      - task: CmdLine@2
+        displayName: 'Updating version to $(Build.BuildNumber)'
+        inputs:
+          script: 'CsProjVersionUpdater.exe $(Build.BuildNumber)'
+
+      - task: NuGetToolInstaller@1
+        inputs:
+          checkLatest: true
+
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$(solution)'
+
+      - task: VSBuild@1
+        inputs:
+          solution: '$(solution)'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
+
+  - job: 'BugFixes_Release'
+    pool:
+      vmImage: 'windows-2022'
+
+    variables:
+      solution: 'Gorgon.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Release'
+
+    steps:
+      - checkout: self
+        submodules: true
+        
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
