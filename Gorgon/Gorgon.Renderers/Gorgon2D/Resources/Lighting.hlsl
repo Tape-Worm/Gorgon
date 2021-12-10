@@ -133,7 +133,7 @@ float3 DirectionalLight(float3 color, float3 normal, GorgonSpriteLitVertex verte
     if ((specularEnabled != 0) && (specularIntensity != 0))
     {        
 		// Oddly enough, if we don't normalize Direction, our specular shows up correctly, and if we do normalize it, it gets weird at 0x0.
-        result += color * GetSpecularValue(uv, -(light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
+        result += GetSpecularValue(uv, -(light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
     }
     
     return saturate(result);
