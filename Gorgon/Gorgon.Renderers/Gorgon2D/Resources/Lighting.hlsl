@@ -109,7 +109,7 @@ float3 PointLight(float3 color, float3 normal, GorgonSpriteLitVertex vertex, flo
 
     if ((specularEnabled != 0) && (specularIntensity != 0))
     {        
-        result += color * GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
+        result += GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
     }
 
     float atten = 1.0f / (light.Attenuation.x + (distance * light.Attenuation.y) + (distance * distance * light.Attenuation.z));
