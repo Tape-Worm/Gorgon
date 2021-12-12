@@ -19,7 +19,7 @@ namespace Gorgon.Editor.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -207,6 +207,16 @@ namespace Gorgon.Editor.Properties {
             get {
                 object obj = ResourceManager.GetObject("generic_file_20x20", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; already exists.
+        ///Would you like to overwrite it?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_OVERWRITE_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_OVERWRITE_FILE", resourceCulture);
             }
         }
         

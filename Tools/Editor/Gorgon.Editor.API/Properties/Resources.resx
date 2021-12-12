@@ -364,4 +364,8 @@ These platforms are incompatible and cannot be mixed.</value>
   <data name="GOREDIT_ERR_HOST_PANEL_NULL" xml:space="preserve">
     <value>There is no panel registered to the view model of '{0}'.</value>
   </data>
+  <data name="GOREDIT_CONFIRM_OVERWRITE_FILE" xml:space="preserve">
+    <value>The file '{0}' already exists.
+Would you like to overwrite it?</value>
+  </data>
 </root>
