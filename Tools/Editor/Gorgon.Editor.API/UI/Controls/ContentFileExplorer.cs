@@ -171,6 +171,8 @@ namespace Gorgon.Editor.UI.Controls
         private readonly Dictionary<string, Image> _icons = new(StringComparer.OrdinalIgnoreCase);
         // The checkbox in the grid header.
         private CheckBox _checkBoxHeader;
+        // The currently selected directory (for single select mode).
+        private string _currentDirectory;
         #endregion
 
         #region Properties.
@@ -247,6 +249,15 @@ namespace Gorgon.Editor.UI.Controls
                 ColumnLocation.HeaderText = value;
             }
         }
+
+        /// <summary>
+        /// Property to return the current directory.
+        /// </summary>
+        /// <remarks>
+        /// This will only return a value if <see cref="MultiSelect"/> is <b>false</b>.
+        /// </remarks>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string CurrentDirectory => _currentDirectory;
         #endregion
 
         #region Methods.
@@ -530,6 +541,8 @@ namespace Gorgon.Editor.UI.Controls
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void GridFiles_SelectionChanged(object sender, EventArgs e)
         {
+            _currentDirectory = string.Empty;
+
             if (GridFiles.SelectedRows.Count == 0)
             {
                 FileEntriesFocused?.Invoke(this, new ContentFileEntriesFocusedArgs(null));
@@ -537,15 +550,22 @@ namespace Gorgon.Editor.UI.Controls
             }            
 
             var fileList = new List<ContentFileExplorerFileEntry>();
-            var args = new ContentFileEntriesFocusedArgs(fileList);
+            var args = new ContentFileEntriesFocusedArgs(fileList);            
 
             foreach(DataGridViewRow row in GridFiles.SelectedRows.OfType<DataGridViewRow>().Reverse())
             {
                 if (_rowFilesXref.TryGetValue(row, out ContentFileExplorerFileEntry fileEntry))
                 {
+                    if (!MultiSelect)
+                    {
+                        _currentDirectory = Path.GetDirectoryName(fileEntry.FullPath).FormatDirectory('/');
+                    }
                     fileList.Add(fileEntry);
                 }
-                
+                else if ((!MultiSelect) && (_rowDirsXref.TryGetValue(row, out ContentFileExplorerDirectoryEntry dirEntry)))
+                {
+                    _currentDirectory = dirEntry.FullPath;
+                }
             }
 
             FileEntriesFocused?.Invoke(this, args);
@@ -630,6 +650,7 @@ namespace Gorgon.Editor.UI.Controls
 
             if (!MultiSelect)
             {
+                _currentDirectory = dirEntry.FullPath;
                 dirEntry.IsExpanded = !dirEntry.IsExpanded;
                 return;
             }
@@ -708,12 +729,21 @@ namespace Gorgon.Editor.UI.Controls
                 return;
             }
 
+            _currentDirectory = string.Empty;
             DataGridViewRow row = GridFiles.Rows[e.RowIndex];
 
-            if ((IsDirectoryRow(row)) && (_rowDirsXref.TryGetValue(row, out ContentFileExplorerDirectoryEntry dirEntry)) && (e.ColumnIndex == 0))
-            {
-                dirEntry.IsExpanded = !dirEntry.IsExpanded;
-                return;
+            if ((IsDirectoryRow(row)) && (_rowDirsXref.TryGetValue(row, out ContentFileExplorerDirectoryEntry dirEntry)))
+            {                
+                if (!MultiSelect)
+                {
+                    _currentDirectory = dirEntry.FullPath;
+                }
+
+                if (e.ColumnIndex == 0)
+                {
+                    dirEntry.IsExpanded = !dirEntry.IsExpanded;
+                    return;
+                }
             }
 
             if (!MultiSelect)
@@ -733,8 +763,14 @@ namespace Gorgon.Editor.UI.Controls
             {
                 if (GridFiles.SelectedRows.Count == 1) 
                 {
+                    if (!MultiSelect)
+                    {
+                        _currentDirectory = Path.GetDirectoryName(fileEntry.FullPath).FormatDirectory('/');
+                    }
+
                     fileEntry.IsSelected = !fileEntry.IsSelected;
                     SetCheckState();
+
                     return;
                 }
             }
@@ -751,6 +787,11 @@ namespace Gorgon.Editor.UI.Controls
                 if (!_rowFilesXref.TryGetValue(selectedRow, out fileEntry))
                 {
                     continue;
+                }
+
+                if ((!MultiSelect) && (checkValue))
+                {
+                    _currentDirectory = Path.GetDirectoryName(fileEntry.FullPath).FormatDirectory('/');
                 }
 
                 fileEntry.IsSelected = checkValue;
@@ -1001,40 +1042,6 @@ namespace Gorgon.Editor.UI.Controls
             ColumnLocation.HeaderCell.SortGlyphDirection = SortOrder.Ascending;
             GridFiles.Sort(_fileComparer);
             GridFiles.Select();
-        }
-
-        /// <summary>
-        /// Function to retrieve the current directory for the currently selected row in the list.
-        /// </summary>
-        /// <returns>The path to the directory.</returns>
-        /// <remarks>
-        /// <para>
-        /// If <see cref="MultiSelect"/> is <b>true</b>, then this method will return <b>null</b>.
-        /// </para>
-        /// </remarks>
-        public string GetCurrentDirectory()
-        {
-            if (MultiSelect)
-            {
-                return null;
-            }            
-
-            for (int i = 0; i < GridFiles.SelectedRows.Count; ++i)
-            {
-                DataGridViewRow row = GridFiles.Rows[i];
-
-                if (IsDirectoryRow(row))
-                {
-                    return _rowDirsXref[row].FullPath;
-                }
-
-                if (_rowFilesXref.TryGetValue(row, out ContentFileExplorerFileEntry fileEntry))
-                {
-                    return Path.GetDirectoryName(fileEntry.FullPath).FormatDirectory('/');
-                }
-            }
-
-            return null;
         }
         #endregion
 
