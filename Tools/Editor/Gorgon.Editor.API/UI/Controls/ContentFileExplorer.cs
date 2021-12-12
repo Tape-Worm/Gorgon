@@ -29,11 +29,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.Views;
+using Gorgon.IO;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.UI.Controls
@@ -999,6 +1001,40 @@ namespace Gorgon.Editor.UI.Controls
             ColumnLocation.HeaderCell.SortGlyphDirection = SortOrder.Ascending;
             GridFiles.Sort(_fileComparer);
             GridFiles.Select();
+        }
+
+        /// <summary>
+        /// Function to retrieve the current directory for the currently selected row in the list.
+        /// </summary>
+        /// <returns>The path to the directory.</returns>
+        /// <remarks>
+        /// <para>
+        /// If <see cref="MultiSelect"/> is <b>true</b>, then this method will return <b>null</b>.
+        /// </para>
+        /// </remarks>
+        public string GetCurrentDirectory()
+        {
+            if (MultiSelect)
+            {
+                return null;
+            }            
+
+            for (int i = 0; i < GridFiles.SelectedRows.Count; ++i)
+            {
+                DataGridViewRow row = GridFiles.Rows[i];
+
+                if (IsDirectoryRow(row))
+                {
+                    return _rowDirsXref[row].FullPath;
+                }
+
+                if (_rowFilesXref.TryGetValue(row, out ContentFileExplorerFileEntry fileEntry))
+                {
+                    return Path.GetDirectoryName(fileEntry.FullPath).FormatDirectory('/');
+                }
+            }
+
+            return null;
         }
         #endregion
 
