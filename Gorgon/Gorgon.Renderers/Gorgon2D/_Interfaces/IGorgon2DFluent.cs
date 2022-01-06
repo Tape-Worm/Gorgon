@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
@@ -42,6 +43,46 @@ namespace Gorgon.Renderers
     public interface IGorgon2DFluent
         : IDisposable
     {
+        /// <summary>
+        /// Property to return a black texture to pass to shaders when no texture is specified.
+        /// </summary>
+        GorgonTexture2DView EmptyBlackTexture
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return an empty white texture to pass to shaders when no texture is specified.
+        /// </summary>
+        GorgonTexture2DView EmptyWhiteTexture
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return an empty normal map texture to pass to shaders when no texture is specified.
+        /// </summary>
+        GorgonTexture2DView EmptyNormalMapTexture
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the default font used for text rendering if the user did not specify a font with text drawing routines.
+        /// </summary>
+        GorgonFont DefaultFont
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the log used to log debug messages.
+        /// </summary>
+        IGorgonLog Log
+        {
+            get;
+        }
+
         /// <summary>
         /// Function to begin rendering a batch.
         /// </summary>
