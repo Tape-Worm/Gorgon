@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
@@ -589,6 +590,16 @@ namespace Gorgon.Graphics.Core
             ResourceRanges resourceChanges = _stateEvaluator.GetResourceStateChanges(state, stateChanges);
             _stateApplicator.BindResourceState(resourceChanges, state);
         }
+
+        /// <summary>
+        /// Function to report any objects that are left alive at the end of a session.
+        /// </summary>
+        private void ReportLiveObjectsInternal(D3D11.Device device)
+        {
+            using D3D11.DeviceDebug debugDevice = new(device);
+            debugDevice.ReportLiveDeviceObjects(D3D11.ReportingLevel.IgnoreInternal);
+        }
+
 
         /// <summary>
         /// Function to check for the minimum windows 10 build that Gorgon Graphics supports.
@@ -1224,6 +1235,24 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to report internal objects that are still alive to the debug output.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method is used to track any object that is still alive even when they should be deactivated. Typically one would call this at shut down due to resource leaks noted by the debug runtime.
+        /// </para>
+        /// </remarks>
+        public void ReportLiveObjects()
+        {
+            if ((!IsObjectTrackingEnabled) || (!IsDebugEnabled) || (D3DDevice is null))
+            {
+                return;
+            }
+
+            ReportLiveObjectsInternal(D3DDevice);
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -1261,6 +1290,15 @@ namespace Gorgon.Graphics.Core
             // Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
             context?.ClearState();
             context?.Dispose();
+
+#if DEBUG
+            if ((IsObjectTrackingEnabled) && (IsDebugEnabled))
+            {
+                Debug.WriteLine("GORGON: A live device object is normal, and will be destroyed after this report.");
+                ReportLiveObjectsInternal(device);
+            }
+#endif
+
             device?.Dispose();
             adapter?.Dispose();
             factory?.Dispose();
