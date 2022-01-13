@@ -715,9 +715,6 @@ namespace Gorgon.Examples
 		{
 			try
 			{
-				GorgonGraphics.IsObjectTrackingEnabled = true;
-				GorgonGraphics.IsDebugEnabled = true;
-
 				Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);

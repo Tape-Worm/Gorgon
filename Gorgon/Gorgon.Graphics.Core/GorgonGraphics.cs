@@ -433,7 +433,7 @@ namespace Gorgon.Graphics.Core
 
             using (var factory2 = new Factory2(IsDebugEnabled))
             {
-                resultFactory = factory2.QueryInterface<Factory5>();
+                resultFactory = factory2.QueryInterface<Factory5>();                
 
                 using Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
                                               ? resultFactory.GetAdapter1(adapterInfo.Index)
@@ -596,10 +596,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         private void ReportLiveObjectsInternal(D3D11.Device device)
         {
-            using D3D11.DeviceDebug debugDevice = new(device);
+            using D3D11.DeviceDebug debugDevice = new(device);            
             debugDevice.ReportLiveDeviceObjects(D3D11.ReportingLevel.IgnoreInternal);
         }
-
 
         /// <summary>
         /// Function to check for the minimum windows 10 build that Gorgon Graphics supports.
@@ -1302,6 +1301,13 @@ namespace Gorgon.Graphics.Core
             device?.Dispose();
             adapter?.Dispose();
             factory?.Dispose();
+
+#if DEBUG
+            if ((IsObjectTrackingEnabled) && (IsDebugEnabled))
+            {
+                Debug.WriteLine($"\nFinal:\n{DX.Diagnostics.ObjectTracker.ReportActiveObjects()}");
+            }
+#endif
         }
         #endregion
 
