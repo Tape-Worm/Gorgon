@@ -243,7 +243,7 @@ namespace Gorgon.Editor.UI.Views
         /// <summary>
         /// Function to set up the scroll bars.
         /// </summary>
-        private void SetupScrollBars()
+        protected void SetupScrollBars()
         {
             DisableScrollEvents();
 
@@ -365,6 +365,33 @@ namespace Gorgon.Editor.UI.Views
             SetupScrollBars();
         }
 
+        /// <summary>
+        /// Function to show the current panel assigned to the <see cref="IVisualEditorContent.CurrentPanel"/> property.
+        /// </summary>
+        protected void ShowCurrentPanel()
+        {
+            if (_dataContext.CurrentPanel is null)
+            {
+                HideHostedPanels();
+                SetupScrollBars();
+                return;
+            }
+
+            string viewModelTypeName = _dataContext.CurrentPanel.GetType().FullName;
+            Control hostControl = GetRegisteredPanel<EditorSubPanelCommon>(viewModelTypeName);
+
+            if (hostControl is null)
+            {
+#if DEBUG
+                GorgonDialogs.ErrorBox(GorgonApplication.MainForm, string.Format(Resources.GOREDIT_ERR_HOST_PANEL_NULL, viewModelTypeName));
+#endif
+                return;
+            }
+
+            ShowHostedPanel(hostControl);
+            SetupScrollBars();            
+        }
+
         /// <summary>Function called when a property is changing on the data context.</summary>
         /// <param name="propertyName">The name of the property that is updating.</param>
         /// <remarks>Implementors should override this method in order to handle a property change notification from their data context.</remarks>
@@ -403,26 +430,7 @@ namespace Gorgon.Editor.UI.Views
             switch (propertyName)
             {
                 case nameof(IVisualEditorContent.CurrentPanel):
-                    if (_dataContext.CurrentPanel is null)
-                    {
-                        HideHostedPanels();
-                        SetupScrollBars();
-                        break;
-                    }
-
-                    string viewModelTypeName = _dataContext.CurrentPanel.GetType().FullName;
-                    Control hostControl = GetRegisteredPanel<EditorSubPanelCommon>(viewModelTypeName);
-
-                    if (hostControl is null)
-                    {
-#if DEBUG
-                        GorgonDialogs.ErrorBox(GorgonApplication.MainForm, string.Format(Resources.GOREDIT_ERR_HOST_PANEL_NULL, viewModelTypeName));
-#endif
-                        return;
-                    }
-
-                    ShowHostedPanel(hostControl);
-                    SetupScrollBars();
+                    ShowCurrentPanel();
                     break;
             }
         }
