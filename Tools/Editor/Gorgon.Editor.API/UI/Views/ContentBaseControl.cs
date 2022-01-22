@@ -205,6 +205,15 @@ namespace Gorgon.Editor.UI.Views
 
         #region Properties.
         /// <summary>
+        /// Property to return the currently hosted panel in the <see cref="HostPanelControls"/>.
+        /// </summary>
+        protected Control CurrentHostedPanel
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Property to set or return the idle method for rendering on the control.
         /// </summary>
         /// <remarks>
@@ -461,6 +470,8 @@ namespace Gorgon.Editor.UI.Views
                 PanelHostControls.Visible = PanelHost.Visible = true;
                 control.Visible = true;
                 PanelHostControls.AutoScrollMinSize = new Size(0, control.Height);
+
+                CurrentHostedPanel = control;
             }
             finally
             {
@@ -539,7 +550,48 @@ namespace Gorgon.Editor.UI.Views
                 control.Visible = false;
             }
 
-            PanelHost.Visible = PanelHostControls.Visible = false;            
+            PanelHost.Visible = PanelHostControls.Visible = false;
+
+            CurrentHostedPanel = null;
+        }
+
+        /// <summary>
+        /// Function to assign a data context to the <see cref="CurrentHostedPanel"/>.
+        /// </summary>
+        /// <param name="dataContext">The data context to assign.</param>        
+        /// <param name="overrideCurrentDc"><b>true</b> to replace any non-null data context if present, or <b>false</b> to leave the current data context in place.</param>
+        /// <exception cref="InvalidCastException">Thrown when the <see cref="CurrentHostedPanel"/> does not accept the type of data context represented by <paramref name="dataContext"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown if the <see cref="CurrentHostedPanel"/> does not implement <see cref="IDataContext{T}"/>.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is used to assign an instance of a data context to the hosted panel in the <see cref="HostPanelControls"/>. If the panel does not implement <see cref="IDataContext{T}"/>, or the type of data 
+        /// context does not match the type of data context the control was built for, an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        protected void AssignDataContextToHostedPanel(IViewModel dataContext, bool overrideCurrentDc)
+        {
+            if (CurrentHostedPanel is null)
+            {
+                return;
+            }
+
+            Type dataContextType = typeof(IDataContext<>);
+            Type controlType = CurrentHostedPanel.GetType();
+            Type controlInterface = controlType.GetInterface(dataContextType.FullName);
+
+            if (controlInterface is null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT, CurrentHostedPanel.Name));
+            }
+
+            if ((!overrideCurrentDc) && (ViewFactory.GetViewModel(CurrentHostedPanel) is not null))
+            {
+                return;
+            }
+
+            ViewFactory.AssignViewModel(dataContext, CurrentHostedPanel);
         }
 
         /// <summary>

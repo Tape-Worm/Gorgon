@@ -96,11 +96,6 @@ namespace Gorgon.Editor.UI
         /// </remarks>
         public static void AssignViewModel(IViewModel viewModel, Control control)
         {
-            if (viewModel is null)
-            {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
             if (control is null)
             {
                 throw new ArgumentNullException(nameof(control));
@@ -117,6 +112,37 @@ namespace Gorgon.Editor.UI
 
             MethodInfo method = controlInterface.GetMethod("SetDataContext");
             method?.Invoke(control, new[] { viewModel });
+        }
+
+        /// <summary>
+        /// Function to retrieve the view model assigned to a control.
+        /// </summary>
+        /// <param name="control">The control to evaluate.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="InvalidCastException">Thrown if the <paramref name="control"/> parameter does not implement <see cref="IDataContext{T}"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will return the view model assigned to the specified <paramref name="control"/>. If the control does not implement <see cref="IDataContext{T}"/>, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public static IViewModel GetViewModel(Control control)
+        {
+            if (control is null)
+            {
+                throw new ArgumentNullException(nameof(control));
+            }
+
+            Type dataContextType = typeof(IDataContext<>);
+            Type controlType = control.GetType();
+            Type controlInterface = controlType.GetInterface(dataContextType.FullName);
+
+            if (controlInterface is null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT, control.Name));
+            }
+
+            PropertyInfo property = controlInterface.GetProperty("DataContext");
+            return property?.GetValue(control) as IViewModel;
         }
 
         /// <summary>

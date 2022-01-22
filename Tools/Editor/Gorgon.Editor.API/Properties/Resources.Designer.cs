@@ -337,6 +337,24 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The hosted control &apos;{0}&apos; does not accept data contexts..
+        /// </summary>
+        internal static string GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The data context type &apos;{0}&apos; cannot be used with the hosted control..
+        /// </summary>
+        internal static string GOREDIT_ERR_INVALID_DATACONTEXT_TYPE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_INVALID_DATACONTEXT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The plug in &apos;{0}&apos; did not produce any content..
         /// </summary>
         internal static string GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN {

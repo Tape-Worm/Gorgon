@@ -368,4 +368,10 @@ These platforms are incompatible and cannot be mixed.</value>
     <value>The file '{0}' already exists.
 Would you like to overwrite it?</value>
   </data>
+  <data name="GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT" xml:space="preserve">
+    <value>The hosted control '{0}' does not accept data contexts.</value>
+  </data>
+  <data name="GOREDIT_ERR_INVALID_DATACONTEXT_TYPE" xml:space="preserve">
+    <value>The data context type '{0}' cannot be used with the hosted control.</value>
+  </data>
 </root>
