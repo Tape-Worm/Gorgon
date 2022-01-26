@@ -81,12 +81,17 @@ namespace Gorgon.Renderers
     ///		<description>The normal map layer for the sprite - This is the texture array index that provides normals for the lighting calculations. This layer must have data in it or else no lighting will 
     ///		be applied. Gorgon does not generate normal map for your texture, however there are a multitude of tools available online to help with this (e.g. CrazyBump, SpriteIlluminator, etc...).</description>
     /// </item>
+    /// <item>
+    ///		<description>The position buffer for the sprite - This is the texture array index that world position data for the lighting calculations. This layer may be omitted by passing -1 to a position 
+    ///		index parameter. The <see cref="Gorgon2DGBuffer"/> will use always positional data and will generate world position data based on whatever you render.</description>
+    /// </item>
     /// </list>
     /// </para>
     /// <para>
     /// The user must also supply at least a single light source to effectively view the lighting on the 2D object.
     /// </para>
     /// </remarks>
+    /// <seealso cref="Gorgon2DGBuffer"/>
     public class Gorgon2DLightingEffect
         : Gorgon2DEffect
     {
@@ -114,7 +119,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The maximum number of lights that can be used at one time.
         /// </summary>
-        public const int MaxLightCount = 256;
+        public const int MaxLightCount = 1024;
         #endregion
 
         #region Variables.        
@@ -150,7 +155,7 @@ namespace Gorgon.Renderers
         // The currently active render target view.
         private GorgonRenderTargetView _currentRtv;
         // The currently active array indices.
-        private (int normalIndex, int specIndex) _currentIndices;
+        private (int normalIndex, int specIndex, int posIndex) _currentIndices;
         // Flag to indicate that normals on the normal map should rotate.
         private bool _rotateNormals;
         // Flag to indicate that a gbuffer is in use.
@@ -370,7 +375,7 @@ namespace Gorgon.Renderers
                 return;
             }
             
-            _currentIndices = (-1, -1);
+            _currentIndices = (-1, -1, -1);
 
             GorgonConstantBufferView lightData = Interlocked.Exchange(ref _lightBuffer, null);
             GorgonConstantBufferView globalData = Interlocked.Exchange(ref _globalBuffer, null);
@@ -565,6 +570,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="normalMapIndex">The array index of the texture being rendered that contains the normal map.</param>
         /// <param name="specularMapIndex">The array index of the texture being rendered that contains the specular map.</param>
+        /// <param name="positionIndex">[Optional] The array index of the texture begin rendered that contains the position buffer.</param>
         /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
         /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
         /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
@@ -574,7 +580,7 @@ namespace Gorgon.Renderers
         /// This method takes the texture of whatever is currently being rendered and uses an array index to index into the texture and retrieve the normal and specular map values.
         /// </para>
         /// </remarks>
-        public void Begin(int normalMapIndex, int specularMapIndex, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
+        public void Begin(int normalMapIndex, int specularMapIndex, int positionIndex = -1, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
         {
             UseGBuffer = false;
             UseArray = true;
@@ -583,8 +589,8 @@ namespace Gorgon.Renderers
 
             if ((_currentIndices.normalIndex != normalMapIndex) || (_currentIndices.specIndex != specularMapIndex))
             {
-                _effectData.ArrayIndices = new Vector4(normalMapIndex, specularMapIndex, 0, 0);
-                _currentIndices = (normalMapIndex, specularMapIndex);
+                _effectData.ArrayIndices = new Vector4(normalMapIndex, specularMapIndex, positionIndex, 0);
+                _currentIndices = (normalMapIndex, specularMapIndex, positionIndex);
             }
 
             OnBeginRender(blendState, depthStencilState, rasterState, camera);
@@ -615,10 +621,10 @@ namespace Gorgon.Renderers
 
             _currentRtv = output;
 
-            if ((_currentIndices.normalIndex != 1) || (_currentIndices.specIndex != 2))
+            if ((_currentIndices.normalIndex != 1) || (_currentIndices.specIndex != 2) || (_currentIndices.posIndex != 3))
             {
-                _effectData.ArrayIndices = new Vector4(1, 2, 0, 0);
-                _currentIndices = (1, 2);
+                _effectData.ArrayIndices = new Vector4(1, 2, 3, 0);
+                _currentIndices = (1, 2, 3);
             }
 
             OnRender(gbuffer.GBufferTexture, output, camera);
@@ -632,9 +638,10 @@ namespace Gorgon.Renderers
         /// <param name="output">The final output target for the effect.</param>
         /// <param name="normalMapIndex">The array index of the diffuse texture that contains the normal map.</param>
         /// <param name="specularMapIndex">The array index of the diffuse texture that contains the specular map.</param>
+        /// <param name="positionIndex">[Optional] The array index of the texture begin rendered that contains the position buffer.</param>
         /// <param name="camera">[Optional] The camera used to transform the lights to camera space.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="diffuse"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
-        public void Render(GorgonTexture2DView diffuse, GorgonRenderTargetView output, int normalMapIndex, int specularMapIndex, GorgonCameraCommon camera = null)
+        public void Render(GorgonTexture2DView diffuse, GorgonRenderTargetView output, int normalMapIndex, int specularMapIndex, int positionIndex = -1, GorgonCameraCommon camera = null)
         {
             UseArray = true;
             UseGBuffer = false;
@@ -647,8 +654,8 @@ namespace Gorgon.Renderers
             if ((normalMapIndex != _currentIndices.normalIndex) || (specularMapIndex != _currentIndices.specIndex))
             {
                 _effectData.ArrayIndices = new Vector4(normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1),
-                                                          specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1), 0, 0);
-                _currentIndices = (normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1), specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1));
+                                                          specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1), positionIndex, 0);
+                _currentIndices = (normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1), specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1), positionIndex);
             }            
 
             OnRender(diffuse, output, camera);

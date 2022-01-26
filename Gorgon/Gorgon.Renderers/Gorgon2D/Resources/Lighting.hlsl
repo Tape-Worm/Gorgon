@@ -94,7 +94,12 @@ float3 PointLight(float3 color, float3 normal, GorgonSpriteLitVertex vertex, flo
     int specularEnabled = int(light.Attributes.w);
     float specularIntensity = light.Attributes.z;
     float3 result;
-    float3 lightRange = light.Position.xyz - vertex.worldPos;
+#ifdef USE_ARRAY
+    float3 worldPos = _arrayIndices.z < 0 ? vertex.worldPos : _gorgonTexture.Sample(_normalSampler, float3(uv, _arrayIndices.z)).rgb;
+#else
+    float3 worldPos = vertex.worldPos;
+#endif
+    float3 lightRange = light.Position.xyz - worldPos;
     float distance = length(lightRange);
 
     if ((distance >= light.Attenuation.w) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))

@@ -56,12 +56,12 @@ namespace Gorgon.Renderers
         // The texture that holds the GBuffer data.
         private GorgonTexture2D _gbuffer;
         // The render targets for the gbuffer.
-        private readonly GorgonRenderTarget2DView[] _target = new GorgonRenderTarget2DView[3];
+        private readonly GorgonRenderTarget2DView[] _target = new GorgonRenderTarget2DView[4];
         // Flag to indicate that array indices should be used to render.
         private bool _useArray;
         // Parameters for the gbuffer shader.
         private GorgonConstantBufferView _params;
-        // The current normal/specular map textures when using separate textures.
+        // The current normal/specular/position map textures when using separate textures.
         private GorgonTexture2DView _normalTexture;
         private GorgonTexture2DView _specularTexture;
         // The original render target view.
@@ -125,6 +125,16 @@ namespace Gorgon.Renderers
         /// Property to return the normal map render target for the gbuffer.
         /// </summary>
         public GorgonRenderTarget2DView NormalTarget => _target[1];
+
+        /// <summary>Property to return the position texture for the gbuffer.</summary>
+        public GorgonTexture2DView Position
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>Property to return the position render target for the gbuffer.</summary>
+        public GorgonRenderTarget2DView PositionTarget => _target[3];
         #endregion
 
         #region Methods.
@@ -134,6 +144,7 @@ namespace Gorgon.Renderers
         private void UnloadGBuffer()
         {
             Diffuse?.Dispose();
+            Position?.Dispose();
             Normal?.Dispose();
             Specular?.Dispose();
             GBufferTexture?.Dispose();
@@ -143,7 +154,7 @@ namespace Gorgon.Renderers
                 _target[i]?.Dispose();
             }
 
-            GBufferTexture = Specular = Normal = Diffuse = null;
+            GBufferTexture = Specular = Normal = Diffuse = Position = null;
             Array.Clear(_target, 0, _target.Length);
 
             _gbuffer?.Dispose();
@@ -308,6 +319,7 @@ namespace Gorgon.Renderers
             _target[0].Clear(GorgonColor.BlackTransparent);
             _target[1].Clear(new GorgonColor(normChanValue, normChanValue, 1.0f, 0.0f));
             _target[2].Clear(GorgonColor.BlackTransparent);
+            _target[3].Clear(GorgonColor.Black);
         }
 
         /// <summary>
@@ -325,7 +337,7 @@ namespace Gorgon.Renderers
 
             UnloadGBuffer();
 
-            GorgonTexture2DInfo mainInfo = new(width, height, BufferFormat.R8G8B8A8_UNorm)
+            GorgonTexture2DInfo mainInfo = new(width, height, BufferFormat.R16G16B16A16_Float)
             {
                 Name = "GBuffer",
                 ArrayCount = _target.Length,
@@ -344,6 +356,7 @@ namespace Gorgon.Renderers
             Diffuse = _gbuffer.GetShaderResourceView(arrayIndex: 0, arrayCount: 1);
             Normal = _gbuffer.GetShaderResourceView(arrayIndex: 1, arrayCount: 1);
             Specular = _gbuffer.GetShaderResourceView(arrayIndex: 2, arrayCount: 1);
+            Position = _gbuffer.GetShaderResourceView(arrayIndex: 3, arrayCount: 1);
         }
 
         /// <summary>

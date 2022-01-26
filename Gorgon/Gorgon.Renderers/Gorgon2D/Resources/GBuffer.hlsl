@@ -11,6 +11,7 @@ cbuffer EffectParams : register(b1)
 struct GorgonLitVertex
 {
     float4 position : SV_POSITION;
+	float4 worldPos : WORLDPOS;
     float4 color : COLOR;
     float4 uv : TEXCOORD;
     float3 tangent : TANGENT;
@@ -26,6 +27,8 @@ struct GorgonGBufferOutput
     float4 Normal : SV_Target1;
 	// The specular map texel.
     float4 Specular : SV_Target2;
+	// The position buffer.
+	float4 Position : SV_Target3;
 };
 
 // Normal and specular map.
@@ -33,12 +36,15 @@ Texture2D _normalTexture : register(t1);
 SamplerState _normalSampler : register(s1);
 Texture2D _specularTexture : register(t2);
 SamplerState _specularSampler : register(s2);
+Texture2D _positionTexture : register(t3);
+SamplerState _positionSampler : register(s3);
 
 // Updated vertex shader that will perform tangent and bitangent transforms.
 GorgonLitVertex GorgonVertexShaderGBuffer(GorgonSpriteVertex vertex)
 {
     GorgonLitVertex output;
 	
+	output.worldPos = vertex.position;
 	output.position = mul(ViewProjection, vertex.position);
 	output.uv = vertex.uv;
 	output.color = vertex.color;
@@ -60,6 +66,7 @@ GorgonGBufferOutput GorgonPixelShaderGBuffer(GorgonLitVertex vertex) : SV_Target
 
 	float3 texCoords = float3(vertex.uv.xy / vertex.uv.w, vertex.uv.z);
 
+	result.Position = float4(vertex.worldPos.rgb, 1.0f);
 	result.Diffuse = _gorgonTexture.Sample(_gorgonSampler, texCoords) * vertex.color;
 	
 	REJECT_ALPHA(result.Diffuse.a);    	

@@ -34,6 +34,22 @@ namespace Gorgon.Renderers.Techniques
     public interface IGorgonGBuffer
     {
         /// <summary>
+        /// Property to return the position texture for the gbuffer.
+        /// </summary>
+        GorgonTexture2DView Position
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the position render target for the gbuffer.
+        /// </summary>
+        GorgonRenderTarget2DView PositionTarget
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the diffuse texture for the gbuffer.
         /// </summary>
         GorgonTexture2DView Diffuse
