@@ -35,6 +35,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
+using Gorgon.Math;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
@@ -132,7 +133,20 @@ namespace Gorgon.IO
             // Locate the texture resource.
             GorgonTexture2D texture = Renderer.Graphics.Locate2DTextureByName(textureName, textureWidth, textureHeight, textureFormat, textureArrayCount, textureMipCount);
 
-            return texture?.GetShaderResourceView(viewFormat, viewMipSlice, viewMipCount, viewArrayIndex, viewArrayCount);
+            if (viewArrayCount == -1)
+            {
+                viewArrayCount = texture.ArrayCount;
+            }
+
+            if (viewMipCount == -1)
+            {
+                viewMipCount = texture.MipLevels;
+            }
+
+            return texture?.GetShaderResourceView(viewFormat, viewMipSlice.Max(0).Min(texture.MipLevels - 1),
+                                                              viewMipCount.Max(1).Min(texture.MipLevels),
+                                                              viewArrayIndex.Max(0).Min(texture.ArrayCount - 1),
+                                                              viewArrayCount.Max(1).Min(texture.ArrayCount));
         }
 
         /// <summary>
@@ -211,14 +225,14 @@ namespace Gorgon.IO
                             // If we don't have any texture reference, write out default values.
                             binWriter.Write(0);
                             binWriter.Write(0);
-                            binWriter.WriteValue(BufferFormat.R8G8B8A8_UNorm);
-                            binWriter.Write(1);
-                            binWriter.Write(1);
+                            binWriter.WriteValue(BufferFormat.Unknown);
+                            binWriter.Write(-1);
+                            binWriter.Write(-1);
                             binWriter.Write(0);
-                            binWriter.Write(1);
+                            binWriter.Write(-1);
                             binWriter.Write(0);
-                            binWriter.Write(1);
-                            binWriter.WriteValue(BufferFormat.R8G8B8A8_UNorm);
+                            binWriter.Write(-1);
+                            binWriter.WriteValue(BufferFormat.Unknown);
                         }
                     }
 

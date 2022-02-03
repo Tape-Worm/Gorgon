@@ -2171,8 +2171,14 @@ namespace Gorgon.Editor.AnimationEditor
             Tracks = injectionParameters.Tracks;
             _trackList.AddRange(Tracks);
 
-            float x = _primarySprite.sprite.Position.X;
-            float y = _primarySprite.sprite.Position.Y;
+            float x = 0;
+            float y = 0;
+
+            if (_primarySprite.sprite is not null)
+            {
+                x = _primarySprite.sprite.Position.X;
+                y = _primarySprite.sprite.Position.Y;
+            }
 
             if (File.Metadata.Attributes.TryGetValue(AnimationIOService.StartPositionAttrX, out string startX))
             {
@@ -2190,7 +2196,12 @@ namespace Gorgon.Editor.AnimationEditor
                 _controller.Pause();
             }
 
-            _primaryStart = PrimarySprite.Position = WorkingSprite.Position = new Vector2(x, y);
+            _primaryStart = WorkingSprite.Position = new Vector2(x, y);
+
+            if (PrimarySprite is not null)
+            {
+                PrimarySprite.Position = _primaryStart;
+            }
         }
 
         /// <summary>Function called when the associated view is loaded.</summary>

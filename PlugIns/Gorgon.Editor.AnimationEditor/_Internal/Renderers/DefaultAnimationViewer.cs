@@ -266,7 +266,7 @@ namespace Gorgon.Editor.AnimationEditor
         /// <summary>Function to draw the animation.</summary>
         protected override void DrawAnimation()
         {
-            Renderer.Begin();                       
+            Renderer.Begin();
             Renderer.DrawSprite(Sprite);
             Renderer.End();
 

@@ -493,7 +493,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SAME_TYPE, destTexture.Name, destTexture.ResourceType, ResourceType), nameof(destTexture));
             }
 
-            if (Usage == ResourceUsage.Immutable)
+            if (destTexture.Usage == ResourceUsage.Immutable)
             {
                 throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
             }
@@ -633,7 +633,7 @@ namespace Gorgon.Graphics.Core
                 throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, destinationTexture.Format, Format));
             }
 
-            if (Usage == ResourceUsage.Immutable)
+            if (destinationTexture.Usage == ResourceUsage.Immutable)
             {
                 throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
             }
@@ -777,7 +777,7 @@ namespace Gorgon.Graphics.Core
                 throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, destinationTexture.Format, Format));
             }
 
-            if (Usage == ResourceUsage.Immutable)
+            if (destinationTexture.Usage == ResourceUsage.Immutable)
             {
                 throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
             }
@@ -950,7 +950,7 @@ namespace Gorgon.Graphics.Core
                 throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, destinationTexture.Format, Format));
             }
 
-            if (Usage == ResourceUsage.Immutable)
+            if (destinationTexture.Usage == ResourceUsage.Immutable)
             {
                 throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
             }
@@ -1026,11 +1026,6 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonTexture3D GetStagingTexture()
         {
-            if (Usage == ResourceUsage.Immutable)
-            {
-                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
-            }
-
 #if NET6_0_OR_GREATER
             GorgonTexture3DInfo info = _info with
             {
@@ -1261,11 +1256,6 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public IGorgonImage ToImage(int mipLevel, int? depthSlice = null)
         {
-            if (Usage == ResourceUsage.Immutable)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
-            }
-
             GorgonTexture3D stagingTexture = this;
             GorgonImage image = null;
 

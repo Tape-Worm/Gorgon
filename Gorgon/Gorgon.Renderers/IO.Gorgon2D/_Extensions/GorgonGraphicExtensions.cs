@@ -44,8 +44,8 @@ namespace Gorgon.IO
         /// <param name="width">The width of the texture to locate.</param>
         /// <param name="height">The height of the texture to locate.</param>
         /// <param name="format">The format of the texture to locate.</param>
-        /// <param name="arrayCount">The number of array indices in the texture to locate.</param>
-        /// <param name="mipCount">The number of mip map levels in the texture to locate.</param>
+        /// <param name="arrayCount">The number of array indices in the texture to locate. Pass -1 to ignore.</param>
+        /// <param name="mipCount">The number of mip map levels in the texture to locate. Pass -1 to ignore.</param>
         /// <returns>The texture resource if found, or <b>null</b> if not.</returns>
         public static GorgonTexture2D Locate2DTextureByName(this GorgonGraphics graphics, string textureName, int width, int height, BufferFormat format, int arrayCount, int mipCount)
         {
@@ -75,8 +75,8 @@ namespace Gorgon.IO
                 if ((texture.Width == width)
                     && (texture.Height == height)
                     && (texture.Format == format)
-                    && (texture.ArrayCount == arrayCount)
-                    && (texture.MipLevels == mipCount))
+                    && ((arrayCount < 1) || (texture.ArrayCount == arrayCount))
+                    && ((mipCount < 1) || (texture.MipLevels == mipCount)))
                 {
                     return texture;
                 }

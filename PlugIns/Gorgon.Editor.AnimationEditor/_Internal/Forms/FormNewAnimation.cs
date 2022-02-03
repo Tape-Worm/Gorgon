@@ -212,7 +212,7 @@ namespace Gorgon.Editor.AnimationEditor
                     {
                         // If we cannot convert, then use a placeholder.
                         image.Dispose();
-                        PictureSpritePreview.Image = _previewImage = Resources.no_thumb_sprite_64x64;
+                        PictureSpritePreview.Image = _previewImage = (Image)Resources.no_thumb_sprite_64x64.Clone();
                         return;
                     }
                 }
@@ -318,7 +318,7 @@ namespace Gorgon.Editor.AnimationEditor
                     {
                         // If we cannot convert, then use a placeholder.
                         image.Dispose();
-                        PictureTexturePreview.Image = _previewImage = Resources.no_thumb_sprite_64x64;
+                        PictureTexturePreview.Image = _previewImage = (Image)Resources.no_thumb_sprite_64x64.Clone();
                         return;
                     }
                 }

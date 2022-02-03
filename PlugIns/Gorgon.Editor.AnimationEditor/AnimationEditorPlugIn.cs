@@ -899,7 +899,7 @@ namespace Gorgon.Editor.AnimationEditor
                     if ((!string.IsNullOrWhiteSpace(texturePath)) && (ContentFileManager.FileExists(texturePath)))
                     {
                         if (_settings.AddTextureTrackForPrimarySprite)
-                        {
+                        {                            
                             builder.Edit2DTexture(GorgonSpriteAnimationController.TextureTrack.TrackName)
                                    .SetKey(new GorgonKeyTexture2D(0, texturePath, sprite.TextureRegion, sprite.TextureArrayIndex))
                                    .EndEdit();
@@ -1212,7 +1212,7 @@ namespace Gorgon.Editor.AnimationEditor
                 GetKeys(animation, tracks, fileManager, maxKeyCount);
                                 
                 IEnumerable<ITrack> textureTracks = tracks.Where(item => (item.ID == GorgonSpriteAnimationController.TextureTrack.ID) 
-                                                                      && (item.KeyFrames.Any(item2 => item2 is not null)));
+                                                              && (item.KeyFrames.Any(item2 => item2 is not null)));
                 foreach (ITrack track in textureTracks)
                 {
                     await UpdateTextureCacheAsync(track.KeyFrames);
