@@ -143,8 +143,6 @@ namespace Gorgon.Renderers
         private GorgonTexture2DView _normalTexture;
         // The texture holding specular maps.
         private GorgonTexture2DView _specularTexture;
-        // The last light count.
-        private int _lastLightCount;
         // The data to pass to the effect.
         private GlobalEffectData _effectData = new()
         {
@@ -268,11 +266,10 @@ namespace Gorgon.Renderers
             lightShader = Interlocked.Exchange(ref _pixelLitTransformShader, null);
             lightShader?.Dispose();
 
-            int newLightBufferSize = ((Lights.Count + 8) & ~7).Min(MaxLightCount).Max(8);
             var arrayMacro = new GorgonShaderMacro("USE_ARRAY");
 
             Macros.Clear();
-            Macros.Add(new GorgonShaderMacro("MAX_LIGHTS", newLightBufferSize.ToString()));
+            Macros.Add(new GorgonShaderMacro("MAX_LIGHTS", MaxLightCount.ToString()));
 
             _pixelLitShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
 
@@ -287,8 +284,6 @@ namespace Gorgon.Renderers
             Macros.Remove(arrayMacro);
 
             _pixelLitTransformShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
-
-            _lastLightCount = newLightBufferSize;
 
             _pixelLitShaderState = null;
         }
@@ -307,7 +302,7 @@ namespace Gorgon.Renderers
 
             int lightCount = Lights.Count.Min(MaxLightCount);
 
-            GorgonGpuLightData[] lightData = GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Rent(_lastLightCount.Max(1));
+            GorgonGpuLightData[] lightData = GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Rent(lightCount.Max(1));
 
             try
             {
@@ -327,7 +322,7 @@ namespace Gorgon.Renderers
 
                 if (lightCount > 0)
                 {
-                    _lightBuffer.Buffer.SetData<GorgonGpuLightData>(lightData.AsSpan(0, _lastLightCount));
+                    _lightBuffer.Buffer.SetData<GorgonGpuLightData>(lightData.AsSpan(0, lightCount));
                 }
                 else
                 {
@@ -413,12 +408,6 @@ namespace Gorgon.Renderers
             {
                 _vertexLitShaderState = builders.VertexShaderBuilder.Shader(rotateNormals ? _vertexLitTransformShader : _vertexLitShader)
                                                                     .Build(VertexShaderAllocator);
-            }
-
-            // If we added a light and we've exceeded the buffer size, then we need to recompile.
-            if (Lights.Count >= _lastLightCount)
-            {
-                BuildPixelShaderPermutations();
             }
 
             if ((statesChanged) || (_pixelLitShaderState is null))
