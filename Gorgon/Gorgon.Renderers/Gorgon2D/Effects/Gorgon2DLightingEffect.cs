@@ -135,7 +135,8 @@ namespace Gorgon.Renderers
         // The data to pass to the effect.
         private GlobalEffectData _effectData = new()
         {
-            AmbientColor = GorgonColor.Black
+            AmbientColor = GorgonColor.Black,
+            ZCheck = 1
         };
         #endregion
 
@@ -367,7 +368,6 @@ namespace Gorgon.Renderers
 
             // If we ever need to change the indices, we can do so here.
             _effectData.ArrayIndices = new Vector4(1, 2, 3, 0);
-            _effectData.ZCheck = 1;
         }
 
         /// <summary>
