@@ -96,7 +96,7 @@ namespace Gorgon.Renderers
     {
         #region Value Types.
         // Constant buffer data for global data.
-        [StructLayout(LayoutKind.Sequential, Size = 48, Pack = 16)]
+        [StructLayout(LayoutKind.Sequential, Size = 64, Pack = 16)]
         private struct GlobalEffectData
         {
             /// <summary>
@@ -111,6 +111,10 @@ namespace Gorgon.Renderers
             /// The texture array indices to use for the normal map, and specular map.
             /// </summary>
             public Vector4 ArrayIndices;
+            /// <summary>
+            /// The flag to check if the light is behind an object.
+            /// </summary>
+            public int ZCheck;
         }
         #endregion
 
@@ -143,6 +147,15 @@ namespace Gorgon.Renderers
         {
             get => _effectData.AmbientColor;
             set => _effectData.AmbientColor = value;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to check if the light is behind an object or not.
+        /// </summary>
+        public bool CheckLightDepth
+        {
+            get => _effectData.ZCheck != 0;
+            set => _effectData.ZCheck = value ? 1 : 0;
         }
 
         /// <summary>
@@ -354,6 +367,7 @@ namespace Gorgon.Renderers
 
             // If we ever need to change the indices, we can do so here.
             _effectData.ArrayIndices = new Vector4(1, 2, 3, 0);
+            _effectData.ZCheck = 1;
         }
 
         /// <summary>

@@ -29,6 +29,8 @@ cbuffer GlobalData : register(b2)
     float4 _cameraPos;
 	// The texture array indices to use.
     float4 _arrayIndices;
+    // Flag to indicate that the z for the light and the object should be compared to determine if the light is in front or behind.
+    int _zCheck;
 }
 
 // Output data from our lighting vertex shader.
@@ -76,6 +78,11 @@ float3 PointLight(float3 color, float3 normal, GorgonSpriteLitVertex vertex, flo
     float3 worldPos = _gorgonTexture.Sample(_normalSampler, float3(uv, _arrayIndices.z)).rgb;
     float3 lightRange = light.Position.xyz - worldPos;
     float distance = length(lightRange);
+
+    if ((_zCheck != 0) && (light.Position.z <= worldPos.z))
+    {
+        return float3(0, 0, 0);
+    }
 
     if ((distance >= light.Attenuation.w) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
     {

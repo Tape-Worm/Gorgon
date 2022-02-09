@@ -335,6 +335,9 @@ namespace Gorgon.Examples
                 case Keys.R:
                     _rotate = !_rotate;
                     break;
+                case Keys.C:
+                    _lightEffect.CheckLightDepth = !_lightEffect.CheckLightDepth;
+                    break;
                 case Keys.Z:                     
                     _light.Position = 
                         !e.Shift
