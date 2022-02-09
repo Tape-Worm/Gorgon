@@ -77,7 +77,7 @@ float3 PointLight(float3 color, float3 normal, GorgonSpriteLitVertex vertex, flo
     float3 lightRange = light.Position.xyz - worldPos;
     float distance = length(lightRange);
 
-    if ((light.Position.z < worldPos.z) || (distance >= light.Attenuation.w) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
+    if ((distance >= light.Attenuation.w) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
     {
         return float3(0, 0, 0);
     }
