@@ -46,6 +46,9 @@ namespace Gorgon.Examples
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
+    /// <remarks>
+    /// This example shows how to use the G-Buffer and Lighting effect to provide lighting for your sprites.
+    /// </remarks>
     static class Program
     {
         #region Variables.
@@ -65,6 +68,8 @@ namespace Gorgon.Examples
         private static GorgonSprite _torchSprite;
         // Our lighting effect.
         private static Gorgon2DLightingEffect _lightEffect;
+        // The g-buffer which contains our buffers used for lighting.
+        private static Gorgon2DGBuffer _gbuffer;
         // Flag to indicate the direction of light brightness.
         private static bool _lightBrightDir = true;
         // The actual light color value.
@@ -76,6 +81,8 @@ namespace Gorgon.Examples
         // The point light that we control.
         private static GorgonPointLight _light;
         private static GorgonOrthoCamera _camera;
+        // Flag to indicate we should rotate the logo.
+        private static bool _rotate;
         #endregion
 
         #region Methods.
@@ -118,15 +125,38 @@ namespace Gorgon.Examples
             _light.Color = new GorgonColor((_lightValue * 253.0f) / 255.0f, (_lightValue * 248.0f) / 255.0f, (_lightValue * 230.0f) / 255.0f);
             _light.SpecularPower = (1.0f - (_lightValue / 1.2f)) * 256;
 
-            // Blit our final texture to the main screen.
-            _graphics.SetRenderTarget(_screen.RenderTargetView);
+            // Clear our buffers each frame.
             _screen.RenderTargetView.Clear(GorgonColor.Black);
+            _gbuffer.ClearGBuffer();
 
-            // Render the lit sprite.
-            _lightEffect.Begin(2, 1, camera: _camera);
-            _logoSprite.Position = new Vector2(0, 0);
+            // Gorgon uses a G-Buffer, a collection of render targets used to facilitate lighting and other effects in order 
+            // provide a basis for lighting. Other techniques could be implemented, some faster, some slower, however this one 
+            // makes deferred lighting easier and is the better option for rendering multiple sprites affected by lighting.
+            //
+            // Gorgon's G-Buffer has one other critical advantage: It supports rotating sprites. Without special considerations 
+            // rotation of sprites when lighting will not look correct because the normals need to be rotated as well. This 
+            // is done in the G-Buffer on your behalf so your lighting will look correct no matter the orientation of the
+            // sprite.
 
-            if (_lightEffect.RotateNormals)
+            // What are the normal and specular maps used for?
+            // The Normal map is used to define how light behaves when it hits a surface in the scene. Without these, you will
+            // not be able to see any depth in the image, and the lighting will not update as the light passes over the scene.
+            // The Specular map is used to map out reflective spots on the image where the light will make the surface appear 
+            // shiny or even wet. 
+
+            // First we need to render the normal map, specular map and diffuse map to the buffer. For this example, these are
+            // stored in texture array indices #2, #1, and #0 respectively. This is why we pass the 2 and 1 as the first
+            // parameters for the gbuffer effect. We do not pass in the diffuse array index because the sprite being drawn
+            // will have that value in its TextureArrayIndex property.
+            _gbuffer.Begin(2, 1, camera: _camera);
+            _renderer.DrawSprite(_logoSprite);
+            _gbuffer.End();
+
+            // Now we'll send it all to our screen using the lighting effect.
+            _graphics.SetRenderTarget(_screen.RenderTargetView);
+            _lightEffect.Render(_gbuffer, _screen.RenderTargetView);
+
+            if (_rotate)
             {
                 _logoSprite.Angle += 45 * GorgonTiming.Delta;
             }
@@ -134,11 +164,9 @@ namespace Gorgon.Examples
             if (_logoSprite.Angle > 360.0f)
             {
                 _logoSprite.Angle -= 360.0f;
-            }
+            }                        
 
-            _renderer.DrawSprite(_logoSprite);
-            _lightEffect.End();
-
+            // Draw the rest of the UI.
             _renderer.Begin();
 
             _renderer.DrawSprite(_torchSprite);
@@ -146,7 +174,7 @@ namespace Gorgon.Examples
             _renderer.DrawString($"Specular Power: {_light.SpecularPower:0.0}\n" + 
                                  $"Light [c #{GorgonColor.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" + 
                                  $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColor.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]D[/c])\n" + 
-                                 $"[c #{GorgonColor.CornFlowerBlue.ToHex()}]N[/c]ormal Rotation: {(_lightEffect.RotateNormals ? "Yes" : "No")}",
+                                 $"[c #{GorgonColor.CornFlowerBlue.ToHex()}]R[/c]otation: {(_rotate ? "Yes" : "No")}",
                                  new Vector2(0, 64));
             _renderer.End();
 
@@ -188,10 +216,12 @@ namespace Gorgon.Examples
                                                   Name = "Gorgon2D Effects Example Swap Chain"
                                               });
 
+                _screen.SwapChainResized += Screen_SwapChainResized;                
+
                 _camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height))
                 {
                     Anchor = new Vector2(0.5f, 0.5f),
-                    Position = new Vector3(0.0f, 0.0f, -70),
+                    Position = new Vector3(0, 0, -70),
                     AllowUpdateOnResize = false
                 };
 
@@ -220,7 +250,9 @@ namespace Gorgon.Examples
                                                              });
 
                 // Initialize the renderer so that we are able to draw stuff.
-                _renderer = new Gorgon2D(_graphics);                
+                _renderer = new Gorgon2D(_graphics);
+
+                _gbuffer = new Gorgon2DGBuffer(_renderer, _screen.Width, _screen.Height);
 
                 _logoSprite = new GorgonSprite
                 {
@@ -276,6 +308,15 @@ namespace Gorgon.Examples
             }
         }
 
+        /// <summary>Handles the SwapChainResized event of the Screen control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
+        private static void Screen_SwapChainResized(object sender, SwapChainResizedEventArgs e)
+        {
+            _gbuffer.Resize(e.Size.Width, e.Size.Height);
+            _camera.ViewDimensions = e.Size.ToSize2F();
+        }
+
         /// <summary>
         /// Windows the key down.
         /// </summary>
@@ -291,8 +332,8 @@ namespace Gorgon.Examples
                 case Keys.Escape:
                     GorgonApplication.Quit();
                     return;
-                case Keys.N:
-                    _lightEffect.RotateNormals = !_lightEffect.RotateNormals;
+                case Keys.R:
+                    _rotate = !_rotate;
                     break;
                 case Keys.Z:                     
                     _light.Position = 
@@ -369,6 +410,7 @@ namespace Gorgon.Examples
             {
                 GorgonExample.UnloadResources();
 
+                _gbuffer?.Dispose();
                 _lightEffect?.Dispose();
                 _renderer?.Dispose();
                 _backgroundLogoTexture?.Dispose();

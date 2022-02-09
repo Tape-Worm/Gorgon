@@ -12,14 +12,13 @@ struct Light
     float4 Color;
 };
 
-#ifdef MAX_LIGHTS
 // Information about the light being rendered.
 cbuffer LightData : register(b1)
 {
-	// A list of list to render.
-    Light _lights[MAX_LIGHTS];
+	// The light to render with.
+    Light _light;
 };
-#endif
+
 
 // Global lighting information.
 cbuffer GlobalData : register(b2)
@@ -39,10 +38,8 @@ struct GorgonSpriteLitVertex
     float4 color : COLOR;
     float4 uv : TEXCOORD;
     float3 worldPos : WORLDPOS;
-#ifdef TRANSFORM // Apply transforms to normals as needed.
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
-#endif
 };
 
 // Normal and specular map.
@@ -54,36 +51,18 @@ SamplerState _specularSampler : register(s2);
 // Gets the specular value based on the specular map supplied.
 float4 GetSpecularValue(float2 uv, float3 lightDir, float3 normal, float3 toEye, float specularPower)
 {
-#ifndef USE_ARRAY
-    float4 specColor = _specularTexture.Sample(_specularSampler, uv);
-#else
 	float4 specColor = _arrayIndices.y < 0 ? float4(0, 0, 0, 1) : _gorgonTexture.Sample(_specularSampler, float3(uv, _arrayIndices.y));
-#endif
-
     float3 halfWay = normalize(toEye - lightDir);
     float nDotH = saturate(dot(normal, halfWay));
     return pow(nDotH, specularPower) * specColor;
 }
 
 // Retrieves a normal texel.
-#ifdef TRANSFORM
 float3 GetNormal(float2 uv, float3 tangent, float3 bitangent)
-#else
-float3 GetNormal(float2 uv)
-#endif
 {
-    // TODO: We should probably be transforming the normal here instead of the gbuffer.
-    //       Otherwise, rotation will be off when we aren't using a gbuffer.
-#ifndef USE_ARRAY
-    float4 normalTexel = _normalTexture.Sample(_normalSampler, uv);
-#else
 	float4 normalTexel = _arrayIndices.x < 0 ? float4(0.5f, 0.5f, 1.0f, 1.0f) : _gorgonTexture.Sample(_normalSampler, float3(uv, _arrayIndices.x));
-#endif
-
     float3 normal = normalTexel.rgb * 2 - 1;
-#ifdef TRANSFORM
     normal = normalize(float3(0, 0, normal.z) + (normal.x * tangent + normal.y * bitangent));
-#endif
 
     return normal;
 }
@@ -94,15 +73,11 @@ float3 PointLight(float3 color, float3 normal, GorgonSpriteLitVertex vertex, flo
     int specularEnabled = int(light.Attributes.w);
     float specularIntensity = light.Attributes.z;
     float3 result;
-#ifdef USE_ARRAY
-    float3 worldPos = _arrayIndices.z < 0 ? vertex.worldPos : _gorgonTexture.Sample(_normalSampler, float3(uv, _arrayIndices.z)).rgb;
-#else
-    float3 worldPos = vertex.worldPos;
-#endif
+    float3 worldPos = _gorgonTexture.Sample(_normalSampler, float3(uv, _arrayIndices.z)).rgb;
     float3 lightRange = light.Position.xyz - worldPos;
     float distance = length(lightRange);
 
-    if ((distance >= light.Attenuation.w) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
+    if ((light.Position.z < worldPos.z) || (distance >= light.Attenuation.w) || ((light.Attenuation.x == 0) && (light.Attenuation.y == 0) && (light.Attenuation.z == 0)))
     {
         return float3(0, 0, 0);
     }
@@ -114,7 +89,7 @@ float3 PointLight(float3 color, float3 normal, GorgonSpriteLitVertex vertex, flo
 
     if ((specularEnabled != 0) && (specularIntensity != 0))
     {        
-        result += GetSpecularValue(uv, normalize(vertex.worldPos - light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
+        result += GetSpecularValue(uv, normalize(worldPos - light.Position.xyz), normalize(normal), normalize(worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
     }
 
     float atten = 1.0f / (light.Attenuation.x + (distance * light.Attenuation.y) + (distance * distance * light.Attenuation.z));
@@ -154,19 +129,16 @@ GorgonSpriteLitVertex GorgonVertexLitShader(GorgonSpriteVertex vertex)
     output.uv = vertex.uv;
     output.color = vertex.color;
 
-#ifdef TRANSFORM
 	// We encode our rotation cosine and sine in our vertex data so that we don't need to perform the calculation more than needed.
 	float3x3 rotation = float3x3(vertex.angle.x, -vertex.angle.y, 0, vertex.angle.y, vertex.angle.x, 0, 0, 0, 1);
 
 	// Build up our tangents.  Without this, rotating a sprite would not look right when lit.
 	output.tangent = normalize(mul(rotation, float3(1, 0, 0)));
 	output.bitangent = normalize(cross(output.tangent, float3(0, 0, -1)));
-#endif
 
     return output;
 }
 
-#ifdef MAX_LIGHTS
 // Entry point for lighting shader.
 float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
 {
@@ -175,41 +147,31 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
     float4 diffuseColor = SampleMainTexture(vertex.uv, vertex.color);
     REJECT_ALPHA(diffuseColor.a);
     
-    if (int(_lights[0].Position.w) == 0)
+    int lightType = int(_light.Position.w);
+
+    if (int(_light.Position.w) == 0)
     {        
-        result = float4(diffuseColor.rgb * _ambientColor.rgb, diffuseColor.a);
+        result = float4(diffuseColor.rgb * _ambientColor.rgb, diffuseColor.a);        
         return result;
     }
 
     float2 uv = vertex.uv.xy / vertex.uv.w;    
         	
-#ifdef TRANSFORM
-    float3 normal = GetNormal(uv, vertex.tangent, vertex.bitangent);
-#else
-    float3 normal = GetNormal(uv);
-#endif
+    float3 normal = GetNormal(uv, vertex.tangent, vertex.bitangent);        
+    float3 color;
 
-    for (int i = 0; i < MAX_LIGHTS; ++i)
-    {
-        Light light = _lights[i];
-        int lightType = int(light.Position.w);
-        float3 color;
-
-        switch (lightType)
-        {			
-            case 1:
-                // Point lights.
-                color = PointLight(diffuseColor.rgb, normal, vertex, uv, light);
-                result = float4(result.rgb + color, diffuseColor.a);                
-                break;
-            case 2:
-                // Directional lights.
-				color = DirectionalLight(diffuseColor.rgb, normal, vertex, uv, light);
-                result = float4(result.rgb + color, diffuseColor.a);
-                break;			
-        }
+    switch (lightType)
+    {			
+        case 1:
+            color = PointLight(diffuseColor.rgb, normal, vertex, uv, _light);
+            result = float4(result.rgb + color, diffuseColor.a);                
+            break;
+        case 2:
+			color = DirectionalLight(diffuseColor.rgb, normal, vertex, uv, _light);
+            result = float4(result.rgb + color, diffuseColor.a);
+            break;			
     }
 
-    return saturate(float4(result.rgb + (diffuseColor.rgb * _ambientColor.rgb), diffuseColor.a));
+    return saturate(float4(result.rgb, diffuseColor.a));
 }
-#endif
+

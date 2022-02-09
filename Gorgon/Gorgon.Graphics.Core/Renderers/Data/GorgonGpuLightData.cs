@@ -39,6 +39,11 @@ namespace Gorgon.Renderers.Data
     public readonly struct GorgonGpuLightData
     {
         /// <summary>
+        /// An empty light data structure.
+        /// </summary>
+        public static readonly GorgonGpuLightData Empty = new();
+
+        /// <summary>
         /// The number of bytes for this value type.
         /// </summary>
         public static readonly int SizeInBytes = Unsafe.SizeOf<GorgonGpuLightData>();

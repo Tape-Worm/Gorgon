@@ -34,7 +34,6 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Memory;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Lights;
@@ -115,21 +114,11 @@ namespace Gorgon.Renderers
         }
         #endregion
 
-        #region Constants.
-        /// <summary>
-        /// The maximum number of lights that can be used at one time.
-        /// </summary>
-        public const int MaxLightCount = 1024;
-        #endregion
-
         #region Variables.        
         // Our custom vertex shader for per pixel lighting.
-        private GorgonVertexShader _vertexLitShader;
         private GorgonVertexShader _vertexLitTransformShader;
         private Gorgon2DShaderState<GorgonVertexShader> _vertexLitShaderState;
         // A pixel shader used to render lights.
-        private GorgonPixelShader _pixelLitShader;
-        private GorgonPixelShader _pixelLitArrayShader;
         private GorgonPixelShader _pixelLitTransformShader;
         private GorgonPixelShader _pixelLitArrayTransformShader;
         private Gorgon2DShaderState<GorgonPixelShader> _pixelLitShaderState;
@@ -139,100 +128,14 @@ namespace Gorgon.Renderers
         private GorgonConstantBufferView _globalBuffer;
         // The batch render state for drawing with lights.
         private Gorgon2DBatchState _lightingState;
-        // The texture holding normal maps.
-        private GorgonTexture2DView _normalTexture;
-        // The texture holding specular maps.
-        private GorgonTexture2DView _specularTexture;
         // The data to pass to the effect.
         private GlobalEffectData _effectData = new()
         {
             AmbientColor = GorgonColor.Black
         };
-        // Flag to indicate whether separate textures are being used or array indices.
-        private bool _useArray;
-        // The currently active render target view.
-        private GorgonRenderTargetView _currentRtv;
-        // The currently active array indices.
-        private (int normalIndex, int specIndex, int posIndex) _currentIndices;
-        // Flag to indicate that normals on the normal map should rotate.
-        private bool _rotateNormals;
-        // Flag to indicate that a gbuffer is in use.
-        private bool _useGBuffer;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to set or return whether to use array indices for normal/specular maps.
-        /// </summary>
-        private bool UseArray
-        {
-            set
-            {
-                if (_useArray == value)
-                {
-                    return;
-                }
-
-                _useArray = value;
-                _pixelLitShaderState = null;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether the gbuffer is being used to for normal and specular maps.
-        /// </summary>
-        private bool UseGBuffer
-        {
-            set
-            {
-                if (_useGBuffer == value)
-                {
-                    return;
-                }
-
-                _useGBuffer = value;
-                _pixelLitShaderState = null;
-                _vertexLitShaderState = null;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether to transform the normal map normals when transforming the geometry.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When this property is set to <b>true</b>, the normals on the normal map are transformed in the same manner as the geometry (rotation only). This impacts performance slightly, but allows 
-        /// the shader to handle rotating objects with correct lighting. 
-        /// </para>
-        /// <para>
-        /// If the property is <b>false</b>, then the shader will be slightly faster, but will not render correctly if an object is rotated. 
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This property has no effect when using the <see cref="Render(IGorgonGBuffer, GorgonRenderTargetView, GorgonCameraCommon)"/> method because the <see cref="IGorgonGBuffer"/> normal map will 
-        /// contain rotated normals already.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="IGorgonGBuffer"/>
-        public bool RotateNormals
-        {
-            get => _rotateNormals;
-            set
-            {
-                if (_rotateNormals == value)
-                {
-                    return;
-                }
-
-                _rotateNormals = value;
-                _vertexLitShaderState = null;
-                _pixelLitShaderState = null;
-            }
-        }
-
         /// <summary>
         /// Property to set or return the global ambient color.
         /// </summary>
@@ -248,96 +151,14 @@ namespace Gorgon.Renderers
         public IList<GorgonLightCommon> Lights
         {
             get;
-        } = new List<GorgonLightCommon>(MaxLightCount);
+        } = new List<GorgonLightCommon>(1024);
+
+        /// <summary>Property to return the number of passes required to render the effect.</summary>
+        /// <remarks>This is merely for information, passes may or may not be exposed to the end user by the effect author.</remarks>
+        public override int PassCount => Lights.Count + 1;
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to build all permutations of the lighting shader.
-        /// </summary>
-        private void BuildPixelShaderPermutations()
-        {
-            GorgonPixelShader lightShader = Interlocked.Exchange(ref _pixelLitShader, null);
-            lightShader?.Dispose();
-            lightShader = Interlocked.Exchange(ref _pixelLitArrayTransformShader, null);
-            lightShader?.Dispose();
-            lightShader = Interlocked.Exchange(ref _pixelLitArrayShader, null);
-            lightShader?.Dispose();
-            lightShader = Interlocked.Exchange(ref _pixelLitTransformShader, null);
-            lightShader?.Dispose();
-
-            var arrayMacro = new GorgonShaderMacro("USE_ARRAY");
-
-            Macros.Clear();
-            Macros.Add(new GorgonShaderMacro("MAX_LIGHTS", MaxLightCount.ToString()));
-
-            _pixelLitShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
-
-            Macros.Add(arrayMacro);
-
-            _pixelLitArrayShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
-
-            Macros.Add(new GorgonShaderMacro("TRANSFORM"));
-
-            _pixelLitArrayTransformShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
-
-            Macros.Remove(arrayMacro);
-
-            _pixelLitTransformShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
-
-            _pixelLitShaderState = null;
-        }
-
-        /// <summary>
-        /// Function to begin actual rendering of the effect.
-        /// </summary>
-        /// <param name="blendState">A user defined blend state to apply when rendering.</param>
-        /// <param name="depthStencilState">A user defined depth/stencil state to apply when rendering.</param>
-        /// <param name="rasterState">A user defined rasterizer state to apply when rendering.</param>
-        /// <param name="camera">The camera used to transform the lights to camera space.</param>
-        /// <returns>A flag indicate whether to continue rendering or not.</returns>
-        private PassContinuationState OnBeginRender(GorgonBlendState blendState, GorgonDepthStencilState depthStencilState, GorgonRasterState rasterState, GorgonCameraCommon camera)
-        {
-            BeginRender(_currentRtv, blendState, depthStencilState, rasterState);
-
-            int lightCount = Lights.Count.Min(MaxLightCount);
-
-            GorgonGpuLightData[] lightData = GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Rent(lightCount.Max(1));
-
-            try
-            {
-                for (int i = 0; i < lightCount; ++i)
-                {
-                    GorgonLightCommon light = Lights[i];
-
-                    if (light is null)
-                    {
-                        lightData[i] = default;
-                        continue;
-                    }
-
-                    ref readonly GorgonGpuLightData gpuLight = ref light.GetGpuData();
-                    lightData[i] = gpuLight;
-                }
-
-                if (lightCount > 0)
-                {
-                    _lightBuffer.Buffer.SetData<GorgonGpuLightData>(lightData.AsSpan(0, lightCount));
-                }
-                else
-                {
-                    lightData[0] = default;
-                    _lightBuffer.Buffer.SetData(lightData[0]);
-                }
-
-                return BeginPass(0, _currentRtv, camera);
-            }
-            finally
-            {
-                GorgonArrayPool<GorgonGpuLightData>.SharedTiny.Return(lightData, true);
-            }
-        }
-
         /// <summary>
         /// Function to perform the actual rendering of the effect.
         /// </summary>
@@ -346,17 +167,36 @@ namespace Gorgon.Renderers
         /// <param name="camera">The camera used to transform the lights to camera space.</param>
         private void OnRender(GorgonTexture2DView diffuse, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
-            if (OnBeginRender(null, null, null, camera) != PassContinuationState.Continue)
-            {
-                return;
-            }
-
+            // Draw our diffuse pass first, so we can get our ambient.
+            Graphics.SetRenderTarget(output);
+            Renderer.Begin(Gorgon2DBatchState.NoBlend, camera);
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
-                                        GorgonColor.White,
+                                        AmbientColor,
                                         diffuse,
                                         new DX.RectangleF(0, 0, 1, 1),
                                         textureSampler: GorgonSamplerState.Default);
-            End();        
+            Renderer.End();
+
+            BeginRender(output, null, null, null);
+
+            for (int i = 0; i < Lights.Count; ++i)
+            {
+                if (BeginPass(i, output, camera) != PassContinuationState.Continue)
+                {
+                    EndPass(i, output);
+                    break;
+                }
+
+                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
+                                            GorgonColor.White,
+                                            diffuse,
+                                            new DX.RectangleF(0, 0, 1, 1),                                            
+                                            textureSampler: GorgonSamplerState.Default);
+
+                EndPass(i, output);
+            }
+
+            EndRender(output);
         }
 
         /// <summary>
@@ -370,21 +210,15 @@ namespace Gorgon.Renderers
                 return;
             }
             
-            _currentIndices = (-1, -1, -1);
-
             GorgonConstantBufferView lightData = Interlocked.Exchange(ref _lightBuffer, null);
             GorgonConstantBufferView globalData = Interlocked.Exchange(ref _globalBuffer, null);
 
-            GorgonVertexShader vertexShader = Interlocked.Exchange(ref _vertexLitShader, null);
+            GorgonVertexShader vertexShader = Interlocked.Exchange(ref _vertexLitTransformShader, null);
             vertexShader?.Dispose();
             vertexShader = Interlocked.Exchange(ref _vertexLitTransformShader, null);
             vertexShader?.Dispose();
 
-            GorgonPixelShader lightShader = Interlocked.Exchange(ref _pixelLitShader, null);
-            lightShader?.Dispose();
-            lightShader = Interlocked.Exchange(ref _pixelLitArrayTransformShader, null);
-            lightShader?.Dispose();
-            lightShader = Interlocked.Exchange(ref _pixelLitArrayShader, null);
+            GorgonPixelShader lightShader = Interlocked.Exchange(ref _pixelLitArrayTransformShader, null);
             lightShader?.Dispose();
             lightShader = Interlocked.Exchange(ref _pixelLitTransformShader, null);
             lightShader?.Dispose();
@@ -402,11 +236,9 @@ namespace Gorgon.Renderers
         /// <returns>The 2D batch state.</returns>
         protected override Gorgon2DBatchState OnGetBatchState(int passIndex, IGorgon2DEffectBuilders builders, bool statesChanged)
         {
-            bool rotateNormals = (!_useGBuffer) && (_rotateNormals);
-
             if (_vertexLitShaderState is null)
             {
-                _vertexLitShaderState = builders.VertexShaderBuilder.Shader(rotateNormals ? _vertexLitTransformShader : _vertexLitShader)
+                _vertexLitShaderState = builders.VertexShaderBuilder.Shader(_vertexLitTransformShader)
                                                                     .Build(VertexShaderAllocator);
             }
 
@@ -419,16 +251,7 @@ namespace Gorgon.Renderers
                                            .SamplerState(GorgonSamplerState.PointFilteringWrapping, 1)
                                            .SamplerState(GorgonSamplerState.Wrapping, 2);
 
-                if (!_useArray)
-                {
-                    builders.PixelShaderBuilder.Shader(rotateNormals ? _pixelLitTransformShader : _pixelLitShader)
-                                               .ShaderResource(_normalTexture ?? Renderer.EmptyNormalMapTexture, 1)
-                                               .ShaderResource(_specularTexture ?? Renderer.EmptyBlackTexture, 2);
-                }
-                else
-                {
-                    builders.PixelShaderBuilder.Shader(rotateNormals ? _pixelLitArrayTransformShader : _pixelLitArrayShader);
-                }
+                builders.PixelShaderBuilder.Shader(_pixelLitArrayTransformShader);
 
                 _pixelLitShaderState = builders.PixelShaderBuilder.Build(PixelShaderAllocator);
                 _lightingState = null;
@@ -437,7 +260,7 @@ namespace Gorgon.Renderers
             if (_lightingState is null)
             {
                 _lightingState = builders.BatchBuilder
-                                         .BlendState(GorgonBlendState.Premultiplied)
+                                         .BlendState(GorgonBlendState.Additive)
                                          .DepthStencilState(GorgonDepthStencilState.Default)
                                          .RasterState(GorgonRasterState.Default)
                                          .PixelShaderState(_pixelLitShaderState)
@@ -492,6 +315,10 @@ namespace Gorgon.Renderers
 
             _globalBuffer.Buffer.SetData(in _effectData);
 
+            GorgonLightCommon light = Lights[passIndex];
+            ref readonly GorgonGpuLightData gpuLight = ref light.GetGpuData();
+            _lightBuffer.Buffer.SetData(in gpuLight);
+
             return PassContinuationState.Continue;
         }
 
@@ -515,83 +342,18 @@ namespace Gorgon.Renderers
                                                                           });
 
             _lightBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
-                                                                       new GorgonConstantBufferInfo(GorgonGpuLightData.SizeInBytes * MaxLightCount)
+                                                                       new GorgonConstantBufferInfo(GorgonGpuLightData.SizeInBytes)
                                                                        {
                                                                            Name = "Deferred Lighting Light Data Buffer",                                                                           
                                                                            Usage = ResourceUsage.Dynamic
                                                                        });
 
-            Macros.Clear();            
-            _vertexLitShader = CompileShader<GorgonVertexShader>(Resources.Lighting, "GorgonVertexLitShader");
-            Macros.Add(new GorgonShaderMacro("TRANSFORM"));
             _vertexLitTransformShader = CompileShader<GorgonVertexShader>(Resources.Lighting, "GorgonVertexLitShader");
+            _pixelLitArrayTransformShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
+            _pixelLitTransformShader = CompileShader<GorgonPixelShader>(Resources.Lighting, "GorgonPixelShaderLighting");
 
-            BuildPixelShaderPermutations();
-        }
-
-        /// <summary>
-        /// Function to begin rendering using separate texture views for the normal/specular map.
-        /// </summary>
-        /// <param name="normal">[Optional] The normal map texture to render.</param>
-        /// <param name="specular">[Optional] The specular map texture to render.</param>
-        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
-        /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
-        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
-        /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        public void Begin(GorgonTexture2DView normal = null, GorgonTexture2DView specular = null, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
-        {
-            UseGBuffer = UseArray = false;
-
-            _currentRtv = Graphics.RenderTargets[0];            
-
-            if ((_normalTexture != normal) || (_specularTexture != specular))
-            {
-                _normalTexture = normal;
-                _specularTexture = specular;
-                _pixelLitShaderState = null;
-            }
-
-            OnBeginRender(blendState, depthStencilState, rasterState, camera);
-        }
-
-        /// <summary>
-        /// Function to begin rendering using array indices of the texture being rendered for the normal/specular map.
-        /// </summary>
-        /// <param name="normalMapIndex">The array index of the texture being rendered that contains the normal map.</param>
-        /// <param name="specularMapIndex">The array index of the texture being rendered that contains the specular map.</param>
-        /// <param name="positionIndex">[Optional] The array index of the texture begin rendered that contains the position buffer.</param>
-        /// <param name="blendState">[Optional] A user defined blend state to apply when rendering.</param>
-        /// <param name="depthStencilState">[Optional] A user defined depth/stencil state to apply when rendering.</param>
-        /// <param name="rasterState">[Optional] A user defined rasterizer state to apply when rendering.</param>
-        /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        /// <remarks>
-        /// <para>
-        /// This method takes the texture of whatever is currently being rendered and uses an array index to index into the texture and retrieve the normal and specular map values.
-        /// </para>
-        /// </remarks>
-        public void Begin(int normalMapIndex, int specularMapIndex, int positionIndex = -1, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null, GorgonCameraCommon camera = null)
-        {
-            UseGBuffer = false;
-            UseArray = true;
-
-            _currentRtv = Graphics.RenderTargets[0];
-
-            if ((_currentIndices.normalIndex != normalMapIndex) || (_currentIndices.specIndex != specularMapIndex))
-            {
-                _effectData.ArrayIndices = new Vector4(normalMapIndex, specularMapIndex, positionIndex, 0);
-                _currentIndices = (normalMapIndex, specularMapIndex, positionIndex);
-            }
-
-            OnBeginRender(blendState, depthStencilState, rasterState, camera);
-        }
-        
-        /// <summary>
-        /// Function to end rendering.
-        /// </summary>
-        public void End()
-        {
-            EndPass(0, _currentRtv);
-            EndRender(_currentRtv);
+            // If we ever need to change the indices, we can do so here.
+            _effectData.ArrayIndices = new Vector4(1, 2, 3, 0);
         }
 
         /// <summary>
@@ -603,79 +365,10 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gbuffer"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
         public void Render(IGorgonGBuffer gbuffer, GorgonRenderTargetView output, GorgonCameraCommon camera = null)
         {
-            UseGBuffer = UseArray = true;
-
             gbuffer.ValidateObject(nameof(gbuffer));
             output.ValidateObject(nameof(output));
 
-            _currentRtv = output;
-
-            if ((_currentIndices.normalIndex != 1) || (_currentIndices.specIndex != 2) || (_currentIndices.posIndex != 3))
-            {
-                _effectData.ArrayIndices = new Vector4(1, 2, 3, 0);
-                _currentIndices = (1, 2, 3);
-            }
-
             OnRender(gbuffer.GBufferTexture, output, camera);
-        }
-
-
-        /// <summary>
-        /// Function to render the effect using the array indices of the diffuse texture.
-        /// </summary>
-        /// <param name="diffuse">The diffuse texture to render.</param>
-        /// <param name="output">The final output target for the effect.</param>
-        /// <param name="normalMapIndex">The array index of the diffuse texture that contains the normal map.</param>
-        /// <param name="specularMapIndex">The array index of the diffuse texture that contains the specular map.</param>
-        /// <param name="positionIndex">[Optional] The array index of the texture begin rendered that contains the position buffer.</param>
-        /// <param name="camera">[Optional] The camera used to transform the lights to camera space.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="diffuse"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
-        public void Render(GorgonTexture2DView diffuse, GorgonRenderTargetView output, int normalMapIndex, int specularMapIndex, int positionIndex = -1, GorgonCameraCommon camera = null)
-        {
-            UseArray = true;
-            UseGBuffer = false;
-
-            diffuse.ValidateObject(nameof(diffuse));
-            output.ValidateObject(nameof(output));
-
-            _currentRtv = output;
-
-            if ((normalMapIndex != _currentIndices.normalIndex) || (specularMapIndex != _currentIndices.specIndex))
-            {
-                _effectData.ArrayIndices = new Vector4(normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1),
-                                                          specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1), positionIndex, 0);
-                _currentIndices = (normalMapIndex.Max(0).Min(diffuse.ArrayCount - 1), specularMapIndex.Max(0).Min(diffuse.ArrayCount - 1), positionIndex);
-            }            
-
-            OnRender(diffuse, output, camera);
-        }
-
-        /// <summary>
-        /// Function to render the effect using multiple textures for the normal and specular maps.
-        /// </summary>
-        /// <param name="diffuse">The diffuse texture to render.</param>
-        /// <param name="output">The final output target for the effect.</param>
-        /// <param name="normal">[Optional] The normal map texture to render.</param>
-        /// <param name="specular">[Optional] The specular map texture to render.</param>
-        /// <param name="camera">[Optional] The camera used to transform the lights to camera space.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="diffuse"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
-        public void Render(GorgonTexture2DView diffuse, GorgonRenderTargetView output, GorgonTexture2DView normal = null, GorgonTexture2DView specular = null, GorgonCameraCommon camera = null)
-        {
-            UseArray = UseGBuffer = false;
-
-            diffuse.ValidateObject(nameof(diffuse));
-            output.ValidateObject(nameof(output));
-
-            _currentRtv = output;
-
-            if ((_normalTexture != normal) || (_specularTexture != specular))
-            {
-                _normalTexture = normal;
-                _specularTexture = specular;
-                _pixelLitShaderState = null;
-            }
-
-            OnRender(diffuse, output, camera);
         }
         #endregion
 
