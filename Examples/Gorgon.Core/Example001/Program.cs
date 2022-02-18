@@ -64,6 +64,7 @@ namespace Gorgon.Examples
 
             // Give up some CPU time.
             Thread.Sleep(5);
+            GorgonTiming.Update();
         }
 
         /// <summary>

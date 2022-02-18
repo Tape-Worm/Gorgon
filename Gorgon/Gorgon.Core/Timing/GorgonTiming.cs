@@ -83,8 +83,8 @@ namespace Gorgon.Timing
         #region Variables.
         // Timer used in calculations.
         private static IGorgonTimer _timer;
-        // Timer used to measure how long the application has been running.
-        private static IGorgonTimer _appTimer;
+        // The value to indicate how long the application has been running.
+        private static decimal _appTimer;
         // Frame counter.
         private static long _frameCounter;
         // Counter for averages.
@@ -96,7 +96,7 @@ namespace Gorgon.Timing
         // Average FPS total.
         private static float _averageFPSTotal;
         // Average scaled delta draw time total.
-        private static float _averageScaledDeltaTotal;
+        private static float _averageUnscaledDeltaTotal;
         // Average delta draw time total.
         private static float _averageDeltaTotal;
         // Maximum number of iterations for average reset.
@@ -110,6 +110,19 @@ namespace Gorgon.Timing
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the maximum frame delta, in seconds.
+        /// </summary>
+        /// <remarks>
+        /// This value is used to cap the <see cref="Delta"/> and <see cref="ScaledDelta"/> values so that frames can appear more smoothly in case of a long delay between frames. By default, this is set to 
+        /// 0.33333 seconds.
+        /// </remarks>
+        public static double MaximumFrameDelta
+        {
+            get;
+            set;
+        } = 0.333333333;
+
         /// <summary>
         /// Property to return whether or not the timing has been started by <see cref="StartTiming{T}"/>.
         /// </summary>
@@ -133,9 +146,11 @@ namespace Gorgon.Timing
         /// This property starts counting at the first call to one of the <c>GorgonApplication.Run</c> methods. If this property is called prior to that, then 
         /// it will return 0.
         /// </para>
-        /// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
+        /// <para>
+        /// This value is affected by the <see cref="TimeScale"/> property, and will not update if the application is not in the foreground unless the application allows for background processing.
+        /// </para>
         /// </remarks>
-        public static float SecondsSinceStart => _appTimer is null ? 0 : MillisecondsSinceStart / 1000.0f;
+        public static float SecondsSinceStart => MillisecondsSinceStart / 1000.0f;
 
         /// <summary>
         /// Property to return the number of milliseconds since a Gorgon application was started.
@@ -145,9 +160,11 @@ namespace Gorgon.Timing
         /// This property starts counting at the first call to one of the <c>GorgonApplication.Run</c> methods. If this property is called prior to that, then 
         /// it will return 0.
         /// </para>
-        /// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
+        /// <para>
+        /// This value is affected by the <see cref="TimeScale"/> property, and will not update if the application is not in the foreground unless the application allows for background processing.
+        /// </para>
         /// </remarks>
-        public static float MillisecondsSinceStart => _appTimer is null ? 0 : (float)_appTimer.Milliseconds;
+        public static float MillisecondsSinceStart => (float)_appTimer;
 
         /// <summary>
         /// Property to return the number of seconds to run the idle loop for a single iteration.
@@ -162,13 +179,13 @@ namespace Gorgon.Timing
         /// information on using frame delta instead of frames per second. 
         /// </para>
         /// <para>
-        /// This is the same as the <see cref="ScaledDelta"/> property when the <see cref="TimeScale">TimeScale</see> is set to 1.0f, otherwise, this value is not affected by <see cref="TimeScale"/>.  
+        /// This is the same as the <see cref="Delta"/> property when the <see cref="TimeScale">TimeScale</see> is set to 1.0f, otherwise, this value is not affected by <see cref="TimeScale"/>.  
         /// </para>
         /// <para>
-        /// Because it is unaffected by TimeScale, this value is the one that should be used when measuring performance.
+        /// Because it is unaffected by <see cref="TimeScale"/>, this value is the one that should be used when measuring performance.
         /// </para>
         /// </remarks>
-        public static float Delta
+        public static float UnscaledDelta
         {
             get;
             private set;
@@ -178,7 +195,7 @@ namespace Gorgon.Timing
         /// Property to return the number of seconds to run the idle loop for a single iteration with scaling.
         /// </summary>
         /// <remarks>This value is affected by the <see cref="TimeScale"/> property.</remarks>
-        public static float ScaledDelta
+        public static float Delta
         {
             get;
             private set;
@@ -281,7 +298,7 @@ namespace Gorgon.Timing
         /// This value is not affected by the <see cref="TimeScale"/> property because it is meant to be used in performance measurement.
         /// </para>
         /// </remarks>
-        public static float AverageDelta
+        public static float AverageUnscaledDelta
         {
             get;
             private set;
@@ -299,7 +316,7 @@ namespace Gorgon.Timing
         /// This value is affected by the <see cref="TimeScale"/> property.
         /// </para>
         /// </remarks>
-        public static float AverageScaledDelta
+        public static float AverageDelta
         {
             get;
             private set;
@@ -388,7 +405,14 @@ namespace Gorgon.Timing
                 frameDelta = (theTime - _lastTimerValue);
             } while (frameDelta is < 0.000001 and not 0.0);
 
-            Delta = (float)frameDelta / 1000.0f;
+            // Cap the maximum frame delta to smooth out glitches.
+            double maxDelta = MaximumFrameDelta * 1000;
+            if (frameDelta > maxDelta)
+            {
+                frameDelta = maxDelta;
+            }
+
+            UnscaledDelta = (float)frameDelta / 1000.0f;            
 
             // If the delta is 0, then put in the smallest possible positive value.
             if (Delta < 1e-6f)
@@ -396,7 +420,9 @@ namespace Gorgon.Timing
                 Delta = 1e-6f;
             }
 
-            ScaledDelta = Delta * TimeScale;
+            Delta = UnscaledDelta * TimeScale;
+
+            _appTimer += (decimal)frameDelta * (decimal)TimeScale;
 
             _lastTimerValue = theTime;
 
@@ -405,7 +431,7 @@ namespace Gorgon.Timing
                 FrameCount++;
                 FrameCountULong++;
 
-                frameDelta = _lastTimerValue - _lastTime;
+                frameDelta = (_lastTimerValue - _lastTime);
 
                 // If the value is too small, then don't use this time value.
                 if (frameDelta < 1e-6)
@@ -431,18 +457,18 @@ namespace Gorgon.Timing
                 if (_averageCounter > 0)
                 {
                     AverageFPS = _averageFPSTotal / _averageCounter;
-                    AverageScaledDelta = _averageScaledDeltaTotal / _averageCounter;
+                    AverageUnscaledDelta = _averageUnscaledDeltaTotal / _averageCounter;
                     AverageDelta = _averageDeltaTotal / _averageCounter;
                 }
                 else
                 {
                     AverageFPS = FPS;
-                    AverageScaledDelta = ScaledDelta;
+                    AverageUnscaledDelta = UnscaledDelta;
                     AverageDelta = Delta;
                 }
 
                 _averageFPSTotal += FPS;
-                _averageScaledDeltaTotal += ScaledDelta;
+                _averageUnscaledDeltaTotal += UnscaledDelta;
                 _averageDeltaTotal += Delta;
                 _averageCounter++;
 
@@ -455,7 +481,7 @@ namespace Gorgon.Timing
                 _averageCounter = 0;
                 _averageFPSTotal = 0;
                 _averageDeltaTotal = 0;
-                _averageScaledDeltaTotal = 0;
+                _averageUnscaledDeltaTotal = 0;
             }
         }
 
@@ -474,7 +500,7 @@ namespace Gorgon.Timing
         /// </note>
         /// </para>
         /// </remarks>
-	    public static void StartTiming<T>()
+        public static void StartTiming<T>()
             where T : class, IGorgonTimer, new()
         {
             if (Interlocked.CompareExchange(ref _timingStarted, 1, 0) == 1)
@@ -483,7 +509,6 @@ namespace Gorgon.Timing
             }
 
             _timer = new T();
-            _appTimer = new T();
 
             Reset();
         }
@@ -506,10 +531,10 @@ namespace Gorgon.Timing
             AverageFPS = 0.0f;
             HighestDelta = 0;
             _lowestDelta = null;
-            AverageScaledDelta = 0.0f;
+            AverageUnscaledDelta = 0.0f;
             AverageDelta = 0.0f;
             Delta = 0.0f;
-            ScaledDelta = 0.0f;
+            UnscaledDelta = 0.0f;
             FPS = 0.0f;
             FrameCountULong = FrameCount = 0;
             _averageCounter = 0;
@@ -517,7 +542,7 @@ namespace Gorgon.Timing
             _lastTime = 0.0;
             _lastTimerValue = 0.0;
             _averageFPSTotal = 0.0f;
-            _averageScaledDeltaTotal = 0.0f;
+            _averageUnscaledDeltaTotal = 0.0f;            
 
             _timer?.Reset();
         }
