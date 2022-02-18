@@ -484,11 +484,6 @@ namespace Gorgon.Animation
 
             float increment = (CurrentAnimation.Speed * (timingDelta ?? GorgonTiming.Delta));
 
-            if ((_time + increment < 0) && (CurrentAnimation.Speed < 0))
-            {
-                _time = CurrentAnimation.Length + (_time + increment);
-            }
-
             // Push the animation time forward (or backward, depending on the Speed modifier).
             Time += increment;
 
