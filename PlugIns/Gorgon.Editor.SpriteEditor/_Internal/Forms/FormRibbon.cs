@@ -212,6 +212,25 @@ namespace Gorgon.Editor.SpriteEditor
             ValidateButtons();
         }
 
+        /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyChangingEventArgs" /> instance containing the event data.</param>
+        private void DataContext_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ISpriteContent.SpriteClipContext):
+                    DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
+                    break;
+                case nameof(ISpriteContent.SpritePickContext):
+                    DataContext.SpriteClipContext.PropertyChanged -= SpritePickContext_PropertyChanged;
+                    break;
+                case nameof(ISpriteContent.SpriteVertexEditContext):
+                    DataContext.SpriteVertexEditContext.PropertyChanged -= SpriteVertexEditorContext_PropertyChanged;
+                    break;
+            }
+        }
+
         /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The [PropertyChangedEventArgs] instance containing the event data.</param>
@@ -229,6 +248,15 @@ namespace Gorgon.Editor.SpriteEditor
                 case nameof(ISpriteContent.Texture):
                     NumericFixedWidth.Maximum = DataContext?.Texture?.Width ?? 16384;
                     NumericFixedHeight.Maximum = DataContext?.Texture?.Height ?? 16384;
+                    break;
+                case nameof(ISpriteContent.SpriteClipContext):
+                    DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
+                    break;
+                case nameof(ISpriteContent.SpritePickContext):
+                    DataContext.SpriteClipContext.PropertyChanged += SpritePickContext_PropertyChanged;
+                    break;
+                case nameof(ISpriteContent.SpriteVertexEditContext):
+                    DataContext.SpriteVertexEditContext.PropertyChanged += SpriteVertexEditorContext_PropertyChanged;
                     break;
             }
 
@@ -678,6 +706,7 @@ namespace Gorgon.Editor.SpriteEditor
                 DataContext.SpriteVertexEditContext.PropertyChanged -= SpriteVertexEditorContext_PropertyChanged;
             }
 
+            DataContext.PropertyChanging -= DataContext_PropertyChanging;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
 
@@ -845,7 +874,8 @@ namespace Gorgon.Editor.SpriteEditor
             }
 
             DataContext.PropertyChanged += DataContext_PropertyChanged;
-        }        
+            DataContext.PropertyChanging += DataContext_PropertyChanging;
+        }
 
         /// <summary>
         /// Function to validate the state of the buttons.

@@ -1674,6 +1674,10 @@ namespace Gorgon.Editor.SpriteEditor
             SpritePickContext = spritePickContext;
             SpriteVertexEditContext = spriteVertexEditContext;
 
+            SpriteClipContext.ApplyCommand = new EditorCommand<object>(DoApplyClip, CanApplyClip);
+            SpritePickContext.ApplyCommand = new EditorCommand<object>(DoApplyPick, CanApplyPick);
+            SpriteVertexEditContext.ApplyCommand = new EditorCommand<object>(DoCommitVertexOffsets, CanCommitVertexOffsets);
+
             NotifyAllPropertiesChanged();
         }
 

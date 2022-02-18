@@ -609,14 +609,11 @@ namespace Gorgon.Editor.SpriteEditor
                     break;
                 case nameof(ISpriteContent.SpriteClipContext):
                     _manualRectEditor.SetDataContext(DataContext.SpriteClipContext);
-                    //DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;                    
+                    DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;                    
                     break;
                 case nameof(ISpriteContent.SpritePickContext):
                     SpritePickMaskColor.SetDataContext(DataContext.SpritePickContext.SpritePickMaskEditor);
-                    //DataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
-                    break;
-                case nameof(ISpriteContent.SpriteVertexEditContext):
-                    //_manualVertexEditor.SetDataContext(DataContext.SpriteVertexEditContext);
+                    DataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
                     break;
             }
 
