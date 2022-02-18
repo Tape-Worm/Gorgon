@@ -114,7 +114,7 @@ namespace Gorgon.Timing
         /// Property to set or return the maximum frame delta, in seconds.
         /// </summary>
         /// <remarks>
-        /// This value is used to cap the <see cref="Delta"/> and <see cref="ScaledDelta"/> values so that frames can appear more smoothly in case of a long delay between frames. By default, this is set to 
+        /// This value is used to cap the <see cref="Delta"/> and <see cref="UnscaledDelta"/> values so that frames can appear more smoothly in case of a long delay between frames. By default, this is set to 
         /// 0.33333 seconds.
         /// </remarks>
         public static double MaximumFrameDelta
@@ -131,7 +131,7 @@ namespace Gorgon.Timing
         /// <summary>
         /// Property to scale the frame delta times.
         /// </summary>
-        /// <remarks>Setting this value to 0 will pause, and a negative value will move things in reverse when using <see cref="ScaledDelta"/>.</remarks>
+        /// <remarks>Setting this value to 0 will pause, and a negative value will move things in reverse when using <see cref="Delta"/>.</remarks>
         public static float TimeScale
         {
             get;
@@ -327,7 +327,7 @@ namespace Gorgon.Timing
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This only applies to the <see cref="AverageFPS"/>, <see cref="AverageDelta"/> and <see cref="AverageScaledDelta"/> properties.
+        /// This only applies to the <see cref="AverageFPS"/>, <see cref="AverageDelta"/> and <see cref="AverageUnscaledDelta"/> properties.
         /// </para>
         /// <para>
         /// Note that the higher the value assigned to this property, the longer it'll take for the averages to compute, this is in addition to any overhead from the time it takes to execute a single 
