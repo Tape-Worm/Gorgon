@@ -253,7 +253,7 @@ namespace Gorgon.Editor.SpriteEditor
                     DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
                     break;
                 case nameof(ISpriteContent.SpritePickContext):
-                    DataContext.SpriteClipContext.PropertyChanged += SpritePickContext_PropertyChanged;
+                    DataContext.SpritePickContext.PropertyChanged += SpritePickContext_PropertyChanged;
                     break;
                 case nameof(ISpriteContent.SpriteVertexEditContext):
                     DataContext.SpriteVertexEditContext.PropertyChanged += SpriteVertexEditorContext_PropertyChanged;
