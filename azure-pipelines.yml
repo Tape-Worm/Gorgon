@@ -60,6 +60,7 @@ jobs:
           SourceFolder: '$(Build.SourcesDirectory)/Gorgon'
           Contents: | 
             **/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)            
+            !**/obj/**/*
             !**/$(buildConfiguration)/**/net48/**/*
             !**/$(buildConfiguration)/**/**/ref/**/*
           CleanTargetFolder: true
@@ -81,7 +82,6 @@ jobs:
           SourceFolder: '$(Build.SourcesDirectory)/Tools/Editor/Gorgon.Editor/bin/$(buildConfiguration)'
           Contents: |
             **/?(*.exe|*.dll|*.config|Gorgon.Editor.API.xml|Readme.txt|Gorgon.Editor.runtimeconfig.json)
-            !**/obj/**/*
             !**/TextViewerContentExample.*
             !**/**/ref/**/*
             !**/net48/**/*
