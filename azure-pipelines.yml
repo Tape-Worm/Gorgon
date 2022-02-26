@@ -155,6 +155,7 @@ jobs:
           SourceFolder: '$(Build.SourcesDirectory)/Gorgon'
           Contents: | 
             **/$(buildConfiguration)/**/?(*.dll|Gorgon*.xml|Gorgon*.pdb)            
+            !**/$(buildConfiguration)/**/obj/**/*
             !**/$(buildConfiguration)/**/net48/**/*
             !**/$(buildConfiguration)/**/**/ref/**/*
           CleanTargetFolder: true
