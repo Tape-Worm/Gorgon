@@ -182,7 +182,7 @@ namespace Gorgon.Renderers
         private void OnRender(GorgonTexture2DView diffuse, GorgonRenderTargetView output, GorgonCameraCommon camera)
         {
             // Draw our diffuse pass first, so we can get our ambient.
-            Graphics.SetRenderTarget(output);
+            Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
             Renderer.Begin(Gorgon2DBatchState.NoBlend, camera);
             Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
                                         AmbientColor,
