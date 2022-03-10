@@ -143,9 +143,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => VertexBuffer is null
-                       ? 281.GenerateHash(Stride).GenerateHash(Offset)
-                       : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
+        public override int GetHashCode() => HashCode.Combine(Stride, Offset, VertexBuffer);
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/> is equal to this instance.

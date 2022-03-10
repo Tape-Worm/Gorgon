@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -69,7 +70,7 @@ namespace Gorgon.IO
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => 281.GenerateHash(ID);
+        public override int GetHashCode() => HashCode.Combine(ID);
 
         /// <summary>
         /// Function to compare two instances for equality.

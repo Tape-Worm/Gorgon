@@ -282,14 +282,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(WriteMask)
-            .GenerateHash(AlphaBlendOperation)
-            .GenerateHash(ColorBlendOperation)
-            .GenerateHash(DestinationAlphaBlend)
-            .GenerateHash(DestinationColorBlend)
-            .GenerateHash(IsBlendingEnabled)
-            .GenerateHash(SourceAlphaBlend)
-            .GenerateHash(SourceColorBlend);
+        public override int GetHashCode() => HashCode.Combine(WriteMask, AlphaBlendOperation, ColorBlendOperation, DestinationAlphaBlend, DestinationColorBlend, IsBlendingEnabled, SourceAlphaBlend, SourceColorBlend);
         #endregion
 
         #region Constructor/Finalizer.

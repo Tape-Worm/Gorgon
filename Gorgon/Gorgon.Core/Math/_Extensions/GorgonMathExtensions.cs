@@ -1128,9 +1128,7 @@ namespace Gorgon.Math
 
             if (min > max)
             {
-                float temp = max;
-                max = min;
-                min = temp;
+                (min, max) = (max, min);
             }
 
             if (angle > max)
@@ -1162,9 +1160,7 @@ namespace Gorgon.Math
 
             if (min > max)
             {
-                double temp = max;
-                max = min;
-                min = temp;
+                (min, max) = (max, min);
             }
 
             if (angle > max)
@@ -1196,9 +1192,7 @@ namespace Gorgon.Math
 
             if (min > max)
             {
-                decimal temp = max;
-                max = min;
-                min = temp;
+                (min, max) = (max, min);
             }
 
             if (angle > max)
@@ -1230,9 +1224,7 @@ namespace Gorgon.Math
 
             if (min > max)
             {
-                short temp = max;
-                max = min;
-                min = temp;
+                (min, max) = (max, min);
             }
 
             if (angle > max)
@@ -1264,9 +1256,7 @@ namespace Gorgon.Math
 
             if (min > max)
             {
-                int temp = max;
-                max = min;
-                min = temp;
+                (min, max) = (max, min);
             }
 
 
@@ -1299,9 +1289,7 @@ namespace Gorgon.Math
 
             if (min > max)
             {
-                long temp = max;
-                max = min;
-                min = temp;
+                (min, max) = (max, min);
             }
 
             if (angle > max)

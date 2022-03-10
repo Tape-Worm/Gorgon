@@ -396,18 +396,23 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(IsAntialiasedLineEnabled)
-            .GenerateHash(CullMode)
-            .GenerateHash(DepthBias)
-            .GenerateHash(DepthBiasClamp)
-            .GenerateHash(IsDepthClippingEnabled)
-            .GenerateHash(FillMode)
-            .GenerateHash(ForcedReadWriteViewSampleCount)
-            .GenerateHash(IsFrontCounterClockwise)
-            .GenerateHash(IsMultisamplingEnabled)
-            .GenerateHash(ScissorRectsEnabled)
-            .GenerateHash(SlopeScaledDepthBias)
-            .GenerateHash(UseConservativeRasterization);
+        public override int GetHashCode()
+        {
+            HashCode hashCode = new();
+            hashCode.Add(IsAntialiasedLineEnabled);
+            hashCode.Add(CullMode);
+            hashCode.Add(DepthBias);
+            hashCode.Add(DepthBiasClamp);   
+            hashCode.Add(IsDepthClippingEnabled);   
+            hashCode.Add(FillMode); 
+            hashCode.Add(ForcedReadWriteViewSampleCount);  
+            hashCode.Add(IsFrontCounterClockwise);
+            hashCode.Add(IsMultisamplingEnabled);
+            hashCode.Add(ScissorRectsEnabled);
+            hashCode.Add(SlopeScaledDepthBias);
+            hashCode.Add(UseConservativeRasterization);
+            return hashCode.ToHashCode();
+        }
         #endregion
 
         #region Constructor/Finalizer.

@@ -190,14 +190,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(Context.GetHashCode())
-                   .GenerateHash(Index)
-                   .GenerateHash(Format)
-                   .GenerateHash(Offset)
-                   .GenerateHash(Slot)
-                   .GenerateHash(Instanced.GetHashCode())
-                   .GenerateHash(InstanceCount)
-                   .GenerateHash(SizeInBytes);
+        public override int GetHashCode() => HashCode.Combine(Context, Index, Format, Offset, Slot, Instanced, InstanceCount, SizeInBytes);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

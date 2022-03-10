@@ -125,10 +125,7 @@ namespace Gorgon.Graphics.Imaging
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(RowPitch)
-                      .GenerateHash(SlicePitch)
-                      .GenerateHash(HorizontalBlockCount)
-                      .GenerateHash(VerticalBlockCount);
+        public override int GetHashCode() => HashCode.Combine(RowPitch, SlicePitch, HorizontalBlockCount, VerticalBlockCount);
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.

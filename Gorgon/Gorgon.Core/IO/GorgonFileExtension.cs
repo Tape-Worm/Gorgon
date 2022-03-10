@@ -153,7 +153,7 @@ namespace Gorgon.IO
 		/// <returns>
 		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
 		/// </returns>
-		public override int GetHashCode() => 281.GenerateHash(Extension.ToUpperInvariant());
+		public override int GetHashCode() => HashCode.Combine(Extension.ToUpperInvariant());
 
 		/// <summary>
 		/// Returns a <see cref="string" /> that represents this instance.

@@ -201,9 +201,7 @@ namespace GorgonTriangulator
 
             while (end > start)
             {
-                Gorgon2DVertex temp = vertices[end];
-                vertices[end] = vertices[start];
-                vertices[start] = temp;
+                (vertices[start], vertices[end]) = (vertices[end], vertices[start]);
                 --end;
                 ++start;
             }

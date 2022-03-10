@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Properties;
@@ -253,12 +254,7 @@ namespace Gorgon.Graphics
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-	    public override int GetHashCode() => 281.GenerateHash(Back)
-                    .GenerateHash(Right)
-                    .GenerateHash(Bottom)
-                    .GenerateHash(Left)
-                    .GenerateHash(Top)
-                    .GenerateHash(Front);
+	    public override int GetHashCode() => HashCode.Combine(Back, Right, Bottom, Left, Top, Front);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

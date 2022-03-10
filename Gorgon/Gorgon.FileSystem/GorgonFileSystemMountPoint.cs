@@ -107,17 +107,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode()
-        {
-#pragma warning disable IDE0046 // Convert to conditional expression
-            if ((Provider is null) || (PhysicalPath is null) || (MountLocation is null))
-            {
-                return 0;
-            }
-
-            return 281.GenerateHash(Provider).GenerateHash(PhysicalPath).GenerateHash(MountLocation);
-#pragma warning restore IDE0046 // Convert to conditional expression
-        }
+        public override int GetHashCode() => HashCode.Combine(Provider, PhysicalPath, MountLocation);
 
         /// <summary>
         /// Equality operator.

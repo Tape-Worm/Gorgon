@@ -850,9 +850,7 @@ namespace Gorgon.Renderers
 
                 if (t1 > t2)
                 {
-                    float temp = t1;
-                    t1 = t2;
-                    t2 = temp;
+                    (t2, t1) = (t1, t2);
                 }
 
                 distance = t1.Max(distance);
@@ -881,9 +879,7 @@ namespace Gorgon.Renderers
 
                 if (t1 > t2)
                 {
-                    float temp = t1;
-                    t1 = t2;
-                    t2 = temp;
+                    (t2, t1) = (t1, t2);
                 }
 
                 distance = t1.Max(distance);
@@ -912,9 +908,7 @@ namespace Gorgon.Renderers
 
                 if (t1 > t2)
                 {
-                    float temp = t1;
-                    t1 = t2;
-                    t2 = temp;
+                    (t2, t1) = (t1, t2);
                 }
 
                 distance = t1.Max(distance);

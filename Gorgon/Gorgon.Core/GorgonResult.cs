@@ -186,7 +186,7 @@ namespace Gorgon.Core
         /// <returns>
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(Code.GenerateHash(Name));
+        public override int GetHashCode() => HashCode.Combine(Code, Name);
         #endregion
 
         #region Operators.

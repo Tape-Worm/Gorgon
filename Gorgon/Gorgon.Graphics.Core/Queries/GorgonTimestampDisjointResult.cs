@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
@@ -56,7 +57,7 @@ namespace Gorgon.Graphics.Core
         #region Methods.
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => 281.GenerateHash(Frequency).GenerateHash(IsDisjoint);
+        public override int GetHashCode() => HashCode.Combine(Frequency, IsDisjoint);
 
         /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>

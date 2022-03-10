@@ -114,10 +114,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(Comparison)
-            .GenerateHash(DepthFailOperation)
-            .GenerateHash(FailOperation)
-            .GenerateHash(PassOperation);
+        public override int GetHashCode() => HashCode.Combine(Comparison, DepthFailOperation, FailOperation, PassOperation);
         #endregion
 
         #region Constructor/Finalizer.

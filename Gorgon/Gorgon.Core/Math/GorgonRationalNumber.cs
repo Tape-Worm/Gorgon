@@ -81,7 +81,7 @@ namespace Gorgon.Math
         /// A hash code for the current object.
         /// </returns>
         /// <filterpriority>2</filterpriority>
-        public override int GetHashCode() => 281.GenerateHash(Numerator).GenerateHash(Denominator);
+        public override int GetHashCode() => HashCode.Combine(Numerator, Denominator);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.

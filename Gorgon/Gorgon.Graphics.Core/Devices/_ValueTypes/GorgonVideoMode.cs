@@ -147,8 +147,7 @@ namespace Gorgon.Graphics.Core
 
         /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
-        public override int GetHashCode() => 397.GenerateHash(Width).GenerateHash(Height).GenerateHash(Format).GenerateHash(RefreshRate).GenerateHash(Scaling)
-                      .GenerateHash(ScanlineOrder).GenerateHash(SupportsStereo);
+        public override int GetHashCode() => HashCode.Combine(Width, Height, Format, RefreshRate, Scaling, ScanlineOrder, SupportsStereo);
 
         /// <summary>Returns the fully qualified type name of this instance.</summary>
         /// <returns>The fully qualified type name.</returns>

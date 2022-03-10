@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
@@ -113,9 +114,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => Buffer is null
-                       ? 281.GenerateHash(Offset)
-                       : 281.GenerateHash(Offset).GenerateHash(Buffer.GetHashCode());
+        public override int GetHashCode() => HashCode.Combine(Offset, Buffer);
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/> is equal to this instance.

@@ -68,9 +68,7 @@ namespace Gorgon.Input
         /// A 32-bit signed integer that is the hash code for this instance.
         /// </returns>
         /// <filterpriority>2</filterpriority>
-        public override int GetHashCode() =>
-            // ReSharper disable NonReadonlyMemberInGetHashCode
-            281.GenerateHash(DeviceType).GenerateHash(DeviceHandle);// ReSharper enable NonReadonlyMemberInGetHashCode
+        public override int GetHashCode() => HashCode.Combine(DeviceType, DeviceHandle);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

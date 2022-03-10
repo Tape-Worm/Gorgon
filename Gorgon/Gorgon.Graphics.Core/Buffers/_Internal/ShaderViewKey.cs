@@ -59,7 +59,7 @@ namespace Gorgon.Graphics.Core
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => 281.GenerateHash(Start).GenerateHash(Count).GenerateHash(DataType);
+        public override int GetHashCode() => HashCode.Combine(Start, Count, DataType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferShaderViewKey"/> struct.

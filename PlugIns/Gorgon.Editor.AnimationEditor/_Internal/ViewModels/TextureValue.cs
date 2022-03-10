@@ -65,7 +65,7 @@ namespace Gorgon.Editor.AnimationEditor
         #region Methods.
         /// <summary>Returns a hash code for this instance.</summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => (Texture?.GetHashCode() ?? 0).GenerateHash(ArrayIndex).GenerateHash(TextureCoordinates);
+        public override int GetHashCode() => HashCode.Combine(ArrayIndex, TextureCoordinates, Texture);
 
         /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
         /// <returns>A <see cref="string"/> that represents this instance.</returns>

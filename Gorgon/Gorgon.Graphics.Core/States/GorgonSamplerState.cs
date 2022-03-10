@@ -353,16 +353,21 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(WrapU)
-            .GenerateHash(WrapV)
-            .GenerateHash(WrapW)
-            .GenerateHash(BorderColor)
-            .GenerateHash(ComparisonFunction)
-            .GenerateHash(Filter)
-            .GenerateHash(MaxAnisotropy)
-            .GenerateHash(MinimumLevelOfDetail)
-            .GenerateHash(MaximumLevelOfDetail)
-            .GenerateHash(MipLevelOfDetailBias);
+        public override int GetHashCode()
+        {
+            HashCode hashCode = new();
+            hashCode.Add(WrapU);
+            hashCode.Add(WrapV);
+            hashCode.Add(WrapW);
+            hashCode.Add(BorderColor);
+            hashCode.Add(ComparisonFunction);
+            hashCode.Add(Filter);
+            hashCode.Add(MaxAnisotropy);
+            hashCode.Add(MinimumLevelOfDetail);
+            hashCode.Add(MaximumLevelOfDetail);
+            hashCode.Add(MipLevelOfDetailBias);
+            return hashCode.ToHashCode();            
+        }
         #endregion
 
         #region Constructor/Finalizer.

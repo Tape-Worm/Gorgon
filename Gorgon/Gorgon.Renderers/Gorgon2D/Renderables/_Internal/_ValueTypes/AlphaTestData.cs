@@ -85,7 +85,7 @@ namespace Gorgon.Renderers
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(IsEnabled).GenerateHash(LowerAlpha).GenerateHash(UpperAlpha);
+        public override int GetHashCode() => HashCode.Combine(IsEnabled, LowerAlpha, UpperAlpha);
         #endregion
 
         #region Constructor/Destructor.

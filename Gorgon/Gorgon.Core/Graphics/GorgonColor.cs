@@ -362,7 +362,7 @@ namespace Gorgon.Graphics
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(Red).GenerateHash(Green).GenerateHash(Blue).GenerateHash(Alpha);
+        public override int GetHashCode() => HashCode.Combine(Red, Green, Blue, Alpha);
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.

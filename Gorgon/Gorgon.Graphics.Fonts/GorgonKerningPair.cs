@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+using System.Security.Policy;
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
 
@@ -71,7 +73,7 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(LeftCharacter).GenerateHash(RightCharacter);
+        public override int GetHashCode() => HashCode.Combine(LeftCharacter, RightCharacter);
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.

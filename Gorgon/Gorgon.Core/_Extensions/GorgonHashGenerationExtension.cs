@@ -25,6 +25,8 @@
 #endregion
 
 
+using System;
+
 namespace Gorgon.Core
 {
     /// <summary>
@@ -56,6 +58,7 @@ namespace Gorgon.Core
         /// </code>
         /// </para>
         /// </remarks>
+        [Obsolete("Use System.HashCode.Combine instead.")]
         public static int GenerateHash<T>(this int previousHash, T item)
         {
             unchecked

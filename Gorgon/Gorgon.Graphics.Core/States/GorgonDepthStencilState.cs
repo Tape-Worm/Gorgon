@@ -347,14 +347,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(BackFaceStencilOp)
-            .GenerateHash(FrontFaceStencilOp)
-            .GenerateHash(DepthComparison)
-            .GenerateHash(IsDepthEnabled)
-            .GenerateHash(IsDepthWriteEnabled)
-            .GenerateHash(IsStencilEnabled)
-            .GenerateHash(StencilReadMask)
-            .GenerateHash(StencilWriteMask);
+        public override int GetHashCode() => HashCode.Combine(BackFaceStencilOp, FrontFaceStencilOp, DepthComparison, IsDepthEnabled, IsDepthWriteEnabled, IsStencilEnabled, StencilReadMask, StencilWriteMask);
         #endregion
 
         #region Constructor/Finalizer.

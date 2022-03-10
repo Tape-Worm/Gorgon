@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -65,7 +66,7 @@ namespace Gorgon.Renderers
         #region Methods.
         /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
-        public override int GetHashCode() => 281.GenerateHash(Color).GenerateHash(TextureArrayIndex).GenerateHash(TextureCoordinate).GenerateHash(Position);
+        public override int GetHashCode() => HashCode.Combine(Color, TextureArrayIndex, TextureCoordinate, Position);
 
         /// <summary>Indicates whether this instance and a specified object are equal.</summary>
         /// <param name="obj">The object to compare with the current instance. </param>

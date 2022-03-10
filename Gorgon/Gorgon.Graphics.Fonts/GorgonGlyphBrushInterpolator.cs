@@ -77,7 +77,7 @@ namespace Gorgon.Graphics.Fonts
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => 281.GenerateHash(Weight);
+        public override int GetHashCode() => HashCode.Combine(Weight);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

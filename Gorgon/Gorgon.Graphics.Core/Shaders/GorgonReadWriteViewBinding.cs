@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
@@ -84,7 +85,7 @@ namespace Gorgon.Graphics.Core
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode() => 281.GenerateHash(InitialCount).GenerateHash(ReadWriteView?.GetHashCode() ?? 0);
+        public override int GetHashCode() => HashCode.Combine(InitialCount, ReadWriteView);
 
         /// <summary>
         /// Function to determine if two instances are equal.
