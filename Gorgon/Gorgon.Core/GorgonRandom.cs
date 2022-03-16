@@ -158,6 +158,33 @@ namespace Gorgon.Core
         public static float SimplexNoise(float x, float y, float z) => 1.0f + (Noise.Generate(x, y, z) - 1.0f);
 
         /// <summary>
+        /// Function to return a random <see cref="double"/> number.
+        /// </summary>
+        /// <param name="start">The starting value for the random number.</param>
+        /// <param name="end">The ending value for the random number range.  This value is inclusive.</param>
+        /// <returns>A random <see cref="double"/> value between <paramref name="start"/> to <paramref name="end"/>.</returns>
+        /// <remarks>
+        /// This overload generates a random <see cref="double"/> number between the range of <paramref name="start"/> and <paramref name="end"/>.
+        /// </remarks>
+        public static double RandomDouble(double start, double end) => start.EqualsEpsilon(end) ? start : (_rnd.NextDouble() * (end - start)) + start;
+
+        /// <summary>
+        /// Function to return a random <see cref="double"/> number.
+        /// </summary>
+        /// <param name="maxValue">The highest number for random values, this value is inclusive.</param>
+        /// <returns>A random <see cref="double"/> value.</returns>.
+        /// <remarks>
+        /// This overload generates a random <see cref="double"/> number between the range of 0 and <paramref name="maxValue"/>.
+        /// </remarks>
+        public static double RandomDouble(double maxValue) => RandomDouble(0, maxValue);
+
+        /// <summary>
+        /// Function to return a random <see cref="double"/> number.
+        /// </summary>
+        /// <returns>A random <see cref="double"/> value between 0.0 and 1.0.</returns>
+        public static double RandomDouble() => _rnd.NextDouble();
+
+        /// <summary>
         /// Function to return a random <see cref="float"/> number.
         /// </summary>
         /// <param name="start">The starting value for the random number.</param>
