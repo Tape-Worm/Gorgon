@@ -554,6 +554,11 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear()
         {
+            if ((_cache is null) || (_cache.Values.Count == 0) || (_cacheLock is null))
+            {
+                return;
+            }
+
             try
             {
                 _cacheLock.Wait();
