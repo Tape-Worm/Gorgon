@@ -268,6 +268,7 @@ namespace Gorgon.Editor.SpriteEditor
             Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 4, transformedAnchor.Y - 4, 8, 8), GorgonColor.Black);            
             Renderer.DrawEllipse(new DX.RectangleF(transformedAnchor.X - 3, transformedAnchor.Y - 3, 6, 6), GorgonColor.White);
 
+            _marchAnts.Animate();
             _marchAnts.Draw(marchAntsRect);
             Renderer.End();
         }

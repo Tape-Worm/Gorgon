@@ -180,7 +180,8 @@ namespace Gorgon.Editor.ImageEditor
             {
                 Renderer.DrawRectangle(_cubeScreenBounds[i], new GorgonColor(GorgonColor.Black, Opacity * 0.88f), 1);
             }
-                        
+
+            _selectionRect.Animate();
             _selectionRect.Draw(_cubeScreenBounds[selectedImage]);
 
             var offset = new Vector2(0, "+X".MeasureLine(_axisFont, true).Height);

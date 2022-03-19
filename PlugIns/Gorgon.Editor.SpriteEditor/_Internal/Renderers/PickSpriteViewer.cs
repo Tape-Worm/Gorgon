@@ -227,6 +227,7 @@ namespace Gorgon.Editor.SpriteEditor
 
             // Draw in client space.
             Renderer.Begin();
+            _marchAnts.Animate();
             _marchAnts.Draw(marchAntsRect);
             Renderer.End();
         }

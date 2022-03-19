@@ -699,6 +699,7 @@ namespace Gorgon.Editor.Services
 
             GetActiveHandle();
 
+            _marchingAnts.Animate();
             _marchingAnts.Draw(_screenRect);
 
             for (int i = 0; i < _handles.Length; ++i)

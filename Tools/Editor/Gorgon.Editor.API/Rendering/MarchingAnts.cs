@@ -67,10 +67,9 @@ namespace Gorgon.Editor.Rendering
         }
 
         /// <summary>
-        /// Function to draw the marching ants rectangle.
+        /// Function to animate the marching ants.
         /// </summary>
-        /// <param name="rect">The rectangular region to draw in.</param>
-        public void Draw(DX.RectangleF rect)
+        public void Animate()
         {
             _step += _marchAntsTexture.Value.Width * (GorgonTiming.Delta * 0.4f);
 
@@ -78,12 +77,16 @@ namespace Gorgon.Editor.Rendering
             {
                 _step -= _marchAntsTexture.Value.Width;
             }
-
-            _renderer.DrawRectangle(rect, GorgonColor.White,
-                texture: _marchAntsTexture.Value,
-                textureRegion: _marchAntsTexture.Value.ToTexel(new DX.Rectangle((int)-_step, 0, (int)rect.Width, (int)rect.Height)),
-                textureSampler: GorgonSamplerState.PointFilteringWrapping);
         }
+
+        /// <summary>
+        /// Function to draw the marching ants rectangle.
+        /// </summary>
+        /// <param name="rect">The rectangular region to draw in.</param>
+        public void Draw(DX.RectangleF rect) => _renderer.DrawRectangle(rect, GorgonColor.White,
+                                                                        texture: _marchAntsTexture.Value,
+                                                                        textureRegion: _marchAntsTexture.Value.ToTexel(new DX.Rectangle((int)-_step, 0, (int)rect.Width, (int)rect.Height)),
+                                                                        textureSampler: GorgonSamplerState.PointFilteringWrapping);
 
         /// <summary>
         /// Function to build an instance of the marching ants texture.
