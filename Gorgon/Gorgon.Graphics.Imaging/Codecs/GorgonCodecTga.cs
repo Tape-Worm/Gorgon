@@ -269,7 +269,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                             pixelFormat = BufferFormat.R8G8B8A8_UNorm;
                             if (header.BPP == 24)
                             {
-                                conversionFlags |= TGAConversionFlags.Expand;
+                                conversionFlags |= TGAConversionFlags.Expand | TGAConversionFlags.RGB888;
                             }
                             break;
                     }
@@ -767,7 +767,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
                     }
 
                     // The components of the pixel data in a TGA file need swizzling for 32 bit.
-                    if (formatInfo.BitDepth == 32)
+                    //if (formatInfo.BitDepth == 32)
+                    if ((conversionFlags & TGAConversionFlags.RGB888) != TGAConversionFlags.RGB888)
                     {
                         ImageUtilities.SwizzleScanline(in destPtr,
                                                         buffer.PitchInformation.RowPitch,
