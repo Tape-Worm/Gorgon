@@ -7,7 +7,7 @@ struct Light
     float4 Position;
     // Point light only. X = constant, Y = linear, Z = quadratic.
     float4 Attenuation;
-	// Attributes (X = Specular Power, Y = Intensity, Z = Specular Intensity, W = Specular on/off).
+	// Attributes (X = Specular Power, Y = Intensity, Z = range (point light only), W = Specular on/off).
     float4 Attributes;
     float4 Color;
 };
@@ -70,7 +70,7 @@ float3 GetNormal(float2 uv, float3 tangent, float3 bitangent)
 }
 
 // Simulates a point light with attenuationuation falloff and optional specular highlighting.
-float3 PointLight(float3 normal, GorgonSpriteLitVertex vertex, float2 uv, Light light)
+float3 PointLight(float3 color, float3 normal, GorgonSpriteLitVertex vertex, float2 uv, Light light)
 {
     int specularEnabled = int(light.Attributes.w);
     float specularIntensity = light.Attributes.z;
@@ -92,7 +92,7 @@ float3 PointLight(float3 normal, GorgonSpriteLitVertex vertex, float2 uv, Light 
     float3 lightDirection = lightRange / distance;
 
     float NDotL = saturate(dot(normal, lightDirection));
-    result = float3(NDotL * light.Color.rgb * light.Attributes.y);
+    result = float3(color * NDotL * light.Color.rgb * light.Attributes.y);
 
     if ((specularEnabled != 0) && (specularIntensity != 0))
     {        
@@ -101,11 +101,11 @@ float3 PointLight(float3 normal, GorgonSpriteLitVertex vertex, float2 uv, Light 
 
     float atten = 1.0f / (light.Attenuation.x + (distance * light.Attenuation.y) + (distance * distance * light.Attenuation.z));
     
-    return result * atten;
+    return saturate(result * atten);
 }
 
 // Simulates a directional light (e.g. the sun) with optional specular highlighting.
-float3 DirectionalLight(float3 normal, GorgonSpriteLitVertex vertex, float2 uv, Light light)
+float3 DirectionalLight(float3 color, float3 normal, GorgonSpriteLitVertex vertex, float2 uv,Light light)
 {
     int specularEnabled = int(light.Attributes.w);
     float specularIntensity = light.Attributes.z;
@@ -115,7 +115,7 @@ float3 DirectionalLight(float3 normal, GorgonSpriteLitVertex vertex, float2 uv, 
 	
     NDotL = saturate(dot(normal, lightDir));
 
-    result = float3(NDotL * light.Color.rgb * light.Attributes.y);
+    result = float3(color * NDotL * light.Color.rgb * light.Attributes.y);
 	
     if ((specularEnabled != 0) && (specularIntensity != 0))
     {        
@@ -123,7 +123,7 @@ float3 DirectionalLight(float3 normal, GorgonSpriteLitVertex vertex, float2 uv, 
         result += GetSpecularValue(uv, -(light.Position.xyz), normalize(normal), normalize(vertex.worldPos - _cameraPos.xyz), light.Attributes.x).rgb * specularIntensity;
     }
     
-    return result;
+    return saturate(result);
 }
 
 // Updated vertex shader that will capture the world position of the vertex prior to sending to the pixel shader.
@@ -158,8 +158,7 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
 
     if (int(_light.Position.w) == 0)
     {        
-        result = float4(diffuseColor.rgb * _ambientColor.rgb, diffuseColor.a);        
-        return result;
+        return float4(diffuseColor.rgb * _ambientColor.rgb, diffuseColor.a);
     }
 
     float2 uv = vertex.uv.xy / vertex.uv.w;    
@@ -170,13 +169,14 @@ float4 GorgonPixelShaderLighting(GorgonSpriteLitVertex vertex) : SV_Target
     switch (lightType)
     {			
         case 1:
-            color = PointLight(normal, vertex, uv, _light);
+            color = PointLight(diffuseColor.rgb, normal, vertex, uv, _light);
+            result = float4(result.rgb + color, diffuseColor.a);                
             break;
         case 2:
-			color = DirectionalLight(normal, vertex, uv, _light);
+			color = DirectionalLight(diffuseColor.rgb, normal, vertex, uv, _light);
+            result = float4(result.rgb + color, diffuseColor.a);
             break;			
     }
 
-    return saturate(float4(color * diffuseColor.rgb, diffuseColor.a));
+    return saturate(float4(result.rgb, diffuseColor.a));
 }
-
