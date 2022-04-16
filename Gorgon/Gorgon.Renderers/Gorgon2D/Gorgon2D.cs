@@ -584,6 +584,39 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Property to return the bounds of the sprite, with transformation applied.
+        /// </summary>
+        /// <param name="renderable">The renderable to interrogate.</param>
+        /// <returns>The bounds with transformation applied.</returns>
+        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>   
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DX.RectangleF GetTransformedBounds(BatchRenderable renderable)
+        {
+            float left = float.MaxValue;
+            float top = float.MaxValue;
+            float right = float.MinValue;
+            float bottom = float.MinValue;
+
+            for (int i = 0; i < renderable.ActualVertexCount; ++i)
+            {
+                ref readonly Vector4 vertex = ref renderable.Vertices[i].Position;
+
+                left = vertex.X.Min(left);
+                top = vertex.Y.Min(top);
+                right = vertex.X.Max(right);
+                bottom = vertex.Y.Max(bottom);
+            }
+
+            return new DX.RectangleF
+            {
+                Left = left,
+                Top = top,
+                Right = right,
+                Bottom = bottom
+            };
+        }
+
+        /// <summary>
         /// Function to initialize the renderer.
         /// </summary>
         private void Initialize()
@@ -708,40 +741,6 @@ namespace Gorgon.Renderers
                 Log.LogException(ex);
                 throw;
             }
-        }
-
-
-        /// <summary>
-        /// Property to return the bounds of the sprite, with transformation applied.
-        /// </summary>
-        /// <param name="renderable">The renderable to interrogate.</param>
-        /// <returns>The bounds with transformation applied.</returns>
-        /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>   
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private DX.RectangleF GetTransformedBounds(BatchRenderable renderable)
-        {
-            float left = float.MaxValue;
-            float top = float.MaxValue;
-            float right = float.MinValue;
-            float bottom = float.MinValue;
-
-            for (int i = 0; i < renderable.ActualVertexCount; ++i)
-            {
-                ref readonly Vector4 vertex = ref renderable.Vertices[i].Position;
-
-                left = vertex.X.Min(left);
-                top = vertex.Y.Min(top);
-                right = vertex.X.Max(right);
-                bottom = vertex.Y.Max(bottom);
-            }
-
-            return new DX.RectangleF
-            {
-                Left = left,
-                Top = top,
-                Right = right,
-                Bottom = bottom
-            };
         }
 
         /// <summary>
